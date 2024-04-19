@@ -6,9 +6,14 @@
 #   require_checksum: true
 #   supported_envs:
 #   - all
+checksum:
+  enabled: true
 registries:
 - type: standard
-  ref: v4.163.0  # renovate: depName=aquaproj/aqua-registry
+  ref: v4.163.0 # renovate: depName=aquaproj/aqua-registry
+- name: local
+  type: local
+  path: aqua-registry.yaml
 packages:
 - name: cli/cli@v2.40.1
 - name: golangci/golangci-lint@v1.55.2
@@ -18,4 +23,7 @@ packages:
 - name: rhysd/actionlint@v1.6.26
 - name: makiuchi-d/arelo@v1.13.0
 - name: koalaman/shellcheck@v0.9.0
-- name: sqlc-dev/sqlc@v1.24.0
+- name: golang-migrate/migrate@v4.17.1
+- name: sqlc-dev/sqlc@v1.26.0
+- name: go-delve/delve@v1.21.2
+  registry: local

@@ -1,0 +1,6 @@
+packages:
+  - name: go-delve/delve
+    type: go_install
+    path: github.com/go-delve/delve/cmd/dlv
+    description: Delve is a debugger for the Go programming language
+

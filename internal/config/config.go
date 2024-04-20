@@ -26,6 +26,10 @@ type Config struct {
 	DBPassword string `env:"DB_PASSWORD"`
 	DBUrl      string `env:"DB_URL,required"`
 
+	// AuthSecret 認証トークンの署名用シークレット
+	AuthSecret   string `env:"AUTH_SECRET,required"`
+	SecretIssuer string `env:"SECRET_ISSUER,required"`
+
 	AppDebug bool `env:"APP_DEBUG"`
 	// development, staging, production
 	AppEnv EnvironmentMode `env:"APP_ENV" envDefault:"production"`

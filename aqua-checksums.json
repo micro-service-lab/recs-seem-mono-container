@@ -26,6 +26,11 @@
       "algorithm": "sha256"
     },
     {
+      "id": "github_release/github.com/k1LoW/tbls/v1.74.0/tbls_v1.74.0_linux_amd64.tar.gz",
+      "checksum": "DD8BBD3053AB9884F966CC20295BD5C1582066FBEA074DC61E7585D5400D8B2B",
+      "algorithm": "sha256"
+    },
+    {
       "id": "github_release/github.com/koalaman/shellcheck/v0.9.0/shellcheck-v0.9.0.linux.x86_64.tar.xz",
       "checksum": "700324C6DD0EBEA0117591C6CC9D7350D9C7C5C287ACBAD7630FA17B1D4D9E2F",
       "algorithm": "sha256"

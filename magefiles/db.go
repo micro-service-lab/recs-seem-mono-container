@@ -41,6 +41,11 @@ func (s DB) Seed(ctx context.Context) {
 	mg.CtxDeps(ctx, s.seed)
 }
 
+// Force forces version.
+func (s DB) Force(ctx context.Context, version string) {
+	mg.CtxDeps(ctx, s.forceVersionGenerator(version))
+}
+
 // Drop deletes database.
 func (s DB) Drop(ctx context.Context) {
 	mg.CtxDeps(ctx, s.drop)
@@ -90,8 +95,6 @@ func (s *DB) migrate() error {
 		return fmt.Errorf("get repo root: %w", err)
 	}
 
-	repoRoot = repoRoot[:strings.LastIndex(repoRoot, "/")]
-
 	dbDir := filepath.Join(repoRoot, "db")
 
 	args := []string{
@@ -118,8 +121,6 @@ func (s *DB) rollback() error {
 		return fmt.Errorf("get repo root: %w", err)
 	}
 
-	repoRoot = repoRoot[:strings.LastIndex(repoRoot, "/")]
-
 	dbDir := filepath.Join(repoRoot, "db")
 
 	args := []string{
@@ -144,7 +145,6 @@ func (s *DB) seed(_ context.Context) error {
 	if err != nil {
 		return fmt.Errorf("get repo root: %w", err)
 	}
-	repoRoot = repoRoot[:strings.LastIndex(repoRoot, "/")]
 
 	seedDir := filepath.Join(repoRoot, "db", "seeds")
 	rankTxt := filepath.Join(seedDir, "seed_rank.txt")
@@ -172,6 +172,33 @@ func (s *DB) seed(_ context.Context) error {
 	return nil
 }
 
+func (s *DB) forceVersionGenerator(version string) func() error {
+	return func() error {
+		cfg, err := config.Get()
+		if err != nil {
+			return fmt.Errorf("get config: %w", err)
+		}
+
+		repoRoot, err := utils.RepoRoot()
+		if err != nil {
+			return fmt.Errorf("get repo root: %w", err)
+		}
+
+		dbDir := filepath.Join(repoRoot, "db")
+
+		args := []string{
+			"--path", filepath.Join(dbDir, "migrations"),
+			"--database", cfg.DBUrl,
+			"force", version,
+		}
+		if err := sh.RunV("migrate", args...); err != nil {
+			return fmt.Errorf("run migrate: %w", err)
+		}
+
+		return nil
+	}
+}
+
 func (s *DB) drop(ctx context.Context) error {
 	cfg, err := config.Get()
 	if err != nil {
@@ -184,9 +211,9 @@ func (s *DB) drop(ctx context.Context) error {
 	}
 	defer db.Close(ctx)
 
-	query := fmt.Sprintf("DROP DATABASE `%s`", cfg.DBName)
+	query := fmt.Sprintf("DROP DATABASE %s", cfg.DBName)
 	if _, err := db.Exec(ctx, query); err != nil {
-		return fmt.Errorf("create database: %w", err)
+		return fmt.Errorf("drop database: %w", err)
 	}
 
 	fmt.Printf("database %q has been deleted.\n", cfg.DBName)

@@ -58,6 +58,31 @@ func (a App) Seed(ctx context.Context) {
 	mg.CtxDeps(ctx, a.seed)
 }
 
+// Tabledoc generates table documentation.
+func (a App) Tabledoc(ctx context.Context) {
+	mg.CtxDeps(ctx, a.tabledoc)
+}
+
+// Force forces version.
+func (a App) Force(ctx context.Context, version string) {
+	mg.CtxDeps(ctx, a.forceVersionGenerator(version))
+}
+
+// Create creates the database.
+func (a App) Create(ctx context.Context) {
+	mg.CtxDeps(ctx, a.create)
+}
+
+// Drop deletes the database.
+func (a App) Drop(ctx context.Context) {
+	mg.CtxDeps(ctx, a.drop)
+}
+
+// Reset resets the database.
+func (a App) Reset(ctx context.Context) {
+	mg.CtxDeps(ctx, a.reset)
+}
+
 // Log shows the logs of the service.
 func (a App) Log(ctx context.Context, service string) {
 	mg.CtxDeps(ctx, a.logGenerator(service))
@@ -118,6 +143,15 @@ func (a App) ps() error {
 	return nil
 }
 
+func (a App) create() error {
+	if err := sh.RunV(
+		"docker", "compose", "exec", "mono-api", "mage", "-d", "/app/server", "db:create"); err != nil {
+		return fmt.Errorf("create database: %w", err)
+	}
+
+	return nil
+}
+
 func (a App) migrate() error {
 	if err := sh.RunV(
 		"docker", "compose", "exec", "mono-api", "mage", "-d", "/app/server", "db:migrate"); err != nil {
@@ -142,6 +176,41 @@ func (a App) seed() error {
 		return fmt.Errorf("create database: %w", err)
 	}
 
+	return nil
+}
+
+func (a App) tabledoc() error {
+	if err := sh.RunV(
+		"docker", "compose", "exec", "mono-api", "mage", "-d", "/app/server", "generate:tabledoc"); err != nil {
+		return fmt.Errorf("generate table documentation: %w", err)
+	}
+
+	return nil
+}
+
+func (a App) forceVersionGenerator(version string) func() error {
+	return func() error {
+		if err := sh.RunV(
+			"docker", "compose", "exec", "mono-api", "mage", "-d", "/app/server", "db:force", version); err != nil {
+			return fmt.Errorf("force version: %w", err)
+		}
+		return nil
+	}
+}
+
+func (a App) drop() error {
+	if err := sh.RunV(
+		"docker", "compose", "exec", "mono-api", "mage", "-d", "/app/server", "db:drop"); err != nil {
+		return fmt.Errorf("drop database: %w", err)
+	}
+	return nil
+}
+
+func (a App) reset() error {
+	if err := sh.RunV(
+		"docker", "compose", "exec", "mono-api", "mage", "-d", "/app/server", "db:reset"); err != nil {
+		return fmt.Errorf("reset database: %w", err)
+	}
 	return nil
 }
 

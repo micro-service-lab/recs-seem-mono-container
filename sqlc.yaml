@@ -1,0 +1,61 @@
+version: '2'
+sql:
+- name: postgresql
+  schema: db/migrations/
+  queries: db/queries/
+  engine: postgresql
+  database:
+    uri: ${DB_URL}
+  analyzer:
+    database: false
+  rules:
+  - sqlc/db-prepare
+  # - postgresql-query-too-costly
+  gen:
+    go:
+      package: "query"
+      out: "app/query"
+      sql_package: "pgx/v5"
+      emit_json_tags: true
+      emit_interface: true
+      emit_empty_slices: true
+      overrides:
+        - db_type: "timestamptz"
+          go_type: "time.Time"
+        - db_type: "uuid"
+          go_type: "github.com/google/uuid.UUID"
+      rename:
+        m_policy_category: PolicyCategory
+        m_policy: Policy
+        m_role: Role
+        m_role_association: RoleAssociation
+        m_attend_status: AttendStatus
+        m_organization: Organization
+        m_permission_category: PermissionCategory
+        m_work_position: WorkPosition
+        m_permission: Permission
+        m_permission_association: PermissionAssociation
+        m_group: Group
+        m_grade: Grade
+        m_mime_type: MimeType
+        t_attachable_item: AttachableItem
+        t_image: Image
+        t_file: File
+        m_member: Member
+        m_student: Student
+        m_professor: Professor
+        m_event_type: EventType
+        t_event: Event
+        m_attendance_type: AttendanceType
+        t_attendance: Attendance
+        t_early_leaving: EarlyLeaving
+        t_late_arrival: LateArrival
+        t_absence: Absence
+        t_lab_io_history: LabIOHistory
+        m_chat_room: ChatRoom
+        t_message: Message
+        t_position_history: PositionHistory
+        m_chat_room_belonging: ChatRoomBelonging
+        m_record_type: RecordType
+        t_record: Record
+

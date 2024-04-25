@@ -38,10 +38,46 @@ WHERE
 AND
 	CASE WHEN @where_is_private::boolean = true THEN is_private = @is_private ELSE TRUE END
 ORDER BY
+	m_chat_rooms_pkey DESC;
+
+-- name: GetChatRoomsUseNumberedPaginate :many
+SELECT * FROM m_chat_rooms
+WHERE
+	CASE WHEN @where_in_owner::boolean = true THEN owner_id = ANY(@in_owner) ELSE TRUE END
+AND
+	CASE WHEN @where_is_private::boolean = true THEN is_private = @is_private ELSE TRUE END
+ORDER BY
 	m_chat_rooms_pkey DESC
 LIMIT $1 OFFSET $2;
 
+-- name: GetChatRoomsUseKeysetPaginate :many
+SELECT * FROM m_chat_rooms
+WHERE
+	CASE WHEN @where_in_owner::boolean = true THEN owner_id = ANY(@in_owner) ELSE TRUE END
+AND
+	CASE WHEN @where_is_private::boolean = true THEN is_private = @is_private ELSE TRUE END
+WHERE
+	CASE @cursor_direction
+		WHEN 'next' THEN
+			m_chat_rooms_pkey < @cursor
+		WHEN 'prev' THEN
+			m_chat_rooms_pkey > @cursor
+	END
+ORDER BY
+	m_chat_rooms_pkey DESC
+LIMIT $1;
+
 -- name: GetChatRoomsWithOwner :many
+SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members) FROM m_chat_rooms
+LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
+WHERE
+	CASE WHEN @where_in_owner::boolean THEN owner_id = ANY(@in_owner) ELSE TRUE END
+AND
+	CASE WHEN @where_is_private::boolean THEN is_private = @is_private ELSE TRUE END
+ORDER BY
+	m_chat_rooms_pkey DESC;
+
+-- name: GetChatRoomsWithOwnerUseNumberedPaginate :many
 SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members) FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE
@@ -52,7 +88,36 @@ ORDER BY
 	m_chat_rooms_pkey DESC
 LIMIT $1 OFFSET $2;
 
+-- name: GetChatRoomsWithOwnerUseKeysetPaginate :many
+SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members) FROM m_chat_rooms
+LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
+WHERE
+	CASE WHEN @where_in_owner::boolean = true THEN owner_id = ANY(@in_owner) ELSE TRUE END
+AND
+	CASE WHEN @where_is_private::boolean = true THEN is_private = @is_private ELSE TRUE END
+WHERE
+	CASE @cursor_direction
+		WHEN 'next' THEN
+			m_chat_rooms_pkey < @cursor
+		WHEN 'prev' THEN
+			m_chat_rooms_pkey > @cursor
+	END
+ORDER BY
+	m_chat_rooms_pkey DESC
+LIMIT $1;
+
 -- name: GetChatRoomsWithCoverImage :many
+SELECT sqlc.embed(m_chat_rooms), sqlc.embed(t_images), sqlc.embed(t_attachable_items) FROM m_chat_rooms
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE
+	CASE WHEN @where_in_owner::boolean THEN owner_id = ANY(@in_owner) ELSE TRUE END
+AND
+	CASE WHEN @where_is_private::boolean THEN is_private = @is_private ELSE TRUE END
+ORDER BY
+	m_chat_rooms_pkey DESC;
+
+-- name: GetChatRoomsWithCoverImageUseNumberedPaginate :many
 SELECT sqlc.embed(m_chat_rooms), sqlc.embed(t_images), sqlc.embed(t_attachable_items) FROM m_chat_rooms
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
@@ -64,7 +129,38 @@ ORDER BY
 	m_chat_rooms_pkey DESC
 LIMIT $1 OFFSET $2;
 
+-- name: GetChatRoomsWithCoverImageUseKeysetPaginate :many
+SELECT sqlc.embed(m_chat_rooms), sqlc.embed(t_images), sqlc.embed(t_attachable_items) FROM m_chat_rooms
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE
+	CASE WHEN @where_in_owner::boolean = true THEN owner_id = ANY(@in_owner) ELSE TRUE END
+AND
+	CASE WHEN @where_is_private::boolean = true THEN is_private = @is_private ELSE TRUE END
+WHERE
+	CASE @cursor_direction
+		WHEN 'next' THEN
+			m_chat_rooms_pkey < @cursor
+		WHEN 'prev' THEN
+			m_chat_rooms_pkey > @cursor
+	END
+ORDER BY
+	m_chat_rooms_pkey DESC
+LIMIT $1;
+
 -- name: GetChatRoomsWithAll :many
+SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members), sqlc.embed(t_images), sqlc.embed(t_attachable_items) FROM m_chat_rooms
+LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE
+	CASE WHEN @where_in_owner::boolean THEN owner_id = ANY(@in_owner) ELSE TRUE END
+AND
+	CASE WHEN @where_is_private::boolean THEN is_private = @is_private ELSE TRUE END
+ORDER BY
+	m_chat_rooms_pkey DESC;
+
+-- name: GetChatRoomsWithAllUseNumberedPaginate :many
 SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members), sqlc.embed(t_images), sqlc.embed(t_attachable_items) FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
@@ -76,6 +172,26 @@ AND
 ORDER BY
 	m_chat_rooms_pkey DESC
 LIMIT $1 OFFSET $2;
+
+-- name: GetChatRoomsWithAllUseKeysetPaginate :many
+SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members), sqlc.embed(t_images), sqlc.embed(t_attachable_items) FROM m_chat_rooms
+LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE
+	CASE WHEN @where_in_owner::boolean = true THEN owner_id = ANY(@in_owner) ELSE TRUE END
+AND
+	CASE WHEN @where_is_private::boolean = true THEN is_private = @is_private ELSE TRUE END
+WHERE
+	CASE @cursor_direction
+		WHEN 'next' THEN
+			m_chat_rooms_pkey < @cursor
+		WHEN 'prev' THEN
+			m_chat_rooms_pkey > @cursor
+	END
+ORDER BY
+	m_chat_rooms_pkey DESC
+LIMIT $1;
 
 -- name: CountChatRooms :one
 SELECT COUNT(*) FROM m_chat_rooms

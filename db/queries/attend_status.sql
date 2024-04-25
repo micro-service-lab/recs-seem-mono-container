@@ -29,8 +29,40 @@ WHERE
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_attend_statuses.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_attend_statuses.name END DESC,
+	m_attend_statuses_pkey DESC;
+
+-- name: GetAttendStatusesUseNumberedPaginate :many
+SELECT * FROM m_attend_statuses
+WHERE
+	CASE WHEN @where_like_name::boolean = true THEN m_attend_statuses.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_attend_statuses.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_attend_statuses.name END DESC,
 	m_attend_statuses_pkey DESC
 LIMIT $1 OFFSET $2;
+
+-- name: GetAttendStatusesUseKeysetPaginate :many
+SELECT * FROM m_attend_statuses
+WHERE
+	CASE @cursor_direction
+		WHEN 'next' THEN
+			CASE @order_method::text
+				WHEN 'name' THEN m_attend_statuses.name > @cursor_column OR (m_attend_statuses.name = @cursor_column AND m_attend_statuses_pkey < @cursor)
+				WHEN 'r_name' THEN m_attend_statuses.name < @cursor_column OR (m_attend_statuses.name = @cursor_column AND m_attend_statuses_pkey < @cursor)
+				ELSE m_attend_statuses_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method::text
+				WHEN 'name' THEN m_attend_statuses.name < @cursor_column OR (m_attend_statuses.name = @cursor_column AND m_attend_statuses_pkey > @cursor)
+				WHEN 'r_name' THEN m_attend_statuses.name > @cursor_column OR (m_attend_statuses.name = @cursor_column AND m_attend_statuses_pkey > @cursor)
+				ELSE m_attend_statuses_pkey > @cursor
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_attend_statuses.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_attend_statuses.name END DESC,
+	m_attend_statuses_pkey DESC
+LIMIT $1;
 
 -- name: CountAttendStatuses :one
 SELECT COUNT(*) FROM m_attend_statuses

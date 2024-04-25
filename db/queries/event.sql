@@ -66,8 +66,71 @@ AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC;
+
+-- name: GetEventsUseNumberedPaginate :many
+SELECT * FROM t_events
+WHERE
+	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_organization::boolean = true THEN organization_id = @organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_start_time::boolean = true THEN start_time >= @earlier_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_start_time::boolean = true THEN start_time <= @later_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
+ORDER BY
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey DESC
 LIMIT $1 OFFSET $2;
+
+-- name: GetEventsUseKeysetPaginate :many
+SELECT * FROM t_events
+WHERE
+	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_organization::boolean = true THEN organization_id = @organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_start_time::boolean = true THEN start_time >= @earlier_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_start_time::boolean = true THEN start_time <= @later_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
+WHERE
+	CASE @cursor_direction
+		WHEN 'next' THEN
+			CASE @order_method
+				WHEN 'start_time' THEN start_time > @cursor_column OR (start_time = @cursor_column AND t_events_pkey < @cursor)
+				WHEN 'r_start_time' THEN start_time < @cursor_column OR (start_time = @cursor_column AND t_events_pkey < @cursor)
+				ELSE t_events_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method
+				WHEN 'start_time' THEN start_time < @cursor_column OR (start_time = @cursor_column AND t_events_pkey > @cursor)
+				WHEN 'r_start_time' THEN start_time > @cursor_column OR (start_time = @cursor_column AND t_events_pkey > @cursor)
+				ELSE t_events_pkey > @cursor
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+LIMIT $1;
 
 -- name: GetEventsWithType :many
 SELECT sqlc.embed(t_events), sqlc.embed(m_event_types) FROM t_events
@@ -90,8 +153,73 @@ AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC;
+
+-- name: GetEventsWithTypeUseNumberedPaginate :many
+SELECT sqlc.embed(t_events), sqlc.embed(m_event_types) FROM t_events
+LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
+WHERE
+	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_organization::boolean = true THEN t_events.organization_id = @organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_start_time::boolean = true THEN start_time >= @earlier_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_start_time::boolean = true THEN start_time <= @later_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
+ORDER BY
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey DESC
 LIMIT $1 OFFSET $2;
+
+-- name: GetEventsWithTypeUseKeysetPaginate :many
+SELECT sqlc.embed(t_events), sqlc.embed(m_event_types) FROM t_events
+LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
+WHERE
+	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_organization::boolean = true THEN t_events.organization_id = @organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_start_time::boolean = true THEN start_time >= @earlier_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_start_time::boolean = true THEN start_time <= @later_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
+WHERE
+	CASE @cursor_direction
+		WHEN 'next' THEN
+			CASE @order_method
+				WHEN 'start_time' THEN start_time > @cursor_column OR (start_time = @cursor_column AND t_events_pkey < @cursor)
+				WHEN 'r_start_time' THEN start_time < @cursor_column OR (start_time = @cursor_column AND t_events_pkey < @cursor)
+				ELSE t_events_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method
+				WHEN 'start_time' THEN start_time < @cursor_column OR (start_time = @cursor_column AND t_events_pkey > @cursor)
+				WHEN 'r_start_time' THEN start_time > @cursor_column OR (start_time = @cursor_column AND t_events_pkey > @cursor)
+				ELSE t_events_pkey > @cursor
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+LIMIT $1;
 
 -- name: GetEventsWithOrganization :many
 SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
@@ -114,8 +242,73 @@ AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC;
+
+-- name: GetEventsWithOrganizationUseNumberedPaginate :many
+SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
+LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_organization::boolean = true THEN t_events.organization_id = @organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_start_time::boolean = true THEN start_time >= @earlier_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_start_time::boolean = true THEN start_time <= @later_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
+ORDER BY
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey DESC
 LIMIT $1 OFFSET $2;
+
+-- name: GetEventsWithOrganizationUseKeysetPaginate :many
+SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
+LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_organization::boolean = true THEN t_events.organization_id = @organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_start_time::boolean = true THEN start_time >= @earlier_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_start_time::boolean = true THEN start_time <= @later_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
+WHERE
+	CASE @cursor_direction
+		WHEN 'next' THEN
+			CASE @order_method
+				WHEN 'start_time' THEN start_time > @cursor_column OR (start_time = @cursor_column AND t_events_pkey < @cursor)
+				WHEN 'r_start_time' THEN start_time < @cursor_column OR (start_time = @cursor_column AND t_events_pkey < @cursor)
+				ELSE t_events_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method
+				WHEN 'start_time' THEN start_time < @cursor_column OR (start_time = @cursor_column AND t_events_pkey > @cursor)
+				WHEN 'r_start_time' THEN start_time > @cursor_column OR (start_time = @cursor_column AND t_events_pkey > @cursor)
+				ELSE t_events_pkey > @cursor
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+LIMIT $1;
 
 -- name: GetEventsWithSendOrganization :many
 SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
@@ -138,8 +331,73 @@ AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC;
+
+-- name: GetEventsWithSendOrganizationUseNumberedPaginate :many
+SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
+LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_organization::boolean = true THEN t_events.organization_id = @organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_start_time::boolean = true THEN start_time >= @earlier_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_start_time::boolean = true THEN start_time <= @later_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
+ORDER BY
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey DESC
 LIMIT $1 OFFSET $2;
+
+-- name: GetEventsWithSendOrganizationUseKeysetPaginate :many
+SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
+LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_organization::boolean = true THEN t_events.organization_id = @organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_start_time::boolean = true THEN start_time >= @earlier_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_start_time::boolean = true THEN start_time <= @later_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
+WHERE
+	CASE @cursor_direction
+		WHEN 'next' THEN
+			CASE @order_method
+				WHEN 'start_time' THEN start_time > @cursor_column OR (start_time = @cursor_column AND t_events_pkey < @cursor)
+				WHEN 'r_start_time' THEN start_time < @cursor_column OR (start_time = @cursor_column AND t_events_pkey < @cursor)
+				ELSE t_events_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method
+				WHEN 'start_time' THEN start_time < @cursor_column OR (start_time = @cursor_column AND t_events_pkey > @cursor)
+				WHEN 'r_start_time' THEN start_time > @cursor_column OR (start_time = @cursor_column AND t_events_pkey > @cursor)
+				ELSE t_events_pkey > @cursor
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+LIMIT $1;
 
 -- name: GetEventsWithPostUser :many
 SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
@@ -162,8 +420,73 @@ AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC;
+
+-- name: GetEventsWithPostUserUseNumberedPaginate :many
+SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
+LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
+WHERE
+	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_organization::boolean = true THEN t_events.organization_id = @organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_start_time::boolean = true THEN start_time >= @earlier_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_start_time::boolean = true THEN start_time <= @later_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
+ORDER BY
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey DESC
 LIMIT $1 OFFSET $2;
+
+-- name: GetEventsWithPostUserUseKeysetPaginate :many
+SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
+LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
+WHERE
+	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_organization::boolean = true THEN t_events.organization_id = @organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_start_time::boolean = true THEN start_time >= @earlier_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_start_time::boolean = true THEN start_time <= @later_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
+WHERE
+	CASE @cursor_direction
+		WHEN 'next' THEN
+			CASE @order_method
+				WHEN 'start_time' THEN start_time > @cursor_column OR (start_time = @cursor_column AND t_events_pkey < @cursor)
+				WHEN 'r_start_time' THEN start_time < @cursor_column OR (start_time = @cursor_column AND t_events_pkey < @cursor)
+				ELSE t_events_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method
+				WHEN 'start_time' THEN start_time < @cursor_column OR (start_time = @cursor_column AND t_events_pkey > @cursor)
+				WHEN 'r_start_time' THEN start_time > @cursor_column OR (start_time = @cursor_column AND t_events_pkey > @cursor)
+				ELSE t_events_pkey > @cursor
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+LIMIT $1;
 
 -- name: GetEventsWithLastEditUser :many
 SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
@@ -186,8 +509,73 @@ AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC;
+
+-- name: GetEventsWithLastEditUserUseNumberedPaginate :many
+SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
+LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
+WHERE
+	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_organization::boolean = true THEN t_events.organization_id = @organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_start_time::boolean = true THEN start_time >= @earlier_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_start_time::boolean = true THEN start_time <= @later_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
+ORDER BY
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey DESC
 LIMIT $1 OFFSET $2;
+
+-- name: GetEventsWithLastEditUserUseKeysetPaginate :many
+SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
+LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
+WHERE
+	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_organization::boolean = true THEN t_events.organization_id = @organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_start_time::boolean = true THEN start_time >= @earlier_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_start_time::boolean = true THEN start_time <= @later_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
+WHERE
+	CASE @cursor_direction
+		WHEN 'next' THEN
+			CASE @order_method
+				WHEN 'start_time' THEN start_time > @cursor_column OR (start_time = @cursor_column AND t_events_pkey < @cursor)
+				WHEN 'r_start_time' THEN start_time < @cursor_column OR (start_time = @cursor_column AND t_events_pkey < @cursor)
+				ELSE t_events_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method
+				WHEN 'start_time' THEN start_time < @cursor_column OR (start_time = @cursor_column AND t_events_pkey > @cursor)
+				WHEN 'r_start_time' THEN start_time > @cursor_column OR (start_time = @cursor_column AND t_events_pkey > @cursor)
+				ELSE t_events_pkey > @cursor
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+LIMIT $1;
 
 -- name: GetEventsWithAll :many
 SELECT sqlc.embed(t_events), sqlc.embed(o), sqlc.embed(s), sqlc.embed(p), sqlc.embed(l), sqlc.embed(l) FROM t_events
@@ -214,8 +602,81 @@ AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC;
+
+-- name: GetEventsWithAllUseNumberedPaginate :many
+SELECT sqlc.embed(t_events), sqlc.embed(o), sqlc.embed(s), sqlc.embed(p), sqlc.embed(l), sqlc.embed(l) FROM t_events
+LEFT JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
+LEFT JOIN m_organizations s ON t_events.organization_id = s.organization_id
+LEFT JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
+LEFT JOIN m_members l ON t_events.posted_by = l.member_id
+LEFT JOIN m_members l ON t_events.last_edited_by = l.member_id
+WHERE
+	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_organization::boolean = true THEN t_events.organization_id = @organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_start_time::boolean = true THEN start_time >= @earlier_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_start_time::boolean = true THEN start_time <= @later_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
+ORDER BY
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey DESC
 LIMIT $1 OFFSET $2;
+
+-- name: GetEventsWithAllUseKeysetPaginate :many
+SELECT sqlc.embed(t_events), sqlc.embed(o), sqlc.embed(s), sqlc.embed(p), sqlc.embed(l), sqlc.embed(l) FROM t_events
+LEFT JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
+LEFT JOIN m_organizations s ON t_events.organization_id = s.organization_id
+LEFT JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
+LEFT JOIN m_members l ON t_events.posted_by = l.member_id
+LEFT JOIN m_members l ON t_events.last_edited_by = l.member_id
+WHERE
+	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_organization::boolean = true THEN t_events.organization_id = @organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_start_time::boolean = true THEN start_time >= @earlier_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_start_time::boolean = true THEN start_time <= @later_start_time ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
+WHERE
+	CASE @cursor_direction
+		WHEN 'next' THEN
+			CASE @order_method
+				WHEN 'start_time' THEN start_time > @cursor_column OR (start_time = @cursor_column AND t_events_pkey < @cursor)
+				WHEN 'r_start_time' THEN start_time < @cursor_column OR (start_time = @cursor_column AND t_events_pkey < @cursor)
+				ELSE t_events_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method
+				WHEN 'start_time' THEN start_time < @cursor_column OR (start_time = @cursor_column AND t_events_pkey > @cursor)
+				WHEN 'r_start_time' THEN start_time > @cursor_column OR (start_time = @cursor_column AND t_events_pkey > @cursor)
+				ELSE t_events_pkey > @cursor
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+LIMIT $1;
 
 -- name: CountEvents :one
 SELECT COUNT(*) FROM t_events

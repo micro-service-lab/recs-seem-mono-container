@@ -18,8 +18,26 @@ WHERE student_id = $1;
 -- name: GetStudents :many
 SELECT * FROM m_students
 ORDER BY
+	m_students_pkey DESC;
+
+-- name: GetStudentsUseNumberedPaginate :many
+SELECT * FROM m_students
+ORDER BY
 	m_students_pkey DESC
 LIMIT $1 OFFSET $2;
+
+-- name: GetStudentsUseKeysetPaginate :many
+SELECT * FROM m_students
+WHERE
+	CASE @cursor_direction
+		WHEN 'next' THEN
+			m_students_pkey < @cursor
+		WHEN 'prev' THEN
+			m_students_pkey > @cursor
+	END
+ORDER BY
+	m_students_pkey DESC
+LIMIT $1;
 
 -- name: CountStudents :one
 SELECT COUNT(*) FROM m_students;

@@ -18,8 +18,26 @@ WHERE professor_id = $1;
 -- name: GetProfessors :many
 SELECT * FROM m_professors
 ORDER BY
+	m_professors_pkey DESC;
+
+-- name: GetProfessorsUseNumberedPaginate :many
+SELECT * FROM m_professors
+ORDER BY
 	m_professors_pkey DESC
 LIMIT $1 OFFSET $2;
+
+-- name: GetProfessorsUseKeysetPaginate :many
+SELECT * FROM m_professors
+WHERE
+	CASE @cursor_direction
+		WHEN 'next' THEN
+			m_professors_pkey < @cursor
+		WHEN 'prev' THEN
+			m_professors_pkey > @cursor
+	END
+ORDER BY
+	m_professors_pkey DESC
+LIMIT $1;
 
 -- name: CountProfessors :one
 SELECT COUNT(*) FROM m_professors;

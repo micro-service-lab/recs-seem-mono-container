@@ -41,8 +41,46 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
+	m_permissions_pkey DESC;
+
+-- name: GetPermissionsUseNumberedPaginate :many
+SELECT * FROM m_permissions
+WHERE
+	CASE WHEN @where_like_name::boolean = true THEN m_permissions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_in_category::boolean = true THEN permission_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
 	m_permissions_pkey DESC
 LIMIT $1 OFFSET $2;
+
+-- name: GetPermissionsUseKeysetPaginate :many
+SELECT * FROM m_permissions
+WHERE
+	CASE WHEN @where_like_name::boolean = true THEN m_permissions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_in_category::boolean = true THEN permission_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
+AND
+	CASE @cursor_direction
+		WHEN 'next' THEN
+			CASE @order_method::text
+				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_permissions_pkey < @cursor)
+				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_permissions_pkey < @cursor)
+				ELSE m_permissions_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method::text
+				WHEN 'name' THEN name < @cursor_column OR (name = @cursor_column AND m_permissions_pkey > @cursor)
+				WHEN 'r_name' THEN name > @cursor_column OR (name = @cursor_column AND m_permissions_pkey > @cursor)
+				ELSE m_permissions_pkey > @cursor
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
+	m_permissions_pkey DESC
+LIMIT $1;
 
 -- name: GetPermissionsWithCategory :many
 SELECT m_permissions.*, m_permission_categories.* FROM m_permissions
@@ -54,8 +92,48 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
+	m_permissions_pkey DESC;
+
+-- name: GetPermissionsWithCategoryUseNumberedPaginate :many
+SELECT m_permissions.*, m_permission_categories.* FROM m_permissions
+JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
+WHERE
+	CASE WHEN @where_like_name::boolean = true THEN m_permissions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_in_category::boolean = true THEN permission_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
 	m_permissions_pkey DESC
 LIMIT $1 OFFSET $2;
+
+-- name: GetPermissionsWithCategoryUseKeysetPaginate :many
+SELECT m_permissions.*, m_permission_categories.* FROM m_permissions
+JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
+WHERE
+	CASE WHEN @where_like_name::boolean = true THEN m_permissions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_in_category::boolean = true THEN permission_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
+AND
+	CASE @cursor_direction
+		WHEN 'next' THEN
+			CASE @order_method::text
+				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_permissions_pkey < @cursor)
+				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_permissions_pkey < @cursor)
+				ELSE m_permissions_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method::text
+				WHEN 'name' THEN name < @cursor_column OR (name = @cursor_column AND m_permissions_pkey > @cursor)
+				WHEN 'r_name' THEN name > @cursor_column OR (name = @cursor_column AND m_permissions_pkey > @cursor)
+				ELSE m_permissions_pkey > @cursor
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
+	m_permissions_pkey DESC
+LIMIT $1;
 
 -- name: CountPermissions :one
 SELECT COUNT(*) FROM m_permissions

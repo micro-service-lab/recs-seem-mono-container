@@ -88,29 +88,30 @@ AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 AND
 	CASE @cursor_direction
-	WHEN 'next' THEN
-		CASE @order_method::text
-			WHEN 'posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'r_posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'r_last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
-			ELSE t_records_pkey < @cursor
-		END
-	WHEN 'prev' THEN
-		CASE @order_method::text
-			WHEN 'posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'r_posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'r_last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
-			ELSE t_records_pkey > @cursor
-		END
-	ORDER BY
-		CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-		CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-		CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-		CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-		t_records_pkey DESC
-	LIMIT $1;
+		WHEN 'next' THEN
+			CASE @order_method::text
+				WHEN 'posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'r_posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'r_last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
+				ELSE t_records_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method::text
+				WHEN 'posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'r_posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'r_last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
+				ELSE t_records_pkey > @cursor
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+LIMIT $1;
 
 -- name: GetRecordsWithRecordType :many
 SELECT sqlc.embed(t_records), sqlc.embed(m_record_types) FROM t_records
@@ -162,29 +163,30 @@ AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 AND
 	CASE @cursor_direction
-	WHEN 'next' THEN
-		CASE @order_method::text
-			WHEN 'posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'r_posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'r_last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
-			ELSE t_records_pkey < @cursor
-		END
-	WHEN 'prev' THEN
-		CASE @order_method::text
-			WHEN 'posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'r_posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'r_last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
-			ELSE t_records_pkey > @cursor
-		END
-	ORDER BY
-		CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-		CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-		CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-		CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-		t_records_pkey DESC
-	LIMIT $1;
+		WHEN 'next' THEN
+			CASE @order_method::text
+				WHEN 'posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'r_posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'r_last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
+				ELSE t_records_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method::text
+				WHEN 'posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'r_posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'r_last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
+				ELSE t_records_pkey > @cursor
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+LIMIT $1;
 
 -- name: GetRecordsWithOrganization :many
 SELECT sqlc.embed(t_records), sqlc.embed(m_organizations) FROM t_records
@@ -236,29 +238,30 @@ AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 AND
 	CASE @cursor_direction
-	WHEN 'next' THEN
-		CASE @order_method::text
-			WHEN 'posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'r_posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'r_last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
-			ELSE t_records_pkey < @cursor
-		END
-	WHEN 'prev' THEN
-		CASE @order_method::text
-			WHEN 'posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'r_posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'r_last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
-			ELSE t_records_pkey > @cursor
-		END
-	ORDER BY
-		CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-		CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-		CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-		CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-		t_records_pkey DESC
-	LIMIT $1;
+		WHEN 'next' THEN
+			CASE @order_method::text
+				WHEN 'posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'r_posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'r_last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
+				ELSE t_records_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method::text
+				WHEN 'posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'r_posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'r_last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
+				ELSE t_records_pkey > @cursor
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+LIMIT $1;
 
 -- name: GetRecordsWithPostedBy :many
 SELECT sqlc.embed(t_records), sqlc.embed(m_members) FROM t_records
@@ -310,29 +313,30 @@ AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 AND
 	CASE @cursor_direction
-	WHEN 'next' THEN
-		CASE @order_method::text
-			WHEN 'posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'r_posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'r_last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
-			ELSE t_records_pkey < @cursor
-		END
-	WHEN 'prev' THEN
-		CASE @order_method::text
-			WHEN 'posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'r_posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'r_last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
-			ELSE t_records_pkey > @cursor
-		END
-	ORDER BY
-		CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-		CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-		CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-		CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-		t_records_pkey DESC
-	LIMIT $1;
+		WHEN 'next' THEN
+			CASE @order_method::text
+				WHEN 'posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'r_posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'r_last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
+				ELSE t_records_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method::text
+				WHEN 'posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'r_posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'r_last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
+				ELSE t_records_pkey > @cursor
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+LIMIT $1;
 
 -- name: GetRecordsWithLastEditedBy :many
 SELECT sqlc.embed(t_records), sqlc.embed(m_members) FROM t_records
@@ -384,29 +388,30 @@ AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN t_records.last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 AND
 	CASE @cursor_direction
-	WHEN 'next' THEN
-		CASE @order_method::text
-			WHEN 'posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'r_posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'r_last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
-			ELSE t_records_pkey < @cursor
-		END
-	WHEN 'prev' THEN
-		CASE @order_method::text
-			WHEN 'posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'r_posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'r_last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
-			ELSE t_records_pkey > @cursor
-		END
-	ORDER BY
-		CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-		CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-		CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-		CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-		t_records_pkey DESC
-	LIMIT $1;
+		WHEN 'next' THEN
+			CASE @order_method::text
+				WHEN 'posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'r_posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'r_last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
+				ELSE t_records_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method::text
+				WHEN 'posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'r_posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'r_last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
+				ELSE t_records_pkey > @cursor
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+LIMIT $1;
 
 -- name: GetRecordsWithAll :many
 SELECT sqlc.embed(t_records), sqlc.embed(m_record_types), sqlc.embed(m_organizations), sqlc.embed(m_members), sqlc.embed(m_members) FROM t_records
@@ -467,29 +472,30 @@ AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN t_records.last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 AND
 	CASE @cursor_direction
-	WHEN 'next' THEN
-		CASE @order_method::text
-			WHEN 'posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'r_posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
-			WHEN 'r_last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
-			ELSE t_records_pkey < @cursor
-		END
-	WHEN 'prev' THEN
-		CASE @order_method::text
-			WHEN 'posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'r_posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
-			WHEN 'r_last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
-			ELSE t_records_pkey > @cursor
-		END
-	ORDER BY
-		CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-		CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-		CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-		CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-		t_records_pkey DESC
-	LIMIT $1;
+		WHEN 'next' THEN
+			CASE @order_method::text
+				WHEN 'posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'r_posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
+				WHEN 'r_last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey < @cursor)
+				ELSE t_records_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method::text
+				WHEN 'posted_at' THEN posted_at < @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'r_posted_at' THEN posted_at > @cursor_column OR (posted_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'last_edited_at' THEN last_edited_at < @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
+				WHEN 'r_last_edited_at' THEN last_edited_at > @cursor_column OR (last_edited_at = @cursor_column AND t_records_pkey > @cursor)
+				ELSE t_records_pkey > @cursor
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+LIMIT $1;
 
 -- name: CountRecords :one
 SELECT COUNT(*) FROM t_records

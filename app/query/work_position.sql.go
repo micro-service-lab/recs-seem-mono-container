@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countWorkPositions = `-- name: CountWorkPositions :one
@@ -97,6 +98,120 @@ func (q *Queries) FindWorkPositionByID(ctx context.Context, workPositionID uuid.
 const getWorkPositions = `-- name: GetWorkPositions :many
 SELECT m_work_positions_pkey, work_position_id, name, description, created_at, updated_at FROM m_work_positions
 WHERE
+	CASE WHEN $1::boolean = true THEN m_work_positions.name LIKE '%' || $2::text || '%' ELSE TRUE END
+ORDER BY
+	CASE WHEN $3::text = 'name' THEN m_work_positions.name END ASC,
+	CASE WHEN $3::text = 'r_name' THEN m_work_positions.name END DESC,
+	m_work_positions_pkey DESC
+`
+
+type GetWorkPositionsParams struct {
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+	OrderMethod   string `json:"order_method"`
+}
+
+func (q *Queries) GetWorkPositions(ctx context.Context, arg GetWorkPositionsParams) ([]WorkPosition, error) {
+	rows, err := q.db.Query(ctx, getWorkPositions, arg.WhereLikeName, arg.SearchName, arg.OrderMethod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []WorkPosition{}
+	for rows.Next() {
+		var i WorkPosition
+		if err := rows.Scan(
+			&i.MWorkPositionsPkey,
+			&i.WorkPositionID,
+			&i.Name,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getWorkPositionsUseKeysetPaginate = `-- name: GetWorkPositionsUseKeysetPaginate :many
+SELECT m_work_positions_pkey, work_position_id, name, description, created_at, updated_at FROM m_work_positions
+WHERE
+	CASE WHEN $2::boolean = true THEN m_work_positions.name LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE $4
+		WHEN 'next' THEN
+			CASE $5::text
+				WHEN 'name' THEN name > $6 OR (name = $6 AND m_work_positions_pkey < $7)
+				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_work_positions_pkey < $7)
+				ELSE m_work_positions_pkey < $7
+			END
+		WHEN 'prev' THEN
+			CASE $5::text
+				WHEN 'name' THEN name < $6 OR (name = $6 AND m_work_positions_pkey > $7)
+				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_work_positions_pkey > $7)
+				ELSE m_work_positions_pkey > $7
+			END
+	END
+ORDER BY
+	CASE WHEN $5::text = 'name' THEN m_work_positions.name END ASC,
+	CASE WHEN $5::text = 'r_name' THEN m_work_positions.name END DESC,
+	m_work_positions_pkey DESC
+LIMIT $1
+`
+
+type GetWorkPositionsUseKeysetPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	WhereLikeName   bool        `json:"where_like_name"`
+	SearchName      string      `json:"search_name"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	OrderMethod     string      `json:"order_method"`
+	CursorColumn    string      `json:"cursor_column"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetWorkPositionsUseKeysetPaginate(ctx context.Context, arg GetWorkPositionsUseKeysetPaginateParams) ([]WorkPosition, error) {
+	rows, err := q.db.Query(ctx, getWorkPositionsUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []WorkPosition{}
+	for rows.Next() {
+		var i WorkPosition
+		if err := rows.Scan(
+			&i.MWorkPositionsPkey,
+			&i.WorkPositionID,
+			&i.Name,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getWorkPositionsUseNumberedPaginate = `-- name: GetWorkPositionsUseNumberedPaginate :many
+SELECT m_work_positions_pkey, work_position_id, name, description, created_at, updated_at FROM m_work_positions
+WHERE
 	CASE WHEN $3::boolean = true THEN m_work_positions.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_work_positions.name END ASC,
@@ -105,7 +220,7 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetWorkPositionsParams struct {
+type GetWorkPositionsUseNumberedPaginateParams struct {
 	Limit         int32  `json:"limit"`
 	Offset        int32  `json:"offset"`
 	WhereLikeName bool   `json:"where_like_name"`
@@ -113,8 +228,8 @@ type GetWorkPositionsParams struct {
 	OrderMethod   string `json:"order_method"`
 }
 
-func (q *Queries) GetWorkPositions(ctx context.Context, arg GetWorkPositionsParams) ([]WorkPosition, error) {
-	rows, err := q.db.Query(ctx, getWorkPositions,
+func (q *Queries) GetWorkPositionsUseNumberedPaginate(ctx context.Context, arg GetWorkPositionsUseNumberedPaginateParams) ([]WorkPosition, error) {
+	rows, err := q.db.Query(ctx, getWorkPositionsUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.WhereLikeName,

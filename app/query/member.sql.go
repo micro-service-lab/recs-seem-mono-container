@@ -489,6 +489,188 @@ func (q *Queries) FindMemberWithDetail(ctx context.Context, memberID uuid.UUID) 
 const getMembers = `-- name: GetMembers :many
 SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members
 WHERE
+	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($4::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN m_members.attend_status_id = ANY($6::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
+ORDER BY
+	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+`
+
+type GetMembersParams struct {
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	OrderMethod        string      `json:"order_method"`
+}
+
+func (q *Queries) GetMembers(ctx context.Context, arg GetMembersParams) ([]Member, error) {
+	rows, err := q.db.Query(ctx, getMembers,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Member{}
+	for rows.Next() {
+		var i Member
+		if err := rows.Scan(
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersUseKeysetPaginate = `-- name: GetMembersUseKeysetPaginate :many
+SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members
+WHERE
+	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($5::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN m_members.attend_status_id = ANY($7::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN m_members.grade_id = ANY($9::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
+AND
+	CASE $12
+		WHEN 'next' THEN
+			CASE $13::text
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15)
+				ELSE m_members_pkey < $15
+			END
+		WHEN 'prev' THEN
+			CASE $13::text
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15)
+				ELSE m_members_pkey > $15
+			END
+	END
+ORDER BY
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+LIMIT $1
+`
+
+type GetMembersUseKeysetPaginateParams struct {
+	Limit              int32       `json:"limit"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	CursorDirection    interface{} `json:"cursor_direction"`
+	OrderMethod        string      `json:"order_method"`
+	CursorColumn       string      `json:"cursor_column"`
+	Cursor             pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetMembersUseKeysetPaginate(ctx context.Context, arg GetMembersUseKeysetPaginateParams) ([]Member, error) {
+	rows, err := q.db.Query(ctx, getMembersUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Member{}
+	for rows.Next() {
+		var i Member
+		if err := rows.Scan(
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersUseNumberedPaginate = `-- name: GetMembersUseNumberedPaginate :many
+SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members
+WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
 	CASE WHEN $5::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($6::uuid[])) > 0 ELSE TRUE END
@@ -505,7 +687,7 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetMembersParams struct {
+type GetMembersUseNumberedPaginateParams struct {
 	Limit              int32       `json:"limit"`
 	Offset             int32       `json:"offset"`
 	WhereLikeName      bool        `json:"where_like_name"`
@@ -521,8 +703,8 @@ type GetMembersParams struct {
 	OrderMethod        string      `json:"order_method"`
 }
 
-func (q *Queries) GetMembers(ctx context.Context, arg GetMembersParams) ([]Member, error) {
-	rows, err := q.db.Query(ctx, getMembers,
+func (q *Queries) GetMembersUseNumberedPaginate(ctx context.Context, arg GetMembersUseNumberedPaginateParams) ([]Member, error) {
+	rows, err := q.db.Query(ctx, getMembersUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.WhereLikeName,
@@ -578,25 +760,22 @@ LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE
-	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
+	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($6::uuid[])) > 0 ELSE TRUE END
+	CASE WHEN $3::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($4::uuid[])) > 0 ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN m_members.attend_status_id = ANY($8::uuid[]) ELSE TRUE END
+	CASE WHEN $5::boolean = true THEN m_members.attend_status_id = ANY($6::uuid[]) ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
+	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
 AND
-	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
+	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey DESC
-LIMIT $1 OFFSET $2
 `
 
 type GetMembersWithAllParams struct {
-	Limit              int32       `json:"limit"`
-	Offset             int32       `json:"offset"`
 	WhereLikeName      bool        `json:"where_like_name"`
 	SearchName         string      `json:"search_name"`
 	WhereHasPolicy     bool        `json:"where_has_policy"`
@@ -621,8 +800,6 @@ type GetMembersWithAllRow struct {
 
 func (q *Queries) GetMembersWithAll(ctx context.Context, arg GetMembersWithAllParams) ([]GetMembersWithAllRow, error) {
 	rows, err := q.db.Query(ctx, getMembersWithAll,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereLikeName,
 		arg.SearchName,
 		arg.WhereHasPolicy,
@@ -694,9 +871,156 @@ func (q *Queries) GetMembersWithAll(ctx context.Context, arg GetMembersWithAllPa
 	return items, nil
 }
 
-const getMembersWithAttendStatus = `-- name: GetMembersWithAttendStatus :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
+const getMembersWithAllUseKeysetPaginate = `-- name: GetMembersWithAllUseKeysetPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
+LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
+WHERE
+	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($5::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN m_members.attend_status_id = ANY($7::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN m_members.grade_id = ANY($9::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
+AND
+	CASE $12
+		WHEN 'next' THEN
+			CASE $13::text
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15)
+				ELSE m_members_pkey < $15
+			END
+		WHEN 'prev' THEN
+			CASE $13::text
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15)
+				ELSE m_members_pkey > $15
+			END
+	END
+ORDER BY
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+LIMIT $1
+`
+
+type GetMembersWithAllUseKeysetPaginateParams struct {
+	Limit              int32       `json:"limit"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	CursorDirection    interface{} `json:"cursor_direction"`
+	OrderMethod        string      `json:"order_method"`
+	CursorColumn       string      `json:"cursor_column"`
+	Cursor             pgtype.Int8 `json:"cursor"`
+}
+
+type GetMembersWithAllUseKeysetPaginateRow struct {
+	Member       Member       `json:"member"`
+	AttendStatus AttendStatus `json:"attend_status"`
+	Grade        Grade        `json:"grade"`
+	Group        Group        `json:"group"`
+	Organization Organization `json:"organization"`
+	Role         Role         `json:"role"`
+}
+
+func (q *Queries) GetMembersWithAllUseKeysetPaginate(ctx context.Context, arg GetMembersWithAllUseKeysetPaginateParams) ([]GetMembersWithAllUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithAllUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersWithAllUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetMembersWithAllUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.AttendStatus.MAttendStatusesPkey,
+			&i.AttendStatus.AttendStatusID,
+			&i.AttendStatus.Name,
+			&i.AttendStatus.Key,
+			&i.Grade.MGradesPkey,
+			&i.Grade.GradeID,
+			&i.Grade.Key,
+			&i.Grade.OrganizationID,
+			&i.Group.MGroupsPkey,
+			&i.Group.GroupID,
+			&i.Group.Key,
+			&i.Group.OrganizationID,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Role.MRolesPkey,
+			&i.Role.RoleID,
+			&i.Role.Name,
+			&i.Role.Description,
+			&i.Role.CreatedAt,
+			&i.Role.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersWithAllUseNumberedPaginate = `-- name: GetMembersWithAllUseNumberedPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
+LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -714,9 +1038,126 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetMembersWithAttendStatusParams struct {
+type GetMembersWithAllUseNumberedPaginateParams struct {
 	Limit              int32       `json:"limit"`
 	Offset             int32       `json:"offset"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	OrderMethod        string      `json:"order_method"`
+}
+
+type GetMembersWithAllUseNumberedPaginateRow struct {
+	Member       Member       `json:"member"`
+	AttendStatus AttendStatus `json:"attend_status"`
+	Grade        Grade        `json:"grade"`
+	Group        Group        `json:"group"`
+	Organization Organization `json:"organization"`
+	Role         Role         `json:"role"`
+}
+
+func (q *Queries) GetMembersWithAllUseNumberedPaginate(ctx context.Context, arg GetMembersWithAllUseNumberedPaginateParams) ([]GetMembersWithAllUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithAllUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersWithAllUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetMembersWithAllUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.AttendStatus.MAttendStatusesPkey,
+			&i.AttendStatus.AttendStatusID,
+			&i.AttendStatus.Name,
+			&i.AttendStatus.Key,
+			&i.Grade.MGradesPkey,
+			&i.Grade.GradeID,
+			&i.Grade.Key,
+			&i.Grade.OrganizationID,
+			&i.Group.MGroupsPkey,
+			&i.Group.GroupID,
+			&i.Group.Key,
+			&i.Group.OrganizationID,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Role.MRolesPkey,
+			&i.Role.RoleID,
+			&i.Role.Name,
+			&i.Role.Description,
+			&i.Role.CreatedAt,
+			&i.Role.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersWithAttendStatus = `-- name: GetMembersWithAttendStatus :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+WHERE
+	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($4::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN m_members.attend_status_id = ANY($6::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
+ORDER BY
+	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+`
+
+type GetMembersWithAttendStatusParams struct {
 	WhereLikeName      bool        `json:"where_like_name"`
 	SearchName         string      `json:"search_name"`
 	WhereHasPolicy     bool        `json:"where_has_policy"`
@@ -737,8 +1178,6 @@ type GetMembersWithAttendStatusRow struct {
 
 func (q *Queries) GetMembersWithAttendStatus(ctx context.Context, arg GetMembersWithAttendStatusParams) ([]GetMembersWithAttendStatusRow, error) {
 	rows, err := q.db.Query(ctx, getMembersWithAttendStatus,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereLikeName,
 		arg.SearchName,
 		arg.WhereHasPolicy,
@@ -788,10 +1227,122 @@ func (q *Queries) GetMembersWithAttendStatus(ctx context.Context, arg GetMembers
 	return items, nil
 }
 
-const getMembersWithGrade = `-- name: GetMembersWithGrade :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
-LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
-LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+const getMembersWithAttendStatusUseKeysetPaginate = `-- name: GetMembersWithAttendStatusUseKeysetPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+WHERE
+	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($5::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN m_members.attend_status_id = ANY($7::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN m_members.grade_id = ANY($9::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
+AND
+	CASE $12
+		WHEN 'next' THEN
+			CASE $13::text
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15)
+				ELSE m_members_pkey < $15
+			END
+		WHEN 'prev' THEN
+			CASE $13::text
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15)
+				ELSE m_members_pkey > $15
+			END
+	END
+ORDER BY
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+LIMIT $1
+`
+
+type GetMembersWithAttendStatusUseKeysetPaginateParams struct {
+	Limit              int32       `json:"limit"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	CursorDirection    interface{} `json:"cursor_direction"`
+	OrderMethod        string      `json:"order_method"`
+	CursorColumn       string      `json:"cursor_column"`
+	Cursor             pgtype.Int8 `json:"cursor"`
+}
+
+type GetMembersWithAttendStatusUseKeysetPaginateRow struct {
+	Member       Member       `json:"member"`
+	AttendStatus AttendStatus `json:"attend_status"`
+}
+
+func (q *Queries) GetMembersWithAttendStatusUseKeysetPaginate(ctx context.Context, arg GetMembersWithAttendStatusUseKeysetPaginateParams) ([]GetMembersWithAttendStatusUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithAttendStatusUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersWithAttendStatusUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetMembersWithAttendStatusUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.AttendStatus.MAttendStatusesPkey,
+			&i.AttendStatus.AttendStatusID,
+			&i.AttendStatus.Name,
+			&i.AttendStatus.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersWithAttendStatusUseNumberedPaginate = `-- name: GetMembersWithAttendStatusUseNumberedPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -809,9 +1360,101 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetMembersWithGradeParams struct {
+type GetMembersWithAttendStatusUseNumberedPaginateParams struct {
 	Limit              int32       `json:"limit"`
 	Offset             int32       `json:"offset"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	OrderMethod        string      `json:"order_method"`
+}
+
+type GetMembersWithAttendStatusUseNumberedPaginateRow struct {
+	Member       Member       `json:"member"`
+	AttendStatus AttendStatus `json:"attend_status"`
+}
+
+func (q *Queries) GetMembersWithAttendStatusUseNumberedPaginate(ctx context.Context, arg GetMembersWithAttendStatusUseNumberedPaginateParams) ([]GetMembersWithAttendStatusUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithAttendStatusUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersWithAttendStatusUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetMembersWithAttendStatusUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.AttendStatus.MAttendStatusesPkey,
+			&i.AttendStatus.AttendStatusID,
+			&i.AttendStatus.Name,
+			&i.AttendStatus.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersWithGrade = `-- name: GetMembersWithGrade :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($4::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN m_members.attend_status_id = ANY($6::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
+ORDER BY
+	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+`
+
+type GetMembersWithGradeParams struct {
 	WhereLikeName      bool        `json:"where_like_name"`
 	SearchName         string      `json:"search_name"`
 	WhereHasPolicy     bool        `json:"where_has_policy"`
@@ -832,8 +1475,6 @@ type GetMembersWithGradeRow struct {
 
 func (q *Queries) GetMembersWithGrade(ctx context.Context, arg GetMembersWithGradeParams) ([]GetMembersWithGradeRow, error) {
 	rows, err := q.db.Query(ctx, getMembersWithGrade,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereLikeName,
 		arg.SearchName,
 		arg.WhereHasPolicy,
@@ -883,10 +1524,124 @@ func (q *Queries) GetMembersWithGrade(ctx context.Context, arg GetMembersWithGra
 	return items, nil
 }
 
-const getMembersWithGroup = `-- name: GetMembersWithGroup :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
-LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
-LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+const getMembersWithGradeUseKeysetPaginate = `-- name: GetMembersWithGradeUseKeysetPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($5::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN m_members.attend_status_id = ANY($7::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN m_members.grade_id = ANY($9::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
+AND
+	CASE $12
+		WHEN 'next' THEN
+			CASE $13::text
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15)
+				ELSE m_members_pkey < $15
+			END
+		WHEN 'prev' THEN
+			CASE $13::text
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15)
+				ELSE m_members_pkey > $15
+			END
+	END
+ORDER BY
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+LIMIT $1
+`
+
+type GetMembersWithGradeUseKeysetPaginateParams struct {
+	Limit              int32       `json:"limit"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	CursorDirection    interface{} `json:"cursor_direction"`
+	OrderMethod        string      `json:"order_method"`
+	CursorColumn       string      `json:"cursor_column"`
+	Cursor             pgtype.Int8 `json:"cursor"`
+}
+
+type GetMembersWithGradeUseKeysetPaginateRow struct {
+	Member Member `json:"member"`
+	Grade  Grade  `json:"grade"`
+}
+
+func (q *Queries) GetMembersWithGradeUseKeysetPaginate(ctx context.Context, arg GetMembersWithGradeUseKeysetPaginateParams) ([]GetMembersWithGradeUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithGradeUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersWithGradeUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetMembersWithGradeUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Grade.MGradesPkey,
+			&i.Grade.GradeID,
+			&i.Grade.Key,
+			&i.Grade.OrganizationID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersWithGradeUseNumberedPaginate = `-- name: GetMembersWithGradeUseNumberedPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -904,9 +1659,101 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetMembersWithGroupParams struct {
+type GetMembersWithGradeUseNumberedPaginateParams struct {
 	Limit              int32       `json:"limit"`
 	Offset             int32       `json:"offset"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	OrderMethod        string      `json:"order_method"`
+}
+
+type GetMembersWithGradeUseNumberedPaginateRow struct {
+	Member Member `json:"member"`
+	Grade  Grade  `json:"grade"`
+}
+
+func (q *Queries) GetMembersWithGradeUseNumberedPaginate(ctx context.Context, arg GetMembersWithGradeUseNumberedPaginateParams) ([]GetMembersWithGradeUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithGradeUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersWithGradeUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetMembersWithGradeUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Grade.MGradesPkey,
+			&i.Grade.GradeID,
+			&i.Grade.Key,
+			&i.Grade.OrganizationID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersWithGroup = `-- name: GetMembersWithGroup :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($4::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN m_members.attend_status_id = ANY($6::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
+ORDER BY
+	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+`
+
+type GetMembersWithGroupParams struct {
 	WhereLikeName      bool        `json:"where_like_name"`
 	SearchName         string      `json:"search_name"`
 	WhereHasPolicy     bool        `json:"where_has_policy"`
@@ -927,8 +1774,6 @@ type GetMembersWithGroupRow struct {
 
 func (q *Queries) GetMembersWithGroup(ctx context.Context, arg GetMembersWithGroupParams) ([]GetMembersWithGroupRow, error) {
 	rows, err := q.db.Query(ctx, getMembersWithGroup,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereLikeName,
 		arg.SearchName,
 		arg.WhereHasPolicy,
@@ -978,9 +1823,124 @@ func (q *Queries) GetMembersWithGroup(ctx context.Context, arg GetMembersWithGro
 	return items, nil
 }
 
-const getMembersWithPersonalOrganization = `-- name: GetMembersWithPersonalOrganization :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_members
-LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
+const getMembersWithGroupUseKeysetPaginate = `-- name: GetMembersWithGroupUseKeysetPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($5::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN m_members.attend_status_id = ANY($7::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN m_members.grade_id = ANY($9::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
+AND
+	CASE $12
+		WHEN 'next' THEN
+			CASE $13::text
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15)
+				ELSE m_members_pkey < $15
+			END
+		WHEN 'prev' THEN
+			CASE $13::text
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15)
+				ELSE m_members_pkey > $15
+			END
+	END
+ORDER BY
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+LIMIT $1
+`
+
+type GetMembersWithGroupUseKeysetPaginateParams struct {
+	Limit              int32       `json:"limit"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	CursorDirection    interface{} `json:"cursor_direction"`
+	OrderMethod        string      `json:"order_method"`
+	CursorColumn       string      `json:"cursor_column"`
+	Cursor             pgtype.Int8 `json:"cursor"`
+}
+
+type GetMembersWithGroupUseKeysetPaginateRow struct {
+	Member Member `json:"member"`
+	Group  Group  `json:"group"`
+}
+
+func (q *Queries) GetMembersWithGroupUseKeysetPaginate(ctx context.Context, arg GetMembersWithGroupUseKeysetPaginateParams) ([]GetMembersWithGroupUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithGroupUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersWithGroupUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetMembersWithGroupUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Group.MGroupsPkey,
+			&i.Group.GroupID,
+			&i.Group.Key,
+			&i.Group.OrganizationID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersWithGroupUseNumberedPaginate = `-- name: GetMembersWithGroupUseNumberedPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -998,9 +1958,100 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetMembersWithPersonalOrganizationParams struct {
+type GetMembersWithGroupUseNumberedPaginateParams struct {
 	Limit              int32       `json:"limit"`
 	Offset             int32       `json:"offset"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	OrderMethod        string      `json:"order_method"`
+}
+
+type GetMembersWithGroupUseNumberedPaginateRow struct {
+	Member Member `json:"member"`
+	Group  Group  `json:"group"`
+}
+
+func (q *Queries) GetMembersWithGroupUseNumberedPaginate(ctx context.Context, arg GetMembersWithGroupUseNumberedPaginateParams) ([]GetMembersWithGroupUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithGroupUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersWithGroupUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetMembersWithGroupUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Group.MGroupsPkey,
+			&i.Group.GroupID,
+			&i.Group.Key,
+			&i.Group.OrganizationID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersWithPersonalOrganization = `-- name: GetMembersWithPersonalOrganization :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_members
+LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($4::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN m_members.attend_status_id = ANY($6::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
+ORDER BY
+	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+`
+
+type GetMembersWithPersonalOrganizationParams struct {
 	WhereLikeName      bool        `json:"where_like_name"`
 	SearchName         string      `json:"search_name"`
 	WhereHasPolicy     bool        `json:"where_has_policy"`
@@ -1021,8 +2072,6 @@ type GetMembersWithPersonalOrganizationRow struct {
 
 func (q *Queries) GetMembersWithPersonalOrganization(ctx context.Context, arg GetMembersWithPersonalOrganizationParams) ([]GetMembersWithPersonalOrganizationRow, error) {
 	rows, err := q.db.Query(ctx, getMembersWithPersonalOrganization,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereLikeName,
 		arg.SearchName,
 		arg.WhereHasPolicy,
@@ -1076,9 +2125,126 @@ func (q *Queries) GetMembersWithPersonalOrganization(ctx context.Context, arg Ge
 	return items, nil
 }
 
-const getMembersWithRole = `-- name: GetMembersWithRole :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
-LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
+const getMembersWithPersonalOrganizationUseKeysetPaginate = `-- name: GetMembersWithPersonalOrganizationUseKeysetPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_members
+LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($5::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN m_members.attend_status_id = ANY($7::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN m_members.grade_id = ANY($9::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
+AND
+	CASE $12
+		WHEN 'next' THEN
+			CASE $13::text
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15)
+				ELSE m_members_pkey < $15
+			END
+		WHEN 'prev' THEN
+			CASE $13::text
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15)
+				ELSE m_members_pkey > $15
+			END
+	END
+ORDER BY
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+LIMIT $1
+`
+
+type GetMembersWithPersonalOrganizationUseKeysetPaginateParams struct {
+	Limit              int32       `json:"limit"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	CursorDirection    interface{} `json:"cursor_direction"`
+	OrderMethod        string      `json:"order_method"`
+	CursorColumn       string      `json:"cursor_column"`
+	Cursor             pgtype.Int8 `json:"cursor"`
+}
+
+type GetMembersWithPersonalOrganizationUseKeysetPaginateRow struct {
+	Member       Member       `json:"member"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetMembersWithPersonalOrganizationUseKeysetPaginate(ctx context.Context, arg GetMembersWithPersonalOrganizationUseKeysetPaginateParams) ([]GetMembersWithPersonalOrganizationUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithPersonalOrganizationUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersWithPersonalOrganizationUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetMembersWithPersonalOrganizationUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersWithPersonalOrganizationUseNumberedPaginate = `-- name: GetMembersWithPersonalOrganizationUseNumberedPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_members
+LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -1096,9 +2262,104 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetMembersWithRoleParams struct {
+type GetMembersWithPersonalOrganizationUseNumberedPaginateParams struct {
 	Limit              int32       `json:"limit"`
 	Offset             int32       `json:"offset"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	OrderMethod        string      `json:"order_method"`
+}
+
+type GetMembersWithPersonalOrganizationUseNumberedPaginateRow struct {
+	Member       Member       `json:"member"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetMembersWithPersonalOrganizationUseNumberedPaginate(ctx context.Context, arg GetMembersWithPersonalOrganizationUseNumberedPaginateParams) ([]GetMembersWithPersonalOrganizationUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithPersonalOrganizationUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersWithPersonalOrganizationUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetMembersWithPersonalOrganizationUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersWithRole = `-- name: GetMembersWithRole :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
+WHERE
+	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($4::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN m_members.attend_status_id = ANY($6::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
+ORDER BY
+	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+`
+
+type GetMembersWithRoleParams struct {
 	WhereLikeName      bool        `json:"where_like_name"`
 	SearchName         string      `json:"search_name"`
 	WhereHasPolicy     bool        `json:"where_has_policy"`
@@ -1119,8 +2380,6 @@ type GetMembersWithRoleRow struct {
 
 func (q *Queries) GetMembersWithRole(ctx context.Context, arg GetMembersWithRoleParams) ([]GetMembersWithRoleRow, error) {
 	rows, err := q.db.Query(ctx, getMembersWithRole,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereLikeName,
 		arg.SearchName,
 		arg.WhereHasPolicy,
@@ -1140,6 +2399,217 @@ func (q *Queries) GetMembersWithRole(ctx context.Context, arg GetMembersWithRole
 	items := []GetMembersWithRoleRow{}
 	for rows.Next() {
 		var i GetMembersWithRoleRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Role.MRolesPkey,
+			&i.Role.RoleID,
+			&i.Role.Name,
+			&i.Role.Description,
+			&i.Role.CreatedAt,
+			&i.Role.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersWithRoleUseKeysetPaginate = `-- name: GetMembersWithRoleUseKeysetPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
+WHERE
+	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($5::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN m_members.attend_status_id = ANY($7::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN m_members.grade_id = ANY($9::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
+AND
+	CASE $12
+		WHEN 'next' THEN
+			CASE $13::text
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15)
+				ELSE m_members_pkey < $15
+			END
+		WHEN 'prev' THEN
+			CASE $13::text
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15)
+				ELSE m_members_pkey > $15
+			END
+	END
+ORDER BY
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+LIMIT $1
+`
+
+type GetMembersWithRoleUseKeysetPaginateParams struct {
+	Limit              int32       `json:"limit"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	CursorDirection    interface{} `json:"cursor_direction"`
+	OrderMethod        string      `json:"order_method"`
+	CursorColumn       string      `json:"cursor_column"`
+	Cursor             pgtype.Int8 `json:"cursor"`
+}
+
+type GetMembersWithRoleUseKeysetPaginateRow struct {
+	Member Member `json:"member"`
+	Role   Role   `json:"role"`
+}
+
+func (q *Queries) GetMembersWithRoleUseKeysetPaginate(ctx context.Context, arg GetMembersWithRoleUseKeysetPaginateParams) ([]GetMembersWithRoleUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithRoleUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersWithRoleUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetMembersWithRoleUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Role.MRolesPkey,
+			&i.Role.RoleID,
+			&i.Role.Name,
+			&i.Role.Description,
+			&i.Role.CreatedAt,
+			&i.Role.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersWithRoleUseNumberedPaginate = `-- name: GetMembersWithRoleUseNumberedPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
+WHERE
+	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($6::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN m_members.attend_status_id = ANY($8::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
+ORDER BY
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetMembersWithRoleUseNumberedPaginateParams struct {
+	Limit              int32       `json:"limit"`
+	Offset             int32       `json:"offset"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	OrderMethod        string      `json:"order_method"`
+}
+
+type GetMembersWithRoleUseNumberedPaginateRow struct {
+	Member Member `json:"member"`
+	Role   Role   `json:"role"`
+}
+
+func (q *Queries) GetMembersWithRoleUseNumberedPaginate(ctx context.Context, arg GetMembersWithRoleUseNumberedPaginateParams) ([]GetMembersWithRoleUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithRoleUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersWithRoleUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetMembersWithRoleUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,

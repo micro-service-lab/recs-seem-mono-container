@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countAttendanceTypes = `-- name: CountAttendanceTypes :one
@@ -113,6 +114,110 @@ func (q *Queries) FindAttendanceTypeByKey(ctx context.Context, key string) (Atte
 const getAttendanceTypes = `-- name: GetAttendanceTypes :many
 SELECT m_attendance_types_pkey, attendance_type_id, name, key, color FROM m_attendance_types
 WHERE
+	CASE WHEN $1::boolean = true THEN m_attendance_types.name LIKE '%' || $2::text || '%' ELSE TRUE END
+ORDER BY
+	CASE WHEN $3::text = 'name' THEN name END ASC,
+	CASE WHEN $3::text = 'r_name' THEN name END DESC,
+	m_attendance_types_pkey DESC
+`
+
+type GetAttendanceTypesParams struct {
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+	OrderMethod   string `json:"order_method"`
+}
+
+func (q *Queries) GetAttendanceTypes(ctx context.Context, arg GetAttendanceTypesParams) ([]AttendanceType, error) {
+	rows, err := q.db.Query(ctx, getAttendanceTypes, arg.WhereLikeName, arg.SearchName, arg.OrderMethod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []AttendanceType{}
+	for rows.Next() {
+		var i AttendanceType
+		if err := rows.Scan(
+			&i.MAttendanceTypesPkey,
+			&i.AttendanceTypeID,
+			&i.Name,
+			&i.Key,
+			&i.Color,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttendanceTypesUseKeysetPaginate = `-- name: GetAttendanceTypesUseKeysetPaginate :many
+SELECT m_attendance_types_pkey, attendance_type_id, name, key, color FROM m_attendance_types
+WHERE
+	CASE $2
+		WHEN 'next' THEN
+			CASE $3::text
+				WHEN 'name' THEN name > $4 OR (name = $4 AND m_attendance_types_pkey < $5)
+				WHEN 'r_name' THEN name < $4 OR (name = $4 AND m_attendance_types_pkey < $5)
+				ELSE m_attendance_types_pkey < $5
+			END
+		WHEN 'prev' THEN
+			CASE $3::text
+				WHEN 'name' THEN name < $4 OR (name = $4 AND m_attendance_types_pkey > $5)
+				WHEN 'r_name' THEN name > $4 OR (name = $4 AND m_attendance_types_pkey > $5)
+				ELSE m_attendance_types_pkey > $5
+			END
+	END
+ORDER BY
+	m_attendance_types_pkey DESC
+LIMIT $1
+`
+
+type GetAttendanceTypesUseKeysetPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	OrderMethod     string      `json:"order_method"`
+	CursorColumn    string      `json:"cursor_column"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetAttendanceTypesUseKeysetPaginate(ctx context.Context, arg GetAttendanceTypesUseKeysetPaginateParams) ([]AttendanceType, error) {
+	rows, err := q.db.Query(ctx, getAttendanceTypesUseKeysetPaginate,
+		arg.Limit,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []AttendanceType{}
+	for rows.Next() {
+		var i AttendanceType
+		if err := rows.Scan(
+			&i.MAttendanceTypesPkey,
+			&i.AttendanceTypeID,
+			&i.Name,
+			&i.Key,
+			&i.Color,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttendanceTypesUseNumberedPaginate = `-- name: GetAttendanceTypesUseNumberedPaginate :many
+SELECT m_attendance_types_pkey, attendance_type_id, name, key, color FROM m_attendance_types
+WHERE
 	CASE WHEN $3::boolean = true THEN m_attendance_types.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN name END ASC,
@@ -121,7 +226,7 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetAttendanceTypesParams struct {
+type GetAttendanceTypesUseNumberedPaginateParams struct {
 	Limit         int32  `json:"limit"`
 	Offset        int32  `json:"offset"`
 	WhereLikeName bool   `json:"where_like_name"`
@@ -129,8 +234,8 @@ type GetAttendanceTypesParams struct {
 	OrderMethod   string `json:"order_method"`
 }
 
-func (q *Queries) GetAttendanceTypes(ctx context.Context, arg GetAttendanceTypesParams) ([]AttendanceType, error) {
-	rows, err := q.db.Query(ctx, getAttendanceTypes,
+func (q *Queries) GetAttendanceTypesUseNumberedPaginate(ctx context.Context, arg GetAttendanceTypesUseNumberedPaginateParams) ([]AttendanceType, error) {
+	rows, err := q.db.Query(ctx, getAttendanceTypesUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.WhereLikeName,

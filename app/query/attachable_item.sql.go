@@ -147,15 +147,12 @@ SELECT t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable
 LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE
-	CASE WHEN $3::boolean = true THEN mime_type_id = $4 ELSE TRUE END
+	CASE WHEN $1::boolean = true THEN mime_type_id = $2 ELSE TRUE END
 ORDER BY
 	t_attachable_items_pkey DESC
-LIMIT $1 OFFSET $2
 `
 
 type GetAttachableItemsParams struct {
-	Limit           int32     `json:"limit"`
-	Offset          int32     `json:"offset"`
 	WhereMimeTypeID bool      `json:"where_mime_type_id"`
 	MimeTypeID      uuid.UUID `json:"mime_type_id"`
 }
@@ -167,12 +164,7 @@ type GetAttachableItemsRow struct {
 }
 
 func (q *Queries) GetAttachableItems(ctx context.Context, arg GetAttachableItemsParams) ([]GetAttachableItemsRow, error) {
-	rows, err := q.db.Query(ctx, getAttachableItems,
-		arg.Limit,
-		arg.Offset,
-		arg.WhereMimeTypeID,
-		arg.MimeTypeID,
-	)
+	rows, err := q.db.Query(ctx, getAttachableItems, arg.WhereMimeTypeID, arg.MimeTypeID)
 	if err != nil {
 		return nil, err
 	}
@@ -211,15 +203,12 @@ LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.where_m
 LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE
-	CASE WHEN $3::boolean = true THEN t_attachable_items.mime_type_id = $4 ELSE TRUE END
+	CASE WHEN $1::boolean = true THEN t_attachable_items.mime_type_id = $2 ELSE TRUE END
 ORDER BY
 	t_attachable_items_pkey DESC
-LIMIT $1 OFFSET $2
 `
 
 type GetAttachableItemsByMimeTypeIDWithMimeTypeParams struct {
-	Limit           int32     `json:"limit"`
-	Offset          int32     `json:"offset"`
 	WhereMimeTypeID bool      `json:"where_mime_type_id"`
 	MimeTypeID      uuid.UUID `json:"mime_type_id"`
 }
@@ -232,12 +221,7 @@ type GetAttachableItemsByMimeTypeIDWithMimeTypeRow struct {
 }
 
 func (q *Queries) GetAttachableItemsByMimeTypeIDWithMimeType(ctx context.Context, arg GetAttachableItemsByMimeTypeIDWithMimeTypeParams) ([]GetAttachableItemsByMimeTypeIDWithMimeTypeRow, error) {
-	rows, err := q.db.Query(ctx, getAttachableItemsByMimeTypeIDWithMimeType,
-		arg.Limit,
-		arg.Offset,
-		arg.WhereMimeTypeID,
-		arg.MimeTypeID,
-	)
+	rows, err := q.db.Query(ctx, getAttachableItemsByMimeTypeIDWithMimeType, arg.WhereMimeTypeID, arg.MimeTypeID)
 	if err != nil {
 		return nil, err
 	}
@@ -255,6 +239,268 @@ func (q *Queries) GetAttachableItemsByMimeTypeIDWithMimeType(ctx context.Context
 			&i.MimeType.MimeTypeID,
 			&i.MimeType.Name,
 			&i.MimeType.Key,
+			&i.Image.TImagesPkey,
+			&i.Image.ImageID,
+			&i.Image.Height,
+			&i.Image.Width,
+			&i.Image.AttachableItemID,
+			&i.File.TFilesPkey,
+			&i.File.FileID,
+			&i.File.AttachableItemID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttachableItemsByMimeTypeIDWithMimeTypeUseKeysetPaginate = `-- name: GetAttachableItemsByMimeTypeIDWithMimeTypeUseKeysetPaginate :many
+SELECT t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key, t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id FROM t_attachable_items
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
+WHERE
+	CASE $2
+		WHEN 'next' THEN
+			t_attachable_items_pkey < $3
+		WHEN 'prev' THEN
+			t_attachable_items_pkey > $3
+	END
+ORDER BY
+	t_attachable_items_pkey DESC
+LIMIT $1
+`
+
+type GetAttachableItemsByMimeTypeIDWithMimeTypeUseKeysetPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+type GetAttachableItemsByMimeTypeIDWithMimeTypeUseKeysetPaginateRow struct {
+	AttachableItem AttachableItem `json:"attachable_item"`
+	MimeType       MimeType       `json:"mime_type"`
+	Image          Image          `json:"image"`
+	File           File           `json:"file"`
+}
+
+func (q *Queries) GetAttachableItemsByMimeTypeIDWithMimeTypeUseKeysetPaginate(ctx context.Context, arg GetAttachableItemsByMimeTypeIDWithMimeTypeUseKeysetPaginateParams) ([]GetAttachableItemsByMimeTypeIDWithMimeTypeUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttachableItemsByMimeTypeIDWithMimeTypeUseKeysetPaginate, arg.Limit, arg.CursorDirection, arg.Cursor)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttachableItemsByMimeTypeIDWithMimeTypeUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetAttachableItemsByMimeTypeIDWithMimeTypeUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.AttachableItem.TAttachableItemsPkey,
+			&i.AttachableItem.AttachableItemID,
+			&i.AttachableItem.Url,
+			&i.AttachableItem.Size,
+			&i.AttachableItem.MimeTypeID,
+			&i.MimeType.MMimeTypesPkey,
+			&i.MimeType.MimeTypeID,
+			&i.MimeType.Name,
+			&i.MimeType.Key,
+			&i.Image.TImagesPkey,
+			&i.Image.ImageID,
+			&i.Image.Height,
+			&i.Image.Width,
+			&i.Image.AttachableItemID,
+			&i.File.TFilesPkey,
+			&i.File.FileID,
+			&i.File.AttachableItemID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttachableItemsByMimeTypeIDWithMimeTypeUseNumberedPaginate = `-- name: GetAttachableItemsByMimeTypeIDWithMimeTypeUseNumberedPaginate :many
+SELECT t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key, t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id FROM t_attachable_items
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
+WHERE
+	CASE WHEN $3::boolean = true THEN t_attachable_items.mime_type_id = $4 ELSE TRUE END
+ORDER BY
+	t_attachable_items_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetAttachableItemsByMimeTypeIDWithMimeTypeUseNumberedPaginateParams struct {
+	Limit           int32     `json:"limit"`
+	Offset          int32     `json:"offset"`
+	WhereMimeTypeID bool      `json:"where_mime_type_id"`
+	MimeTypeID      uuid.UUID `json:"mime_type_id"`
+}
+
+type GetAttachableItemsByMimeTypeIDWithMimeTypeUseNumberedPaginateRow struct {
+	AttachableItem AttachableItem `json:"attachable_item"`
+	MimeType       MimeType       `json:"mime_type"`
+	Image          Image          `json:"image"`
+	File           File           `json:"file"`
+}
+
+func (q *Queries) GetAttachableItemsByMimeTypeIDWithMimeTypeUseNumberedPaginate(ctx context.Context, arg GetAttachableItemsByMimeTypeIDWithMimeTypeUseNumberedPaginateParams) ([]GetAttachableItemsByMimeTypeIDWithMimeTypeUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttachableItemsByMimeTypeIDWithMimeTypeUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereMimeTypeID,
+		arg.MimeTypeID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttachableItemsByMimeTypeIDWithMimeTypeUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetAttachableItemsByMimeTypeIDWithMimeTypeUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.AttachableItem.TAttachableItemsPkey,
+			&i.AttachableItem.AttachableItemID,
+			&i.AttachableItem.Url,
+			&i.AttachableItem.Size,
+			&i.AttachableItem.MimeTypeID,
+			&i.MimeType.MMimeTypesPkey,
+			&i.MimeType.MimeTypeID,
+			&i.MimeType.Name,
+			&i.MimeType.Key,
+			&i.Image.TImagesPkey,
+			&i.Image.ImageID,
+			&i.Image.Height,
+			&i.Image.Width,
+			&i.Image.AttachableItemID,
+			&i.File.TFilesPkey,
+			&i.File.FileID,
+			&i.File.AttachableItemID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttachableItemsUseKeysetPaginate = `-- name: GetAttachableItemsUseKeysetPaginate :many
+SELECT t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id FROM t_attachable_items
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
+WHERE
+	CASE $2
+		WHEN 'next' THEN
+			t_attachable_items_pkey < $3
+		WHEN 'prev' THEN
+			t_attachable_items_pkey > $3
+	END
+ORDER BY
+	t_attachable_items_pkey DESC
+LIMIT $1
+`
+
+type GetAttachableItemsUseKeysetPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+type GetAttachableItemsUseKeysetPaginateRow struct {
+	AttachableItem AttachableItem `json:"attachable_item"`
+	Image          Image          `json:"image"`
+	File           File           `json:"file"`
+}
+
+func (q *Queries) GetAttachableItemsUseKeysetPaginate(ctx context.Context, arg GetAttachableItemsUseKeysetPaginateParams) ([]GetAttachableItemsUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttachableItemsUseKeysetPaginate, arg.Limit, arg.CursorDirection, arg.Cursor)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttachableItemsUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetAttachableItemsUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.AttachableItem.TAttachableItemsPkey,
+			&i.AttachableItem.AttachableItemID,
+			&i.AttachableItem.Url,
+			&i.AttachableItem.Size,
+			&i.AttachableItem.MimeTypeID,
+			&i.Image.TImagesPkey,
+			&i.Image.ImageID,
+			&i.Image.Height,
+			&i.Image.Width,
+			&i.Image.AttachableItemID,
+			&i.File.TFilesPkey,
+			&i.File.FileID,
+			&i.File.AttachableItemID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttachableItemsUseNumberedPaginate = `-- name: GetAttachableItemsUseNumberedPaginate :many
+SELECT t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id FROM t_attachable_items
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
+WHERE
+	CASE WHEN $3::boolean = true THEN mime_type_id = $4 ELSE TRUE END
+ORDER BY
+	t_attachable_items_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetAttachableItemsUseNumberedPaginateParams struct {
+	Limit           int32     `json:"limit"`
+	Offset          int32     `json:"offset"`
+	WhereMimeTypeID bool      `json:"where_mime_type_id"`
+	MimeTypeID      uuid.UUID `json:"mime_type_id"`
+}
+
+type GetAttachableItemsUseNumberedPaginateRow struct {
+	AttachableItem AttachableItem `json:"attachable_item"`
+	Image          Image          `json:"image"`
+	File           File           `json:"file"`
+}
+
+func (q *Queries) GetAttachableItemsUseNumberedPaginate(ctx context.Context, arg GetAttachableItemsUseNumberedPaginateParams) ([]GetAttachableItemsUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttachableItemsUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereMimeTypeID,
+		arg.MimeTypeID,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttachableItemsUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetAttachableItemsUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.AttachableItem.TAttachableItemsPkey,
+			&i.AttachableItem.AttachableItemID,
+			&i.AttachableItem.Url,
+			&i.AttachableItem.Size,
+			&i.AttachableItem.MimeTypeID,
 			&i.Image.TImagesPkey,
 			&i.Image.ImageID,
 			&i.Image.Height,

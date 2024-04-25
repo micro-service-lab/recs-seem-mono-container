@@ -117,16 +117,94 @@ const getImages = `-- name: GetImages :many
 SELECT t_images_pkey, image_id, height, width, attachable_item_id FROM t_images
 ORDER BY
 	t_images_pkey DESC
+`
+
+func (q *Queries) GetImages(ctx context.Context) ([]Image, error) {
+	rows, err := q.db.Query(ctx, getImages)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Image{}
+	for rows.Next() {
+		var i Image
+		if err := rows.Scan(
+			&i.TImagesPkey,
+			&i.ImageID,
+			&i.Height,
+			&i.Width,
+			&i.AttachableItemID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getImagesUseKeysetPaginate = `-- name: GetImagesUseKeysetPaginate :many
+SELECT t_images_pkey, image_id, height, width, attachable_item_id FROM t_images
+WHERE
+	CASE $2
+		WHEN 'next' THEN
+			t_images_pkey < $3
+		WHEN 'prev' THEN
+			t_images_pkey > $3
+	END
+ORDER BY
+	t_images_pkey DESC
+LIMIT $1
+`
+
+type GetImagesUseKeysetPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetImagesUseKeysetPaginate(ctx context.Context, arg GetImagesUseKeysetPaginateParams) ([]Image, error) {
+	rows, err := q.db.Query(ctx, getImagesUseKeysetPaginate, arg.Limit, arg.CursorDirection, arg.Cursor)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Image{}
+	for rows.Next() {
+		var i Image
+		if err := rows.Scan(
+			&i.TImagesPkey,
+			&i.ImageID,
+			&i.Height,
+			&i.Width,
+			&i.AttachableItemID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getImagesUseNumberedPaginate = `-- name: GetImagesUseNumberedPaginate :many
+SELECT t_images_pkey, image_id, height, width, attachable_item_id FROM t_images
+ORDER BY
+	t_images_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
-type GetImagesParams struct {
+type GetImagesUseNumberedPaginateParams struct {
 	Limit  int32 `json:"limit"`
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) GetImages(ctx context.Context, arg GetImagesParams) ([]Image, error) {
-	rows, err := q.db.Query(ctx, getImages, arg.Limit, arg.Offset)
+func (q *Queries) GetImagesUseNumberedPaginate(ctx context.Context, arg GetImagesUseNumberedPaginateParams) ([]Image, error) {
+	rows, err := q.db.Query(ctx, getImagesUseNumberedPaginate, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -157,13 +235,7 @@ LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
 	t_images_pkey DESC
-LIMIT $1 OFFSET $2
 `
-
-type GetImagesWithAttachableItemParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
-}
 
 type GetImagesWithAttachableItemRow struct {
 	Image          Image          `json:"image"`
@@ -171,8 +243,8 @@ type GetImagesWithAttachableItemRow struct {
 	MimeType       MimeType       `json:"mime_type"`
 }
 
-func (q *Queries) GetImagesWithAttachableItem(ctx context.Context, arg GetImagesWithAttachableItemParams) ([]GetImagesWithAttachableItemRow, error) {
-	rows, err := q.db.Query(ctx, getImagesWithAttachableItem, arg.Limit, arg.Offset)
+func (q *Queries) GetImagesWithAttachableItem(ctx context.Context) ([]GetImagesWithAttachableItemRow, error) {
+	rows, err := q.db.Query(ctx, getImagesWithAttachableItem)
 	if err != nil {
 		return nil, err
 	}
@@ -180,6 +252,124 @@ func (q *Queries) GetImagesWithAttachableItem(ctx context.Context, arg GetImages
 	items := []GetImagesWithAttachableItemRow{}
 	for rows.Next() {
 		var i GetImagesWithAttachableItemRow
+		if err := rows.Scan(
+			&i.Image.TImagesPkey,
+			&i.Image.ImageID,
+			&i.Image.Height,
+			&i.Image.Width,
+			&i.Image.AttachableItemID,
+			&i.AttachableItem.TAttachableItemsPkey,
+			&i.AttachableItem.AttachableItemID,
+			&i.AttachableItem.Url,
+			&i.AttachableItem.Size,
+			&i.AttachableItem.MimeTypeID,
+			&i.MimeType.MMimeTypesPkey,
+			&i.MimeType.MimeTypeID,
+			&i.MimeType.Name,
+			&i.MimeType.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getImagesWithAttachableItemUseKeysetPaginate = `-- name: GetImagesWithAttachableItemUseKeysetPaginate :many
+SELECT t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_images
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+WHERE
+	CASE $2
+		WHEN 'next' THEN
+			t_images_pkey < $3
+		WHEN 'prev' THEN
+			t_images_pkey > $3
+	END
+ORDER BY
+	t_images_pkey DESC
+LIMIT $1
+`
+
+type GetImagesWithAttachableItemUseKeysetPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+type GetImagesWithAttachableItemUseKeysetPaginateRow struct {
+	Image          Image          `json:"image"`
+	AttachableItem AttachableItem `json:"attachable_item"`
+	MimeType       MimeType       `json:"mime_type"`
+}
+
+func (q *Queries) GetImagesWithAttachableItemUseKeysetPaginate(ctx context.Context, arg GetImagesWithAttachableItemUseKeysetPaginateParams) ([]GetImagesWithAttachableItemUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getImagesWithAttachableItemUseKeysetPaginate, arg.Limit, arg.CursorDirection, arg.Cursor)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetImagesWithAttachableItemUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetImagesWithAttachableItemUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Image.TImagesPkey,
+			&i.Image.ImageID,
+			&i.Image.Height,
+			&i.Image.Width,
+			&i.Image.AttachableItemID,
+			&i.AttachableItem.TAttachableItemsPkey,
+			&i.AttachableItem.AttachableItemID,
+			&i.AttachableItem.Url,
+			&i.AttachableItem.Size,
+			&i.AttachableItem.MimeTypeID,
+			&i.MimeType.MMimeTypesPkey,
+			&i.MimeType.MimeTypeID,
+			&i.MimeType.Name,
+			&i.MimeType.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getImagesWithAttachableItemUseNumberedPaginate = `-- name: GetImagesWithAttachableItemUseNumberedPaginate :many
+SELECT t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_images
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+ORDER BY
+	t_images_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetImagesWithAttachableItemUseNumberedPaginateParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+type GetImagesWithAttachableItemUseNumberedPaginateRow struct {
+	Image          Image          `json:"image"`
+	AttachableItem AttachableItem `json:"attachable_item"`
+	MimeType       MimeType       `json:"mime_type"`
+}
+
+func (q *Queries) GetImagesWithAttachableItemUseNumberedPaginate(ctx context.Context, arg GetImagesWithAttachableItemUseNumberedPaginateParams) ([]GetImagesWithAttachableItemUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getImagesWithAttachableItemUseNumberedPaginate, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetImagesWithAttachableItemUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetImagesWithAttachableItemUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.Image.TImagesPkey,
 			&i.Image.ImageID,

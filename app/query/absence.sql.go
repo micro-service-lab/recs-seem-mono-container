@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countAbsences = `-- name: CountAbsences :one
@@ -57,16 +58,82 @@ const getAbsences = `-- name: GetAbsences :many
 SELECT t_absences_pkey, absence_id, attendance_id FROM t_absences
 ORDER BY
 	t_absences_pkey DESC
+`
+
+func (q *Queries) GetAbsences(ctx context.Context) ([]Absence, error) {
+	rows, err := q.db.Query(ctx, getAbsences)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Absence{}
+	for rows.Next() {
+		var i Absence
+		if err := rows.Scan(&i.TAbsencesPkey, &i.AbsenceID, &i.AttendanceID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAbsencesUseKeysetPaginate = `-- name: GetAbsencesUseKeysetPaginate :many
+SELECT t_absences_pkey, absence_id, attendance_id FROM t_absences
+WHERE
+	CASE $2
+		WHEN 'next' THEN
+			t_absences_pkey < $3
+		WHEN 'prev' THEN
+			t_absences_pkey > $3
+	END
+ORDER BY
+	t_absences_pkey DESC
+LIMIT $1
+`
+
+type GetAbsencesUseKeysetPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetAbsencesUseKeysetPaginate(ctx context.Context, arg GetAbsencesUseKeysetPaginateParams) ([]Absence, error) {
+	rows, err := q.db.Query(ctx, getAbsencesUseKeysetPaginate, arg.Limit, arg.CursorDirection, arg.Cursor)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Absence{}
+	for rows.Next() {
+		var i Absence
+		if err := rows.Scan(&i.TAbsencesPkey, &i.AbsenceID, &i.AttendanceID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAbsencesUseNumberedPaginate = `-- name: GetAbsencesUseNumberedPaginate :many
+SELECT t_absences_pkey, absence_id, attendance_id FROM t_absences
+ORDER BY
+	t_absences_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
-type GetAbsencesParams struct {
+type GetAbsencesUseNumberedPaginateParams struct {
 	Limit  int32 `json:"limit"`
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) GetAbsences(ctx context.Context, arg GetAbsencesParams) ([]Absence, error) {
-	rows, err := q.db.Query(ctx, getAbsences, arg.Limit, arg.Offset)
+func (q *Queries) GetAbsencesUseNumberedPaginate(ctx context.Context, arg GetAbsencesUseNumberedPaginateParams) ([]Absence, error) {
+	rows, err := q.db.Query(ctx, getAbsencesUseNumberedPaginate, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

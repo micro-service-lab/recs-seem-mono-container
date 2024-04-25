@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countEarlyLeavings = `-- name: CountEarlyLeavings :one
@@ -78,16 +79,92 @@ const getEarlyLeavings = `-- name: GetEarlyLeavings :many
 SELECT t_early_leavings_pkey, early_leaving_id, attendance_id, leave_time FROM t_early_leavings
 ORDER BY
 	t_early_leavings_pkey DESC
+`
+
+func (q *Queries) GetEarlyLeavings(ctx context.Context) ([]EarlyLeaving, error) {
+	rows, err := q.db.Query(ctx, getEarlyLeavings)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []EarlyLeaving{}
+	for rows.Next() {
+		var i EarlyLeaving
+		if err := rows.Scan(
+			&i.TEarlyLeavingsPkey,
+			&i.EarlyLeavingID,
+			&i.AttendanceID,
+			&i.LeaveTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEarlyLeavingsUseKeysetPaginate = `-- name: GetEarlyLeavingsUseKeysetPaginate :many
+SELECT t_early_leavings_pkey, early_leaving_id, attendance_id, leave_time FROM t_early_leavings
+WHERE
+	CASE $2
+		WHEN 'next' THEN
+			t_early_leavings_pkey < $3
+		WHEN 'prev' THEN
+			t_early_leavings_pkey > $3
+	END
+ORDER BY
+	t_early_leavings_pkey DESC
+LIMIT $1
+`
+
+type GetEarlyLeavingsUseKeysetPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetEarlyLeavingsUseKeysetPaginate(ctx context.Context, arg GetEarlyLeavingsUseKeysetPaginateParams) ([]EarlyLeaving, error) {
+	rows, err := q.db.Query(ctx, getEarlyLeavingsUseKeysetPaginate, arg.Limit, arg.CursorDirection, arg.Cursor)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []EarlyLeaving{}
+	for rows.Next() {
+		var i EarlyLeaving
+		if err := rows.Scan(
+			&i.TEarlyLeavingsPkey,
+			&i.EarlyLeavingID,
+			&i.AttendanceID,
+			&i.LeaveTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEarlyLeavingsUseNumberedPaginate = `-- name: GetEarlyLeavingsUseNumberedPaginate :many
+SELECT t_early_leavings_pkey, early_leaving_id, attendance_id, leave_time FROM t_early_leavings
+ORDER BY
+	t_early_leavings_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
-type GetEarlyLeavingsParams struct {
+type GetEarlyLeavingsUseNumberedPaginateParams struct {
 	Limit  int32 `json:"limit"`
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) GetEarlyLeavings(ctx context.Context, arg GetEarlyLeavingsParams) ([]EarlyLeaving, error) {
-	rows, err := q.db.Query(ctx, getEarlyLeavings, arg.Limit, arg.Offset)
+func (q *Queries) GetEarlyLeavingsUseNumberedPaginate(ctx context.Context, arg GetEarlyLeavingsUseNumberedPaginateParams) ([]EarlyLeaving, error) {
+	rows, err := q.db.Query(ctx, getEarlyLeavingsUseNumberedPaginate, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

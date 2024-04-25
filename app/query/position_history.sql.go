@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countPositionHistories = `-- name: CountPositionHistories :one
@@ -151,6 +152,148 @@ func (q *Queries) FindPositionHistoryByIDWithMember(ctx context.Context, positio
 const getPositionHistories = `-- name: GetPositionHistories :many
 SELECT t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, sent_at FROM t_position_histories
 WHERE
+	CASE WHEN $1::boolean = true THEN member_id = ANY($2::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN sent_at >= $4 ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN sent_at <= $6 ELSE TRUE END
+ORDER BY
+	CASE WHEN $7::text = 'old_send' THEN sent_at END ASC,
+	CASE WHEN $7::text = 'late_send' THEN sent_at END DESC,
+	t_position_histories_pkey DESC
+`
+
+type GetPositionHistoriesParams struct {
+	WhereInMember      bool        `json:"where_in_member"`
+	InMemberIds        []uuid.UUID `json:"in_member_ids"`
+	WhereEarlierSentAt bool        `json:"where_earlier_sent_at"`
+	EarlierSentAt      time.Time   `json:"earlier_sent_at"`
+	WhereLaterSentAt   bool        `json:"where_later_sent_at"`
+	LaterSentAt        time.Time   `json:"later_sent_at"`
+	OrderMethod        string      `json:"order_method"`
+}
+
+func (q *Queries) GetPositionHistories(ctx context.Context, arg GetPositionHistoriesParams) ([]PositionHistory, error) {
+	rows, err := q.db.Query(ctx, getPositionHistories,
+		arg.WhereInMember,
+		arg.InMemberIds,
+		arg.WhereEarlierSentAt,
+		arg.EarlierSentAt,
+		arg.WhereLaterSentAt,
+		arg.LaterSentAt,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []PositionHistory{}
+	for rows.Next() {
+		var i PositionHistory
+		if err := rows.Scan(
+			&i.TPositionHistoriesPkey,
+			&i.PositionHistoryID,
+			&i.MemberID,
+			&i.XPos,
+			&i.YPos,
+			&i.SentAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPositionHistoriesUseKeysetPaginate = `-- name: GetPositionHistoriesUseKeysetPaginate :many
+SELECT t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, sent_at FROM t_position_histories
+WHERE
+	CASE WHEN $2::boolean = true THEN member_id = ANY($3::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN sent_at >= $5 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN sent_at <= $7 ELSE TRUE END
+AND
+	CASE $8
+		WHEN 'next' THEN
+			CASE $9::text
+				WHEN 'old_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey < $11)
+				WHEN 'late_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey < $11)
+				ELSE t_position_histories_pkey < $11
+			END
+		WHEN 'prev' THEN
+			CASE $9::text
+				WHEN 'old_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey > $11)
+				WHEN 'late_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey > $11)
+				ELSE t_position_histories_pkey > $11
+		END
+	END
+ORDER BY
+	CASE WHEN $9::text = 'old_send' THEN sent_at END ASC,
+	CASE WHEN $9::text = 'late_send' THEN sent_at END DESC,
+	t_position_histories_pkey DESC
+LIMIT $1
+`
+
+type GetPositionHistoriesUseKeysetPaginateParams struct {
+	Limit              int32       `json:"limit"`
+	WhereInMember      bool        `json:"where_in_member"`
+	InMemberIds        []uuid.UUID `json:"in_member_ids"`
+	WhereEarlierSentAt bool        `json:"where_earlier_sent_at"`
+	EarlierSentAt      time.Time   `json:"earlier_sent_at"`
+	WhereLaterSentAt   bool        `json:"where_later_sent_at"`
+	LaterSentAt        time.Time   `json:"later_sent_at"`
+	CursorDirection    interface{} `json:"cursor_direction"`
+	OrderMethod        string      `json:"order_method"`
+	CursorColumn       time.Time   `json:"cursor_column"`
+	Cursor             pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetPositionHistoriesUseKeysetPaginate(ctx context.Context, arg GetPositionHistoriesUseKeysetPaginateParams) ([]PositionHistory, error) {
+	rows, err := q.db.Query(ctx, getPositionHistoriesUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInMember,
+		arg.InMemberIds,
+		arg.WhereEarlierSentAt,
+		arg.EarlierSentAt,
+		arg.WhereLaterSentAt,
+		arg.LaterSentAt,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []PositionHistory{}
+	for rows.Next() {
+		var i PositionHistory
+		if err := rows.Scan(
+			&i.TPositionHistoriesPkey,
+			&i.PositionHistoryID,
+			&i.MemberID,
+			&i.XPos,
+			&i.YPos,
+			&i.SentAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPositionHistoriesUseNumberedPaginate = `-- name: GetPositionHistoriesUseNumberedPaginate :many
+SELECT t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, sent_at FROM t_position_histories
+WHERE
 	CASE WHEN $3::boolean = true THEN member_id = ANY($4::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $5::boolean = true THEN sent_at >= $6 ELSE TRUE END
@@ -163,7 +306,7 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetPositionHistoriesParams struct {
+type GetPositionHistoriesUseNumberedPaginateParams struct {
 	Limit              int32       `json:"limit"`
 	Offset             int32       `json:"offset"`
 	WhereInMember      bool        `json:"where_in_member"`
@@ -175,8 +318,8 @@ type GetPositionHistoriesParams struct {
 	OrderMethod        string      `json:"order_method"`
 }
 
-func (q *Queries) GetPositionHistories(ctx context.Context, arg GetPositionHistoriesParams) ([]PositionHistory, error) {
-	rows, err := q.db.Query(ctx, getPositionHistories,
+func (q *Queries) GetPositionHistoriesUseNumberedPaginate(ctx context.Context, arg GetPositionHistoriesUseNumberedPaginateParams) ([]PositionHistory, error) {
+	rows, err := q.db.Query(ctx, getPositionHistoriesUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.WhereInMember,
@@ -216,21 +359,18 @@ const getPositionHistoriesWithMember = `-- name: GetPositionHistoriesWithMember 
 SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.sent_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
 LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE
-	CASE WHEN $3::boolean = true THEN member_id = ANY($4::uuid[]) ELSE TRUE END
+	CASE WHEN $1::boolean = true THEN member_id = ANY($2::uuid[]) ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN sent_at >= $6 ELSE TRUE END
+	CASE WHEN $3::boolean = true THEN sent_at >= $4 ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN sent_at <= $8 ELSE TRUE END
+	CASE WHEN $5::boolean = true THEN sent_at <= $6 ELSE TRUE END
 ORDER BY
-	CASE WHEN $9::text = 'old_send' THEN sent_at END ASC,
-	CASE WHEN $9::text = 'late_send' THEN sent_at END DESC,
+	CASE WHEN $7::text = 'old_send' THEN sent_at END ASC,
+	CASE WHEN $7::text = 'late_send' THEN sent_at END DESC,
 	t_position_histories_pkey DESC
-LIMIT $1 OFFSET $2
 `
 
 type GetPositionHistoriesWithMemberParams struct {
-	Limit              int32       `json:"limit"`
-	Offset             int32       `json:"offset"`
 	WhereInMember      bool        `json:"where_in_member"`
 	InMemberIds        []uuid.UUID `json:"in_member_ids"`
 	WhereEarlierSentAt bool        `json:"where_earlier_sent_at"`
@@ -247,8 +387,6 @@ type GetPositionHistoriesWithMemberRow struct {
 
 func (q *Queries) GetPositionHistoriesWithMember(ctx context.Context, arg GetPositionHistoriesWithMemberParams) ([]GetPositionHistoriesWithMemberRow, error) {
 	rows, err := q.db.Query(ctx, getPositionHistoriesWithMember,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereInMember,
 		arg.InMemberIds,
 		arg.WhereEarlierSentAt,
@@ -264,6 +402,193 @@ func (q *Queries) GetPositionHistoriesWithMember(ctx context.Context, arg GetPos
 	items := []GetPositionHistoriesWithMemberRow{}
 	for rows.Next() {
 		var i GetPositionHistoriesWithMemberRow
+		if err := rows.Scan(
+			&i.PositionHistory.TPositionHistoriesPkey,
+			&i.PositionHistory.PositionHistoryID,
+			&i.PositionHistory.MemberID,
+			&i.PositionHistory.XPos,
+			&i.PositionHistory.YPos,
+			&i.PositionHistory.SentAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPositionHistoriesWithMemberUseKeysetPaginate = `-- name: GetPositionHistoriesWithMemberUseKeysetPaginate :many
+SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.sent_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
+LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
+WHERE
+	CASE WHEN $2::boolean = true THEN member_id = ANY($3::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN sent_at >= $5 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN sent_at <= $7 ELSE TRUE END
+AND
+	CASE $8
+		WHEN 'next' THEN
+			CASE $9::text
+				WHEN 'old_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey < $11)
+				WHEN 'late_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey < $11)
+				ELSE t_position_histories_pkey < $11
+			END
+		WHEN 'prev' THEN
+			CASE $9::text
+				WHEN 'old_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey > $11)
+				WHEN 'late_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey > $11)
+				ELSE t_position_histories_pkey > $11
+			END
+	END
+ORDER BY
+	CASE WHEN $9::text = 'old_send' THEN sent_at END ASC,
+	CASE WHEN $9::text = 'late_send' THEN sent_at END DESC,
+	t_position_histories_pkey DESC
+LIMIT $1
+`
+
+type GetPositionHistoriesWithMemberUseKeysetPaginateParams struct {
+	Limit              int32       `json:"limit"`
+	WhereInMember      bool        `json:"where_in_member"`
+	InMemberIds        []uuid.UUID `json:"in_member_ids"`
+	WhereEarlierSentAt bool        `json:"where_earlier_sent_at"`
+	EarlierSentAt      time.Time   `json:"earlier_sent_at"`
+	WhereLaterSentAt   bool        `json:"where_later_sent_at"`
+	LaterSentAt        time.Time   `json:"later_sent_at"`
+	CursorDirection    interface{} `json:"cursor_direction"`
+	OrderMethod        string      `json:"order_method"`
+	CursorColumn       time.Time   `json:"cursor_column"`
+	Cursor             pgtype.Int8 `json:"cursor"`
+}
+
+type GetPositionHistoriesWithMemberUseKeysetPaginateRow struct {
+	PositionHistory PositionHistory `json:"position_history"`
+	Member          Member          `json:"member"`
+}
+
+func (q *Queries) GetPositionHistoriesWithMemberUseKeysetPaginate(ctx context.Context, arg GetPositionHistoriesWithMemberUseKeysetPaginateParams) ([]GetPositionHistoriesWithMemberUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPositionHistoriesWithMemberUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInMember,
+		arg.InMemberIds,
+		arg.WhereEarlierSentAt,
+		arg.EarlierSentAt,
+		arg.WhereLaterSentAt,
+		arg.LaterSentAt,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPositionHistoriesWithMemberUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetPositionHistoriesWithMemberUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.PositionHistory.TPositionHistoriesPkey,
+			&i.PositionHistory.PositionHistoryID,
+			&i.PositionHistory.MemberID,
+			&i.PositionHistory.XPos,
+			&i.PositionHistory.YPos,
+			&i.PositionHistory.SentAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPositionHistoriesWithMemberUseNumberedPaginate = `-- name: GetPositionHistoriesWithMemberUseNumberedPaginate :many
+SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.sent_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
+LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
+WHERE
+	CASE WHEN $3::boolean = true THEN member_id = ANY($4::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN sent_at >= $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN sent_at <= $8 ELSE TRUE END
+ORDER BY
+	CASE WHEN $9::text = 'old_send' THEN sent_at END ASC,
+	CASE WHEN $9::text = 'late_send' THEN sent_at END DESC,
+	t_position_histories_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPositionHistoriesWithMemberUseNumberedPaginateParams struct {
+	Limit              int32       `json:"limit"`
+	Offset             int32       `json:"offset"`
+	WhereInMember      bool        `json:"where_in_member"`
+	InMemberIds        []uuid.UUID `json:"in_member_ids"`
+	WhereEarlierSentAt bool        `json:"where_earlier_sent_at"`
+	EarlierSentAt      time.Time   `json:"earlier_sent_at"`
+	WhereLaterSentAt   bool        `json:"where_later_sent_at"`
+	LaterSentAt        time.Time   `json:"later_sent_at"`
+	OrderMethod        string      `json:"order_method"`
+}
+
+type GetPositionHistoriesWithMemberUseNumberedPaginateRow struct {
+	PositionHistory PositionHistory `json:"position_history"`
+	Member          Member          `json:"member"`
+}
+
+func (q *Queries) GetPositionHistoriesWithMemberUseNumberedPaginate(ctx context.Context, arg GetPositionHistoriesWithMemberUseNumberedPaginateParams) ([]GetPositionHistoriesWithMemberUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPositionHistoriesWithMemberUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInMember,
+		arg.InMemberIds,
+		arg.WhereEarlierSentAt,
+		arg.EarlierSentAt,
+		arg.WhereLaterSentAt,
+		arg.LaterSentAt,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPositionHistoriesWithMemberUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPositionHistoriesWithMemberUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.PositionHistory.TPositionHistoriesPkey,
 			&i.PositionHistory.PositionHistoryID,

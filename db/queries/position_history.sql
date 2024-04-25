@@ -55,23 +55,24 @@ AND
 	CASE WHEN @where_later_sent_at::boolean = true THEN sent_at <= @later_sent_at ELSE TRUE END
 AND
 	CASE @cursor_direction
-	WHEN 'next' THEN
-		CASE @order_method::text
-			WHEN 'old_send' THEN sent_at > @cursor_column OR (sent_at = @cursor_column AND t_position_histories_pkey < @cursor)
-			WHEN 'late_send' THEN sent_at < @cursor_column OR (sent_at = @cursor_column AND t_position_histories_pkey < @cursor)
-			ELSE t_position_histories_pkey < @cursor
+		WHEN 'next' THEN
+			CASE @order_method::text
+				WHEN 'old_send' THEN sent_at > @cursor_column OR (sent_at = @cursor_column AND t_position_histories_pkey < @cursor)
+				WHEN 'late_send' THEN sent_at < @cursor_column OR (sent_at = @cursor_column AND t_position_histories_pkey < @cursor)
+				ELSE t_position_histories_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method::text
+				WHEN 'old_send' THEN sent_at < @cursor_column OR (sent_at = @cursor_column AND t_position_histories_pkey > @cursor)
+				WHEN 'late_send' THEN sent_at > @cursor_column OR (sent_at = @cursor_column AND t_position_histories_pkey > @cursor)
+				ELSE t_position_histories_pkey > @cursor
 		END
-	WHEN 'prev' THEN
-		CASE @order_method::text
-			WHEN 'old_send' THEN sent_at < @cursor_column OR (sent_at = @cursor_column AND t_position_histories_pkey > @cursor)
-			WHEN 'late_send' THEN sent_at > @cursor_column OR (sent_at = @cursor_column AND t_position_histories_pkey > @cursor)
-			ELSE t_position_histories_pkey > @cursor
-		END
-	ORDER BY
-		CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC,
-		CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC,
-		t_position_histories_pkey DESC
-	LIMIT $1;
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC,
+	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC,
+	t_position_histories_pkey DESC
+LIMIT $1;
 
 -- name: GetPositionHistoriesWithMember :many
 SELECT sqlc.embed(t_position_histories), sqlc.embed(m_members) FROM t_position_histories
@@ -87,7 +88,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC,
 	t_position_histories_pkey DESC;
 
--- name: GetPositionHistoriesWithMemberUseKeysetPaginate :many
+-- name: GetPositionHistoriesWithMemberUseNumberedPaginate :many
 SELECT sqlc.embed(t_position_histories), sqlc.embed(m_members) FROM t_position_histories
 LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE
@@ -113,23 +114,24 @@ AND
 	CASE WHEN @where_later_sent_at::boolean = true THEN sent_at <= @later_sent_at ELSE TRUE END
 AND
 	CASE @cursor_direction
-	WHEN 'next' THEN
-		CASE @order_method::text
-			WHEN 'old_send' THEN sent_at > @cursor_column OR (sent_at = @cursor_column AND t_position_histories_pkey < @cursor)
-			WHEN 'late_send' THEN sent_at < @cursor_column OR (sent_at = @cursor_column AND t_position_histories_pkey < @cursor)
-			ELSE t_position_histories_pkey < @cursor
-		END
-	WHEN 'prev' THEN
-		CASE @order_method::text
-			WHEN 'old_send' THEN sent_at < @cursor_column OR (sent_at = @cursor_column AND t_position_histories_pkey > @cursor)
-			WHEN 'late_send' THEN sent_at > @cursor_column OR (sent_at = @cursor_column AND t_position_histories_pkey > @cursor)
-			ELSE t_position_histories_pkey > @cursor
-		END
-	ORDER BY
-		CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC,
-		CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC,
-		t_position_histories_pkey DESC
-	LIMIT $1;
+		WHEN 'next' THEN
+			CASE @order_method::text
+				WHEN 'old_send' THEN sent_at > @cursor_column OR (sent_at = @cursor_column AND t_position_histories_pkey < @cursor)
+				WHEN 'late_send' THEN sent_at < @cursor_column OR (sent_at = @cursor_column AND t_position_histories_pkey < @cursor)
+				ELSE t_position_histories_pkey < @cursor
+			END
+		WHEN 'prev' THEN
+			CASE @order_method::text
+				WHEN 'old_send' THEN sent_at < @cursor_column OR (sent_at = @cursor_column AND t_position_histories_pkey > @cursor)
+				WHEN 'late_send' THEN sent_at > @cursor_column OR (sent_at = @cursor_column AND t_position_histories_pkey > @cursor)
+				ELSE t_position_histories_pkey > @cursor
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC,
+	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC,
+	t_position_histories_pkey DESC
+LIMIT $1;
 
 -- name: CountPositionHistories :one
 SELECT COUNT(*) FROM t_position_histories

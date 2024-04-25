@@ -266,6 +266,206 @@ func (q *Queries) FindMessageByIDWithSender(ctx context.Context, messageID uuid.
 const getMessages = `-- name: GetMessages :many
 SELECT t_messages_pkey, message_id, chat_room_id, sender_id, body, posted_at, last_edited_at FROM t_messages
 WHERE
+	CASE WHEN $1::boolean = true THEN chat_room_id = ANY($2) ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN sender_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN body LIKE '%' || $6::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN posted_at >= $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN posted_at <= $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN last_edited_at >= $12 ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN last_edited_at <= $14 ELSE TRUE END
+ORDER BY
+	CASE WHEN $15::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $15::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $15::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $15::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_messages_pkey DESC
+`
+
+type GetMessagesParams struct {
+	WhereInChatRoom          bool        `json:"where_in_chat_room"`
+	InChatRoom               uuid.UUID   `json:"in_chat_room"`
+	WhereInSender            bool        `json:"where_in_sender"`
+	InSender                 pgtype.UUID `json:"in_sender"`
+	WhereLikeBody            bool        `json:"where_like_body"`
+	SearchBody               string      `json:"search_body"`
+	WhereEarlierPostedAt     bool        `json:"where_earlier_posted_at"`
+	EarlierPostedAt          time.Time   `json:"earlier_posted_at"`
+	WhereLaterPostedAt       bool        `json:"where_later_posted_at"`
+	LaterPostedAt            time.Time   `json:"later_posted_at"`
+	WhereEarlierLastEditedAt bool        `json:"where_earlier_last_edited_at"`
+	EarlierLastEditedAt      time.Time   `json:"earlier_last_edited_at"`
+	WhereLaterLastEditedAt   bool        `json:"where_later_last_edited_at"`
+	LaterLastEditedAt        time.Time   `json:"later_last_edited_at"`
+	OrderMethod              string      `json:"order_method"`
+}
+
+func (q *Queries) GetMessages(ctx context.Context, arg GetMessagesParams) ([]Message, error) {
+	rows, err := q.db.Query(ctx, getMessages,
+		arg.WhereInChatRoom,
+		arg.InChatRoom,
+		arg.WhereInSender,
+		arg.InSender,
+		arg.WhereLikeBody,
+		arg.SearchBody,
+		arg.WhereEarlierPostedAt,
+		arg.EarlierPostedAt,
+		arg.WhereLaterPostedAt,
+		arg.LaterPostedAt,
+		arg.WhereEarlierLastEditedAt,
+		arg.EarlierLastEditedAt,
+		arg.WhereLaterLastEditedAt,
+		arg.LaterLastEditedAt,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Message{}
+	for rows.Next() {
+		var i Message
+		if err := rows.Scan(
+			&i.TMessagesPkey,
+			&i.MessageID,
+			&i.ChatRoomID,
+			&i.SenderID,
+			&i.Body,
+			&i.PostedAt,
+			&i.LastEditedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMessagesUseKeysetPaginate = `-- name: GetMessagesUseKeysetPaginate :many
+SELECT t_messages_pkey, message_id, chat_room_id, sender_id, body, posted_at, last_edited_at FROM t_messages
+WHERE
+	CASE WHEN $2::boolean = true THEN chat_room_id = ANY($3) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN sender_id = ANY($5) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN body LIKE '%' || $7::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN posted_at >= $9 ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN posted_at <= $11 ELSE TRUE END
+AND
+	CASE WHEN $12::boolean = true THEN last_edited_at >= $13 ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN last_edited_at <= $15 ELSE TRUE END
+AND
+	CASE $16
+		WHEN 'next' THEN
+			CASE $17::text
+				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19)
+				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19)
+				WHEN 'last_edited_at' THEN last_edited_at > $18 OR (last_edited_at = $18 AND t_messages_pkey < $19)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $18 OR (last_edited_at = $18 AND t_messages_pkey < $19)
+				ELSE t_messages_pkey < $19
+			END
+		WHEN 'prev' THEN
+			CASE $17::text
+				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19)
+				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19)
+				WHEN 'last_edited_at' THEN last_edited_at < $18 OR (last_edited_at = $18 AND t_messages_pkey > $19)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $18 OR (last_edited_at = $18 AND t_messages_pkey > $19)
+				ELSE t_messages_pkey > $19
+			END
+	END
+ORDER BY
+	CASE WHEN $17::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_messages_pkey DESC
+LIMIT $1
+`
+
+type GetMessagesUseKeysetPaginateParams struct {
+	Limit                    int32       `json:"limit"`
+	WhereInChatRoom          bool        `json:"where_in_chat_room"`
+	InChatRoom               uuid.UUID   `json:"in_chat_room"`
+	WhereInSender            bool        `json:"where_in_sender"`
+	InSender                 pgtype.UUID `json:"in_sender"`
+	WhereLikeBody            bool        `json:"where_like_body"`
+	SearchBody               string      `json:"search_body"`
+	WhereEarlierPostedAt     bool        `json:"where_earlier_posted_at"`
+	EarlierPostedAt          time.Time   `json:"earlier_posted_at"`
+	WhereLaterPostedAt       bool        `json:"where_later_posted_at"`
+	LaterPostedAt            time.Time   `json:"later_posted_at"`
+	WhereEarlierLastEditedAt bool        `json:"where_earlier_last_edited_at"`
+	EarlierLastEditedAt      time.Time   `json:"earlier_last_edited_at"`
+	WhereLaterLastEditedAt   bool        `json:"where_later_last_edited_at"`
+	LaterLastEditedAt        time.Time   `json:"later_last_edited_at"`
+	CursorDirection          interface{} `json:"cursor_direction"`
+	OrderMethod              string      `json:"order_method"`
+	CursorColumn             time.Time   `json:"cursor_column"`
+	Cursor                   pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetMessagesUseKeysetPaginate(ctx context.Context, arg GetMessagesUseKeysetPaginateParams) ([]Message, error) {
+	rows, err := q.db.Query(ctx, getMessagesUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInChatRoom,
+		arg.InChatRoom,
+		arg.WhereInSender,
+		arg.InSender,
+		arg.WhereLikeBody,
+		arg.SearchBody,
+		arg.WhereEarlierPostedAt,
+		arg.EarlierPostedAt,
+		arg.WhereLaterPostedAt,
+		arg.LaterPostedAt,
+		arg.WhereEarlierLastEditedAt,
+		arg.EarlierLastEditedAt,
+		arg.WhereLaterLastEditedAt,
+		arg.LaterLastEditedAt,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Message{}
+	for rows.Next() {
+		var i Message
+		if err := rows.Scan(
+			&i.TMessagesPkey,
+			&i.MessageID,
+			&i.ChatRoomID,
+			&i.SenderID,
+			&i.Body,
+			&i.PostedAt,
+			&i.LastEditedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMessagesUseNumberedPaginate = `-- name: GetMessagesUseNumberedPaginate :many
+SELECT t_messages_pkey, message_id, chat_room_id, sender_id, body, posted_at, last_edited_at FROM t_messages
+WHERE
 	CASE WHEN $3::boolean = true THEN chat_room_id = ANY($4) ELSE TRUE END
 AND
 	CASE WHEN $5::boolean = true THEN sender_id = ANY($6) ELSE TRUE END
@@ -288,7 +488,7 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetMessagesParams struct {
+type GetMessagesUseNumberedPaginateParams struct {
 	Limit                    int32       `json:"limit"`
 	Offset                   int32       `json:"offset"`
 	WhereInChatRoom          bool        `json:"where_in_chat_room"`
@@ -308,8 +508,8 @@ type GetMessagesParams struct {
 	OrderMethod              string      `json:"order_method"`
 }
 
-func (q *Queries) GetMessages(ctx context.Context, arg GetMessagesParams) ([]Message, error) {
-	rows, err := q.db.Query(ctx, getMessages,
+func (q *Queries) GetMessagesUseNumberedPaginate(ctx context.Context, arg GetMessagesUseNumberedPaginateParams) ([]Message, error) {
+	rows, err := q.db.Query(ctx, getMessagesUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.WhereInChatRoom,
@@ -359,31 +559,28 @@ SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_i
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE
-	CASE WHEN $3::boolean = true THEN t_messages.chat_room_id = ANY($4) ELSE TRUE END
+	CASE WHEN $1::boolean = true THEN t_messages.chat_room_id = ANY($2) ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN sender_id = ANY($6) ELSE TRUE END
+	CASE WHEN $3::boolean = true THEN sender_id = ANY($4) ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN body LIKE '%' || $8::text || '%' ELSE TRUE END
+	CASE WHEN $5::boolean = true THEN body LIKE '%' || $6::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN posted_at >= $10 ELSE TRUE END
+	CASE WHEN $7::boolean = true THEN posted_at >= $8 ELSE TRUE END
 AND
-	CASE WHEN $11::boolean = true THEN posted_at <= $12 ELSE TRUE END
+	CASE WHEN $9::boolean = true THEN posted_at <= $10 ELSE TRUE END
 AND
-	CASE WHEN $13::boolean = true THEN last_edited_at >= $14 ELSE TRUE END
+	CASE WHEN $11::boolean = true THEN last_edited_at >= $12 ELSE TRUE END
 AND
-	CASE WHEN $15::boolean = true THEN last_edited_at <= $16 ELSE TRUE END
+	CASE WHEN $13::boolean = true THEN last_edited_at <= $14 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $15::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $15::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $15::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $15::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_messages_pkey DESC
-LIMIT $1 OFFSET $2
 `
 
 type GetMessagesWithAllParams struct {
-	Limit                    int32       `json:"limit"`
-	Offset                   int32       `json:"offset"`
 	WhereInChatRoom          bool        `json:"where_in_chat_room"`
 	InChatRoom               uuid.UUID   `json:"in_chat_room"`
 	WhereInSender            bool        `json:"where_in_sender"`
@@ -409,8 +606,6 @@ type GetMessagesWithAllRow struct {
 
 func (q *Queries) GetMessagesWithAll(ctx context.Context, arg GetMessagesWithAllParams) ([]GetMessagesWithAllRow, error) {
 	rows, err := q.db.Query(ctx, getMessagesWithAll,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereInChatRoom,
 		arg.InChatRoom,
 		arg.WhereInSender,
@@ -475,9 +670,154 @@ func (q *Queries) GetMessagesWithAll(ctx context.Context, arg GetMessagesWithAll
 	return items, nil
 }
 
-const getMessagesWithChatRoom = `-- name: GetMessagesWithChatRoom :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+const getMessagesWithAllUseKeysetPaginate = `-- name: GetMessagesWithAllUseKeysetPaginate :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
+WHERE
+	CASE WHEN $2::boolean = true THEN t_messages.chat_room_id = ANY($3) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN sender_id = ANY($5) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN body LIKE '%' || $7::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN posted_at >= $9 ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN posted_at <= $11 ELSE TRUE END
+AND
+	CASE WHEN $12::boolean = true THEN last_edited_at >= $13 ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN last_edited_at <= $15 ELSE TRUE END
+AND
+	CASE $16
+		WHEN 'next' THEN
+			CASE $17::text
+				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19)
+				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19)
+				WHEN 'last_edited_at' THEN last_edited_at > $18 OR (last_edited_at = $18 AND t_messages_pkey < $19)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $18 OR (last_edited_at = $18 AND t_messages_pkey < $19)
+				ELSE t_messages_pkey < $19
+			END
+		WHEN 'prev' THEN
+			CASE $17::text
+				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19)
+				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19)
+				WHEN 'last_edited_at' THEN last_edited_at < $18 OR (last_edited_at = $18 AND t_messages_pkey > $19)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $18 OR (last_edited_at = $18 AND t_messages_pkey > $19)
+				ELSE t_messages_pkey > $19
+			END
+	END
+ORDER BY
+	CASE WHEN $17::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_messages_pkey DESC
+LIMIT $1
+`
+
+type GetMessagesWithAllUseKeysetPaginateParams struct {
+	Limit                    int32       `json:"limit"`
+	WhereInChatRoom          bool        `json:"where_in_chat_room"`
+	InChatRoom               uuid.UUID   `json:"in_chat_room"`
+	WhereInSender            bool        `json:"where_in_sender"`
+	InSender                 pgtype.UUID `json:"in_sender"`
+	WhereLikeBody            bool        `json:"where_like_body"`
+	SearchBody               string      `json:"search_body"`
+	WhereEarlierPostedAt     bool        `json:"where_earlier_posted_at"`
+	EarlierPostedAt          time.Time   `json:"earlier_posted_at"`
+	WhereLaterPostedAt       bool        `json:"where_later_posted_at"`
+	LaterPostedAt            time.Time   `json:"later_posted_at"`
+	WhereEarlierLastEditedAt bool        `json:"where_earlier_last_edited_at"`
+	EarlierLastEditedAt      time.Time   `json:"earlier_last_edited_at"`
+	WhereLaterLastEditedAt   bool        `json:"where_later_last_edited_at"`
+	LaterLastEditedAt        time.Time   `json:"later_last_edited_at"`
+	CursorDirection          interface{} `json:"cursor_direction"`
+	OrderMethod              string      `json:"order_method"`
+	CursorColumn             time.Time   `json:"cursor_column"`
+	Cursor                   pgtype.Int8 `json:"cursor"`
+}
+
+type GetMessagesWithAllUseKeysetPaginateRow struct {
+	Message  Message  `json:"message"`
+	ChatRoom ChatRoom `json:"chat_room"`
+	Member   Member   `json:"member"`
+}
+
+func (q *Queries) GetMessagesWithAllUseKeysetPaginate(ctx context.Context, arg GetMessagesWithAllUseKeysetPaginateParams) ([]GetMessagesWithAllUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMessagesWithAllUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInChatRoom,
+		arg.InChatRoom,
+		arg.WhereInSender,
+		arg.InSender,
+		arg.WhereLikeBody,
+		arg.SearchBody,
+		arg.WhereEarlierPostedAt,
+		arg.EarlierPostedAt,
+		arg.WhereLaterPostedAt,
+		arg.LaterPostedAt,
+		arg.WhereEarlierLastEditedAt,
+		arg.EarlierLastEditedAt,
+		arg.WhereLaterLastEditedAt,
+		arg.LaterLastEditedAt,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMessagesWithAllUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetMessagesWithAllUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Message.TMessagesPkey,
+			&i.Message.MessageID,
+			&i.Message.ChatRoomID,
+			&i.Message.SenderID,
+			&i.Message.Body,
+			&i.Message.PostedAt,
+			&i.Message.LastEditedAt,
+			&i.ChatRoom.MChatRoomsPkey,
+			&i.ChatRoom.ChatRoomID,
+			&i.ChatRoom.Name,
+			&i.ChatRoom.IsPrivate,
+			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.CreatedAt,
+			&i.ChatRoom.UpdatedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMessagesWithAllUseNumberedPaginate = `-- name: GetMessagesWithAllUseNumberedPaginate :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_messages.chat_room_id = ANY($4) ELSE TRUE END
 AND
@@ -501,9 +841,126 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetMessagesWithChatRoomParams struct {
+type GetMessagesWithAllUseNumberedPaginateParams struct {
 	Limit                    int32       `json:"limit"`
 	Offset                   int32       `json:"offset"`
+	WhereInChatRoom          bool        `json:"where_in_chat_room"`
+	InChatRoom               uuid.UUID   `json:"in_chat_room"`
+	WhereInSender            bool        `json:"where_in_sender"`
+	InSender                 pgtype.UUID `json:"in_sender"`
+	WhereLikeBody            bool        `json:"where_like_body"`
+	SearchBody               string      `json:"search_body"`
+	WhereEarlierPostedAt     bool        `json:"where_earlier_posted_at"`
+	EarlierPostedAt          time.Time   `json:"earlier_posted_at"`
+	WhereLaterPostedAt       bool        `json:"where_later_posted_at"`
+	LaterPostedAt            time.Time   `json:"later_posted_at"`
+	WhereEarlierLastEditedAt bool        `json:"where_earlier_last_edited_at"`
+	EarlierLastEditedAt      time.Time   `json:"earlier_last_edited_at"`
+	WhereLaterLastEditedAt   bool        `json:"where_later_last_edited_at"`
+	LaterLastEditedAt        time.Time   `json:"later_last_edited_at"`
+	OrderMethod              string      `json:"order_method"`
+}
+
+type GetMessagesWithAllUseNumberedPaginateRow struct {
+	Message  Message  `json:"message"`
+	ChatRoom ChatRoom `json:"chat_room"`
+	Member   Member   `json:"member"`
+}
+
+func (q *Queries) GetMessagesWithAllUseNumberedPaginate(ctx context.Context, arg GetMessagesWithAllUseNumberedPaginateParams) ([]GetMessagesWithAllUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMessagesWithAllUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInChatRoom,
+		arg.InChatRoom,
+		arg.WhereInSender,
+		arg.InSender,
+		arg.WhereLikeBody,
+		arg.SearchBody,
+		arg.WhereEarlierPostedAt,
+		arg.EarlierPostedAt,
+		arg.WhereLaterPostedAt,
+		arg.LaterPostedAt,
+		arg.WhereEarlierLastEditedAt,
+		arg.EarlierLastEditedAt,
+		arg.WhereLaterLastEditedAt,
+		arg.LaterLastEditedAt,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMessagesWithAllUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetMessagesWithAllUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Message.TMessagesPkey,
+			&i.Message.MessageID,
+			&i.Message.ChatRoomID,
+			&i.Message.SenderID,
+			&i.Message.Body,
+			&i.Message.PostedAt,
+			&i.Message.LastEditedAt,
+			&i.ChatRoom.MChatRoomsPkey,
+			&i.ChatRoom.ChatRoomID,
+			&i.ChatRoom.Name,
+			&i.ChatRoom.IsPrivate,
+			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.CreatedAt,
+			&i.ChatRoom.UpdatedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMessagesWithChatRoom = `-- name: GetMessagesWithChatRoom :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
+WHERE
+	CASE WHEN $1::boolean = true THEN t_messages.chat_room_id = ANY($2) ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN sender_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN body LIKE '%' || $6::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN posted_at >= $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN posted_at <= $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN last_edited_at >= $12 ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN last_edited_at <= $14 ELSE TRUE END
+ORDER BY
+	CASE WHEN $15::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $15::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $15::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $15::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_messages_pkey DESC
+`
+
+type GetMessagesWithChatRoomParams struct {
 	WhereInChatRoom          bool        `json:"where_in_chat_room"`
 	InChatRoom               uuid.UUID   `json:"in_chat_room"`
 	WhereInSender            bool        `json:"where_in_sender"`
@@ -528,8 +985,6 @@ type GetMessagesWithChatRoomRow struct {
 
 func (q *Queries) GetMessagesWithChatRoom(ctx context.Context, arg GetMessagesWithChatRoomParams) ([]GetMessagesWithChatRoomRow, error) {
 	rows, err := q.db.Query(ctx, getMessagesWithChatRoom,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereInChatRoom,
 		arg.InChatRoom,
 		arg.WhereInSender,
@@ -580,7 +1035,480 @@ func (q *Queries) GetMessagesWithChatRoom(ctx context.Context, arg GetMessagesWi
 	return items, nil
 }
 
+const getMessagesWithChatRoomUseKeysetPaginate = `-- name: GetMessagesWithChatRoomUseKeysetPaginate :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
+WHERE
+	CASE WHEN $2::boolean = true THEN t_messages.chat_room_id = ANY($3) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN sender_id = ANY($5) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN body LIKE '%' || $7::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN posted_at >= $9 ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN posted_at <= $11 ELSE TRUE END
+AND
+	CASE WHEN $12::boolean = true THEN last_edited_at >= $13 ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN last_edited_at <= $15 ELSE TRUE END
+AND
+	CASE $16
+		WHEN 'next' THEN
+			CASE $17::text
+				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19)
+				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19)
+				WHEN 'last_edited_at' THEN last_edited_at > $18 OR (last_edited_at = $18 AND t_messages_pkey < $19)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $18 OR (last_edited_at = $18 AND t_messages_pkey < $19)
+				ELSE t_messages_pkey < $19
+			END
+		WHEN 'prev' THEN
+			CASE $17::text
+				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19)
+				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19)
+				WHEN 'last_edited_at' THEN last_edited_at < $18 OR (last_edited_at = $18 AND t_messages_pkey > $19)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $18 OR (last_edited_at = $18 AND t_messages_pkey > $19)
+				ELSE t_messages_pkey > $19
+			END
+	END
+ORDER BY
+	CASE WHEN $17::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_messages_pkey DESC
+LIMIT $1
+`
+
+type GetMessagesWithChatRoomUseKeysetPaginateParams struct {
+	Limit                    int32       `json:"limit"`
+	WhereInChatRoom          bool        `json:"where_in_chat_room"`
+	InChatRoom               uuid.UUID   `json:"in_chat_room"`
+	WhereInSender            bool        `json:"where_in_sender"`
+	InSender                 pgtype.UUID `json:"in_sender"`
+	WhereLikeBody            bool        `json:"where_like_body"`
+	SearchBody               string      `json:"search_body"`
+	WhereEarlierPostedAt     bool        `json:"where_earlier_posted_at"`
+	EarlierPostedAt          time.Time   `json:"earlier_posted_at"`
+	WhereLaterPostedAt       bool        `json:"where_later_posted_at"`
+	LaterPostedAt            time.Time   `json:"later_posted_at"`
+	WhereEarlierLastEditedAt bool        `json:"where_earlier_last_edited_at"`
+	EarlierLastEditedAt      time.Time   `json:"earlier_last_edited_at"`
+	WhereLaterLastEditedAt   bool        `json:"where_later_last_edited_at"`
+	LaterLastEditedAt        time.Time   `json:"later_last_edited_at"`
+	CursorDirection          interface{} `json:"cursor_direction"`
+	OrderMethod              string      `json:"order_method"`
+	CursorColumn             time.Time   `json:"cursor_column"`
+	Cursor                   pgtype.Int8 `json:"cursor"`
+}
+
+type GetMessagesWithChatRoomUseKeysetPaginateRow struct {
+	Message  Message  `json:"message"`
+	ChatRoom ChatRoom `json:"chat_room"`
+}
+
+func (q *Queries) GetMessagesWithChatRoomUseKeysetPaginate(ctx context.Context, arg GetMessagesWithChatRoomUseKeysetPaginateParams) ([]GetMessagesWithChatRoomUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMessagesWithChatRoomUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInChatRoom,
+		arg.InChatRoom,
+		arg.WhereInSender,
+		arg.InSender,
+		arg.WhereLikeBody,
+		arg.SearchBody,
+		arg.WhereEarlierPostedAt,
+		arg.EarlierPostedAt,
+		arg.WhereLaterPostedAt,
+		arg.LaterPostedAt,
+		arg.WhereEarlierLastEditedAt,
+		arg.EarlierLastEditedAt,
+		arg.WhereLaterLastEditedAt,
+		arg.LaterLastEditedAt,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMessagesWithChatRoomUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetMessagesWithChatRoomUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Message.TMessagesPkey,
+			&i.Message.MessageID,
+			&i.Message.ChatRoomID,
+			&i.Message.SenderID,
+			&i.Message.Body,
+			&i.Message.PostedAt,
+			&i.Message.LastEditedAt,
+			&i.ChatRoom.MChatRoomsPkey,
+			&i.ChatRoom.ChatRoomID,
+			&i.ChatRoom.Name,
+			&i.ChatRoom.IsPrivate,
+			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.CreatedAt,
+			&i.ChatRoom.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMessagesWithChatRoomUseNumberedPaginate = `-- name: GetMessagesWithChatRoomUseNumberedPaginate :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
+WHERE
+	CASE WHEN $3::boolean = true THEN t_messages.chat_room_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN sender_id = ANY($6) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN body LIKE '%' || $8::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN posted_at >= $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN posted_at <= $12 ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN last_edited_at >= $14 ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN last_edited_at <= $16 ELSE TRUE END
+ORDER BY
+	CASE WHEN $17::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_messages_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetMessagesWithChatRoomUseNumberedPaginateParams struct {
+	Limit                    int32       `json:"limit"`
+	Offset                   int32       `json:"offset"`
+	WhereInChatRoom          bool        `json:"where_in_chat_room"`
+	InChatRoom               uuid.UUID   `json:"in_chat_room"`
+	WhereInSender            bool        `json:"where_in_sender"`
+	InSender                 pgtype.UUID `json:"in_sender"`
+	WhereLikeBody            bool        `json:"where_like_body"`
+	SearchBody               string      `json:"search_body"`
+	WhereEarlierPostedAt     bool        `json:"where_earlier_posted_at"`
+	EarlierPostedAt          time.Time   `json:"earlier_posted_at"`
+	WhereLaterPostedAt       bool        `json:"where_later_posted_at"`
+	LaterPostedAt            time.Time   `json:"later_posted_at"`
+	WhereEarlierLastEditedAt bool        `json:"where_earlier_last_edited_at"`
+	EarlierLastEditedAt      time.Time   `json:"earlier_last_edited_at"`
+	WhereLaterLastEditedAt   bool        `json:"where_later_last_edited_at"`
+	LaterLastEditedAt        time.Time   `json:"later_last_edited_at"`
+	OrderMethod              string      `json:"order_method"`
+}
+
+type GetMessagesWithChatRoomUseNumberedPaginateRow struct {
+	Message  Message  `json:"message"`
+	ChatRoom ChatRoom `json:"chat_room"`
+}
+
+func (q *Queries) GetMessagesWithChatRoomUseNumberedPaginate(ctx context.Context, arg GetMessagesWithChatRoomUseNumberedPaginateParams) ([]GetMessagesWithChatRoomUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMessagesWithChatRoomUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInChatRoom,
+		arg.InChatRoom,
+		arg.WhereInSender,
+		arg.InSender,
+		arg.WhereLikeBody,
+		arg.SearchBody,
+		arg.WhereEarlierPostedAt,
+		arg.EarlierPostedAt,
+		arg.WhereLaterPostedAt,
+		arg.LaterPostedAt,
+		arg.WhereEarlierLastEditedAt,
+		arg.EarlierLastEditedAt,
+		arg.WhereLaterLastEditedAt,
+		arg.LaterLastEditedAt,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMessagesWithChatRoomUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetMessagesWithChatRoomUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Message.TMessagesPkey,
+			&i.Message.MessageID,
+			&i.Message.ChatRoomID,
+			&i.Message.SenderID,
+			&i.Message.Body,
+			&i.Message.PostedAt,
+			&i.Message.LastEditedAt,
+			&i.ChatRoom.MChatRoomsPkey,
+			&i.ChatRoom.ChatRoomID,
+			&i.ChatRoom.Name,
+			&i.ChatRoom.IsPrivate,
+			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.CreatedAt,
+			&i.ChatRoom.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getMessagesWithSender = `-- name: GetMessagesWithSender :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
+WHERE
+	CASE WHEN $1::boolean = true THEN t_messages.chat_room_id = ANY($2) ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN sender_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN body LIKE '%' || $6::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN posted_at >= $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN posted_at <= $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN last_edited_at >= $12 ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN last_edited_at <= $14 ELSE TRUE END
+ORDER BY
+	CASE WHEN $15::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $15::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $15::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $15::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_messages_pkey DESC
+`
+
+type GetMessagesWithSenderParams struct {
+	WhereInChatRoom          bool        `json:"where_in_chat_room"`
+	InChatRoom               uuid.UUID   `json:"in_chat_room"`
+	WhereInSender            bool        `json:"where_in_sender"`
+	InSender                 pgtype.UUID `json:"in_sender"`
+	WhereLikeBody            bool        `json:"where_like_body"`
+	SearchBody               string      `json:"search_body"`
+	WhereEarlierPostedAt     bool        `json:"where_earlier_posted_at"`
+	EarlierPostedAt          time.Time   `json:"earlier_posted_at"`
+	WhereLaterPostedAt       bool        `json:"where_later_posted_at"`
+	LaterPostedAt            time.Time   `json:"later_posted_at"`
+	WhereEarlierLastEditedAt bool        `json:"where_earlier_last_edited_at"`
+	EarlierLastEditedAt      time.Time   `json:"earlier_last_edited_at"`
+	WhereLaterLastEditedAt   bool        `json:"where_later_last_edited_at"`
+	LaterLastEditedAt        time.Time   `json:"later_last_edited_at"`
+	OrderMethod              string      `json:"order_method"`
+}
+
+type GetMessagesWithSenderRow struct {
+	Message Message `json:"message"`
+	Member  Member  `json:"member"`
+}
+
+func (q *Queries) GetMessagesWithSender(ctx context.Context, arg GetMessagesWithSenderParams) ([]GetMessagesWithSenderRow, error) {
+	rows, err := q.db.Query(ctx, getMessagesWithSender,
+		arg.WhereInChatRoom,
+		arg.InChatRoom,
+		arg.WhereInSender,
+		arg.InSender,
+		arg.WhereLikeBody,
+		arg.SearchBody,
+		arg.WhereEarlierPostedAt,
+		arg.EarlierPostedAt,
+		arg.WhereLaterPostedAt,
+		arg.LaterPostedAt,
+		arg.WhereEarlierLastEditedAt,
+		arg.EarlierLastEditedAt,
+		arg.WhereLaterLastEditedAt,
+		arg.LaterLastEditedAt,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMessagesWithSenderRow{}
+	for rows.Next() {
+		var i GetMessagesWithSenderRow
+		if err := rows.Scan(
+			&i.Message.TMessagesPkey,
+			&i.Message.MessageID,
+			&i.Message.ChatRoomID,
+			&i.Message.SenderID,
+			&i.Message.Body,
+			&i.Message.PostedAt,
+			&i.Message.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMessagesWithSenderUseKeysetPaginate = `-- name: GetMessagesWithSenderUseKeysetPaginate :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
+WHERE
+	CASE WHEN $2::boolean = true THEN t_messages.chat_room_id = ANY($3) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN sender_id = ANY($5) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN body LIKE '%' || $7::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN posted_at >= $9 ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN posted_at <= $11 ELSE TRUE END
+AND
+	CASE WHEN $12::boolean = true THEN last_edited_at >= $13 ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN last_edited_at <= $15 ELSE TRUE END
+AND
+	CASE $16
+		WHEN 'next' THEN
+			CASE $17::text
+				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19)
+				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19)
+				WHEN 'last_edited_at' THEN last_edited_at > $18 OR (last_edited_at = $18 AND t_messages_pkey < $19)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $18 OR (last_edited_at = $18 AND t_messages_pkey < $19)
+				ELSE t_messages_pkey < $19
+			END
+		WHEN 'prev' THEN
+			CASE $17::text
+				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19)
+				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19)
+				WHEN 'last_edited_at' THEN last_edited_at < $18 OR (last_edited_at = $18 AND t_messages_pkey > $19)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $18 OR (last_edited_at = $18 AND t_messages_pkey > $19)
+				ELSE t_messages_pkey > $19
+			END
+	END
+ORDER BY
+	CASE WHEN $17::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_messages_pkey DESC
+LIMIT $1
+`
+
+type GetMessagesWithSenderUseKeysetPaginateParams struct {
+	Limit                    int32       `json:"limit"`
+	WhereInChatRoom          bool        `json:"where_in_chat_room"`
+	InChatRoom               uuid.UUID   `json:"in_chat_room"`
+	WhereInSender            bool        `json:"where_in_sender"`
+	InSender                 pgtype.UUID `json:"in_sender"`
+	WhereLikeBody            bool        `json:"where_like_body"`
+	SearchBody               string      `json:"search_body"`
+	WhereEarlierPostedAt     bool        `json:"where_earlier_posted_at"`
+	EarlierPostedAt          time.Time   `json:"earlier_posted_at"`
+	WhereLaterPostedAt       bool        `json:"where_later_posted_at"`
+	LaterPostedAt            time.Time   `json:"later_posted_at"`
+	WhereEarlierLastEditedAt bool        `json:"where_earlier_last_edited_at"`
+	EarlierLastEditedAt      time.Time   `json:"earlier_last_edited_at"`
+	WhereLaterLastEditedAt   bool        `json:"where_later_last_edited_at"`
+	LaterLastEditedAt        time.Time   `json:"later_last_edited_at"`
+	CursorDirection          interface{} `json:"cursor_direction"`
+	OrderMethod              string      `json:"order_method"`
+	CursorColumn             time.Time   `json:"cursor_column"`
+	Cursor                   pgtype.Int8 `json:"cursor"`
+}
+
+type GetMessagesWithSenderUseKeysetPaginateRow struct {
+	Message Message `json:"message"`
+	Member  Member  `json:"member"`
+}
+
+func (q *Queries) GetMessagesWithSenderUseKeysetPaginate(ctx context.Context, arg GetMessagesWithSenderUseKeysetPaginateParams) ([]GetMessagesWithSenderUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMessagesWithSenderUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInChatRoom,
+		arg.InChatRoom,
+		arg.WhereInSender,
+		arg.InSender,
+		arg.WhereLikeBody,
+		arg.SearchBody,
+		arg.WhereEarlierPostedAt,
+		arg.EarlierPostedAt,
+		arg.WhereLaterPostedAt,
+		arg.LaterPostedAt,
+		arg.WhereEarlierLastEditedAt,
+		arg.EarlierLastEditedAt,
+		arg.WhereLaterLastEditedAt,
+		arg.LaterLastEditedAt,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMessagesWithSenderUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetMessagesWithSenderUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Message.TMessagesPkey,
+			&i.Message.MessageID,
+			&i.Message.ChatRoomID,
+			&i.Message.SenderID,
+			&i.Message.Body,
+			&i.Message.PostedAt,
+			&i.Message.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMessagesWithSenderUseNumberedPaginate = `-- name: GetMessagesWithSenderUseNumberedPaginate :many
 SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE
@@ -606,7 +1534,7 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetMessagesWithSenderParams struct {
+type GetMessagesWithSenderUseNumberedPaginateParams struct {
 	Limit                    int32       `json:"limit"`
 	Offset                   int32       `json:"offset"`
 	WhereInChatRoom          bool        `json:"where_in_chat_room"`
@@ -626,13 +1554,13 @@ type GetMessagesWithSenderParams struct {
 	OrderMethod              string      `json:"order_method"`
 }
 
-type GetMessagesWithSenderRow struct {
+type GetMessagesWithSenderUseNumberedPaginateRow struct {
 	Message Message `json:"message"`
 	Member  Member  `json:"member"`
 }
 
-func (q *Queries) GetMessagesWithSender(ctx context.Context, arg GetMessagesWithSenderParams) ([]GetMessagesWithSenderRow, error) {
-	rows, err := q.db.Query(ctx, getMessagesWithSender,
+func (q *Queries) GetMessagesWithSenderUseNumberedPaginate(ctx context.Context, arg GetMessagesWithSenderUseNumberedPaginateParams) ([]GetMessagesWithSenderUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMessagesWithSenderUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.WhereInChatRoom,
@@ -655,9 +1583,9 @@ func (q *Queries) GetMessagesWithSender(ctx context.Context, arg GetMessagesWith
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetMessagesWithSenderRow{}
+	items := []GetMessagesWithSenderUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetMessagesWithSenderRow
+		var i GetMessagesWithSenderUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.Message.TMessagesPkey,
 			&i.Message.MessageID,

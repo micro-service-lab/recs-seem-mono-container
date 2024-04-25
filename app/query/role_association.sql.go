@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countPoliciesByRoleID = `-- name: CountPoliciesByRoleID :one
@@ -93,18 +94,15 @@ SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id
 LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE role_id = $1
 AND
-	CASE WHEN $4::boolean = true THEN m_policies.name LIKE '%' || $5::text || '%' ELSE TRUE END
+	CASE WHEN $2::boolean = true THEN m_policies.name LIKE '%' || $3::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_policies.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_policies.name END DESC,
 	m_role_associations_pkey DESC
-LIMIT $2 OFFSET $3
 `
 
 type GetPoliciesOnRoleParams struct {
 	RoleID        uuid.UUID `json:"role_id"`
-	Limit         int32     `json:"limit"`
-	Offset        int32     `json:"offset"`
 	WhereLikeName bool      `json:"where_like_name"`
 	SearchName    string    `json:"search_name"`
 	OrderMethod   string    `json:"order_method"`
@@ -118,8 +116,6 @@ type GetPoliciesOnRoleRow struct {
 func (q *Queries) GetPoliciesOnRole(ctx context.Context, arg GetPoliciesOnRoleParams) ([]GetPoliciesOnRoleRow, error) {
 	rows, err := q.db.Query(ctx, getPoliciesOnRole,
 		arg.RoleID,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereLikeName,
 		arg.SearchName,
 		arg.OrderMethod,
@@ -152,23 +148,167 @@ func (q *Queries) GetPoliciesOnRole(ctx context.Context, arg GetPoliciesOnRolePa
 	return items, nil
 }
 
+const getPoliciesOnRoleUseKeysetPaginate = `-- name: GetPoliciesOnRoleUseKeysetPaginate :many
+SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id FROM m_role_associations
+LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
+WHERE role_id = $1
+AND
+	CASE WHEN $3::boolean = true THEN m_policies.name LIKE '%' || $4::text || '%' ELSE TRUE END
+AND
+	CASE $5
+		WHEN 'next' THEN
+			CASE $6::text
+				WHEN 'name' THEN m_policies.name > $7 OR (m_policies.name = $7 AND m_role_associations_pkey < $8)
+				WHEN 'r_name' THEN m_policies.name < $7 OR (m_policies.name = $7 AND m_role_associations_pkey < $8)
+				ELSE m_role_associations_pkey < $8
+			END
+		WHEN 'prev' THEN
+			CASE $6::text
+				WHEN 'name' THEN m_policies.name < $7 OR (m_policies.name = $7 AND m_role_associations_pkey > $8)
+				WHEN 'r_name' THEN m_policies.name > $7 OR (m_policies.name = $7 AND m_role_associations_pkey > $8)
+				ELSE m_role_associations_pkey > $8
+			END
+	END
+ORDER BY
+	CASE WHEN $6::text = 'name' THEN m_policies.name END ASC,
+	CASE WHEN $6::text = 'r_name' THEN m_policies.name END DESC,
+	m_role_associations_pkey DESC
+LIMIT $2
+`
+
+type GetPoliciesOnRoleUseKeysetPaginateParams struct {
+	RoleID          uuid.UUID   `json:"role_id"`
+	Limit           int32       `json:"limit"`
+	WhereLikeName   bool        `json:"where_like_name"`
+	SearchName      string      `json:"search_name"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	OrderMethod     string      `json:"order_method"`
+	CursorColumn    string      `json:"cursor_column"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+type GetPoliciesOnRoleUseKeysetPaginateRow struct {
+	RoleAssociation RoleAssociation `json:"role_association"`
+	Policy          Policy          `json:"policy"`
+}
+
+func (q *Queries) GetPoliciesOnRoleUseKeysetPaginate(ctx context.Context, arg GetPoliciesOnRoleUseKeysetPaginateParams) ([]GetPoliciesOnRoleUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPoliciesOnRoleUseKeysetPaginate,
+		arg.RoleID,
+		arg.Limit,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPoliciesOnRoleUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetPoliciesOnRoleUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.RoleAssociation.MRoleAssociationsPkey,
+			&i.RoleAssociation.RoleID,
+			&i.RoleAssociation.PolicyID,
+			&i.Policy.MPoliciesPkey,
+			&i.Policy.PolicyID,
+			&i.Policy.Name,
+			&i.Policy.Description,
+			&i.Policy.Key,
+			&i.Policy.PolicyCategoryID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPoliciesOnRoleUseNumberedPaginate = `-- name: GetPoliciesOnRoleUseNumberedPaginate :many
+SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id FROM m_role_associations
+LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
+WHERE role_id = $1
+AND
+	CASE WHEN $4::boolean = true THEN m_policies.name LIKE '%' || $5::text || '%' ELSE TRUE END
+ORDER BY
+	CASE WHEN $6::text = 'name' THEN m_policies.name END ASC,
+	CASE WHEN $6::text = 'r_name' THEN m_policies.name END DESC,
+	m_role_associations_pkey DESC
+LIMIT $2 OFFSET $3
+`
+
+type GetPoliciesOnRoleUseNumberedPaginateParams struct {
+	RoleID        uuid.UUID `json:"role_id"`
+	Limit         int32     `json:"limit"`
+	Offset        int32     `json:"offset"`
+	WhereLikeName bool      `json:"where_like_name"`
+	SearchName    string    `json:"search_name"`
+	OrderMethod   string    `json:"order_method"`
+}
+
+type GetPoliciesOnRoleUseNumberedPaginateRow struct {
+	RoleAssociation RoleAssociation `json:"role_association"`
+	Policy          Policy          `json:"policy"`
+}
+
+func (q *Queries) GetPoliciesOnRoleUseNumberedPaginate(ctx context.Context, arg GetPoliciesOnRoleUseNumberedPaginateParams) ([]GetPoliciesOnRoleUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPoliciesOnRoleUseNumberedPaginate,
+		arg.RoleID,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPoliciesOnRoleUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPoliciesOnRoleUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.RoleAssociation.MRoleAssociationsPkey,
+			&i.RoleAssociation.RoleID,
+			&i.RoleAssociation.PolicyID,
+			&i.Policy.MPoliciesPkey,
+			&i.Policy.PolicyID,
+			&i.Policy.Name,
+			&i.Policy.Description,
+			&i.Policy.Key,
+			&i.Policy.PolicyCategoryID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getRolesOnPolicy = `-- name: GetRolesOnPolicy :many
 SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_role_associations
 LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE policy_id = $1
 AND
-	CASE WHEN $4::boolean = true THEN m_roles.name LIKE '%' || $5::text || '%' ELSE TRUE END
+	CASE WHEN $2::boolean = true THEN m_roles.name LIKE '%' || $3::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_roles.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_roles.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_roles.name END DESC,
 	m_role_associations_pkey DESC
-LIMIT $2 OFFSET $3
 `
 
 type GetRolesOnPolicyParams struct {
 	PolicyID      uuid.UUID `json:"policy_id"`
-	Limit         int32     `json:"limit"`
-	Offset        int32     `json:"offset"`
 	WhereLikeName bool      `json:"where_like_name"`
 	SearchName    string    `json:"search_name"`
 	OrderMethod   string    `json:"order_method"`
@@ -182,8 +322,6 @@ type GetRolesOnPolicyRow struct {
 func (q *Queries) GetRolesOnPolicy(ctx context.Context, arg GetRolesOnPolicyParams) ([]GetRolesOnPolicyRow, error) {
 	rows, err := q.db.Query(ctx, getRolesOnPolicy,
 		arg.PolicyID,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereLikeName,
 		arg.SearchName,
 		arg.OrderMethod,
@@ -195,6 +333,153 @@ func (q *Queries) GetRolesOnPolicy(ctx context.Context, arg GetRolesOnPolicyPara
 	items := []GetRolesOnPolicyRow{}
 	for rows.Next() {
 		var i GetRolesOnPolicyRow
+		if err := rows.Scan(
+			&i.RoleAssociation.MRoleAssociationsPkey,
+			&i.RoleAssociation.RoleID,
+			&i.RoleAssociation.PolicyID,
+			&i.Role.MRolesPkey,
+			&i.Role.RoleID,
+			&i.Role.Name,
+			&i.Role.Description,
+			&i.Role.CreatedAt,
+			&i.Role.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRolesOnPolicyUseKeysetPaginate = `-- name: GetRolesOnPolicyUseKeysetPaginate :many
+SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_role_associations
+LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
+WHERE policy_id = $1
+AND
+	CASE WHEN $3::boolean = true THEN m_roles.name LIKE '%' || $4::text || '%' ELSE TRUE END
+AND
+	CASE $5
+		WHEN 'next' THEN
+			CASE $6::text
+				WHEN 'name' THEN m_roles.name > $7 OR (m_roles.name = $7 AND m_role_associations_pkey < $8)
+				WHEN 'r_name' THEN m_roles.name < $7 OR (m_roles.name = $7 AND m_role_associations_pkey < $8)
+				ELSE m_role_associations_pkey < $8
+			END
+		WHEN 'prev' THEN
+			CASE $6::text
+				WHEN 'name' THEN m_roles.name < $7 OR (m_roles.name = $7 AND m_role_associations_pkey > $8)
+				WHEN 'r_name' THEN m_roles.name > $7 OR (m_roles.name = $7 AND m_role_associations_pkey > $8)
+				ELSE m_role_associations_pkey > $8
+			END
+	END
+ORDER BY
+	CASE WHEN $6::text = 'name' THEN m_roles.name END ASC,
+	CASE WHEN $6::text = 'r_name' THEN m_roles.name END DESC,
+	m_role_associations_pkey DESC
+LIMIT $2
+`
+
+type GetRolesOnPolicyUseKeysetPaginateParams struct {
+	PolicyID        uuid.UUID   `json:"policy_id"`
+	Limit           int32       `json:"limit"`
+	WhereLikeName   bool        `json:"where_like_name"`
+	SearchName      string      `json:"search_name"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	OrderMethod     string      `json:"order_method"`
+	CursorColumn    string      `json:"cursor_column"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+type GetRolesOnPolicyUseKeysetPaginateRow struct {
+	RoleAssociation RoleAssociation `json:"role_association"`
+	Role            Role            `json:"role"`
+}
+
+func (q *Queries) GetRolesOnPolicyUseKeysetPaginate(ctx context.Context, arg GetRolesOnPolicyUseKeysetPaginateParams) ([]GetRolesOnPolicyUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getRolesOnPolicyUseKeysetPaginate,
+		arg.PolicyID,
+		arg.Limit,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetRolesOnPolicyUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetRolesOnPolicyUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.RoleAssociation.MRoleAssociationsPkey,
+			&i.RoleAssociation.RoleID,
+			&i.RoleAssociation.PolicyID,
+			&i.Role.MRolesPkey,
+			&i.Role.RoleID,
+			&i.Role.Name,
+			&i.Role.Description,
+			&i.Role.CreatedAt,
+			&i.Role.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRolesOnPolicyUseNumberedPaginate = `-- name: GetRolesOnPolicyUseNumberedPaginate :many
+SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_role_associations
+LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
+WHERE policy_id = $1
+AND
+	CASE WHEN $4::boolean = true THEN m_roles.name LIKE '%' || $5::text || '%' ELSE TRUE END
+ORDER BY
+	CASE WHEN $6::text = 'name' THEN m_roles.name END ASC,
+	CASE WHEN $6::text = 'r_name' THEN m_roles.name END DESC,
+	m_role_associations_pkey DESC
+LIMIT $2 OFFSET $3
+`
+
+type GetRolesOnPolicyUseNumberedPaginateParams struct {
+	PolicyID      uuid.UUID `json:"policy_id"`
+	Limit         int32     `json:"limit"`
+	Offset        int32     `json:"offset"`
+	WhereLikeName bool      `json:"where_like_name"`
+	SearchName    string    `json:"search_name"`
+	OrderMethod   string    `json:"order_method"`
+}
+
+type GetRolesOnPolicyUseNumberedPaginateRow struct {
+	RoleAssociation RoleAssociation `json:"role_association"`
+	Role            Role            `json:"role"`
+}
+
+func (q *Queries) GetRolesOnPolicyUseNumberedPaginate(ctx context.Context, arg GetRolesOnPolicyUseNumberedPaginateParams) ([]GetRolesOnPolicyUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getRolesOnPolicyUseNumberedPaginate,
+		arg.PolicyID,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetRolesOnPolicyUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetRolesOnPolicyUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.RoleAssociation.MRoleAssociationsPkey,
 			&i.RoleAssociation.RoleID,

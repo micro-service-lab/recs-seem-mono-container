@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countGrades = `-- name: CountGrades :one
@@ -164,16 +165,92 @@ const getGrades = `-- name: GetGrades :many
 SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades
 ORDER BY
 	m_grades_pkey DESC
+`
+
+func (q *Queries) GetGrades(ctx context.Context) ([]Grade, error) {
+	rows, err := q.db.Query(ctx, getGrades)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Grade{}
+	for rows.Next() {
+		var i Grade
+		if err := rows.Scan(
+			&i.MGradesPkey,
+			&i.GradeID,
+			&i.Key,
+			&i.OrganizationID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getGradesUseKeysetPaginate = `-- name: GetGradesUseKeysetPaginate :many
+SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades
+WHERE
+	CASE $2
+		WHEN 'next' THEN
+			m_grades_pkey < $3
+		WHEN 'prev' THEN
+			m_grades_pkey > $3
+	END
+ORDER BY
+	m_grades_pkey DESC
+LIMIT $1
+`
+
+type GetGradesUseKeysetPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetGradesUseKeysetPaginate(ctx context.Context, arg GetGradesUseKeysetPaginateParams) ([]Grade, error) {
+	rows, err := q.db.Query(ctx, getGradesUseKeysetPaginate, arg.Limit, arg.CursorDirection, arg.Cursor)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Grade{}
+	for rows.Next() {
+		var i Grade
+		if err := rows.Scan(
+			&i.MGradesPkey,
+			&i.GradeID,
+			&i.Key,
+			&i.OrganizationID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getGradesUseNumberedPaginate = `-- name: GetGradesUseNumberedPaginate :many
+SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades
+ORDER BY
+	m_grades_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
-type GetGradesParams struct {
+type GetGradesUseNumberedPaginateParams struct {
 	Limit  int32 `json:"limit"`
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) GetGrades(ctx context.Context, arg GetGradesParams) ([]Grade, error) {
-	rows, err := q.db.Query(ctx, getGrades, arg.Limit, arg.Offset)
+func (q *Queries) GetGradesUseNumberedPaginate(ctx context.Context, arg GetGradesUseNumberedPaginateParams) ([]Grade, error) {
+	rows, err := q.db.Query(ctx, getGradesUseNumberedPaginate, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -201,24 +278,18 @@ const getGradesWithOrganization = `-- name: GetGradesWithOrganization :many
 SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN $1::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN $1::text = 'r_name' THEN m_organizations.name END DESC,
 	m_grades_pkey DESC
-LIMIT $1 OFFSET $2
 `
-
-type GetGradesWithOrganizationParams struct {
-	Limit       int32  `json:"limit"`
-	Offset      int32  `json:"offset"`
-	OrderMethod string `json:"order_method"`
-}
 
 type GetGradesWithOrganizationRow struct {
 	Grade        Grade        `json:"grade"`
 	Organization Organization `json:"organization"`
 }
 
-func (q *Queries) GetGradesWithOrganization(ctx context.Context, arg GetGradesWithOrganizationParams) ([]GetGradesWithOrganizationRow, error) {
-	rows, err := q.db.Query(ctx, getGradesWithOrganization, arg.Limit, arg.Offset, arg.OrderMethod)
+func (q *Queries) GetGradesWithOrganization(ctx context.Context, orderMethod string) ([]GetGradesWithOrganizationRow, error) {
+	rows, err := q.db.Query(ctx, getGradesWithOrganization, orderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -226,6 +297,133 @@ func (q *Queries) GetGradesWithOrganization(ctx context.Context, arg GetGradesWi
 	items := []GetGradesWithOrganizationRow{}
 	for rows.Next() {
 		var i GetGradesWithOrganizationRow
+		if err := rows.Scan(
+			&i.Grade.MGradesPkey,
+			&i.Grade.GradeID,
+			&i.Grade.Key,
+			&i.Grade.OrganizationID,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getGradesWithOrganizationUseKeysetPaginate = `-- name: GetGradesWithOrganizationUseKeysetPaginate :many
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_grades
+LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+WHERE
+	CASE $2
+		WHEN 'next' THEN
+			CASE $3::text
+				WHEN 'name' THEN name > $4 OR (name = $4 AND m_grades_pkey < $5)
+				WHEN 'r_name' THEN name < $4 OR (name = $4 AND m_grades_pkey < $5)
+				ELSE m_grades_pkey < $5
+			END
+		WHEN 'prev' THEN
+			m_grades_pkey > $5
+	END
+ORDER BY
+	CASE WHEN $3::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN $3::text = 'r_name' THEN m_organizations.name END DESC,
+	m_grades_pkey DESC
+LIMIT $1
+`
+
+type GetGradesWithOrganizationUseKeysetPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	OrderMethod     string      `json:"order_method"`
+	CursorColumn    string      `json:"cursor_column"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+type GetGradesWithOrganizationUseKeysetPaginateRow struct {
+	Grade        Grade        `json:"grade"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetGradesWithOrganizationUseKeysetPaginate(ctx context.Context, arg GetGradesWithOrganizationUseKeysetPaginateParams) ([]GetGradesWithOrganizationUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getGradesWithOrganizationUseKeysetPaginate,
+		arg.Limit,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetGradesWithOrganizationUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetGradesWithOrganizationUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Grade.MGradesPkey,
+			&i.Grade.GradeID,
+			&i.Grade.Key,
+			&i.Grade.OrganizationID,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getGradesWithOrganizationUseNumberedPaginate = `-- name: GetGradesWithOrganizationUseNumberedPaginate :many
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_grades
+LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+ORDER BY
+	CASE WHEN $3::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN $3::text = 'r_name' THEN m_organizations.name END DESC,
+	m_grades_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetGradesWithOrganizationUseNumberedPaginateParams struct {
+	Limit       int32  `json:"limit"`
+	Offset      int32  `json:"offset"`
+	OrderMethod string `json:"order_method"`
+}
+
+type GetGradesWithOrganizationUseNumberedPaginateRow struct {
+	Grade        Grade        `json:"grade"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetGradesWithOrganizationUseNumberedPaginate(ctx context.Context, arg GetGradesWithOrganizationUseNumberedPaginateParams) ([]GetGradesWithOrganizationUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getGradesWithOrganizationUseNumberedPaginate, arg.Limit, arg.Offset, arg.OrderMethod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetGradesWithOrganizationUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetGradesWithOrganizationUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.Grade.MGradesPkey,
 			&i.Grade.GradeID,

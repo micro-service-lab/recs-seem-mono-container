@@ -10,43 +10,44 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const countChatRoomsByMemberID = `-- name: CountChatRoomsByMemberID :one
+const countChatRoomsOnMember = `-- name: CountChatRoomsOnMember :one
 SELECT COUNT(*) FROM m_chat_room_belongings WHERE member_id = $1
 AND CASE WHEN $2::boolean = true THEN
 		EXISTS (SELECT 1 FROM m_chat_rooms WHERE m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id AND m_chat_rooms.name LIKE '%' || $3::text || '%')
 	ELSE TRUE END
 `
 
-type CountChatRoomsByMemberIDParams struct {
+type CountChatRoomsOnMemberParams struct {
 	MemberID      uuid.UUID `json:"member_id"`
 	WhereLikeName bool      `json:"where_like_name"`
 	SearchName    string    `json:"search_name"`
 }
 
-func (q *Queries) CountChatRoomsByMemberID(ctx context.Context, arg CountChatRoomsByMemberIDParams) (int64, error) {
-	row := q.db.QueryRow(ctx, countChatRoomsByMemberID, arg.MemberID, arg.WhereLikeName, arg.SearchName)
+func (q *Queries) CountChatRoomsOnMember(ctx context.Context, arg CountChatRoomsOnMemberParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countChatRoomsOnMember, arg.MemberID, arg.WhereLikeName, arg.SearchName)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
 }
 
-const countMembersOnChatRoomID = `-- name: CountMembersOnChatRoomID :one
+const countMembersOnChatRoom = `-- name: CountMembersOnChatRoom :one
 SELECT COUNT(*) FROM m_chat_room_belongings WHERE chat_room_id = $1
 AND CASE WHEN $2::boolean = true THEN
 		EXISTS (SELECT 1 FROM m_members WHERE m_chat_room_belongings.member_id = m_members.member_id AND m_members.name LIKE '%' || $3::text || '%')
 	ELSE TRUE END
 `
 
-type CountMembersOnChatRoomIDParams struct {
+type CountMembersOnChatRoomParams struct {
 	ChatRoomID    uuid.UUID `json:"chat_room_id"`
 	WhereLikeName bool      `json:"where_like_name"`
 	SearchName    string    `json:"search_name"`
 }
 
-func (q *Queries) CountMembersOnChatRoomID(ctx context.Context, arg CountMembersOnChatRoomIDParams) (int64, error) {
-	row := q.db.QueryRow(ctx, countMembersOnChatRoomID, arg.ChatRoomID, arg.WhereLikeName, arg.SearchName)
+func (q *Queries) CountMembersOnChatRoom(ctx context.Context, arg CountMembersOnChatRoomParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countMembersOnChatRoom, arg.ChatRoomID, arg.WhereLikeName, arg.SearchName)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -94,47 +95,42 @@ func (q *Queries) DeleteChatRoomBelonging(ctx context.Context, arg DeleteChatRoo
 	return err
 }
 
-const getChatRoomsByMemberID = `-- name: GetChatRoomsByMemberID :many
+const getChatRoomsOnMember = `-- name: GetChatRoomsOnMember :many
 SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = $1
 AND CASE
-	WHEN $4::boolean = true THEN m_members.name LIKE '%' || $5::text || '%'
+	WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%'
 END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_chat_rooms.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_chat_rooms.name END DESC,
-	CASE WHEN $6::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN $6::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN $6::text = 'old_chat' THEN
+	CASE WHEN $4::text = 'name' THEN m_chat_rooms.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_chat_rooms.name END DESC,
+	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN $4::text = 'old_chat' THEN
 		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
 	END ASC,
-	CASE WHEN $6::text = 'late_chat' THEN
+	CASE WHEN $4::text = 'late_chat' THEN
 		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
 	END DESC,
 	m_chat_room_belongings_pkey DESC
-LIMIT $2 OFFSET $3
 `
 
-type GetChatRoomsByMemberIDParams struct {
+type GetChatRoomsOnMemberParams struct {
 	MemberID      uuid.UUID `json:"member_id"`
-	Limit         int32     `json:"limit"`
-	Offset        int32     `json:"offset"`
 	WhereLikeName bool      `json:"where_like_name"`
 	SearchName    string    `json:"search_name"`
 	OrderMethod   string    `json:"order_method"`
 }
 
-type GetChatRoomsByMemberIDRow struct {
+type GetChatRoomsOnMemberRow struct {
 	ChatRoomBelonging ChatRoomBelonging `json:"chat_room_belonging"`
 	ChatRoom          ChatRoom          `json:"chat_room"`
 }
 
-func (q *Queries) GetChatRoomsByMemberID(ctx context.Context, arg GetChatRoomsByMemberIDParams) ([]GetChatRoomsByMemberIDRow, error) {
-	rows, err := q.db.Query(ctx, getChatRoomsByMemberID,
+func (q *Queries) GetChatRoomsOnMember(ctx context.Context, arg GetChatRoomsOnMemberParams) ([]GetChatRoomsOnMemberRow, error) {
+	rows, err := q.db.Query(ctx, getChatRoomsOnMember,
 		arg.MemberID,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereLikeName,
 		arg.SearchName,
 		arg.OrderMethod,
@@ -143,9 +139,9 @@ func (q *Queries) GetChatRoomsByMemberID(ctx context.Context, arg GetChatRoomsBy
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetChatRoomsByMemberIDRow{}
+	items := []GetChatRoomsOnMemberRow{}
 	for rows.Next() {
-		var i GetChatRoomsByMemberIDRow
+		var i GetChatRoomsOnMemberRow
 		if err := rows.Scan(
 			&i.ChatRoomBelonging.MChatRoomBelongingsPkey,
 			&i.ChatRoomBelonging.MemberID,
@@ -170,7 +166,342 @@ func (q *Queries) GetChatRoomsByMemberID(ctx context.Context, arg GetChatRoomsBy
 	return items, nil
 }
 
-const getMembersOnChatRoomID = `-- name: GetMembersOnChatRoomID :many
+const getChatRoomsOnMemberUseKeysetPaginate = `-- name: GetChatRoomsOnMemberUseKeysetPaginate :many
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
+LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
+WHERE member_id = $1
+AND CASE $3
+	WHEN 'next' THEN
+		CASE $4::text
+			WHEN 'name' THEN m_chat_rooms.name > $5 OR (m_chat_rooms.name = $5 AND m_chat_room_belongings_pkey < $6)
+			WHEN 'r_name' THEN m_chat_rooms.name < $5 OR (m_chat_rooms.name = $5 AND m_chat_room_belongings_pkey < $6)
+			WHEN 'old_add' THEN m_chat_room_belongings.added_at > $5 OR (m_chat_room_belongings.added_at = $5 AND m_chat_room_belongings_pkey < $6)
+			WHEN 'late_add' THEN m_chat_room_belongings.added_at < $5 OR (m_chat_room_belongings.added_at = $5 AND m_chat_room_belongings_pkey < $6)
+			WHEN 'old_chat' THEN
+				(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) > $5
+				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = $5 AND m_chat_room_belongings_pkey < $6)
+			WHEN 'late_chat' THEN
+				(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) < $5
+				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = $5 AND m_chat_room_belongings_pkey < $6)
+		END
+	WHEN 'prev' THEN
+		CASE $4::text
+			WHEN 'name' THEN m_chat_rooms.name < $5 OR (m_chat_rooms.name = $5 AND m_chat_room_belongings_pkey > $6)
+			WHEN 'r_name' THEN m_chat_rooms.name > $5 OR (m_chat_rooms.name = $5 AND m_chat_room_belongings_pkey > $6)
+			WHEN 'old_add' THEN m_chat_room_belongings.added_at < $5 OR (m_chat_room_belongings.added = $5 AND m_chat_room_belongings_pkey > $6)
+			WHEN 'late_add' THEN m_chat_room_belongings.added_at > $5 OR (m_chat_room_belongings.added_at = $5 AND m_chat_room_belongings_pkey > $6)
+			WHEN 'old_chat' THEN
+				(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) < $5
+				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = $5 AND m_chat_room_belongings_pkey > $6)
+			WHEN 'late_chat' THEN
+				(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) > $5
+				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = $5 AND m_chat_room_belongings_pkey > $6)
+		END
+END
+ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_chat_rooms.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_chat_rooms.name END DESC,
+	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN $4::text = 'old_chat' THEN
+		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END ASC,
+	CASE WHEN $4::text = 'late_chat' THEN
+		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END DESC,
+	m_chat_room_belongings_pkey DESC
+LIMIT $2
+`
+
+type GetChatRoomsOnMemberUseKeysetPaginateParams struct {
+	MemberID        uuid.UUID   `json:"member_id"`
+	Limit           int32       `json:"limit"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	OrderMethod     string      `json:"order_method"`
+	CursorColumn    pgtype.Text `json:"cursor_column"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+type GetChatRoomsOnMemberUseKeysetPaginateRow struct {
+	ChatRoomBelonging ChatRoomBelonging `json:"chat_room_belonging"`
+	ChatRoom          ChatRoom          `json:"chat_room"`
+}
+
+func (q *Queries) GetChatRoomsOnMemberUseKeysetPaginate(ctx context.Context, arg GetChatRoomsOnMemberUseKeysetPaginateParams) ([]GetChatRoomsOnMemberUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getChatRoomsOnMemberUseKeysetPaginate,
+		arg.MemberID,
+		arg.Limit,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetChatRoomsOnMemberUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetChatRoomsOnMemberUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.ChatRoomBelonging.MChatRoomBelongingsPkey,
+			&i.ChatRoomBelonging.MemberID,
+			&i.ChatRoomBelonging.ChatRoomID,
+			&i.ChatRoomBelonging.AddedAt,
+			&i.ChatRoom.MChatRoomsPkey,
+			&i.ChatRoom.ChatRoomID,
+			&i.ChatRoom.Name,
+			&i.ChatRoom.IsPrivate,
+			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.CreatedAt,
+			&i.ChatRoom.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getChatRoomsOnMemberUseNumberedPaginate = `-- name: GetChatRoomsOnMemberUseNumberedPaginate :many
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
+LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
+WHERE member_id = $1
+AND CASE
+	WHEN $4::boolean = true THEN m_members.name LIKE '%' || $5::text || '%'
+END
+ORDER BY
+	CASE WHEN $6::text = 'name' THEN m_chat_rooms.name END ASC,
+	CASE WHEN $6::text = 'r_name' THEN m_chat_rooms.name END DESC,
+	CASE WHEN $6::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN $6::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN $6::text = 'old_chat' THEN
+		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
+	END ASC,
+	CASE WHEN $6::text = 'late_chat' THEN
+		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
+	END DESC,
+	m_chat_room_belongings_pkey DESC
+LIMIT $2 OFFSET $3
+`
+
+type GetChatRoomsOnMemberUseNumberedPaginateParams struct {
+	MemberID      uuid.UUID `json:"member_id"`
+	Limit         int32     `json:"limit"`
+	Offset        int32     `json:"offset"`
+	WhereLikeName bool      `json:"where_like_name"`
+	SearchName    string    `json:"search_name"`
+	OrderMethod   string    `json:"order_method"`
+}
+
+type GetChatRoomsOnMemberUseNumberedPaginateRow struct {
+	ChatRoomBelonging ChatRoomBelonging `json:"chat_room_belonging"`
+	ChatRoom          ChatRoom          `json:"chat_room"`
+}
+
+func (q *Queries) GetChatRoomsOnMemberUseNumberedPaginate(ctx context.Context, arg GetChatRoomsOnMemberUseNumberedPaginateParams) ([]GetChatRoomsOnMemberUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getChatRoomsOnMemberUseNumberedPaginate,
+		arg.MemberID,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetChatRoomsOnMemberUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetChatRoomsOnMemberUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.ChatRoomBelonging.MChatRoomBelongingsPkey,
+			&i.ChatRoomBelonging.MemberID,
+			&i.ChatRoomBelonging.ChatRoomID,
+			&i.ChatRoomBelonging.AddedAt,
+			&i.ChatRoom.MChatRoomsPkey,
+			&i.ChatRoom.ChatRoomID,
+			&i.ChatRoom.Name,
+			&i.ChatRoom.IsPrivate,
+			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.CreatedAt,
+			&i.ChatRoom.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersOnChatRoom = `-- name: GetMembersOnChatRoom :many
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_room_belongings
+LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
+WHERE chat_room_id = $1
+AND CASE
+	WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%'
+END
+ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
+	m_chat_room_belongings_pkey DESC
+`
+
+type GetMembersOnChatRoomParams struct {
+	ChatRoomID    uuid.UUID `json:"chat_room_id"`
+	WhereLikeName bool      `json:"where_like_name"`
+	SearchName    string    `json:"search_name"`
+	OrderMethod   string    `json:"order_method"`
+}
+
+type GetMembersOnChatRoomRow struct {
+	ChatRoomBelonging ChatRoomBelonging `json:"chat_room_belonging"`
+	Member            Member            `json:"member"`
+}
+
+func (q *Queries) GetMembersOnChatRoom(ctx context.Context, arg GetMembersOnChatRoomParams) ([]GetMembersOnChatRoomRow, error) {
+	rows, err := q.db.Query(ctx, getMembersOnChatRoom,
+		arg.ChatRoomID,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersOnChatRoomRow{}
+	for rows.Next() {
+		var i GetMembersOnChatRoomRow
+		if err := rows.Scan(
+			&i.ChatRoomBelonging.MChatRoomBelongingsPkey,
+			&i.ChatRoomBelonging.MemberID,
+			&i.ChatRoomBelonging.ChatRoomID,
+			&i.ChatRoomBelonging.AddedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersOnChatRoomUseKeysetPaginate = `-- name: GetMembersOnChatRoomUseKeysetPaginate :many
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_room_belongings
+LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
+WHERE chat_room_id = $1
+AND CASE $3
+	WHEN 'next' THEN
+		CASE $4::text
+			WHEN 'name' THEN m_members.name > $5 OR (m_members.name = $5 AND m_chat_room_belongings_pkey < $6)
+			WHEN 'r_name' THEN m_members.name < $5 OR (m_members.name = $5 AND m_chat_room_belongings_pkey < $6)
+			WHEN 'old_add' THEN m_chat_room_belongings.added_at > $5 OR (m_chat_room_belongings.added_at = $5 AND m_chat_room_belongings_pkey < $6)
+			WHEN 'late_add' THEN m_chat_room_belongings.added_at < $5 OR (m_chat_room_belongings.added_at = $5 AND m_chat_room_belongings_pkey < $6)
+		END
+	WHEN 'prev' THEN
+		CASE $4::text
+			WHEN 'name' THEN m_members.name < $5 OR (m_members.name = $5 AND m_chat_room_belongings_pkey > $6)
+			WHEN 'r_name' THEN m_members.name > $5 OR (m_members.name = $5 AND m_chat_room_belongings_pkey > $6)
+			WHEN 'old_add' THEN m_chat_room_belongings.added_at < $5 OR (m_chat_room_belongings.added_at = $5 AND m_chat_room_belongings_pkey > $6)
+			WHEN 'late_add' THEN m_chat_room_belongings.added_at > $5 OR (m_chat_room_belongings.added_at = $5 AND m_chat_room_belongings_pkey > $6)
+		END
+END
+ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
+	m_chat_room_belongings_pkey DESC
+LIMIT $2
+`
+
+type GetMembersOnChatRoomUseKeysetPaginateParams struct {
+	ChatRoomID      uuid.UUID   `json:"chat_room_id"`
+	Limit           int32       `json:"limit"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	OrderMethod     string      `json:"order_method"`
+	CursorColumn    string      `json:"cursor_column"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+type GetMembersOnChatRoomUseKeysetPaginateRow struct {
+	ChatRoomBelonging ChatRoomBelonging `json:"chat_room_belonging"`
+	Member            Member            `json:"member"`
+}
+
+func (q *Queries) GetMembersOnChatRoomUseKeysetPaginate(ctx context.Context, arg GetMembersOnChatRoomUseKeysetPaginateParams) ([]GetMembersOnChatRoomUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersOnChatRoomUseKeysetPaginate,
+		arg.ChatRoomID,
+		arg.Limit,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersOnChatRoomUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetMembersOnChatRoomUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.ChatRoomBelonging.MChatRoomBelongingsPkey,
+			&i.ChatRoomBelonging.MemberID,
+			&i.ChatRoomBelonging.ChatRoomID,
+			&i.ChatRoomBelonging.AddedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersOnChatRoomUseNumberedPaginate = `-- name: GetMembersOnChatRoomUseNumberedPaginate :many
 SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_room_belongings
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 WHERE chat_room_id = $1
@@ -186,7 +517,7 @@ ORDER BY
 LIMIT $2 OFFSET $3
 `
 
-type GetMembersOnChatRoomIDParams struct {
+type GetMembersOnChatRoomUseNumberedPaginateParams struct {
 	ChatRoomID    uuid.UUID `json:"chat_room_id"`
 	Limit         int32     `json:"limit"`
 	Offset        int32     `json:"offset"`
@@ -195,13 +526,13 @@ type GetMembersOnChatRoomIDParams struct {
 	OrderMethod   string    `json:"order_method"`
 }
 
-type GetMembersOnChatRoomIDRow struct {
+type GetMembersOnChatRoomUseNumberedPaginateRow struct {
 	ChatRoomBelonging ChatRoomBelonging `json:"chat_room_belonging"`
 	Member            Member            `json:"member"`
 }
 
-func (q *Queries) GetMembersOnChatRoomID(ctx context.Context, arg GetMembersOnChatRoomIDParams) ([]GetMembersOnChatRoomIDRow, error) {
-	rows, err := q.db.Query(ctx, getMembersOnChatRoomID,
+func (q *Queries) GetMembersOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetMembersOnChatRoomUseNumberedPaginateParams) ([]GetMembersOnChatRoomUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersOnChatRoomUseNumberedPaginate,
 		arg.ChatRoomID,
 		arg.Limit,
 		arg.Offset,
@@ -213,9 +544,9 @@ func (q *Queries) GetMembersOnChatRoomID(ctx context.Context, arg GetMembersOnCh
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetMembersOnChatRoomIDRow{}
+	items := []GetMembersOnChatRoomUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetMembersOnChatRoomIDRow
+		var i GetMembersOnChatRoomUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.ChatRoomBelonging.MChatRoomBelongingsPkey,
 			&i.ChatRoomBelonging.MemberID,

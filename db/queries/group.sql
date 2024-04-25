@@ -74,14 +74,16 @@ WHERE
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_organizations.name END ASC,
-				WHEN 'r_name' THEN m_organizations.name END DESC,
-				m_groups_pkey < @cursor
+				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_groups_pkey < @cursor)
+				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_groups_pkey < @cursor)
+				ELSE m_groups_pkey < @cursor
+			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_organizations.name END ASC,
-				WHEN 'r_name' THEN m_organizations.name END DESC,
-				m_groups_pkey > @cursor
+				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_groups_pkey < @cursor)
+				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_groups_pkey < @cursor)
+				ELSE m_groups_pkey < @cursor
+			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,

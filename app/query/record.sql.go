@@ -355,6 +355,176 @@ func (q *Queries) FindRecordByIDWithRecordType(ctx context.Context, recordID uui
 const getRecords = `-- name: GetRecords :many
 SELECT t_records_pkey, record_id, record_type_id, title, body, organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_records
 WHERE
+	CASE WHEN $1::boolean = true THEN record_type_id = ANY($2) ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN organization_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN posted_by = ANY($6) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN last_edited_by = ANY($8) ELSE TRUE END
+ORDER BY
+	CASE WHEN $9::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $9::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $9::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $9::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+`
+
+type GetRecordsParams struct {
+	WhereInRecordType   bool        `json:"where_in_record_type"`
+	InRecordType        uuid.UUID   `json:"in_record_type"`
+	WhereInOrganization bool        `json:"where_in_organization"`
+	InOrganization      pgtype.UUID `json:"in_organization"`
+	WhereInPostedBy     bool        `json:"where_in_posted_by"`
+	InPostedBy          pgtype.UUID `json:"in_posted_by"`
+	WhereInLastEditedBy bool        `json:"where_in_last_edited_by"`
+	InLastEditedBy      pgtype.UUID `json:"in_last_edited_by"`
+	OrderMethod         string      `json:"order_method"`
+}
+
+func (q *Queries) GetRecords(ctx context.Context, arg GetRecordsParams) ([]Record, error) {
+	rows, err := q.db.Query(ctx, getRecords,
+		arg.WhereInRecordType,
+		arg.InRecordType,
+		arg.WhereInOrganization,
+		arg.InOrganization,
+		arg.WhereInPostedBy,
+		arg.InPostedBy,
+		arg.WhereInLastEditedBy,
+		arg.InLastEditedBy,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Record{}
+	for rows.Next() {
+		var i Record
+		if err := rows.Scan(
+			&i.TRecordsPkey,
+			&i.RecordID,
+			&i.RecordTypeID,
+			&i.Title,
+			&i.Body,
+			&i.OrganizationID,
+			&i.PostedBy,
+			&i.LastEditedBy,
+			&i.PostedAt,
+			&i.LastEditedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRecordsUseKeysetPaginate = `-- name: GetRecordsUseKeysetPaginate :many
+SELECT t_records_pkey, record_id, record_type_id, title, body, organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_records
+WHERE
+	CASE WHEN $2::boolean = true THEN record_type_id = ANY($3) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN organization_id = ANY($5) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN posted_by = ANY($7) ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN last_edited_by = ANY($9) ELSE TRUE END
+AND
+	CASE $10
+		WHEN 'next' THEN
+			CASE $11::text
+				WHEN 'posted_at' THEN posted_at > $12 OR (posted_at = $12 AND t_records_pkey < $13)
+				WHEN 'r_posted_at' THEN posted_at < $12 OR (posted_at = $12 AND t_records_pkey < $13)
+				WHEN 'last_edited_at' THEN last_edited_at > $12 OR (last_edited_at = $12 AND t_records_pkey < $13)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $12 OR (last_edited_at = $12 AND t_records_pkey < $13)
+				ELSE t_records_pkey < $13
+			END
+		WHEN 'prev' THEN
+			CASE $11::text
+				WHEN 'posted_at' THEN posted_at < $12 OR (posted_at = $12 AND t_records_pkey > $13)
+				WHEN 'r_posted_at' THEN posted_at > $12 OR (posted_at = $12 AND t_records_pkey > $13)
+				WHEN 'last_edited_at' THEN last_edited_at < $12 OR (last_edited_at = $12 AND t_records_pkey > $13)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $12 OR (last_edited_at = $12 AND t_records_pkey > $13)
+				ELSE t_records_pkey > $13
+			END
+	END
+ORDER BY
+	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+LIMIT $1
+`
+
+type GetRecordsUseKeysetPaginateParams struct {
+	Limit               int32       `json:"limit"`
+	WhereInRecordType   bool        `json:"where_in_record_type"`
+	InRecordType        uuid.UUID   `json:"in_record_type"`
+	WhereInOrganization bool        `json:"where_in_organization"`
+	InOrganization      pgtype.UUID `json:"in_organization"`
+	WhereInPostedBy     bool        `json:"where_in_posted_by"`
+	InPostedBy          pgtype.UUID `json:"in_posted_by"`
+	WhereInLastEditedBy bool        `json:"where_in_last_edited_by"`
+	InLastEditedBy      pgtype.UUID `json:"in_last_edited_by"`
+	CursorDirection     interface{} `json:"cursor_direction"`
+	OrderMethod         string      `json:"order_method"`
+	CursorColumn        time.Time   `json:"cursor_column"`
+	Cursor              pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetRecordsUseKeysetPaginate(ctx context.Context, arg GetRecordsUseKeysetPaginateParams) ([]Record, error) {
+	rows, err := q.db.Query(ctx, getRecordsUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInRecordType,
+		arg.InRecordType,
+		arg.WhereInOrganization,
+		arg.InOrganization,
+		arg.WhereInPostedBy,
+		arg.InPostedBy,
+		arg.WhereInLastEditedBy,
+		arg.InLastEditedBy,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Record{}
+	for rows.Next() {
+		var i Record
+		if err := rows.Scan(
+			&i.TRecordsPkey,
+			&i.RecordID,
+			&i.RecordTypeID,
+			&i.Title,
+			&i.Body,
+			&i.OrganizationID,
+			&i.PostedBy,
+			&i.LastEditedBy,
+			&i.PostedAt,
+			&i.LastEditedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRecordsUseNumberedPaginate = `-- name: GetRecordsUseNumberedPaginate :many
+SELECT t_records_pkey, record_id, record_type_id, title, body, organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_records
+WHERE
 	CASE WHEN $3::boolean = true THEN record_type_id = ANY($4) ELSE TRUE END
 AND
 	CASE WHEN $5::boolean = true THEN organization_id = ANY($6) ELSE TRUE END
@@ -371,7 +541,7 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetRecordsParams struct {
+type GetRecordsUseNumberedPaginateParams struct {
 	Limit               int32       `json:"limit"`
 	Offset              int32       `json:"offset"`
 	WhereInRecordType   bool        `json:"where_in_record_type"`
@@ -385,8 +555,8 @@ type GetRecordsParams struct {
 	OrderMethod         string      `json:"order_method"`
 }
 
-func (q *Queries) GetRecords(ctx context.Context, arg GetRecordsParams) ([]Record, error) {
-	rows, err := q.db.Query(ctx, getRecords,
+func (q *Queries) GetRecordsUseNumberedPaginate(ctx context.Context, arg GetRecordsUseNumberedPaginateParams) ([]Record, error) {
+	rows, err := q.db.Query(ctx, getRecordsUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.WhereInRecordType,
@@ -435,25 +605,22 @@ LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organiz
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 LEFT JOIN m_members AS m_members_2 ON t_records.last_edited_by = m_members_2.member_id
 WHERE
-	CASE WHEN $3::boolean = true THEN t_records.record_type_id = ANY($4) ELSE TRUE END
+	CASE WHEN $1::boolean = true THEN t_records.record_type_id = ANY($2) ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN t_records.organization_id = ANY($6) ELSE TRUE END
+	CASE WHEN $3::boolean = true THEN t_records.organization_id = ANY($4) ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN t_records.posted_by = ANY($8) ELSE TRUE END
+	CASE WHEN $5::boolean = true THEN t_records.posted_by = ANY($6) ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN t_records.last_edited_by = ANY($10) ELSE TRUE END
+	CASE WHEN $7::boolean = true THEN t_records.last_edited_by = ANY($8) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $9::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $9::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $9::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $9::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_records_pkey DESC
-LIMIT $1 OFFSET $2
 `
 
 type GetRecordsWithAllParams struct {
-	Limit               int32       `json:"limit"`
-	Offset              int32       `json:"offset"`
 	WhereInRecordType   bool        `json:"where_in_record_type"`
 	InRecordType        uuid.UUID   `json:"in_record_type"`
 	WhereInOrganization bool        `json:"where_in_organization"`
@@ -475,8 +642,6 @@ type GetRecordsWithAllRow struct {
 
 func (q *Queries) GetRecordsWithAll(ctx context.Context, arg GetRecordsWithAllParams) ([]GetRecordsWithAllRow, error) {
 	rows, err := q.db.Query(ctx, getRecordsWithAll,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereInRecordType,
 		arg.InRecordType,
 		arg.WhereInOrganization,
@@ -556,15 +721,169 @@ func (q *Queries) GetRecordsWithAll(ctx context.Context, arg GetRecordsWithAllPa
 	return items, nil
 }
 
-const getRecordsWithLastEditedBy = `-- name: GetRecordsWithLastEditedBy :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
-LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
+const getRecordsWithAllUseKeysetPaginate = `-- name: GetRecordsWithAllUseKeysetPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
+LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+LEFT JOIN m_members AS m_members_2 ON t_records.last_edited_by = m_members_2.member_id
 WHERE
-	CASE WHEN $3::boolean = true THEN record_type_id = ANY($4) ELSE TRUE END
+	CASE WHEN $2::boolean = true THEN t_records.record_type_id = ANY($3) ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN organization_id = ANY($6) ELSE TRUE END
+	CASE WHEN $4::boolean = true THEN t_records.organization_id = ANY($5) ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN posted_by = ANY($8) ELSE TRUE END
+	CASE WHEN $6::boolean = true THEN t_records.posted_by = ANY($7) ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN t_records.last_edited_by = ANY($9) ELSE TRUE END
+AND
+	CASE $10
+		WHEN 'next' THEN
+			CASE $11::text
+				WHEN 'posted_at' THEN posted_at > $12 OR (posted_at = $12 AND t_records_pkey < $13)
+				WHEN 'r_posted_at' THEN posted_at < $12 OR (posted_at = $12 AND t_records_pkey < $13)
+				WHEN 'last_edited_at' THEN last_edited_at > $12 OR (last_edited_at = $12 AND t_records_pkey < $13)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $12 OR (last_edited_at = $12 AND t_records_pkey < $13)
+				ELSE t_records_pkey < $13
+			END
+		WHEN 'prev' THEN
+			CASE $11::text
+				WHEN 'posted_at' THEN posted_at < $12 OR (posted_at = $12 AND t_records_pkey > $13)
+				WHEN 'r_posted_at' THEN posted_at > $12 OR (posted_at = $12 AND t_records_pkey > $13)
+				WHEN 'last_edited_at' THEN last_edited_at < $12 OR (last_edited_at = $12 AND t_records_pkey > $13)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $12 OR (last_edited_at = $12 AND t_records_pkey > $13)
+				ELSE t_records_pkey > $13
+			END
+	END
+ORDER BY
+	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+LIMIT $1
+`
+
+type GetRecordsWithAllUseKeysetPaginateParams struct {
+	Limit               int32       `json:"limit"`
+	WhereInRecordType   bool        `json:"where_in_record_type"`
+	InRecordType        uuid.UUID   `json:"in_record_type"`
+	WhereInOrganization bool        `json:"where_in_organization"`
+	InOrganization      pgtype.UUID `json:"in_organization"`
+	WhereInPostedBy     bool        `json:"where_in_posted_by"`
+	InPostedBy          pgtype.UUID `json:"in_posted_by"`
+	WhereInLastEditedBy bool        `json:"where_in_last_edited_by"`
+	InLastEditedBy      pgtype.UUID `json:"in_last_edited_by"`
+	CursorDirection     interface{} `json:"cursor_direction"`
+	OrderMethod         string      `json:"order_method"`
+	CursorColumn        time.Time   `json:"cursor_column"`
+	Cursor              pgtype.Int8 `json:"cursor"`
+}
+
+type GetRecordsWithAllUseKeysetPaginateRow struct {
+	Record       Record       `json:"record"`
+	RecordType   RecordType   `json:"record_type"`
+	Organization Organization `json:"organization"`
+	Member       Member       `json:"member"`
+	Member_2     Member       `json:"member_2"`
+}
+
+func (q *Queries) GetRecordsWithAllUseKeysetPaginate(ctx context.Context, arg GetRecordsWithAllUseKeysetPaginateParams) ([]GetRecordsWithAllUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getRecordsWithAllUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInRecordType,
+		arg.InRecordType,
+		arg.WhereInOrganization,
+		arg.InOrganization,
+		arg.WhereInPostedBy,
+		arg.InPostedBy,
+		arg.WhereInLastEditedBy,
+		arg.InLastEditedBy,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetRecordsWithAllUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetRecordsWithAllUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.RecordType.MRecordTypesPkey,
+			&i.RecordType.RecordTypeID,
+			&i.RecordType.Name,
+			&i.RecordType.Key,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Member_2.MMembersPkey,
+			&i.Member_2.MemberID,
+			&i.Member_2.LoginID,
+			&i.Member_2.Password,
+			&i.Member_2.Email,
+			&i.Member_2.Name,
+			&i.Member_2.AttendStatusID,
+			&i.Member_2.ProfileImageID,
+			&i.Member_2.GradeID,
+			&i.Member_2.GroupID,
+			&i.Member_2.PersonalOrganizationID,
+			&i.Member_2.RoleID,
+			&i.Member_2.CreatedAt,
+			&i.Member_2.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRecordsWithAllUseNumberedPaginate = `-- name: GetRecordsWithAllUseNumberedPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
+LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+LEFT JOIN m_members AS m_members_2 ON t_records.last_edited_by = m_members_2.member_id
+WHERE
+	CASE WHEN $3::boolean = true THEN t_records.record_type_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN t_records.organization_id = ANY($6) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN t_records.posted_by = ANY($8) ELSE TRUE END
 AND
 	CASE WHEN $9::boolean = true THEN t_records.last_edited_by = ANY($10) ELSE TRUE END
 ORDER BY
@@ -576,9 +895,131 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetRecordsWithLastEditedByParams struct {
+type GetRecordsWithAllUseNumberedPaginateParams struct {
 	Limit               int32       `json:"limit"`
 	Offset              int32       `json:"offset"`
+	WhereInRecordType   bool        `json:"where_in_record_type"`
+	InRecordType        uuid.UUID   `json:"in_record_type"`
+	WhereInOrganization bool        `json:"where_in_organization"`
+	InOrganization      pgtype.UUID `json:"in_organization"`
+	WhereInPostedBy     bool        `json:"where_in_posted_by"`
+	InPostedBy          pgtype.UUID `json:"in_posted_by"`
+	WhereInLastEditedBy bool        `json:"where_in_last_edited_by"`
+	InLastEditedBy      pgtype.UUID `json:"in_last_edited_by"`
+	OrderMethod         string      `json:"order_method"`
+}
+
+type GetRecordsWithAllUseNumberedPaginateRow struct {
+	Record       Record       `json:"record"`
+	RecordType   RecordType   `json:"record_type"`
+	Organization Organization `json:"organization"`
+	Member       Member       `json:"member"`
+	Member_2     Member       `json:"member_2"`
+}
+
+func (q *Queries) GetRecordsWithAllUseNumberedPaginate(ctx context.Context, arg GetRecordsWithAllUseNumberedPaginateParams) ([]GetRecordsWithAllUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getRecordsWithAllUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInRecordType,
+		arg.InRecordType,
+		arg.WhereInOrganization,
+		arg.InOrganization,
+		arg.WhereInPostedBy,
+		arg.InPostedBy,
+		arg.WhereInLastEditedBy,
+		arg.InLastEditedBy,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetRecordsWithAllUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetRecordsWithAllUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.RecordType.MRecordTypesPkey,
+			&i.RecordType.RecordTypeID,
+			&i.RecordType.Name,
+			&i.RecordType.Key,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Member_2.MMembersPkey,
+			&i.Member_2.MemberID,
+			&i.Member_2.LoginID,
+			&i.Member_2.Password,
+			&i.Member_2.Email,
+			&i.Member_2.Name,
+			&i.Member_2.AttendStatusID,
+			&i.Member_2.ProfileImageID,
+			&i.Member_2.GradeID,
+			&i.Member_2.GroupID,
+			&i.Member_2.PersonalOrganizationID,
+			&i.Member_2.RoleID,
+			&i.Member_2.CreatedAt,
+			&i.Member_2.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRecordsWithLastEditedBy = `-- name: GetRecordsWithLastEditedBy :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
+WHERE
+	CASE WHEN $1::boolean = true THEN record_type_id = ANY($2) ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN organization_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN posted_by = ANY($6) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN t_records.last_edited_by = ANY($8) ELSE TRUE END
+ORDER BY
+	CASE WHEN $9::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $9::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $9::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $9::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+`
+
+type GetRecordsWithLastEditedByParams struct {
 	WhereInRecordType   bool        `json:"where_in_record_type"`
 	InRecordType        uuid.UUID   `json:"in_record_type"`
 	WhereInOrganization bool        `json:"where_in_organization"`
@@ -597,8 +1038,6 @@ type GetRecordsWithLastEditedByRow struct {
 
 func (q *Queries) GetRecordsWithLastEditedBy(ctx context.Context, arg GetRecordsWithLastEditedByParams) ([]GetRecordsWithLastEditedByRow, error) {
 	rows, err := q.db.Query(ctx, getRecordsWithLastEditedBy,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereInRecordType,
 		arg.InRecordType,
 		arg.WhereInOrganization,
@@ -652,17 +1091,136 @@ func (q *Queries) GetRecordsWithLastEditedBy(ctx context.Context, arg GetRecords
 	return items, nil
 }
 
-const getRecordsWithOrganization = `-- name: GetRecordsWithOrganization :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_records
-LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
+const getRecordsWithLastEditedByUseKeysetPaginate = `-- name: GetRecordsWithLastEditedByUseKeysetPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
+WHERE
+	CASE WHEN $2::boolean = true THEN record_type_id = ANY($3) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN organization_id = ANY($5) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN posted_by = ANY($7) ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN t_records.last_edited_by = ANY($9) ELSE TRUE END
+AND
+	CASE $10
+		WHEN 'next' THEN
+			CASE $11::text
+				WHEN 'posted_at' THEN posted_at > $12 OR (posted_at = $12 AND t_records_pkey < $13)
+				WHEN 'r_posted_at' THEN posted_at < $12 OR (posted_at = $12 AND t_records_pkey < $13)
+				WHEN 'last_edited_at' THEN last_edited_at > $12 OR (last_edited_at = $12 AND t_records_pkey < $13)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $12 OR (last_edited_at = $12 AND t_records_pkey < $13)
+				ELSE t_records_pkey < $13
+			END
+		WHEN 'prev' THEN
+			CASE $11::text
+				WHEN 'posted_at' THEN posted_at < $12 OR (posted_at = $12 AND t_records_pkey > $13)
+				WHEN 'r_posted_at' THEN posted_at > $12 OR (posted_at = $12 AND t_records_pkey > $13)
+				WHEN 'last_edited_at' THEN last_edited_at < $12 OR (last_edited_at = $12 AND t_records_pkey > $13)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $12 OR (last_edited_at = $12 AND t_records_pkey > $13)
+				ELSE t_records_pkey > $13
+			END
+	END
+ORDER BY
+	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+LIMIT $1
+`
+
+type GetRecordsWithLastEditedByUseKeysetPaginateParams struct {
+	Limit               int32       `json:"limit"`
+	WhereInRecordType   bool        `json:"where_in_record_type"`
+	InRecordType        uuid.UUID   `json:"in_record_type"`
+	WhereInOrganization bool        `json:"where_in_organization"`
+	InOrganization      pgtype.UUID `json:"in_organization"`
+	WhereInPostedBy     bool        `json:"where_in_posted_by"`
+	InPostedBy          pgtype.UUID `json:"in_posted_by"`
+	WhereInLastEditedBy bool        `json:"where_in_last_edited_by"`
+	InLastEditedBy      pgtype.UUID `json:"in_last_edited_by"`
+	CursorDirection     interface{} `json:"cursor_direction"`
+	OrderMethod         string      `json:"order_method"`
+	CursorColumn        time.Time   `json:"cursor_column"`
+	Cursor              pgtype.Int8 `json:"cursor"`
+}
+
+type GetRecordsWithLastEditedByUseKeysetPaginateRow struct {
+	Record Record `json:"record"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) GetRecordsWithLastEditedByUseKeysetPaginate(ctx context.Context, arg GetRecordsWithLastEditedByUseKeysetPaginateParams) ([]GetRecordsWithLastEditedByUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getRecordsWithLastEditedByUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInRecordType,
+		arg.InRecordType,
+		arg.WhereInOrganization,
+		arg.InOrganization,
+		arg.WhereInPostedBy,
+		arg.InPostedBy,
+		arg.WhereInLastEditedBy,
+		arg.InLastEditedBy,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetRecordsWithLastEditedByUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetRecordsWithLastEditedByUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRecordsWithLastEditedByUseNumberedPaginate = `-- name: GetRecordsWithLastEditedByUseNumberedPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN record_type_id = ANY($4) ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN t_records.organization_id = ANY($6) ELSE TRUE END
+	CASE WHEN $5::boolean = true THEN organization_id = ANY($6) ELSE TRUE END
 AND
 	CASE WHEN $7::boolean = true THEN posted_by = ANY($8) ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN last_edited_by = ANY($10) ELSE TRUE END
+	CASE WHEN $9::boolean = true THEN t_records.last_edited_by = ANY($10) ELSE TRUE END
 ORDER BY
 	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC,
 	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
@@ -672,9 +1230,102 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetRecordsWithOrganizationParams struct {
+type GetRecordsWithLastEditedByUseNumberedPaginateParams struct {
 	Limit               int32       `json:"limit"`
 	Offset              int32       `json:"offset"`
+	WhereInRecordType   bool        `json:"where_in_record_type"`
+	InRecordType        uuid.UUID   `json:"in_record_type"`
+	WhereInOrganization bool        `json:"where_in_organization"`
+	InOrganization      pgtype.UUID `json:"in_organization"`
+	WhereInPostedBy     bool        `json:"where_in_posted_by"`
+	InPostedBy          pgtype.UUID `json:"in_posted_by"`
+	WhereInLastEditedBy bool        `json:"where_in_last_edited_by"`
+	InLastEditedBy      pgtype.UUID `json:"in_last_edited_by"`
+	OrderMethod         string      `json:"order_method"`
+}
+
+type GetRecordsWithLastEditedByUseNumberedPaginateRow struct {
+	Record Record `json:"record"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) GetRecordsWithLastEditedByUseNumberedPaginate(ctx context.Context, arg GetRecordsWithLastEditedByUseNumberedPaginateParams) ([]GetRecordsWithLastEditedByUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getRecordsWithLastEditedByUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInRecordType,
+		arg.InRecordType,
+		arg.WhereInOrganization,
+		arg.InOrganization,
+		arg.WhereInPostedBy,
+		arg.InPostedBy,
+		arg.WhereInLastEditedBy,
+		arg.InLastEditedBy,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetRecordsWithLastEditedByUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetRecordsWithLastEditedByUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRecordsWithOrganization = `-- name: GetRecordsWithOrganization :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_records
+LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $1::boolean = true THEN record_type_id = ANY($2) ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN t_records.organization_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN posted_by = ANY($6) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN last_edited_by = ANY($8) ELSE TRUE END
+ORDER BY
+	CASE WHEN $9::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $9::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $9::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $9::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+`
+
+type GetRecordsWithOrganizationParams struct {
 	WhereInRecordType   bool        `json:"where_in_record_type"`
 	InRecordType        uuid.UUID   `json:"in_record_type"`
 	WhereInOrganization bool        `json:"where_in_organization"`
@@ -693,8 +1344,6 @@ type GetRecordsWithOrganizationRow struct {
 
 func (q *Queries) GetRecordsWithOrganization(ctx context.Context, arg GetRecordsWithOrganizationParams) ([]GetRecordsWithOrganizationRow, error) {
 	rows, err := q.db.Query(ctx, getRecordsWithOrganization,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereInRecordType,
 		arg.InRecordType,
 		arg.WhereInOrganization,
@@ -742,15 +1391,128 @@ func (q *Queries) GetRecordsWithOrganization(ctx context.Context, arg GetRecords
 	return items, nil
 }
 
-const getRecordsWithPostedBy = `-- name: GetRecordsWithPostedBy :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
-LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+const getRecordsWithOrganizationUseKeysetPaginate = `-- name: GetRecordsWithOrganizationUseKeysetPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_records
+LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $2::boolean = true THEN record_type_id = ANY($3) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN t_records.organization_id = ANY($5) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN posted_by = ANY($7) ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN last_edited_by = ANY($9) ELSE TRUE END
+AND
+	CASE $10
+		WHEN 'next' THEN
+			CASE $11::text
+				WHEN 'posted_at' THEN posted_at > $12 OR (posted_at = $12 AND t_records_pkey < $13)
+				WHEN 'r_posted_at' THEN posted_at < $12 OR (posted_at = $12 AND t_records_pkey < $13)
+				WHEN 'last_edited_at' THEN last_edited_at > $12 OR (last_edited_at = $12 AND t_records_pkey < $13)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $12 OR (last_edited_at = $12 AND t_records_pkey < $13)
+				ELSE t_records_pkey < $13
+			END
+		WHEN 'prev' THEN
+			CASE $11::text
+				WHEN 'posted_at' THEN posted_at < $12 OR (posted_at = $12 AND t_records_pkey > $13)
+				WHEN 'r_posted_at' THEN posted_at > $12 OR (posted_at = $12 AND t_records_pkey > $13)
+				WHEN 'last_edited_at' THEN last_edited_at < $12 OR (last_edited_at = $12 AND t_records_pkey > $13)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $12 OR (last_edited_at = $12 AND t_records_pkey > $13)
+				ELSE t_records_pkey > $13
+			END
+	END
+ORDER BY
+	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+LIMIT $1
+`
+
+type GetRecordsWithOrganizationUseKeysetPaginateParams struct {
+	Limit               int32       `json:"limit"`
+	WhereInRecordType   bool        `json:"where_in_record_type"`
+	InRecordType        uuid.UUID   `json:"in_record_type"`
+	WhereInOrganization bool        `json:"where_in_organization"`
+	InOrganization      pgtype.UUID `json:"in_organization"`
+	WhereInPostedBy     bool        `json:"where_in_posted_by"`
+	InPostedBy          pgtype.UUID `json:"in_posted_by"`
+	WhereInLastEditedBy bool        `json:"where_in_last_edited_by"`
+	InLastEditedBy      pgtype.UUID `json:"in_last_edited_by"`
+	CursorDirection     interface{} `json:"cursor_direction"`
+	OrderMethod         string      `json:"order_method"`
+	CursorColumn        time.Time   `json:"cursor_column"`
+	Cursor              pgtype.Int8 `json:"cursor"`
+}
+
+type GetRecordsWithOrganizationUseKeysetPaginateRow struct {
+	Record       Record       `json:"record"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetRecordsWithOrganizationUseKeysetPaginate(ctx context.Context, arg GetRecordsWithOrganizationUseKeysetPaginateParams) ([]GetRecordsWithOrganizationUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getRecordsWithOrganizationUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInRecordType,
+		arg.InRecordType,
+		arg.WhereInOrganization,
+		arg.InOrganization,
+		arg.WhereInPostedBy,
+		arg.InPostedBy,
+		arg.WhereInLastEditedBy,
+		arg.InLastEditedBy,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetRecordsWithOrganizationUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetRecordsWithOrganizationUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRecordsWithOrganizationUseNumberedPaginate = `-- name: GetRecordsWithOrganizationUseNumberedPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_records
+LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $3::boolean = true THEN record_type_id = ANY($4) ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN organization_id = ANY($6) ELSE TRUE END
+	CASE WHEN $5::boolean = true THEN t_records.organization_id = ANY($6) ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN t_records.posted_by = ANY($8) ELSE TRUE END
+	CASE WHEN $7::boolean = true THEN posted_by = ANY($8) ELSE TRUE END
 AND
 	CASE WHEN $9::boolean = true THEN last_edited_by = ANY($10) ELSE TRUE END
 ORDER BY
@@ -762,9 +1524,96 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetRecordsWithPostedByParams struct {
+type GetRecordsWithOrganizationUseNumberedPaginateParams struct {
 	Limit               int32       `json:"limit"`
 	Offset              int32       `json:"offset"`
+	WhereInRecordType   bool        `json:"where_in_record_type"`
+	InRecordType        uuid.UUID   `json:"in_record_type"`
+	WhereInOrganization bool        `json:"where_in_organization"`
+	InOrganization      pgtype.UUID `json:"in_organization"`
+	WhereInPostedBy     bool        `json:"where_in_posted_by"`
+	InPostedBy          pgtype.UUID `json:"in_posted_by"`
+	WhereInLastEditedBy bool        `json:"where_in_last_edited_by"`
+	InLastEditedBy      pgtype.UUID `json:"in_last_edited_by"`
+	OrderMethod         string      `json:"order_method"`
+}
+
+type GetRecordsWithOrganizationUseNumberedPaginateRow struct {
+	Record       Record       `json:"record"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetRecordsWithOrganizationUseNumberedPaginate(ctx context.Context, arg GetRecordsWithOrganizationUseNumberedPaginateParams) ([]GetRecordsWithOrganizationUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getRecordsWithOrganizationUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInRecordType,
+		arg.InRecordType,
+		arg.WhereInOrganization,
+		arg.InOrganization,
+		arg.WhereInPostedBy,
+		arg.InPostedBy,
+		arg.WhereInLastEditedBy,
+		arg.InLastEditedBy,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetRecordsWithOrganizationUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetRecordsWithOrganizationUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRecordsWithPostedBy = `-- name: GetRecordsWithPostedBy :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+WHERE
+	CASE WHEN $1::boolean = true THEN record_type_id = ANY($2) ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN organization_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN t_records.posted_by = ANY($6) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN last_edited_by = ANY($8) ELSE TRUE END
+ORDER BY
+	CASE WHEN $9::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $9::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $9::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $9::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+`
+
+type GetRecordsWithPostedByParams struct {
 	WhereInRecordType   bool        `json:"where_in_record_type"`
 	InRecordType        uuid.UUID   `json:"in_record_type"`
 	WhereInOrganization bool        `json:"where_in_organization"`
@@ -783,8 +1632,6 @@ type GetRecordsWithPostedByRow struct {
 
 func (q *Queries) GetRecordsWithPostedBy(ctx context.Context, arg GetRecordsWithPostedByParams) ([]GetRecordsWithPostedByRow, error) {
 	rows, err := q.db.Query(ctx, getRecordsWithPostedBy,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereInRecordType,
 		arg.InRecordType,
 		arg.WhereInOrganization,
@@ -838,7 +1685,412 @@ func (q *Queries) GetRecordsWithPostedBy(ctx context.Context, arg GetRecordsWith
 	return items, nil
 }
 
+const getRecordsWithPostedByUseKeysetPaginate = `-- name: GetRecordsWithPostedByUseKeysetPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+WHERE
+	CASE WHEN $2::boolean = true THEN record_type_id = ANY($3) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN organization_id = ANY($5) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN t_records.posted_by = ANY($7) ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN last_edited_by = ANY($9) ELSE TRUE END
+AND
+	CASE $10
+		WHEN 'next' THEN
+			CASE $11::text
+				WHEN 'posted_at' THEN posted_at > $12 OR (posted_at = $12 AND t_records_pkey < $13)
+				WHEN 'r_posted_at' THEN posted_at < $12 OR (posted_at = $12 AND t_records_pkey < $13)
+				WHEN 'last_edited_at' THEN last_edited_at > $12 OR (last_edited_at = $12 AND t_records_pkey < $13)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $12 OR (last_edited_at = $12 AND t_records_pkey < $13)
+				ELSE t_records_pkey < $13
+			END
+		WHEN 'prev' THEN
+			CASE $11::text
+				WHEN 'posted_at' THEN posted_at < $12 OR (posted_at = $12 AND t_records_pkey > $13)
+				WHEN 'r_posted_at' THEN posted_at > $12 OR (posted_at = $12 AND t_records_pkey > $13)
+				WHEN 'last_edited_at' THEN last_edited_at < $12 OR (last_edited_at = $12 AND t_records_pkey > $13)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $12 OR (last_edited_at = $12 AND t_records_pkey > $13)
+				ELSE t_records_pkey > $13
+			END
+	END
+ORDER BY
+	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+LIMIT $1
+`
+
+type GetRecordsWithPostedByUseKeysetPaginateParams struct {
+	Limit               int32       `json:"limit"`
+	WhereInRecordType   bool        `json:"where_in_record_type"`
+	InRecordType        uuid.UUID   `json:"in_record_type"`
+	WhereInOrganization bool        `json:"where_in_organization"`
+	InOrganization      pgtype.UUID `json:"in_organization"`
+	WhereInPostedBy     bool        `json:"where_in_posted_by"`
+	InPostedBy          pgtype.UUID `json:"in_posted_by"`
+	WhereInLastEditedBy bool        `json:"where_in_last_edited_by"`
+	InLastEditedBy      pgtype.UUID `json:"in_last_edited_by"`
+	CursorDirection     interface{} `json:"cursor_direction"`
+	OrderMethod         string      `json:"order_method"`
+	CursorColumn        time.Time   `json:"cursor_column"`
+	Cursor              pgtype.Int8 `json:"cursor"`
+}
+
+type GetRecordsWithPostedByUseKeysetPaginateRow struct {
+	Record Record `json:"record"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) GetRecordsWithPostedByUseKeysetPaginate(ctx context.Context, arg GetRecordsWithPostedByUseKeysetPaginateParams) ([]GetRecordsWithPostedByUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getRecordsWithPostedByUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInRecordType,
+		arg.InRecordType,
+		arg.WhereInOrganization,
+		arg.InOrganization,
+		arg.WhereInPostedBy,
+		arg.InPostedBy,
+		arg.WhereInLastEditedBy,
+		arg.InLastEditedBy,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetRecordsWithPostedByUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetRecordsWithPostedByUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRecordsWithPostedByUseNumberedPaginate = `-- name: GetRecordsWithPostedByUseNumberedPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+WHERE
+	CASE WHEN $3::boolean = true THEN record_type_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN organization_id = ANY($6) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN t_records.posted_by = ANY($8) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN last_edited_by = ANY($10) ELSE TRUE END
+ORDER BY
+	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetRecordsWithPostedByUseNumberedPaginateParams struct {
+	Limit               int32       `json:"limit"`
+	Offset              int32       `json:"offset"`
+	WhereInRecordType   bool        `json:"where_in_record_type"`
+	InRecordType        uuid.UUID   `json:"in_record_type"`
+	WhereInOrganization bool        `json:"where_in_organization"`
+	InOrganization      pgtype.UUID `json:"in_organization"`
+	WhereInPostedBy     bool        `json:"where_in_posted_by"`
+	InPostedBy          pgtype.UUID `json:"in_posted_by"`
+	WhereInLastEditedBy bool        `json:"where_in_last_edited_by"`
+	InLastEditedBy      pgtype.UUID `json:"in_last_edited_by"`
+	OrderMethod         string      `json:"order_method"`
+}
+
+type GetRecordsWithPostedByUseNumberedPaginateRow struct {
+	Record Record `json:"record"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) GetRecordsWithPostedByUseNumberedPaginate(ctx context.Context, arg GetRecordsWithPostedByUseNumberedPaginateParams) ([]GetRecordsWithPostedByUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getRecordsWithPostedByUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInRecordType,
+		arg.InRecordType,
+		arg.WhereInOrganization,
+		arg.InOrganization,
+		arg.WhereInPostedBy,
+		arg.InPostedBy,
+		arg.WhereInLastEditedBy,
+		arg.InLastEditedBy,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetRecordsWithPostedByUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetRecordsWithPostedByUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getRecordsWithRecordType = `-- name: GetRecordsWithRecordType :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key FROM t_records
+LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
+WHERE
+	CASE WHEN $1::boolean = true THEN t_records.record_type_id = ANY($2) ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN organization_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN posted_by = ANY($6) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN last_edited_by = ANY($8) ELSE TRUE END
+ORDER BY
+	CASE WHEN $9::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $9::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $9::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $9::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+`
+
+type GetRecordsWithRecordTypeParams struct {
+	WhereInRecordType   bool        `json:"where_in_record_type"`
+	InRecordType        uuid.UUID   `json:"in_record_type"`
+	WhereInOrganization bool        `json:"where_in_organization"`
+	InOrganization      pgtype.UUID `json:"in_organization"`
+	WhereInPostedBy     bool        `json:"where_in_posted_by"`
+	InPostedBy          pgtype.UUID `json:"in_posted_by"`
+	WhereInLastEditedBy bool        `json:"where_in_last_edited_by"`
+	InLastEditedBy      pgtype.UUID `json:"in_last_edited_by"`
+	OrderMethod         string      `json:"order_method"`
+}
+
+type GetRecordsWithRecordTypeRow struct {
+	Record     Record     `json:"record"`
+	RecordType RecordType `json:"record_type"`
+}
+
+func (q *Queries) GetRecordsWithRecordType(ctx context.Context, arg GetRecordsWithRecordTypeParams) ([]GetRecordsWithRecordTypeRow, error) {
+	rows, err := q.db.Query(ctx, getRecordsWithRecordType,
+		arg.WhereInRecordType,
+		arg.InRecordType,
+		arg.WhereInOrganization,
+		arg.InOrganization,
+		arg.WhereInPostedBy,
+		arg.InPostedBy,
+		arg.WhereInLastEditedBy,
+		arg.InLastEditedBy,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetRecordsWithRecordTypeRow{}
+	for rows.Next() {
+		var i GetRecordsWithRecordTypeRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.RecordType.MRecordTypesPkey,
+			&i.RecordType.RecordTypeID,
+			&i.RecordType.Name,
+			&i.RecordType.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRecordsWithRecordTypeUseKeysetPaginate = `-- name: GetRecordsWithRecordTypeUseKeysetPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key FROM t_records
+LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
+WHERE
+	CASE WHEN $2::boolean = true THEN t_records.record_type_id = ANY($3) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN organization_id = ANY($5) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN posted_by = ANY($7) ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN last_edited_by = ANY($9) ELSE TRUE END
+AND
+	CASE $10
+		WHEN 'next' THEN
+			CASE $11::text
+				WHEN 'posted_at' THEN posted_at > $12 OR (posted_at = $12 AND t_records_pkey < $13)
+				WHEN 'r_posted_at' THEN posted_at < $12 OR (posted_at = $12 AND t_records_pkey < $13)
+				WHEN 'last_edited_at' THEN last_edited_at > $12 OR (last_edited_at = $12 AND t_records_pkey < $13)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $12 OR (last_edited_at = $12 AND t_records_pkey < $13)
+				ELSE t_records_pkey < $13
+			END
+		WHEN 'prev' THEN
+			CASE $11::text
+				WHEN 'posted_at' THEN posted_at < $12 OR (posted_at = $12 AND t_records_pkey > $13)
+				WHEN 'r_posted_at' THEN posted_at > $12 OR (posted_at = $12 AND t_records_pkey > $13)
+				WHEN 'last_edited_at' THEN last_edited_at < $12 OR (last_edited_at = $12 AND t_records_pkey > $13)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $12 OR (last_edited_at = $12 AND t_records_pkey > $13)
+				ELSE t_records_pkey > $13
+			END
+	END
+ORDER BY
+	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	t_records_pkey DESC
+LIMIT $1
+`
+
+type GetRecordsWithRecordTypeUseKeysetPaginateParams struct {
+	Limit               int32       `json:"limit"`
+	WhereInRecordType   bool        `json:"where_in_record_type"`
+	InRecordType        uuid.UUID   `json:"in_record_type"`
+	WhereInOrganization bool        `json:"where_in_organization"`
+	InOrganization      pgtype.UUID `json:"in_organization"`
+	WhereInPostedBy     bool        `json:"where_in_posted_by"`
+	InPostedBy          pgtype.UUID `json:"in_posted_by"`
+	WhereInLastEditedBy bool        `json:"where_in_last_edited_by"`
+	InLastEditedBy      pgtype.UUID `json:"in_last_edited_by"`
+	CursorDirection     interface{} `json:"cursor_direction"`
+	OrderMethod         string      `json:"order_method"`
+	CursorColumn        time.Time   `json:"cursor_column"`
+	Cursor              pgtype.Int8 `json:"cursor"`
+}
+
+type GetRecordsWithRecordTypeUseKeysetPaginateRow struct {
+	Record     Record     `json:"record"`
+	RecordType RecordType `json:"record_type"`
+}
+
+func (q *Queries) GetRecordsWithRecordTypeUseKeysetPaginate(ctx context.Context, arg GetRecordsWithRecordTypeUseKeysetPaginateParams) ([]GetRecordsWithRecordTypeUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getRecordsWithRecordTypeUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInRecordType,
+		arg.InRecordType,
+		arg.WhereInOrganization,
+		arg.InOrganization,
+		arg.WhereInPostedBy,
+		arg.InPostedBy,
+		arg.WhereInLastEditedBy,
+		arg.InLastEditedBy,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetRecordsWithRecordTypeUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetRecordsWithRecordTypeUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.RecordType.MRecordTypesPkey,
+			&i.RecordType.RecordTypeID,
+			&i.RecordType.Name,
+			&i.RecordType.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRecordsWithRecordTypeUseNumberedPaginate = `-- name: GetRecordsWithRecordTypeUseNumberedPaginate :many
 SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 WHERE
@@ -858,7 +2110,7 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetRecordsWithRecordTypeParams struct {
+type GetRecordsWithRecordTypeUseNumberedPaginateParams struct {
 	Limit               int32       `json:"limit"`
 	Offset              int32       `json:"offset"`
 	WhereInRecordType   bool        `json:"where_in_record_type"`
@@ -872,13 +2124,13 @@ type GetRecordsWithRecordTypeParams struct {
 	OrderMethod         string      `json:"order_method"`
 }
 
-type GetRecordsWithRecordTypeRow struct {
+type GetRecordsWithRecordTypeUseNumberedPaginateRow struct {
 	Record     Record     `json:"record"`
 	RecordType RecordType `json:"record_type"`
 }
 
-func (q *Queries) GetRecordsWithRecordType(ctx context.Context, arg GetRecordsWithRecordTypeParams) ([]GetRecordsWithRecordTypeRow, error) {
-	rows, err := q.db.Query(ctx, getRecordsWithRecordType,
+func (q *Queries) GetRecordsWithRecordTypeUseNumberedPaginate(ctx context.Context, arg GetRecordsWithRecordTypeUseNumberedPaginateParams) ([]GetRecordsWithRecordTypeUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getRecordsWithRecordTypeUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.WhereInRecordType,
@@ -895,9 +2147,9 @@ func (q *Queries) GetRecordsWithRecordType(ctx context.Context, arg GetRecordsWi
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetRecordsWithRecordTypeRow{}
+	items := []GetRecordsWithRecordTypeUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetRecordsWithRecordTypeRow
+		var i GetRecordsWithRecordTypeUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.Record.TRecordsPkey,
 			&i.Record.RecordID,

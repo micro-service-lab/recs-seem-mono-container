@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countEventTypes = `-- name: CountEventTypes :one
@@ -112,20 +113,143 @@ func (q *Queries) FindEventTypeByKey(ctx context.Context, key string) (EventType
 
 const getEventTypes = `-- name: GetEventTypes :many
 SELECT m_event_types_pkey, event_type_id, name, key, color FROM m_event_types
+WHERE
+	CASE WHEN $1::boolean = true THEN name LIKE '%' || $2::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN $3::text = 'name' THEN name END ASC,
+	CASE WHEN $3::text = 'r_name' THEN name END DESC,
+	m_event_types_pkey DESC
+`
+
+type GetEventTypesParams struct {
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+	OrderMethod   string `json:"order_method"`
+}
+
+func (q *Queries) GetEventTypes(ctx context.Context, arg GetEventTypesParams) ([]EventType, error) {
+	rows, err := q.db.Query(ctx, getEventTypes, arg.WhereLikeName, arg.SearchName, arg.OrderMethod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []EventType{}
+	for rows.Next() {
+		var i EventType
+		if err := rows.Scan(
+			&i.MEventTypesPkey,
+			&i.EventTypeID,
+			&i.Name,
+			&i.Key,
+			&i.Color,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEventTypesUseKeysetPaginate = `-- name: GetEventTypesUseKeysetPaginate :many
+SELECT m_event_types_pkey, event_type_id, name, key, color FROM m_event_types
+WHERE
+	CASE WHEN $2::boolean = true THEN name LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE $4
+		WHEN 'next' THEN
+			CASE $5::text
+				WHEN 'name' THEN name > $6 OR (name = $6 AND m_event_types_pkey < $7)
+				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_event_types_pkey < $7)
+				ELSE m_event_types_pkey < $7
+			END
+		WHEN 'prev' THEN
+			CASE $5::text
+				WHEN 'name' THEN name < $6 OR (name = $6 AND m_event_types_pkey > $7)
+				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_event_types_pkey > $7)
+				ELSE m_event_types_pkey > $7
+			END
+	END
+ORDER BY
+	CASE WHEN $5::text = 'name' THEN name END ASC,
+	CASE WHEN $5::text = 'r_name' THEN name END DESC,
+	m_event_types_pkey DESC
+LIMIT $1
+`
+
+type GetEventTypesUseKeysetPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	WhereLikeName   bool        `json:"where_like_name"`
+	SearchName      string      `json:"search_name"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	OrderMethod     string      `json:"order_method"`
+	CursorColumn    string      `json:"cursor_column"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetEventTypesUseKeysetPaginate(ctx context.Context, arg GetEventTypesUseKeysetPaginateParams) ([]EventType, error) {
+	rows, err := q.db.Query(ctx, getEventTypesUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []EventType{}
+	for rows.Next() {
+		var i EventType
+		if err := rows.Scan(
+			&i.MEventTypesPkey,
+			&i.EventTypeID,
+			&i.Name,
+			&i.Key,
+			&i.Color,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEventTypesUseNumberedPaginate = `-- name: GetEventTypesUseNumberedPaginate :many
+SELECT m_event_types_pkey, event_type_id, name, key, color FROM m_event_types
+WHERE
+	CASE WHEN $3::boolean = true THEN name LIKE '%' || $4::text || '%' ELSE TRUE END
+ORDER BY
+	CASE WHEN $5::text = 'name' THEN name END ASC,
+	CASE WHEN $5::text = 'r_name' THEN name END DESC,
 	m_event_types_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
-type GetEventTypesParams struct {
-	Limit       int32  `json:"limit"`
-	Offset      int32  `json:"offset"`
-	OrderMethod string `json:"order_method"`
+type GetEventTypesUseNumberedPaginateParams struct {
+	Limit         int32  `json:"limit"`
+	Offset        int32  `json:"offset"`
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+	OrderMethod   string `json:"order_method"`
 }
 
-func (q *Queries) GetEventTypes(ctx context.Context, arg GetEventTypesParams) ([]EventType, error) {
-	rows, err := q.db.Query(ctx, getEventTypes, arg.Limit, arg.Offset, arg.OrderMethod)
+func (q *Queries) GetEventTypesUseNumberedPaginate(ctx context.Context, arg GetEventTypesUseNumberedPaginateParams) ([]EventType, error) {
+	rows, err := q.db.Query(ctx, getEventTypesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

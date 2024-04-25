@@ -56,7 +56,7 @@ WHERE
 	CASE WHEN @where_in_owner::boolean = true THEN owner_id = ANY(@in_owner) ELSE TRUE END
 AND
 	CASE WHEN @where_is_private::boolean = true THEN is_private = @is_private ELSE TRUE END
-WHERE
+AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			m_chat_rooms_pkey < @cursor
@@ -95,7 +95,7 @@ WHERE
 	CASE WHEN @where_in_owner::boolean = true THEN owner_id = ANY(@in_owner) ELSE TRUE END
 AND
 	CASE WHEN @where_is_private::boolean = true THEN is_private = @is_private ELSE TRUE END
-WHERE
+AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			m_chat_rooms_pkey < @cursor
@@ -137,7 +137,7 @@ WHERE
 	CASE WHEN @where_in_owner::boolean = true THEN owner_id = ANY(@in_owner) ELSE TRUE END
 AND
 	CASE WHEN @where_is_private::boolean = true THEN is_private = @is_private ELSE TRUE END
-WHERE
+AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			m_chat_rooms_pkey < @cursor
@@ -182,7 +182,7 @@ WHERE
 	CASE WHEN @where_in_owner::boolean = true THEN owner_id = ANY(@in_owner) ELSE TRUE END
 AND
 	CASE WHEN @where_is_private::boolean = true THEN is_private = @is_private ELSE TRUE END
-WHERE
+AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			m_chat_rooms_pkey < @cursor

@@ -47,7 +47,7 @@ LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_ty
 ORDER BY
 	t_images_pkey DESC;
 
--- name: GetImagesWithAttachableItem :many
+-- name: GetImagesWithAttachableItemUseNumberedPaginate :many
 SELECT sqlc.embed(t_images), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
@@ -55,7 +55,7 @@ ORDER BY
 	t_images_pkey DESC
 LIMIT $1 OFFSET $2;
 
--- name: GetImagesWithAttachableItem :many
+-- name: GetImagesWithAttachableItemUseKeysetPaginate :many
 SELECT sqlc.embed(t_images), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id

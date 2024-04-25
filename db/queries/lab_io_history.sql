@@ -72,7 +72,7 @@ AND
 	CASE WHEN @where_earlier_exited_at::boolean = true THEN exited_at >= @earlier_exited_at ELSE TRUE END
 AND
 	CASE WHEN @where_later_exited_at::boolean = true THEN exited_at <= @later_exited_at ELSE TRUE END
-WHERE
+AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method::text
@@ -89,6 +89,7 @@ WHERE
 				WHEN 'old_exit' THEN exited_at < @cursor_column OR (exited_at = @cursor_column AND t_lab_io_histories_pkey > @cursor)
 				WHEN 'late_exit' THEN exited_at > @cursor_column OR (exited_at = @cursor_column AND t_lab_io_histories_pkey > @cursor)
 				ELSE t_lab_io_histories_pkey > @cursor
+		END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC,
@@ -152,7 +153,7 @@ AND
 	CASE WHEN @where_earlier_exited_at::boolean = true THEN exited_at >= @earlier_exited_at ELSE TRUE END
 AND
 	CASE WHEN @where_later_exited_at::boolean = true THEN exited_at <= @later_exited_at ELSE TRUE END
-WHERE
+AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method::text
@@ -169,6 +170,7 @@ WHERE
 				WHEN 'old_exit' THEN exited_at < @cursor_column OR (exited_at = @cursor_column AND t_lab_io_histories_pkey > @cursor)
 				WHEN 'late_exit' THEN exited_at > @cursor_column OR (exited_at = @cursor_column AND t_lab_io_histories_pkey > @cursor)
 				ELSE t_lab_io_histories_pkey > @cursor
+		END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC,

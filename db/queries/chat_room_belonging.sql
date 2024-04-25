@@ -133,7 +133,7 @@ AND CASE @cursor_direction
 		CASE @order_method::text
 			WHEN 'name' THEN m_chat_rooms.name < @cursor_column OR (m_chat_rooms.name = @cursor_column AND m_chat_room_belongings_pkey > @cursor)
 			WHEN 'r_name' THEN m_chat_rooms.name > @cursor_column OR (m_chat_rooms.name = @cursor_column AND m_chat_room_belongings_pkey > @cursor)
-			WHEN 'old_add' THEN m_chat_room_belongings.added_at < @cursor_column OR (m_chat_room_belongings.added
+			WHEN 'old_add' THEN m_chat_room_belongings.added_at < @cursor_column OR (m_chat_room_belongings.added = @cursor_column AND m_chat_room_belongings_pkey > @cursor)
 			WHEN 'late_add' THEN m_chat_room_belongings.added_at > @cursor_column OR (m_chat_room_belongings.added_at = @cursor_column AND m_chat_room_belongings_pkey > @cursor)
 			WHEN 'old_chat' THEN
 				(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) < @cursor_column

@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countPolicyCategories = `-- name: CountPolicyCategories :one
@@ -113,6 +114,115 @@ func (q *Queries) FindPolicyCategoryByKey(ctx context.Context, key string) (Poli
 const getPolicyCategories = `-- name: GetPolicyCategories :many
 SELECT m_policy_categories_pkey, policy_category_id, name, description, key FROM m_policy_categories
 WHERE
+	CASE WHEN $1::boolean = true THEN m_policy_categories.name LIKE '%' || $2::text || '%' ELSE TRUE END
+ORDER BY
+	CASE WHEN $3::text = 'name' THEN m_policy_categories.name END ASC,
+	CASE WHEN $3::text = 'r_name' THEN m_policy_categories.name END DESC,
+	m_policy_categories_pkey DESC
+`
+
+type GetPolicyCategoriesParams struct {
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+	OrderMethod   string `json:"order_method"`
+}
+
+func (q *Queries) GetPolicyCategories(ctx context.Context, arg GetPolicyCategoriesParams) ([]PolicyCategory, error) {
+	rows, err := q.db.Query(ctx, getPolicyCategories, arg.WhereLikeName, arg.SearchName, arg.OrderMethod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []PolicyCategory{}
+	for rows.Next() {
+		var i PolicyCategory
+		if err := rows.Scan(
+			&i.MPolicyCategoriesPkey,
+			&i.PolicyCategoryID,
+			&i.Name,
+			&i.Description,
+			&i.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPolicyCategoriesUseKeysetPaginate = `-- name: GetPolicyCategoriesUseKeysetPaginate :many
+SELECT m_policy_categories_pkey, policy_category_id, name, description, key FROM m_policy_categories
+WHERE
+	CASE WHEN $1::boolean = true THEN m_policy_categories.name LIKE '%' || $2::text || '%' ELSE TRUE END
+AND
+	CASE $3
+		WHEN 'next' THEN
+			CASE $4::text
+				WHEN 'name' THEN name > $5 OR (name = $5 AND m_policy_categories_pkey < $6)
+				WHEN 'r_name' THEN name < $5 OR (name = $5 AND m_policy_categories_pkey < $6)
+				ELSE m_policy_categories_pkey < $6
+			END
+		WHEN 'prev' THEN
+			CASE $4::text
+				WHEN 'name' THEN name < $5 OR (name = $5 AND m_policy_categories_pkey > $6)
+				WHEN 'r_name' THEN name > $5 OR (name = $5 AND m_policy_categories_pkey > $6)
+				ELSE m_policy_categories_pkey > $6
+			END
+	END
+ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_policy_categories.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_policy_categories.name END DESC,
+	m_policy_categories_pkey DESC
+`
+
+type GetPolicyCategoriesUseKeysetPaginateParams struct {
+	WhereLikeName   bool        `json:"where_like_name"`
+	SearchName      string      `json:"search_name"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	OrderMethod     string      `json:"order_method"`
+	CursorColumn    string      `json:"cursor_column"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetPolicyCategoriesUseKeysetPaginate(ctx context.Context, arg GetPolicyCategoriesUseKeysetPaginateParams) ([]PolicyCategory, error) {
+	rows, err := q.db.Query(ctx, getPolicyCategoriesUseKeysetPaginate,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []PolicyCategory{}
+	for rows.Next() {
+		var i PolicyCategory
+		if err := rows.Scan(
+			&i.MPolicyCategoriesPkey,
+			&i.PolicyCategoryID,
+			&i.Name,
+			&i.Description,
+			&i.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPolicyCategoriesUseNumberedPaginate = `-- name: GetPolicyCategoriesUseNumberedPaginate :many
+SELECT m_policy_categories_pkey, policy_category_id, name, description, key FROM m_policy_categories
+WHERE
 	CASE WHEN $3::boolean = true THEN m_policy_categories.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_policy_categories.name END ASC,
@@ -121,7 +231,7 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetPolicyCategoriesParams struct {
+type GetPolicyCategoriesUseNumberedPaginateParams struct {
 	Limit         int32  `json:"limit"`
 	Offset        int32  `json:"offset"`
 	WhereLikeName bool   `json:"where_like_name"`
@@ -129,8 +239,8 @@ type GetPolicyCategoriesParams struct {
 	OrderMethod   string `json:"order_method"`
 }
 
-func (q *Queries) GetPolicyCategories(ctx context.Context, arg GetPolicyCategoriesParams) ([]PolicyCategory, error) {
-	rows, err := q.db.Query(ctx, getPolicyCategories,
+func (q *Queries) GetPolicyCategoriesUseNumberedPaginate(ctx context.Context, arg GetPolicyCategoriesUseNumberedPaginateParams) ([]PolicyCategory, error) {
+	rows, err := q.db.Query(ctx, getPolicyCategoriesUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.WhereLikeName,

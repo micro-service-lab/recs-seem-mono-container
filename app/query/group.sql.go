@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countGroups = `-- name: CountGroups :one
@@ -164,16 +165,92 @@ const getGroups = `-- name: GetGroups :many
 SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups
 ORDER BY
 	m_groups_pkey DESC
+`
+
+func (q *Queries) GetGroups(ctx context.Context) ([]Group, error) {
+	rows, err := q.db.Query(ctx, getGroups)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Group{}
+	for rows.Next() {
+		var i Group
+		if err := rows.Scan(
+			&i.MGroupsPkey,
+			&i.GroupID,
+			&i.Key,
+			&i.OrganizationID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getGroupsUseKeysetPaginate = `-- name: GetGroupsUseKeysetPaginate :many
+SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups
+WHERE
+	CASE $2
+		WHEN 'next' THEN
+			m_groups_pkey < $3
+		WHEN 'prev' THEN
+			m_groups_pkey > $3
+	END
+ORDER BY
+	m_groups_pkey DESC
+LIMIT $1
+`
+
+type GetGroupsUseKeysetPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetGroupsUseKeysetPaginate(ctx context.Context, arg GetGroupsUseKeysetPaginateParams) ([]Group, error) {
+	rows, err := q.db.Query(ctx, getGroupsUseKeysetPaginate, arg.Limit, arg.CursorDirection, arg.Cursor)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Group{}
+	for rows.Next() {
+		var i Group
+		if err := rows.Scan(
+			&i.MGroupsPkey,
+			&i.GroupID,
+			&i.Key,
+			&i.OrganizationID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getGroupsUseNumberedPaginate = `-- name: GetGroupsUseNumberedPaginate :many
+SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups
+ORDER BY
+	m_groups_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
-type GetGroupsParams struct {
+type GetGroupsUseNumberedPaginateParams struct {
 	Limit  int32 `json:"limit"`
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) GetGroups(ctx context.Context, arg GetGroupsParams) ([]Group, error) {
-	rows, err := q.db.Query(ctx, getGroups, arg.Limit, arg.Offset)
+func (q *Queries) GetGroupsUseNumberedPaginate(ctx context.Context, arg GetGroupsUseNumberedPaginateParams) ([]Group, error) {
+	rows, err := q.db.Query(ctx, getGroupsUseNumberedPaginate, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -201,24 +278,18 @@ const getGroupsWithOrganization = `-- name: GetGroupsWithOrganization :many
 SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_groups
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN $1::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN $1::text = 'r_name' THEN m_organizations.name END DESC,
 	m_groups_pkey DESC
-LIMIT $1 OFFSET $2
 `
-
-type GetGroupsWithOrganizationParams struct {
-	Limit       int32  `json:"limit"`
-	Offset      int32  `json:"offset"`
-	OrderMethod string `json:"order_method"`
-}
 
 type GetGroupsWithOrganizationRow struct {
 	Group        Group        `json:"group"`
 	Organization Organization `json:"organization"`
 }
 
-func (q *Queries) GetGroupsWithOrganization(ctx context.Context, arg GetGroupsWithOrganizationParams) ([]GetGroupsWithOrganizationRow, error) {
-	rows, err := q.db.Query(ctx, getGroupsWithOrganization, arg.Limit, arg.Offset, arg.OrderMethod)
+func (q *Queries) GetGroupsWithOrganization(ctx context.Context, orderMethod string) ([]GetGroupsWithOrganizationRow, error) {
+	rows, err := q.db.Query(ctx, getGroupsWithOrganization, orderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -226,6 +297,134 @@ func (q *Queries) GetGroupsWithOrganization(ctx context.Context, arg GetGroupsWi
 	items := []GetGroupsWithOrganizationRow{}
 	for rows.Next() {
 		var i GetGroupsWithOrganizationRow
+		if err := rows.Scan(
+			&i.Group.MGroupsPkey,
+			&i.Group.GroupID,
+			&i.Group.Key,
+			&i.Group.OrganizationID,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getGroupsWithOrganizationUseKeysetPaginate = `-- name: GetGroupsWithOrganizationUseKeysetPaginate :many
+SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_groups
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+WHERE
+	CASE $1
+		WHEN 'next' THEN
+			CASE $2::text
+				WHEN 'name' THEN name > $3 OR (name = $3 AND m_groups_pkey < $4)
+				WHEN 'r_name' THEN name < $3 OR (name = $3 AND m_groups_pkey < $4)
+				ELSE m_groups_pkey < $4
+			END
+		WHEN 'prev' THEN
+			CASE $2::text
+				WHEN 'name' THEN name > $3 OR (name = $3 AND m_groups_pkey < $4)
+				WHEN 'r_name' THEN name < $3 OR (name = $3 AND m_groups_pkey < $4)
+				ELSE m_groups_pkey < $4
+			END
+	END
+ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_organizations.name END DESC,
+	m_groups_pkey DESC
+`
+
+type GetGroupsWithOrganizationUseKeysetPaginateParams struct {
+	CursorDirection interface{} `json:"cursor_direction"`
+	OrderMethod     string      `json:"order_method"`
+	CursorColumn    string      `json:"cursor_column"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+type GetGroupsWithOrganizationUseKeysetPaginateRow struct {
+	Group        Group        `json:"group"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetGroupsWithOrganizationUseKeysetPaginate(ctx context.Context, arg GetGroupsWithOrganizationUseKeysetPaginateParams) ([]GetGroupsWithOrganizationUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getGroupsWithOrganizationUseKeysetPaginate,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetGroupsWithOrganizationUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetGroupsWithOrganizationUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Group.MGroupsPkey,
+			&i.Group.GroupID,
+			&i.Group.Key,
+			&i.Group.OrganizationID,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getGroupsWithOrganizationUseNumberedPaginate = `-- name: GetGroupsWithOrganizationUseNumberedPaginate :many
+SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_groups
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+ORDER BY
+	CASE WHEN $3::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN $3::text = 'r_name' THEN m_organizations.name END DESC,
+	m_groups_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetGroupsWithOrganizationUseNumberedPaginateParams struct {
+	Limit       int32  `json:"limit"`
+	Offset      int32  `json:"offset"`
+	OrderMethod string `json:"order_method"`
+}
+
+type GetGroupsWithOrganizationUseNumberedPaginateRow struct {
+	Group        Group        `json:"group"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetGroupsWithOrganizationUseNumberedPaginate(ctx context.Context, arg GetGroupsWithOrganizationUseNumberedPaginateParams) ([]GetGroupsWithOrganizationUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getGroupsWithOrganizationUseNumberedPaginate, arg.Limit, arg.Offset, arg.OrderMethod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetGroupsWithOrganizationUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetGroupsWithOrganizationUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.Group.MGroupsPkey,
 			&i.Group.GroupID,

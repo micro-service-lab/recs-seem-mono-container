@@ -383,14 +383,113 @@ func (q *Queries) FindAttendanceByIDWithSendOrganization(ctx context.Context, at
 	return i, err
 }
 
-const getAttendanceWithAll = `-- name: GetAttendanceWithAll :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
-LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
-LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
-LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
-LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
-LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
-LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+const getAttendanceUseKeysetPaginate = `-- name: GetAttendanceUseKeysetPaginate :many
+SELECT t_attendances_pkey, attendance_id, attendance_type_id, member_id, description, date, mail_send_flag, send_organization_id, posted_at, last_edited_at FROM t_attendances
+WHERE
+	CASE WHEN $2::boolean = true THEN t_attendances.attendance_type_id = ANY($3) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN t_attendances.member_id = ANY($5) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN t_attendances.date >= $7 ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN t_attendances.date <= $9 ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN t_attendances.mail_send_flag = $11 ELSE TRUE END
+AND
+	CASE WHEN $12::boolean = true THEN t_attendances.send_organization_id = ANY($13) ELSE TRUE END
+AND
+	CASE $14
+		WHEN 'next' THEN
+			CASE $15::text
+				WHEN 'date' THEN date > $16 OR (date = $16 AND t_attendances_pkey < $17)
+				WHEN 'r_date' THEN date < $16 OR (date = $16 AND t_attendances_pkey < $17)
+				ELSE t_attendances_pkey < $17
+			END
+		WHEN 'prev' THEN
+			CASE $15::text
+				WHEN 'date' THEN date < $16 OR (date = $16 AND t_attendances_pkey > $17)
+				WHEN 'r_date' THEN date > $16 OR (date = $16 AND t_attendances_pkey > $17)
+				ELSE t_attendances_pkey > $17
+			END
+	END
+ORDER BY
+	CASE WHEN $15::text = 'date' THEN date END ASC,
+	CASE WHEN $15::text = 'r_date' THEN date END DESC,
+	t_attendances_pkey DESC
+LIMIT $1
+`
+
+type GetAttendanceUseKeysetPaginateParams struct {
+	Limit                   int32       `json:"limit"`
+	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
+	InAttendanceType        uuid.UUID   `json:"in_attendance_type"`
+	WhereInMember           bool        `json:"where_in_member"`
+	InMember                uuid.UUID   `json:"in_member"`
+	WhereEarlierDate        bool        `json:"where_earlier_date"`
+	EarlierDate             pgtype.Date `json:"earlier_date"`
+	WhereLaterDate          bool        `json:"where_later_date"`
+	LaterDate               pgtype.Date `json:"later_date"`
+	WhereMailSendFlag       bool        `json:"where_mail_send_flag"`
+	MailSendFlag            bool        `json:"mail_send_flag"`
+	WhereInSendOrganization bool        `json:"where_in_send_organization"`
+	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
+	CursorDirection         interface{} `json:"cursor_direction"`
+	OrderMethod             string      `json:"order_method"`
+	CursorColumn            pgtype.Date `json:"cursor_column"`
+	Cursor                  pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetAttendanceUseKeysetPaginate(ctx context.Context, arg GetAttendanceUseKeysetPaginateParams) ([]Attendance, error) {
+	rows, err := q.db.Query(ctx, getAttendanceUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInAttendanceType,
+		arg.InAttendanceType,
+		arg.WhereInMember,
+		arg.InMember,
+		arg.WhereEarlierDate,
+		arg.EarlierDate,
+		arg.WhereLaterDate,
+		arg.LaterDate,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereInSendOrganization,
+		arg.InSendOrganization,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Attendance{}
+	for rows.Next() {
+		var i Attendance
+		if err := rows.Scan(
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttendanceUseNumberedPaginate = `-- name: GetAttendanceUseNumberedPaginate :many
+SELECT t_attendances_pkey, attendance_id, attendance_type_id, member_id, description, date, mail_send_flag, send_organization_id, posted_at, last_edited_at FROM t_attendances
 WHERE
 	CASE WHEN $3::boolean = true THEN t_attendances.attendance_type_id = ANY($4) ELSE TRUE END
 AND
@@ -410,9 +509,98 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetAttendanceWithAllParams struct {
+type GetAttendanceUseNumberedPaginateParams struct {
 	Limit                   int32       `json:"limit"`
 	Offset                  int32       `json:"offset"`
+	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
+	InAttendanceType        uuid.UUID   `json:"in_attendance_type"`
+	WhereInMember           bool        `json:"where_in_member"`
+	InMember                uuid.UUID   `json:"in_member"`
+	WhereEarlierDate        bool        `json:"where_earlier_date"`
+	EarlierDate             pgtype.Date `json:"earlier_date"`
+	WhereLaterDate          bool        `json:"where_later_date"`
+	LaterDate               pgtype.Date `json:"later_date"`
+	WhereMailSendFlag       bool        `json:"where_mail_send_flag"`
+	MailSendFlag            bool        `json:"mail_send_flag"`
+	WhereInSendOrganization bool        `json:"where_in_send_organization"`
+	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
+	OrderMethod             string      `json:"order_method"`
+}
+
+func (q *Queries) GetAttendanceUseNumberedPaginate(ctx context.Context, arg GetAttendanceUseNumberedPaginateParams) ([]Attendance, error) {
+	rows, err := q.db.Query(ctx, getAttendanceUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInAttendanceType,
+		arg.InAttendanceType,
+		arg.WhereInMember,
+		arg.InMember,
+		arg.WhereEarlierDate,
+		arg.EarlierDate,
+		arg.WhereLaterDate,
+		arg.LaterDate,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereInSendOrganization,
+		arg.InSendOrganization,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Attendance{}
+	for rows.Next() {
+		var i Attendance
+		if err := rows.Scan(
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttendanceWithAll = `-- name: GetAttendanceWithAll :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
+LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
+LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
+LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $1::boolean = true THEN t_attendances.attendance_type_id = ANY($2) ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN t_attendances.member_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN t_attendances.date >= $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN t_attendances.date <= $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN t_attendances.mail_send_flag = $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN t_attendances.send_organization_id = ANY($12) ELSE TRUE END
+ORDER BY
+	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC,
+	t_attendances_pkey DESC
+`
+
+type GetAttendanceWithAllParams struct {
 	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
 	InAttendanceType        uuid.UUID   `json:"in_attendance_type"`
 	WhereInMember           bool        `json:"where_in_member"`
@@ -440,8 +628,6 @@ type GetAttendanceWithAllRow struct {
 
 func (q *Queries) GetAttendanceWithAll(ctx context.Context, arg GetAttendanceWithAllParams) ([]GetAttendanceWithAllRow, error) {
 	rows, err := q.db.Query(ctx, getAttendanceWithAll,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereInAttendanceType,
 		arg.InAttendanceType,
 		arg.WhereInMember,
@@ -523,9 +709,173 @@ func (q *Queries) GetAttendanceWithAll(ctx context.Context, arg GetAttendanceWit
 	return items, nil
 }
 
-const getAttendanceWithAttendanceType = `-- name: GetAttendanceWithAttendanceType :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color FROM t_attendances
+const getAttendanceWithAllUseKeysetPaginate = `-- name: GetAttendanceWithAllUseKeysetPaginate :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
+LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
+LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
+LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $2::boolean = true THEN t_attendances.attendance_type_id = ANY($3) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN t_attendances.member_id = ANY($5) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN t_attendances.date >= $7 ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN t_attendances.date <= $9 ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN t_attendances.mail_send_flag = $11 ELSE TRUE END
+AND
+	CASE WHEN $12::boolean = true THEN t_attendances.send_organization_id = ANY($13) ELSE TRUE END
+AND
+	CASE $14
+		WHEN 'next' THEN
+			CASE $15::text
+				WHEN 'date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
+				WHEN 'r_date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
+				ELSE t_attendances_pkey < $17
+			END
+		WHEN 'prev' THEN
+			CASE $15::text
+				WHEN 'date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
+				WHEN 'r_date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
+				ELSE t_attendances_pkey > $17
+			END
+	END
+ORDER BY
+	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC,
+	t_attendances_pkey DESC
+LIMIT $1
+`
+
+type GetAttendanceWithAllUseKeysetPaginateParams struct {
+	Limit                   int32       `json:"limit"`
+	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
+	InAttendanceType        uuid.UUID   `json:"in_attendance_type"`
+	WhereInMember           bool        `json:"where_in_member"`
+	InMember                uuid.UUID   `json:"in_member"`
+	WhereEarlierDate        bool        `json:"where_earlier_date"`
+	EarlierDate             pgtype.Date `json:"earlier_date"`
+	WhereLaterDate          bool        `json:"where_later_date"`
+	LaterDate               pgtype.Date `json:"later_date"`
+	WhereMailSendFlag       bool        `json:"where_mail_send_flag"`
+	MailSendFlag            bool        `json:"mail_send_flag"`
+	WhereInSendOrganization bool        `json:"where_in_send_organization"`
+	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
+	CursorDirection         interface{} `json:"cursor_direction"`
+	OrderMethod             string      `json:"order_method"`
+	CursorColumn            pgtype.Date `json:"cursor_column"`
+	Cursor                  pgtype.Int8 `json:"cursor"`
+}
+
+type GetAttendanceWithAllUseKeysetPaginateRow struct {
+	Attendance     Attendance     `json:"attendance"`
+	Member         Member         `json:"member"`
+	AttendanceType AttendanceType `json:"attendance_type"`
+	Organization   Organization   `json:"organization"`
+	EarlyLeaving   EarlyLeaving   `json:"early_leaving"`
+	LateArrival    LateArrival    `json:"late_arrival"`
+	Absence        Absence        `json:"absence"`
+}
+
+func (q *Queries) GetAttendanceWithAllUseKeysetPaginate(ctx context.Context, arg GetAttendanceWithAllUseKeysetPaginateParams) ([]GetAttendanceWithAllUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttendanceWithAllUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInAttendanceType,
+		arg.InAttendanceType,
+		arg.WhereInMember,
+		arg.InMember,
+		arg.WhereEarlierDate,
+		arg.EarlierDate,
+		arg.WhereLaterDate,
+		arg.LaterDate,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereInSendOrganization,
+		arg.InSendOrganization,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttendanceWithAllUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetAttendanceWithAllUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Attendance.TAttendancesPkey,
+			&i.Attendance.AttendanceID,
+			&i.Attendance.AttendanceTypeID,
+			&i.Attendance.MemberID,
+			&i.Attendance.Description,
+			&i.Attendance.Date,
+			&i.Attendance.MailSendFlag,
+			&i.Attendance.SendOrganizationID,
+			&i.Attendance.PostedAt,
+			&i.Attendance.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.AttendanceType.MAttendanceTypesPkey,
+			&i.AttendanceType.AttendanceTypeID,
+			&i.AttendanceType.Name,
+			&i.AttendanceType.Key,
+			&i.AttendanceType.Color,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.EarlyLeaving.TEarlyLeavingsPkey,
+			&i.EarlyLeaving.EarlyLeavingID,
+			&i.EarlyLeaving.AttendanceID,
+			&i.EarlyLeaving.LeaveTime,
+			&i.LateArrival.TLateArrivalsPkey,
+			&i.LateArrival.LateArrivalID,
+			&i.LateArrival.AttendanceID,
+			&i.LateArrival.ArriveTime,
+			&i.Absence.TAbsencesPkey,
+			&i.Absence.AbsenceID,
+			&i.Absence.AttendanceID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttendanceWithAllUseNumberedPaginate = `-- name: GetAttendanceWithAllUseNumberedPaginate :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
+LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
+LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
+LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_attendances.attendance_type_id = ANY($4) ELSE TRUE END
 AND
@@ -545,9 +895,141 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetAttendanceWithAttendanceTypeParams struct {
+type GetAttendanceWithAllUseNumberedPaginateParams struct {
 	Limit                   int32       `json:"limit"`
 	Offset                  int32       `json:"offset"`
+	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
+	InAttendanceType        uuid.UUID   `json:"in_attendance_type"`
+	WhereInMember           bool        `json:"where_in_member"`
+	InMember                uuid.UUID   `json:"in_member"`
+	WhereEarlierDate        bool        `json:"where_earlier_date"`
+	EarlierDate             pgtype.Date `json:"earlier_date"`
+	WhereLaterDate          bool        `json:"where_later_date"`
+	LaterDate               pgtype.Date `json:"later_date"`
+	WhereMailSendFlag       bool        `json:"where_mail_send_flag"`
+	MailSendFlag            bool        `json:"mail_send_flag"`
+	WhereInSendOrganization bool        `json:"where_in_send_organization"`
+	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
+	OrderMethod             string      `json:"order_method"`
+}
+
+type GetAttendanceWithAllUseNumberedPaginateRow struct {
+	Attendance     Attendance     `json:"attendance"`
+	Member         Member         `json:"member"`
+	AttendanceType AttendanceType `json:"attendance_type"`
+	Organization   Organization   `json:"organization"`
+	EarlyLeaving   EarlyLeaving   `json:"early_leaving"`
+	LateArrival    LateArrival    `json:"late_arrival"`
+	Absence        Absence        `json:"absence"`
+}
+
+func (q *Queries) GetAttendanceWithAllUseNumberedPaginate(ctx context.Context, arg GetAttendanceWithAllUseNumberedPaginateParams) ([]GetAttendanceWithAllUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttendanceWithAllUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInAttendanceType,
+		arg.InAttendanceType,
+		arg.WhereInMember,
+		arg.InMember,
+		arg.WhereEarlierDate,
+		arg.EarlierDate,
+		arg.WhereLaterDate,
+		arg.LaterDate,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereInSendOrganization,
+		arg.InSendOrganization,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttendanceWithAllUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetAttendanceWithAllUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Attendance.TAttendancesPkey,
+			&i.Attendance.AttendanceID,
+			&i.Attendance.AttendanceTypeID,
+			&i.Attendance.MemberID,
+			&i.Attendance.Description,
+			&i.Attendance.Date,
+			&i.Attendance.MailSendFlag,
+			&i.Attendance.SendOrganizationID,
+			&i.Attendance.PostedAt,
+			&i.Attendance.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.AttendanceType.MAttendanceTypesPkey,
+			&i.AttendanceType.AttendanceTypeID,
+			&i.AttendanceType.Name,
+			&i.AttendanceType.Key,
+			&i.AttendanceType.Color,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.EarlyLeaving.TEarlyLeavingsPkey,
+			&i.EarlyLeaving.EarlyLeavingID,
+			&i.EarlyLeaving.AttendanceID,
+			&i.EarlyLeaving.LeaveTime,
+			&i.LateArrival.TLateArrivalsPkey,
+			&i.LateArrival.LateArrivalID,
+			&i.LateArrival.AttendanceID,
+			&i.LateArrival.ArriveTime,
+			&i.Absence.TAbsencesPkey,
+			&i.Absence.AbsenceID,
+			&i.Absence.AttendanceID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttendanceWithAttendanceType = `-- name: GetAttendanceWithAttendanceType :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color FROM t_attendances
+LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+WHERE
+	CASE WHEN $1::boolean = true THEN t_attendances.attendance_type_id = ANY($2) ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN t_attendances.member_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN t_attendances.date >= $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN t_attendances.date <= $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN t_attendances.mail_send_flag = $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN t_attendances.send_organization_id = ANY($12) ELSE TRUE END
+ORDER BY
+	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC,
+	t_attendances_pkey DESC
+`
+
+type GetAttendanceWithAttendanceTypeParams struct {
 	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
 	InAttendanceType        uuid.UUID   `json:"in_attendance_type"`
 	WhereInMember           bool        `json:"where_in_member"`
@@ -570,8 +1052,6 @@ type GetAttendanceWithAttendanceTypeRow struct {
 
 func (q *Queries) GetAttendanceWithAttendanceType(ctx context.Context, arg GetAttendanceWithAttendanceTypeParams) ([]GetAttendanceWithAttendanceTypeRow, error) {
 	rows, err := q.db.Query(ctx, getAttendanceWithAttendanceType,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereInAttendanceType,
 		arg.InAttendanceType,
 		arg.WhereInMember,
@@ -620,11 +1100,125 @@ func (q *Queries) GetAttendanceWithAttendanceType(ctx context.Context, arg GetAt
 	return items, nil
 }
 
-const getAttendanceWithDetails = `-- name: GetAttendanceWithDetails :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
-LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
-LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
-LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
+const getAttendanceWithAttendanceTypeUseKeysetPaginate = `-- name: GetAttendanceWithAttendanceTypeUseKeysetPaginate :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color FROM t_attendances
+LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+WHERE
+	CASE WHEN $2::boolean = true THEN t_attendances.attendance_type_id = ANY($3) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN t_attendances.member_id = ANY($5) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN t_attendances.date >= $7 ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN t_attendances.date <= $9 ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN t_attendances.mail_send_flag = $11 ELSE TRUE END
+AND
+	CASE WHEN $12::boolean = true THEN t_attendances.send_organization_id = ANY($13) ELSE TRUE END
+AND
+	CASE $14
+		WHEN 'next' THEN
+			CASE $15::text
+				WHEN 'date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
+				WHEN 'r_date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
+				ELSE t_attendances_pkey < $17
+			END
+		WHEN 'prev' THEN
+			CASE $15::text
+				WHEN 'date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
+				WHEN 'r_date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
+				ELSE t_attendances_pkey > $17
+			END
+	END
+ORDER BY
+	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC,
+	t_attendances_pkey DESC
+LIMIT $1
+`
+
+type GetAttendanceWithAttendanceTypeUseKeysetPaginateParams struct {
+	Limit                   int32       `json:"limit"`
+	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
+	InAttendanceType        uuid.UUID   `json:"in_attendance_type"`
+	WhereInMember           bool        `json:"where_in_member"`
+	InMember                uuid.UUID   `json:"in_member"`
+	WhereEarlierDate        bool        `json:"where_earlier_date"`
+	EarlierDate             pgtype.Date `json:"earlier_date"`
+	WhereLaterDate          bool        `json:"where_later_date"`
+	LaterDate               pgtype.Date `json:"later_date"`
+	WhereMailSendFlag       bool        `json:"where_mail_send_flag"`
+	MailSendFlag            bool        `json:"mail_send_flag"`
+	WhereInSendOrganization bool        `json:"where_in_send_organization"`
+	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
+	CursorDirection         interface{} `json:"cursor_direction"`
+	OrderMethod             string      `json:"order_method"`
+	CursorColumn            pgtype.Date `json:"cursor_column"`
+	Cursor                  pgtype.Int8 `json:"cursor"`
+}
+
+type GetAttendanceWithAttendanceTypeUseKeysetPaginateRow struct {
+	Attendance     Attendance     `json:"attendance"`
+	AttendanceType AttendanceType `json:"attendance_type"`
+}
+
+func (q *Queries) GetAttendanceWithAttendanceTypeUseKeysetPaginate(ctx context.Context, arg GetAttendanceWithAttendanceTypeUseKeysetPaginateParams) ([]GetAttendanceWithAttendanceTypeUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttendanceWithAttendanceTypeUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInAttendanceType,
+		arg.InAttendanceType,
+		arg.WhereInMember,
+		arg.InMember,
+		arg.WhereEarlierDate,
+		arg.EarlierDate,
+		arg.WhereLaterDate,
+		arg.LaterDate,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereInSendOrganization,
+		arg.InSendOrganization,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttendanceWithAttendanceTypeUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetAttendanceWithAttendanceTypeUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Attendance.TAttendancesPkey,
+			&i.Attendance.AttendanceID,
+			&i.Attendance.AttendanceTypeID,
+			&i.Attendance.MemberID,
+			&i.Attendance.Description,
+			&i.Attendance.Date,
+			&i.Attendance.MailSendFlag,
+			&i.Attendance.SendOrganizationID,
+			&i.Attendance.PostedAt,
+			&i.Attendance.LastEditedAt,
+			&i.AttendanceType.MAttendanceTypesPkey,
+			&i.AttendanceType.AttendanceTypeID,
+			&i.AttendanceType.Name,
+			&i.AttendanceType.Key,
+			&i.AttendanceType.Color,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttendanceWithAttendanceTypeUseNumberedPaginate = `-- name: GetAttendanceWithAttendanceTypeUseNumberedPaginate :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color FROM t_attendances
+LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_attendances.attendance_type_id = ANY($4) ELSE TRUE END
 AND
@@ -644,9 +1238,105 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetAttendanceWithDetailsParams struct {
+type GetAttendanceWithAttendanceTypeUseNumberedPaginateParams struct {
 	Limit                   int32       `json:"limit"`
 	Offset                  int32       `json:"offset"`
+	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
+	InAttendanceType        uuid.UUID   `json:"in_attendance_type"`
+	WhereInMember           bool        `json:"where_in_member"`
+	InMember                uuid.UUID   `json:"in_member"`
+	WhereEarlierDate        bool        `json:"where_earlier_date"`
+	EarlierDate             pgtype.Date `json:"earlier_date"`
+	WhereLaterDate          bool        `json:"where_later_date"`
+	LaterDate               pgtype.Date `json:"later_date"`
+	WhereMailSendFlag       bool        `json:"where_mail_send_flag"`
+	MailSendFlag            bool        `json:"mail_send_flag"`
+	WhereInSendOrganization bool        `json:"where_in_send_organization"`
+	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
+	OrderMethod             string      `json:"order_method"`
+}
+
+type GetAttendanceWithAttendanceTypeUseNumberedPaginateRow struct {
+	Attendance     Attendance     `json:"attendance"`
+	AttendanceType AttendanceType `json:"attendance_type"`
+}
+
+func (q *Queries) GetAttendanceWithAttendanceTypeUseNumberedPaginate(ctx context.Context, arg GetAttendanceWithAttendanceTypeUseNumberedPaginateParams) ([]GetAttendanceWithAttendanceTypeUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttendanceWithAttendanceTypeUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInAttendanceType,
+		arg.InAttendanceType,
+		arg.WhereInMember,
+		arg.InMember,
+		arg.WhereEarlierDate,
+		arg.EarlierDate,
+		arg.WhereLaterDate,
+		arg.LaterDate,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereInSendOrganization,
+		arg.InSendOrganization,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttendanceWithAttendanceTypeUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetAttendanceWithAttendanceTypeUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Attendance.TAttendancesPkey,
+			&i.Attendance.AttendanceID,
+			&i.Attendance.AttendanceTypeID,
+			&i.Attendance.MemberID,
+			&i.Attendance.Description,
+			&i.Attendance.Date,
+			&i.Attendance.MailSendFlag,
+			&i.Attendance.SendOrganizationID,
+			&i.Attendance.PostedAt,
+			&i.Attendance.LastEditedAt,
+			&i.AttendanceType.MAttendanceTypesPkey,
+			&i.AttendanceType.AttendanceTypeID,
+			&i.AttendanceType.Name,
+			&i.AttendanceType.Key,
+			&i.AttendanceType.Color,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttendanceWithDetails = `-- name: GetAttendanceWithDetails :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
+LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
+LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
+WHERE
+	CASE WHEN $1::boolean = true THEN t_attendances.attendance_type_id = ANY($2) ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN t_attendances.member_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN t_attendances.date >= $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN t_attendances.date <= $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN t_attendances.mail_send_flag = $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN t_attendances.send_organization_id = ANY($12) ELSE TRUE END
+ORDER BY
+	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC,
+	t_attendances_pkey DESC
+`
+
+type GetAttendanceWithDetailsParams struct {
 	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
 	InAttendanceType        uuid.UUID   `json:"in_attendance_type"`
 	WhereInMember           bool        `json:"where_in_member"`
@@ -671,8 +1361,6 @@ type GetAttendanceWithDetailsRow struct {
 
 func (q *Queries) GetAttendanceWithDetails(ctx context.Context, arg GetAttendanceWithDetailsParams) ([]GetAttendanceWithDetailsRow, error) {
 	rows, err := q.db.Query(ctx, getAttendanceWithDetails,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereInAttendanceType,
 		arg.InAttendanceType,
 		arg.WhereInMember,
@@ -727,9 +1415,137 @@ func (q *Queries) GetAttendanceWithDetails(ctx context.Context, arg GetAttendanc
 	return items, nil
 }
 
-const getAttendanceWithMember = `-- name: GetAttendanceWithMember :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
-LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+const getAttendanceWithDetailsUseKeysetPaginate = `-- name: GetAttendanceWithDetailsUseKeysetPaginate :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
+LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
+LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
+WHERE
+	CASE WHEN $2::boolean = true THEN t_attendances.attendance_type_id = ANY($3) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN t_attendances.member_id = ANY($5) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN t_attendances.date >= $7 ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN t_attendances.date <= $9 ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN t_attendances.mail_send_flag = $11 ELSE TRUE END
+AND
+	CASE WHEN $12::boolean = true THEN t_attendances.send_organization_id = ANY($13) ELSE TRUE END
+AND
+	CASE $14
+		WHEN 'next' THEN
+			CASE $15::text
+				WHEN 'date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
+				WHEN 'r_date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
+				ELSE t_attendances_pkey < $17
+			END
+		WHEN 'prev' THEN
+			CASE $15::text
+				WHEN 'date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
+				WHEN 'r_date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
+				ELSE t_attendances_pkey > $17
+			END
+	END
+ORDER BY
+	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC,
+	t_attendances_pkey DESC
+LIMIT $1
+`
+
+type GetAttendanceWithDetailsUseKeysetPaginateParams struct {
+	Limit                   int32       `json:"limit"`
+	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
+	InAttendanceType        uuid.UUID   `json:"in_attendance_type"`
+	WhereInMember           bool        `json:"where_in_member"`
+	InMember                uuid.UUID   `json:"in_member"`
+	WhereEarlierDate        bool        `json:"where_earlier_date"`
+	EarlierDate             pgtype.Date `json:"earlier_date"`
+	WhereLaterDate          bool        `json:"where_later_date"`
+	LaterDate               pgtype.Date `json:"later_date"`
+	WhereMailSendFlag       bool        `json:"where_mail_send_flag"`
+	MailSendFlag            bool        `json:"mail_send_flag"`
+	WhereInSendOrganization bool        `json:"where_in_send_organization"`
+	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
+	CursorDirection         interface{} `json:"cursor_direction"`
+	OrderMethod             string      `json:"order_method"`
+	CursorColumn            pgtype.Date `json:"cursor_column"`
+	Cursor                  pgtype.Int8 `json:"cursor"`
+}
+
+type GetAttendanceWithDetailsUseKeysetPaginateRow struct {
+	Attendance   Attendance   `json:"attendance"`
+	EarlyLeaving EarlyLeaving `json:"early_leaving"`
+	LateArrival  LateArrival  `json:"late_arrival"`
+	Absence      Absence      `json:"absence"`
+}
+
+func (q *Queries) GetAttendanceWithDetailsUseKeysetPaginate(ctx context.Context, arg GetAttendanceWithDetailsUseKeysetPaginateParams) ([]GetAttendanceWithDetailsUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttendanceWithDetailsUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInAttendanceType,
+		arg.InAttendanceType,
+		arg.WhereInMember,
+		arg.InMember,
+		arg.WhereEarlierDate,
+		arg.EarlierDate,
+		arg.WhereLaterDate,
+		arg.LaterDate,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereInSendOrganization,
+		arg.InSendOrganization,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttendanceWithDetailsUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetAttendanceWithDetailsUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Attendance.TAttendancesPkey,
+			&i.Attendance.AttendanceID,
+			&i.Attendance.AttendanceTypeID,
+			&i.Attendance.MemberID,
+			&i.Attendance.Description,
+			&i.Attendance.Date,
+			&i.Attendance.MailSendFlag,
+			&i.Attendance.SendOrganizationID,
+			&i.Attendance.PostedAt,
+			&i.Attendance.LastEditedAt,
+			&i.EarlyLeaving.TEarlyLeavingsPkey,
+			&i.EarlyLeaving.EarlyLeavingID,
+			&i.EarlyLeaving.AttendanceID,
+			&i.EarlyLeaving.LeaveTime,
+			&i.LateArrival.TLateArrivalsPkey,
+			&i.LateArrival.LateArrivalID,
+			&i.LateArrival.AttendanceID,
+			&i.LateArrival.ArriveTime,
+			&i.Absence.TAbsencesPkey,
+			&i.Absence.AbsenceID,
+			&i.Absence.AttendanceID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttendanceWithDetailsUseNumberedPaginate = `-- name: GetAttendanceWithDetailsUseNumberedPaginate :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
+LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
+LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_attendances.attendance_type_id = ANY($4) ELSE TRUE END
 AND
@@ -749,9 +1565,111 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetAttendanceWithMemberParams struct {
+type GetAttendanceWithDetailsUseNumberedPaginateParams struct {
 	Limit                   int32       `json:"limit"`
 	Offset                  int32       `json:"offset"`
+	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
+	InAttendanceType        uuid.UUID   `json:"in_attendance_type"`
+	WhereInMember           bool        `json:"where_in_member"`
+	InMember                uuid.UUID   `json:"in_member"`
+	WhereEarlierDate        bool        `json:"where_earlier_date"`
+	EarlierDate             pgtype.Date `json:"earlier_date"`
+	WhereLaterDate          bool        `json:"where_later_date"`
+	LaterDate               pgtype.Date `json:"later_date"`
+	WhereMailSendFlag       bool        `json:"where_mail_send_flag"`
+	MailSendFlag            bool        `json:"mail_send_flag"`
+	WhereInSendOrganization bool        `json:"where_in_send_organization"`
+	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
+	OrderMethod             string      `json:"order_method"`
+}
+
+type GetAttendanceWithDetailsUseNumberedPaginateRow struct {
+	Attendance   Attendance   `json:"attendance"`
+	EarlyLeaving EarlyLeaving `json:"early_leaving"`
+	LateArrival  LateArrival  `json:"late_arrival"`
+	Absence      Absence      `json:"absence"`
+}
+
+func (q *Queries) GetAttendanceWithDetailsUseNumberedPaginate(ctx context.Context, arg GetAttendanceWithDetailsUseNumberedPaginateParams) ([]GetAttendanceWithDetailsUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttendanceWithDetailsUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInAttendanceType,
+		arg.InAttendanceType,
+		arg.WhereInMember,
+		arg.InMember,
+		arg.WhereEarlierDate,
+		arg.EarlierDate,
+		arg.WhereLaterDate,
+		arg.LaterDate,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereInSendOrganization,
+		arg.InSendOrganization,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttendanceWithDetailsUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetAttendanceWithDetailsUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Attendance.TAttendancesPkey,
+			&i.Attendance.AttendanceID,
+			&i.Attendance.AttendanceTypeID,
+			&i.Attendance.MemberID,
+			&i.Attendance.Description,
+			&i.Attendance.Date,
+			&i.Attendance.MailSendFlag,
+			&i.Attendance.SendOrganizationID,
+			&i.Attendance.PostedAt,
+			&i.Attendance.LastEditedAt,
+			&i.EarlyLeaving.TEarlyLeavingsPkey,
+			&i.EarlyLeaving.EarlyLeavingID,
+			&i.EarlyLeaving.AttendanceID,
+			&i.EarlyLeaving.LeaveTime,
+			&i.LateArrival.TLateArrivalsPkey,
+			&i.LateArrival.LateArrivalID,
+			&i.LateArrival.AttendanceID,
+			&i.LateArrival.ArriveTime,
+			&i.Absence.TAbsencesPkey,
+			&i.Absence.AbsenceID,
+			&i.Absence.AttendanceID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttendanceWithMember = `-- name: GetAttendanceWithMember :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
+LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+WHERE
+	CASE WHEN $1::boolean = true THEN t_attendances.attendance_type_id = ANY($2) ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN t_attendances.member_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN t_attendances.date >= $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN t_attendances.date <= $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN t_attendances.mail_send_flag = $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN t_attendances.send_organization_id = ANY($12) ELSE TRUE END
+ORDER BY
+	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC,
+	t_attendances_pkey DESC
+`
+
+type GetAttendanceWithMemberParams struct {
 	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
 	InAttendanceType        uuid.UUID   `json:"in_attendance_type"`
 	WhereInMember           bool        `json:"where_in_member"`
@@ -774,8 +1692,6 @@ type GetAttendanceWithMemberRow struct {
 
 func (q *Queries) GetAttendanceWithMember(ctx context.Context, arg GetAttendanceWithMemberParams) ([]GetAttendanceWithMemberRow, error) {
 	rows, err := q.db.Query(ctx, getAttendanceWithMember,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereInAttendanceType,
 		arg.InAttendanceType,
 		arg.WhereInMember,
@@ -833,9 +1749,134 @@ func (q *Queries) GetAttendanceWithMember(ctx context.Context, arg GetAttendance
 	return items, nil
 }
 
-const getAttendanceWithSendOrganization = `-- name: GetAttendanceWithSendOrganization :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_attendances
-LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+const getAttendanceWithMemberUseKeysetPaginate = `-- name: GetAttendanceWithMemberUseKeysetPaginate :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
+LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+WHERE
+	CASE WHEN $2::boolean = true THEN t_attendances.attendance_type_id = ANY($3) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN t_attendances.member_id = ANY($5) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN t_attendances.date >= $7 ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN t_attendances.date <= $9 ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN t_attendances.mail_send_flag = $11 ELSE TRUE END
+AND
+	CASE WHEN $12::boolean = true THEN t_attendances.send_organization_id = ANY($13) ELSE TRUE END
+AND
+	CASE $14
+		WHEN 'next' THEN
+			CASE $15::text
+				WHEN 'date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
+				WHEN 'r_date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
+				ELSE t_attendances_pkey < $17
+			END
+		WHEN 'prev' THEN
+			CASE $15::text
+				WHEN 'date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
+				WHEN 'r_date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
+				ELSE t_attendances_pkey > $17
+			END
+	END
+ORDER BY
+	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC,
+	t_attendances_pkey DESC
+LIMIT $1
+`
+
+type GetAttendanceWithMemberUseKeysetPaginateParams struct {
+	Limit                   int32       `json:"limit"`
+	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
+	InAttendanceType        uuid.UUID   `json:"in_attendance_type"`
+	WhereInMember           bool        `json:"where_in_member"`
+	InMember                uuid.UUID   `json:"in_member"`
+	WhereEarlierDate        bool        `json:"where_earlier_date"`
+	EarlierDate             pgtype.Date `json:"earlier_date"`
+	WhereLaterDate          bool        `json:"where_later_date"`
+	LaterDate               pgtype.Date `json:"later_date"`
+	WhereMailSendFlag       bool        `json:"where_mail_send_flag"`
+	MailSendFlag            bool        `json:"mail_send_flag"`
+	WhereInSendOrganization bool        `json:"where_in_send_organization"`
+	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
+	CursorDirection         interface{} `json:"cursor_direction"`
+	OrderMethod             string      `json:"order_method"`
+	CursorColumn            pgtype.Date `json:"cursor_column"`
+	Cursor                  pgtype.Int8 `json:"cursor"`
+}
+
+type GetAttendanceWithMemberUseKeysetPaginateRow struct {
+	Attendance Attendance `json:"attendance"`
+	Member     Member     `json:"member"`
+}
+
+func (q *Queries) GetAttendanceWithMemberUseKeysetPaginate(ctx context.Context, arg GetAttendanceWithMemberUseKeysetPaginateParams) ([]GetAttendanceWithMemberUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttendanceWithMemberUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInAttendanceType,
+		arg.InAttendanceType,
+		arg.WhereInMember,
+		arg.InMember,
+		arg.WhereEarlierDate,
+		arg.EarlierDate,
+		arg.WhereLaterDate,
+		arg.LaterDate,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereInSendOrganization,
+		arg.InSendOrganization,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttendanceWithMemberUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetAttendanceWithMemberUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Attendance.TAttendancesPkey,
+			&i.Attendance.AttendanceID,
+			&i.Attendance.AttendanceTypeID,
+			&i.Attendance.MemberID,
+			&i.Attendance.Description,
+			&i.Attendance.Date,
+			&i.Attendance.MailSendFlag,
+			&i.Attendance.SendOrganizationID,
+			&i.Attendance.PostedAt,
+			&i.Attendance.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttendanceWithMemberUseNumberedPaginate = `-- name: GetAttendanceWithMemberUseNumberedPaginate :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
+LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_attendances.attendance_type_id = ANY($4) ELSE TRUE END
 AND
@@ -855,9 +1896,112 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetAttendanceWithSendOrganizationParams struct {
+type GetAttendanceWithMemberUseNumberedPaginateParams struct {
 	Limit                   int32       `json:"limit"`
 	Offset                  int32       `json:"offset"`
+	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
+	InAttendanceType        uuid.UUID   `json:"in_attendance_type"`
+	WhereInMember           bool        `json:"where_in_member"`
+	InMember                uuid.UUID   `json:"in_member"`
+	WhereEarlierDate        bool        `json:"where_earlier_date"`
+	EarlierDate             pgtype.Date `json:"earlier_date"`
+	WhereLaterDate          bool        `json:"where_later_date"`
+	LaterDate               pgtype.Date `json:"later_date"`
+	WhereMailSendFlag       bool        `json:"where_mail_send_flag"`
+	MailSendFlag            bool        `json:"mail_send_flag"`
+	WhereInSendOrganization bool        `json:"where_in_send_organization"`
+	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
+	OrderMethod             string      `json:"order_method"`
+}
+
+type GetAttendanceWithMemberUseNumberedPaginateRow struct {
+	Attendance Attendance `json:"attendance"`
+	Member     Member     `json:"member"`
+}
+
+func (q *Queries) GetAttendanceWithMemberUseNumberedPaginate(ctx context.Context, arg GetAttendanceWithMemberUseNumberedPaginateParams) ([]GetAttendanceWithMemberUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttendanceWithMemberUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInAttendanceType,
+		arg.InAttendanceType,
+		arg.WhereInMember,
+		arg.InMember,
+		arg.WhereEarlierDate,
+		arg.EarlierDate,
+		arg.WhereLaterDate,
+		arg.LaterDate,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereInSendOrganization,
+		arg.InSendOrganization,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttendanceWithMemberUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetAttendanceWithMemberUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Attendance.TAttendancesPkey,
+			&i.Attendance.AttendanceID,
+			&i.Attendance.AttendanceTypeID,
+			&i.Attendance.MemberID,
+			&i.Attendance.Description,
+			&i.Attendance.Date,
+			&i.Attendance.MailSendFlag,
+			&i.Attendance.SendOrganizationID,
+			&i.Attendance.PostedAt,
+			&i.Attendance.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttendanceWithSendOrganization = `-- name: GetAttendanceWithSendOrganization :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_attendances
+LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $1::boolean = true THEN t_attendances.attendance_type_id = ANY($2) ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN t_attendances.member_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN t_attendances.date >= $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN t_attendances.date <= $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN t_attendances.mail_send_flag = $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN t_attendances.send_organization_id = ANY($12) ELSE TRUE END
+ORDER BY
+	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC,
+	t_attendances_pkey DESC
+`
+
+type GetAttendanceWithSendOrganizationParams struct {
 	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
 	InAttendanceType        uuid.UUID   `json:"in_attendance_type"`
 	WhereInMember           bool        `json:"where_in_member"`
@@ -880,8 +2024,6 @@ type GetAttendanceWithSendOrganizationRow struct {
 
 func (q *Queries) GetAttendanceWithSendOrganization(ctx context.Context, arg GetAttendanceWithSendOrganizationParams) ([]GetAttendanceWithSendOrganizationRow, error) {
 	rows, err := q.db.Query(ctx, getAttendanceWithSendOrganization,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereInAttendanceType,
 		arg.InAttendanceType,
 		arg.WhereInMember,
@@ -933,8 +2075,128 @@ func (q *Queries) GetAttendanceWithSendOrganization(ctx context.Context, arg Get
 	return items, nil
 }
 
-const getAttendances = `-- name: GetAttendances :many
-SELECT t_attendances_pkey, attendance_id, attendance_type_id, member_id, description, date, mail_send_flag, send_organization_id, posted_at, last_edited_at FROM t_attendances
+const getAttendanceWithSendOrganizationUseKeysetPaginate = `-- name: GetAttendanceWithSendOrganizationUseKeysetPaginate :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_attendances
+LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $2::boolean = true THEN t_attendances.attendance_type_id = ANY($3) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN t_attendances.member_id = ANY($5) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN t_attendances.date >= $7 ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN t_attendances.date <= $9 ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN t_attendances.mail_send_flag = $11 ELSE TRUE END
+AND
+	CASE WHEN $12::boolean = true THEN t_attendances.send_organization_id = ANY($13) ELSE TRUE END
+AND
+	CASE $14
+		WHEN 'next' THEN
+			CASE $15::text
+				WHEN 'date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
+				WHEN 'r_date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
+				ELSE t_attendances_pkey < $17
+			END
+		WHEN 'prev' THEN
+			CASE $15::text
+				WHEN 'date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
+				WHEN 'r_date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
+				ELSE t_attendances_pkey > $17
+			END
+	END
+ORDER BY
+	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC,
+	t_attendances_pkey DESC
+LIMIT $1
+`
+
+type GetAttendanceWithSendOrganizationUseKeysetPaginateParams struct {
+	Limit                   int32       `json:"limit"`
+	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
+	InAttendanceType        uuid.UUID   `json:"in_attendance_type"`
+	WhereInMember           bool        `json:"where_in_member"`
+	InMember                uuid.UUID   `json:"in_member"`
+	WhereEarlierDate        bool        `json:"where_earlier_date"`
+	EarlierDate             pgtype.Date `json:"earlier_date"`
+	WhereLaterDate          bool        `json:"where_later_date"`
+	LaterDate               pgtype.Date `json:"later_date"`
+	WhereMailSendFlag       bool        `json:"where_mail_send_flag"`
+	MailSendFlag            bool        `json:"mail_send_flag"`
+	WhereInSendOrganization bool        `json:"where_in_send_organization"`
+	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
+	CursorDirection         interface{} `json:"cursor_direction"`
+	OrderMethod             string      `json:"order_method"`
+	CursorColumn            pgtype.Date `json:"cursor_column"`
+	Cursor                  pgtype.Int8 `json:"cursor"`
+}
+
+type GetAttendanceWithSendOrganizationUseKeysetPaginateRow struct {
+	Attendance   Attendance   `json:"attendance"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetAttendanceWithSendOrganizationUseKeysetPaginate(ctx context.Context, arg GetAttendanceWithSendOrganizationUseKeysetPaginateParams) ([]GetAttendanceWithSendOrganizationUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttendanceWithSendOrganizationUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInAttendanceType,
+		arg.InAttendanceType,
+		arg.WhereInMember,
+		arg.InMember,
+		arg.WhereEarlierDate,
+		arg.EarlierDate,
+		arg.WhereLaterDate,
+		arg.LaterDate,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereInSendOrganization,
+		arg.InSendOrganization,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttendanceWithSendOrganizationUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetAttendanceWithSendOrganizationUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Attendance.TAttendancesPkey,
+			&i.Attendance.AttendanceID,
+			&i.Attendance.AttendanceTypeID,
+			&i.Attendance.MemberID,
+			&i.Attendance.Description,
+			&i.Attendance.Date,
+			&i.Attendance.MailSendFlag,
+			&i.Attendance.SendOrganizationID,
+			&i.Attendance.PostedAt,
+			&i.Attendance.LastEditedAt,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttendanceWithSendOrganizationUseNumberedPaginate = `-- name: GetAttendanceWithSendOrganizationUseNumberedPaginate :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_attendances
+LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_attendances.attendance_type_id = ANY($4) ELSE TRUE END
 AND
@@ -954,7 +2216,7 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetAttendancesParams struct {
+type GetAttendanceWithSendOrganizationUseNumberedPaginateParams struct {
 	Limit                   int32       `json:"limit"`
 	Offset                  int32       `json:"offset"`
 	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
@@ -972,10 +2234,104 @@ type GetAttendancesParams struct {
 	OrderMethod             string      `json:"order_method"`
 }
 
-func (q *Queries) GetAttendances(ctx context.Context, arg GetAttendancesParams) ([]Attendance, error) {
-	rows, err := q.db.Query(ctx, getAttendances,
+type GetAttendanceWithSendOrganizationUseNumberedPaginateRow struct {
+	Attendance   Attendance   `json:"attendance"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetAttendanceWithSendOrganizationUseNumberedPaginate(ctx context.Context, arg GetAttendanceWithSendOrganizationUseNumberedPaginateParams) ([]GetAttendanceWithSendOrganizationUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttendanceWithSendOrganizationUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
+		arg.WhereInAttendanceType,
+		arg.InAttendanceType,
+		arg.WhereInMember,
+		arg.InMember,
+		arg.WhereEarlierDate,
+		arg.EarlierDate,
+		arg.WhereLaterDate,
+		arg.LaterDate,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereInSendOrganization,
+		arg.InSendOrganization,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttendanceWithSendOrganizationUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetAttendanceWithSendOrganizationUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Attendance.TAttendancesPkey,
+			&i.Attendance.AttendanceID,
+			&i.Attendance.AttendanceTypeID,
+			&i.Attendance.MemberID,
+			&i.Attendance.Description,
+			&i.Attendance.Date,
+			&i.Attendance.MailSendFlag,
+			&i.Attendance.SendOrganizationID,
+			&i.Attendance.PostedAt,
+			&i.Attendance.LastEditedAt,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttendances = `-- name: GetAttendances :many
+SELECT t_attendances_pkey, attendance_id, attendance_type_id, member_id, description, date, mail_send_flag, send_organization_id, posted_at, last_edited_at FROM t_attendances
+WHERE
+	CASE WHEN $1::boolean = true THEN t_attendances.attendance_type_id = ANY($2) ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN t_attendances.member_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN t_attendances.date >= $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN t_attendances.date <= $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN t_attendances.mail_send_flag = $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN t_attendances.send_organization_id = ANY($12) ELSE TRUE END
+ORDER BY
+	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC,
+	t_attendances_pkey DESC
+`
+
+type GetAttendancesParams struct {
+	WhereInAttendanceType   bool        `json:"where_in_attendance_type"`
+	InAttendanceType        uuid.UUID   `json:"in_attendance_type"`
+	WhereInMember           bool        `json:"where_in_member"`
+	InMember                uuid.UUID   `json:"in_member"`
+	WhereEarlierDate        bool        `json:"where_earlier_date"`
+	EarlierDate             pgtype.Date `json:"earlier_date"`
+	WhereLaterDate          bool        `json:"where_later_date"`
+	LaterDate               pgtype.Date `json:"later_date"`
+	WhereMailSendFlag       bool        `json:"where_mail_send_flag"`
+	MailSendFlag            bool        `json:"mail_send_flag"`
+	WhereInSendOrganization bool        `json:"where_in_send_organization"`
+	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
+	OrderMethod             string      `json:"order_method"`
+}
+
+func (q *Queries) GetAttendances(ctx context.Context, arg GetAttendancesParams) ([]Attendance, error) {
+	rows, err := q.db.Query(ctx, getAttendances,
 		arg.WhereInAttendanceType,
 		arg.InAttendanceType,
 		arg.WhereInMember,

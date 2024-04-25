@@ -111,7 +111,7 @@ AND
 	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
-WHERE
+AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method
@@ -200,7 +200,7 @@ AND
 	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
-WHERE
+AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method
@@ -289,7 +289,7 @@ AND
 	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
-WHERE
+AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method
@@ -378,7 +378,7 @@ AND
 	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
-WHERE
+AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method
@@ -467,7 +467,7 @@ AND
 	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
-WHERE
+AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method
@@ -556,7 +556,7 @@ AND
 	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
-WHERE
+AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method
@@ -657,7 +657,7 @@ AND
 	CASE WHEN @where_earlier_end_time::boolean = true THEN end_time >= @earlier_end_time ELSE TRUE END
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
-WHERE
+AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method

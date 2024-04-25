@@ -127,21 +127,22 @@ AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_members_pkey < @cursor)
-				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_members_pkey < @cursor)
+				WHEN 'name' THEN m_members.name > @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey < @cursor)
+				WHEN 'r_name' THEN m_members.name < @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey < @cursor)
 				ELSE m_members_pkey < @cursor
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name < @cursor_column OR (name = @cursor_column AND m_members_pkey > @cursor)
-				WHEN 'r_name' THEN name > @cursor_column OR (name = @cursor_column AND m_members_pkey > @cursor)
+				WHEN 'name' THEN m_members.name < @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey > @cursor)
+				WHEN 'r_name' THEN m_members.name > @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey > @cursor)
 				ELSE m_members_pkey > @cursor
 			END
-	ORDER BY
-		CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-		CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-		m_members_pkey DESC
-	LIMIT $1;
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+LIMIT $1;
 
 -- name: GetMembersWithAttendStatus :many
 SELECT sqlc.embed(m_members), sqlc.embed(m_attend_statuses) FROM m_members
@@ -197,21 +198,22 @@ AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_members_pkey < @cursor)
-				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_members_pkey < @cursor)
+				WHEN 'name' THEN m_members.name > @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey < @cursor)
+				WHEN 'r_name' THEN m_members.name < @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey < @cursor)
 				ELSE m_members_pkey < @cursor
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name < @cursor_column OR (name = @cursor_column AND m_members_pkey > @cursor)
-				WHEN 'r_name' THEN name > @cursor_column OR (name = @cursor_column AND m_members_pkey > @cursor)
+				WHEN 'name' THEN m_members.name < @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey > @cursor)
+				WHEN 'r_name' THEN m_members.name > @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey > @cursor)
 				ELSE m_members_pkey > @cursor
 			END
-	ORDER BY
-		CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-		CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-		m_members_pkey DESC
-	LIMIT $1;
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+LIMIT $1;
 
 -- name: GetMembersWithGrade :many
 SELECT sqlc.embed(m_members), sqlc.embed(m_grades) FROM m_members
@@ -270,21 +272,22 @@ AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_members_pkey < @cursor)
-				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_members_pkey < @cursor)
+				WHEN 'name' THEN m_members.name > @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey < @cursor)
+				WHEN 'r_name' THEN m_members.name < @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey < @cursor)
 				ELSE m_members_pkey < @cursor
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name < @cursor_column OR (name = @cursor_column AND m_members_pkey > @cursor)
-				WHEN 'r_name' THEN name > @cursor_column OR (name = @cursor_column AND m_members_pkey > @cursor)
+				WHEN 'name' THEN m_members.name < @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey > @cursor)
+				WHEN 'r_name' THEN m_members.name > @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey > @cursor)
 				ELSE m_members_pkey > @cursor
 			END
-	ORDER BY
-		CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-		CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-		m_members_pkey DESC
-	LIMIT $1;
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+LIMIT $1;
 
 -- name: GetMembersWithGroup :many
 SELECT sqlc.embed(m_members), sqlc.embed(m_groups) FROM m_members
@@ -343,21 +346,22 @@ AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_members_pkey < @cursor)
-				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_members_pkey < @cursor)
+				WHEN 'name' THEN m_members.name > @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey < @cursor)
+				WHEN 'r_name' THEN m_members.name < @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey < @cursor)
 				ELSE m_members_pkey < @cursor
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name < @cursor_column OR (name = @cursor_column AND m_members_pkey > @cursor)
-				WHEN 'r_name' THEN name > @cursor_column OR (name = @cursor_column AND m_members_pkey > @cursor)
+				WHEN 'name' THEN m_members.name < @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey > @cursor)
+				WHEN 'r_name' THEN m_members.name > @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey > @cursor)
 				ELSE m_members_pkey > @cursor
 			END
-	ORDER BY
-		CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-		CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-		m_members_pkey DESC
-	LIMIT $1;
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+LIMIT $1;
 
 -- name: GetMembersWithPersonalOrganization :many
 SELECT sqlc.embed(m_members), sqlc.embed(m_organizations) FROM m_members
@@ -413,21 +417,22 @@ AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_members_pkey < @cursor)
-				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_members_pkey < @cursor)
+				WHEN 'name' THEN m_members.name > @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey < @cursor)
+				WHEN 'r_name' THEN m_members.name < @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey < @cursor)
 				ELSE m_members_pkey < @cursor
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name < @cursor_column OR (name = @cursor_column AND m_members_pkey > @cursor)
-				WHEN 'r_name' THEN name > @cursor_column OR (name = @cursor_column AND m_members_pkey > @cursor)
+				WHEN 'name' THEN m_members.name < @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey > @cursor)
+				WHEN 'r_name' THEN m_members.name > @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey > @cursor)
 				ELSE m_members_pkey > @cursor
 			END
-	ORDER BY
-		CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-		CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-		m_members_pkey DESC
-	LIMIT $1;
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+LIMIT $1;
 
 -- name: GetMembersWithRole :many
 SELECT sqlc.embed(m_members), sqlc.embed(m_roles) FROM m_members
@@ -483,21 +488,22 @@ AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_members_pkey < @cursor)
-				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_members_pkey < @cursor)
+				WHEN 'name' THEN m_members.name > @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey < @cursor)
+				WHEN 'r_name' THEN m_members.name < @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey < @cursor)
 				ELSE m_members_pkey < @cursor
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name < @cursor_column OR (name = @cursor_column AND m_members_pkey > @cursor)
-				WHEN 'r_name' THEN name > @cursor_column OR (name = @cursor_column AND m_members_pkey > @cursor)
+				WHEN 'name' THEN m_members.name < @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey > @cursor)
+				WHEN 'r_name' THEN m_members.name > @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey > @cursor)
 				ELSE m_members_pkey > @cursor
 			END
-	ORDER BY
-		CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-		CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-		m_members_pkey DESC
-	LIMIT $1;
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+LIMIT $1;
 
 -- name: GetMembersWithAll :many
 SELECT sqlc.embed(m_members), sqlc.embed(m_attend_statuses), sqlc.embed(m_grades), sqlc.embed(m_groups), sqlc.embed(m_organizations), sqlc.embed(m_roles) FROM m_members
@@ -565,21 +571,22 @@ AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_members_pkey < @cursor)
-				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_members_pkey < @cursor)
+				WHEN 'name' THEN m_members.name > @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey < @cursor)
+				WHEN 'r_name' THEN m_members.name < @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey < @cursor)
 				ELSE m_members_pkey < @cursor
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name < @cursor_column OR (name = @cursor_column AND m_members_pkey > @cursor)
-				WHEN 'r_name' THEN name > @cursor_column OR (name = @cursor_column AND m_members_pkey > @cursor)
+				WHEN 'name' THEN m_members.name < @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey > @cursor)
+				WHEN 'r_name' THEN m_members.name > @cursor_column OR (m_members.name = @cursor_column AND m_members_pkey > @cursor)
 				ELSE m_members_pkey > @cursor
 			END
-	ORDER BY
-		CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-		CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-		m_members_pkey DESC
-	LIMIT $1;
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+LIMIT $1;
 
 -- name: CountMembers :one
 SELECT COUNT(*) FROM m_members

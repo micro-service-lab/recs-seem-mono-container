@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countLateArrivals = `-- name: CountLateArrivals :one
@@ -78,16 +79,92 @@ const getLateArrivals = `-- name: GetLateArrivals :many
 SELECT t_late_arrivals_pkey, late_arrival_id, attendance_id, arrive_time FROM t_late_arrivals
 ORDER BY
 	t_late_arrivals_pkey DESC
+`
+
+func (q *Queries) GetLateArrivals(ctx context.Context) ([]LateArrival, error) {
+	rows, err := q.db.Query(ctx, getLateArrivals)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []LateArrival{}
+	for rows.Next() {
+		var i LateArrival
+		if err := rows.Scan(
+			&i.TLateArrivalsPkey,
+			&i.LateArrivalID,
+			&i.AttendanceID,
+			&i.ArriveTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getLateArrivalsUseKeysetPaginate = `-- name: GetLateArrivalsUseKeysetPaginate :many
+SELECT t_late_arrivals_pkey, late_arrival_id, attendance_id, arrive_time FROM t_late_arrivals
+WHERE
+	CASE $2
+		WHEN 'next' THEN
+			t_late_arrivals_pkey < $3
+		WHEN 'prev' THEN
+			t_late_arrivals_pkey > $3
+	END
+ORDER BY
+	t_late_arrivals_pkey DESC
+LIMIT $1
+`
+
+type GetLateArrivalsUseKeysetPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetLateArrivalsUseKeysetPaginate(ctx context.Context, arg GetLateArrivalsUseKeysetPaginateParams) ([]LateArrival, error) {
+	rows, err := q.db.Query(ctx, getLateArrivalsUseKeysetPaginate, arg.Limit, arg.CursorDirection, arg.Cursor)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []LateArrival{}
+	for rows.Next() {
+		var i LateArrival
+		if err := rows.Scan(
+			&i.TLateArrivalsPkey,
+			&i.LateArrivalID,
+			&i.AttendanceID,
+			&i.ArriveTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getLateArrivalsUseNumberedPaginate = `-- name: GetLateArrivalsUseNumberedPaginate :many
+SELECT t_late_arrivals_pkey, late_arrival_id, attendance_id, arrive_time FROM t_late_arrivals
+ORDER BY
+	t_late_arrivals_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
-type GetLateArrivalsParams struct {
+type GetLateArrivalsUseNumberedPaginateParams struct {
 	Limit  int32 `json:"limit"`
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) GetLateArrivals(ctx context.Context, arg GetLateArrivalsParams) ([]LateArrival, error) {
-	rows, err := q.db.Query(ctx, getLateArrivals, arg.Limit, arg.Offset)
+func (q *Queries) GetLateArrivalsUseNumberedPaginate(ctx context.Context, arg GetLateArrivalsUseNumberedPaginateParams) ([]LateArrival, error) {
+	rows, err := q.db.Query(ctx, getLateArrivalsUseNumberedPaginate, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

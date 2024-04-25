@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countAttendStatuses = `-- name: CountAttendStatuses :one
@@ -108,6 +109,110 @@ func (q *Queries) FindAttendStatusByKey(ctx context.Context, key string) (Attend
 const getAttendStatuses = `-- name: GetAttendStatuses :many
 SELECT m_attend_statuses_pkey, attend_status_id, name, key FROM m_attend_statuses
 WHERE
+	CASE WHEN $1::boolean = true THEN m_attend_statuses.name LIKE '%' || $2::text || '%' ELSE TRUE END
+ORDER BY
+	CASE WHEN $3::text = 'name' THEN m_attend_statuses.name END ASC,
+	CASE WHEN $3::text = 'r_name' THEN m_attend_statuses.name END DESC,
+	m_attend_statuses_pkey DESC
+`
+
+type GetAttendStatusesParams struct {
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+	OrderMethod   string `json:"order_method"`
+}
+
+func (q *Queries) GetAttendStatuses(ctx context.Context, arg GetAttendStatusesParams) ([]AttendStatus, error) {
+	rows, err := q.db.Query(ctx, getAttendStatuses, arg.WhereLikeName, arg.SearchName, arg.OrderMethod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []AttendStatus{}
+	for rows.Next() {
+		var i AttendStatus
+		if err := rows.Scan(
+			&i.MAttendStatusesPkey,
+			&i.AttendStatusID,
+			&i.Name,
+			&i.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttendStatusesUseKeysetPaginate = `-- name: GetAttendStatusesUseKeysetPaginate :many
+SELECT m_attend_statuses_pkey, attend_status_id, name, key FROM m_attend_statuses
+WHERE
+	CASE $2
+		WHEN 'next' THEN
+			CASE $3::text
+				WHEN 'name' THEN m_attend_statuses.name > $4 OR (m_attend_statuses.name = $4 AND m_attend_statuses_pkey < $5)
+				WHEN 'r_name' THEN m_attend_statuses.name < $4 OR (m_attend_statuses.name = $4 AND m_attend_statuses_pkey < $5)
+				ELSE m_attend_statuses_pkey < $5
+			END
+		WHEN 'prev' THEN
+			CASE $3::text
+				WHEN 'name' THEN m_attend_statuses.name < $4 OR (m_attend_statuses.name = $4 AND m_attend_statuses_pkey > $5)
+				WHEN 'r_name' THEN m_attend_statuses.name > $4 OR (m_attend_statuses.name = $4 AND m_attend_statuses_pkey > $5)
+				ELSE m_attend_statuses_pkey > $5
+			END
+	END
+ORDER BY
+	CASE WHEN $3::text = 'name' THEN m_attend_statuses.name END ASC,
+	CASE WHEN $3::text = 'r_name' THEN m_attend_statuses.name END DESC,
+	m_attend_statuses_pkey DESC
+LIMIT $1
+`
+
+type GetAttendStatusesUseKeysetPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	OrderMethod     string      `json:"order_method"`
+	CursorColumn    string      `json:"cursor_column"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetAttendStatusesUseKeysetPaginate(ctx context.Context, arg GetAttendStatusesUseKeysetPaginateParams) ([]AttendStatus, error) {
+	rows, err := q.db.Query(ctx, getAttendStatusesUseKeysetPaginate,
+		arg.Limit,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []AttendStatus{}
+	for rows.Next() {
+		var i AttendStatus
+		if err := rows.Scan(
+			&i.MAttendStatusesPkey,
+			&i.AttendStatusID,
+			&i.Name,
+			&i.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttendStatusesUseNumberedPaginate = `-- name: GetAttendStatusesUseNumberedPaginate :many
+SELECT m_attend_statuses_pkey, attend_status_id, name, key FROM m_attend_statuses
+WHERE
 	CASE WHEN $3::boolean = true THEN m_attend_statuses.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_attend_statuses.name END ASC,
@@ -116,7 +221,7 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetAttendStatusesParams struct {
+type GetAttendStatusesUseNumberedPaginateParams struct {
 	Limit         int32  `json:"limit"`
 	Offset        int32  `json:"offset"`
 	WhereLikeName bool   `json:"where_like_name"`
@@ -124,8 +229,8 @@ type GetAttendStatusesParams struct {
 	OrderMethod   string `json:"order_method"`
 }
 
-func (q *Queries) GetAttendStatuses(ctx context.Context, arg GetAttendStatusesParams) ([]AttendStatus, error) {
-	rows, err := q.db.Query(ctx, getAttendStatuses,
+func (q *Queries) GetAttendStatusesUseNumberedPaginate(ctx context.Context, arg GetAttendStatusesUseNumberedPaginateParams) ([]AttendStatus, error) {
+	rows, err := q.db.Query(ctx, getAttendStatusesUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.WhereLikeName,

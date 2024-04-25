@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countAttachableItemsOnMessage = `-- name: CountAttachableItemsOnMessage :one
@@ -80,14 +81,7 @@ LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_
 WHERE message_id = $1
 ORDER BY
 	t_attached_messages_pkey DESC
-LIMIT $2 OFFSET $3
 `
-
-type GetAttachableItemsOnMessageParams struct {
-	MessageID uuid.UUID `json:"message_id"`
-	Limit     int32     `json:"limit"`
-	Offset    int32     `json:"offset"`
-}
 
 type GetAttachableItemsOnMessageRow struct {
 	AttachedMessage AttachedMessage `json:"attached_message"`
@@ -97,8 +91,8 @@ type GetAttachableItemsOnMessageRow struct {
 	File            File            `json:"file"`
 }
 
-func (q *Queries) GetAttachableItemsOnMessage(ctx context.Context, arg GetAttachableItemsOnMessageParams) ([]GetAttachableItemsOnMessageRow, error) {
-	rows, err := q.db.Query(ctx, getAttachableItemsOnMessage, arg.MessageID, arg.Limit, arg.Offset)
+func (q *Queries) GetAttachableItemsOnMessage(ctx context.Context, messageID uuid.UUID) ([]GetAttachableItemsOnMessageRow, error) {
+	rows, err := q.db.Query(ctx, getAttachableItemsOnMessage, messageID)
 	if err != nil {
 		return nil, err
 	}
@@ -106,6 +100,153 @@ func (q *Queries) GetAttachableItemsOnMessage(ctx context.Context, arg GetAttach
 	items := []GetAttachableItemsOnMessageRow{}
 	for rows.Next() {
 		var i GetAttachableItemsOnMessageRow
+		if err := rows.Scan(
+			&i.AttachedMessage.TAttachedMessagesPkey,
+			&i.AttachedMessage.MessageID,
+			&i.AttachedMessage.AttachableItemID,
+			&i.AttachableItem.TAttachableItemsPkey,
+			&i.AttachableItem.AttachableItemID,
+			&i.AttachableItem.Url,
+			&i.AttachableItem.Size,
+			&i.AttachableItem.MimeTypeID,
+			&i.MimeType.MMimeTypesPkey,
+			&i.MimeType.MimeTypeID,
+			&i.MimeType.Name,
+			&i.MimeType.Key,
+			&i.Image.TImagesPkey,
+			&i.Image.ImageID,
+			&i.Image.Height,
+			&i.Image.Width,
+			&i.Image.AttachableItemID,
+			&i.File.TFilesPkey,
+			&i.File.FileID,
+			&i.File.AttachableItemID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttachableItemsOnMessageUseKeysetPaginate = `-- name: GetAttachableItemsOnMessageUseKeysetPaginate :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key, t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
+WHERE message_id = $1
+AND
+	CASE $3
+		WHEN 'next' THEN
+			t_attached_messages_pkey < $4
+		WHEN 'prev' THEN
+			t_attached_messages_pkey > $4
+	END
+ORDER BY
+	t_attached_messages_pkey DESC
+LIMIT $2
+`
+
+type GetAttachableItemsOnMessageUseKeysetPaginateParams struct {
+	MessageID       uuid.UUID   `json:"message_id"`
+	Limit           int32       `json:"limit"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+type GetAttachableItemsOnMessageUseKeysetPaginateRow struct {
+	AttachedMessage AttachedMessage `json:"attached_message"`
+	AttachableItem  AttachableItem  `json:"attachable_item"`
+	MimeType        MimeType        `json:"mime_type"`
+	Image           Image           `json:"image"`
+	File            File            `json:"file"`
+}
+
+func (q *Queries) GetAttachableItemsOnMessageUseKeysetPaginate(ctx context.Context, arg GetAttachableItemsOnMessageUseKeysetPaginateParams) ([]GetAttachableItemsOnMessageUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttachableItemsOnMessageUseKeysetPaginate,
+		arg.MessageID,
+		arg.Limit,
+		arg.CursorDirection,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttachableItemsOnMessageUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetAttachableItemsOnMessageUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.AttachedMessage.TAttachedMessagesPkey,
+			&i.AttachedMessage.MessageID,
+			&i.AttachedMessage.AttachableItemID,
+			&i.AttachableItem.TAttachableItemsPkey,
+			&i.AttachableItem.AttachableItemID,
+			&i.AttachableItem.Url,
+			&i.AttachableItem.Size,
+			&i.AttachableItem.MimeTypeID,
+			&i.MimeType.MMimeTypesPkey,
+			&i.MimeType.MimeTypeID,
+			&i.MimeType.Name,
+			&i.MimeType.Key,
+			&i.Image.TImagesPkey,
+			&i.Image.ImageID,
+			&i.Image.Height,
+			&i.Image.Width,
+			&i.Image.AttachableItemID,
+			&i.File.TFilesPkey,
+			&i.File.FileID,
+			&i.File.AttachableItemID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttachableItemsOnMessageUseNumberedPaginate = `-- name: GetAttachableItemsOnMessageUseNumberedPaginate :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key, t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
+WHERE message_id = $1
+ORDER BY
+	t_attached_messages_pkey DESC
+LIMIT $2 OFFSET $3
+`
+
+type GetAttachableItemsOnMessageUseNumberedPaginateParams struct {
+	MessageID uuid.UUID `json:"message_id"`
+	Limit     int32     `json:"limit"`
+	Offset    int32     `json:"offset"`
+}
+
+type GetAttachableItemsOnMessageUseNumberedPaginateRow struct {
+	AttachedMessage AttachedMessage `json:"attached_message"`
+	AttachableItem  AttachableItem  `json:"attachable_item"`
+	MimeType        MimeType        `json:"mime_type"`
+	Image           Image           `json:"image"`
+	File            File            `json:"file"`
+}
+
+func (q *Queries) GetAttachableItemsOnMessageUseNumberedPaginate(ctx context.Context, arg GetAttachableItemsOnMessageUseNumberedPaginateParams) ([]GetAttachableItemsOnMessageUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttachableItemsOnMessageUseNumberedPaginate, arg.MessageID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttachableItemsOnMessageUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetAttachableItemsOnMessageUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.AttachedMessage.TAttachedMessagesPkey,
 			&i.AttachedMessage.MessageID,
@@ -149,14 +290,7 @@ WHERE message_id IN (
 )
 ORDER BY
 	t_attached_messages_pkey DESC
-LIMIT $2 OFFSET $3
 `
-
-type GetAttachedMessagesOnChatRoomParams struct {
-	ChatRoomID uuid.UUID `json:"chat_room_id"`
-	Limit      int32     `json:"limit"`
-	Offset     int32     `json:"offset"`
-}
 
 type GetAttachedMessagesOnChatRoomRow struct {
 	AttachedMessage AttachedMessage `json:"attached_message"`
@@ -166,8 +300,8 @@ type GetAttachedMessagesOnChatRoomRow struct {
 	File            File            `json:"file"`
 }
 
-func (q *Queries) GetAttachedMessagesOnChatRoom(ctx context.Context, arg GetAttachedMessagesOnChatRoomParams) ([]GetAttachedMessagesOnChatRoomRow, error) {
-	rows, err := q.db.Query(ctx, getAttachedMessagesOnChatRoom, arg.ChatRoomID, arg.Limit, arg.Offset)
+func (q *Queries) GetAttachedMessagesOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) ([]GetAttachedMessagesOnChatRoomRow, error) {
+	rows, err := q.db.Query(ctx, getAttachedMessagesOnChatRoom, chatRoomID)
 	if err != nil {
 		return nil, err
 	}
@@ -175,6 +309,157 @@ func (q *Queries) GetAttachedMessagesOnChatRoom(ctx context.Context, arg GetAtta
 	items := []GetAttachedMessagesOnChatRoomRow{}
 	for rows.Next() {
 		var i GetAttachedMessagesOnChatRoomRow
+		if err := rows.Scan(
+			&i.AttachedMessage.TAttachedMessagesPkey,
+			&i.AttachedMessage.MessageID,
+			&i.AttachedMessage.AttachableItemID,
+			&i.AttachableItem.TAttachableItemsPkey,
+			&i.AttachableItem.AttachableItemID,
+			&i.AttachableItem.Url,
+			&i.AttachableItem.Size,
+			&i.AttachableItem.MimeTypeID,
+			&i.MimeType.MMimeTypesPkey,
+			&i.MimeType.MimeTypeID,
+			&i.MimeType.Name,
+			&i.MimeType.Key,
+			&i.Image.TImagesPkey,
+			&i.Image.ImageID,
+			&i.Image.Height,
+			&i.Image.Width,
+			&i.Image.AttachableItemID,
+			&i.File.TFilesPkey,
+			&i.File.FileID,
+			&i.File.AttachableItemID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttachedMessagesOnChatRoomUseKeysetPaginate = `-- name: GetAttachedMessagesOnChatRoomUseKeysetPaginate :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key, t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
+WHERE message_id IN (
+	SELECT message_id FROM t_messages WHERE chat_room_id = $1
+)
+AND
+	CASE $3
+		WHEN 'next' THEN
+			t_attached_messages_pkey < $4
+		WHEN 'prev' THEN
+			t_attached_messages_pkey > $4
+	END
+ORDER BY
+	t_attached_messages_pkey DESC
+LIMIT $2
+`
+
+type GetAttachedMessagesOnChatRoomUseKeysetPaginateParams struct {
+	ChatRoomID      uuid.UUID   `json:"chat_room_id"`
+	Limit           int32       `json:"limit"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+type GetAttachedMessagesOnChatRoomUseKeysetPaginateRow struct {
+	AttachedMessage AttachedMessage `json:"attached_message"`
+	AttachableItem  AttachableItem  `json:"attachable_item"`
+	MimeType        MimeType        `json:"mime_type"`
+	Image           Image           `json:"image"`
+	File            File            `json:"file"`
+}
+
+func (q *Queries) GetAttachedMessagesOnChatRoomUseKeysetPaginate(ctx context.Context, arg GetAttachedMessagesOnChatRoomUseKeysetPaginateParams) ([]GetAttachedMessagesOnChatRoomUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttachedMessagesOnChatRoomUseKeysetPaginate,
+		arg.ChatRoomID,
+		arg.Limit,
+		arg.CursorDirection,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttachedMessagesOnChatRoomUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetAttachedMessagesOnChatRoomUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.AttachedMessage.TAttachedMessagesPkey,
+			&i.AttachedMessage.MessageID,
+			&i.AttachedMessage.AttachableItemID,
+			&i.AttachableItem.TAttachableItemsPkey,
+			&i.AttachableItem.AttachableItemID,
+			&i.AttachableItem.Url,
+			&i.AttachableItem.Size,
+			&i.AttachableItem.MimeTypeID,
+			&i.MimeType.MMimeTypesPkey,
+			&i.MimeType.MimeTypeID,
+			&i.MimeType.Name,
+			&i.MimeType.Key,
+			&i.Image.TImagesPkey,
+			&i.Image.ImageID,
+			&i.Image.Height,
+			&i.Image.Width,
+			&i.Image.AttachableItemID,
+			&i.File.TFilesPkey,
+			&i.File.FileID,
+			&i.File.AttachableItemID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttachedMessagesOnChatRoomUseNumberedPaginate = `-- name: GetAttachedMessagesOnChatRoomUseNumberedPaginate :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key, t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
+WHERE message_id IN (
+	SELECT message_id FROM t_messages WHERE chat_room_id = $1
+)
+ORDER BY
+	t_attached_messages_pkey DESC
+LIMIT $2 OFFSET $3
+`
+
+type GetAttachedMessagesOnChatRoomUseNumberedPaginateParams struct {
+	ChatRoomID uuid.UUID `json:"chat_room_id"`
+	Limit      int32     `json:"limit"`
+	Offset     int32     `json:"offset"`
+}
+
+type GetAttachedMessagesOnChatRoomUseNumberedPaginateRow struct {
+	AttachedMessage AttachedMessage `json:"attached_message"`
+	AttachableItem  AttachableItem  `json:"attachable_item"`
+	MimeType        MimeType        `json:"mime_type"`
+	Image           Image           `json:"image"`
+	File            File            `json:"file"`
+}
+
+func (q *Queries) GetAttachedMessagesOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetAttachedMessagesOnChatRoomUseNumberedPaginateParams) ([]GetAttachedMessagesOnChatRoomUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttachedMessagesOnChatRoomUseNumberedPaginate, arg.ChatRoomID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttachedMessagesOnChatRoomUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetAttachedMessagesOnChatRoomUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.AttachedMessage.TAttachedMessagesPkey,
 			&i.AttachedMessage.MessageID,

@@ -471,30 +471,28 @@ func (q *Queries) FindEventByIDWithType(ctx context.Context, eventID uuid.UUID) 
 const getEvents = `-- name: GetEvents :many
 SELECT t_events_pkey, event_id, event_type_id, title, description, organization_id, start_time, end_time, mail_send_flag, send_organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_events
 WHERE
-	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
+	CASE WHEN $1::boolean = true THEN title LIKE '%' || $2::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN organization_id = $6 ELSE TRUE END
+	CASE WHEN $3::boolean = true THEN organization_id = $4 ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN mail_send_flag = $8 ELSE TRUE END
+	CASE WHEN $5::boolean = true THEN mail_send_flag = $6 ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN send_organization_id = $10 ELSE TRUE END
+	CASE WHEN $7::boolean = true THEN send_organization_id = $8 ELSE TRUE END
 AND
-	CASE WHEN $11::boolean = true THEN start_time >= $12 ELSE TRUE END
+	CASE WHEN $9::boolean = true THEN start_time >= $10 ELSE TRUE END
 AND
-	CASE WHEN $13::boolean = true THEN start_time <= $14 ELSE TRUE END
+	CASE WHEN $11::boolean = true THEN start_time <= $12 ELSE TRUE END
 AND
-	CASE WHEN $15::boolean = true THEN end_time >= $16 ELSE TRUE END
+	CASE WHEN $13::boolean = true THEN end_time >= $14 ELSE TRUE END
 AND
-	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
+	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey DESC
-LIMIT $1 OFFSET $2
 `
 
 type GetEventsParams struct {
-	Limit                 int32       `json:"limit"`
-	Offset                int32       `json:"offset"`
 	WhereLikeTitle        bool        `json:"where_like_title"`
 	SearchTitle           string      `json:"search_title"`
 	WhereOrganization     bool        `json:"where_organization"`
@@ -516,6 +514,227 @@ type GetEventsParams struct {
 
 func (q *Queries) GetEvents(ctx context.Context, arg GetEventsParams) ([]Event, error) {
 	rows, err := q.db.Query(ctx, getEvents,
+		arg.WhereLikeTitle,
+		arg.SearchTitle,
+		arg.WhereOrganization,
+		arg.OrganizationID,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereSendOrganization,
+		arg.SendOrganizationID,
+		arg.WhereEarlierStartTime,
+		arg.EarlierStartTime,
+		arg.WhereLaterStartTime,
+		arg.LaterStartTime,
+		arg.WhereEarlierEndTime,
+		arg.EarlierEndTime,
+		arg.WhereLaterEndTime,
+		arg.LaterEndTime,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Event{}
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.TEventsPkey,
+			&i.EventID,
+			&i.EventTypeID,
+			&i.Title,
+			&i.Description,
+			&i.OrganizationID,
+			&i.StartTime,
+			&i.EndTime,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedBy,
+			&i.LastEditedBy,
+			&i.PostedAt,
+			&i.LastEditedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEventsUseKeysetPaginate = `-- name: GetEventsUseKeysetPaginate :many
+SELECT t_events_pkey, event_id, event_type_id, title, description, organization_id, start_time, end_time, mail_send_flag, send_organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_events
+WHERE
+	CASE WHEN $2::boolean = true THEN title LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN organization_id = $5 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN mail_send_flag = $7 ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN send_organization_id = $9 ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN start_time >= $11 ELSE TRUE END
+AND
+	CASE WHEN $12::boolean = true THEN start_time <= $13 ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN end_time >= $15 ELSE TRUE END
+AND
+	CASE WHEN $16::boolean = true THEN end_time <= $17 ELSE TRUE END
+AND
+	CASE $18
+		WHEN 'next' THEN
+			CASE $19
+				WHEN 'start_time' THEN start_time > $20 OR (start_time = $20 AND t_events_pkey < $21)
+				WHEN 'r_start_time' THEN start_time < $20 OR (start_time = $20 AND t_events_pkey < $21)
+				ELSE t_events_pkey < $21
+			END
+		WHEN 'prev' THEN
+			CASE $19
+				WHEN 'start_time' THEN start_time < $20 OR (start_time = $20 AND t_events_pkey > $21)
+				WHEN 'r_start_time' THEN start_time > $20 OR (start_time = $20 AND t_events_pkey > $21)
+				ELSE t_events_pkey > $21
+			END
+	END
+ORDER BY
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+LIMIT $1
+`
+
+type GetEventsUseKeysetPaginateParams struct {
+	Limit                 int32       `json:"limit"`
+	WhereLikeTitle        bool        `json:"where_like_title"`
+	SearchTitle           string      `json:"search_title"`
+	WhereOrganization     bool        `json:"where_organization"`
+	OrganizationID        pgtype.UUID `json:"organization_id"`
+	WhereMailSendFlag     bool        `json:"where_mail_send_flag"`
+	MailSendFlag          bool        `json:"mail_send_flag"`
+	WhereSendOrganization bool        `json:"where_send_organization"`
+	SendOrganizationID    pgtype.UUID `json:"send_organization_id"`
+	WhereEarlierStartTime bool        `json:"where_earlier_start_time"`
+	EarlierStartTime      time.Time   `json:"earlier_start_time"`
+	WhereLaterStartTime   bool        `json:"where_later_start_time"`
+	LaterStartTime        time.Time   `json:"later_start_time"`
+	WhereEarlierEndTime   bool        `json:"where_earlier_end_time"`
+	EarlierEndTime        time.Time   `json:"earlier_end_time"`
+	WhereLaterEndTime     bool        `json:"where_later_end_time"`
+	LaterEndTime          time.Time   `json:"later_end_time"`
+	CursorDirection       interface{} `json:"cursor_direction"`
+	OrderMethod           interface{} `json:"order_method"`
+	CursorColumn          time.Time   `json:"cursor_column"`
+	Cursor                pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetEventsUseKeysetPaginate(ctx context.Context, arg GetEventsUseKeysetPaginateParams) ([]Event, error) {
+	rows, err := q.db.Query(ctx, getEventsUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeTitle,
+		arg.SearchTitle,
+		arg.WhereOrganization,
+		arg.OrganizationID,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereSendOrganization,
+		arg.SendOrganizationID,
+		arg.WhereEarlierStartTime,
+		arg.EarlierStartTime,
+		arg.WhereLaterStartTime,
+		arg.LaterStartTime,
+		arg.WhereEarlierEndTime,
+		arg.EarlierEndTime,
+		arg.WhereLaterEndTime,
+		arg.LaterEndTime,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Event{}
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.TEventsPkey,
+			&i.EventID,
+			&i.EventTypeID,
+			&i.Title,
+			&i.Description,
+			&i.OrganizationID,
+			&i.StartTime,
+			&i.EndTime,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedBy,
+			&i.LastEditedBy,
+			&i.PostedAt,
+			&i.LastEditedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEventsUseNumberedPaginate = `-- name: GetEventsUseNumberedPaginate :many
+SELECT t_events_pkey, event_id, event_type_id, title, description, organization_id, start_time, end_time, mail_send_flag, send_organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_events
+WHERE
+	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN organization_id = $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN mail_send_flag = $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN send_organization_id = $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN start_time >= $12 ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN start_time <= $14 ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN end_time >= $16 ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
+ORDER BY
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetEventsUseNumberedPaginateParams struct {
+	Limit                 int32       `json:"limit"`
+	Offset                int32       `json:"offset"`
+	WhereLikeTitle        bool        `json:"where_like_title"`
+	SearchTitle           string      `json:"search_title"`
+	WhereOrganization     bool        `json:"where_organization"`
+	OrganizationID        pgtype.UUID `json:"organization_id"`
+	WhereMailSendFlag     bool        `json:"where_mail_send_flag"`
+	MailSendFlag          bool        `json:"mail_send_flag"`
+	WhereSendOrganization bool        `json:"where_send_organization"`
+	SendOrganizationID    pgtype.UUID `json:"send_organization_id"`
+	WhereEarlierStartTime bool        `json:"where_earlier_start_time"`
+	EarlierStartTime      time.Time   `json:"earlier_start_time"`
+	WhereLaterStartTime   bool        `json:"where_later_start_time"`
+	LaterStartTime        time.Time   `json:"later_start_time"`
+	WhereEarlierEndTime   bool        `json:"where_earlier_end_time"`
+	EarlierEndTime        time.Time   `json:"earlier_end_time"`
+	WhereLaterEndTime     bool        `json:"where_later_end_time"`
+	LaterEndTime          time.Time   `json:"later_end_time"`
+	OrderMethod           string      `json:"order_method"`
+}
+
+func (q *Queries) GetEventsUseNumberedPaginate(ctx context.Context, arg GetEventsUseNumberedPaginateParams) ([]Event, error) {
+	rows, err := q.db.Query(ctx, getEventsUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.WhereLikeTitle,
@@ -577,30 +796,28 @@ LEFT JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
 LEFT JOIN m_members l ON t_events.posted_by = l.member_id
 LEFT JOIN m_members l ON t_events.last_edited_by = l.member_id
 WHERE
-	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
+	CASE WHEN $1::boolean = true THEN title LIKE '%' || $2::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN t_events.organization_id = $6 ELSE TRUE END
+	CASE WHEN $3::boolean = true THEN t_events.organization_id = $4 ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN mail_send_flag = $8 ELSE TRUE END
+	CASE WHEN $5::boolean = true THEN mail_send_flag = $6 ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN send_organization_id = $10 ELSE TRUE END
+	CASE WHEN $7::boolean = true THEN send_organization_id = $8 ELSE TRUE END
 AND
-	CASE WHEN $11::boolean = true THEN start_time >= $12 ELSE TRUE END
+	CASE WHEN $9::boolean = true THEN start_time >= $10 ELSE TRUE END
 AND
-	CASE WHEN $13::boolean = true THEN start_time <= $14 ELSE TRUE END
+	CASE WHEN $11::boolean = true THEN start_time <= $12 ELSE TRUE END
 AND
-	CASE WHEN $15::boolean = true THEN end_time >= $16 ELSE TRUE END
+	CASE WHEN $13::boolean = true THEN end_time >= $14 ELSE TRUE END
 AND
-	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
+	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey DESC
-LIMIT $1 OFFSET $2
 `
 
 type GetEventsWithAllParams struct {
-	Limit                 int32       `json:"limit"`
-	Offset                int32       `json:"offset"`
 	WhereLikeTitle        bool        `json:"where_like_title"`
 	SearchTitle           string      `json:"search_title"`
 	WhereOrganization     bool        `json:"where_organization"`
@@ -631,8 +848,6 @@ type GetEventsWithAllRow struct {
 
 func (q *Queries) GetEventsWithAll(ctx context.Context, arg GetEventsWithAllParams) ([]GetEventsWithAllRow, error) {
 	rows, err := q.db.Query(ctx, getEventsWithAll,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereLikeTitle,
 		arg.SearchTitle,
 		arg.WhereOrganization,
@@ -733,9 +948,197 @@ func (q *Queries) GetEventsWithAll(ctx context.Context, arg GetEventsWithAllPara
 	return items, nil
 }
 
-const getEventsWithLastEditUser = `-- name: GetEventsWithLastEditUser :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
-LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
+const getEventsWithAllUseKeysetPaginate = `-- name: GetEventsWithAllUseKeysetPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_event_types_pkey, o.event_type_id, o.name, o.key, o.color, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.is_personal, s.is_whole, s.created_at, s.updated_at, p.m_organizations_pkey, p.organization_id, p.name, p.description, p.is_personal, p.is_whole, p.created_at, p.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at FROM t_events
+LEFT JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
+LEFT JOIN m_organizations s ON t_events.organization_id = s.organization_id
+LEFT JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
+LEFT JOIN m_members l ON t_events.posted_by = l.member_id
+LEFT JOIN m_members l ON t_events.last_edited_by = l.member_id
+WHERE
+	CASE WHEN $2::boolean = true THEN title LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN t_events.organization_id = $5 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN mail_send_flag = $7 ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN send_organization_id = $9 ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN start_time >= $11 ELSE TRUE END
+AND
+	CASE WHEN $12::boolean = true THEN start_time <= $13 ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN end_time >= $15 ELSE TRUE END
+AND
+	CASE WHEN $16::boolean = true THEN end_time <= $17 ELSE TRUE END
+AND
+	CASE $18
+		WHEN 'next' THEN
+			CASE $19
+				WHEN 'start_time' THEN start_time > $20 OR (start_time = $20 AND t_events_pkey < $21)
+				WHEN 'r_start_time' THEN start_time < $20 OR (start_time = $20 AND t_events_pkey < $21)
+				ELSE t_events_pkey < $21
+			END
+		WHEN 'prev' THEN
+			CASE $19
+				WHEN 'start_time' THEN start_time < $20 OR (start_time = $20 AND t_events_pkey > $21)
+				WHEN 'r_start_time' THEN start_time > $20 OR (start_time = $20 AND t_events_pkey > $21)
+				ELSE t_events_pkey > $21
+			END
+	END
+ORDER BY
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+LIMIT $1
+`
+
+type GetEventsWithAllUseKeysetPaginateParams struct {
+	Limit                 int32       `json:"limit"`
+	WhereLikeTitle        bool        `json:"where_like_title"`
+	SearchTitle           string      `json:"search_title"`
+	WhereOrganization     bool        `json:"where_organization"`
+	OrganizationID        pgtype.UUID `json:"organization_id"`
+	WhereMailSendFlag     bool        `json:"where_mail_send_flag"`
+	MailSendFlag          bool        `json:"mail_send_flag"`
+	WhereSendOrganization bool        `json:"where_send_organization"`
+	SendOrganizationID    pgtype.UUID `json:"send_organization_id"`
+	WhereEarlierStartTime bool        `json:"where_earlier_start_time"`
+	EarlierStartTime      time.Time   `json:"earlier_start_time"`
+	WhereLaterStartTime   bool        `json:"where_later_start_time"`
+	LaterStartTime        time.Time   `json:"later_start_time"`
+	WhereEarlierEndTime   bool        `json:"where_earlier_end_time"`
+	EarlierEndTime        time.Time   `json:"earlier_end_time"`
+	WhereLaterEndTime     bool        `json:"where_later_end_time"`
+	LaterEndTime          time.Time   `json:"later_end_time"`
+	CursorDirection       interface{} `json:"cursor_direction"`
+	OrderMethod           interface{} `json:"order_method"`
+	CursorColumn          time.Time   `json:"cursor_column"`
+	Cursor                pgtype.Int8 `json:"cursor"`
+}
+
+type GetEventsWithAllUseKeysetPaginateRow struct {
+	Event          Event        `json:"event"`
+	EventType      EventType    `json:"event_type"`
+	Organization   Organization `json:"organization"`
+	Organization_2 Organization `json:"organization_2"`
+	Member         Member       `json:"member"`
+	Member_2       Member       `json:"member_2"`
+}
+
+func (q *Queries) GetEventsWithAllUseKeysetPaginate(ctx context.Context, arg GetEventsWithAllUseKeysetPaginateParams) ([]GetEventsWithAllUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getEventsWithAllUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeTitle,
+		arg.SearchTitle,
+		arg.WhereOrganization,
+		arg.OrganizationID,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereSendOrganization,
+		arg.SendOrganizationID,
+		arg.WhereEarlierStartTime,
+		arg.EarlierStartTime,
+		arg.WhereLaterStartTime,
+		arg.LaterStartTime,
+		arg.WhereEarlierEndTime,
+		arg.EarlierEndTime,
+		arg.WhereLaterEndTime,
+		arg.LaterEndTime,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetEventsWithAllUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetEventsWithAllUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.EventType.MEventTypesPkey,
+			&i.EventType.EventTypeID,
+			&i.EventType.Name,
+			&i.EventType.Key,
+			&i.EventType.Color,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Organization_2.MOrganizationsPkey,
+			&i.Organization_2.OrganizationID,
+			&i.Organization_2.Name,
+			&i.Organization_2.Description,
+			&i.Organization_2.IsPersonal,
+			&i.Organization_2.IsWhole,
+			&i.Organization_2.CreatedAt,
+			&i.Organization_2.UpdatedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Member_2.MMembersPkey,
+			&i.Member_2.MemberID,
+			&i.Member_2.LoginID,
+			&i.Member_2.Password,
+			&i.Member_2.Email,
+			&i.Member_2.Name,
+			&i.Member_2.AttendStatusID,
+			&i.Member_2.ProfileImageID,
+			&i.Member_2.GradeID,
+			&i.Member_2.GroupID,
+			&i.Member_2.PersonalOrganizationID,
+			&i.Member_2.RoleID,
+			&i.Member_2.CreatedAt,
+			&i.Member_2.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEventsWithAllUseNumberedPaginate = `-- name: GetEventsWithAllUseNumberedPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_event_types_pkey, o.event_type_id, o.name, o.key, o.color, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.is_personal, s.is_whole, s.created_at, s.updated_at, p.m_organizations_pkey, p.organization_id, p.name, p.description, p.is_personal, p.is_whole, p.created_at, p.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at FROM t_events
+LEFT JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
+LEFT JOIN m_organizations s ON t_events.organization_id = s.organization_id
+LEFT JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
+LEFT JOIN m_members l ON t_events.posted_by = l.member_id
+LEFT JOIN m_members l ON t_events.last_edited_by = l.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -754,13 +1157,172 @@ AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
 	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
-type GetEventsWithLastEditUserParams struct {
+type GetEventsWithAllUseNumberedPaginateParams struct {
 	Limit                 int32       `json:"limit"`
 	Offset                int32       `json:"offset"`
+	WhereLikeTitle        bool        `json:"where_like_title"`
+	SearchTitle           string      `json:"search_title"`
+	WhereOrganization     bool        `json:"where_organization"`
+	OrganizationID        pgtype.UUID `json:"organization_id"`
+	WhereMailSendFlag     bool        `json:"where_mail_send_flag"`
+	MailSendFlag          bool        `json:"mail_send_flag"`
+	WhereSendOrganization bool        `json:"where_send_organization"`
+	SendOrganizationID    pgtype.UUID `json:"send_organization_id"`
+	WhereEarlierStartTime bool        `json:"where_earlier_start_time"`
+	EarlierStartTime      time.Time   `json:"earlier_start_time"`
+	WhereLaterStartTime   bool        `json:"where_later_start_time"`
+	LaterStartTime        time.Time   `json:"later_start_time"`
+	WhereEarlierEndTime   bool        `json:"where_earlier_end_time"`
+	EarlierEndTime        time.Time   `json:"earlier_end_time"`
+	WhereLaterEndTime     bool        `json:"where_later_end_time"`
+	LaterEndTime          time.Time   `json:"later_end_time"`
+	OrderMethod           string      `json:"order_method"`
+}
+
+type GetEventsWithAllUseNumberedPaginateRow struct {
+	Event          Event        `json:"event"`
+	EventType      EventType    `json:"event_type"`
+	Organization   Organization `json:"organization"`
+	Organization_2 Organization `json:"organization_2"`
+	Member         Member       `json:"member"`
+	Member_2       Member       `json:"member_2"`
+}
+
+func (q *Queries) GetEventsWithAllUseNumberedPaginate(ctx context.Context, arg GetEventsWithAllUseNumberedPaginateParams) ([]GetEventsWithAllUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getEventsWithAllUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeTitle,
+		arg.SearchTitle,
+		arg.WhereOrganization,
+		arg.OrganizationID,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereSendOrganization,
+		arg.SendOrganizationID,
+		arg.WhereEarlierStartTime,
+		arg.EarlierStartTime,
+		arg.WhereLaterStartTime,
+		arg.LaterStartTime,
+		arg.WhereEarlierEndTime,
+		arg.EarlierEndTime,
+		arg.WhereLaterEndTime,
+		arg.LaterEndTime,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetEventsWithAllUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetEventsWithAllUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.EventType.MEventTypesPkey,
+			&i.EventType.EventTypeID,
+			&i.EventType.Name,
+			&i.EventType.Key,
+			&i.EventType.Color,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Organization_2.MOrganizationsPkey,
+			&i.Organization_2.OrganizationID,
+			&i.Organization_2.Name,
+			&i.Organization_2.Description,
+			&i.Organization_2.IsPersonal,
+			&i.Organization_2.IsWhole,
+			&i.Organization_2.CreatedAt,
+			&i.Organization_2.UpdatedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Member_2.MMembersPkey,
+			&i.Member_2.MemberID,
+			&i.Member_2.LoginID,
+			&i.Member_2.Password,
+			&i.Member_2.Email,
+			&i.Member_2.Name,
+			&i.Member_2.AttendStatusID,
+			&i.Member_2.ProfileImageID,
+			&i.Member_2.GradeID,
+			&i.Member_2.GroupID,
+			&i.Member_2.PersonalOrganizationID,
+			&i.Member_2.RoleID,
+			&i.Member_2.CreatedAt,
+			&i.Member_2.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEventsWithLastEditUser = `-- name: GetEventsWithLastEditUser :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
+WHERE
+	CASE WHEN $1::boolean = true THEN title LIKE '%' || $2::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN t_events.organization_id = $4 ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN mail_send_flag = $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN send_organization_id = $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN start_time >= $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN start_time <= $12 ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN end_time >= $14 ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
+ORDER BY
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+`
+
+type GetEventsWithLastEditUserParams struct {
 	WhereLikeTitle        bool        `json:"where_like_title"`
 	SearchTitle           string      `json:"search_title"`
 	WhereOrganization     bool        `json:"where_organization"`
@@ -787,8 +1349,6 @@ type GetEventsWithLastEditUserRow struct {
 
 func (q *Queries) GetEventsWithLastEditUser(ctx context.Context, arg GetEventsWithLastEditUserParams) ([]GetEventsWithLastEditUserRow, error) {
 	rows, err := q.db.Query(ctx, getEventsWithLastEditUser,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereLikeTitle,
 		arg.SearchTitle,
 		arg.WhereOrganization,
@@ -854,9 +1414,150 @@ func (q *Queries) GetEventsWithLastEditUser(ctx context.Context, arg GetEventsWi
 	return items, nil
 }
 
-const getEventsWithOrganization = `-- name: GetEventsWithOrganization :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_events
-LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
+const getEventsWithLastEditUserUseKeysetPaginate = `-- name: GetEventsWithLastEditUserUseKeysetPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
+WHERE
+	CASE WHEN $2::boolean = true THEN title LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN t_events.organization_id = $5 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN mail_send_flag = $7 ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN send_organization_id = $9 ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN start_time >= $11 ELSE TRUE END
+AND
+	CASE WHEN $12::boolean = true THEN start_time <= $13 ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN end_time >= $15 ELSE TRUE END
+AND
+	CASE WHEN $16::boolean = true THEN end_time <= $17 ELSE TRUE END
+AND
+	CASE $18
+		WHEN 'next' THEN
+			CASE $19
+				WHEN 'start_time' THEN start_time > $20 OR (start_time = $20 AND t_events_pkey < $21)
+				WHEN 'r_start_time' THEN start_time < $20 OR (start_time = $20 AND t_events_pkey < $21)
+				ELSE t_events_pkey < $21
+			END
+		WHEN 'prev' THEN
+			CASE $19
+				WHEN 'start_time' THEN start_time < $20 OR (start_time = $20 AND t_events_pkey > $21)
+				WHEN 'r_start_time' THEN start_time > $20 OR (start_time = $20 AND t_events_pkey > $21)
+				ELSE t_events_pkey > $21
+			END
+	END
+ORDER BY
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+LIMIT $1
+`
+
+type GetEventsWithLastEditUserUseKeysetPaginateParams struct {
+	Limit                 int32       `json:"limit"`
+	WhereLikeTitle        bool        `json:"where_like_title"`
+	SearchTitle           string      `json:"search_title"`
+	WhereOrganization     bool        `json:"where_organization"`
+	OrganizationID        pgtype.UUID `json:"organization_id"`
+	WhereMailSendFlag     bool        `json:"where_mail_send_flag"`
+	MailSendFlag          bool        `json:"mail_send_flag"`
+	WhereSendOrganization bool        `json:"where_send_organization"`
+	SendOrganizationID    pgtype.UUID `json:"send_organization_id"`
+	WhereEarlierStartTime bool        `json:"where_earlier_start_time"`
+	EarlierStartTime      time.Time   `json:"earlier_start_time"`
+	WhereLaterStartTime   bool        `json:"where_later_start_time"`
+	LaterStartTime        time.Time   `json:"later_start_time"`
+	WhereEarlierEndTime   bool        `json:"where_earlier_end_time"`
+	EarlierEndTime        time.Time   `json:"earlier_end_time"`
+	WhereLaterEndTime     bool        `json:"where_later_end_time"`
+	LaterEndTime          time.Time   `json:"later_end_time"`
+	CursorDirection       interface{} `json:"cursor_direction"`
+	OrderMethod           interface{} `json:"order_method"`
+	CursorColumn          time.Time   `json:"cursor_column"`
+	Cursor                pgtype.Int8 `json:"cursor"`
+}
+
+type GetEventsWithLastEditUserUseKeysetPaginateRow struct {
+	Event  Event  `json:"event"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) GetEventsWithLastEditUserUseKeysetPaginate(ctx context.Context, arg GetEventsWithLastEditUserUseKeysetPaginateParams) ([]GetEventsWithLastEditUserUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getEventsWithLastEditUserUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeTitle,
+		arg.SearchTitle,
+		arg.WhereOrganization,
+		arg.OrganizationID,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereSendOrganization,
+		arg.SendOrganizationID,
+		arg.WhereEarlierStartTime,
+		arg.EarlierStartTime,
+		arg.WhereLaterStartTime,
+		arg.LaterStartTime,
+		arg.WhereEarlierEndTime,
+		arg.EarlierEndTime,
+		arg.WhereLaterEndTime,
+		arg.LaterEndTime,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetEventsWithLastEditUserUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetEventsWithLastEditUserUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEventsWithLastEditUserUseNumberedPaginate = `-- name: GetEventsWithLastEditUserUseNumberedPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -875,13 +1576,133 @@ AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
 	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
-type GetEventsWithOrganizationParams struct {
+type GetEventsWithLastEditUserUseNumberedPaginateParams struct {
 	Limit                 int32       `json:"limit"`
 	Offset                int32       `json:"offset"`
+	WhereLikeTitle        bool        `json:"where_like_title"`
+	SearchTitle           string      `json:"search_title"`
+	WhereOrganization     bool        `json:"where_organization"`
+	OrganizationID        pgtype.UUID `json:"organization_id"`
+	WhereMailSendFlag     bool        `json:"where_mail_send_flag"`
+	MailSendFlag          bool        `json:"mail_send_flag"`
+	WhereSendOrganization bool        `json:"where_send_organization"`
+	SendOrganizationID    pgtype.UUID `json:"send_organization_id"`
+	WhereEarlierStartTime bool        `json:"where_earlier_start_time"`
+	EarlierStartTime      time.Time   `json:"earlier_start_time"`
+	WhereLaterStartTime   bool        `json:"where_later_start_time"`
+	LaterStartTime        time.Time   `json:"later_start_time"`
+	WhereEarlierEndTime   bool        `json:"where_earlier_end_time"`
+	EarlierEndTime        time.Time   `json:"earlier_end_time"`
+	WhereLaterEndTime     bool        `json:"where_later_end_time"`
+	LaterEndTime          time.Time   `json:"later_end_time"`
+	OrderMethod           string      `json:"order_method"`
+}
+
+type GetEventsWithLastEditUserUseNumberedPaginateRow struct {
+	Event  Event  `json:"event"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) GetEventsWithLastEditUserUseNumberedPaginate(ctx context.Context, arg GetEventsWithLastEditUserUseNumberedPaginateParams) ([]GetEventsWithLastEditUserUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getEventsWithLastEditUserUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeTitle,
+		arg.SearchTitle,
+		arg.WhereOrganization,
+		arg.OrganizationID,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereSendOrganization,
+		arg.SendOrganizationID,
+		arg.WhereEarlierStartTime,
+		arg.EarlierStartTime,
+		arg.WhereLaterStartTime,
+		arg.LaterStartTime,
+		arg.WhereEarlierEndTime,
+		arg.EarlierEndTime,
+		arg.WhereLaterEndTime,
+		arg.LaterEndTime,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetEventsWithLastEditUserUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetEventsWithLastEditUserUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEventsWithOrganization = `-- name: GetEventsWithOrganization :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_events
+LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $1::boolean = true THEN title LIKE '%' || $2::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN t_events.organization_id = $4 ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN mail_send_flag = $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN send_organization_id = $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN start_time >= $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN start_time <= $12 ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN end_time >= $14 ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
+ORDER BY
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+`
+
+type GetEventsWithOrganizationParams struct {
 	WhereLikeTitle        bool        `json:"where_like_title"`
 	SearchTitle           string      `json:"search_title"`
 	WhereOrganization     bool        `json:"where_organization"`
@@ -908,8 +1729,6 @@ type GetEventsWithOrganizationRow struct {
 
 func (q *Queries) GetEventsWithOrganization(ctx context.Context, arg GetEventsWithOrganizationParams) ([]GetEventsWithOrganizationRow, error) {
 	rows, err := q.db.Query(ctx, getEventsWithOrganization,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereLikeTitle,
 		arg.SearchTitle,
 		arg.WhereOrganization,
@@ -969,9 +1788,144 @@ func (q *Queries) GetEventsWithOrganization(ctx context.Context, arg GetEventsWi
 	return items, nil
 }
 
-const getEventsWithPostUser = `-- name: GetEventsWithPostUser :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
-LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
+const getEventsWithOrganizationUseKeysetPaginate = `-- name: GetEventsWithOrganizationUseKeysetPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_events
+LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $2::boolean = true THEN title LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN t_events.organization_id = $5 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN mail_send_flag = $7 ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN send_organization_id = $9 ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN start_time >= $11 ELSE TRUE END
+AND
+	CASE WHEN $12::boolean = true THEN start_time <= $13 ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN end_time >= $15 ELSE TRUE END
+AND
+	CASE WHEN $16::boolean = true THEN end_time <= $17 ELSE TRUE END
+AND
+	CASE $18
+		WHEN 'next' THEN
+			CASE $19
+				WHEN 'start_time' THEN start_time > $20 OR (start_time = $20 AND t_events_pkey < $21)
+				WHEN 'r_start_time' THEN start_time < $20 OR (start_time = $20 AND t_events_pkey < $21)
+				ELSE t_events_pkey < $21
+			END
+		WHEN 'prev' THEN
+			CASE $19
+				WHEN 'start_time' THEN start_time < $20 OR (start_time = $20 AND t_events_pkey > $21)
+				WHEN 'r_start_time' THEN start_time > $20 OR (start_time = $20 AND t_events_pkey > $21)
+				ELSE t_events_pkey > $21
+			END
+	END
+ORDER BY
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+LIMIT $1
+`
+
+type GetEventsWithOrganizationUseKeysetPaginateParams struct {
+	Limit                 int32       `json:"limit"`
+	WhereLikeTitle        bool        `json:"where_like_title"`
+	SearchTitle           string      `json:"search_title"`
+	WhereOrganization     bool        `json:"where_organization"`
+	OrganizationID        pgtype.UUID `json:"organization_id"`
+	WhereMailSendFlag     bool        `json:"where_mail_send_flag"`
+	MailSendFlag          bool        `json:"mail_send_flag"`
+	WhereSendOrganization bool        `json:"where_send_organization"`
+	SendOrganizationID    pgtype.UUID `json:"send_organization_id"`
+	WhereEarlierStartTime bool        `json:"where_earlier_start_time"`
+	EarlierStartTime      time.Time   `json:"earlier_start_time"`
+	WhereLaterStartTime   bool        `json:"where_later_start_time"`
+	LaterStartTime        time.Time   `json:"later_start_time"`
+	WhereEarlierEndTime   bool        `json:"where_earlier_end_time"`
+	EarlierEndTime        time.Time   `json:"earlier_end_time"`
+	WhereLaterEndTime     bool        `json:"where_later_end_time"`
+	LaterEndTime          time.Time   `json:"later_end_time"`
+	CursorDirection       interface{} `json:"cursor_direction"`
+	OrderMethod           interface{} `json:"order_method"`
+	CursorColumn          time.Time   `json:"cursor_column"`
+	Cursor                pgtype.Int8 `json:"cursor"`
+}
+
+type GetEventsWithOrganizationUseKeysetPaginateRow struct {
+	Event        Event        `json:"event"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetEventsWithOrganizationUseKeysetPaginate(ctx context.Context, arg GetEventsWithOrganizationUseKeysetPaginateParams) ([]GetEventsWithOrganizationUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getEventsWithOrganizationUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeTitle,
+		arg.SearchTitle,
+		arg.WhereOrganization,
+		arg.OrganizationID,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereSendOrganization,
+		arg.SendOrganizationID,
+		arg.WhereEarlierStartTime,
+		arg.EarlierStartTime,
+		arg.WhereLaterStartTime,
+		arg.LaterStartTime,
+		arg.WhereEarlierEndTime,
+		arg.EarlierEndTime,
+		arg.WhereLaterEndTime,
+		arg.LaterEndTime,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetEventsWithOrganizationUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetEventsWithOrganizationUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEventsWithOrganizationUseNumberedPaginate = `-- name: GetEventsWithOrganizationUseNumberedPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_events
+LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -990,13 +1944,127 @@ AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
 	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
-type GetEventsWithPostUserParams struct {
+type GetEventsWithOrganizationUseNumberedPaginateParams struct {
 	Limit                 int32       `json:"limit"`
 	Offset                int32       `json:"offset"`
+	WhereLikeTitle        bool        `json:"where_like_title"`
+	SearchTitle           string      `json:"search_title"`
+	WhereOrganization     bool        `json:"where_organization"`
+	OrganizationID        pgtype.UUID `json:"organization_id"`
+	WhereMailSendFlag     bool        `json:"where_mail_send_flag"`
+	MailSendFlag          bool        `json:"mail_send_flag"`
+	WhereSendOrganization bool        `json:"where_send_organization"`
+	SendOrganizationID    pgtype.UUID `json:"send_organization_id"`
+	WhereEarlierStartTime bool        `json:"where_earlier_start_time"`
+	EarlierStartTime      time.Time   `json:"earlier_start_time"`
+	WhereLaterStartTime   bool        `json:"where_later_start_time"`
+	LaterStartTime        time.Time   `json:"later_start_time"`
+	WhereEarlierEndTime   bool        `json:"where_earlier_end_time"`
+	EarlierEndTime        time.Time   `json:"earlier_end_time"`
+	WhereLaterEndTime     bool        `json:"where_later_end_time"`
+	LaterEndTime          time.Time   `json:"later_end_time"`
+	OrderMethod           string      `json:"order_method"`
+}
+
+type GetEventsWithOrganizationUseNumberedPaginateRow struct {
+	Event        Event        `json:"event"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetEventsWithOrganizationUseNumberedPaginate(ctx context.Context, arg GetEventsWithOrganizationUseNumberedPaginateParams) ([]GetEventsWithOrganizationUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getEventsWithOrganizationUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeTitle,
+		arg.SearchTitle,
+		arg.WhereOrganization,
+		arg.OrganizationID,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereSendOrganization,
+		arg.SendOrganizationID,
+		arg.WhereEarlierStartTime,
+		arg.EarlierStartTime,
+		arg.WhereLaterStartTime,
+		arg.LaterStartTime,
+		arg.WhereEarlierEndTime,
+		arg.EarlierEndTime,
+		arg.WhereLaterEndTime,
+		arg.LaterEndTime,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetEventsWithOrganizationUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetEventsWithOrganizationUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEventsWithPostUser = `-- name: GetEventsWithPostUser :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
+WHERE
+	CASE WHEN $1::boolean = true THEN title LIKE '%' || $2::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN t_events.organization_id = $4 ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN mail_send_flag = $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN send_organization_id = $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN start_time >= $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN start_time <= $12 ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN end_time >= $14 ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
+ORDER BY
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+`
+
+type GetEventsWithPostUserParams struct {
 	WhereLikeTitle        bool        `json:"where_like_title"`
 	SearchTitle           string      `json:"search_title"`
 	WhereOrganization     bool        `json:"where_organization"`
@@ -1023,8 +2091,6 @@ type GetEventsWithPostUserRow struct {
 
 func (q *Queries) GetEventsWithPostUser(ctx context.Context, arg GetEventsWithPostUserParams) ([]GetEventsWithPostUserRow, error) {
 	rows, err := q.db.Query(ctx, getEventsWithPostUser,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereLikeTitle,
 		arg.SearchTitle,
 		arg.WhereOrganization,
@@ -1090,9 +2156,150 @@ func (q *Queries) GetEventsWithPostUser(ctx context.Context, arg GetEventsWithPo
 	return items, nil
 }
 
-const getEventsWithSendOrganization = `-- name: GetEventsWithSendOrganization :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_events
-LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
+const getEventsWithPostUserUseKeysetPaginate = `-- name: GetEventsWithPostUserUseKeysetPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
+WHERE
+	CASE WHEN $2::boolean = true THEN title LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN t_events.organization_id = $5 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN mail_send_flag = $7 ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN send_organization_id = $9 ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN start_time >= $11 ELSE TRUE END
+AND
+	CASE WHEN $12::boolean = true THEN start_time <= $13 ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN end_time >= $15 ELSE TRUE END
+AND
+	CASE WHEN $16::boolean = true THEN end_time <= $17 ELSE TRUE END
+AND
+	CASE $18
+		WHEN 'next' THEN
+			CASE $19
+				WHEN 'start_time' THEN start_time > $20 OR (start_time = $20 AND t_events_pkey < $21)
+				WHEN 'r_start_time' THEN start_time < $20 OR (start_time = $20 AND t_events_pkey < $21)
+				ELSE t_events_pkey < $21
+			END
+		WHEN 'prev' THEN
+			CASE $19
+				WHEN 'start_time' THEN start_time < $20 OR (start_time = $20 AND t_events_pkey > $21)
+				WHEN 'r_start_time' THEN start_time > $20 OR (start_time = $20 AND t_events_pkey > $21)
+				ELSE t_events_pkey > $21
+			END
+	END
+ORDER BY
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+LIMIT $1
+`
+
+type GetEventsWithPostUserUseKeysetPaginateParams struct {
+	Limit                 int32       `json:"limit"`
+	WhereLikeTitle        bool        `json:"where_like_title"`
+	SearchTitle           string      `json:"search_title"`
+	WhereOrganization     bool        `json:"where_organization"`
+	OrganizationID        pgtype.UUID `json:"organization_id"`
+	WhereMailSendFlag     bool        `json:"where_mail_send_flag"`
+	MailSendFlag          bool        `json:"mail_send_flag"`
+	WhereSendOrganization bool        `json:"where_send_organization"`
+	SendOrganizationID    pgtype.UUID `json:"send_organization_id"`
+	WhereEarlierStartTime bool        `json:"where_earlier_start_time"`
+	EarlierStartTime      time.Time   `json:"earlier_start_time"`
+	WhereLaterStartTime   bool        `json:"where_later_start_time"`
+	LaterStartTime        time.Time   `json:"later_start_time"`
+	WhereEarlierEndTime   bool        `json:"where_earlier_end_time"`
+	EarlierEndTime        time.Time   `json:"earlier_end_time"`
+	WhereLaterEndTime     bool        `json:"where_later_end_time"`
+	LaterEndTime          time.Time   `json:"later_end_time"`
+	CursorDirection       interface{} `json:"cursor_direction"`
+	OrderMethod           interface{} `json:"order_method"`
+	CursorColumn          time.Time   `json:"cursor_column"`
+	Cursor                pgtype.Int8 `json:"cursor"`
+}
+
+type GetEventsWithPostUserUseKeysetPaginateRow struct {
+	Event  Event  `json:"event"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) GetEventsWithPostUserUseKeysetPaginate(ctx context.Context, arg GetEventsWithPostUserUseKeysetPaginateParams) ([]GetEventsWithPostUserUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getEventsWithPostUserUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeTitle,
+		arg.SearchTitle,
+		arg.WhereOrganization,
+		arg.OrganizationID,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereSendOrganization,
+		arg.SendOrganizationID,
+		arg.WhereEarlierStartTime,
+		arg.EarlierStartTime,
+		arg.WhereLaterStartTime,
+		arg.LaterStartTime,
+		arg.WhereEarlierEndTime,
+		arg.EarlierEndTime,
+		arg.WhereLaterEndTime,
+		arg.LaterEndTime,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetEventsWithPostUserUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetEventsWithPostUserUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEventsWithPostUserUseNumberedPaginate = `-- name: GetEventsWithPostUserUseNumberedPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -1111,13 +2318,133 @@ AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
 	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
-type GetEventsWithSendOrganizationParams struct {
+type GetEventsWithPostUserUseNumberedPaginateParams struct {
 	Limit                 int32       `json:"limit"`
 	Offset                int32       `json:"offset"`
+	WhereLikeTitle        bool        `json:"where_like_title"`
+	SearchTitle           string      `json:"search_title"`
+	WhereOrganization     bool        `json:"where_organization"`
+	OrganizationID        pgtype.UUID `json:"organization_id"`
+	WhereMailSendFlag     bool        `json:"where_mail_send_flag"`
+	MailSendFlag          bool        `json:"mail_send_flag"`
+	WhereSendOrganization bool        `json:"where_send_organization"`
+	SendOrganizationID    pgtype.UUID `json:"send_organization_id"`
+	WhereEarlierStartTime bool        `json:"where_earlier_start_time"`
+	EarlierStartTime      time.Time   `json:"earlier_start_time"`
+	WhereLaterStartTime   bool        `json:"where_later_start_time"`
+	LaterStartTime        time.Time   `json:"later_start_time"`
+	WhereEarlierEndTime   bool        `json:"where_earlier_end_time"`
+	EarlierEndTime        time.Time   `json:"earlier_end_time"`
+	WhereLaterEndTime     bool        `json:"where_later_end_time"`
+	LaterEndTime          time.Time   `json:"later_end_time"`
+	OrderMethod           string      `json:"order_method"`
+}
+
+type GetEventsWithPostUserUseNumberedPaginateRow struct {
+	Event  Event  `json:"event"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) GetEventsWithPostUserUseNumberedPaginate(ctx context.Context, arg GetEventsWithPostUserUseNumberedPaginateParams) ([]GetEventsWithPostUserUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getEventsWithPostUserUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeTitle,
+		arg.SearchTitle,
+		arg.WhereOrganization,
+		arg.OrganizationID,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereSendOrganization,
+		arg.SendOrganizationID,
+		arg.WhereEarlierStartTime,
+		arg.EarlierStartTime,
+		arg.WhereLaterStartTime,
+		arg.LaterStartTime,
+		arg.WhereEarlierEndTime,
+		arg.EarlierEndTime,
+		arg.WhereLaterEndTime,
+		arg.LaterEndTime,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetEventsWithPostUserUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetEventsWithPostUserUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEventsWithSendOrganization = `-- name: GetEventsWithSendOrganization :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_events
+LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $1::boolean = true THEN title LIKE '%' || $2::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN t_events.organization_id = $4 ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN mail_send_flag = $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN send_organization_id = $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN start_time >= $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN start_time <= $12 ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN end_time >= $14 ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
+ORDER BY
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+`
+
+type GetEventsWithSendOrganizationParams struct {
 	WhereLikeTitle        bool        `json:"where_like_title"`
 	SearchTitle           string      `json:"search_title"`
 	WhereOrganization     bool        `json:"where_organization"`
@@ -1144,8 +2471,6 @@ type GetEventsWithSendOrganizationRow struct {
 
 func (q *Queries) GetEventsWithSendOrganization(ctx context.Context, arg GetEventsWithSendOrganizationParams) ([]GetEventsWithSendOrganizationRow, error) {
 	rows, err := q.db.Query(ctx, getEventsWithSendOrganization,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereLikeTitle,
 		arg.SearchTitle,
 		arg.WhereOrganization,
@@ -1205,9 +2530,144 @@ func (q *Queries) GetEventsWithSendOrganization(ctx context.Context, arg GetEven
 	return items, nil
 }
 
-const getEventsWithType = `-- name: GetEventsWithType :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_event_types.m_event_types_pkey, m_event_types.event_type_id, m_event_types.name, m_event_types.key, m_event_types.color FROM t_events
-LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
+const getEventsWithSendOrganizationUseKeysetPaginate = `-- name: GetEventsWithSendOrganizationUseKeysetPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_events
+LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $2::boolean = true THEN title LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN t_events.organization_id = $5 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN mail_send_flag = $7 ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN send_organization_id = $9 ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN start_time >= $11 ELSE TRUE END
+AND
+	CASE WHEN $12::boolean = true THEN start_time <= $13 ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN end_time >= $15 ELSE TRUE END
+AND
+	CASE WHEN $16::boolean = true THEN end_time <= $17 ELSE TRUE END
+AND
+	CASE $18
+		WHEN 'next' THEN
+			CASE $19
+				WHEN 'start_time' THEN start_time > $20 OR (start_time = $20 AND t_events_pkey < $21)
+				WHEN 'r_start_time' THEN start_time < $20 OR (start_time = $20 AND t_events_pkey < $21)
+				ELSE t_events_pkey < $21
+			END
+		WHEN 'prev' THEN
+			CASE $19
+				WHEN 'start_time' THEN start_time < $20 OR (start_time = $20 AND t_events_pkey > $21)
+				WHEN 'r_start_time' THEN start_time > $20 OR (start_time = $20 AND t_events_pkey > $21)
+				ELSE t_events_pkey > $21
+			END
+	END
+ORDER BY
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+LIMIT $1
+`
+
+type GetEventsWithSendOrganizationUseKeysetPaginateParams struct {
+	Limit                 int32       `json:"limit"`
+	WhereLikeTitle        bool        `json:"where_like_title"`
+	SearchTitle           string      `json:"search_title"`
+	WhereOrganization     bool        `json:"where_organization"`
+	OrganizationID        pgtype.UUID `json:"organization_id"`
+	WhereMailSendFlag     bool        `json:"where_mail_send_flag"`
+	MailSendFlag          bool        `json:"mail_send_flag"`
+	WhereSendOrganization bool        `json:"where_send_organization"`
+	SendOrganizationID    pgtype.UUID `json:"send_organization_id"`
+	WhereEarlierStartTime bool        `json:"where_earlier_start_time"`
+	EarlierStartTime      time.Time   `json:"earlier_start_time"`
+	WhereLaterStartTime   bool        `json:"where_later_start_time"`
+	LaterStartTime        time.Time   `json:"later_start_time"`
+	WhereEarlierEndTime   bool        `json:"where_earlier_end_time"`
+	EarlierEndTime        time.Time   `json:"earlier_end_time"`
+	WhereLaterEndTime     bool        `json:"where_later_end_time"`
+	LaterEndTime          time.Time   `json:"later_end_time"`
+	CursorDirection       interface{} `json:"cursor_direction"`
+	OrderMethod           interface{} `json:"order_method"`
+	CursorColumn          time.Time   `json:"cursor_column"`
+	Cursor                pgtype.Int8 `json:"cursor"`
+}
+
+type GetEventsWithSendOrganizationUseKeysetPaginateRow struct {
+	Event        Event        `json:"event"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetEventsWithSendOrganizationUseKeysetPaginate(ctx context.Context, arg GetEventsWithSendOrganizationUseKeysetPaginateParams) ([]GetEventsWithSendOrganizationUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getEventsWithSendOrganizationUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeTitle,
+		arg.SearchTitle,
+		arg.WhereOrganization,
+		arg.OrganizationID,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereSendOrganization,
+		arg.SendOrganizationID,
+		arg.WhereEarlierStartTime,
+		arg.EarlierStartTime,
+		arg.WhereLaterStartTime,
+		arg.LaterStartTime,
+		arg.WhereEarlierEndTime,
+		arg.EarlierEndTime,
+		arg.WhereLaterEndTime,
+		arg.LaterEndTime,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetEventsWithSendOrganizationUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetEventsWithSendOrganizationUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEventsWithSendOrganizationUseNumberedPaginate = `-- name: GetEventsWithSendOrganizationUseNumberedPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_events
+LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -1226,13 +2686,127 @@ AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
 	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
-type GetEventsWithTypeParams struct {
+type GetEventsWithSendOrganizationUseNumberedPaginateParams struct {
 	Limit                 int32       `json:"limit"`
 	Offset                int32       `json:"offset"`
+	WhereLikeTitle        bool        `json:"where_like_title"`
+	SearchTitle           string      `json:"search_title"`
+	WhereOrganization     bool        `json:"where_organization"`
+	OrganizationID        pgtype.UUID `json:"organization_id"`
+	WhereMailSendFlag     bool        `json:"where_mail_send_flag"`
+	MailSendFlag          bool        `json:"mail_send_flag"`
+	WhereSendOrganization bool        `json:"where_send_organization"`
+	SendOrganizationID    pgtype.UUID `json:"send_organization_id"`
+	WhereEarlierStartTime bool        `json:"where_earlier_start_time"`
+	EarlierStartTime      time.Time   `json:"earlier_start_time"`
+	WhereLaterStartTime   bool        `json:"where_later_start_time"`
+	LaterStartTime        time.Time   `json:"later_start_time"`
+	WhereEarlierEndTime   bool        `json:"where_earlier_end_time"`
+	EarlierEndTime        time.Time   `json:"earlier_end_time"`
+	WhereLaterEndTime     bool        `json:"where_later_end_time"`
+	LaterEndTime          time.Time   `json:"later_end_time"`
+	OrderMethod           string      `json:"order_method"`
+}
+
+type GetEventsWithSendOrganizationUseNumberedPaginateRow struct {
+	Event        Event        `json:"event"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetEventsWithSendOrganizationUseNumberedPaginate(ctx context.Context, arg GetEventsWithSendOrganizationUseNumberedPaginateParams) ([]GetEventsWithSendOrganizationUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getEventsWithSendOrganizationUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeTitle,
+		arg.SearchTitle,
+		arg.WhereOrganization,
+		arg.OrganizationID,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereSendOrganization,
+		arg.SendOrganizationID,
+		arg.WhereEarlierStartTime,
+		arg.EarlierStartTime,
+		arg.WhereLaterStartTime,
+		arg.LaterStartTime,
+		arg.WhereEarlierEndTime,
+		arg.EarlierEndTime,
+		arg.WhereLaterEndTime,
+		arg.LaterEndTime,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetEventsWithSendOrganizationUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetEventsWithSendOrganizationUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEventsWithType = `-- name: GetEventsWithType :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_event_types.m_event_types_pkey, m_event_types.event_type_id, m_event_types.name, m_event_types.key, m_event_types.color FROM t_events
+LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
+WHERE
+	CASE WHEN $1::boolean = true THEN title LIKE '%' || $2::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN t_events.organization_id = $4 ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN mail_send_flag = $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN send_organization_id = $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN start_time >= $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN start_time <= $12 ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN end_time >= $14 ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
+ORDER BY
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+`
+
+type GetEventsWithTypeParams struct {
 	WhereLikeTitle        bool        `json:"where_like_title"`
 	SearchTitle           string      `json:"search_title"`
 	WhereOrganization     bool        `json:"where_organization"`
@@ -1259,8 +2833,6 @@ type GetEventsWithTypeRow struct {
 
 func (q *Queries) GetEventsWithType(ctx context.Context, arg GetEventsWithTypeParams) ([]GetEventsWithTypeRow, error) {
 	rows, err := q.db.Query(ctx, getEventsWithType,
-		arg.Limit,
-		arg.Offset,
 		arg.WhereLikeTitle,
 		arg.SearchTitle,
 		arg.WhereOrganization,
@@ -1286,6 +2858,251 @@ func (q *Queries) GetEventsWithType(ctx context.Context, arg GetEventsWithTypePa
 	items := []GetEventsWithTypeRow{}
 	for rows.Next() {
 		var i GetEventsWithTypeRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.EventType.MEventTypesPkey,
+			&i.EventType.EventTypeID,
+			&i.EventType.Name,
+			&i.EventType.Key,
+			&i.EventType.Color,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEventsWithTypeUseKeysetPaginate = `-- name: GetEventsWithTypeUseKeysetPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_event_types.m_event_types_pkey, m_event_types.event_type_id, m_event_types.name, m_event_types.key, m_event_types.color FROM t_events
+LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
+WHERE
+	CASE WHEN $2::boolean = true THEN title LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN t_events.organization_id = $5 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN mail_send_flag = $7 ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN send_organization_id = $9 ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN start_time >= $11 ELSE TRUE END
+AND
+	CASE WHEN $12::boolean = true THEN start_time <= $13 ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN end_time >= $15 ELSE TRUE END
+AND
+	CASE WHEN $16::boolean = true THEN end_time <= $17 ELSE TRUE END
+AND
+	CASE $18
+		WHEN 'next' THEN
+			CASE $19
+				WHEN 'start_time' THEN start_time > $20 OR (start_time = $20 AND t_events_pkey < $21)
+				WHEN 'r_start_time' THEN start_time < $20 OR (start_time = $20 AND t_events_pkey < $21)
+				ELSE t_events_pkey < $21
+			END
+		WHEN 'prev' THEN
+			CASE $19
+				WHEN 'start_time' THEN start_time < $20 OR (start_time = $20 AND t_events_pkey > $21)
+				WHEN 'r_start_time' THEN start_time > $20 OR (start_time = $20 AND t_events_pkey > $21)
+				ELSE t_events_pkey > $21
+			END
+	END
+ORDER BY
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+LIMIT $1
+`
+
+type GetEventsWithTypeUseKeysetPaginateParams struct {
+	Limit                 int32       `json:"limit"`
+	WhereLikeTitle        bool        `json:"where_like_title"`
+	SearchTitle           string      `json:"search_title"`
+	WhereOrganization     bool        `json:"where_organization"`
+	OrganizationID        pgtype.UUID `json:"organization_id"`
+	WhereMailSendFlag     bool        `json:"where_mail_send_flag"`
+	MailSendFlag          bool        `json:"mail_send_flag"`
+	WhereSendOrganization bool        `json:"where_send_organization"`
+	SendOrganizationID    pgtype.UUID `json:"send_organization_id"`
+	WhereEarlierStartTime bool        `json:"where_earlier_start_time"`
+	EarlierStartTime      time.Time   `json:"earlier_start_time"`
+	WhereLaterStartTime   bool        `json:"where_later_start_time"`
+	LaterStartTime        time.Time   `json:"later_start_time"`
+	WhereEarlierEndTime   bool        `json:"where_earlier_end_time"`
+	EarlierEndTime        time.Time   `json:"earlier_end_time"`
+	WhereLaterEndTime     bool        `json:"where_later_end_time"`
+	LaterEndTime          time.Time   `json:"later_end_time"`
+	CursorDirection       interface{} `json:"cursor_direction"`
+	OrderMethod           interface{} `json:"order_method"`
+	CursorColumn          time.Time   `json:"cursor_column"`
+	Cursor                pgtype.Int8 `json:"cursor"`
+}
+
+type GetEventsWithTypeUseKeysetPaginateRow struct {
+	Event     Event     `json:"event"`
+	EventType EventType `json:"event_type"`
+}
+
+func (q *Queries) GetEventsWithTypeUseKeysetPaginate(ctx context.Context, arg GetEventsWithTypeUseKeysetPaginateParams) ([]GetEventsWithTypeUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getEventsWithTypeUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeTitle,
+		arg.SearchTitle,
+		arg.WhereOrganization,
+		arg.OrganizationID,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereSendOrganization,
+		arg.SendOrganizationID,
+		arg.WhereEarlierStartTime,
+		arg.EarlierStartTime,
+		arg.WhereLaterStartTime,
+		arg.LaterStartTime,
+		arg.WhereEarlierEndTime,
+		arg.EarlierEndTime,
+		arg.WhereLaterEndTime,
+		arg.LaterEndTime,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetEventsWithTypeUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetEventsWithTypeUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.EventType.MEventTypesPkey,
+			&i.EventType.EventTypeID,
+			&i.EventType.Name,
+			&i.EventType.Key,
+			&i.EventType.Color,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEventsWithTypeUseNumberedPaginate = `-- name: GetEventsWithTypeUseNumberedPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_event_types.m_event_types_pkey, m_event_types.event_type_id, m_event_types.name, m_event_types.key, m_event_types.color FROM t_events
+LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
+WHERE
+	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN t_events.organization_id = $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN mail_send_flag = $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN send_organization_id = $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN start_time >= $12 ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN start_time <= $14 ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN end_time >= $16 ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
+ORDER BY
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	t_events_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetEventsWithTypeUseNumberedPaginateParams struct {
+	Limit                 int32       `json:"limit"`
+	Offset                int32       `json:"offset"`
+	WhereLikeTitle        bool        `json:"where_like_title"`
+	SearchTitle           string      `json:"search_title"`
+	WhereOrganization     bool        `json:"where_organization"`
+	OrganizationID        pgtype.UUID `json:"organization_id"`
+	WhereMailSendFlag     bool        `json:"where_mail_send_flag"`
+	MailSendFlag          bool        `json:"mail_send_flag"`
+	WhereSendOrganization bool        `json:"where_send_organization"`
+	SendOrganizationID    pgtype.UUID `json:"send_organization_id"`
+	WhereEarlierStartTime bool        `json:"where_earlier_start_time"`
+	EarlierStartTime      time.Time   `json:"earlier_start_time"`
+	WhereLaterStartTime   bool        `json:"where_later_start_time"`
+	LaterStartTime        time.Time   `json:"later_start_time"`
+	WhereEarlierEndTime   bool        `json:"where_earlier_end_time"`
+	EarlierEndTime        time.Time   `json:"earlier_end_time"`
+	WhereLaterEndTime     bool        `json:"where_later_end_time"`
+	LaterEndTime          time.Time   `json:"later_end_time"`
+	OrderMethod           string      `json:"order_method"`
+}
+
+type GetEventsWithTypeUseNumberedPaginateRow struct {
+	Event     Event     `json:"event"`
+	EventType EventType `json:"event_type"`
+}
+
+func (q *Queries) GetEventsWithTypeUseNumberedPaginate(ctx context.Context, arg GetEventsWithTypeUseNumberedPaginateParams) ([]GetEventsWithTypeUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getEventsWithTypeUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeTitle,
+		arg.SearchTitle,
+		arg.WhereOrganization,
+		arg.OrganizationID,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereSendOrganization,
+		arg.SendOrganizationID,
+		arg.WhereEarlierStartTime,
+		arg.EarlierStartTime,
+		arg.WhereLaterStartTime,
+		arg.LaterStartTime,
+		arg.WhereEarlierEndTime,
+		arg.EarlierEndTime,
+		arg.WhereLaterEndTime,
+		arg.LaterEndTime,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetEventsWithTypeUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetEventsWithTypeUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.Event.TEventsPkey,
 			&i.Event.EventID,

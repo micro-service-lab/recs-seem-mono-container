@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countRoles = `-- name: CountRoles :one
@@ -97,6 +98,120 @@ func (q *Queries) FindRoleByID(ctx context.Context, roleID uuid.UUID) (Role, err
 const getRoles = `-- name: GetRoles :many
 SELECT m_roles_pkey, role_id, name, description, created_at, updated_at FROM m_roles
 WHERE
+	CASE WHEN $1::boolean = true THEN m_roles.name LIKE '%' || $2::text || '%' ELSE TRUE END
+ORDER BY
+	CASE WHEN $3::text = 'name' THEN m_roles.name END ASC,
+	CASE WHEN $3::text = 'r_name' THEN m_roles.name END DESC,
+	m_roles_pkey DESC
+`
+
+type GetRolesParams struct {
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+	OrderMethod   string `json:"order_method"`
+}
+
+func (q *Queries) GetRoles(ctx context.Context, arg GetRolesParams) ([]Role, error) {
+	rows, err := q.db.Query(ctx, getRoles, arg.WhereLikeName, arg.SearchName, arg.OrderMethod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Role{}
+	for rows.Next() {
+		var i Role
+		if err := rows.Scan(
+			&i.MRolesPkey,
+			&i.RoleID,
+			&i.Name,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRolesUseKeysetPaginate = `-- name: GetRolesUseKeysetPaginate :many
+SELECT m_roles_pkey, role_id, name, description, created_at, updated_at FROM m_roles
+WHERE
+	CASE WHEN $2::boolean = true THEN m_roles.name LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE $4
+		WHEN 'next' THEN
+			CASE $5::text
+				WHEN 'name' THEN name > $6 OR (name = $6 AND m_roles_pkey < $7)
+				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_roles_pkey < $7)
+				ELSE m_roles_pkey < $7
+			END
+		WHEN 'prev' THEN
+			CASE $5::text
+				WHEN 'name' THEN name < $6 OR (name = $6 AND m_roles_pkey > $7)
+				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_roles_pkey > $7)
+				ELSE m_roles_pkey > $7
+			END
+	END
+ORDER BY
+	CASE WHEN $5::text = 'name' THEN m_roles.name END ASC,
+	CASE WHEN $5::text = 'r_name' THEN m_roles.name END DESC,
+	m_roles_pkey DESC
+LIMIT $1
+`
+
+type GetRolesUseKeysetPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	WhereLikeName   bool        `json:"where_like_name"`
+	SearchName      string      `json:"search_name"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	OrderMethod     string      `json:"order_method"`
+	CursorColumn    string      `json:"cursor_column"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetRolesUseKeysetPaginate(ctx context.Context, arg GetRolesUseKeysetPaginateParams) ([]Role, error) {
+	rows, err := q.db.Query(ctx, getRolesUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.CursorColumn,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Role{}
+	for rows.Next() {
+		var i Role
+		if err := rows.Scan(
+			&i.MRolesPkey,
+			&i.RoleID,
+			&i.Name,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRolesUseNumberedPaginate = `-- name: GetRolesUseNumberedPaginate :many
+SELECT m_roles_pkey, role_id, name, description, created_at, updated_at FROM m_roles
+WHERE
 	CASE WHEN $3::boolean = true THEN m_roles.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_roles.name END ASC,
@@ -105,7 +220,7 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetRolesParams struct {
+type GetRolesUseNumberedPaginateParams struct {
 	Limit         int32  `json:"limit"`
 	Offset        int32  `json:"offset"`
 	WhereLikeName bool   `json:"where_like_name"`
@@ -113,8 +228,8 @@ type GetRolesParams struct {
 	OrderMethod   string `json:"order_method"`
 }
 
-func (q *Queries) GetRoles(ctx context.Context, arg GetRolesParams) ([]Role, error) {
-	rows, err := q.db.Query(ctx, getRoles,
+func (q *Queries) GetRolesUseNumberedPaginate(ctx context.Context, arg GetRolesUseNumberedPaginateParams) ([]Role, error) {
+	rows, err := q.db.Query(ctx, getRolesUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.WhereLikeName,

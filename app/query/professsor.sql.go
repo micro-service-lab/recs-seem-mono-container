@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countProfessors = `-- name: CountProfessors :one
@@ -93,16 +94,82 @@ const getProfessors = `-- name: GetProfessors :many
 SELECT m_professors_pkey, professor_id, member_id FROM m_professors
 ORDER BY
 	m_professors_pkey DESC
+`
+
+func (q *Queries) GetProfessors(ctx context.Context) ([]Professor, error) {
+	rows, err := q.db.Query(ctx, getProfessors)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Professor{}
+	for rows.Next() {
+		var i Professor
+		if err := rows.Scan(&i.MProfessorsPkey, &i.ProfessorID, &i.MemberID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getProfessorsUseKeysetPaginate = `-- name: GetProfessorsUseKeysetPaginate :many
+SELECT m_professors_pkey, professor_id, member_id FROM m_professors
+WHERE
+	CASE $2
+		WHEN 'next' THEN
+			m_professors_pkey < $3
+		WHEN 'prev' THEN
+			m_professors_pkey > $3
+	END
+ORDER BY
+	m_professors_pkey DESC
+LIMIT $1
+`
+
+type GetProfessorsUseKeysetPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	CursorDirection interface{} `json:"cursor_direction"`
+	Cursor          pgtype.Int8 `json:"cursor"`
+}
+
+func (q *Queries) GetProfessorsUseKeysetPaginate(ctx context.Context, arg GetProfessorsUseKeysetPaginateParams) ([]Professor, error) {
+	rows, err := q.db.Query(ctx, getProfessorsUseKeysetPaginate, arg.Limit, arg.CursorDirection, arg.Cursor)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Professor{}
+	for rows.Next() {
+		var i Professor
+		if err := rows.Scan(&i.MProfessorsPkey, &i.ProfessorID, &i.MemberID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getProfessorsUseNumberedPaginate = `-- name: GetProfessorsUseNumberedPaginate :many
+SELECT m_professors_pkey, professor_id, member_id FROM m_professors
+ORDER BY
+	m_professors_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
-type GetProfessorsParams struct {
+type GetProfessorsUseNumberedPaginateParams struct {
 	Limit  int32 `json:"limit"`
 	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) GetProfessors(ctx context.Context, arg GetProfessorsParams) ([]Professor, error) {
-	rows, err := q.db.Query(ctx, getProfessors, arg.Limit, arg.Offset)
+func (q *Queries) GetProfessorsUseNumberedPaginate(ctx context.Context, arg GetProfessorsUseNumberedPaginateParams) ([]Professor, error) {
+	rows, err := q.db.Query(ctx, getProfessorsUseNumberedPaginate, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}

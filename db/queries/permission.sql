@@ -65,14 +65,14 @@ AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_permissions_pkey < @cursor)
-				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_permissions_pkey < @cursor)
+				WHEN 'name' THEN m_permissions.name > @cursor_column OR (m_permissions.name = @cursor_column AND m_permissions_pkey < @cursor)
+				WHEN 'r_name' THEN m_permissions.name < @cursor_column OR (m_permissions.name = @cursor_column AND m_permissions_pkey < @cursor)
 				ELSE m_permissions_pkey < @cursor
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name < @cursor_column OR (name = @cursor_column AND m_permissions_pkey > @cursor)
-				WHEN 'r_name' THEN name > @cursor_column OR (name = @cursor_column AND m_permissions_pkey > @cursor)
+				WHEN 'name' THEN m_permissions.name < @cursor_column OR (m_permissions.name = @cursor_column AND m_permissions_pkey > @cursor)
+				WHEN 'r_name' THEN m_permissions.name > @cursor_column OR (m_permissions.name = @cursor_column AND m_permissions_pkey > @cursor)
 				ELSE m_permissions_pkey > @cursor
 			END
 	END
@@ -118,14 +118,14 @@ AND
 	CASE @cursor_direction
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_permissions_pkey < @cursor)
-				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_permissions_pkey < @cursor)
+				WHEN 'name' THEN m_permissions.name > @cursor_column OR (m_permissions.name = @cursor_column AND m_permissions_pkey < @cursor)
+				WHEN 'r_name' THEN m_permissions.name < @cursor_column OR (m_permissions.name = @cursor_column AND m_permissions_pkey < @cursor)
 				ELSE m_permissions_pkey < @cursor
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name < @cursor_column OR (name = @cursor_column AND m_permissions_pkey > @cursor)
-				WHEN 'r_name' THEN name > @cursor_column OR (name = @cursor_column AND m_permissions_pkey > @cursor)
+				WHEN 'name' THEN m_permissions.name < @cursor_column OR (m_permissions.name = @cursor_column AND m_permissions_pkey > @cursor)
+				WHEN 'r_name' THEN m_permissions.name > @cursor_column OR (m_permissions.name = @cursor_column AND m_permissions_pkey > @cursor)
 				ELSE m_permissions_pkey > @cursor
 			END
 	END

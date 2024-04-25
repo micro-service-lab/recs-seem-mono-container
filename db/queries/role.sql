@@ -20,7 +20,7 @@ WHERE
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
-	m_roles_pkey DESC
+	m_roles_pkey DESC;
 
 -- name: GetRolesUseNumberedPaginate :many
 SELECT * FROM m_roles

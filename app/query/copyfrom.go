@@ -938,7 +938,7 @@ func (r iteratorForCreatePositionHistories) Values() ([]interface{}, error) {
 		r.rows[0].MemberID,
 		r.rows[0].XPos,
 		r.rows[0].YPos,
-		r.rows[0].SendAt,
+		r.rows[0].SentAt,
 	}, nil
 }
 
@@ -947,7 +947,7 @@ func (r iteratorForCreatePositionHistories) Err() error {
 }
 
 func (q *Queries) CreatePositionHistories(ctx context.Context, arg []CreatePositionHistoriesParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"t_position_histories"}, []string{"member_id", "x_pos", "y_pos", "send_at"}, &iteratorForCreatePositionHistories{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"t_position_histories"}, []string{"member_id", "x_pos", "y_pos", "sent_at"}, &iteratorForCreatePositionHistories{rows: arg})
 }
 
 // iteratorForCreateProfessors implements pgx.CopyFromSource.

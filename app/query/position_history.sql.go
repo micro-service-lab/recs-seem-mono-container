@@ -17,28 +17,28 @@ SELECT COUNT(*) FROM t_position_histories
 WHERE
 	CASE WHEN $1::boolean = true THEN member_id = ANY($2::uuid[]) ELSE TRUE END
 AND
-	CASE WHEN $3::boolean = true THEN send_at >= $4 ELSE TRUE END
+	CASE WHEN $3::boolean = true THEN sent_at >= $4 ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN send_at <= $6 ELSE TRUE END
+	CASE WHEN $5::boolean = true THEN sent_at <= $6 ELSE TRUE END
 `
 
 type CountPositionHistoriesParams struct {
 	WhereInMember      bool        `json:"where_in_member"`
 	InMemberIds        []uuid.UUID `json:"in_member_ids"`
-	WhereEarlierSendAt bool        `json:"where_earlier_send_at"`
-	EarlierSendAt      time.Time   `json:"earlier_send_at"`
-	WhereLaterSendAt   bool        `json:"where_later_send_at"`
-	LaterSendAt        time.Time   `json:"later_send_at"`
+	WhereEarlierSentAt bool        `json:"where_earlier_sent_at"`
+	EarlierSentAt      time.Time   `json:"earlier_sent_at"`
+	WhereLaterSentAt   bool        `json:"where_later_sent_at"`
+	LaterSentAt        time.Time   `json:"later_sent_at"`
 }
 
 func (q *Queries) CountPositionHistories(ctx context.Context, arg CountPositionHistoriesParams) (int64, error) {
 	row := q.db.QueryRow(ctx, countPositionHistories,
 		arg.WhereInMember,
 		arg.InMemberIds,
-		arg.WhereEarlierSendAt,
-		arg.EarlierSendAt,
-		arg.WhereLaterSendAt,
-		arg.LaterSendAt,
+		arg.WhereEarlierSentAt,
+		arg.EarlierSentAt,
+		arg.WhereLaterSentAt,
+		arg.LaterSentAt,
 	)
 	var count int64
 	err := row.Scan(&count)
@@ -49,18 +49,18 @@ type CreatePositionHistoriesParams struct {
 	MemberID uuid.UUID `json:"member_id"`
 	XPos     float64   `json:"x_pos"`
 	YPos     float64   `json:"y_pos"`
-	SendAt   time.Time `json:"send_at"`
+	SentAt   time.Time `json:"sent_at"`
 }
 
 const createPositionHistory = `-- name: CreatePositionHistory :one
-INSERT INTO t_position_histories (member_id, x_pos, y_pos, send_at) VALUES ($1, $2, $3, $4) RETURNING t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, send_at
+INSERT INTO t_position_histories (member_id, x_pos, y_pos, sent_at) VALUES ($1, $2, $3, $4) RETURNING t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, sent_at
 `
 
 type CreatePositionHistoryParams struct {
 	MemberID uuid.UUID `json:"member_id"`
 	XPos     float64   `json:"x_pos"`
 	YPos     float64   `json:"y_pos"`
-	SendAt   time.Time `json:"send_at"`
+	SentAt   time.Time `json:"sent_at"`
 }
 
 func (q *Queries) CreatePositionHistory(ctx context.Context, arg CreatePositionHistoryParams) (PositionHistory, error) {
@@ -68,7 +68,7 @@ func (q *Queries) CreatePositionHistory(ctx context.Context, arg CreatePositionH
 		arg.MemberID,
 		arg.XPos,
 		arg.YPos,
-		arg.SendAt,
+		arg.SentAt,
 	)
 	var i PositionHistory
 	err := row.Scan(
@@ -77,7 +77,7 @@ func (q *Queries) CreatePositionHistory(ctx context.Context, arg CreatePositionH
 		&i.MemberID,
 		&i.XPos,
 		&i.YPos,
-		&i.SendAt,
+		&i.SentAt,
 	)
 	return i, err
 }
@@ -92,7 +92,7 @@ func (q *Queries) DeletePositionHistory(ctx context.Context, positionHistoryID u
 }
 
 const findPositionHistoryByID = `-- name: FindPositionHistoryByID :one
-SELECT t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, send_at FROM t_position_histories WHERE position_history_id = $1
+SELECT t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, sent_at FROM t_position_histories WHERE position_history_id = $1
 `
 
 func (q *Queries) FindPositionHistoryByID(ctx context.Context, positionHistoryID uuid.UUID) (PositionHistory, error) {
@@ -104,13 +104,13 @@ func (q *Queries) FindPositionHistoryByID(ctx context.Context, positionHistoryID
 		&i.MemberID,
 		&i.XPos,
 		&i.YPos,
-		&i.SendAt,
+		&i.SentAt,
 	)
 	return i, err
 }
 
 const findPositionHistoryByIDWithMember = `-- name: FindPositionHistoryByIDWithMember :one
-SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.send_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
+SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.sent_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
 LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE position_history_id = $1
 `
@@ -129,7 +129,7 @@ func (q *Queries) FindPositionHistoryByIDWithMember(ctx context.Context, positio
 		&i.PositionHistory.MemberID,
 		&i.PositionHistory.XPos,
 		&i.PositionHistory.YPos,
-		&i.PositionHistory.SendAt,
+		&i.PositionHistory.SentAt,
 		&i.Member.MMembersPkey,
 		&i.Member.MemberID,
 		&i.Member.LoginID,
@@ -149,16 +149,16 @@ func (q *Queries) FindPositionHistoryByIDWithMember(ctx context.Context, positio
 }
 
 const getPositionHistories = `-- name: GetPositionHistories :many
-SELECT t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, send_at FROM t_position_histories
+SELECT t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, sent_at FROM t_position_histories
 WHERE
 	CASE WHEN $3::boolean = true THEN member_id = ANY($4::uuid[]) ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN send_at >= $6 ELSE TRUE END
+	CASE WHEN $5::boolean = true THEN sent_at >= $6 ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN send_at <= $8 ELSE TRUE END
+	CASE WHEN $7::boolean = true THEN sent_at <= $8 ELSE TRUE END
 ORDER BY
-	CASE WHEN $9::text = 'old_send' THEN send_at END ASC,
-	CASE WHEN $9::text = 'late_send' THEN send_at END DESC,
+	CASE WHEN $9::text = 'old_send' THEN sent_at END ASC,
+	CASE WHEN $9::text = 'late_send' THEN sent_at END DESC,
 	t_position_histories_pkey DESC
 LIMIT $1 OFFSET $2
 `
@@ -168,10 +168,10 @@ type GetPositionHistoriesParams struct {
 	Offset             int32       `json:"offset"`
 	WhereInMember      bool        `json:"where_in_member"`
 	InMemberIds        []uuid.UUID `json:"in_member_ids"`
-	WhereEarlierSendAt bool        `json:"where_earlier_send_at"`
-	EarlierSendAt      time.Time   `json:"earlier_send_at"`
-	WhereLaterSendAt   bool        `json:"where_later_send_at"`
-	LaterSendAt        time.Time   `json:"later_send_at"`
+	WhereEarlierSentAt bool        `json:"where_earlier_sent_at"`
+	EarlierSentAt      time.Time   `json:"earlier_sent_at"`
+	WhereLaterSentAt   bool        `json:"where_later_sent_at"`
+	LaterSentAt        time.Time   `json:"later_sent_at"`
 	OrderMethod        string      `json:"order_method"`
 }
 
@@ -181,10 +181,10 @@ func (q *Queries) GetPositionHistories(ctx context.Context, arg GetPositionHisto
 		arg.Offset,
 		arg.WhereInMember,
 		arg.InMemberIds,
-		arg.WhereEarlierSendAt,
-		arg.EarlierSendAt,
-		arg.WhereLaterSendAt,
-		arg.LaterSendAt,
+		arg.WhereEarlierSentAt,
+		arg.EarlierSentAt,
+		arg.WhereLaterSentAt,
+		arg.LaterSentAt,
 		arg.OrderMethod,
 	)
 	if err != nil {
@@ -200,7 +200,7 @@ func (q *Queries) GetPositionHistories(ctx context.Context, arg GetPositionHisto
 			&i.MemberID,
 			&i.XPos,
 			&i.YPos,
-			&i.SendAt,
+			&i.SentAt,
 		); err != nil {
 			return nil, err
 		}
@@ -213,17 +213,17 @@ func (q *Queries) GetPositionHistories(ctx context.Context, arg GetPositionHisto
 }
 
 const getPositionHistoriesWithMember = `-- name: GetPositionHistoriesWithMember :many
-SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.send_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
+SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.sent_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
 LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN member_id = ANY($4::uuid[]) ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN send_at >= $6 ELSE TRUE END
+	CASE WHEN $5::boolean = true THEN sent_at >= $6 ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN send_at <= $8 ELSE TRUE END
+	CASE WHEN $7::boolean = true THEN sent_at <= $8 ELSE TRUE END
 ORDER BY
-	CASE WHEN $9::text = 'old_send' THEN send_at END ASC,
-	CASE WHEN $9::text = 'late_send' THEN send_at END DESC,
+	CASE WHEN $9::text = 'old_send' THEN sent_at END ASC,
+	CASE WHEN $9::text = 'late_send' THEN sent_at END DESC,
 	t_position_histories_pkey DESC
 LIMIT $1 OFFSET $2
 `
@@ -233,10 +233,10 @@ type GetPositionHistoriesWithMemberParams struct {
 	Offset             int32       `json:"offset"`
 	WhereInMember      bool        `json:"where_in_member"`
 	InMemberIds        []uuid.UUID `json:"in_member_ids"`
-	WhereEarlierSendAt bool        `json:"where_earlier_send_at"`
-	EarlierSendAt      time.Time   `json:"earlier_send_at"`
-	WhereLaterSendAt   bool        `json:"where_later_send_at"`
-	LaterSendAt        time.Time   `json:"later_send_at"`
+	WhereEarlierSentAt bool        `json:"where_earlier_sent_at"`
+	EarlierSentAt      time.Time   `json:"earlier_sent_at"`
+	WhereLaterSentAt   bool        `json:"where_later_sent_at"`
+	LaterSentAt        time.Time   `json:"later_sent_at"`
 	OrderMethod        string      `json:"order_method"`
 }
 
@@ -251,10 +251,10 @@ func (q *Queries) GetPositionHistoriesWithMember(ctx context.Context, arg GetPos
 		arg.Offset,
 		arg.WhereInMember,
 		arg.InMemberIds,
-		arg.WhereEarlierSendAt,
-		arg.EarlierSendAt,
-		arg.WhereLaterSendAt,
-		arg.LaterSendAt,
+		arg.WhereEarlierSentAt,
+		arg.EarlierSentAt,
+		arg.WhereLaterSentAt,
+		arg.LaterSentAt,
 		arg.OrderMethod,
 	)
 	if err != nil {
@@ -270,7 +270,7 @@ func (q *Queries) GetPositionHistoriesWithMember(ctx context.Context, arg GetPos
 			&i.PositionHistory.MemberID,
 			&i.PositionHistory.XPos,
 			&i.PositionHistory.YPos,
-			&i.PositionHistory.SendAt,
+			&i.PositionHistory.SentAt,
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,
 			&i.Member.LoginID,
@@ -297,7 +297,7 @@ func (q *Queries) GetPositionHistoriesWithMember(ctx context.Context, arg GetPos
 }
 
 const updatePositionHistory = `-- name: UpdatePositionHistory :one
-UPDATE t_position_histories SET member_id = $2, x_pos = $3, y_pos = $4, send_at = $5 WHERE position_history_id = $1 RETURNING t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, send_at
+UPDATE t_position_histories SET member_id = $2, x_pos = $3, y_pos = $4, sent_at = $5 WHERE position_history_id = $1 RETURNING t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, sent_at
 `
 
 type UpdatePositionHistoryParams struct {
@@ -305,7 +305,7 @@ type UpdatePositionHistoryParams struct {
 	MemberID          uuid.UUID `json:"member_id"`
 	XPos              float64   `json:"x_pos"`
 	YPos              float64   `json:"y_pos"`
-	SendAt            time.Time `json:"send_at"`
+	SentAt            time.Time `json:"sent_at"`
 }
 
 func (q *Queries) UpdatePositionHistory(ctx context.Context, arg UpdatePositionHistoryParams) (PositionHistory, error) {
@@ -314,7 +314,7 @@ func (q *Queries) UpdatePositionHistory(ctx context.Context, arg UpdatePositionH
 		arg.MemberID,
 		arg.XPos,
 		arg.YPos,
-		arg.SendAt,
+		arg.SentAt,
 	)
 	var i PositionHistory
 	err := row.Scan(
@@ -323,7 +323,7 @@ func (q *Queries) UpdatePositionHistory(ctx context.Context, arg UpdatePositionH
 		&i.MemberID,
 		&i.XPos,
 		&i.YPos,
-		&i.SendAt,
+		&i.SentAt,
 	)
 	return i, err
 }

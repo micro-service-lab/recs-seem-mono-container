@@ -243,7 +243,7 @@ type PositionHistory struct {
 	MemberID               uuid.UUID   `json:"member_id"`
 	XPos                   float64     `json:"x_pos"`
 	YPos                   float64     `json:"y_pos"`
-	SendAt                 time.Time   `json:"send_at"`
+	SentAt                 time.Time   `json:"sent_at"`
 }
 
 type Professor struct {

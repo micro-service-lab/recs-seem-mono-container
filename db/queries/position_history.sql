@@ -1,11 +1,11 @@
 -- name: CreatePositionHistories :copyfrom
-INSERT INTO t_position_histories (member_id, x_pos, y_pos, send_at) VALUES ($1, $2, $3, $4);
+INSERT INTO t_position_histories (member_id, x_pos, y_pos, sent_at) VALUES ($1, $2, $3, $4);
 
 -- name: CreatePositionHistory :one
-INSERT INTO t_position_histories (member_id, x_pos, y_pos, send_at) VALUES ($1, $2, $3, $4) RETURNING *;
+INSERT INTO t_position_histories (member_id, x_pos, y_pos, sent_at) VALUES ($1, $2, $3, $4) RETURNING *;
 
 -- name: UpdatePositionHistory :one
-UPDATE t_position_histories SET member_id = $2, x_pos = $3, y_pos = $4, send_at = $5 WHERE position_history_id = $1 RETURNING *;
+UPDATE t_position_histories SET member_id = $2, x_pos = $3, y_pos = $4, sent_at = $5 WHERE position_history_id = $1 RETURNING *;
 
 -- name: DeletePositionHistory :exec
 DELETE FROM t_position_histories WHERE position_history_id = $1;
@@ -23,12 +23,12 @@ SELECT * FROM t_position_histories
 WHERE
 	CASE WHEN @where_in_member::boolean = true THEN member_id = ANY(@in_member_ids::uuid[]) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_send_at::boolean = true THEN send_at >= @earlier_send_at ELSE TRUE END
+	CASE WHEN @where_earlier_sent_at::boolean = true THEN sent_at >= @earlier_sent_at ELSE TRUE END
 AND
-	CASE WHEN @where_later_send_at::boolean = true THEN send_at <= @later_send_at ELSE TRUE END
+	CASE WHEN @where_later_sent_at::boolean = true THEN sent_at <= @later_sent_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'old_send' THEN send_at END ASC,
-	CASE WHEN @order_method::text = 'late_send' THEN send_at END DESC,
+	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC,
+	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC,
 	t_position_histories_pkey DESC
 LIMIT $1 OFFSET $2;
 
@@ -38,12 +38,12 @@ LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE
 	CASE WHEN @where_in_member::boolean = true THEN member_id = ANY(@in_member_ids::uuid[]) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_send_at::boolean = true THEN send_at >= @earlier_send_at ELSE TRUE END
+	CASE WHEN @where_earlier_sent_at::boolean = true THEN sent_at >= @earlier_sent_at ELSE TRUE END
 AND
-	CASE WHEN @where_later_send_at::boolean = true THEN send_at <= @later_send_at ELSE TRUE END
+	CASE WHEN @where_later_sent_at::boolean = true THEN sent_at <= @later_sent_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'old_send' THEN send_at END ASC,
-	CASE WHEN @order_method::text = 'late_send' THEN send_at END DESC,
+	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC,
+	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC,
 	t_position_histories_pkey DESC
 LIMIT $1 OFFSET $2;
 
@@ -52,6 +52,6 @@ SELECT COUNT(*) FROM t_position_histories
 WHERE
 	CASE WHEN @where_in_member::boolean = true THEN member_id = ANY(@in_member_ids::uuid[]) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_send_at::boolean = true THEN send_at >= @earlier_send_at ELSE TRUE END
+	CASE WHEN @where_earlier_sent_at::boolean = true THEN sent_at >= @earlier_sent_at ELSE TRUE END
 AND
-	CASE WHEN @where_later_send_at::boolean = true THEN send_at <= @later_send_at ELSE TRUE END;
+	CASE WHEN @where_later_sent_at::boolean = true THEN sent_at <= @later_sent_at ELSE TRUE END;

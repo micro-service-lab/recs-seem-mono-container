@@ -11,6 +11,24 @@ import (
 	"github.com/google/uuid"
 )
 
+const countEventTypes = `-- name: CountEventTypes :one
+SELECT COUNT(*) FROM m_event_types
+WHERE
+	CASE WHEN $1::boolean = true THEN name LIKE '%' || $2::text || '%' ELSE TRUE END
+`
+
+type CountEventTypesParams struct {
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+}
+
+func (q *Queries) CountEventTypes(ctx context.Context, arg CountEventTypesParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countEventTypes, arg.WhereLikeName, arg.SearchName)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createEventType = `-- name: CreateEventType :one
 INSERT INTO m_event_types (name, key, color) VALUES ($1, $2, $3) RETURNING m_event_types_pkey, event_type_id, name, key, color
 `
@@ -162,23 +180,17 @@ func (q *Queries) UpdateEventType(ctx context.Context, arg UpdateEventTypeParams
 }
 
 const updateEventTypeByKey = `-- name: UpdateEventTypeByKey :one
-UPDATE m_event_types SET name = $2, key = $3, color = $4 WHERE key = $1 RETURNING m_event_types_pkey, event_type_id, name, key, color
+UPDATE m_event_types SET name = $2, color = $3 WHERE key = $1 RETURNING m_event_types_pkey, event_type_id, name, key, color
 `
 
 type UpdateEventTypeByKeyParams struct {
 	Key   string `json:"key"`
 	Name  string `json:"name"`
-	Key_2 string `json:"key_2"`
 	Color string `json:"color"`
 }
 
 func (q *Queries) UpdateEventTypeByKey(ctx context.Context, arg UpdateEventTypeByKeyParams) (EventType, error) {
-	row := q.db.QueryRow(ctx, updateEventTypeByKey,
-		arg.Key,
-		arg.Name,
-		arg.Key_2,
-		arg.Color,
-	)
+	row := q.db.QueryRow(ctx, updateEventTypeByKey, arg.Key, arg.Name, arg.Color)
 	var i EventType
 	err := row.Scan(
 		&i.MEventTypesPkey,

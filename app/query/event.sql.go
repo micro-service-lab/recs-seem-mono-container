@@ -182,10 +182,10 @@ func (q *Queries) FindEventByID(ctx context.Context, eventID uuid.UUID) (Event, 
 
 const findEventByIDWithAll = `-- name: FindEventByIDWithAll :one
 SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_event_types_pkey, o.event_type_id, o.name, o.key, o.color, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.is_personal, s.is_whole, s.created_at, s.updated_at, p.m_organizations_pkey, p.organization_id, p.name, p.description, p.is_personal, p.is_whole, p.created_at, p.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at FROM t_events
-INNER JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
-INNER JOIN m_organizations s ON t_events.organization_id = s.organization_id
-INNER JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
-INNER JOIN m_members l ON t_events.posted_by = l.member_id
+LEFT JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
+LEFT JOIN m_organizations s ON t_events.organization_id = s.organization_id
+LEFT JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
+LEFT JOIN m_members l ON t_events.posted_by = l.member_id
 WHERE event_id = $1
 `
 
@@ -256,7 +256,7 @@ func (q *Queries) FindEventByIDWithAll(ctx context.Context, eventID uuid.UUID) (
 
 const findEventByIDWithLastEditUser = `-- name: FindEventByIDWithLastEditUser :one
 SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
-INNER JOIN m_members ON t_events.last_edited_by = m_members.member_id
+LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
 WHERE event_id = $1
 `
 
@@ -303,7 +303,7 @@ func (q *Queries) FindEventByIDWithLastEditUser(ctx context.Context, eventID uui
 
 const findEventByIDWithOrganization = `-- name: FindEventByIDWithOrganization :one
 SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_events
-INNER JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
 WHERE event_id = $1
 `
 
@@ -344,7 +344,7 @@ func (q *Queries) FindEventByIDWithOrganization(ctx context.Context, eventID uui
 
 const findEventByIDWithPostUser = `-- name: FindEventByIDWithPostUser :one
 SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
-INNER JOIN m_members ON t_events.posted_by = m_members.member_id
+LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
 WHERE event_id = $1
 `
 
@@ -391,7 +391,7 @@ func (q *Queries) FindEventByIDWithPostUser(ctx context.Context, eventID uuid.UU
 
 const findEventByIDWithSendOrganization = `-- name: FindEventByIDWithSendOrganization :one
 SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_events
-INNER JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
 WHERE event_id = $1
 `
 
@@ -432,7 +432,7 @@ func (q *Queries) FindEventByIDWithSendOrganization(ctx context.Context, eventID
 
 const findEventByIDWithType = `-- name: FindEventByIDWithType :one
 SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_event_types.m_event_types_pkey, m_event_types.event_type_id, m_event_types.name, m_event_types.key, m_event_types.color FROM t_events
-INNER JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
+LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
 WHERE event_id = $1
 `
 
@@ -571,11 +571,11 @@ func (q *Queries) GetEvents(ctx context.Context, arg GetEventsParams) ([]Event, 
 
 const getEventsWithAll = `-- name: GetEventsWithAll :many
 SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_event_types_pkey, o.event_type_id, o.name, o.key, o.color, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.is_personal, s.is_whole, s.created_at, s.updated_at, p.m_organizations_pkey, p.organization_id, p.name, p.description, p.is_personal, p.is_whole, p.created_at, p.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at FROM t_events
-INNER JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
-INNER JOIN m_organizations s ON t_events.organization_id = s.organization_id
-INNER JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
-INNER JOIN m_members l ON t_events.posted_by = l.member_id
-INNER JOIN m_members l ON t_events.last_edited_by = l.member_id
+LEFT JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
+LEFT JOIN m_organizations s ON t_events.organization_id = s.organization_id
+LEFT JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
+LEFT JOIN m_members l ON t_events.posted_by = l.member_id
+LEFT JOIN m_members l ON t_events.last_edited_by = l.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -735,7 +735,7 @@ func (q *Queries) GetEventsWithAll(ctx context.Context, arg GetEventsWithAllPara
 
 const getEventsWithLastEditUser = `-- name: GetEventsWithLastEditUser :many
 SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
-INNER JOIN m_members ON t_events.last_edited_by = m_members.member_id
+LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -856,7 +856,7 @@ func (q *Queries) GetEventsWithLastEditUser(ctx context.Context, arg GetEventsWi
 
 const getEventsWithOrganization = `-- name: GetEventsWithOrganization :many
 SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_events
-INNER JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -971,7 +971,7 @@ func (q *Queries) GetEventsWithOrganization(ctx context.Context, arg GetEventsWi
 
 const getEventsWithPostUser = `-- name: GetEventsWithPostUser :many
 SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
-INNER JOIN m_members ON t_events.posted_by = m_members.member_id
+LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -1092,7 +1092,7 @@ func (q *Queries) GetEventsWithPostUser(ctx context.Context, arg GetEventsWithPo
 
 const getEventsWithSendOrganization = `-- name: GetEventsWithSendOrganization :many
 SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_events
-INNER JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -1207,7 +1207,7 @@ func (q *Queries) GetEventsWithSendOrganization(ctx context.Context, arg GetEven
 
 const getEventsWithType = `-- name: GetEventsWithType :many
 SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_event_types.m_event_types_pkey, m_event_types.event_type_id, m_event_types.name, m_event_types.key, m_event_types.color FROM t_events
-INNER JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
+LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
 WHERE
 	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
 AND

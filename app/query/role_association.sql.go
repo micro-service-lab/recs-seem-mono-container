@@ -12,22 +12,42 @@ import (
 )
 
 const countPoliciesByRoleID = `-- name: CountPoliciesByRoleID :one
-SELECT COUNT(*) FROM m_role_associations WHERE role_id = $1
+SELECT COUNT(*) FROM m_role_associations
+LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
+WHERE role_id = $1
+AND
+	CASE WHEN $2::boolean = true THEN m_policies.name LIKE '%' || $3::text || '%' ELSE TRUE END
 `
 
-func (q *Queries) CountPoliciesByRoleID(ctx context.Context, roleID uuid.UUID) (int64, error) {
-	row := q.db.QueryRow(ctx, countPoliciesByRoleID, roleID)
+type CountPoliciesByRoleIDParams struct {
+	RoleID        uuid.UUID `json:"role_id"`
+	WhereLikeName bool      `json:"where_like_name"`
+	SearchName    string    `json:"search_name"`
+}
+
+func (q *Queries) CountPoliciesByRoleID(ctx context.Context, arg CountPoliciesByRoleIDParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countPoliciesByRoleID, arg.RoleID, arg.WhereLikeName, arg.SearchName)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
 }
 
 const countRolesByPolicyID = `-- name: CountRolesByPolicyID :one
-SELECT COUNT(*) FROM m_role_associations WHERE policy_id = $1
+SELECT COUNT(*) FROM m_role_associations
+LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
+WHERE policy_id = $1
+AND
+	CASE WHEN $2::boolean = true THEN m_roles.name LIKE '%' || $3::text || '%' ELSE TRUE END
 `
 
-func (q *Queries) CountRolesByPolicyID(ctx context.Context, policyID uuid.UUID) (int64, error) {
-	row := q.db.QueryRow(ctx, countRolesByPolicyID, policyID)
+type CountRolesByPolicyIDParams struct {
+	PolicyID      uuid.UUID `json:"policy_id"`
+	WhereLikeName bool      `json:"where_like_name"`
+	SearchName    string    `json:"search_name"`
+}
+
+func (q *Queries) CountRolesByPolicyID(ctx context.Context, arg CountRolesByPolicyIDParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countRolesByPolicyID, arg.PolicyID, arg.WhereLikeName, arg.SearchName)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -68,20 +88,20 @@ func (q *Queries) DeleteRoleAssociation(ctx context.Context, arg DeleteRoleAssoc
 	return err
 }
 
-const getPoliciesByRoleID = `-- name: GetPoliciesByRoleID :many
+const getPoliciesOnRole = `-- name: GetPoliciesOnRole :many
 SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id FROM m_role_associations
-INNER JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
+LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE role_id = $1
-AND CASE
-	WHEN $4::boolean = true THEN m_policies.name LIKE '%' || $5::text || '%'
-END
+AND
+	CASE WHEN $4::boolean = true THEN m_policies.name LIKE '%' || $5::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN $6::text = 'name' THEN m_policies.name END ASC,
+	CASE WHEN $6::text = 'r_name' THEN m_policies.name END DESC,
 	m_role_associations_pkey DESC
 LIMIT $2 OFFSET $3
 `
 
-type GetPoliciesByRoleIDParams struct {
+type GetPoliciesOnRoleParams struct {
 	RoleID        uuid.UUID `json:"role_id"`
 	Limit         int32     `json:"limit"`
 	Offset        int32     `json:"offset"`
@@ -90,13 +110,13 @@ type GetPoliciesByRoleIDParams struct {
 	OrderMethod   string    `json:"order_method"`
 }
 
-type GetPoliciesByRoleIDRow struct {
+type GetPoliciesOnRoleRow struct {
 	RoleAssociation RoleAssociation `json:"role_association"`
 	Policy          Policy          `json:"policy"`
 }
 
-func (q *Queries) GetPoliciesByRoleID(ctx context.Context, arg GetPoliciesByRoleIDParams) ([]GetPoliciesByRoleIDRow, error) {
-	rows, err := q.db.Query(ctx, getPoliciesByRoleID,
+func (q *Queries) GetPoliciesOnRole(ctx context.Context, arg GetPoliciesOnRoleParams) ([]GetPoliciesOnRoleRow, error) {
+	rows, err := q.db.Query(ctx, getPoliciesOnRole,
 		arg.RoleID,
 		arg.Limit,
 		arg.Offset,
@@ -108,9 +128,9 @@ func (q *Queries) GetPoliciesByRoleID(ctx context.Context, arg GetPoliciesByRole
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPoliciesByRoleIDRow{}
+	items := []GetPoliciesOnRoleRow{}
 	for rows.Next() {
-		var i GetPoliciesByRoleIDRow
+		var i GetPoliciesOnRoleRow
 		if err := rows.Scan(
 			&i.RoleAssociation.MRoleAssociationsPkey,
 			&i.RoleAssociation.RoleID,
@@ -132,20 +152,20 @@ func (q *Queries) GetPoliciesByRoleID(ctx context.Context, arg GetPoliciesByRole
 	return items, nil
 }
 
-const getRolesByPolicyID = `-- name: GetRolesByPolicyID :many
+const getRolesOnPolicy = `-- name: GetRolesOnPolicy :many
 SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_role_associations
-INNER JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
+LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE policy_id = $1
-AND CASE
-	WHEN $4::boolean = true THEN m_roles.name LIKE '%' || $5::text || '%'
-END
+AND
+	CASE WHEN $4::boolean = true THEN m_roles.name LIKE '%' || $5::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN $6::text = 'name' THEN m_roles.name END ASC,
+	CASE WHEN $6::text = 'r_name' THEN m_roles.name END DESC,
 	m_role_associations_pkey DESC
 LIMIT $2 OFFSET $3
 `
 
-type GetRolesByPolicyIDParams struct {
+type GetRolesOnPolicyParams struct {
 	PolicyID      uuid.UUID `json:"policy_id"`
 	Limit         int32     `json:"limit"`
 	Offset        int32     `json:"offset"`
@@ -154,13 +174,13 @@ type GetRolesByPolicyIDParams struct {
 	OrderMethod   string    `json:"order_method"`
 }
 
-type GetRolesByPolicyIDRow struct {
+type GetRolesOnPolicyRow struct {
 	RoleAssociation RoleAssociation `json:"role_association"`
 	Role            Role            `json:"role"`
 }
 
-func (q *Queries) GetRolesByPolicyID(ctx context.Context, arg GetRolesByPolicyIDParams) ([]GetRolesByPolicyIDRow, error) {
-	rows, err := q.db.Query(ctx, getRolesByPolicyID,
+func (q *Queries) GetRolesOnPolicy(ctx context.Context, arg GetRolesOnPolicyParams) ([]GetRolesOnPolicyRow, error) {
+	rows, err := q.db.Query(ctx, getRolesOnPolicy,
 		arg.PolicyID,
 		arg.Limit,
 		arg.Offset,
@@ -172,9 +192,9 @@ func (q *Queries) GetRolesByPolicyID(ctx context.Context, arg GetRolesByPolicyID
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetRolesByPolicyIDRow{}
+	items := []GetRolesOnPolicyRow{}
 	for rows.Next() {
-		var i GetRolesByPolicyIDRow
+		var i GetRolesOnPolicyRow
 		if err := rows.Scan(
 			&i.RoleAssociation.MRoleAssociationsPkey,
 			&i.RoleAssociation.RoleID,

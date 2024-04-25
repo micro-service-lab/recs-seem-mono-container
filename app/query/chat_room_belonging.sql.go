@@ -96,7 +96,7 @@ func (q *Queries) DeleteChatRoomBelonging(ctx context.Context, arg DeleteChatRoo
 
 const getChatRoomsByMemberID = `-- name: GetChatRoomsByMemberID :many
 SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
-INNER JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = $1
 AND CASE
 	WHEN $4::boolean = true THEN m_members.name LIKE '%' || $5::text || '%'
@@ -172,7 +172,7 @@ func (q *Queries) GetChatRoomsByMemberID(ctx context.Context, arg GetChatRoomsBy
 
 const getMembersOnChatRoomID = `-- name: GetMembersOnChatRoomID :many
 SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_room_belongings
-INNER JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
+LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 WHERE chat_room_id = $1
 AND CASE
 	WHEN $4::boolean = true THEN m_members.name LIKE '%' || $5::text || '%'

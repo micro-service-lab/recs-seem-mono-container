@@ -24,4 +24,6 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: CountMimeTypes :one
-SELECT COUNT(*) FROM m_mime_types;
+SELECT COUNT(*) FROM m_mime_types
+WHERE
+	CASE WHEN @where_like_name::boolean = true THEN name LIKE '%' || @search_name::text || '%' ELSE TRUE END;

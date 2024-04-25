@@ -15,13 +15,15 @@ SELECT * FROM m_work_positions WHERE work_position_id = $1;
 
 -- name: GetWorkPositions :many
 SELECT * FROM m_work_positions
-WHERE CASE
-	WHEN @where_like_name::boolean = true THEN m_work_positions.name LIKE '%' || @search_name::text || '%'
-END
+WHERE
+	CASE WHEN @where_like_name::boolean = true THEN m_work_positions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
 	m_work_positions_pkey DESC
 LIMIT $1 OFFSET $2;
 
 -- name: CountWorkPositions :one
-SELECT COUNT(*) FROM m_work_positions;
+SELECT COUNT(*) FROM m_work_positions
+WHERE
+	CASE WHEN @where_like_name::boolean = true THEN name LIKE '%' || @search_name::text || '%' ELSE TRUE END;

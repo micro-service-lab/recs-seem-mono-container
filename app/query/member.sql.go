@@ -15,10 +15,44 @@ import (
 
 const countMembers = `-- name: CountMembers :one
 SELECT COUNT(*) FROM m_members
+WHERE
+	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($4::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN m_members.attend_status_id = ANY($6::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
 `
 
-func (q *Queries) CountMembers(ctx context.Context) (int64, error) {
-	row := q.db.QueryRow(ctx, countMembers)
+type CountMembersParams struct {
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+}
+
+func (q *Queries) CountMembers(ctx context.Context, arg CountMembersParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countMembers,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+	)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -127,7 +161,7 @@ func (q *Queries) FindMemberByID(ctx context.Context, memberID uuid.UUID) (Membe
 
 const findMemberByIDWithAttendStatus = `-- name: FindMemberByIDWithAttendStatus :one
 SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
-INNER JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE member_id = $1
 `
 
@@ -162,62 +196,10 @@ func (q *Queries) FindMemberByIDWithAttendStatus(ctx context.Context, memberID u
 	return i, err
 }
 
-const findMemberByIDWithDetailRole = `-- name: FindMemberByIDWithDetailRole :one
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at, m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id FROM m_members
-LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
-LEFT JOIN m_role_associations ON m_members.role_id = m_role_associations.role_id
-LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
-WHERE member_id = $1
-`
-
-type FindMemberByIDWithDetailRoleRow struct {
-	Member          Member          `json:"member"`
-	Role            Role            `json:"role"`
-	RoleAssociation RoleAssociation `json:"role_association"`
-	Policy          Policy          `json:"policy"`
-}
-
-func (q *Queries) FindMemberByIDWithDetailRole(ctx context.Context, memberID uuid.UUID) (FindMemberByIDWithDetailRoleRow, error) {
-	row := q.db.QueryRow(ctx, findMemberByIDWithDetailRole, memberID)
-	var i FindMemberByIDWithDetailRoleRow
-	err := row.Scan(
-		&i.Member.MMembersPkey,
-		&i.Member.MemberID,
-		&i.Member.LoginID,
-		&i.Member.Password,
-		&i.Member.Email,
-		&i.Member.Name,
-		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageID,
-		&i.Member.GradeID,
-		&i.Member.GroupID,
-		&i.Member.PersonalOrganizationID,
-		&i.Member.RoleID,
-		&i.Member.CreatedAt,
-		&i.Member.UpdatedAt,
-		&i.Role.MRolesPkey,
-		&i.Role.RoleID,
-		&i.Role.Name,
-		&i.Role.Description,
-		&i.Role.CreatedAt,
-		&i.Role.UpdatedAt,
-		&i.RoleAssociation.MRoleAssociationsPkey,
-		&i.RoleAssociation.RoleID,
-		&i.RoleAssociation.PolicyID,
-		&i.Policy.MPoliciesPkey,
-		&i.Policy.PolicyID,
-		&i.Policy.Name,
-		&i.Policy.Description,
-		&i.Policy.Key,
-		&i.Policy.PolicyCategoryID,
-	)
-	return i, err
-}
-
 const findMemberByIDWithGrade = `-- name: FindMemberByIDWithGrade :one
 SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
-INNER JOIN m_grades ON m_members.grade_id = m_grades.grade_id
-INNER JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE member_id = $1
 `
 
@@ -254,8 +236,8 @@ func (q *Queries) FindMemberByIDWithGrade(ctx context.Context, memberID uuid.UUI
 
 const findMemberByIDWithGroup = `-- name: FindMemberByIDWithGroup :one
 SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
-INNER JOIN m_groups ON m_members.group_id = m_groups.group_id
-INNER JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE member_id = $1
 `
 
@@ -292,7 +274,7 @@ func (q *Queries) FindMemberByIDWithGroup(ctx context.Context, memberID uuid.UUI
 
 const findMemberByIDWithPersonalOrganization = `-- name: FindMemberByIDWithPersonalOrganization :one
 SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_members
-INNER JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE member_id = $1
 `
 
@@ -396,24 +378,147 @@ func (q *Queries) FindMemberByLoginID(ctx context.Context, loginID string) (Memb
 	return i, err
 }
 
+const findMemberWithAll = `-- name: FindMemberWithAll :one
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
+LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
+WHERE member_id = $1
+`
+
+type FindMemberWithAllRow struct {
+	Member       Member       `json:"member"`
+	AttendStatus AttendStatus `json:"attend_status"`
+	Grade        Grade        `json:"grade"`
+	Group        Group        `json:"group"`
+	Organization Organization `json:"organization"`
+	Role         Role         `json:"role"`
+}
+
+func (q *Queries) FindMemberWithAll(ctx context.Context, memberID uuid.UUID) (FindMemberWithAllRow, error) {
+	row := q.db.QueryRow(ctx, findMemberWithAll, memberID)
+	var i FindMemberWithAllRow
+	err := row.Scan(
+		&i.Member.MMembersPkey,
+		&i.Member.MemberID,
+		&i.Member.LoginID,
+		&i.Member.Password,
+		&i.Member.Email,
+		&i.Member.Name,
+		&i.Member.AttendStatusID,
+		&i.Member.ProfileImageID,
+		&i.Member.GradeID,
+		&i.Member.GroupID,
+		&i.Member.PersonalOrganizationID,
+		&i.Member.RoleID,
+		&i.Member.CreatedAt,
+		&i.Member.UpdatedAt,
+		&i.AttendStatus.MAttendStatusesPkey,
+		&i.AttendStatus.AttendStatusID,
+		&i.AttendStatus.Name,
+		&i.AttendStatus.Key,
+		&i.Grade.MGradesPkey,
+		&i.Grade.GradeID,
+		&i.Grade.Key,
+		&i.Grade.OrganizationID,
+		&i.Group.MGroupsPkey,
+		&i.Group.GroupID,
+		&i.Group.Key,
+		&i.Group.OrganizationID,
+		&i.Organization.MOrganizationsPkey,
+		&i.Organization.OrganizationID,
+		&i.Organization.Name,
+		&i.Organization.Description,
+		&i.Organization.IsPersonal,
+		&i.Organization.IsWhole,
+		&i.Organization.CreatedAt,
+		&i.Organization.UpdatedAt,
+		&i.Role.MRolesPkey,
+		&i.Role.RoleID,
+		&i.Role.Name,
+		&i.Role.Description,
+		&i.Role.CreatedAt,
+		&i.Role.UpdatedAt,
+	)
+	return i, err
+}
+
+const findMemberWithDetail = `-- name: FindMemberWithDetail :one
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id FROM m_members
+LEFT JOIN m_students ON m_members.member_id = m_students.member_id
+LEFT JOIN m_professors ON m_members.member_id = m_professor.member_id
+WHERE m_members.member_id = $1
+`
+
+type FindMemberWithDetailRow struct {
+	Member    Member    `json:"member"`
+	Student   Student   `json:"student"`
+	Professor Professor `json:"professor"`
+}
+
+func (q *Queries) FindMemberWithDetail(ctx context.Context, memberID uuid.UUID) (FindMemberWithDetailRow, error) {
+	row := q.db.QueryRow(ctx, findMemberWithDetail, memberID)
+	var i FindMemberWithDetailRow
+	err := row.Scan(
+		&i.Member.MMembersPkey,
+		&i.Member.MemberID,
+		&i.Member.LoginID,
+		&i.Member.Password,
+		&i.Member.Email,
+		&i.Member.Name,
+		&i.Member.AttendStatusID,
+		&i.Member.ProfileImageID,
+		&i.Member.GradeID,
+		&i.Member.GroupID,
+		&i.Member.PersonalOrganizationID,
+		&i.Member.RoleID,
+		&i.Member.CreatedAt,
+		&i.Member.UpdatedAt,
+		&i.Student.MStudentsPkey,
+		&i.Student.StudentID,
+		&i.Student.MemberID,
+		&i.Professor.MProfessorsPkey,
+		&i.Professor.ProfessorID,
+		&i.Professor.MemberID,
+	)
+	return i, err
+}
+
 const getMembers = `-- name: GetMembers :many
 SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members
 WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
 	CASE WHEN $5::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($6::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN m_members.attend_status_id = ANY($8::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
 ORDER BY
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
 type GetMembersParams struct {
-	Limit          int32       `json:"limit"`
-	Offset         int32       `json:"offset"`
-	WhereLikeName  bool        `json:"where_like_name"`
-	SearchName     string      `json:"search_name"`
-	WhereHasPolicy bool        `json:"where_has_policy"`
-	HasPolicyIds   []uuid.UUID `json:"has_policy_ids"`
+	Limit              int32       `json:"limit"`
+	Offset             int32       `json:"offset"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	OrderMethod        string      `json:"order_method"`
 }
 
 func (q *Queries) GetMembers(ctx context.Context, arg GetMembersParams) ([]Member, error) {
@@ -424,6 +529,13 @@ func (q *Queries) GetMembers(ctx context.Context, arg GetMembersParams) ([]Membe
 		arg.SearchName,
 		arg.WhereHasPolicy,
 		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.OrderMethod,
 	)
 	if err != nil {
 		return nil, err
@@ -458,17 +570,164 @@ func (q *Queries) GetMembers(ctx context.Context, arg GetMembersParams) ([]Membe
 	return items, nil
 }
 
+const getMembersWithAll = `-- name: GetMembersWithAll :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
+LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
+WHERE
+	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($6::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN m_members.attend_status_id = ANY($8::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
+ORDER BY
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetMembersWithAllParams struct {
+	Limit              int32       `json:"limit"`
+	Offset             int32       `json:"offset"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	OrderMethod        string      `json:"order_method"`
+}
+
+type GetMembersWithAllRow struct {
+	Member       Member       `json:"member"`
+	AttendStatus AttendStatus `json:"attend_status"`
+	Grade        Grade        `json:"grade"`
+	Group        Group        `json:"group"`
+	Organization Organization `json:"organization"`
+	Role         Role         `json:"role"`
+}
+
+func (q *Queries) GetMembersWithAll(ctx context.Context, arg GetMembersWithAllParams) ([]GetMembersWithAllRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithAll,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersWithAllRow{}
+	for rows.Next() {
+		var i GetMembersWithAllRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.AttendStatus.MAttendStatusesPkey,
+			&i.AttendStatus.AttendStatusID,
+			&i.AttendStatus.Name,
+			&i.AttendStatus.Key,
+			&i.Grade.MGradesPkey,
+			&i.Grade.GradeID,
+			&i.Grade.Key,
+			&i.Grade.OrganizationID,
+			&i.Group.MGroupsPkey,
+			&i.Group.GroupID,
+			&i.Group.Key,
+			&i.Group.OrganizationID,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Role.MRolesPkey,
+			&i.Role.RoleID,
+			&i.Role.Name,
+			&i.Role.Description,
+			&i.Role.CreatedAt,
+			&i.Role.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getMembersWithAttendStatus = `-- name: GetMembersWithAttendStatus :many
 SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
-INNER JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+WHERE
+	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($6::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN m_members.attend_status_id = ANY($8::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
 ORDER BY
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
 type GetMembersWithAttendStatusParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit              int32       `json:"limit"`
+	Offset             int32       `json:"offset"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	OrderMethod        string      `json:"order_method"`
 }
 
 type GetMembersWithAttendStatusRow struct {
@@ -477,7 +736,21 @@ type GetMembersWithAttendStatusRow struct {
 }
 
 func (q *Queries) GetMembersWithAttendStatus(ctx context.Context, arg GetMembersWithAttendStatusParams) ([]GetMembersWithAttendStatusRow, error) {
-	rows, err := q.db.Query(ctx, getMembersWithAttendStatus, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, getMembersWithAttendStatus,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -517,16 +790,39 @@ func (q *Queries) GetMembersWithAttendStatus(ctx context.Context, arg GetMembers
 
 const getMembersWithGrade = `-- name: GetMembersWithGrade :many
 SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
-INNER JOIN m_grades ON m_members.grade_id = m_grades.grade_id
-INNER JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($6::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN m_members.attend_status_id = ANY($8::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
 ORDER BY
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
 type GetMembersWithGradeParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit              int32       `json:"limit"`
+	Offset             int32       `json:"offset"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	OrderMethod        string      `json:"order_method"`
 }
 
 type GetMembersWithGradeRow struct {
@@ -535,7 +831,21 @@ type GetMembersWithGradeRow struct {
 }
 
 func (q *Queries) GetMembersWithGrade(ctx context.Context, arg GetMembersWithGradeParams) ([]GetMembersWithGradeRow, error) {
-	rows, err := q.db.Query(ctx, getMembersWithGrade, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, getMembersWithGrade,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -575,16 +885,39 @@ func (q *Queries) GetMembersWithGrade(ctx context.Context, arg GetMembersWithGra
 
 const getMembersWithGroup = `-- name: GetMembersWithGroup :many
 SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
-INNER JOIN m_groups ON m_members.group_id = m_groups.group_id
-INNER JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($6::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN m_members.attend_status_id = ANY($8::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
 ORDER BY
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
 type GetMembersWithGroupParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit              int32       `json:"limit"`
+	Offset             int32       `json:"offset"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	OrderMethod        string      `json:"order_method"`
 }
 
 type GetMembersWithGroupRow struct {
@@ -593,7 +926,21 @@ type GetMembersWithGroupRow struct {
 }
 
 func (q *Queries) GetMembersWithGroup(ctx context.Context, arg GetMembersWithGroupParams) ([]GetMembersWithGroupRow, error) {
-	rows, err := q.db.Query(ctx, getMembersWithGroup, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, getMembersWithGroup,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -633,15 +980,38 @@ func (q *Queries) GetMembersWithGroup(ctx context.Context, arg GetMembersWithGro
 
 const getMembersWithPersonalOrganization = `-- name: GetMembersWithPersonalOrganization :many
 SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_members
-INNER JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($6::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN m_members.attend_status_id = ANY($8::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
 ORDER BY
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
 type GetMembersWithPersonalOrganizationParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit              int32       `json:"limit"`
+	Offset             int32       `json:"offset"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	OrderMethod        string      `json:"order_method"`
 }
 
 type GetMembersWithPersonalOrganizationRow struct {
@@ -650,7 +1020,21 @@ type GetMembersWithPersonalOrganizationRow struct {
 }
 
 func (q *Queries) GetMembersWithPersonalOrganization(ctx context.Context, arg GetMembersWithPersonalOrganizationParams) ([]GetMembersWithPersonalOrganizationRow, error) {
-	rows, err := q.db.Query(ctx, getMembersWithPersonalOrganization, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, getMembersWithPersonalOrganization,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -695,14 +1079,37 @@ func (q *Queries) GetMembersWithPersonalOrganization(ctx context.Context, arg Ge
 const getMembersWithRole = `-- name: GetMembersWithRole :many
 SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
+WHERE
+	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($6::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN m_members.attend_status_id = ANY($8::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
 ORDER BY
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
 type GetMembersWithRoleParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit              int32       `json:"limit"`
+	Offset             int32       `json:"offset"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	OrderMethod        string      `json:"order_method"`
 }
 
 type GetMembersWithRoleRow struct {
@@ -711,7 +1118,21 @@ type GetMembersWithRoleRow struct {
 }
 
 func (q *Queries) GetMembersWithRole(ctx context.Context, arg GetMembersWithRoleParams) ([]GetMembersWithRoleRow, error) {
-	rows, err := q.db.Query(ctx, getMembersWithRole, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, getMembersWithRole,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

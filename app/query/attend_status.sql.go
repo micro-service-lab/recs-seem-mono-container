@@ -178,17 +178,16 @@ func (q *Queries) UpdateAttendStatus(ctx context.Context, arg UpdateAttendStatus
 }
 
 const updateAttendStatusByKey = `-- name: UpdateAttendStatusByKey :one
-UPDATE m_attend_statuses SET name = $2, key = $3 WHERE key = $1 RETURNING m_attend_statuses_pkey, attend_status_id, name, key
+UPDATE m_attend_statuses SET name = $2 WHERE key = $1 RETURNING m_attend_statuses_pkey, attend_status_id, name, key
 `
 
 type UpdateAttendStatusByKeyParams struct {
-	Key   string `json:"key"`
-	Name  string `json:"name"`
-	Key_2 string `json:"key_2"`
+	Key  string `json:"key"`
+	Name string `json:"name"`
 }
 
 func (q *Queries) UpdateAttendStatusByKey(ctx context.Context, arg UpdateAttendStatusByKeyParams) (AttendStatus, error) {
-	row := q.db.QueryRow(ctx, updateAttendStatusByKey, arg.Key, arg.Name, arg.Key_2)
+	row := q.db.QueryRow(ctx, updateAttendStatusByKey, arg.Key, arg.Name)
 	var i AttendStatus
 	err := row.Scan(
 		&i.MAttendStatusesPkey,

@@ -15,7 +15,7 @@ SELECT * FROM m_grades WHERE grade_id = $1;
 
 -- name: FindGradeByIDWithOrganization :one
 SELECT sqlc.embed(m_grades), sqlc.embed(m_organizations) FROM m_grades
-INNER JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE grade_id = $1;
 
 -- name: FindGradeByKey :one
@@ -23,7 +23,7 @@ SELECT * FROM m_grades WHERE key = $1;
 
 -- name: FindGradeByKeyWithOrganization :one
 SELECT sqlc.embed(m_grades), sqlc.embed(m_organizations) FROM m_grades
-INNER JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE key = $1;
 
 -- name: GetGrades :many
@@ -34,7 +34,7 @@ LIMIT $1 OFFSET $2;
 
 -- name: GetGradesWithOrganization :many
 SELECT sqlc.embed(m_grades), sqlc.embed(m_organizations) FROM m_grades
-INNER JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
 	m_grades_pkey DESC

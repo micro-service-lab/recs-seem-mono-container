@@ -13,10 +13,17 @@ import (
 
 const countPermissionCategories = `-- name: CountPermissionCategories :one
 SELECT COUNT(*) FROM m_permission_categories
+WHERE
+	CASE WHEN $1::boolean = true THEN name LIKE '%' || $2::text || '%' ELSE TRUE END
 `
 
-func (q *Queries) CountPermissionCategories(ctx context.Context) (int64, error) {
-	row := q.db.QueryRow(ctx, countPermissionCategories)
+type CountPermissionCategoriesParams struct {
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+}
+
+func (q *Queries) CountPermissionCategories(ctx context.Context, arg CountPermissionCategoriesParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countPermissionCategories, arg.WhereLikeName, arg.SearchName)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -105,11 +112,11 @@ func (q *Queries) FindPermissionCategoryByKey(ctx context.Context, key string) (
 
 const getPermissionCategories = `-- name: GetPermissionCategories :many
 SELECT m_permission_categories_pkey, permission_category_id, name, description, key FROM m_permission_categories
-WHERE CASE
-	WHEN $3::boolean = true THEN m_permission_categories.name LIKE '%' || $4::text || '%'
-END
+WHERE
+	CASE WHEN $3::boolean = true THEN m_permission_categories.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_permission_categories.name END ASC,
+	CASE WHEN $5::text = 'r_name' THEN m_permission_categories.name END DESC,
 	m_permission_categories_pkey DESC
 LIMIT $1 OFFSET $2
 `
@@ -154,71 +161,24 @@ func (q *Queries) GetPermissionCategories(ctx context.Context, arg GetPermission
 	return items, nil
 }
 
-const getPermissionCategoriesByKeys = `-- name: GetPermissionCategoriesByKeys :many
-SELECT m_permission_categories_pkey, permission_category_id, name, description, key FROM m_permission_categories WHERE key = ANY($1)
-AND CASE
-	WHEN $4::boolean = true THEN m_permission_categories.name LIKE '%' || $5::text || '%'
-END
-ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_permission_categories.name END ASC,
-	m_permission_categories_pkey DESC
-LIMIT $2 OFFSET $3
-`
-
-type GetPermissionCategoriesByKeysParams struct {
-	Key           string `json:"key"`
-	Limit         int32  `json:"limit"`
-	Offset        int32  `json:"offset"`
-	WhereLikeName bool   `json:"where_like_name"`
-	SearchName    string `json:"search_name"`
-	OrderMethod   string `json:"order_method"`
-}
-
-func (q *Queries) GetPermissionCategoriesByKeys(ctx context.Context, arg GetPermissionCategoriesByKeysParams) ([]PermissionCategory, error) {
-	rows, err := q.db.Query(ctx, getPermissionCategoriesByKeys,
-		arg.Key,
-		arg.Limit,
-		arg.Offset,
-		arg.WhereLikeName,
-		arg.SearchName,
-		arg.OrderMethod,
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []PermissionCategory{}
-	for rows.Next() {
-		var i PermissionCategory
-		if err := rows.Scan(
-			&i.MPermissionCategoriesPkey,
-			&i.PermissionCategoryID,
-			&i.Name,
-			&i.Description,
-			&i.Key,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const updatePermissionCategory = `-- name: UpdatePermissionCategory :one
-UPDATE m_permission_categories SET name = $2, description = $3 WHERE permission_category_id = $1 RETURNING m_permission_categories_pkey, permission_category_id, name, description, key
+UPDATE m_permission_categories SET name = $2, description = $3, key = $4 WHERE permission_category_id = $1 RETURNING m_permission_categories_pkey, permission_category_id, name, description, key
 `
 
 type UpdatePermissionCategoryParams struct {
 	PermissionCategoryID uuid.UUID `json:"permission_category_id"`
 	Name                 string    `json:"name"`
 	Description          string    `json:"description"`
+	Key                  string    `json:"key"`
 }
 
 func (q *Queries) UpdatePermissionCategory(ctx context.Context, arg UpdatePermissionCategoryParams) (PermissionCategory, error) {
-	row := q.db.QueryRow(ctx, updatePermissionCategory, arg.PermissionCategoryID, arg.Name, arg.Description)
+	row := q.db.QueryRow(ctx, updatePermissionCategory,
+		arg.PermissionCategoryID,
+		arg.Name,
+		arg.Description,
+		arg.Key,
+	)
 	var i PermissionCategory
 	err := row.Scan(
 		&i.MPermissionCategoriesPkey,
@@ -230,17 +190,18 @@ func (q *Queries) UpdatePermissionCategory(ctx context.Context, arg UpdatePermis
 	return i, err
 }
 
-const updatePermissionCategoryKey = `-- name: UpdatePermissionCategoryKey :one
-UPDATE m_permission_categories SET key = $2 WHERE permission_category_id = $1 RETURNING m_permission_categories_pkey, permission_category_id, name, description, key
+const updatePermissionCategoryByKey = `-- name: UpdatePermissionCategoryByKey :one
+UPDATE m_permission_categories SET name = $2, description = $3 WHERE key = $1 RETURNING m_permission_categories_pkey, permission_category_id, name, description, key
 `
 
-type UpdatePermissionCategoryKeyParams struct {
-	PermissionCategoryID uuid.UUID `json:"permission_category_id"`
-	Key                  string    `json:"key"`
+type UpdatePermissionCategoryByKeyParams struct {
+	Key         string `json:"key"`
+	Name        string `json:"name"`
+	Description string `json:"description"`
 }
 
-func (q *Queries) UpdatePermissionCategoryKey(ctx context.Context, arg UpdatePermissionCategoryKeyParams) (PermissionCategory, error) {
-	row := q.db.QueryRow(ctx, updatePermissionCategoryKey, arg.PermissionCategoryID, arg.Key)
+func (q *Queries) UpdatePermissionCategoryByKey(ctx context.Context, arg UpdatePermissionCategoryByKeyParams) (PermissionCategory, error) {
+	row := q.db.QueryRow(ctx, updatePermissionCategoryByKey, arg.Key, arg.Name, arg.Description)
 	var i PermissionCategory
 	err := row.Scan(
 		&i.MPermissionCategoriesPkey,

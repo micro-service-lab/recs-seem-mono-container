@@ -15,7 +15,7 @@ WHERE t_attachable_items.attachable_item_id = $1;
 
 -- name: FindAttachableItemByIDWithMimeType :one
 SELECT sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types), sqlc.embed(t_images), sqlc.embed(t_files) FROM t_attachable_items
-INNER JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE t_attachable_items.attachable_item_id = $1;
@@ -32,7 +32,7 @@ LIMIT $1 OFFSET $2;
 
 -- name: GetAttachableItemsByMimeTypeIDWithMimeType :many
 SELECT sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types), sqlc.embed(t_images), sqlc.embed(t_files) FROM t_attachable_items
-INNER JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.where_mime_type_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.where_mime_type_id
 LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE

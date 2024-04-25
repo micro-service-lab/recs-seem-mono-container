@@ -15,13 +15,15 @@ SELECT * FROM m_roles WHERE role_id = $1;
 
 -- name: GetRoles :many
 SELECT * FROM m_roles
-WHERE CASE
-	WHEN @where_like_name::boolean = true THEN m_roles.name LIKE '%' || @search_name::text || '%'
-END
+WHERE
+	CASE WHEN @where_like_name::boolean = true THEN m_roles.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
 	m_roles_pkey DESC
 LIMIT $1 OFFSET $2;
 
 -- name: CountRoles :one
-SELECT COUNT(*) FROM m_roles;
+SELECT COUNT(*) FROM m_roles
+WHERE
+	CASE WHEN @where_like_name::boolean = true THEN name LIKE '%' || @search_name::text || '%' ELSE TRUE END;

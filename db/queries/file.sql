@@ -12,8 +12,8 @@ SELECT * FROM t_files WHERE file_id = $1;
 
 -- name: FindFileByIDWithAttachableItem :one
 SELECT sqlc.embed(t_files), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_files
-INNER JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
-INNER JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE file_id = $1;
 
 -- name: GetFiles :many
@@ -24,8 +24,8 @@ LIMIT $1 OFFSET $2;
 
 -- name: GetFilesWithAttachableItem :many
 SELECT sqlc.embed(t_files), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_files
-INNER JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
-INNER JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
 	t_files_pkey DESC
 LIMIT $1 OFFSET $2;

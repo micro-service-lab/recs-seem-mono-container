@@ -9,7 +9,7 @@ DELETE FROM m_chat_room_belongings WHERE member_id = $1 AND chat_room_id = $2;
 
 -- name: GetMembersOnChatRoomID :many
 SELECT sqlc.embed(m_chat_room_belongings), sqlc.embed(m_members) FROM m_chat_room_belongings
-INNER JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
+LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 WHERE chat_room_id = $1
 AND CASE
 	WHEN @where_like_name::boolean = true THEN m_members.name LIKE '%' || @search_name::text || '%'
@@ -30,7 +30,7 @@ AND CASE WHEN @where_like_name::boolean = true THEN
 
 -- name: GetChatRoomsByMemberID :many
 SELECT sqlc.embed(m_chat_room_belongings), sqlc.embed(m_chat_rooms) FROM m_chat_room_belongings
-INNER JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = $1
 AND CASE
 	WHEN @where_like_name::boolean = true THEN m_members.name LIKE '%' || @search_name::text || '%'

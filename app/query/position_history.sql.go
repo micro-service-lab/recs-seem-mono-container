@@ -15,7 +15,7 @@ import (
 const countPositionHistories = `-- name: CountPositionHistories :one
 SELECT COUNT(*) FROM t_position_histories
 WHERE
-	CASE WHEN $1::boolean = true THEN member_id = $2 ELSE TRUE END
+	CASE WHEN $1::boolean = true THEN member_id = ANY($2::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $3::boolean = true THEN send_at >= $4 ELSE TRUE END
 AND
@@ -23,18 +23,18 @@ AND
 `
 
 type CountPositionHistoriesParams struct {
-	WhereMember        bool      `json:"where_member"`
-	MemberID           uuid.UUID `json:"member_id"`
-	WhereEarlierSendAt bool      `json:"where_earlier_send_at"`
-	EarlierSendAt      time.Time `json:"earlier_send_at"`
-	WhereLaterSendAt   bool      `json:"where_later_send_at"`
-	LaterSendAt        time.Time `json:"later_send_at"`
+	WhereInMember      bool        `json:"where_in_member"`
+	InMemberIds        []uuid.UUID `json:"in_member_ids"`
+	WhereEarlierSendAt bool        `json:"where_earlier_send_at"`
+	EarlierSendAt      time.Time   `json:"earlier_send_at"`
+	WhereLaterSendAt   bool        `json:"where_later_send_at"`
+	LaterSendAt        time.Time   `json:"later_send_at"`
 }
 
 func (q *Queries) CountPositionHistories(ctx context.Context, arg CountPositionHistoriesParams) (int64, error) {
 	row := q.db.QueryRow(ctx, countPositionHistories,
-		arg.WhereMember,
-		arg.MemberID,
+		arg.WhereInMember,
+		arg.InMemberIds,
 		arg.WhereEarlierSendAt,
 		arg.EarlierSendAt,
 		arg.WhereLaterSendAt,
@@ -111,7 +111,7 @@ func (q *Queries) FindPositionHistoryByID(ctx context.Context, positionHistoryID
 
 const findPositionHistoryByIDWithMember = `-- name: FindPositionHistoryByIDWithMember :one
 SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.send_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
-INNER JOIN m_members ON t_position_histories.member_id = m_members.member_id
+LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE position_history_id = $1
 `
 
@@ -151,35 +151,36 @@ func (q *Queries) FindPositionHistoryByIDWithMember(ctx context.Context, positio
 const getPositionHistories = `-- name: GetPositionHistories :many
 SELECT t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, send_at FROM t_position_histories
 WHERE
-	CASE WHEN $3::boolean = true THEN member_id = $4 ELSE TRUE END
+	CASE WHEN $3::boolean = true THEN member_id = ANY($4::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $5::boolean = true THEN send_at >= $6 ELSE TRUE END
 AND
 	CASE WHEN $7::boolean = true THEN send_at <= $8 ELSE TRUE END
 ORDER BY
-	CASE WHEN $9::text = 'send_at' THEN send_at END ASC,
+	CASE WHEN $9::text = 'old_send' THEN send_at END ASC,
+	CASE WHEN $9::text = 'late_send' THEN send_at END DESC,
 	t_position_histories_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
 type GetPositionHistoriesParams struct {
-	Limit              int32     `json:"limit"`
-	Offset             int32     `json:"offset"`
-	WhereMember        bool      `json:"where_member"`
-	MemberID           uuid.UUID `json:"member_id"`
-	WhereEarlierSendAt bool      `json:"where_earlier_send_at"`
-	EarlierSendAt      time.Time `json:"earlier_send_at"`
-	WhereLaterSendAt   bool      `json:"where_later_send_at"`
-	LaterSendAt        time.Time `json:"later_send_at"`
-	OrderMethod        string    `json:"order_method"`
+	Limit              int32       `json:"limit"`
+	Offset             int32       `json:"offset"`
+	WhereInMember      bool        `json:"where_in_member"`
+	InMemberIds        []uuid.UUID `json:"in_member_ids"`
+	WhereEarlierSendAt bool        `json:"where_earlier_send_at"`
+	EarlierSendAt      time.Time   `json:"earlier_send_at"`
+	WhereLaterSendAt   bool        `json:"where_later_send_at"`
+	LaterSendAt        time.Time   `json:"later_send_at"`
+	OrderMethod        string      `json:"order_method"`
 }
 
 func (q *Queries) GetPositionHistories(ctx context.Context, arg GetPositionHistoriesParams) ([]PositionHistory, error) {
 	rows, err := q.db.Query(ctx, getPositionHistories,
 		arg.Limit,
 		arg.Offset,
-		arg.WhereMember,
-		arg.MemberID,
+		arg.WhereInMember,
+		arg.InMemberIds,
 		arg.WhereEarlierSendAt,
 		arg.EarlierSendAt,
 		arg.WhereLaterSendAt,
@@ -213,29 +214,30 @@ func (q *Queries) GetPositionHistories(ctx context.Context, arg GetPositionHisto
 
 const getPositionHistoriesWithMember = `-- name: GetPositionHistoriesWithMember :many
 SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.send_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
-INNER JOIN m_members ON t_position_histories.member_id = m_members.member_id
+LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE
-	CASE WHEN $3::boolean = true THEN t_position_histories.member_id = $4 ELSE TRUE END
+	CASE WHEN $3::boolean = true THEN member_id = ANY($4::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $5::boolean = true THEN send_at >= $6 ELSE TRUE END
 AND
 	CASE WHEN $7::boolean = true THEN send_at <= $8 ELSE TRUE END
 ORDER BY
-	CASE WHEN $9::text = 'send_at' THEN send_at END ASC,
+	CASE WHEN $9::text = 'old_send' THEN send_at END ASC,
+	CASE WHEN $9::text = 'late_send' THEN send_at END DESC,
 	t_position_histories_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
 type GetPositionHistoriesWithMemberParams struct {
-	Limit              int32     `json:"limit"`
-	Offset             int32     `json:"offset"`
-	WhereMember        bool      `json:"where_member"`
-	MemberID           uuid.UUID `json:"member_id"`
-	WhereEarlierSendAt bool      `json:"where_earlier_send_at"`
-	EarlierSendAt      time.Time `json:"earlier_send_at"`
-	WhereLaterSendAt   bool      `json:"where_later_send_at"`
-	LaterSendAt        time.Time `json:"later_send_at"`
-	OrderMethod        string    `json:"order_method"`
+	Limit              int32       `json:"limit"`
+	Offset             int32       `json:"offset"`
+	WhereInMember      bool        `json:"where_in_member"`
+	InMemberIds        []uuid.UUID `json:"in_member_ids"`
+	WhereEarlierSendAt bool        `json:"where_earlier_send_at"`
+	EarlierSendAt      time.Time   `json:"earlier_send_at"`
+	WhereLaterSendAt   bool        `json:"where_later_send_at"`
+	LaterSendAt        time.Time   `json:"later_send_at"`
+	OrderMethod        string      `json:"order_method"`
 }
 
 type GetPositionHistoriesWithMemberRow struct {
@@ -247,8 +249,8 @@ func (q *Queries) GetPositionHistoriesWithMember(ctx context.Context, arg GetPos
 	rows, err := q.db.Query(ctx, getPositionHistoriesWithMember,
 		arg.Limit,
 		arg.Offset,
-		arg.WhereMember,
-		arg.MemberID,
+		arg.WhereInMember,
+		arg.InMemberIds,
 		arg.WhereEarlierSendAt,
 		arg.EarlierSendAt,
 		arg.WhereLaterSendAt,

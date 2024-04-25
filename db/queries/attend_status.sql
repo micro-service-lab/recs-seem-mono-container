@@ -8,7 +8,7 @@ INSERT INTO m_attend_statuses (name, key) VALUES ($1, $2) RETURNING *;
 UPDATE m_attend_statuses SET name = $2, key = $3 WHERE attend_status_id = $1 RETURNING *;
 
 -- name: UpdateAttendStatusByKey :one
-UPDATE m_attend_statuses SET name = $2, key = $3 WHERE key = $1 RETURNING *;
+UPDATE m_attend_statuses SET name = $2 WHERE key = $1 RETURNING *;
 
 -- name: DeleteAttendStatus :exec
 DELETE FROM m_attend_statuses WHERE attend_status_id = $1;

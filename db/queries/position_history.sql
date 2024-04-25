@@ -15,40 +15,42 @@ SELECT * FROM t_position_histories WHERE position_history_id = $1;
 
 -- name: FindPositionHistoryByIDWithMember :one
 SELECT sqlc.embed(t_position_histories), sqlc.embed(m_members) FROM t_position_histories
-INNER JOIN m_members ON t_position_histories.member_id = m_members.member_id
+LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE position_history_id = $1;
 
 -- name: GetPositionHistories :many
 SELECT * FROM t_position_histories
 WHERE
-	CASE WHEN @where_member::boolean = true THEN member_id = @member_id ELSE TRUE END
+	CASE WHEN @where_in_member::boolean = true THEN member_id = ANY(@in_member_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @where_earlier_send_at::boolean = true THEN send_at >= @earlier_send_at ELSE TRUE END
 AND
 	CASE WHEN @where_later_send_at::boolean = true THEN send_at <= @later_send_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'send_at' THEN send_at END ASC,
+	CASE WHEN @order_method::text = 'old_send' THEN send_at END ASC,
+	CASE WHEN @order_method::text = 'late_send' THEN send_at END DESC,
 	t_position_histories_pkey DESC
 LIMIT $1 OFFSET $2;
 
 -- name: GetPositionHistoriesWithMember :many
 SELECT sqlc.embed(t_position_histories), sqlc.embed(m_members) FROM t_position_histories
-INNER JOIN m_members ON t_position_histories.member_id = m_members.member_id
+LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE
-	CASE WHEN @where_member::boolean = true THEN t_position_histories.member_id = @member_id ELSE TRUE END
+	CASE WHEN @where_in_member::boolean = true THEN member_id = ANY(@in_member_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @where_earlier_send_at::boolean = true THEN send_at >= @earlier_send_at ELSE TRUE END
 AND
 	CASE WHEN @where_later_send_at::boolean = true THEN send_at <= @later_send_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'send_at' THEN send_at END ASC,
+	CASE WHEN @order_method::text = 'old_send' THEN send_at END ASC,
+	CASE WHEN @order_method::text = 'late_send' THEN send_at END DESC,
 	t_position_histories_pkey DESC
 LIMIT $1 OFFSET $2;
 
 -- name: CountPositionHistories :one
 SELECT COUNT(*) FROM t_position_histories
 WHERE
-	CASE WHEN @where_member::boolean = true THEN member_id = @member_id ELSE TRUE END
+	CASE WHEN @where_in_member::boolean = true THEN member_id = ANY(@in_member_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @where_earlier_send_at::boolean = true THEN send_at >= @earlier_send_at ELSE TRUE END
 AND

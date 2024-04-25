@@ -191,23 +191,17 @@ func (q *Queries) UpdateAttendanceType(ctx context.Context, arg UpdateAttendance
 }
 
 const updateAttendanceTypeByKey = `-- name: UpdateAttendanceTypeByKey :one
-UPDATE m_attendance_types SET name = $2, key = $3, color = $4 WHERE key = $1 RETURNING m_attendance_types_pkey, attendance_type_id, name, key, color
+UPDATE m_attendance_types SET name = $2, color = $3 WHERE key = $1 RETURNING m_attendance_types_pkey, attendance_type_id, name, key, color
 `
 
 type UpdateAttendanceTypeByKeyParams struct {
 	Key   string `json:"key"`
 	Name  string `json:"name"`
-	Key_2 string `json:"key_2"`
 	Color string `json:"color"`
 }
 
 func (q *Queries) UpdateAttendanceTypeByKey(ctx context.Context, arg UpdateAttendanceTypeByKeyParams) (AttendanceType, error) {
-	row := q.db.QueryRow(ctx, updateAttendanceTypeByKey,
-		arg.Key,
-		arg.Name,
-		arg.Key_2,
-		arg.Color,
-	)
+	row := q.db.QueryRow(ctx, updateAttendanceTypeByKey, arg.Key, arg.Name, arg.Color)
 	var i AttendanceType
 	err := row.Scan(
 		&i.MAttendanceTypesPkey,

@@ -11,6 +11,31 @@ import (
 	"github.com/google/uuid"
 )
 
+const countAttachableItemsOnMessage = `-- name: CountAttachableItemsOnMessage :one
+SELECT COUNT(*) FROM t_attached_messages WHERE message_id = $1
+`
+
+func (q *Queries) CountAttachableItemsOnMessage(ctx context.Context, messageID uuid.UUID) (int64, error) {
+	row := q.db.QueryRow(ctx, countAttachableItemsOnMessage, messageID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const countAttachedMessagesOnChatRoom = `-- name: CountAttachedMessagesOnChatRoom :one
+SELECT COUNT(*) FROM t_attached_messages
+WHERE message_id IN (
+	SELECT message_id FROM t_messages WHERE chat_room_id = $1
+)
+`
+
+func (q *Queries) CountAttachedMessagesOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) (int64, error) {
+	row := q.db.QueryRow(ctx, countAttachedMessagesOnChatRoom, chatRoomID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createAttachedMessage = `-- name: CreateAttachedMessage :one
 INSERT INTO t_attached_messages (message_id, attachable_item_id) VALUES ($1, $2) RETURNING t_attached_messages_pkey, message_id, attachable_item_id
 `
@@ -46,10 +71,10 @@ func (q *Queries) DeleteAttachedMessage(ctx context.Context, arg DeleteAttachedM
 	return err
 }
 
-const getAttachableItemsOnMessageID = `-- name: GetAttachableItemsOnMessageID :many
+const getAttachableItemsOnMessage = `-- name: GetAttachableItemsOnMessage :many
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key, t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id FROM t_attached_messages
-INNER JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
-INNER JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE message_id = $1
@@ -58,13 +83,13 @@ ORDER BY
 LIMIT $2 OFFSET $3
 `
 
-type GetAttachableItemsOnMessageIDParams struct {
+type GetAttachableItemsOnMessageParams struct {
 	MessageID uuid.UUID `json:"message_id"`
 	Limit     int32     `json:"limit"`
 	Offset    int32     `json:"offset"`
 }
 
-type GetAttachableItemsOnMessageIDRow struct {
+type GetAttachableItemsOnMessageRow struct {
 	AttachedMessage AttachedMessage `json:"attached_message"`
 	AttachableItem  AttachableItem  `json:"attachable_item"`
 	MimeType        MimeType        `json:"mime_type"`
@@ -72,15 +97,84 @@ type GetAttachableItemsOnMessageIDRow struct {
 	File            File            `json:"file"`
 }
 
-func (q *Queries) GetAttachableItemsOnMessageID(ctx context.Context, arg GetAttachableItemsOnMessageIDParams) ([]GetAttachableItemsOnMessageIDRow, error) {
-	rows, err := q.db.Query(ctx, getAttachableItemsOnMessageID, arg.MessageID, arg.Limit, arg.Offset)
+func (q *Queries) GetAttachableItemsOnMessage(ctx context.Context, arg GetAttachableItemsOnMessageParams) ([]GetAttachableItemsOnMessageRow, error) {
+	rows, err := q.db.Query(ctx, getAttachableItemsOnMessage, arg.MessageID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetAttachableItemsOnMessageIDRow{}
+	items := []GetAttachableItemsOnMessageRow{}
 	for rows.Next() {
-		var i GetAttachableItemsOnMessageIDRow
+		var i GetAttachableItemsOnMessageRow
+		if err := rows.Scan(
+			&i.AttachedMessage.TAttachedMessagesPkey,
+			&i.AttachedMessage.MessageID,
+			&i.AttachedMessage.AttachableItemID,
+			&i.AttachableItem.TAttachableItemsPkey,
+			&i.AttachableItem.AttachableItemID,
+			&i.AttachableItem.Url,
+			&i.AttachableItem.Size,
+			&i.AttachableItem.MimeTypeID,
+			&i.MimeType.MMimeTypesPkey,
+			&i.MimeType.MimeTypeID,
+			&i.MimeType.Name,
+			&i.MimeType.Key,
+			&i.Image.TImagesPkey,
+			&i.Image.ImageID,
+			&i.Image.Height,
+			&i.Image.Width,
+			&i.Image.AttachableItemID,
+			&i.File.TFilesPkey,
+			&i.File.FileID,
+			&i.File.AttachableItemID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttachedMessagesOnChatRoom = `-- name: GetAttachedMessagesOnChatRoom :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key, t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
+WHERE message_id IN (
+	SELECT message_id FROM t_messages WHERE chat_room_id = $1
+)
+ORDER BY
+	t_attached_messages_pkey DESC
+LIMIT $2 OFFSET $3
+`
+
+type GetAttachedMessagesOnChatRoomParams struct {
+	ChatRoomID uuid.UUID `json:"chat_room_id"`
+	Limit      int32     `json:"limit"`
+	Offset     int32     `json:"offset"`
+}
+
+type GetAttachedMessagesOnChatRoomRow struct {
+	AttachedMessage AttachedMessage `json:"attached_message"`
+	AttachableItem  AttachableItem  `json:"attachable_item"`
+	MimeType        MimeType        `json:"mime_type"`
+	Image           Image           `json:"image"`
+	File            File            `json:"file"`
+}
+
+func (q *Queries) GetAttachedMessagesOnChatRoom(ctx context.Context, arg GetAttachedMessagesOnChatRoomParams) ([]GetAttachedMessagesOnChatRoomRow, error) {
+	rows, err := q.db.Query(ctx, getAttachedMessagesOnChatRoom, arg.ChatRoomID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttachedMessagesOnChatRoomRow{}
+	for rows.Next() {
+		var i GetAttachedMessagesOnChatRoomRow
 		if err := rows.Scan(
 			&i.AttachedMessage.TAttachedMessagesPkey,
 			&i.AttachedMessage.MessageID,

@@ -138,10 +138,10 @@ func (q *Queries) FindRecordByID(ctx context.Context, recordID uuid.UUID) (Recor
 
 const findRecordByIDWithAll = `-- name: FindRecordByIDWithAll :one
 SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
-INNER JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
+LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
-INNER JOIN m_members ON t_records.posted_by = m_members.member_id
-INNER JOIN m_members AS m_members_2 ON t_records.last_edited_by = m_members_2.member_id
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+LEFT JOIN m_members AS m_members_2 ON t_records.last_edited_by = m_members_2.member_id
 WHERE record_id = $1
 `
 
@@ -198,7 +198,7 @@ func (q *Queries) FindRecordByIDWithAll(ctx context.Context, recordID uuid.UUID)
 
 const findRecordByIDWithLastEditedBy = `-- name: FindRecordByIDWithLastEditedBy :one
 SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
-INNER JOIN m_members ON t_records.last_edited_by = m_members.member_id
+LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE record_id = $1
 `
 
@@ -278,7 +278,7 @@ func (q *Queries) FindRecordByIDWithOrganization(ctx context.Context, recordID u
 
 const findRecordByIDWithPostedBy = `-- name: FindRecordByIDWithPostedBy :one
 SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
-INNER JOIN m_members ON t_records.posted_by = m_members.member_id
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 WHERE record_id = $1
 `
 
@@ -321,7 +321,7 @@ func (q *Queries) FindRecordByIDWithPostedBy(ctx context.Context, recordID uuid.
 
 const findRecordByIDWithRecordType = `-- name: FindRecordByIDWithRecordType :one
 SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key FROM t_records
-INNER JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
+LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 WHERE record_id = $1
 `
 
@@ -430,10 +430,10 @@ func (q *Queries) GetRecords(ctx context.Context, arg GetRecordsParams) ([]Recor
 
 const getRecordsWithAll = `-- name: GetRecordsWithAll :many
 SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
-INNER JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
+LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
-INNER JOIN m_members ON t_records.posted_by = m_members.member_id
-INNER JOIN m_members AS m_members_2 ON t_records.last_edited_by = m_members_2.member_id
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+LEFT JOIN m_members AS m_members_2 ON t_records.last_edited_by = m_members_2.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_records.record_type_id = ANY($4) ELSE TRUE END
 AND
@@ -558,7 +558,7 @@ func (q *Queries) GetRecordsWithAll(ctx context.Context, arg GetRecordsWithAllPa
 
 const getRecordsWithLastEditedBy = `-- name: GetRecordsWithLastEditedBy :many
 SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
-INNER JOIN m_members ON t_records.last_edited_by = m_members.member_id
+LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN record_type_id = ANY($4) ELSE TRUE END
 AND
@@ -744,7 +744,7 @@ func (q *Queries) GetRecordsWithOrganization(ctx context.Context, arg GetRecords
 
 const getRecordsWithPostedBy = `-- name: GetRecordsWithPostedBy :many
 SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
-INNER JOIN m_members ON t_records.posted_by = m_members.member_id
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN record_type_id = ANY($4) ELSE TRUE END
 AND
@@ -840,7 +840,7 @@ func (q *Queries) GetRecordsWithPostedBy(ctx context.Context, arg GetRecordsWith
 
 const getRecordsWithRecordType = `-- name: GetRecordsWithRecordType :many
 SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key FROM t_records
-INNER JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
+LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_records.record_type_id = ANY($4) ELSE TRUE END
 AND
@@ -925,7 +925,7 @@ func (q *Queries) GetRecordsWithRecordType(ctx context.Context, arg GetRecordsWi
 }
 
 const updateRecord = `-- name: UpdateRecord :one
-UPDATE t_records SET record_type_id = $2, title = $3, body = $4, organization_id = $5, posted_by = $6, last_edited_by = $7, posted_at = $8, last_edited_at = $9 WHERE record_id = $1 RETURNING t_records_pkey, record_id, record_type_id, title, body, organization_id, posted_by, last_edited_by, posted_at, last_edited_at
+UPDATE t_records SET record_type_id = $2, title = $3, body = $4, organization_id = $5, last_edited_by = $6, last_edited_at = $7 WHERE record_id = $1 RETURNING t_records_pkey, record_id, record_type_id, title, body, organization_id, posted_by, last_edited_by, posted_at, last_edited_at
 `
 
 type UpdateRecordParams struct {
@@ -934,9 +934,7 @@ type UpdateRecordParams struct {
 	Title          string      `json:"title"`
 	Body           pgtype.Text `json:"body"`
 	OrganizationID pgtype.UUID `json:"organization_id"`
-	PostedBy       pgtype.UUID `json:"posted_by"`
 	LastEditedBy   pgtype.UUID `json:"last_edited_by"`
-	PostedAt       time.Time   `json:"posted_at"`
 	LastEditedAt   time.Time   `json:"last_edited_at"`
 }
 
@@ -947,9 +945,7 @@ func (q *Queries) UpdateRecord(ctx context.Context, arg UpdateRecordParams) (Rec
 		arg.Title,
 		arg.Body,
 		arg.OrganizationID,
-		arg.PostedBy,
 		arg.LastEditedBy,
-		arg.PostedAt,
 		arg.LastEditedAt,
 	)
 	var i Record

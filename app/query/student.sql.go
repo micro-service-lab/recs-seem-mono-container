@@ -53,31 +53,20 @@ func (q *Queries) FindStudentByID(ctx context.Context, studentID uuid.UUID) (Stu
 	return i, err
 }
 
-const findStudentByMemberID = `-- name: FindStudentByMemberID :one
-SELECT m_students_pkey, student_id, member_id FROM m_students WHERE member_id = $1
-`
-
-func (q *Queries) FindStudentByMemberID(ctx context.Context, memberID uuid.UUID) (Student, error) {
-	row := q.db.QueryRow(ctx, findStudentByMemberID, memberID)
-	var i Student
-	err := row.Scan(&i.MStudentsPkey, &i.StudentID, &i.MemberID)
-	return i, err
-}
-
-const findStudentWithMember = `-- name: FindStudentWithMember :one
+const findStudentByIDWithMember = `-- name: FindStudentByIDWithMember :one
 SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
-INNER JOIN m_members ON m_students.member_id = m_members.member_id
+LEFT JOIN m_members ON m_students.member_id = m_members.member_id
 WHERE student_id = $1
 `
 
-type FindStudentWithMemberRow struct {
+type FindStudentByIDWithMemberRow struct {
 	Student Student `json:"student"`
 	Member  Member  `json:"member"`
 }
 
-func (q *Queries) FindStudentWithMember(ctx context.Context, studentID uuid.UUID) (FindStudentWithMemberRow, error) {
-	row := q.db.QueryRow(ctx, findStudentWithMember, studentID)
-	var i FindStudentWithMemberRow
+func (q *Queries) FindStudentByIDWithMember(ctx context.Context, studentID uuid.UUID) (FindStudentByIDWithMemberRow, error) {
+	row := q.db.QueryRow(ctx, findStudentByIDWithMember, studentID)
+	var i FindStudentByIDWithMemberRow
 	err := row.Scan(
 		&i.Student.MStudentsPkey,
 		&i.Student.StudentID,
@@ -122,62 +111,6 @@ func (q *Queries) GetStudents(ctx context.Context, arg GetStudentsParams) ([]Stu
 	for rows.Next() {
 		var i Student
 		if err := rows.Scan(&i.MStudentsPkey, &i.StudentID, &i.MemberID); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getStudentsWithMember = `-- name: GetStudentsWithMember :many
-SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
-INNER JOIN m_members ON m_students.member_id = m_members.member_id
-ORDER BY
-	m_students_pkey DESC
-LIMIT $1 OFFSET $2
-`
-
-type GetStudentsWithMemberParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
-}
-
-type GetStudentsWithMemberRow struct {
-	Student Student `json:"student"`
-	Member  Member  `json:"member"`
-}
-
-func (q *Queries) GetStudentsWithMember(ctx context.Context, arg GetStudentsWithMemberParams) ([]GetStudentsWithMemberRow, error) {
-	rows, err := q.db.Query(ctx, getStudentsWithMember, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []GetStudentsWithMemberRow{}
-	for rows.Next() {
-		var i GetStudentsWithMemberRow
-		if err := rows.Scan(
-			&i.Student.MStudentsPkey,
-			&i.Student.StudentID,
-			&i.Student.MemberID,
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

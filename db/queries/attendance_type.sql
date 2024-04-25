@@ -8,7 +8,7 @@ INSERT INTO m_attendance_types (name, key, color) VALUES ($1, $2, $3) RETURNING 
 UPDATE m_attendance_types SET name = $2, key = $3, color = $4 WHERE attendance_type_id = $1 RETURNING *;
 
 -- name: UpdateAttendanceTypeByKey :one
-UPDATE m_attendance_types SET name = $2, key = $3, color = $4 WHERE key = $1 RETURNING *;
+UPDATE m_attendance_types SET name = $2, color = $3 WHERE key = $1 RETURNING *;
 
 -- name: DeleteAttendanceType :exec
 DELETE FROM m_attendance_types WHERE attendance_type_id = $1;

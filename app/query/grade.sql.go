@@ -84,7 +84,7 @@ func (q *Queries) FindGradeByID(ctx context.Context, gradeID uuid.UUID) (Grade, 
 
 const findGradeByIDWithOrganization = `-- name: FindGradeByIDWithOrganization :one
 SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_grades
-INNER JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE grade_id = $1
 `
 
@@ -131,7 +131,7 @@ func (q *Queries) FindGradeByKey(ctx context.Context, key string) (Grade, error)
 
 const findGradeByKeyWithOrganization = `-- name: FindGradeByKeyWithOrganization :one
 SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_grades
-INNER JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE key = $1
 `
 
@@ -199,7 +199,7 @@ func (q *Queries) GetGrades(ctx context.Context, arg GetGradesParams) ([]Grade, 
 
 const getGradesWithOrganization = `-- name: GetGradesWithOrganization :many
 SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_grades
-INNER JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 ORDER BY
 	CASE WHEN $3::text = 'name' THEN m_organizations.name END ASC,
 	m_grades_pkey DESC

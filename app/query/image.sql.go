@@ -80,8 +80,8 @@ func (q *Queries) FindImageByID(ctx context.Context, imageID uuid.UUID) (Image, 
 
 const findImageByIDWithAttachableItem = `-- name: FindImageByIDWithAttachableItem :one
 SELECT t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_images
-INNER JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-INNER JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE image_id = $1
 `
 
@@ -153,8 +153,8 @@ func (q *Queries) GetImages(ctx context.Context, arg GetImagesParams) ([]Image, 
 
 const getImagesWithAttachableItem = `-- name: GetImagesWithAttachableItem :many
 SELECT t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_images
-INNER JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-INNER JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
 	t_images_pkey DESC
 LIMIT $1 OFFSET $2

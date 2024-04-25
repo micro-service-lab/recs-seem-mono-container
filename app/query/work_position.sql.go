@@ -14,10 +14,17 @@ import (
 
 const countWorkPositions = `-- name: CountWorkPositions :one
 SELECT COUNT(*) FROM m_work_positions
+WHERE
+	CASE WHEN $1::boolean = true THEN name LIKE '%' || $2::text || '%' ELSE TRUE END
 `
 
-func (q *Queries) CountWorkPositions(ctx context.Context) (int64, error) {
-	row := q.db.QueryRow(ctx, countWorkPositions)
+type CountWorkPositionsParams struct {
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+}
+
+func (q *Queries) CountWorkPositions(ctx context.Context, arg CountWorkPositionsParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countWorkPositions, arg.WhereLikeName, arg.SearchName)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -89,11 +96,11 @@ func (q *Queries) FindWorkPositionByID(ctx context.Context, workPositionID uuid.
 
 const getWorkPositions = `-- name: GetWorkPositions :many
 SELECT m_work_positions_pkey, work_position_id, name, description, created_at, updated_at FROM m_work_positions
-WHERE CASE
-	WHEN $3::boolean = true THEN m_work_positions.name LIKE '%' || $4::text || '%'
-END
+WHERE
+	CASE WHEN $3::boolean = true THEN m_work_positions.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_work_positions.name END ASC,
+	CASE WHEN $5::text = 'r_name' THEN m_work_positions.name END DESC,
 	m_work_positions_pkey DESC
 LIMIT $1 OFFSET $2
 `

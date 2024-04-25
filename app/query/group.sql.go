@@ -84,7 +84,7 @@ func (q *Queries) FindGroupByID(ctx context.Context, groupID uuid.UUID) (Group, 
 
 const findGroupByIDWithOrganization = `-- name: FindGroupByIDWithOrganization :one
 SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_groups
-INNER JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE group_id = $1
 `
 
@@ -131,7 +131,7 @@ func (q *Queries) FindGroupByKey(ctx context.Context, key string) (Group, error)
 
 const findGroupByKeyWithOrganization = `-- name: FindGroupByKeyWithOrganization :one
 SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_groups
-INNER JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE key = $1
 `
 
@@ -199,7 +199,7 @@ func (q *Queries) GetGroups(ctx context.Context, arg GetGroupsParams) ([]Group, 
 
 const getGroupsWithOrganization = `-- name: GetGroupsWithOrganization :many
 SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_groups
-INNER JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 ORDER BY
 	CASE WHEN $3::text = 'name' THEN m_organizations.name END ASC,
 	m_groups_pkey DESC

@@ -15,35 +15,35 @@ SELECT * FROM t_events WHERE event_id = $1;
 
 -- name: FindEventByIDWithType :one
 SELECT sqlc.embed(t_events), sqlc.embed(m_event_types) FROM t_events
-INNER JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
+LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
 WHERE event_id = $1;
 
 -- name: FindEventByIDWithOrganization :one
 SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
-INNER JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
 WHERE event_id = $1;
 
 -- name: FindEventByIDWithSendOrganization :one
 SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
-INNER JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
 WHERE event_id = $1;
 
 -- name: FindEventByIDWithPostUser :one
 SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
-INNER JOIN m_members ON t_events.posted_by = m_members.member_id
+LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
 WHERE event_id = $1;
 
 -- name: FindEventByIDWithLastEditUser :one
 SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
-INNER JOIN m_members ON t_events.last_edited_by = m_members.member_id
+LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
 WHERE event_id = $1;
 
 -- name: FindEventByIDWithAll :one
 SELECT sqlc.embed(t_events), sqlc.embed(o), sqlc.embed(s), sqlc.embed(p), sqlc.embed(l) FROM t_events
-INNER JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
-INNER JOIN m_organizations s ON t_events.organization_id = s.organization_id
-INNER JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
-INNER JOIN m_members l ON t_events.posted_by = l.member_id
+LEFT JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
+LEFT JOIN m_organizations s ON t_events.organization_id = s.organization_id
+LEFT JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
+LEFT JOIN m_members l ON t_events.posted_by = l.member_id
 WHERE event_id = $1;
 
 -- name: GetEvents :many
@@ -71,7 +71,7 @@ LIMIT $1 OFFSET $2;
 
 -- name: GetEventsWithType :many
 SELECT sqlc.embed(t_events), sqlc.embed(m_event_types) FROM t_events
-INNER JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
+LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
 WHERE
 	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
 AND
@@ -95,7 +95,7 @@ LIMIT $1 OFFSET $2;
 
 -- name: GetEventsWithOrganization :many
 SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
-INNER JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
 AND
@@ -119,7 +119,7 @@ LIMIT $1 OFFSET $2;
 
 -- name: GetEventsWithSendOrganization :many
 SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
-INNER JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
 AND
@@ -143,7 +143,7 @@ LIMIT $1 OFFSET $2;
 
 -- name: GetEventsWithPostUser :many
 SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
-INNER JOIN m_members ON t_events.posted_by = m_members.member_id
+LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
 WHERE
 	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
 AND
@@ -167,7 +167,7 @@ LIMIT $1 OFFSET $2;
 
 -- name: GetEventsWithLastEditUser :many
 SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
-INNER JOIN m_members ON t_events.last_edited_by = m_members.member_id
+LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
 WHERE
 	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
 AND
@@ -191,11 +191,11 @@ LIMIT $1 OFFSET $2;
 
 -- name: GetEventsWithAll :many
 SELECT sqlc.embed(t_events), sqlc.embed(o), sqlc.embed(s), sqlc.embed(p), sqlc.embed(l), sqlc.embed(l) FROM t_events
-INNER JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
-INNER JOIN m_organizations s ON t_events.organization_id = s.organization_id
-INNER JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
-INNER JOIN m_members l ON t_events.posted_by = l.member_id
-INNER JOIN m_members l ON t_events.last_edited_by = l.member_id
+LEFT JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
+LEFT JOIN m_organizations s ON t_events.organization_id = s.organization_id
+LEFT JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
+LEFT JOIN m_members l ON t_events.posted_by = l.member_id
+LEFT JOIN m_members l ON t_events.last_edited_by = l.member_id
 WHERE
 	CASE WHEN @where_like_title::boolean = true THEN title LIKE '%' || @search_title::text || '%' ELSE TRUE END
 AND

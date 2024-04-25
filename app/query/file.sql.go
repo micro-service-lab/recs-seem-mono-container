@@ -55,8 +55,8 @@ func (q *Queries) FindFileByID(ctx context.Context, fileID uuid.UUID) (File, err
 
 const findFileByIDWithAttachableItem = `-- name: FindFileByIDWithAttachableItem :one
 SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_files
-INNER JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
-INNER JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE file_id = $1
 `
 
@@ -120,8 +120,8 @@ func (q *Queries) GetFiles(ctx context.Context, arg GetFilesParams) ([]File, err
 
 const getFilesWithAttachableItem = `-- name: GetFilesWithAttachableItem :many
 SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_files
-INNER JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
-INNER JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
 	t_files_pkey DESC
 LIMIT $1 OFFSET $2

@@ -11,6 +11,24 @@ import (
 	"github.com/google/uuid"
 )
 
+const countPolicyCategories = `-- name: CountPolicyCategories :one
+SELECT COUNT(*) FROM m_policy_categories
+WHERE
+	CASE WHEN $1::boolean = true THEN name LIKE '%' || $2::text || '%' ELSE TRUE END
+`
+
+type CountPolicyCategoriesParams struct {
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+}
+
+func (q *Queries) CountPolicyCategories(ctx context.Context, arg CountPolicyCategoriesParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countPolicyCategories, arg.WhereLikeName, arg.SearchName)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 type CreatePolicyCategoriesParams struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
@@ -94,11 +112,11 @@ func (q *Queries) FindPolicyCategoryByKey(ctx context.Context, key string) (Poli
 
 const getPolicyCategories = `-- name: GetPolicyCategories :many
 SELECT m_policy_categories_pkey, policy_category_id, name, description, key FROM m_policy_categories
-WHERE CASE
-	WHEN $3::boolean = true THEN m_policy_categories.name LIKE '%' || $4::text || '%'
-END
+WHERE
+	CASE WHEN $3::boolean = true THEN m_policy_categories.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_policy_categories.name END ASC,
+	CASE WHEN $5::text = 'r_name' THEN m_policy_categories.name END DESC,
 	m_policy_categories_pkey DESC
 LIMIT $1 OFFSET $2
 `
@@ -143,71 +161,24 @@ func (q *Queries) GetPolicyCategories(ctx context.Context, arg GetPolicyCategori
 	return items, nil
 }
 
-const getPolicyCategoriesByKeys = `-- name: GetPolicyCategoriesByKeys :many
-SELECT m_policy_categories_pkey, policy_category_id, name, description, key FROM m_policy_categories WHERE key = ANY($3::varchar[])
-AND CASE
-	WHEN $4::boolean = true THEN m_policy_categories.name LIKE '%' || $5::text || '%'
-END
-ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_policy_categories.name END ASC,
-	m_policy_categories_pkey DESC
-LIMIT $1 OFFSET $2
-`
-
-type GetPolicyCategoriesByKeysParams struct {
-	Limit         int32    `json:"limit"`
-	Offset        int32    `json:"offset"`
-	Keys          []string `json:"keys"`
-	WhereLikeName bool     `json:"where_like_name"`
-	SearchName    string   `json:"search_name"`
-	OrderMethod   string   `json:"order_method"`
-}
-
-func (q *Queries) GetPolicyCategoriesByKeys(ctx context.Context, arg GetPolicyCategoriesByKeysParams) ([]PolicyCategory, error) {
-	rows, err := q.db.Query(ctx, getPolicyCategoriesByKeys,
-		arg.Limit,
-		arg.Offset,
-		arg.Keys,
-		arg.WhereLikeName,
-		arg.SearchName,
-		arg.OrderMethod,
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []PolicyCategory{}
-	for rows.Next() {
-		var i PolicyCategory
-		if err := rows.Scan(
-			&i.MPolicyCategoriesPkey,
-			&i.PolicyCategoryID,
-			&i.Name,
-			&i.Description,
-			&i.Key,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const updatePolicyCategory = `-- name: UpdatePolicyCategory :one
-UPDATE m_policy_categories SET name = $2, description = $3 WHERE policy_category_id = $1 RETURNING m_policy_categories_pkey, policy_category_id, name, description, key
+UPDATE m_policy_categories SET name = $2, description = $3, key = $4 WHERE policy_category_id = $1 RETURNING m_policy_categories_pkey, policy_category_id, name, description, key
 `
 
 type UpdatePolicyCategoryParams struct {
 	PolicyCategoryID uuid.UUID `json:"policy_category_id"`
 	Name             string    `json:"name"`
 	Description      string    `json:"description"`
+	Key              string    `json:"key"`
 }
 
 func (q *Queries) UpdatePolicyCategory(ctx context.Context, arg UpdatePolicyCategoryParams) (PolicyCategory, error) {
-	row := q.db.QueryRow(ctx, updatePolicyCategory, arg.PolicyCategoryID, arg.Name, arg.Description)
+	row := q.db.QueryRow(ctx, updatePolicyCategory,
+		arg.PolicyCategoryID,
+		arg.Name,
+		arg.Description,
+		arg.Key,
+	)
 	var i PolicyCategory
 	err := row.Scan(
 		&i.MPolicyCategoriesPkey,
@@ -231,28 +202,6 @@ type UpdatePolicyCategoryByKeyParams struct {
 
 func (q *Queries) UpdatePolicyCategoryByKey(ctx context.Context, arg UpdatePolicyCategoryByKeyParams) (PolicyCategory, error) {
 	row := q.db.QueryRow(ctx, updatePolicyCategoryByKey, arg.Key, arg.Name, arg.Description)
-	var i PolicyCategory
-	err := row.Scan(
-		&i.MPolicyCategoriesPkey,
-		&i.PolicyCategoryID,
-		&i.Name,
-		&i.Description,
-		&i.Key,
-	)
-	return i, err
-}
-
-const updatePolicyCategoryKey = `-- name: UpdatePolicyCategoryKey :one
-UPDATE m_policy_categories SET key = $2 WHERE policy_category_id = $1 RETURNING m_policy_categories_pkey, policy_category_id, name, description, key
-`
-
-type UpdatePolicyCategoryKeyParams struct {
-	PolicyCategoryID uuid.UUID `json:"policy_category_id"`
-	Key              string    `json:"key"`
-}
-
-func (q *Queries) UpdatePolicyCategoryKey(ctx context.Context, arg UpdatePolicyCategoryKeyParams) (PolicyCategory, error) {
-	row := q.db.QueryRow(ctx, updatePolicyCategoryKey, arg.PolicyCategoryID, arg.Key)
 	var i PolicyCategory
 	err := row.Scan(
 		&i.MPolicyCategoriesPkey,

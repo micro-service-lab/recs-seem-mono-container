@@ -107,20 +107,30 @@ func (q *Queries) FindRecordTypeByKey(ctx context.Context, key string) (RecordTy
 
 const getRecordTypes = `-- name: GetRecordTypes :many
 SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
+WHERE
+	CASE WHEN $3::boolean = true THEN m_record_types.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN name END ASC,
+	CASE WHEN $5::text = 'name' THEN name END ASC,
 	m_record_types_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
 type GetRecordTypesParams struct {
-	Limit       int32  `json:"limit"`
-	Offset      int32  `json:"offset"`
-	OrderMethod string `json:"order_method"`
+	Limit         int32  `json:"limit"`
+	Offset        int32  `json:"offset"`
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+	OrderMethod   string `json:"order_method"`
 }
 
 func (q *Queries) GetRecordTypes(ctx context.Context, arg GetRecordTypesParams) ([]RecordType, error) {
-	rows, err := q.db.Query(ctx, getRecordTypes, arg.Limit, arg.Offset, arg.OrderMethod)
+	rows, err := q.db.Query(ctx, getRecordTypes,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -145,16 +155,17 @@ func (q *Queries) GetRecordTypes(ctx context.Context, arg GetRecordTypesParams) 
 }
 
 const updateRecordType = `-- name: UpdateRecordType :one
-UPDATE m_record_types SET name = $2 WHERE record_type_id = $1 RETURNING m_record_types_pkey, record_type_id, name, key
+UPDATE m_record_types SET name = $2, key = $3 WHERE record_type_id = $1 RETURNING m_record_types_pkey, record_type_id, name, key
 `
 
 type UpdateRecordTypeParams struct {
 	RecordTypeID uuid.UUID `json:"record_type_id"`
 	Name         string    `json:"name"`
+	Key          string    `json:"key"`
 }
 
 func (q *Queries) UpdateRecordType(ctx context.Context, arg UpdateRecordTypeParams) (RecordType, error) {
-	row := q.db.QueryRow(ctx, updateRecordType, arg.RecordTypeID, arg.Name)
+	row := q.db.QueryRow(ctx, updateRecordType, arg.RecordTypeID, arg.Name, arg.Key)
 	var i RecordType
 	err := row.Scan(
 		&i.MRecordTypesPkey,
@@ -176,27 +187,6 @@ type UpdateRecordTypeByKeyParams struct {
 
 func (q *Queries) UpdateRecordTypeByKey(ctx context.Context, arg UpdateRecordTypeByKeyParams) (RecordType, error) {
 	row := q.db.QueryRow(ctx, updateRecordTypeByKey, arg.Key, arg.Name)
-	var i RecordType
-	err := row.Scan(
-		&i.MRecordTypesPkey,
-		&i.RecordTypeID,
-		&i.Name,
-		&i.Key,
-	)
-	return i, err
-}
-
-const updateRecordTypeKey = `-- name: UpdateRecordTypeKey :one
-UPDATE m_record_types SET key = $2 WHERE record_type_id = $1 RETURNING m_record_types_pkey, record_type_id, name, key
-`
-
-type UpdateRecordTypeKeyParams struct {
-	RecordTypeID uuid.UUID `json:"record_type_id"`
-	Key          string    `json:"key"`
-}
-
-func (q *Queries) UpdateRecordTypeKey(ctx context.Context, arg UpdateRecordTypeKeyParams) (RecordType, error) {
-	row := q.db.QueryRow(ctx, updateRecordTypeKey, arg.RecordTypeID, arg.Key)
 	var i RecordType
 	err := row.Scan(
 		&i.MRecordTypesPkey,

@@ -14,10 +14,17 @@ import (
 
 const countRoles = `-- name: CountRoles :one
 SELECT COUNT(*) FROM m_roles
+WHERE
+	CASE WHEN $1::boolean = true THEN name LIKE '%' || $2::text || '%' ELSE TRUE END
 `
 
-func (q *Queries) CountRoles(ctx context.Context) (int64, error) {
-	row := q.db.QueryRow(ctx, countRoles)
+type CountRolesParams struct {
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+}
+
+func (q *Queries) CountRoles(ctx context.Context, arg CountRolesParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countRoles, arg.WhereLikeName, arg.SearchName)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -89,11 +96,11 @@ func (q *Queries) FindRoleByID(ctx context.Context, roleID uuid.UUID) (Role, err
 
 const getRoles = `-- name: GetRoles :many
 SELECT m_roles_pkey, role_id, name, description, created_at, updated_at FROM m_roles
-WHERE CASE
-	WHEN $3::boolean = true THEN m_roles.name LIKE '%' || $4::text || '%'
-END
+WHERE
+	CASE WHEN $3::boolean = true THEN m_roles.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_roles.name END ASC,
+	CASE WHEN $5::text = 'r_name' THEN m_roles.name END DESC,
 	m_roles_pkey DESC
 LIMIT $1 OFFSET $2
 `

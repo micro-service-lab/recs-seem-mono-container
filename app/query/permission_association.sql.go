@@ -11,23 +11,43 @@ import (
 	"github.com/google/uuid"
 )
 
-const countPermissionsByWorkPositionID = `-- name: CountPermissionsByWorkPositionID :one
-SELECT COUNT(*) FROM m_permission_associations WHERE work_position_id = $1
+const countPermissionsOnWorkPosition = `-- name: CountPermissionsOnWorkPosition :one
+SELECT COUNT(*) FROM m_permission_associations
+LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
+WHERE work_position_id = $1
+AND
+	CASE WHEN $2::boolean = true THEN m_permissions.name LIKE '%' || $3::text || '%' ELSE TRUE END
 `
 
-func (q *Queries) CountPermissionsByWorkPositionID(ctx context.Context, workPositionID uuid.UUID) (int64, error) {
-	row := q.db.QueryRow(ctx, countPermissionsByWorkPositionID, workPositionID)
+type CountPermissionsOnWorkPositionParams struct {
+	WorkPositionID uuid.UUID `json:"work_position_id"`
+	WhereLikeName  bool      `json:"where_like_name"`
+	SearchName     string    `json:"search_name"`
+}
+
+func (q *Queries) CountPermissionsOnWorkPosition(ctx context.Context, arg CountPermissionsOnWorkPositionParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countPermissionsOnWorkPosition, arg.WorkPositionID, arg.WhereLikeName, arg.SearchName)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
 }
 
-const countWorkPositionsByPermissionID = `-- name: CountWorkPositionsByPermissionID :one
-SELECT COUNT(*) FROM m_permission_associations WHERE permission_id = $1
+const countWorkPositionsOnPermission = `-- name: CountWorkPositionsOnPermission :one
+SELECT COUNT(*) FROM m_permission_associations
+LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
+WHERE permission_id = $1
+AND
+	CASE WHEN $2::boolean = true THEN m_work_positions.name LIKE '%' || $3::text || '%' ELSE TRUE END
 `
 
-func (q *Queries) CountWorkPositionsByPermissionID(ctx context.Context, permissionID uuid.UUID) (int64, error) {
-	row := q.db.QueryRow(ctx, countWorkPositionsByPermissionID, permissionID)
+type CountWorkPositionsOnPermissionParams struct {
+	PermissionID  uuid.UUID `json:"permission_id"`
+	WhereLikeName bool      `json:"where_like_name"`
+	SearchName    string    `json:"search_name"`
+}
+
+func (q *Queries) CountWorkPositionsOnPermission(ctx context.Context, arg CountWorkPositionsOnPermissionParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countWorkPositionsOnPermission, arg.PermissionID, arg.WhereLikeName, arg.SearchName)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -68,20 +88,19 @@ func (q *Queries) DeletePermissionAssociation(ctx context.Context, arg DeletePer
 	return err
 }
 
-const getPermissionsByWorkPositionID = `-- name: GetPermissionsByWorkPositionID :many
+const getPermissionsOnWorkPosition = `-- name: GetPermissionsOnWorkPosition :many
 SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id FROM m_permission_associations
-INNER JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
+LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
 WHERE work_position_id = $1
-AND CASE
-	WHEN $4::boolean = true THEN m_permissions.name LIKE '%' || $5::text || '%'
-END
+AND
+	CASE WHEN $4::boolean = true THEN m_permissions.name LIKE '%' || $5::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN $6::text = 'name' THEN m_permissions.name END ASC,
 	m_permission_associations_pkey DESC
 LIMIT $2 OFFSET $3
 `
 
-type GetPermissionsByWorkPositionIDParams struct {
+type GetPermissionsOnWorkPositionParams struct {
 	WorkPositionID uuid.UUID `json:"work_position_id"`
 	Limit          int32     `json:"limit"`
 	Offset         int32     `json:"offset"`
@@ -90,13 +109,13 @@ type GetPermissionsByWorkPositionIDParams struct {
 	OrderMethod    string    `json:"order_method"`
 }
 
-type GetPermissionsByWorkPositionIDRow struct {
+type GetPermissionsOnWorkPositionRow struct {
 	PermissionAssociation PermissionAssociation `json:"permission_association"`
 	Permission            Permission            `json:"permission"`
 }
 
-func (q *Queries) GetPermissionsByWorkPositionID(ctx context.Context, arg GetPermissionsByWorkPositionIDParams) ([]GetPermissionsByWorkPositionIDRow, error) {
-	rows, err := q.db.Query(ctx, getPermissionsByWorkPositionID,
+func (q *Queries) GetPermissionsOnWorkPosition(ctx context.Context, arg GetPermissionsOnWorkPositionParams) ([]GetPermissionsOnWorkPositionRow, error) {
+	rows, err := q.db.Query(ctx, getPermissionsOnWorkPosition,
 		arg.WorkPositionID,
 		arg.Limit,
 		arg.Offset,
@@ -108,9 +127,9 @@ func (q *Queries) GetPermissionsByWorkPositionID(ctx context.Context, arg GetPer
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPermissionsByWorkPositionIDRow{}
+	items := []GetPermissionsOnWorkPositionRow{}
 	for rows.Next() {
-		var i GetPermissionsByWorkPositionIDRow
+		var i GetPermissionsOnWorkPositionRow
 		if err := rows.Scan(
 			&i.PermissionAssociation.MPermissionAssociationsPkey,
 			&i.PermissionAssociation.PermissionID,
@@ -132,20 +151,20 @@ func (q *Queries) GetPermissionsByWorkPositionID(ctx context.Context, arg GetPer
 	return items, nil
 }
 
-const getWorkPositionsByPermissionID = `-- name: GetWorkPositionsByPermissionID :many
+const getWorkPositionsOnPermission = `-- name: GetWorkPositionsOnPermission :many
 SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_work_positions.m_work_positions_pkey, m_work_positions.work_position_id, m_work_positions.name, m_work_positions.description, m_work_positions.created_at, m_work_positions.updated_at FROM m_permission_associations
-INNER JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
+LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
 WHERE permission_id = $1
-AND CASE
-	WHEN $4::boolean = true THEN m_work_positions.name LIKE '%' || $5::text || '%'
-END
+AND
+	CASE WHEN $4::boolean = true THEN m_work_positions.name LIKE '%' || $5::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN $6::text = 'name' THEN m_work_positions.name END ASC,
+	CASE WHEN $6::text = 'r_name' THEN m_work_positions.name END DESC,
 	m_permission_associations_pkey DESC
 LIMIT $2 OFFSET $3
 `
 
-type GetWorkPositionsByPermissionIDParams struct {
+type GetWorkPositionsOnPermissionParams struct {
 	PermissionID  uuid.UUID `json:"permission_id"`
 	Limit         int32     `json:"limit"`
 	Offset        int32     `json:"offset"`
@@ -154,13 +173,13 @@ type GetWorkPositionsByPermissionIDParams struct {
 	OrderMethod   string    `json:"order_method"`
 }
 
-type GetWorkPositionsByPermissionIDRow struct {
+type GetWorkPositionsOnPermissionRow struct {
 	PermissionAssociation PermissionAssociation `json:"permission_association"`
 	WorkPosition          WorkPosition          `json:"work_position"`
 }
 
-func (q *Queries) GetWorkPositionsByPermissionID(ctx context.Context, arg GetWorkPositionsByPermissionIDParams) ([]GetWorkPositionsByPermissionIDRow, error) {
-	rows, err := q.db.Query(ctx, getWorkPositionsByPermissionID,
+func (q *Queries) GetWorkPositionsOnPermission(ctx context.Context, arg GetWorkPositionsOnPermissionParams) ([]GetWorkPositionsOnPermissionRow, error) {
+	rows, err := q.db.Query(ctx, getWorkPositionsOnPermission,
 		arg.PermissionID,
 		arg.Limit,
 		arg.Offset,
@@ -172,9 +191,9 @@ func (q *Queries) GetWorkPositionsByPermissionID(ctx context.Context, arg GetWor
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetWorkPositionsByPermissionIDRow{}
+	items := []GetWorkPositionsOnPermissionRow{}
 	for rows.Next() {
-		var i GetWorkPositionsByPermissionIDRow
+		var i GetWorkPositionsOnPermissionRow
 		if err := rows.Scan(
 			&i.PermissionAssociation.MPermissionAssociationsPkey,
 			&i.PermissionAssociation.PermissionID,

@@ -15,7 +15,7 @@ SELECT * FROM m_groups WHERE group_id = $1;
 
 -- name: FindGroupByIDWithOrganization :one
 SELECT sqlc.embed(m_groups), sqlc.embed(m_organizations) FROM m_groups
-INNER JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE group_id = $1;
 
 -- name: FindGroupByKey :one
@@ -23,7 +23,7 @@ SELECT * FROM m_groups WHERE key = $1;
 
 -- name: FindGroupByKeyWithOrganization :one
 SELECT sqlc.embed(m_groups), sqlc.embed(m_organizations) FROM m_groups
-INNER JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE key = $1;
 
 -- name: GetGroups :many
@@ -34,7 +34,7 @@ LIMIT $1 OFFSET $2;
 
 -- name: GetGroupsWithOrganization :many
 SELECT sqlc.embed(m_groups), sqlc.embed(m_organizations) FROM m_groups
-INNER JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
 	m_groups_pkey DESC

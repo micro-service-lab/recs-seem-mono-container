@@ -150,9 +150,9 @@ func (q *Queries) FindAttendanceByID(ctx context.Context, attendanceID uuid.UUID
 
 const findAttendanceByIDWithAll = `-- name: FindAttendanceByIDWithAll :one
 SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
-INNER JOIN m_members ON t_attendances.member_id = m_members.member_id
-INNER JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
-INNER JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
@@ -227,7 +227,7 @@ func (q *Queries) FindAttendanceByIDWithAll(ctx context.Context, attendanceID uu
 
 const findAttendanceByIDWithAttendanceType = `-- name: FindAttendanceByIDWithAttendanceType :one
 SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color FROM t_attendances
-INNER JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE attendance_id = $1
 `
 
@@ -305,7 +305,7 @@ func (q *Queries) FindAttendanceByIDWithDetails(ctx context.Context, attendanceI
 
 const findAttendanceByIDWithMember = `-- name: FindAttendanceByIDWithMember :one
 SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
-INNER JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
 WHERE attendance_id = $1
 `
 
@@ -348,7 +348,7 @@ func (q *Queries) FindAttendanceByIDWithMember(ctx context.Context, attendanceID
 
 const findAttendanceByIDWithSendOrganization = `-- name: FindAttendanceByIDWithSendOrganization :one
 SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_attendances
-INNER JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = $1
 `
 
@@ -388,9 +388,9 @@ SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendan
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
-INNER JOIN m_members ON t_attendances.member_id = m_members.member_id
-INNER JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
-INNER JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_attendances.attendance_type_id = ANY($4) ELSE TRUE END
 AND
@@ -525,7 +525,7 @@ func (q *Queries) GetAttendanceWithAll(ctx context.Context, arg GetAttendanceWit
 
 const getAttendanceWithAttendanceType = `-- name: GetAttendanceWithAttendanceType :many
 SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color FROM t_attendances
-INNER JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_attendances.attendance_type_id = ANY($4) ELSE TRUE END
 AND
@@ -729,7 +729,7 @@ func (q *Queries) GetAttendanceWithDetails(ctx context.Context, arg GetAttendanc
 
 const getAttendanceWithMember = `-- name: GetAttendanceWithMember :many
 SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
-INNER JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_attendances.attendance_type_id = ANY($4) ELSE TRUE END
 AND
@@ -835,7 +835,7 @@ func (q *Queries) GetAttendanceWithMember(ctx context.Context, arg GetAttendance
 
 const getAttendanceWithSendOrganization = `-- name: GetAttendanceWithSendOrganization :many
 SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_attendances
-INNER JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_attendances.attendance_type_id = ANY($4) ELSE TRUE END
 AND

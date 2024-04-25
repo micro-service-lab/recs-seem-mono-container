@@ -53,31 +53,20 @@ func (q *Queries) FindProfessorByID(ctx context.Context, professorID uuid.UUID) 
 	return i, err
 }
 
-const findProfessorByMemberID = `-- name: FindProfessorByMemberID :one
-SELECT m_professors_pkey, professor_id, member_id FROM m_professors WHERE member_id = $1
-`
-
-func (q *Queries) FindProfessorByMemberID(ctx context.Context, memberID uuid.UUID) (Professor, error) {
-	row := q.db.QueryRow(ctx, findProfessorByMemberID, memberID)
-	var i Professor
-	err := row.Scan(&i.MProfessorsPkey, &i.ProfessorID, &i.MemberID)
-	return i, err
-}
-
-const findProfessorWithMember = `-- name: FindProfessorWithMember :one
+const findProfessorByIDWithMember = `-- name: FindProfessorByIDWithMember :one
 SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_professors
-INNER JOIN m_members ON m_professors.member_id = m_members.member_id
+LEFT JOIN m_members ON m_professors.member_id = m_members.member_id
 WHERE professor_id = $1
 `
 
-type FindProfessorWithMemberRow struct {
+type FindProfessorByIDWithMemberRow struct {
 	Professor Professor `json:"professor"`
 	Member    Member    `json:"member"`
 }
 
-func (q *Queries) FindProfessorWithMember(ctx context.Context, professorID uuid.UUID) (FindProfessorWithMemberRow, error) {
-	row := q.db.QueryRow(ctx, findProfessorWithMember, professorID)
-	var i FindProfessorWithMemberRow
+func (q *Queries) FindProfessorByIDWithMember(ctx context.Context, professorID uuid.UUID) (FindProfessorByIDWithMemberRow, error) {
+	row := q.db.QueryRow(ctx, findProfessorByIDWithMember, professorID)
+	var i FindProfessorByIDWithMemberRow
 	err := row.Scan(
 		&i.Professor.MProfessorsPkey,
 		&i.Professor.ProfessorID,
@@ -122,62 +111,6 @@ func (q *Queries) GetProfessors(ctx context.Context, arg GetProfessorsParams) ([
 	for rows.Next() {
 		var i Professor
 		if err := rows.Scan(&i.MProfessorsPkey, &i.ProfessorID, &i.MemberID); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getProfessorsWithMember = `-- name: GetProfessorsWithMember :many
-SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_professors
-INNER JOIN m_members ON m_professors.member_id = m_members.member_id
-ORDER BY
-	m_professors_pkey DESC
-LIMIT $1 OFFSET $2
-`
-
-type GetProfessorsWithMemberParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
-}
-
-type GetProfessorsWithMemberRow struct {
-	Professor Professor `json:"professor"`
-	Member    Member    `json:"member"`
-}
-
-func (q *Queries) GetProfessorsWithMember(ctx context.Context, arg GetProfessorsWithMemberParams) ([]GetProfessorsWithMemberRow, error) {
-	rows, err := q.db.Query(ctx, getProfessorsWithMember, arg.Limit, arg.Offset)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []GetProfessorsWithMemberRow{}
-	for rows.Next() {
-		var i GetProfessorsWithMemberRow
-		if err := rows.Scan(
-			&i.Professor.MProfessorsPkey,
-			&i.Professor.ProfessorID,
-			&i.Professor.MemberID,
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

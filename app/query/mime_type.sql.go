@@ -13,10 +13,17 @@ import (
 
 const countMimeTypes = `-- name: CountMimeTypes :one
 SELECT COUNT(*) FROM m_mime_types
+WHERE
+	CASE WHEN $1::boolean = true THEN name LIKE '%' || $2::text || '%' ELSE TRUE END
 `
 
-func (q *Queries) CountMimeTypes(ctx context.Context) (int64, error) {
-	row := q.db.QueryRow(ctx, countMimeTypes)
+type CountMimeTypesParams struct {
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+}
+
+func (q *Queries) CountMimeTypes(ctx context.Context, arg CountMimeTypesParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countMimeTypes, arg.WhereLikeName, arg.SearchName)
 	var count int64
 	err := row.Scan(&count)
 	return count, err

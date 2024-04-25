@@ -18,7 +18,7 @@
 | [public.m_groups](public.m_groups.md) | 4 |  | BASE TABLE |
 | [public.m_grades](public.m_grades.md) | 4 |  | BASE TABLE |
 | [public.m_mime_types](public.m_mime_types.md) | 4 |  | BASE TABLE |
-| [public.t_attachable_items](public.t_attachable_items.md) | 4 |  | BASE TABLE |
+| [public.t_attachable_items](public.t_attachable_items.md) | 5 |  | BASE TABLE |
 | [public.t_images](public.t_images.md) | 5 |  | BASE TABLE |
 | [public.t_files](public.t_files.md) | 3 |  | BASE TABLE |
 | [public.m_members](public.m_members.md) | 14 |  | BASE TABLE |
@@ -38,6 +38,7 @@
 | [public.m_chat_room_belongings](public.m_chat_room_belongings.md) | 4 |  | BASE TABLE |
 | [public.m_record_types](public.m_record_types.md) | 4 |  | BASE TABLE |
 | [public.t_records](public.t_records.md) | 10 |  | BASE TABLE |
+| [public.t_attached_messages](public.t_attached_messages.md) | 3 |  | BASE TABLE |
 
 ## Stored procedures and functions
 

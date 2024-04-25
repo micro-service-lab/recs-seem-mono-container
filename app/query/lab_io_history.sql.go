@@ -15,8 +15,8 @@ import (
 
 const countLabIoHistories = `-- name: CountLabIoHistories :one
 SELECT COUNT(*) FROM t_lab_io_histories
-WHERE
-	CASE WHEN $1::boolean = true THEN member_id = $2 ELSE TRUE END
+where
+	CASE WHEN $1::boolean = true THEN member_id = ANY($2) ELSE TRUE END
 AND
 	CASE WHEN $3::boolean = true THEN entered_at >= $4 ELSE TRUE END
 AND
@@ -28,8 +28,8 @@ AND
 `
 
 type CountLabIoHistoriesParams struct {
-	WhereMember           bool               `json:"where_member"`
-	MemberID              uuid.UUID          `json:"member_id"`
+	WhereInMember         bool               `json:"where_in_member"`
+	InMember              uuid.UUID          `json:"in_member"`
 	WhereEarlierEnteredAt bool               `json:"where_earlier_entered_at"`
 	EarlierEnteredAt      time.Time          `json:"earlier_entered_at"`
 	WhereLaterEnteredAt   bool               `json:"where_later_entered_at"`
@@ -42,8 +42,8 @@ type CountLabIoHistoriesParams struct {
 
 func (q *Queries) CountLabIoHistories(ctx context.Context, arg CountLabIoHistoriesParams) (int64, error) {
 	row := q.db.QueryRow(ctx, countLabIoHistories,
-		arg.WhereMember,
-		arg.MemberID,
+		arg.WhereInMember,
+		arg.InMember,
 		arg.WhereEarlierEnteredAt,
 		arg.EarlierEnteredAt,
 		arg.WhereLaterEnteredAt,
@@ -96,6 +96,28 @@ func (q *Queries) DeleteLabIoHistory(ctx context.Context, labIoHistoryID uuid.UU
 	return err
 }
 
+const exitLabIoHistory = `-- name: ExitLabIoHistory :one
+UPDATE t_lab_io_histories SET exited_at = $2 WHERE lab_io_history_id = $1 RETURNING t_lab_io_histories_pkey, lab_io_history_id, member_id, entered_at, exited_at
+`
+
+type ExitLabIoHistoryParams struct {
+	LabIoHistoryID uuid.UUID          `json:"lab_io_history_id"`
+	ExitedAt       pgtype.Timestamptz `json:"exited_at"`
+}
+
+func (q *Queries) ExitLabIoHistory(ctx context.Context, arg ExitLabIoHistoryParams) (LabIOHistory, error) {
+	row := q.db.QueryRow(ctx, exitLabIoHistory, arg.LabIoHistoryID, arg.ExitedAt)
+	var i LabIOHistory
+	err := row.Scan(
+		&i.TLabIoHistoriesPkey,
+		&i.LabIoHistoryID,
+		&i.MemberID,
+		&i.EnteredAt,
+		&i.ExitedAt,
+	)
+	return i, err
+}
+
 const findLabIoHistoryByID = `-- name: FindLabIoHistoryByID :one
 SELECT t_lab_io_histories_pkey, lab_io_history_id, member_id, entered_at, exited_at FROM t_lab_io_histories WHERE lab_io_history_id = $1
 `
@@ -113,10 +135,48 @@ func (q *Queries) FindLabIoHistoryByID(ctx context.Context, labIoHistoryID uuid.
 	return i, err
 }
 
+const findLabIoHistoryWithMember = `-- name: FindLabIoHistoryWithMember :one
+SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
+LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
+WHERE lab_io_history_id = $1
+`
+
+type FindLabIoHistoryWithMemberRow struct {
+	LabIOHistory LabIOHistory `json:"lab_iohistory"`
+	Member       Member       `json:"member"`
+}
+
+func (q *Queries) FindLabIoHistoryWithMember(ctx context.Context, labIoHistoryID uuid.UUID) (FindLabIoHistoryWithMemberRow, error) {
+	row := q.db.QueryRow(ctx, findLabIoHistoryWithMember, labIoHistoryID)
+	var i FindLabIoHistoryWithMemberRow
+	err := row.Scan(
+		&i.LabIOHistory.TLabIoHistoriesPkey,
+		&i.LabIOHistory.LabIoHistoryID,
+		&i.LabIOHistory.MemberID,
+		&i.LabIOHistory.EnteredAt,
+		&i.LabIOHistory.ExitedAt,
+		&i.Member.MMembersPkey,
+		&i.Member.MemberID,
+		&i.Member.LoginID,
+		&i.Member.Password,
+		&i.Member.Email,
+		&i.Member.Name,
+		&i.Member.AttendStatusID,
+		&i.Member.ProfileImageID,
+		&i.Member.GradeID,
+		&i.Member.GroupID,
+		&i.Member.PersonalOrganizationID,
+		&i.Member.RoleID,
+		&i.Member.CreatedAt,
+		&i.Member.UpdatedAt,
+	)
+	return i, err
+}
+
 const getLabIoHistories = `-- name: GetLabIoHistories :many
 SELECT t_lab_io_histories_pkey, lab_io_history_id, member_id, entered_at, exited_at FROM t_lab_io_histories
 WHERE
-	CASE WHEN $3::boolean = true THEN member_id = $4 ELSE TRUE END
+	CASE WHEN $3::boolean = true THEN member_id = ANY($4) ELSE TRUE END
 AND
 	CASE WHEN $5::boolean = true THEN entered_at >= $6 ELSE TRUE END
 AND
@@ -126,8 +186,10 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN exited_at <= $12 ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'entered_at' THEN entered_at END ASC,
-	CASE WHEN $13::text = 'exited_at' THEN exited_at END ASC,
+	CASE WHEN $13::text = 'old_enter' THEN entered_at END ASC,
+	CASE WHEN $13::text = 'late_enter' THEN entered_at END DESC,
+	CASE WHEN $13::text = 'old_exit' THEN exited_at END ASC,
+	CASE WHEN $13::text = 'late_exit' THEN exited_at END DESC,
 	t_lab_io_histories_pkey DESC
 LIMIT $1 OFFSET $2
 `
@@ -135,8 +197,8 @@ LIMIT $1 OFFSET $2
 type GetLabIoHistoriesParams struct {
 	Limit                 int32              `json:"limit"`
 	Offset                int32              `json:"offset"`
-	WhereMember           bool               `json:"where_member"`
-	MemberID              uuid.UUID          `json:"member_id"`
+	WhereInMember         bool               `json:"where_in_member"`
+	InMember              uuid.UUID          `json:"in_member"`
 	WhereEarlierEnteredAt bool               `json:"where_earlier_entered_at"`
 	EarlierEnteredAt      time.Time          `json:"earlier_entered_at"`
 	WhereLaterEnteredAt   bool               `json:"where_later_entered_at"`
@@ -152,8 +214,8 @@ func (q *Queries) GetLabIoHistories(ctx context.Context, arg GetLabIoHistoriesPa
 	rows, err := q.db.Query(ctx, getLabIoHistories,
 		arg.Limit,
 		arg.Offset,
-		arg.WhereMember,
-		arg.MemberID,
+		arg.WhereInMember,
+		arg.InMember,
 		arg.WhereEarlierEnteredAt,
 		arg.EarlierEnteredAt,
 		arg.WhereLaterEnteredAt,
@@ -177,6 +239,103 @@ func (q *Queries) GetLabIoHistories(ctx context.Context, arg GetLabIoHistoriesPa
 			&i.MemberID,
 			&i.EnteredAt,
 			&i.ExitedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getLabIoHistoriesWithMember = `-- name: GetLabIoHistoriesWithMember :many
+SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
+LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
+WHERE
+	CASE WHEN $3::boolean = true THEN t_lab_io_histories.member_id = ANY($4) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN entered_at >= $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN entered_at <= $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN exited_at >= $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN exited_at <= $12 ELSE TRUE END
+ORDER BY
+	CASE WHEN $13::text = 'old_enter' THEN entered_at END ASC,
+	CASE WHEN $13::text = 'late_enter' THEN entered_at END DESC,
+	CASE WHEN $13::text = 'old_exit' THEN exited_at END ASC,
+	CASE WHEN $13::text = 'late_exit' THEN exited_at END DESC,
+	t_lab_io_histories_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetLabIoHistoriesWithMemberParams struct {
+	Limit                 int32              `json:"limit"`
+	Offset                int32              `json:"offset"`
+	WhereInMember         bool               `json:"where_in_member"`
+	InMember              uuid.UUID          `json:"in_member"`
+	WhereEarlierEnteredAt bool               `json:"where_earlier_entered_at"`
+	EarlierEnteredAt      time.Time          `json:"earlier_entered_at"`
+	WhereLaterEnteredAt   bool               `json:"where_later_entered_at"`
+	LaterEnteredAt        time.Time          `json:"later_entered_at"`
+	WhereEarlierExitedAt  bool               `json:"where_earlier_exited_at"`
+	EarlierExitedAt       pgtype.Timestamptz `json:"earlier_exited_at"`
+	WhereLaterExitedAt    bool               `json:"where_later_exited_at"`
+	LaterExitedAt         pgtype.Timestamptz `json:"later_exited_at"`
+	OrderMethod           string             `json:"order_method"`
+}
+
+type GetLabIoHistoriesWithMemberRow struct {
+	LabIOHistory LabIOHistory `json:"lab_iohistory"`
+	Member       Member       `json:"member"`
+}
+
+func (q *Queries) GetLabIoHistoriesWithMember(ctx context.Context, arg GetLabIoHistoriesWithMemberParams) ([]GetLabIoHistoriesWithMemberRow, error) {
+	rows, err := q.db.Query(ctx, getLabIoHistoriesWithMember,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInMember,
+		arg.InMember,
+		arg.WhereEarlierEnteredAt,
+		arg.EarlierEnteredAt,
+		arg.WhereLaterEnteredAt,
+		arg.LaterEnteredAt,
+		arg.WhereEarlierExitedAt,
+		arg.EarlierExitedAt,
+		arg.WhereLaterExitedAt,
+		arg.LaterExitedAt,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetLabIoHistoriesWithMemberRow{}
+	for rows.Next() {
+		var i GetLabIoHistoriesWithMemberRow
+		if err := rows.Scan(
+			&i.LabIOHistory.TLabIoHistoriesPkey,
+			&i.LabIOHistory.LabIoHistoryID,
+			&i.LabIOHistory.MemberID,
+			&i.LabIOHistory.EnteredAt,
+			&i.LabIOHistory.ExitedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}

@@ -12,23 +12,22 @@ import (
 
 type Querier interface {
 	CountAbsences(ctx context.Context) (int64, error)
-	CountAttachableItems(ctx context.Context) (int64, error)
-	CountAttachableItemsByMimeTypeID(ctx context.Context, mimeTypeID uuid.UUID) (int64, error)
-	CountAttendStatuses(ctx context.Context) (int64, error)
+	CountAttachableItems(ctx context.Context, arg CountAttachableItemsParams) (int64, error)
+	CountAttendStatuses(ctx context.Context, arg CountAttendStatusesParams) (int64, error)
 	CountAttendanceTypes(ctx context.Context, arg CountAttendanceTypesParams) (int64, error)
 	CountAttendances(ctx context.Context, arg CountAttendancesParams) (int64, error)
 	CountChatRooms(ctx context.Context, arg CountChatRoomsParams) (int64, error)
-	CountChatRoomsByMemberID(ctx context.Context, memberID uuid.UUID) (int64, error)
+	CountChatRoomsByMemberID(ctx context.Context, arg CountChatRoomsByMemberIDParams) (int64, error)
 	CountEarlyLeavings(ctx context.Context) (int64, error)
 	CountEvents(ctx context.Context, arg CountEventsParams) (int64, error)
 	CountFiles(ctx context.Context) (int64, error)
-	CountGradesByOrganizationID(ctx context.Context, organizationID uuid.UUID) (int64, error)
-	CountGroupsByOrganizationID(ctx context.Context, organizationID uuid.UUID) (int64, error)
+	CountGrades(ctx context.Context) (int64, error)
+	CountGroups(ctx context.Context) (int64, error)
 	CountImages(ctx context.Context) (int64, error)
 	CountLabIoHistories(ctx context.Context, arg CountLabIoHistoriesParams) (int64, error)
 	CountLateArrivals(ctx context.Context) (int64, error)
 	CountMembers(ctx context.Context) (int64, error)
-	CountMembersOnChatRoomID(ctx context.Context, chatRoomID uuid.UUID) (int64, error)
+	CountMembersOnChatRoomID(ctx context.Context, arg CountMembersOnChatRoomIDParams) (int64, error)
 	CountMessages(ctx context.Context, arg CountMessagesParams) (int64, error)
 	CountMimeTypes(ctx context.Context) (int64, error)
 	CountOrganizations(ctx context.Context) (int64, error)
@@ -48,6 +47,8 @@ type Querier interface {
 	CreateAbsences(ctx context.Context, attendanceID []uuid.UUID) (int64, error)
 	CreateAttachableItem(ctx context.Context, arg CreateAttachableItemParams) (AttachableItem, error)
 	CreateAttachableItems(ctx context.Context, arg []CreateAttachableItemsParams) (int64, error)
+	CreateAttachedMessage(ctx context.Context, arg CreateAttachedMessageParams) (AttachedMessage, error)
+	CreateAttachedMessages(ctx context.Context, arg []CreateAttachedMessagesParams) (int64, error)
 	CreateAttendStatus(ctx context.Context, arg CreateAttendStatusParams) (AttendStatus, error)
 	CreateAttendStatuses(ctx context.Context, arg []CreateAttendStatusesParams) (int64, error)
 	CreateAttendance(ctx context.Context, arg CreateAttendanceParams) (Attendance, error)
@@ -89,18 +90,6 @@ type Querier interface {
 	CreatePermissionAssociations(ctx context.Context, arg []CreatePermissionAssociationsParams) (int64, error)
 	CreatePermissionCategories(ctx context.Context, arg []CreatePermissionCategoriesParams) (int64, error)
 	CreatePermissionCategory(ctx context.Context, arg CreatePermissionCategoryParams) (PermissionCategory, error)
-	// CREATE TABLE m_permissions (
-	// 	m_permissions_pkey BIGSERIAL,
-	//     permission_id UUID NOT NULL DEFAULT uuid_generate_v4(),
-	//     name VARCHAR(255) NOT NULL,
-	//     description TEXT NOT NULL,
-	// 	key VARCHAR(255) NOT NULL,
-	// 	permission_category_id UUID NOT NULL
-	// );
-	// ALTER TABLE m_permissions ADD CONSTRAINT m_permissions_pkey PRIMARY KEY (m_permissions_pkey);
-	// ALTER TABLE m_permissions ADD CONSTRAINT fk_m_permissions_permission_category_id FOREIGN KEY (permission_category_id) REFERENCES m_permission_categories(permission_category_id) ON DELETE RESTRICT ON UPDATE RESTRICT;
-	// CREATE UNIQUE INDEX idx_m_permissions_id ON m_permissions(permission_id);
-	// CREATE UNIQUE INDEX idx_m_permissions_key ON m_permissions(key);
 	CreatePermissions(ctx context.Context, arg []CreatePermissionsParams) (int64, error)
 	CreatePolicies(ctx context.Context, arg []CreatePoliciesParams) (int64, error)
 	CreatePolicy(ctx context.Context, arg CreatePolicyParams) (Policy, error)
@@ -113,24 +102,6 @@ type Querier interface {
 	CreateRecord(ctx context.Context, arg CreateRecordParams) (Record, error)
 	CreateRecordType(ctx context.Context, arg CreateRecordTypeParams) (RecordType, error)
 	CreateRecordTypes(ctx context.Context, arg []CreateRecordTypesParams) (int64, error)
-	// CREATE TABLE t_records (
-	// 	t_records_pkey BIGSERIAL,
-	//     record_id UUID NOT NULL DEFAULT uuid_generate_v4(),
-	// 	record_type_id UUID NOT NULL,
-	// 	title VARCHAR(255) NOT NULL,
-	// 	body TEXT,
-	// 	organization_id UUID,
-	// 	posted_by UUID,
-	// 	last_edited_by UUID,
-	// 	posted_at TIMESTAMPTZ NOT NULL,
-	// 	last_edited_at TIMESTAMPTZ NOT NULL
-	// );
-	// ALTER TABLE t_records ADD CONSTRAINT t_records_pkey PRIMARY KEY (t_records_pkey);
-	// ALTER TABLE t_records ADD CONSTRAINT fk_t_records_record_type_id FOREIGN KEY (record_type_id) REFERENCES m_record_types(record_type_id) ON DELETE RESTRICT ON UPDATE RESTRICT;
-	// ALTER TABLE t_records ADD CONSTRAINT fk_t_records_organization_id FOREIGN KEY (organization_id) REFERENCES m_organizations(organization_id) ON DELETE SET NULL ON UPDATE SET NULL;
-	// ALTER TABLE t_records ADD CONSTRAINT fk_t_records_posted_by FOREIGN KEY (posted_by) REFERENCES m_members(member_id) ON DELETE SET NULL ON UPDATE SET NULL;
-	// ALTER TABLE t_records ADD CONSTRAINT fk_t_records_last_edited_by FOREIGN KEY (last_edited_by) REFERENCES m_members(member_id) ON DELETE SET NULL ON UPDATE SET NULL;
-	// CREATE UNIQUE INDEX idx_t_records_id ON t_records(record_id);
 	CreateRecords(ctx context.Context, arg []CreateRecordsParams) (int64, error)
 	CreateRole(ctx context.Context, arg CreateRoleParams) (Role, error)
 	CreateRoleAssociation(ctx context.Context, arg CreateRoleAssociationParams) (RoleAssociation, error)
@@ -142,6 +113,7 @@ type Querier interface {
 	CreateWorkPositions(ctx context.Context, arg []CreateWorkPositionsParams) (int64, error)
 	DeleteAbsence(ctx context.Context, absenceID uuid.UUID) error
 	DeleteAttachableItem(ctx context.Context, attachableItemID uuid.UUID) error
+	DeleteAttachedMessage(ctx context.Context, arg DeleteAttachedMessageParams) error
 	DeleteAttendStatus(ctx context.Context, attendStatusID uuid.UUID) error
 	DeleteAttendStatusByKey(ctx context.Context, key string) error
 	DeleteAttendance(ctx context.Context, attendanceID uuid.UUID) error
@@ -155,7 +127,9 @@ type Querier interface {
 	DeleteEventTypeByKey(ctx context.Context, key string) error
 	DeleteFile(ctx context.Context, fileID uuid.UUID) error
 	DeleteGrade(ctx context.Context, gradeID uuid.UUID) error
+	DeleteGradeByKey(ctx context.Context, key string) error
 	DeleteGroup(ctx context.Context, groupID uuid.UUID) error
+	DeleteGroupByKey(ctx context.Context, key string) error
 	DeleteImage(ctx context.Context, imageID uuid.UUID) error
 	DeleteLabIoHistory(ctx context.Context, labIoHistoryID uuid.UUID) error
 	DeleteLateArrival(ctx context.Context, lateArrivalID uuid.UUID) error
@@ -182,20 +156,32 @@ type Querier interface {
 	DeleteRoleAssociation(ctx context.Context, arg DeleteRoleAssociationParams) error
 	DeleteStudent(ctx context.Context, studentID uuid.UUID) error
 	DeleteWorkPosition(ctx context.Context, workPositionID uuid.UUID) error
+	ExitLabIoHistory(ctx context.Context, arg ExitLabIoHistoryParams) (LabIOHistory, error)
 	FindAbsenceByID(ctx context.Context, absenceID uuid.UUID) (Absence, error)
-	FindAttachableItemByID(ctx context.Context, attachableItemID uuid.UUID) (AttachableItem, error)
+	FindAttachableItemByID(ctx context.Context, attachableItemID uuid.UUID) (FindAttachableItemByIDRow, error)
 	FindAttachableItemByIDWithMimeType(ctx context.Context, attachableItemID uuid.UUID) (FindAttachableItemByIDWithMimeTypeRow, error)
 	FindAttendStatusById(ctx context.Context, attendStatusID uuid.UUID) (AttendStatus, error)
 	FindAttendStatusByKey(ctx context.Context, key string) (AttendStatus, error)
 	FindAttendanceByID(ctx context.Context, attendanceID uuid.UUID) (Attendance, error)
+	FindAttendanceByIDWithAll(ctx context.Context, attendanceID uuid.UUID) (FindAttendanceByIDWithAllRow, error)
+	FindAttendanceByIDWithAttendanceType(ctx context.Context, attendanceID uuid.UUID) (FindAttendanceByIDWithAttendanceTypeRow, error)
+	FindAttendanceByIDWithDetails(ctx context.Context, attendanceID uuid.UUID) (FindAttendanceByIDWithDetailsRow, error)
 	FindAttendanceByIDWithMember(ctx context.Context, attendanceID uuid.UUID) (FindAttendanceByIDWithMemberRow, error)
+	FindAttendanceByIDWithSendOrganization(ctx context.Context, attendanceID uuid.UUID) (FindAttendanceByIDWithSendOrganizationRow, error)
 	FindAttendanceTypeByID(ctx context.Context, attendanceTypeID uuid.UUID) (AttendanceType, error)
 	FindAttendanceTypeByKey(ctx context.Context, key string) (AttendanceType, error)
 	FindChatRoomByID(ctx context.Context, chatRoomID uuid.UUID) (ChatRoom, error)
+	FindChatRoomByIDWithAll(ctx context.Context, chatRoomID uuid.UUID) (FindChatRoomByIDWithAllRow, error)
+	FindChatRoomByIDWithCoverImage(ctx context.Context, chatRoomID uuid.UUID) (FindChatRoomByIDWithCoverImageRow, error)
 	FindChatRoomByIDWithOwner(ctx context.Context, chatRoomID uuid.UUID) (FindChatRoomByIDWithOwnerRow, error)
 	FindEarlyLeavingByID(ctx context.Context, earlyLeavingID uuid.UUID) (EarlyLeaving, error)
 	FindEventByID(ctx context.Context, eventID uuid.UUID) (Event, error)
+	FindEventByIDWithAll(ctx context.Context, eventID uuid.UUID) (FindEventByIDWithAllRow, error)
+	FindEventByIDWithLastEditUser(ctx context.Context, eventID uuid.UUID) (FindEventByIDWithLastEditUserRow, error)
 	FindEventByIDWithOrganization(ctx context.Context, eventID uuid.UUID) (FindEventByIDWithOrganizationRow, error)
+	FindEventByIDWithPostUser(ctx context.Context, eventID uuid.UUID) (FindEventByIDWithPostUserRow, error)
+	FindEventByIDWithSendOrganization(ctx context.Context, eventID uuid.UUID) (FindEventByIDWithSendOrganizationRow, error)
+	FindEventByIDWithType(ctx context.Context, eventID uuid.UUID) (FindEventByIDWithTypeRow, error)
 	FindEventTypeByID(ctx context.Context, eventTypeID uuid.UUID) (EventType, error)
 	FindEventTypeByKey(ctx context.Context, key string) (EventType, error)
 	FindFileByID(ctx context.Context, fileID uuid.UUID) (File, error)
@@ -211,9 +197,11 @@ type Querier interface {
 	FindImageByID(ctx context.Context, imageID uuid.UUID) (Image, error)
 	FindImageByIDWithAttachableItem(ctx context.Context, imageID uuid.UUID) (FindImageByIDWithAttachableItemRow, error)
 	FindLabIoHistoryByID(ctx context.Context, labIoHistoryID uuid.UUID) (LabIOHistory, error)
+	FindLabIoHistoryWithMember(ctx context.Context, labIoHistoryID uuid.UUID) (FindLabIoHistoryWithMemberRow, error)
 	FindLateArrivalByID(ctx context.Context, lateArrivalID uuid.UUID) (LateArrival, error)
 	FindMemberByID(ctx context.Context, memberID uuid.UUID) (Member, error)
 	FindMemberByIDWithAttendStatus(ctx context.Context, memberID uuid.UUID) (FindMemberByIDWithAttendStatusRow, error)
+	FindMemberByIDWithDetailRole(ctx context.Context, memberID uuid.UUID) (FindMemberByIDWithDetailRoleRow, error)
 	FindMemberByIDWithGrade(ctx context.Context, memberID uuid.UUID) (FindMemberByIDWithGradeRow, error)
 	FindMemberByIDWithGroup(ctx context.Context, memberID uuid.UUID) (FindMemberByIDWithGroupRow, error)
 	FindMemberByIDWithPersonalOrganization(ctx context.Context, memberID uuid.UUID) (FindMemberByIDWithPersonalOrganizationRow, error)
@@ -254,34 +242,41 @@ type Querier interface {
 	FindWholeOrganization(ctx context.Context) (Organization, error)
 	FindWorkPositionByID(ctx context.Context, workPositionID uuid.UUID) (WorkPosition, error)
 	GetAbsences(ctx context.Context, arg GetAbsencesParams) ([]Absence, error)
-	GetAttachableItemsByMimeTypeID(ctx context.Context, arg GetAttachableItemsByMimeTypeIDParams) ([]AttachableItem, error)
+	GetAttachableItems(ctx context.Context, arg GetAttachableItemsParams) ([]GetAttachableItemsRow, error)
 	GetAttachableItemsByMimeTypeIDWithMimeType(ctx context.Context, arg GetAttachableItemsByMimeTypeIDWithMimeTypeParams) ([]GetAttachableItemsByMimeTypeIDWithMimeTypeRow, error)
+	GetAttachableItemsOnMessageID(ctx context.Context, arg GetAttachableItemsOnMessageIDParams) ([]GetAttachableItemsOnMessageIDRow, error)
 	GetAttendStatuses(ctx context.Context, arg GetAttendStatusesParams) ([]AttendStatus, error)
-	GetAttendStatusesByKeys(ctx context.Context, arg GetAttendStatusesByKeysParams) ([]AttendStatus, error)
 	GetAttendanceTypes(ctx context.Context, arg GetAttendanceTypesParams) ([]AttendanceType, error)
 	GetAttendanceWithAll(ctx context.Context, arg GetAttendanceWithAllParams) ([]GetAttendanceWithAllRow, error)
 	GetAttendanceWithAttendanceType(ctx context.Context, arg GetAttendanceWithAttendanceTypeParams) ([]GetAttendanceWithAttendanceTypeRow, error)
 	GetAttendanceWithDetails(ctx context.Context, arg GetAttendanceWithDetailsParams) ([]GetAttendanceWithDetailsRow, error)
 	GetAttendanceWithMember(ctx context.Context, arg GetAttendanceWithMemberParams) ([]GetAttendanceWithMemberRow, error)
+	GetAttendanceWithSendOrganization(ctx context.Context, arg GetAttendanceWithSendOrganizationParams) ([]GetAttendanceWithSendOrganizationRow, error)
 	GetAttendances(ctx context.Context, arg GetAttendancesParams) ([]Attendance, error)
 	GetChatRooms(ctx context.Context, arg GetChatRoomsParams) ([]ChatRoom, error)
 	GetChatRoomsByMemberID(ctx context.Context, arg GetChatRoomsByMemberIDParams) ([]GetChatRoomsByMemberIDRow, error)
+	GetChatRoomsWithAll(ctx context.Context, arg GetChatRoomsWithAllParams) ([]GetChatRoomsWithAllRow, error)
+	GetChatRoomsWithCoverImage(ctx context.Context, arg GetChatRoomsWithCoverImageParams) ([]GetChatRoomsWithCoverImageRow, error)
 	GetChatRoomsWithOwner(ctx context.Context, arg GetChatRoomsWithOwnerParams) ([]GetChatRoomsWithOwnerRow, error)
 	GetEarlyLeavings(ctx context.Context, arg GetEarlyLeavingsParams) ([]EarlyLeaving, error)
 	GetEventTypes(ctx context.Context, arg GetEventTypesParams) ([]EventType, error)
 	GetEvents(ctx context.Context, arg GetEventsParams) ([]Event, error)
 	GetEventsWithAll(ctx context.Context, arg GetEventsWithAllParams) ([]GetEventsWithAllRow, error)
+	GetEventsWithLastEditUser(ctx context.Context, arg GetEventsWithLastEditUserParams) ([]GetEventsWithLastEditUserRow, error)
 	GetEventsWithOrganization(ctx context.Context, arg GetEventsWithOrganizationParams) ([]GetEventsWithOrganizationRow, error)
+	GetEventsWithPostUser(ctx context.Context, arg GetEventsWithPostUserParams) ([]GetEventsWithPostUserRow, error)
 	GetEventsWithSendOrganization(ctx context.Context, arg GetEventsWithSendOrganizationParams) ([]GetEventsWithSendOrganizationRow, error)
+	GetEventsWithType(ctx context.Context, arg GetEventsWithTypeParams) ([]GetEventsWithTypeRow, error)
 	GetFiles(ctx context.Context, arg GetFilesParams) ([]File, error)
 	GetFilesWithAttachableItem(ctx context.Context, arg GetFilesWithAttachableItemParams) ([]GetFilesWithAttachableItemRow, error)
-	GetGradesByOrganizationID(ctx context.Context, arg GetGradesByOrganizationIDParams) ([]Grade, error)
-	GetGradesByOrganizationIDWithOrganization(ctx context.Context, arg GetGradesByOrganizationIDWithOrganizationParams) ([]GetGradesByOrganizationIDWithOrganizationRow, error)
-	GetGroupsByOrganizationID(ctx context.Context, arg GetGroupsByOrganizationIDParams) ([]Group, error)
-	GetGroupsByOrganizationIDWithOrganization(ctx context.Context, arg GetGroupsByOrganizationIDWithOrganizationParams) ([]GetGroupsByOrganizationIDWithOrganizationRow, error)
+	GetGrades(ctx context.Context, arg GetGradesParams) ([]Grade, error)
+	GetGradesWithOrganization(ctx context.Context, arg GetGradesWithOrganizationParams) ([]GetGradesWithOrganizationRow, error)
+	GetGroups(ctx context.Context, arg GetGroupsParams) ([]Group, error)
+	GetGroupsWithOrganization(ctx context.Context, arg GetGroupsWithOrganizationParams) ([]GetGroupsWithOrganizationRow, error)
 	GetImages(ctx context.Context, arg GetImagesParams) ([]Image, error)
 	GetImagesWithAttachableItem(ctx context.Context, arg GetImagesWithAttachableItemParams) ([]GetImagesWithAttachableItemRow, error)
 	GetLabIoHistories(ctx context.Context, arg GetLabIoHistoriesParams) ([]LabIOHistory, error)
+	GetLabIoHistoriesWithMember(ctx context.Context, arg GetLabIoHistoriesWithMemberParams) ([]GetLabIoHistoriesWithMemberRow, error)
 	GetLateArrivals(ctx context.Context, arg GetLateArrivalsParams) ([]LateArrival, error)
 	GetMembers(ctx context.Context, arg GetMembersParams) ([]Member, error)
 	GetMembersOnChatRoomID(ctx context.Context, arg GetMembersOnChatRoomIDParams) ([]GetMembersOnChatRoomIDRow, error)
@@ -329,17 +324,22 @@ type Querier interface {
 	GetWorkPositions(ctx context.Context, arg GetWorkPositionsParams) ([]WorkPosition, error)
 	GetWorkPositionsByPermissionID(ctx context.Context, arg GetWorkPositionsByPermissionIDParams) ([]GetWorkPositionsByPermissionIDRow, error)
 	UpdateAttendStatus(ctx context.Context, arg UpdateAttendStatusParams) (AttendStatus, error)
-	UpdateAttendStatusKey(ctx context.Context, arg UpdateAttendStatusKeyParams) (AttendStatus, error)
+	UpdateAttendStatusByKey(ctx context.Context, arg UpdateAttendStatusByKeyParams) (AttendStatus, error)
 	UpdateAttendance(ctx context.Context, arg UpdateAttendanceParams) (Attendance, error)
 	UpdateAttendanceType(ctx context.Context, arg UpdateAttendanceTypeParams) (AttendanceType, error)
 	UpdateAttendanceTypeByKey(ctx context.Context, arg UpdateAttendanceTypeByKeyParams) (AttendanceType, error)
-	UpdateAttendanceTypeKey(ctx context.Context, arg UpdateAttendanceTypeKeyParams) (AttendanceType, error)
 	UpdateChatRoom(ctx context.Context, arg UpdateChatRoomParams) (ChatRoom, error)
 	UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event, error)
 	UpdateEventType(ctx context.Context, arg UpdateEventTypeParams) (EventType, error)
 	UpdateEventTypeByKey(ctx context.Context, arg UpdateEventTypeByKeyParams) (EventType, error)
-	UpdateEventTypeKey(ctx context.Context, arg UpdateEventTypeKeyParams) (EventType, error)
 	UpdateLabIoHistory(ctx context.Context, arg UpdateLabIoHistoryParams) (LabIOHistory, error)
+	UpdateMember(ctx context.Context, arg UpdateMemberParams) (Member, error)
+	UpdateMemberAttendStatus(ctx context.Context, arg UpdateMemberAttendStatusParams) (Member, error)
+	UpdateMemberGrade(ctx context.Context, arg UpdateMemberGradeParams) (Member, error)
+	UpdateMemberGroup(ctx context.Context, arg UpdateMemberGroupParams) (Member, error)
+	UpdateMemberLoginID(ctx context.Context, arg UpdateMemberLoginIDParams) (Member, error)
+	UpdateMemberPassword(ctx context.Context, arg UpdateMemberPasswordParams) (Member, error)
+	UpdateMemberRole(ctx context.Context, arg UpdateMemberRoleParams) (Member, error)
 	UpdateMessage(ctx context.Context, arg UpdateMessageParams) (Message, error)
 	UpdateOrganization(ctx context.Context, arg UpdateOrganizationParams) (Organization, error)
 	UpdatePermission(ctx context.Context, arg UpdatePermissionParams) (Permission, error)

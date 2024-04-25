@@ -20,8 +20,15 @@ type Absence struct {
 type AttachableItem struct {
 	TAttachableItemsPkey pgtype.Int8   `json:"t_attachable_items_pkey"`
 	AttachableItemID     uuid.UUID     `json:"attachable_item_id"`
+	Url                  string        `json:"url"`
 	Size                 pgtype.Float8 `json:"size"`
 	MimeTypeID           uuid.UUID     `json:"mime_type_id"`
+}
+
+type AttachedMessage struct {
+	TAttachedMessagesPkey pgtype.Int8 `json:"t_attached_messages_pkey"`
+	MessageID             uuid.UUID   `json:"message_id"`
+	AttachableItemID      uuid.UUID   `json:"attachable_item_id"`
 }
 
 type AttendStatus struct {

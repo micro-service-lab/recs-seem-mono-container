@@ -112,20 +112,31 @@ func (q *Queries) FindAttendanceTypeByKey(ctx context.Context, key string) (Atte
 
 const getAttendanceTypes = `-- name: GetAttendanceTypes :many
 SELECT m_attendance_types_pkey, attendance_type_id, name, key, color FROM m_attendance_types
+WHERE
+	CASE WHEN $3::boolean = true THEN m_attendance_types.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN name END ASC,
+	CASE WHEN $5::text = 'name' THEN name END ASC,
+	CASE WHEN $5::text = 'r_name' THEN name END DESC,
 	m_attendance_types_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
 type GetAttendanceTypesParams struct {
-	Limit       int32  `json:"limit"`
-	Offset      int32  `json:"offset"`
-	OrderMethod string `json:"order_method"`
+	Limit         int32  `json:"limit"`
+	Offset        int32  `json:"offset"`
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+	OrderMethod   string `json:"order_method"`
 }
 
 func (q *Queries) GetAttendanceTypes(ctx context.Context, arg GetAttendanceTypesParams) ([]AttendanceType, error) {
-	rows, err := q.db.Query(ctx, getAttendanceTypes, arg.Limit, arg.Offset, arg.OrderMethod)
+	rows, err := q.db.Query(ctx, getAttendanceTypes,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -151,17 +162,23 @@ func (q *Queries) GetAttendanceTypes(ctx context.Context, arg GetAttendanceTypes
 }
 
 const updateAttendanceType = `-- name: UpdateAttendanceType :one
-UPDATE m_attendance_types SET name = $2, color = $3 WHERE attendance_type_id = $1 RETURNING m_attendance_types_pkey, attendance_type_id, name, key, color
+UPDATE m_attendance_types SET name = $2, key = $3, color = $4 WHERE attendance_type_id = $1 RETURNING m_attendance_types_pkey, attendance_type_id, name, key, color
 `
 
 type UpdateAttendanceTypeParams struct {
 	AttendanceTypeID uuid.UUID `json:"attendance_type_id"`
 	Name             string    `json:"name"`
+	Key              string    `json:"key"`
 	Color            string    `json:"color"`
 }
 
 func (q *Queries) UpdateAttendanceType(ctx context.Context, arg UpdateAttendanceTypeParams) (AttendanceType, error) {
-	row := q.db.QueryRow(ctx, updateAttendanceType, arg.AttendanceTypeID, arg.Name, arg.Color)
+	row := q.db.QueryRow(ctx, updateAttendanceType,
+		arg.AttendanceTypeID,
+		arg.Name,
+		arg.Key,
+		arg.Color,
+	)
 	var i AttendanceType
 	err := row.Scan(
 		&i.MAttendanceTypesPkey,
@@ -174,39 +191,23 @@ func (q *Queries) UpdateAttendanceType(ctx context.Context, arg UpdateAttendance
 }
 
 const updateAttendanceTypeByKey = `-- name: UpdateAttendanceTypeByKey :one
-UPDATE m_attendance_types SET name = $2, color = $3 WHERE key = $1 RETURNING m_attendance_types_pkey, attendance_type_id, name, key, color
+UPDATE m_attendance_types SET name = $2, key = $3, color = $4 WHERE key = $1 RETURNING m_attendance_types_pkey, attendance_type_id, name, key, color
 `
 
 type UpdateAttendanceTypeByKeyParams struct {
 	Key   string `json:"key"`
 	Name  string `json:"name"`
+	Key_2 string `json:"key_2"`
 	Color string `json:"color"`
 }
 
 func (q *Queries) UpdateAttendanceTypeByKey(ctx context.Context, arg UpdateAttendanceTypeByKeyParams) (AttendanceType, error) {
-	row := q.db.QueryRow(ctx, updateAttendanceTypeByKey, arg.Key, arg.Name, arg.Color)
-	var i AttendanceType
-	err := row.Scan(
-		&i.MAttendanceTypesPkey,
-		&i.AttendanceTypeID,
-		&i.Name,
-		&i.Key,
-		&i.Color,
+	row := q.db.QueryRow(ctx, updateAttendanceTypeByKey,
+		arg.Key,
+		arg.Name,
+		arg.Key_2,
+		arg.Color,
 	)
-	return i, err
-}
-
-const updateAttendanceTypeKey = `-- name: UpdateAttendanceTypeKey :one
-UPDATE m_attendance_types SET key = $2 WHERE attendance_type_id = $1 RETURNING m_attendance_types_pkey, attendance_type_id, name, key, color
-`
-
-type UpdateAttendanceTypeKeyParams struct {
-	AttendanceTypeID uuid.UUID `json:"attendance_type_id"`
-	Key              string    `json:"key"`
-}
-
-func (q *Queries) UpdateAttendanceTypeKey(ctx context.Context, arg UpdateAttendanceTypeKeyParams) (AttendanceType, error) {
-	row := q.db.QueryRow(ctx, updateAttendanceTypeKey, arg.AttendanceTypeID, arg.Key)
 	var i AttendanceType
 	err := row.Scan(
 		&i.MAttendanceTypesPkey,

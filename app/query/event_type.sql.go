@@ -133,17 +133,23 @@ func (q *Queries) GetEventTypes(ctx context.Context, arg GetEventTypesParams) ([
 }
 
 const updateEventType = `-- name: UpdateEventType :one
-UPDATE m_event_types SET name = $2, color = $3 WHERE event_type_id = $1 RETURNING m_event_types_pkey, event_type_id, name, key, color
+UPDATE m_event_types SET name = $2, key = $3, color = $4 WHERE event_type_id = $1 RETURNING m_event_types_pkey, event_type_id, name, key, color
 `
 
 type UpdateEventTypeParams struct {
 	EventTypeID uuid.UUID `json:"event_type_id"`
 	Name        string    `json:"name"`
+	Key         string    `json:"key"`
 	Color       string    `json:"color"`
 }
 
 func (q *Queries) UpdateEventType(ctx context.Context, arg UpdateEventTypeParams) (EventType, error) {
-	row := q.db.QueryRow(ctx, updateEventType, arg.EventTypeID, arg.Name, arg.Color)
+	row := q.db.QueryRow(ctx, updateEventType,
+		arg.EventTypeID,
+		arg.Name,
+		arg.Key,
+		arg.Color,
+	)
 	var i EventType
 	err := row.Scan(
 		&i.MEventTypesPkey,
@@ -156,39 +162,23 @@ func (q *Queries) UpdateEventType(ctx context.Context, arg UpdateEventTypeParams
 }
 
 const updateEventTypeByKey = `-- name: UpdateEventTypeByKey :one
-UPDATE m_event_types SET name = $2, color = $3 WHERE key = $1 RETURNING m_event_types_pkey, event_type_id, name, key, color
+UPDATE m_event_types SET name = $2, key = $3, color = $4 WHERE key = $1 RETURNING m_event_types_pkey, event_type_id, name, key, color
 `
 
 type UpdateEventTypeByKeyParams struct {
 	Key   string `json:"key"`
 	Name  string `json:"name"`
+	Key_2 string `json:"key_2"`
 	Color string `json:"color"`
 }
 
 func (q *Queries) UpdateEventTypeByKey(ctx context.Context, arg UpdateEventTypeByKeyParams) (EventType, error) {
-	row := q.db.QueryRow(ctx, updateEventTypeByKey, arg.Key, arg.Name, arg.Color)
-	var i EventType
-	err := row.Scan(
-		&i.MEventTypesPkey,
-		&i.EventTypeID,
-		&i.Name,
-		&i.Key,
-		&i.Color,
+	row := q.db.QueryRow(ctx, updateEventTypeByKey,
+		arg.Key,
+		arg.Name,
+		arg.Key_2,
+		arg.Color,
 	)
-	return i, err
-}
-
-const updateEventTypeKey = `-- name: UpdateEventTypeKey :one
-UPDATE m_event_types SET key = $2 WHERE event_type_id = $1 RETURNING m_event_types_pkey, event_type_id, name, key, color
-`
-
-type UpdateEventTypeKeyParams struct {
-	EventTypeID uuid.UUID `json:"event_type_id"`
-	Key         string    `json:"key"`
-}
-
-func (q *Queries) UpdateEventTypeKey(ctx context.Context, arg UpdateEventTypeKeyParams) (EventType, error) {
-	row := q.db.QueryRow(ctx, updateEventTypeKey, arg.EventTypeID, arg.Key)
 	var i EventType
 	err := row.Scan(
 		&i.MEventTypesPkey,

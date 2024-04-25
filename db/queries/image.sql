@@ -11,8 +11,9 @@ DELETE FROM t_images WHERE image_id = $1;
 SELECT * FROM t_images WHERE image_id = $1;
 
 -- name: FindImageByIDWithAttachableItem :one
-SELECT sqlc.embed(t_images), sqlc.embed(t_attachable_items) FROM t_images
+SELECT sqlc.embed(t_images), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_images
 INNER JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+INNER JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE image_id = $1;
 
 -- name: GetImages :many
@@ -22,8 +23,9 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetImagesWithAttachableItem :many
-SELECT sqlc.embed(t_images), sqlc.embed(t_attachable_items) FROM t_images
+SELECT sqlc.embed(t_images), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_images
 INNER JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+INNER JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
 	t_images_pkey DESC
 LIMIT $1 OFFSET $2;

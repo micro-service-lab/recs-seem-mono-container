@@ -58,4 +58,5 @@ sql:
         m_chat_room_belonging: ChatRoomBelonging
         m_record_type: RecordType
         t_record: Record
+        t_attached_message: AttachedMessage
 

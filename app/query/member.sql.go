@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countMembers = `-- name: CountMembers :one
@@ -24,20 +25,21 @@ func (q *Queries) CountMembers(ctx context.Context) (int64, error) {
 }
 
 const createMember = `-- name: CreateMember :one
-INSERT INTO m_members (login_id, password, email, name, attend_status_id, grade_id, group_id, personal_organization_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+INSERT INTO m_members (login_id, password, email, name, attend_status_id, grade_id, group_id, role_id, personal_organization_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `
 
 type CreateMemberParams struct {
-	LoginID                string    `json:"login_id"`
-	Password               string    `json:"password"`
-	Email                  string    `json:"email"`
-	Name                   string    `json:"name"`
-	AttendStatusID         uuid.UUID `json:"attend_status_id"`
-	GradeID                uuid.UUID `json:"grade_id"`
-	GroupID                uuid.UUID `json:"group_id"`
-	PersonalOrganizationID uuid.UUID `json:"personal_organization_id"`
-	CreatedAt              time.Time `json:"created_at"`
-	UpdatedAt              time.Time `json:"updated_at"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
 }
 
 func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) (Member, error) {
@@ -49,6 +51,7 @@ func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) (Mem
 		arg.AttendStatusID,
 		arg.GradeID,
 		arg.GroupID,
+		arg.RoleID,
 		arg.PersonalOrganizationID,
 		arg.CreatedAt,
 		arg.UpdatedAt,
@@ -74,16 +77,17 @@ func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) (Mem
 }
 
 type CreateMembersParams struct {
-	LoginID                string    `json:"login_id"`
-	Password               string    `json:"password"`
-	Email                  string    `json:"email"`
-	Name                   string    `json:"name"`
-	AttendStatusID         uuid.UUID `json:"attend_status_id"`
-	GradeID                uuid.UUID `json:"grade_id"`
-	GroupID                uuid.UUID `json:"group_id"`
-	PersonalOrganizationID uuid.UUID `json:"personal_organization_id"`
-	CreatedAt              time.Time `json:"created_at"`
-	UpdatedAt              time.Time `json:"updated_at"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
 }
 
 const deleteMember = `-- name: DeleteMember :exec
@@ -154,6 +158,58 @@ func (q *Queries) FindMemberByIDWithAttendStatus(ctx context.Context, memberID u
 		&i.AttendStatus.AttendStatusID,
 		&i.AttendStatus.Name,
 		&i.AttendStatus.Key,
+	)
+	return i, err
+}
+
+const findMemberByIDWithDetailRole = `-- name: FindMemberByIDWithDetailRole :one
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at, m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id FROM m_members
+LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
+LEFT JOIN m_role_associations ON m_members.role_id = m_role_associations.role_id
+LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
+WHERE member_id = $1
+`
+
+type FindMemberByIDWithDetailRoleRow struct {
+	Member          Member          `json:"member"`
+	Role            Role            `json:"role"`
+	RoleAssociation RoleAssociation `json:"role_association"`
+	Policy          Policy          `json:"policy"`
+}
+
+func (q *Queries) FindMemberByIDWithDetailRole(ctx context.Context, memberID uuid.UUID) (FindMemberByIDWithDetailRoleRow, error) {
+	row := q.db.QueryRow(ctx, findMemberByIDWithDetailRole, memberID)
+	var i FindMemberByIDWithDetailRoleRow
+	err := row.Scan(
+		&i.Member.MMembersPkey,
+		&i.Member.MemberID,
+		&i.Member.LoginID,
+		&i.Member.Password,
+		&i.Member.Email,
+		&i.Member.Name,
+		&i.Member.AttendStatusID,
+		&i.Member.ProfileImageID,
+		&i.Member.GradeID,
+		&i.Member.GroupID,
+		&i.Member.PersonalOrganizationID,
+		&i.Member.RoleID,
+		&i.Member.CreatedAt,
+		&i.Member.UpdatedAt,
+		&i.Role.MRolesPkey,
+		&i.Role.RoleID,
+		&i.Role.Name,
+		&i.Role.Description,
+		&i.Role.CreatedAt,
+		&i.Role.UpdatedAt,
+		&i.RoleAssociation.MRoleAssociationsPkey,
+		&i.RoleAssociation.RoleID,
+		&i.RoleAssociation.PolicyID,
+		&i.Policy.MPoliciesPkey,
+		&i.Policy.PolicyID,
+		&i.Policy.Name,
+		&i.Policy.Description,
+		&i.Policy.Key,
+		&i.Policy.PolicyCategoryID,
 	)
 	return i, err
 }
@@ -342,18 +398,33 @@ func (q *Queries) FindMemberByLoginID(ctx context.Context, loginID string) (Memb
 
 const getMembers = `-- name: GetMembers :many
 SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members
+WHERE
+	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($6::uuid[])) > 0 ELSE TRUE END
 ORDER BY
 	m_members_pkey DESC
 LIMIT $1 OFFSET $2
 `
 
 type GetMembersParams struct {
-	Limit  int32 `json:"limit"`
-	Offset int32 `json:"offset"`
+	Limit          int32       `json:"limit"`
+	Offset         int32       `json:"offset"`
+	WhereLikeName  bool        `json:"where_like_name"`
+	SearchName     string      `json:"search_name"`
+	WhereHasPolicy bool        `json:"where_has_policy"`
+	HasPolicyIds   []uuid.UUID `json:"has_policy_ids"`
 }
 
 func (q *Queries) GetMembers(ctx context.Context, arg GetMembersParams) ([]Member, error) {
-	rows, err := q.db.Query(ctx, getMembers, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, getMembers,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -678,4 +749,234 @@ func (q *Queries) GetMembersWithRole(ctx context.Context, arg GetMembersWithRole
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateMember = `-- name: UpdateMember :one
+UPDATE m_members SET email = $2, name = $3, updated_at = $4 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+`
+
+type UpdateMemberParams struct {
+	MemberID  uuid.UUID `json:"member_id"`
+	Email     string    `json:"email"`
+	Name      string    `json:"name"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (q *Queries) UpdateMember(ctx context.Context, arg UpdateMemberParams) (Member, error) {
+	row := q.db.QueryRow(ctx, updateMember,
+		arg.MemberID,
+		arg.Email,
+		arg.Name,
+		arg.UpdatedAt,
+	)
+	var i Member
+	err := row.Scan(
+		&i.MMembersPkey,
+		&i.MemberID,
+		&i.LoginID,
+		&i.Password,
+		&i.Email,
+		&i.Name,
+		&i.AttendStatusID,
+		&i.ProfileImageID,
+		&i.GradeID,
+		&i.GroupID,
+		&i.PersonalOrganizationID,
+		&i.RoleID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateMemberAttendStatus = `-- name: UpdateMemberAttendStatus :one
+UPDATE m_members SET attend_status_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+`
+
+type UpdateMemberAttendStatusParams struct {
+	MemberID       uuid.UUID `json:"member_id"`
+	AttendStatusID uuid.UUID `json:"attend_status_id"`
+	UpdatedAt      time.Time `json:"updated_at"`
+}
+
+func (q *Queries) UpdateMemberAttendStatus(ctx context.Context, arg UpdateMemberAttendStatusParams) (Member, error) {
+	row := q.db.QueryRow(ctx, updateMemberAttendStatus, arg.MemberID, arg.AttendStatusID, arg.UpdatedAt)
+	var i Member
+	err := row.Scan(
+		&i.MMembersPkey,
+		&i.MemberID,
+		&i.LoginID,
+		&i.Password,
+		&i.Email,
+		&i.Name,
+		&i.AttendStatusID,
+		&i.ProfileImageID,
+		&i.GradeID,
+		&i.GroupID,
+		&i.PersonalOrganizationID,
+		&i.RoleID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateMemberGrade = `-- name: UpdateMemberGrade :one
+UPDATE m_members SET grade_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+`
+
+type UpdateMemberGradeParams struct {
+	MemberID  uuid.UUID `json:"member_id"`
+	GradeID   uuid.UUID `json:"grade_id"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (q *Queries) UpdateMemberGrade(ctx context.Context, arg UpdateMemberGradeParams) (Member, error) {
+	row := q.db.QueryRow(ctx, updateMemberGrade, arg.MemberID, arg.GradeID, arg.UpdatedAt)
+	var i Member
+	err := row.Scan(
+		&i.MMembersPkey,
+		&i.MemberID,
+		&i.LoginID,
+		&i.Password,
+		&i.Email,
+		&i.Name,
+		&i.AttendStatusID,
+		&i.ProfileImageID,
+		&i.GradeID,
+		&i.GroupID,
+		&i.PersonalOrganizationID,
+		&i.RoleID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateMemberGroup = `-- name: UpdateMemberGroup :one
+UPDATE m_members SET group_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+`
+
+type UpdateMemberGroupParams struct {
+	MemberID  uuid.UUID `json:"member_id"`
+	GroupID   uuid.UUID `json:"group_id"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (q *Queries) UpdateMemberGroup(ctx context.Context, arg UpdateMemberGroupParams) (Member, error) {
+	row := q.db.QueryRow(ctx, updateMemberGroup, arg.MemberID, arg.GroupID, arg.UpdatedAt)
+	var i Member
+	err := row.Scan(
+		&i.MMembersPkey,
+		&i.MemberID,
+		&i.LoginID,
+		&i.Password,
+		&i.Email,
+		&i.Name,
+		&i.AttendStatusID,
+		&i.ProfileImageID,
+		&i.GradeID,
+		&i.GroupID,
+		&i.PersonalOrganizationID,
+		&i.RoleID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateMemberLoginID = `-- name: UpdateMemberLoginID :one
+UPDATE m_members SET login_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+`
+
+type UpdateMemberLoginIDParams struct {
+	MemberID  uuid.UUID `json:"member_id"`
+	LoginID   string    `json:"login_id"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (q *Queries) UpdateMemberLoginID(ctx context.Context, arg UpdateMemberLoginIDParams) (Member, error) {
+	row := q.db.QueryRow(ctx, updateMemberLoginID, arg.MemberID, arg.LoginID, arg.UpdatedAt)
+	var i Member
+	err := row.Scan(
+		&i.MMembersPkey,
+		&i.MemberID,
+		&i.LoginID,
+		&i.Password,
+		&i.Email,
+		&i.Name,
+		&i.AttendStatusID,
+		&i.ProfileImageID,
+		&i.GradeID,
+		&i.GroupID,
+		&i.PersonalOrganizationID,
+		&i.RoleID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateMemberPassword = `-- name: UpdateMemberPassword :one
+UPDATE m_members SET password = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+`
+
+type UpdateMemberPasswordParams struct {
+	MemberID  uuid.UUID `json:"member_id"`
+	Password  string    `json:"password"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func (q *Queries) UpdateMemberPassword(ctx context.Context, arg UpdateMemberPasswordParams) (Member, error) {
+	row := q.db.QueryRow(ctx, updateMemberPassword, arg.MemberID, arg.Password, arg.UpdatedAt)
+	var i Member
+	err := row.Scan(
+		&i.MMembersPkey,
+		&i.MemberID,
+		&i.LoginID,
+		&i.Password,
+		&i.Email,
+		&i.Name,
+		&i.AttendStatusID,
+		&i.ProfileImageID,
+		&i.GradeID,
+		&i.GroupID,
+		&i.PersonalOrganizationID,
+		&i.RoleID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateMemberRole = `-- name: UpdateMemberRole :one
+UPDATE m_members SET role_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+`
+
+type UpdateMemberRoleParams struct {
+	MemberID  uuid.UUID   `json:"member_id"`
+	RoleID    pgtype.UUID `json:"role_id"`
+	UpdatedAt time.Time   `json:"updated_at"`
+}
+
+func (q *Queries) UpdateMemberRole(ctx context.Context, arg UpdateMemberRoleParams) (Member, error) {
+	row := q.db.QueryRow(ctx, updateMemberRole, arg.MemberID, arg.RoleID, arg.UpdatedAt)
+	var i Member
+	err := row.Scan(
+		&i.MMembersPkey,
+		&i.MemberID,
+		&i.LoginID,
+		&i.Password,
+		&i.Email,
+		&i.Name,
+		&i.AttendStatusID,
+		&i.ProfileImageID,
+		&i.GradeID,
+		&i.GroupID,
+		&i.PersonalOrganizationID,
+		&i.RoleID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }

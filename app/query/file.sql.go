@@ -54,14 +54,16 @@ func (q *Queries) FindFileByID(ctx context.Context, fileID uuid.UUID) (File, err
 }
 
 const findFileByIDWithAttachableItem = `-- name: FindFileByIDWithAttachableItem :one
-SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.size, t_attachable_items.mime_type_id FROM t_files
+SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_files
 INNER JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
+INNER JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE file_id = $1
 `
 
 type FindFileByIDWithAttachableItemRow struct {
 	File           File           `json:"file"`
 	AttachableItem AttachableItem `json:"attachable_item"`
+	MimeType       MimeType       `json:"mime_type"`
 }
 
 func (q *Queries) FindFileByIDWithAttachableItem(ctx context.Context, fileID uuid.UUID) (FindFileByIDWithAttachableItemRow, error) {
@@ -73,8 +75,13 @@ func (q *Queries) FindFileByIDWithAttachableItem(ctx context.Context, fileID uui
 		&i.File.AttachableItemID,
 		&i.AttachableItem.TAttachableItemsPkey,
 		&i.AttachableItem.AttachableItemID,
+		&i.AttachableItem.Url,
 		&i.AttachableItem.Size,
 		&i.AttachableItem.MimeTypeID,
+		&i.MimeType.MMimeTypesPkey,
+		&i.MimeType.MimeTypeID,
+		&i.MimeType.Name,
+		&i.MimeType.Key,
 	)
 	return i, err
 }
@@ -112,8 +119,9 @@ func (q *Queries) GetFiles(ctx context.Context, arg GetFilesParams) ([]File, err
 }
 
 const getFilesWithAttachableItem = `-- name: GetFilesWithAttachableItem :many
-SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.size, t_attachable_items.mime_type_id FROM t_files
+SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_files
 INNER JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
+INNER JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
 	t_files_pkey DESC
 LIMIT $1 OFFSET $2
@@ -127,6 +135,7 @@ type GetFilesWithAttachableItemParams struct {
 type GetFilesWithAttachableItemRow struct {
 	File           File           `json:"file"`
 	AttachableItem AttachableItem `json:"attachable_item"`
+	MimeType       MimeType       `json:"mime_type"`
 }
 
 func (q *Queries) GetFilesWithAttachableItem(ctx context.Context, arg GetFilesWithAttachableItemParams) ([]GetFilesWithAttachableItemRow, error) {
@@ -144,8 +153,13 @@ func (q *Queries) GetFilesWithAttachableItem(ctx context.Context, arg GetFilesWi
 			&i.File.AttachableItemID,
 			&i.AttachableItem.TAttachableItemsPkey,
 			&i.AttachableItem.AttachableItemID,
+			&i.AttachableItem.Url,
 			&i.AttachableItem.Size,
 			&i.AttachableItem.MimeTypeID,
+			&i.MimeType.MMimeTypesPkey,
+			&i.MimeType.MimeTypeID,
+			&i.MimeType.Name,
+			&i.MimeType.Key,
 		); err != nil {
 			return nil, err
 		}

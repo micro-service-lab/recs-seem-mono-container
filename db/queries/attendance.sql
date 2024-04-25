@@ -18,22 +18,50 @@ SELECT sqlc.embed(t_attendances), sqlc.embed(m_members) FROM t_attendances
 INNER JOIN m_members ON t_attendances.member_id = m_members.member_id
 WHERE attendance_id = $1;
 
+-- name: FindAttendanceByIDWithAttendanceType :one
+SELECT sqlc.embed(t_attendances), sqlc.embed(m_attendance_types) FROM t_attendances
+INNER JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+WHERE attendance_id = $1;
+
+-- name: FindAttendanceByIDWithSendOrganization :one
+SELECT sqlc.embed(t_attendances), sqlc.embed(m_organizations) FROM t_attendances
+INNER JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+WHERE attendance_id = $1;
+
+-- name: FindAttendanceByIDWithDetails :one
+SELECT sqlc.embed(t_attendances), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
+LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
+LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
+LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
+WHERE t_attendances.attendance_id = $1;
+
+-- name: FindAttendanceByIDWithAll :one
+SELECT sqlc.embed(t_attendances), sqlc.embed(m_members), sqlc.embed(m_attendance_types), sqlc.embed(m_organizations), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
+INNER JOIN m_members ON t_attendances.member_id = m_members.member_id
+INNER JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+INNER JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
+LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
+LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
+WHERE t_attendances.attendance_id = $1;
+
 -- name: GetAttendances :many
 SELECT * FROM t_attendances
 WHERE
-	CASE WHEN @where_in_attendance_type::boolean = true THEN attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
+	CASE WHEN @where_in_attendance_type::boolean = true THEN t_attendances.attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
 AND
-	CASE WHEN @where_member::boolean = true THEN member_id = @member_id ELSE TRUE END
+	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
 AND
-	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
-	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN date END ASC,
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey DESC
 LIMIT $1 OFFSET $2;
 
@@ -41,17 +69,20 @@ LIMIT $1 OFFSET $2;
 SELECT sqlc.embed(t_attendances), sqlc.embed(m_members) FROM t_attendances
 INNER JOIN m_members ON t_attendances.member_id = m_members.member_id
 WHERE
-	CASE WHEN @where_in_attendance_type::boolean = true THEN attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
+	CASE WHEN @where_in_attendance_type::boolean = true THEN t_attendances.attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN date <= @later_date ELSE TRUE END
+	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
 AND
-	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
 AND
-	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN date END ASC,
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey DESC
 LIMIT $1 OFFSET $2;
 
@@ -59,17 +90,41 @@ LIMIT $1 OFFSET $2;
 SELECT sqlc.embed(t_attendances), sqlc.embed(m_attendance_types) FROM t_attendances
 INNER JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE
-	CASE WHEN @where_in_member::boolean = true THEN member_id = ANY(@in_member) ELSE TRUE END
+	CASE WHEN @where_in_attendance_type::boolean = true THEN t_attendances.attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN date <= @later_date ELSE TRUE END
+	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
 AND
-	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
 AND
-	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN date END ASC,
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
+	t_attendances_pkey DESC
+LIMIT $1 OFFSET $2;
+
+-- name: GetAttendanceWithSendOrganization :many
+SELECT sqlc.embed(t_attendances), sqlc.embed(m_organizations) FROM t_attendances
+INNER JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+WHERE
+	CASE WHEN @where_in_attendance_type::boolean = true THEN t_attendances.attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
+AND
+	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+AND
+	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
+ORDER BY
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey DESC
 LIMIT $1 OFFSET $2;
 
@@ -79,53 +134,60 @@ LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.att
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 WHERE
-	CASE WHEN @where_in_attendance_type::boolean = true THEN attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
+	CASE WHEN @where_in_attendance_type::boolean = true THEN t_attendances.attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
 AND
-	CASE WHEN @where_member::boolean = true THEN member_id = @member_id ELSE TRUE END
+	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
 AND
-	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
-	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN date END ASC,
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey DESC
 LIMIT $1 OFFSET $2;
 
 -- name: GetAttendanceWithAll :many
-SELECT sqlc.embed(t_attendances), sqlc.embed(m_members), sqlc.embed(m_attendance_types), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
+SELECT sqlc.embed(t_attendances), sqlc.embed(m_members), sqlc.embed(m_attendance_types), sqlc.embed(m_organizations), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 INNER JOIN m_members ON t_attendances.member_id = m_members.member_id
 INNER JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+INNER JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE
-	CASE WHEN @where_earlier_date::boolean = true THEN date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_in_attendance_type::boolean = true THEN t_attendances.attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN date <= @later_date ELSE TRUE END
+	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
 AND
-	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END
+	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+AND
+	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
+AND
+	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN date END ASC,
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey DESC
 LIMIT $1 OFFSET $2;
 
 -- name: CountAttendances :one
 SELECT COUNT(*) FROM t_attendances
 WHERE
-	CASE WHEN @where_in_attendance_type::boolean = true THEN attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
+	CASE WHEN @where_in_attendance_type::boolean = true THEN t_attendances.attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
 AND
-	CASE WHEN @where_member::boolean = true THEN member_id = @member_id ELSE TRUE END
+	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
 AND
-	CASE WHEN @where_mail_send_flag::boolean = true THEN mail_send_flag = @mail_send_flag ELSE TRUE END
+	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
-	CASE WHEN @where_send_organization::boolean = true THEN send_organization_id = @send_organization_id ELSE TRUE END;
+	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END;

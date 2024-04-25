@@ -7,7 +7,8 @@
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | t_attachable_items_pkey | bigint | nextval('t_attachable_items_t_attachable_items_pkey_seq'::regclass) | false |  |  |  |
-| attachable_item_id | uuid | uuid_generate_v4() | false | [public.t_images](public.t_images.md) [public.t_files](public.t_files.md) |  |  |
+| attachable_item_id | uuid | uuid_generate_v4() | false | [public.t_images](public.t_images.md) [public.t_files](public.t_files.md) [public.t_attached_messages](public.t_attached_messages.md) |  |  |
+| url | text |  | false |  |  |  |
 | size | double precision |  | true |  |  |  |
 | mime_type_id | uuid |  | false |  | [public.m_mime_types](public.m_mime_types.md) |  |
 

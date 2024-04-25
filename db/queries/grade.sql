@@ -7,6 +7,9 @@ INSERT INTO m_grades (key, organization_id) VALUES ($1, $2) RETURNING *;
 -- name: DeleteGrade :exec
 DELETE FROM m_grades WHERE grade_id = $1;
 
+-- name: DeleteGradeByKey :exec
+DELETE FROM m_grades WHERE key = $1;
+
 -- name: FindGradeByID :one
 SELECT * FROM m_grades WHERE grade_id = $1;
 
@@ -23,21 +26,20 @@ SELECT sqlc.embed(m_grades), sqlc.embed(m_organizations) FROM m_grades
 INNER JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE key = $1;
 
--- name: GetGradesByOrganizationID :many
-SELECT * FROM m_grades WHERE organization_id = $1
+-- name: GetGrades :many
+SELECT * FROM m_grades
 ORDER BY
 	m_grades_pkey DESC
-LIMIT $2 OFFSET $3;
+LIMIT $1 OFFSET $2;
 
--- name: GetGradesByOrganizationIDWithOrganization :many
+-- name: GetGradesWithOrganization :many
 SELECT sqlc.embed(m_grades), sqlc.embed(m_organizations) FROM m_grades
 INNER JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
-WHERE m_grades.organization_id = $1
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_grades.name END ASC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
 	m_grades_pkey DESC
-LIMIT $2 OFFSET $3;
+LIMIT $1 OFFSET $2;
 
--- name: CountGradesByOrganizationID :one
-SELECT COUNT(*) FROM m_grades WHERE organization_id = $1;
+-- name: CountGrades :one
+SELECT COUNT(*) FROM m_grades;
 

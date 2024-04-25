@@ -63,6 +63,7 @@ func (r *iteratorForCreateAttachableItems) Next() bool {
 
 func (r iteratorForCreateAttachableItems) Values() ([]interface{}, error) {
 	return []interface{}{
+		r.rows[0].Url,
 		r.rows[0].Size,
 		r.rows[0].MimeTypeID,
 	}, nil
@@ -73,7 +74,40 @@ func (r iteratorForCreateAttachableItems) Err() error {
 }
 
 func (q *Queries) CreateAttachableItems(ctx context.Context, arg []CreateAttachableItemsParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"t_attachable_items"}, []string{"size", "mime_type_id"}, &iteratorForCreateAttachableItems{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"t_attachable_items"}, []string{"url", "size", "mime_type_id"}, &iteratorForCreateAttachableItems{rows: arg})
+}
+
+// iteratorForCreateAttachedMessages implements pgx.CopyFromSource.
+type iteratorForCreateAttachedMessages struct {
+	rows                 []CreateAttachedMessagesParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateAttachedMessages) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateAttachedMessages) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].MessageID,
+		r.rows[0].AttachableItemID,
+	}, nil
+}
+
+func (r iteratorForCreateAttachedMessages) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateAttachedMessages(ctx context.Context, arg []CreateAttachedMessagesParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_attached_messages"}, []string{"message_id", "attachable_item_id"}, &iteratorForCreateAttachedMessages{rows: arg})
 }
 
 // iteratorForCreateAttendStatuses implements pgx.CopyFromSource.
@@ -589,6 +623,7 @@ func (r iteratorForCreateMembers) Values() ([]interface{}, error) {
 		r.rows[0].AttendStatusID,
 		r.rows[0].GradeID,
 		r.rows[0].GroupID,
+		r.rows[0].RoleID,
 		r.rows[0].PersonalOrganizationID,
 		r.rows[0].CreatedAt,
 		r.rows[0].UpdatedAt,
@@ -600,7 +635,7 @@ func (r iteratorForCreateMembers) Err() error {
 }
 
 func (q *Queries) CreateMembers(ctx context.Context, arg []CreateMembersParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"m_members"}, []string{"login_id", "password", "email", "name", "attend_status_id", "grade_id", "group_id", "personal_organization_id", "created_at", "updated_at"}, &iteratorForCreateMembers{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"m_members"}, []string{"login_id", "password", "email", "name", "attend_status_id", "grade_id", "group_id", "role_id", "personal_organization_id", "created_at", "updated_at"}, &iteratorForCreateMembers{rows: arg})
 }
 
 // iteratorForCreateMessages implements pgx.CopyFromSource.
@@ -807,20 +842,6 @@ func (r iteratorForCreatePermissions) Err() error {
 	return nil
 }
 
-// CREATE TABLE m_permissions (
-//
-//		m_permissions_pkey BIGSERIAL,
-//	    permission_id UUID NOT NULL DEFAULT uuid_generate_v4(),
-//	    name VARCHAR(255) NOT NULL,
-//	    description TEXT NOT NULL,
-//		key VARCHAR(255) NOT NULL,
-//		permission_category_id UUID NOT NULL
-//
-// );
-// ALTER TABLE m_permissions ADD CONSTRAINT m_permissions_pkey PRIMARY KEY (m_permissions_pkey);
-// ALTER TABLE m_permissions ADD CONSTRAINT fk_m_permissions_permission_category_id FOREIGN KEY (permission_category_id) REFERENCES m_permission_categories(permission_category_id) ON DELETE RESTRICT ON UPDATE RESTRICT;
-// CREATE UNIQUE INDEX idx_m_permissions_id ON m_permissions(permission_id);
-// CREATE UNIQUE INDEX idx_m_permissions_key ON m_permissions(key);
 func (q *Queries) CreatePermissions(ctx context.Context, arg []CreatePermissionsParams) (int64, error) {
 	return q.db.CopyFrom(ctx, []string{"m_permissions"}, []string{"name", "description", "key", "permission_category_id"}, &iteratorForCreatePermissions{rows: arg})
 }
@@ -1029,26 +1050,6 @@ func (r iteratorForCreateRecords) Err() error {
 	return nil
 }
 
-// CREATE TABLE t_records (
-//
-//		t_records_pkey BIGSERIAL,
-//	    record_id UUID NOT NULL DEFAULT uuid_generate_v4(),
-//		record_type_id UUID NOT NULL,
-//		title VARCHAR(255) NOT NULL,
-//		body TEXT,
-//		organization_id UUID,
-//		posted_by UUID,
-//		last_edited_by UUID,
-//		posted_at TIMESTAMPTZ NOT NULL,
-//		last_edited_at TIMESTAMPTZ NOT NULL
-//
-// );
-// ALTER TABLE t_records ADD CONSTRAINT t_records_pkey PRIMARY KEY (t_records_pkey);
-// ALTER TABLE t_records ADD CONSTRAINT fk_t_records_record_type_id FOREIGN KEY (record_type_id) REFERENCES m_record_types(record_type_id) ON DELETE RESTRICT ON UPDATE RESTRICT;
-// ALTER TABLE t_records ADD CONSTRAINT fk_t_records_organization_id FOREIGN KEY (organization_id) REFERENCES m_organizations(organization_id) ON DELETE SET NULL ON UPDATE SET NULL;
-// ALTER TABLE t_records ADD CONSTRAINT fk_t_records_posted_by FOREIGN KEY (posted_by) REFERENCES m_members(member_id) ON DELETE SET NULL ON UPDATE SET NULL;
-// ALTER TABLE t_records ADD CONSTRAINT fk_t_records_last_edited_by FOREIGN KEY (last_edited_by) REFERENCES m_members(member_id) ON DELETE SET NULL ON UPDATE SET NULL;
-// CREATE UNIQUE INDEX idx_t_records_id ON t_records(record_id);
 func (q *Queries) CreateRecords(ctx context.Context, arg []CreateRecordsParams) (int64, error) {
 	return q.db.CopyFrom(ctx, []string{"t_records"}, []string{"record_type_id", "title", "body", "organization_id", "posted_by", "last_edited_by", "posted_at", "last_edited_at"}, &iteratorForCreateRecords{rows: arg})
 }

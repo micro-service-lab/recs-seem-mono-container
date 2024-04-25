@@ -11,12 +11,12 @@ import (
 	"github.com/google/uuid"
 )
 
-const countGradesByOrganizationID = `-- name: CountGradesByOrganizationID :one
-SELECT COUNT(*) FROM m_grades WHERE organization_id = $1
+const countGrades = `-- name: CountGrades :one
+SELECT COUNT(*) FROM m_grades
 `
 
-func (q *Queries) CountGradesByOrganizationID(ctx context.Context, organizationID uuid.UUID) (int64, error) {
-	row := q.db.QueryRow(ctx, countGradesByOrganizationID, organizationID)
+func (q *Queries) CountGrades(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countGrades)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -54,6 +54,15 @@ DELETE FROM m_grades WHERE grade_id = $1
 
 func (q *Queries) DeleteGrade(ctx context.Context, gradeID uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteGrade, gradeID)
+	return err
+}
+
+const deleteGradeByKey = `-- name: DeleteGradeByKey :exec
+DELETE FROM m_grades WHERE key = $1
+`
+
+func (q *Queries) DeleteGradeByKey(ctx context.Context, key string) error {
+	_, err := q.db.Exec(ctx, deleteGradeByKey, key)
 	return err
 }
 
@@ -151,21 +160,20 @@ func (q *Queries) FindGradeByKeyWithOrganization(ctx context.Context, key string
 	return i, err
 }
 
-const getGradesByOrganizationID = `-- name: GetGradesByOrganizationID :many
-SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE organization_id = $1
+const getGrades = `-- name: GetGrades :many
+SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades
 ORDER BY
 	m_grades_pkey DESC
-LIMIT $2 OFFSET $3
+LIMIT $1 OFFSET $2
 `
 
-type GetGradesByOrganizationIDParams struct {
-	OrganizationID uuid.UUID `json:"organization_id"`
-	Limit          int32     `json:"limit"`
-	Offset         int32     `json:"offset"`
+type GetGradesParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) GetGradesByOrganizationID(ctx context.Context, arg GetGradesByOrganizationIDParams) ([]Grade, error) {
-	rows, err := q.db.Query(ctx, getGradesByOrganizationID, arg.OrganizationID, arg.Limit, arg.Offset)
+func (q *Queries) GetGrades(ctx context.Context, arg GetGradesParams) ([]Grade, error) {
+	rows, err := q.db.Query(ctx, getGrades, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -189,42 +197,35 @@ func (q *Queries) GetGradesByOrganizationID(ctx context.Context, arg GetGradesBy
 	return items, nil
 }
 
-const getGradesByOrganizationIDWithOrganization = `-- name: GetGradesByOrganizationIDWithOrganization :many
+const getGradesWithOrganization = `-- name: GetGradesWithOrganization :many
 SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_grades
 INNER JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
-WHERE m_grades.organization_id = $1
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_grades.name END ASC,
+	CASE WHEN $3::text = 'name' THEN m_organizations.name END ASC,
 	m_grades_pkey DESC
-LIMIT $2 OFFSET $3
+LIMIT $1 OFFSET $2
 `
 
-type GetGradesByOrganizationIDWithOrganizationParams struct {
-	OrganizationID uuid.UUID `json:"organization_id"`
-	Limit          int32     `json:"limit"`
-	Offset         int32     `json:"offset"`
-	OrderMethod    string    `json:"order_method"`
+type GetGradesWithOrganizationParams struct {
+	Limit       int32  `json:"limit"`
+	Offset      int32  `json:"offset"`
+	OrderMethod string `json:"order_method"`
 }
 
-type GetGradesByOrganizationIDWithOrganizationRow struct {
+type GetGradesWithOrganizationRow struct {
 	Grade        Grade        `json:"grade"`
 	Organization Organization `json:"organization"`
 }
 
-func (q *Queries) GetGradesByOrganizationIDWithOrganization(ctx context.Context, arg GetGradesByOrganizationIDWithOrganizationParams) ([]GetGradesByOrganizationIDWithOrganizationRow, error) {
-	rows, err := q.db.Query(ctx, getGradesByOrganizationIDWithOrganization,
-		arg.OrganizationID,
-		arg.Limit,
-		arg.Offset,
-		arg.OrderMethod,
-	)
+func (q *Queries) GetGradesWithOrganization(ctx context.Context, arg GetGradesWithOrganizationParams) ([]GetGradesWithOrganizationRow, error) {
+	rows, err := q.db.Query(ctx, getGradesWithOrganization, arg.Limit, arg.Offset, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetGradesByOrganizationIDWithOrganizationRow{}
+	items := []GetGradesWithOrganizationRow{}
 	for rows.Next() {
-		var i GetGradesByOrganizationIDWithOrganizationRow
+		var i GetGradesWithOrganizationRow
 		if err := rows.Scan(
 			&i.Grade.MGradesPkey,
 			&i.Grade.GradeID,

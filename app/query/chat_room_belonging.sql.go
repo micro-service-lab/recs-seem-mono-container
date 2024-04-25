@@ -14,10 +14,19 @@ import (
 
 const countChatRoomsByMemberID = `-- name: CountChatRoomsByMemberID :one
 SELECT COUNT(*) FROM m_chat_room_belongings WHERE member_id = $1
+AND CASE WHEN $2::boolean = true THEN
+		EXISTS (SELECT 1 FROM m_chat_rooms WHERE m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id AND m_chat_rooms.name LIKE '%' || $3::text || '%')
+	ELSE TRUE END
 `
 
-func (q *Queries) CountChatRoomsByMemberID(ctx context.Context, memberID uuid.UUID) (int64, error) {
-	row := q.db.QueryRow(ctx, countChatRoomsByMemberID, memberID)
+type CountChatRoomsByMemberIDParams struct {
+	MemberID      uuid.UUID `json:"member_id"`
+	WhereLikeName bool      `json:"where_like_name"`
+	SearchName    string    `json:"search_name"`
+}
+
+func (q *Queries) CountChatRoomsByMemberID(ctx context.Context, arg CountChatRoomsByMemberIDParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countChatRoomsByMemberID, arg.MemberID, arg.WhereLikeName, arg.SearchName)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -25,10 +34,19 @@ func (q *Queries) CountChatRoomsByMemberID(ctx context.Context, memberID uuid.UU
 
 const countMembersOnChatRoomID = `-- name: CountMembersOnChatRoomID :one
 SELECT COUNT(*) FROM m_chat_room_belongings WHERE chat_room_id = $1
+AND CASE WHEN $2::boolean = true THEN
+		EXISTS (SELECT 1 FROM m_members WHERE m_chat_room_belongings.member_id = m_members.member_id AND m_members.name LIKE '%' || $3::text || '%')
+	ELSE TRUE END
 `
 
-func (q *Queries) CountMembersOnChatRoomID(ctx context.Context, chatRoomID uuid.UUID) (int64, error) {
-	row := q.db.QueryRow(ctx, countMembersOnChatRoomID, chatRoomID)
+type CountMembersOnChatRoomIDParams struct {
+	ChatRoomID    uuid.UUID `json:"chat_room_id"`
+	WhereLikeName bool      `json:"where_like_name"`
+	SearchName    string    `json:"search_name"`
+}
+
+func (q *Queries) CountMembersOnChatRoomID(ctx context.Context, arg CountMembersOnChatRoomIDParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countMembersOnChatRoomID, arg.ChatRoomID, arg.WhereLikeName, arg.SearchName)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -85,13 +103,15 @@ AND CASE
 END
 ORDER BY
 	CASE WHEN $6::text = 'name' THEN m_chat_rooms.name END ASC,
-	CASE WHEN $6::text = 'add' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN $6::text = 'late_chat' THEN
-		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
-	END DESC,
+	CASE WHEN $6::text = 'r_name' THEN m_chat_rooms.name END DESC,
+	CASE WHEN $6::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN $6::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
 	CASE WHEN $6::text = 'old_chat' THEN
 		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
 	END ASC,
+	CASE WHEN $6::text = 'late_chat' THEN
+		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
+	END DESC,
 	m_chat_room_belongings_pkey DESC
 LIMIT $2 OFFSET $3
 `
@@ -159,7 +179,9 @@ AND CASE
 END
 ORDER BY
 	CASE WHEN $6::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $6::text = 'add' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN $6::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $6::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN $6::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
 	m_chat_room_belongings_pkey DESC
 LIMIT $2 OFFSET $3
 `

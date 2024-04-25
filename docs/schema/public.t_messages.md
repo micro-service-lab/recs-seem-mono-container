@@ -7,7 +7,7 @@
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | t_messages_pkey | bigint | nextval('t_messages_t_messages_pkey_seq'::regclass) | false |  |  |  |
-| message_id | uuid | uuid_generate_v4() | false |  |  |  |
+| message_id | uuid | uuid_generate_v4() | false | [public.t_attached_messages](public.t_attached_messages.md) |  |  |
 | chat_room_id | uuid |  | false |  | [public.m_chat_rooms](public.m_chat_rooms.md) |  |
 | sender_id | uuid |  | true |  | [public.m_members](public.m_members.md) |  |
 | body | text |  | false |  |  |  |

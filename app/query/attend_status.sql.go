@@ -13,10 +13,17 @@ import (
 
 const countAttendStatuses = `-- name: CountAttendStatuses :one
 SELECT COUNT(*) FROM m_attend_statuses
+WHERE
+	CASE WHEN $1::boolean = true THEN name LIKE '%' || $2::text || '%' ELSE TRUE END
 `
 
-func (q *Queries) CountAttendStatuses(ctx context.Context) (int64, error) {
-	row := q.db.QueryRow(ctx, countAttendStatuses)
+type CountAttendStatusesParams struct {
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+}
+
+func (q *Queries) CountAttendStatuses(ctx context.Context, arg CountAttendStatusesParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countAttendStatuses, arg.WhereLikeName, arg.SearchName)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -100,11 +107,11 @@ func (q *Queries) FindAttendStatusByKey(ctx context.Context, key string) (Attend
 
 const getAttendStatuses = `-- name: GetAttendStatuses :many
 SELECT m_attend_statuses_pkey, attend_status_id, name, key FROM m_attend_statuses
-WHERE CASE
-	WHEN $3::boolean = true THEN m_attend_statuses.name LIKE '%' || $4::text || '%'
-END
+WHERE
+	CASE WHEN $3::boolean = true THEN m_attend_statuses.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_attend_statuses.name END ASC,
+	CASE WHEN $5::text = 'r_name' THEN m_attend_statuses.name END DESC,
 	m_attend_statuses_pkey DESC
 LIMIT $1 OFFSET $2
 `
@@ -148,69 +155,18 @@ func (q *Queries) GetAttendStatuses(ctx context.Context, arg GetAttendStatusesPa
 	return items, nil
 }
 
-const getAttendStatusesByKeys = `-- name: GetAttendStatusesByKeys :many
-SELECT m_attend_statuses_pkey, attend_status_id, name, key FROM m_attend_statuses WHERE key = ANY($3::varchar[])
-AND CASE
-	WHEN $4::boolean = true THEN m_attend_statuses.name LIKE '%' || $5::text || '%'
-END
-ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_attend_statuses.name END ASC,
-	m_attend_statuses_pkey DESC
-LIMIT $1 OFFSET $2
-`
-
-type GetAttendStatusesByKeysParams struct {
-	Limit         int32    `json:"limit"`
-	Offset        int32    `json:"offset"`
-	Keys          []string `json:"keys"`
-	WhereLikeName bool     `json:"where_like_name"`
-	SearchName    string   `json:"search_name"`
-	OrderMethod   string   `json:"order_method"`
-}
-
-func (q *Queries) GetAttendStatusesByKeys(ctx context.Context, arg GetAttendStatusesByKeysParams) ([]AttendStatus, error) {
-	rows, err := q.db.Query(ctx, getAttendStatusesByKeys,
-		arg.Limit,
-		arg.Offset,
-		arg.Keys,
-		arg.WhereLikeName,
-		arg.SearchName,
-		arg.OrderMethod,
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []AttendStatus{}
-	for rows.Next() {
-		var i AttendStatus
-		if err := rows.Scan(
-			&i.MAttendStatusesPkey,
-			&i.AttendStatusID,
-			&i.Name,
-			&i.Key,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const updateAttendStatus = `-- name: UpdateAttendStatus :one
-UPDATE m_attend_statuses SET name = $2 WHERE attend_status_id = $1 RETURNING m_attend_statuses_pkey, attend_status_id, name, key
+UPDATE m_attend_statuses SET name = $2, key = $3 WHERE attend_status_id = $1 RETURNING m_attend_statuses_pkey, attend_status_id, name, key
 `
 
 type UpdateAttendStatusParams struct {
 	AttendStatusID uuid.UUID `json:"attend_status_id"`
 	Name           string    `json:"name"`
+	Key            string    `json:"key"`
 }
 
 func (q *Queries) UpdateAttendStatus(ctx context.Context, arg UpdateAttendStatusParams) (AttendStatus, error) {
-	row := q.db.QueryRow(ctx, updateAttendStatus, arg.AttendStatusID, arg.Name)
+	row := q.db.QueryRow(ctx, updateAttendStatus, arg.AttendStatusID, arg.Name, arg.Key)
 	var i AttendStatus
 	err := row.Scan(
 		&i.MAttendStatusesPkey,
@@ -221,17 +177,18 @@ func (q *Queries) UpdateAttendStatus(ctx context.Context, arg UpdateAttendStatus
 	return i, err
 }
 
-const updateAttendStatusKey = `-- name: UpdateAttendStatusKey :one
-UPDATE m_attend_statuses SET key = $2 WHERE attend_status_id = $1 RETURNING m_attend_statuses_pkey, attend_status_id, name, key
+const updateAttendStatusByKey = `-- name: UpdateAttendStatusByKey :one
+UPDATE m_attend_statuses SET name = $2, key = $3 WHERE key = $1 RETURNING m_attend_statuses_pkey, attend_status_id, name, key
 `
 
-type UpdateAttendStatusKeyParams struct {
-	AttendStatusID uuid.UUID `json:"attend_status_id"`
-	Key            string    `json:"key"`
+type UpdateAttendStatusByKeyParams struct {
+	Key   string `json:"key"`
+	Name  string `json:"name"`
+	Key_2 string `json:"key_2"`
 }
 
-func (q *Queries) UpdateAttendStatusKey(ctx context.Context, arg UpdateAttendStatusKeyParams) (AttendStatus, error) {
-	row := q.db.QueryRow(ctx, updateAttendStatusKey, arg.AttendStatusID, arg.Key)
+func (q *Queries) UpdateAttendStatusByKey(ctx context.Context, arg UpdateAttendStatusByKeyParams) (AttendStatus, error) {
+	row := q.db.QueryRow(ctx, updateAttendStatusByKey, arg.Key, arg.Name, arg.Key_2)
 	var i AttendStatus
 	err := row.Scan(
 		&i.MAttendStatusesPkey,

@@ -1,6 +1,7 @@
 CREATE TABLE t_attachable_items (
 	t_attachable_items_pkey BIGSERIAL,
     attachable_item_id UUID NOT NULL DEFAULT uuid_generate_v4(),
+	url TEXT NOT NULL,
 	size DOUBLE PRECISION,
 	mime_type_id UUID NOT NULL
 );

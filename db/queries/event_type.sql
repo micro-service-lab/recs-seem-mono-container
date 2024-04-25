@@ -5,13 +5,10 @@ INSERT INTO m_event_types (name, key, color) VALUES ($1, $2, $3);
 INSERT INTO m_event_types (name, key, color) VALUES ($1, $2, $3) RETURNING *;
 
 -- name: UpdateEventType :one
-UPDATE m_event_types SET name = $2, color = $3 WHERE event_type_id = $1 RETURNING *;
+UPDATE m_event_types SET name = $2, key = $3, color = $4 WHERE event_type_id = $1 RETURNING *;
 
 -- name: UpdateEventTypeByKey :one
-UPDATE m_event_types SET name = $2, color = $3 WHERE key = $1 RETURNING *;
-
--- name: UpdateEventTypeKey :one
-UPDATE m_event_types SET key = $2 WHERE event_type_id = $1 RETURNING *;
+UPDATE m_event_types SET name = $2, key = $3, color = $4 WHERE key = $1 RETURNING *;
 
 -- name: DeleteEventType :exec
 DELETE FROM m_event_types WHERE event_type_id = $1;

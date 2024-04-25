@@ -180,6 +180,127 @@ func (q *Queries) FindEventByID(ctx context.Context, eventID uuid.UUID) (Event, 
 	return i, err
 }
 
+const findEventByIDWithAll = `-- name: FindEventByIDWithAll :one
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_event_types_pkey, o.event_type_id, o.name, o.key, o.color, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.is_personal, s.is_whole, s.created_at, s.updated_at, p.m_organizations_pkey, p.organization_id, p.name, p.description, p.is_personal, p.is_whole, p.created_at, p.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at FROM t_events
+INNER JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
+INNER JOIN m_organizations s ON t_events.organization_id = s.organization_id
+INNER JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
+INNER JOIN m_members l ON t_events.posted_by = l.member_id
+WHERE event_id = $1
+`
+
+type FindEventByIDWithAllRow struct {
+	Event          Event        `json:"event"`
+	EventType      EventType    `json:"event_type"`
+	Organization   Organization `json:"organization"`
+	Organization_2 Organization `json:"organization_2"`
+	Member         Member       `json:"member"`
+}
+
+func (q *Queries) FindEventByIDWithAll(ctx context.Context, eventID uuid.UUID) (FindEventByIDWithAllRow, error) {
+	row := q.db.QueryRow(ctx, findEventByIDWithAll, eventID)
+	var i FindEventByIDWithAllRow
+	err := row.Scan(
+		&i.Event.TEventsPkey,
+		&i.Event.EventID,
+		&i.Event.EventTypeID,
+		&i.Event.Title,
+		&i.Event.Description,
+		&i.Event.OrganizationID,
+		&i.Event.StartTime,
+		&i.Event.EndTime,
+		&i.Event.MailSendFlag,
+		&i.Event.SendOrganizationID,
+		&i.Event.PostedBy,
+		&i.Event.LastEditedBy,
+		&i.Event.PostedAt,
+		&i.Event.LastEditedAt,
+		&i.EventType.MEventTypesPkey,
+		&i.EventType.EventTypeID,
+		&i.EventType.Name,
+		&i.EventType.Key,
+		&i.EventType.Color,
+		&i.Organization.MOrganizationsPkey,
+		&i.Organization.OrganizationID,
+		&i.Organization.Name,
+		&i.Organization.Description,
+		&i.Organization.IsPersonal,
+		&i.Organization.IsWhole,
+		&i.Organization.CreatedAt,
+		&i.Organization.UpdatedAt,
+		&i.Organization_2.MOrganizationsPkey,
+		&i.Organization_2.OrganizationID,
+		&i.Organization_2.Name,
+		&i.Organization_2.Description,
+		&i.Organization_2.IsPersonal,
+		&i.Organization_2.IsWhole,
+		&i.Organization_2.CreatedAt,
+		&i.Organization_2.UpdatedAt,
+		&i.Member.MMembersPkey,
+		&i.Member.MemberID,
+		&i.Member.LoginID,
+		&i.Member.Password,
+		&i.Member.Email,
+		&i.Member.Name,
+		&i.Member.AttendStatusID,
+		&i.Member.ProfileImageID,
+		&i.Member.GradeID,
+		&i.Member.GroupID,
+		&i.Member.PersonalOrganizationID,
+		&i.Member.RoleID,
+		&i.Member.CreatedAt,
+		&i.Member.UpdatedAt,
+	)
+	return i, err
+}
+
+const findEventByIDWithLastEditUser = `-- name: FindEventByIDWithLastEditUser :one
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+INNER JOIN m_members ON t_events.last_edited_by = m_members.member_id
+WHERE event_id = $1
+`
+
+type FindEventByIDWithLastEditUserRow struct {
+	Event  Event  `json:"event"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) FindEventByIDWithLastEditUser(ctx context.Context, eventID uuid.UUID) (FindEventByIDWithLastEditUserRow, error) {
+	row := q.db.QueryRow(ctx, findEventByIDWithLastEditUser, eventID)
+	var i FindEventByIDWithLastEditUserRow
+	err := row.Scan(
+		&i.Event.TEventsPkey,
+		&i.Event.EventID,
+		&i.Event.EventTypeID,
+		&i.Event.Title,
+		&i.Event.Description,
+		&i.Event.OrganizationID,
+		&i.Event.StartTime,
+		&i.Event.EndTime,
+		&i.Event.MailSendFlag,
+		&i.Event.SendOrganizationID,
+		&i.Event.PostedBy,
+		&i.Event.LastEditedBy,
+		&i.Event.PostedAt,
+		&i.Event.LastEditedAt,
+		&i.Member.MMembersPkey,
+		&i.Member.MemberID,
+		&i.Member.LoginID,
+		&i.Member.Password,
+		&i.Member.Email,
+		&i.Member.Name,
+		&i.Member.AttendStatusID,
+		&i.Member.ProfileImageID,
+		&i.Member.GradeID,
+		&i.Member.GroupID,
+		&i.Member.PersonalOrganizationID,
+		&i.Member.RoleID,
+		&i.Member.CreatedAt,
+		&i.Member.UpdatedAt,
+	)
+	return i, err
+}
+
 const findEventByIDWithOrganization = `-- name: FindEventByIDWithOrganization :one
 SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_events
 INNER JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
@@ -217,6 +338,132 @@ func (q *Queries) FindEventByIDWithOrganization(ctx context.Context, eventID uui
 		&i.Organization.IsWhole,
 		&i.Organization.CreatedAt,
 		&i.Organization.UpdatedAt,
+	)
+	return i, err
+}
+
+const findEventByIDWithPostUser = `-- name: FindEventByIDWithPostUser :one
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+INNER JOIN m_members ON t_events.posted_by = m_members.member_id
+WHERE event_id = $1
+`
+
+type FindEventByIDWithPostUserRow struct {
+	Event  Event  `json:"event"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) FindEventByIDWithPostUser(ctx context.Context, eventID uuid.UUID) (FindEventByIDWithPostUserRow, error) {
+	row := q.db.QueryRow(ctx, findEventByIDWithPostUser, eventID)
+	var i FindEventByIDWithPostUserRow
+	err := row.Scan(
+		&i.Event.TEventsPkey,
+		&i.Event.EventID,
+		&i.Event.EventTypeID,
+		&i.Event.Title,
+		&i.Event.Description,
+		&i.Event.OrganizationID,
+		&i.Event.StartTime,
+		&i.Event.EndTime,
+		&i.Event.MailSendFlag,
+		&i.Event.SendOrganizationID,
+		&i.Event.PostedBy,
+		&i.Event.LastEditedBy,
+		&i.Event.PostedAt,
+		&i.Event.LastEditedAt,
+		&i.Member.MMembersPkey,
+		&i.Member.MemberID,
+		&i.Member.LoginID,
+		&i.Member.Password,
+		&i.Member.Email,
+		&i.Member.Name,
+		&i.Member.AttendStatusID,
+		&i.Member.ProfileImageID,
+		&i.Member.GradeID,
+		&i.Member.GroupID,
+		&i.Member.PersonalOrganizationID,
+		&i.Member.RoleID,
+		&i.Member.CreatedAt,
+		&i.Member.UpdatedAt,
+	)
+	return i, err
+}
+
+const findEventByIDWithSendOrganization = `-- name: FindEventByIDWithSendOrganization :one
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_events
+INNER JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
+WHERE event_id = $1
+`
+
+type FindEventByIDWithSendOrganizationRow struct {
+	Event        Event        `json:"event"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) FindEventByIDWithSendOrganization(ctx context.Context, eventID uuid.UUID) (FindEventByIDWithSendOrganizationRow, error) {
+	row := q.db.QueryRow(ctx, findEventByIDWithSendOrganization, eventID)
+	var i FindEventByIDWithSendOrganizationRow
+	err := row.Scan(
+		&i.Event.TEventsPkey,
+		&i.Event.EventID,
+		&i.Event.EventTypeID,
+		&i.Event.Title,
+		&i.Event.Description,
+		&i.Event.OrganizationID,
+		&i.Event.StartTime,
+		&i.Event.EndTime,
+		&i.Event.MailSendFlag,
+		&i.Event.SendOrganizationID,
+		&i.Event.PostedBy,
+		&i.Event.LastEditedBy,
+		&i.Event.PostedAt,
+		&i.Event.LastEditedAt,
+		&i.Organization.MOrganizationsPkey,
+		&i.Organization.OrganizationID,
+		&i.Organization.Name,
+		&i.Organization.Description,
+		&i.Organization.IsPersonal,
+		&i.Organization.IsWhole,
+		&i.Organization.CreatedAt,
+		&i.Organization.UpdatedAt,
+	)
+	return i, err
+}
+
+const findEventByIDWithType = `-- name: FindEventByIDWithType :one
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_event_types.m_event_types_pkey, m_event_types.event_type_id, m_event_types.name, m_event_types.key, m_event_types.color FROM t_events
+INNER JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
+WHERE event_id = $1
+`
+
+type FindEventByIDWithTypeRow struct {
+	Event     Event     `json:"event"`
+	EventType EventType `json:"event_type"`
+}
+
+func (q *Queries) FindEventByIDWithType(ctx context.Context, eventID uuid.UUID) (FindEventByIDWithTypeRow, error) {
+	row := q.db.QueryRow(ctx, findEventByIDWithType, eventID)
+	var i FindEventByIDWithTypeRow
+	err := row.Scan(
+		&i.Event.TEventsPkey,
+		&i.Event.EventID,
+		&i.Event.EventTypeID,
+		&i.Event.Title,
+		&i.Event.Description,
+		&i.Event.OrganizationID,
+		&i.Event.StartTime,
+		&i.Event.EndTime,
+		&i.Event.MailSendFlag,
+		&i.Event.SendOrganizationID,
+		&i.Event.PostedBy,
+		&i.Event.LastEditedBy,
+		&i.Event.PostedAt,
+		&i.Event.LastEditedAt,
+		&i.EventType.MEventTypesPkey,
+		&i.EventType.EventTypeID,
+		&i.EventType.Name,
+		&i.EventType.Key,
+		&i.EventType.Color,
 	)
 	return i, err
 }
@@ -323,9 +570,12 @@ func (q *Queries) GetEvents(ctx context.Context, arg GetEventsParams) ([]Event, 
 }
 
 const getEventsWithAll = `-- name: GetEventsWithAll :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_organizations_pkey, o.organization_id, o.name, o.description, o.is_personal, o.is_whole, o.created_at, o.updated_at, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.is_personal, s.is_whole, s.created_at, s.updated_at FROM t_events
-INNER JOIN m_organizations o ON t_events.organization_id = m_organizations.organization_id
-INNER JOIN m_organizations s ON t_events.send_organization_id = s.organization_id
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_event_types_pkey, o.event_type_id, o.name, o.key, o.color, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.is_personal, s.is_whole, s.created_at, s.updated_at, p.m_organizations_pkey, p.organization_id, p.name, p.description, p.is_personal, p.is_whole, p.created_at, p.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at FROM t_events
+INNER JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
+INNER JOIN m_organizations s ON t_events.organization_id = s.organization_id
+INNER JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
+INNER JOIN m_members l ON t_events.posted_by = l.member_id
+INNER JOIN m_members l ON t_events.last_edited_by = l.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -372,8 +622,11 @@ type GetEventsWithAllParams struct {
 
 type GetEventsWithAllRow struct {
 	Event          Event        `json:"event"`
+	EventType      EventType    `json:"event_type"`
 	Organization   Organization `json:"organization"`
 	Organization_2 Organization `json:"organization_2"`
+	Member         Member       `json:"member"`
+	Member_2       Member       `json:"member_2"`
 }
 
 func (q *Queries) GetEventsWithAll(ctx context.Context, arg GetEventsWithAllParams) ([]GetEventsWithAllRow, error) {
@@ -420,6 +673,11 @@ func (q *Queries) GetEventsWithAll(ctx context.Context, arg GetEventsWithAllPara
 			&i.Event.LastEditedBy,
 			&i.Event.PostedAt,
 			&i.Event.LastEditedAt,
+			&i.EventType.MEventTypesPkey,
+			&i.EventType.EventTypeID,
+			&i.EventType.Name,
+			&i.EventType.Key,
+			&i.EventType.Color,
 			&i.Organization.MOrganizationsPkey,
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
@@ -436,6 +694,155 @@ func (q *Queries) GetEventsWithAll(ctx context.Context, arg GetEventsWithAllPara
 			&i.Organization_2.IsWhole,
 			&i.Organization_2.CreatedAt,
 			&i.Organization_2.UpdatedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Member_2.MMembersPkey,
+			&i.Member_2.MemberID,
+			&i.Member_2.LoginID,
+			&i.Member_2.Password,
+			&i.Member_2.Email,
+			&i.Member_2.Name,
+			&i.Member_2.AttendStatusID,
+			&i.Member_2.ProfileImageID,
+			&i.Member_2.GradeID,
+			&i.Member_2.GroupID,
+			&i.Member_2.PersonalOrganizationID,
+			&i.Member_2.RoleID,
+			&i.Member_2.CreatedAt,
+			&i.Member_2.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getEventsWithLastEditUser = `-- name: GetEventsWithLastEditUser :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+INNER JOIN m_members ON t_events.last_edited_by = m_members.member_id
+WHERE
+	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN t_events.organization_id = $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN mail_send_flag = $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN send_organization_id = $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN start_time >= $12 ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN start_time <= $14 ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN end_time >= $16 ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
+ORDER BY
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	t_events_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetEventsWithLastEditUserParams struct {
+	Limit                 int32       `json:"limit"`
+	Offset                int32       `json:"offset"`
+	WhereLikeTitle        bool        `json:"where_like_title"`
+	SearchTitle           string      `json:"search_title"`
+	WhereOrganization     bool        `json:"where_organization"`
+	OrganizationID        pgtype.UUID `json:"organization_id"`
+	WhereMailSendFlag     bool        `json:"where_mail_send_flag"`
+	MailSendFlag          bool        `json:"mail_send_flag"`
+	WhereSendOrganization bool        `json:"where_send_organization"`
+	SendOrganizationID    pgtype.UUID `json:"send_organization_id"`
+	WhereEarlierStartTime bool        `json:"where_earlier_start_time"`
+	EarlierStartTime      time.Time   `json:"earlier_start_time"`
+	WhereLaterStartTime   bool        `json:"where_later_start_time"`
+	LaterStartTime        time.Time   `json:"later_start_time"`
+	WhereEarlierEndTime   bool        `json:"where_earlier_end_time"`
+	EarlierEndTime        time.Time   `json:"earlier_end_time"`
+	WhereLaterEndTime     bool        `json:"where_later_end_time"`
+	LaterEndTime          time.Time   `json:"later_end_time"`
+	OrderMethod           string      `json:"order_method"`
+}
+
+type GetEventsWithLastEditUserRow struct {
+	Event  Event  `json:"event"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) GetEventsWithLastEditUser(ctx context.Context, arg GetEventsWithLastEditUserParams) ([]GetEventsWithLastEditUserRow, error) {
+	rows, err := q.db.Query(ctx, getEventsWithLastEditUser,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeTitle,
+		arg.SearchTitle,
+		arg.WhereOrganization,
+		arg.OrganizationID,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereSendOrganization,
+		arg.SendOrganizationID,
+		arg.WhereEarlierStartTime,
+		arg.EarlierStartTime,
+		arg.WhereLaterStartTime,
+		arg.LaterStartTime,
+		arg.WhereEarlierEndTime,
+		arg.EarlierEndTime,
+		arg.WhereLaterEndTime,
+		arg.LaterEndTime,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetEventsWithLastEditUserRow{}
+	for rows.Next() {
+		var i GetEventsWithLastEditUserRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -562,6 +969,127 @@ func (q *Queries) GetEventsWithOrganization(ctx context.Context, arg GetEventsWi
 	return items, nil
 }
 
+const getEventsWithPostUser = `-- name: GetEventsWithPostUser :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+INNER JOIN m_members ON t_events.posted_by = m_members.member_id
+WHERE
+	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN t_events.organization_id = $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN mail_send_flag = $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN send_organization_id = $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN start_time >= $12 ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN start_time <= $14 ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN end_time >= $16 ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
+ORDER BY
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	t_events_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetEventsWithPostUserParams struct {
+	Limit                 int32       `json:"limit"`
+	Offset                int32       `json:"offset"`
+	WhereLikeTitle        bool        `json:"where_like_title"`
+	SearchTitle           string      `json:"search_title"`
+	WhereOrganization     bool        `json:"where_organization"`
+	OrganizationID        pgtype.UUID `json:"organization_id"`
+	WhereMailSendFlag     bool        `json:"where_mail_send_flag"`
+	MailSendFlag          bool        `json:"mail_send_flag"`
+	WhereSendOrganization bool        `json:"where_send_organization"`
+	SendOrganizationID    pgtype.UUID `json:"send_organization_id"`
+	WhereEarlierStartTime bool        `json:"where_earlier_start_time"`
+	EarlierStartTime      time.Time   `json:"earlier_start_time"`
+	WhereLaterStartTime   bool        `json:"where_later_start_time"`
+	LaterStartTime        time.Time   `json:"later_start_time"`
+	WhereEarlierEndTime   bool        `json:"where_earlier_end_time"`
+	EarlierEndTime        time.Time   `json:"earlier_end_time"`
+	WhereLaterEndTime     bool        `json:"where_later_end_time"`
+	LaterEndTime          time.Time   `json:"later_end_time"`
+	OrderMethod           string      `json:"order_method"`
+}
+
+type GetEventsWithPostUserRow struct {
+	Event  Event  `json:"event"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) GetEventsWithPostUser(ctx context.Context, arg GetEventsWithPostUserParams) ([]GetEventsWithPostUserRow, error) {
+	rows, err := q.db.Query(ctx, getEventsWithPostUser,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeTitle,
+		arg.SearchTitle,
+		arg.WhereOrganization,
+		arg.OrganizationID,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereSendOrganization,
+		arg.SendOrganizationID,
+		arg.WhereEarlierStartTime,
+		arg.EarlierStartTime,
+		arg.WhereLaterStartTime,
+		arg.LaterStartTime,
+		arg.WhereEarlierEndTime,
+		arg.EarlierEndTime,
+		arg.WhereLaterEndTime,
+		arg.LaterEndTime,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetEventsWithPostUserRow{}
+	for rows.Next() {
+		var i GetEventsWithPostUserRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getEventsWithSendOrganization = `-- name: GetEventsWithSendOrganization :many
 SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_events
 INNER JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
@@ -677,8 +1205,120 @@ func (q *Queries) GetEventsWithSendOrganization(ctx context.Context, arg GetEven
 	return items, nil
 }
 
+const getEventsWithType = `-- name: GetEventsWithType :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_event_types.m_event_types_pkey, m_event_types.event_type_id, m_event_types.name, m_event_types.key, m_event_types.color FROM t_events
+INNER JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
+WHERE
+	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN t_events.organization_id = $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN mail_send_flag = $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN send_organization_id = $10 ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN start_time >= $12 ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN start_time <= $14 ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN end_time >= $16 ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
+ORDER BY
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
+	t_events_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetEventsWithTypeParams struct {
+	Limit                 int32       `json:"limit"`
+	Offset                int32       `json:"offset"`
+	WhereLikeTitle        bool        `json:"where_like_title"`
+	SearchTitle           string      `json:"search_title"`
+	WhereOrganization     bool        `json:"where_organization"`
+	OrganizationID        pgtype.UUID `json:"organization_id"`
+	WhereMailSendFlag     bool        `json:"where_mail_send_flag"`
+	MailSendFlag          bool        `json:"mail_send_flag"`
+	WhereSendOrganization bool        `json:"where_send_organization"`
+	SendOrganizationID    pgtype.UUID `json:"send_organization_id"`
+	WhereEarlierStartTime bool        `json:"where_earlier_start_time"`
+	EarlierStartTime      time.Time   `json:"earlier_start_time"`
+	WhereLaterStartTime   bool        `json:"where_later_start_time"`
+	LaterStartTime        time.Time   `json:"later_start_time"`
+	WhereEarlierEndTime   bool        `json:"where_earlier_end_time"`
+	EarlierEndTime        time.Time   `json:"earlier_end_time"`
+	WhereLaterEndTime     bool        `json:"where_later_end_time"`
+	LaterEndTime          time.Time   `json:"later_end_time"`
+	OrderMethod           string      `json:"order_method"`
+}
+
+type GetEventsWithTypeRow struct {
+	Event     Event     `json:"event"`
+	EventType EventType `json:"event_type"`
+}
+
+func (q *Queries) GetEventsWithType(ctx context.Context, arg GetEventsWithTypeParams) ([]GetEventsWithTypeRow, error) {
+	rows, err := q.db.Query(ctx, getEventsWithType,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeTitle,
+		arg.SearchTitle,
+		arg.WhereOrganization,
+		arg.OrganizationID,
+		arg.WhereMailSendFlag,
+		arg.MailSendFlag,
+		arg.WhereSendOrganization,
+		arg.SendOrganizationID,
+		arg.WhereEarlierStartTime,
+		arg.EarlierStartTime,
+		arg.WhereLaterStartTime,
+		arg.LaterStartTime,
+		arg.WhereEarlierEndTime,
+		arg.EarlierEndTime,
+		arg.WhereLaterEndTime,
+		arg.LaterEndTime,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetEventsWithTypeRow{}
+	for rows.Next() {
+		var i GetEventsWithTypeRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.EventType.MEventTypesPkey,
+			&i.EventType.EventTypeID,
+			&i.EventType.Name,
+			&i.EventType.Key,
+			&i.EventType.Color,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateEvent = `-- name: UpdateEvent :one
-UPDATE t_events SET event_type_id = $2, title = $3, description = $4, organization_id = $5, start_time = $6, end_time = $7, send_organization_id = $8, posted_by = $9, last_edited_by = $10, posted_at = $11, last_edited_at = $12 WHERE event_id = $1 RETURNING t_events_pkey, event_id, event_type_id, title, description, organization_id, start_time, end_time, mail_send_flag, send_organization_id, posted_by, last_edited_by, posted_at, last_edited_at
+UPDATE t_events SET event_type_id = $2, title = $3, description = $4, organization_id = $5, start_time = $6, end_time = $7, send_organization_id = $8, last_edited_by = $9, last_edited_at = $10 WHERE event_id = $1 RETURNING t_events_pkey, event_id, event_type_id, title, description, organization_id, start_time, end_time, mail_send_flag, send_organization_id, posted_by, last_edited_by, posted_at, last_edited_at
 `
 
 type UpdateEventParams struct {
@@ -690,9 +1330,7 @@ type UpdateEventParams struct {
 	StartTime          time.Time   `json:"start_time"`
 	EndTime            time.Time   `json:"end_time"`
 	SendOrganizationID pgtype.UUID `json:"send_organization_id"`
-	PostedBy           pgtype.UUID `json:"posted_by"`
 	LastEditedBy       pgtype.UUID `json:"last_edited_by"`
-	PostedAt           time.Time   `json:"posted_at"`
 	LastEditedAt       time.Time   `json:"last_edited_at"`
 }
 
@@ -706,9 +1344,7 @@ func (q *Queries) UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event
 		arg.StartTime,
 		arg.EndTime,
 		arg.SendOrganizationID,
-		arg.PostedBy,
 		arg.LastEditedBy,
-		arg.PostedAt,
 		arg.LastEditedAt,
 	)
 	var i Event

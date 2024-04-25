@@ -11,12 +11,12 @@ import (
 	"github.com/google/uuid"
 )
 
-const countGroupsByOrganizationID = `-- name: CountGroupsByOrganizationID :one
-SELECT COUNT(*) FROM m_groups WHERE organization_id = $1
+const countGroups = `-- name: CountGroups :one
+SELECT COUNT(*) FROM m_groups
 `
 
-func (q *Queries) CountGroupsByOrganizationID(ctx context.Context, organizationID uuid.UUID) (int64, error) {
-	row := q.db.QueryRow(ctx, countGroupsByOrganizationID, organizationID)
+func (q *Queries) CountGroups(ctx context.Context) (int64, error) {
+	row := q.db.QueryRow(ctx, countGroups)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -54,6 +54,15 @@ DELETE FROM m_groups WHERE group_id = $1
 
 func (q *Queries) DeleteGroup(ctx context.Context, groupID uuid.UUID) error {
 	_, err := q.db.Exec(ctx, deleteGroup, groupID)
+	return err
+}
+
+const deleteGroupByKey = `-- name: DeleteGroupByKey :exec
+DELETE FROM m_groups WHERE key = $1
+`
+
+func (q *Queries) DeleteGroupByKey(ctx context.Context, key string) error {
+	_, err := q.db.Exec(ctx, deleteGroupByKey, key)
 	return err
 }
 
@@ -151,21 +160,20 @@ func (q *Queries) FindGroupByKeyWithOrganization(ctx context.Context, key string
 	return i, err
 }
 
-const getGroupsByOrganizationID = `-- name: GetGroupsByOrganizationID :many
-SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE organization_id = $1
+const getGroups = `-- name: GetGroups :many
+SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups
 ORDER BY
 	m_groups_pkey DESC
-LIMIT $2 OFFSET $3
+LIMIT $1 OFFSET $2
 `
 
-type GetGroupsByOrganizationIDParams struct {
-	OrganizationID uuid.UUID `json:"organization_id"`
-	Limit          int32     `json:"limit"`
-	Offset         int32     `json:"offset"`
+type GetGroupsParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
-func (q *Queries) GetGroupsByOrganizationID(ctx context.Context, arg GetGroupsByOrganizationIDParams) ([]Group, error) {
-	rows, err := q.db.Query(ctx, getGroupsByOrganizationID, arg.OrganizationID, arg.Limit, arg.Offset)
+func (q *Queries) GetGroups(ctx context.Context, arg GetGroupsParams) ([]Group, error) {
+	rows, err := q.db.Query(ctx, getGroups, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -189,42 +197,35 @@ func (q *Queries) GetGroupsByOrganizationID(ctx context.Context, arg GetGroupsBy
 	return items, nil
 }
 
-const getGroupsByOrganizationIDWithOrganization = `-- name: GetGroupsByOrganizationIDWithOrganization :many
+const getGroupsWithOrganization = `-- name: GetGroupsWithOrganization :many
 SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_groups
 INNER JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
-WHERE m_groups.organization_id = $1
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_groups.name END ASC,
+	CASE WHEN $3::text = 'name' THEN m_organizations.name END ASC,
 	m_groups_pkey DESC
-LIMIT $2 OFFSET $3
+LIMIT $1 OFFSET $2
 `
 
-type GetGroupsByOrganizationIDWithOrganizationParams struct {
-	OrganizationID uuid.UUID `json:"organization_id"`
-	Limit          int32     `json:"limit"`
-	Offset         int32     `json:"offset"`
-	OrderMethod    string    `json:"order_method"`
+type GetGroupsWithOrganizationParams struct {
+	Limit       int32  `json:"limit"`
+	Offset      int32  `json:"offset"`
+	OrderMethod string `json:"order_method"`
 }
 
-type GetGroupsByOrganizationIDWithOrganizationRow struct {
+type GetGroupsWithOrganizationRow struct {
 	Group        Group        `json:"group"`
 	Organization Organization `json:"organization"`
 }
 
-func (q *Queries) GetGroupsByOrganizationIDWithOrganization(ctx context.Context, arg GetGroupsByOrganizationIDWithOrganizationParams) ([]GetGroupsByOrganizationIDWithOrganizationRow, error) {
-	rows, err := q.db.Query(ctx, getGroupsByOrganizationIDWithOrganization,
-		arg.OrganizationID,
-		arg.Limit,
-		arg.Offset,
-		arg.OrderMethod,
-	)
+func (q *Queries) GetGroupsWithOrganization(ctx context.Context, arg GetGroupsWithOrganizationParams) ([]GetGroupsWithOrganizationRow, error) {
+	rows, err := q.db.Query(ctx, getGroupsWithOrganization, arg.Limit, arg.Offset, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetGroupsByOrganizationIDWithOrganizationRow{}
+	items := []GetGroupsWithOrganizationRow{}
 	for rows.Next() {
-		var i GetGroupsByOrganizationIDWithOrganizationRow
+		var i GetGroupsWithOrganizationRow
 		if err := rows.Scan(
 			&i.Group.MGroupsPkey,
 			&i.Group.GroupID,

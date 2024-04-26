@@ -11,8 +11,6 @@ import (
 const (
 	// CursorID カーソルID。
 	CursorID = "id"
-	// CursorCtx カーソルコンテキスト。
-	CursorCtx = "cursor_ctx"
 	// CursorPointsNext 次のカーソル。
 	CursorPointsNext = "points_next"
 )

@@ -9,7 +9,6 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countAbsences = `-- name: CountAbsences :one
@@ -83,11 +82,11 @@ func (q *Queries) GetAbsences(ctx context.Context) ([]Absence, error) {
 const getAbsencesUseKeysetPaginate = `-- name: GetAbsencesUseKeysetPaginate :many
 SELECT t_absences_pkey, absence_id, attendance_id FROM t_absences
 WHERE
-	CASE $2
+	CASE $2::text
 		WHEN 'next' THEN
-			t_absences_pkey < $3
+			t_absences_pkey < $3::int
 		WHEN 'prev' THEN
-			t_absences_pkey > $3
+			t_absences_pkey > $3::int
 	END
 ORDER BY
 	t_absences_pkey DESC
@@ -95,9 +94,9 @@ LIMIT $1
 `
 
 type GetAbsencesUseKeysetPaginateParams struct {
-	Limit           int32       `json:"limit"`
-	CursorDirection interface{} `json:"cursor_direction"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	Limit           int32  `json:"limit"`
+	CursorDirection string `json:"cursor_direction"`
+	Cursor          int32  `json:"cursor"`
 }
 
 func (q *Queries) GetAbsencesUseKeysetPaginate(ctx context.Context, arg GetAbsencesUseKeysetPaginateParams) ([]Absence, error) {
@@ -134,6 +133,40 @@ type GetAbsencesUseNumberedPaginateParams struct {
 
 func (q *Queries) GetAbsencesUseNumberedPaginate(ctx context.Context, arg GetAbsencesUseNumberedPaginateParams) ([]Absence, error) {
 	rows, err := q.db.Query(ctx, getAbsencesUseNumberedPaginate, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Absence{}
+	for rows.Next() {
+		var i Absence
+		if err := rows.Scan(&i.TAbsencesPkey, &i.AbsenceID, &i.AttendanceID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAbsences = `-- name: GetPluralAbsences :many
+SELECT t_absences_pkey, absence_id, attendance_id FROM t_absences
+WHERE attendance_id = ANY($3::uuid[])
+ORDER BY
+	t_absences_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralAbsencesParams struct {
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+}
+
+func (q *Queries) GetPluralAbsences(ctx context.Context, arg GetPluralAbsencesParams) ([]Absence, error) {
+	rows, err := q.db.Query(ctx, getPluralAbsences, arg.Limit, arg.Offset, arg.AttendanceIds)
 	if err != nil {
 		return nil, err
 	}

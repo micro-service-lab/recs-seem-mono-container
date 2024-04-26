@@ -24,15 +24,22 @@ LIMIT $1 OFFSET $2;
 -- name: GetAbsencesUseKeysetPaginate :many
 SELECT * FROM t_absences
 WHERE
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
-			t_absences_pkey < @cursor
+			t_absences_pkey < @cursor::int
 		WHEN 'prev' THEN
-			t_absences_pkey > @cursor
+			t_absences_pkey > @cursor::int
 	END
 ORDER BY
 	t_absences_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralAbsences :many
+SELECT * FROM t_absences
+WHERE attendance_id = ANY(@attendance_ids::uuid[])
+ORDER BY
+	t_absences_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountAbsences :one
 SELECT COUNT(*) FROM t_absences;

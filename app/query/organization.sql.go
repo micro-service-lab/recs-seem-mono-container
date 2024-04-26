@@ -332,18 +332,18 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
 AND
-	CASE $11
+	CASE $11::text
 		WHEN 'next' THEN
 			CASE $12::text
-				WHEN 'name' THEN m_organizations.name > $13 OR (m_organizations.name = $13 AND m_organizations_pkey < $14)
-				WHEN 'r_name' THEN m_organizations.name < $13 OR (m_organizations.name = $13 AND m_organizations_pkey < $14)
-				ELSE m_organizations_pkey < $14
+				WHEN 'name' THEN m_organizations.name > $13 OR (m_organizations.name = $13 AND m_organizations_pkey < $14::int)
+				WHEN 'r_name' THEN m_organizations.name < $13 OR (m_organizations.name = $13 AND m_organizations_pkey < $14::int)
+				ELSE m_organizations_pkey < $14::int
 			END
 		WHEN 'prev' THEN
 			CASE $12::text
-				WHEN 'name' THEN m_organizations.name < $13 OR (m_organizations.name = $13 AND m_organizations_pkey > $14)
-				WHEN 'r_name' THEN m_organizations.name > $13 OR (m_organizations.name = $13 AND m_organizations_pkey > $14)
-				ELSE m_organizations_pkey > $14
+				WHEN 'name' THEN m_organizations.name < $13 OR (m_organizations.name = $13 AND m_organizations_pkey > $14::int)
+				WHEN 'r_name' THEN m_organizations.name > $13 OR (m_organizations.name = $13 AND m_organizations_pkey > $14::int)
+				ELSE m_organizations_pkey > $14::int
 			END
 	END
 ORDER BY
@@ -354,20 +354,20 @@ LIMIT $1
 `
 
 type GetOrganizationsUseKeysetPaginateParams struct {
-	Limit            int32       `json:"limit"`
-	WhereLikeName    bool        `json:"where_like_name"`
-	SearchName       string      `json:"search_name"`
-	WhereIsWhole     bool        `json:"where_is_whole"`
-	IsWhole          bool        `json:"is_whole"`
-	WhereIsPersonal  bool        `json:"where_is_personal"`
-	IsPersonal       bool        `json:"is_personal"`
-	PersonalMemberID uuid.UUID   `json:"personal_member_id"`
-	WhereIsGroup     bool        `json:"where_is_group"`
-	WhereIsGrade     bool        `json:"where_is_grade"`
-	CursorDirection  interface{} `json:"cursor_direction"`
-	OrderMethod      string      `json:"order_method"`
-	CursorColumn     string      `json:"cursor_column"`
-	Cursor           pgtype.Int8 `json:"cursor"`
+	Limit            int32     `json:"limit"`
+	WhereLikeName    bool      `json:"where_like_name"`
+	SearchName       string    `json:"search_name"`
+	WhereIsWhole     bool      `json:"where_is_whole"`
+	IsWhole          bool      `json:"is_whole"`
+	WhereIsPersonal  bool      `json:"where_is_personal"`
+	IsPersonal       bool      `json:"is_personal"`
+	PersonalMemberID uuid.UUID `json:"personal_member_id"`
+	WhereIsGroup     bool      `json:"where_is_group"`
+	WhereIsGrade     bool      `json:"where_is_grade"`
+	CursorDirection  string    `json:"cursor_direction"`
+	OrderMethod      string    `json:"order_method"`
+	NameCursor       string    `json:"name_cursor"`
+	Cursor           int32     `json:"cursor"`
 }
 
 func (q *Queries) GetOrganizationsUseKeysetPaginate(ctx context.Context, arg GetOrganizationsUseKeysetPaginateParams) ([]Organization, error) {
@@ -384,7 +384,7 @@ func (q *Queries) GetOrganizationsUseKeysetPaginate(ctx context.Context, arg Get
 		arg.WhereIsGrade,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -592,18 +592,18 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
 AND
-	CASE $11
+	CASE $11::text
 		WHEN 'next' THEN
 			CASE $12::text
-				WHEN 'name' THEN m_organizations.name > $13 OR (m_organizations.name = $13 AND m_organizations_pkey < $14)
-				WHEN 'r_name' THEN m_organizations.name < $13 OR (m_organizations.name = $13 AND m_organizations_pkey < $14)
-				ELSE m_organizations_pkey < $14
+				WHEN 'name' THEN m_organizations.name > $13 OR (m_organizations.name = $13 AND m_organizations_pkey < $14::int)
+				WHEN 'r_name' THEN m_organizations.name < $13 OR (m_organizations.name = $13 AND m_organizations_pkey < $14::int)
+				ELSE m_organizations_pkey < $14::int
 			END
 		WHEN 'prev' THEN
 			CASE $12::text
-				WHEN 'name' THEN m_organizations.name < $13 OR (m_organizations.name = $13 AND m_organizations_pkey > $14)
-				WHEN 'r_name' THEN m_organizations.name > $13 OR (m_organizations.name = $13 AND m_organizations_pkey > $14)
-				ELSE m_organizations_pkey > $14
+				WHEN 'name' THEN m_organizations.name < $13 OR (m_organizations.name = $13 AND m_organizations_pkey > $14::int)
+				WHEN 'r_name' THEN m_organizations.name > $13 OR (m_organizations.name = $13 AND m_organizations_pkey > $14::int)
+				ELSE m_organizations_pkey > $14::int
 			END
 	END
 ORDER BY
@@ -614,20 +614,20 @@ LIMIT $1
 `
 
 type GetOrganizationsWithDetailUseKeysetPaginateParams struct {
-	Limit            int32       `json:"limit"`
-	WhereLikeName    bool        `json:"where_like_name"`
-	SearchName       string      `json:"search_name"`
-	WhereIsWhole     bool        `json:"where_is_whole"`
-	IsWhole          bool        `json:"is_whole"`
-	WhereIsPersonal  bool        `json:"where_is_personal"`
-	IsPersonal       bool        `json:"is_personal"`
-	PersonalMemberID uuid.UUID   `json:"personal_member_id"`
-	WhereIsGroup     bool        `json:"where_is_group"`
-	WhereIsGrade     bool        `json:"where_is_grade"`
-	CursorDirection  interface{} `json:"cursor_direction"`
-	OrderMethod      string      `json:"order_method"`
-	CursorColumn     string      `json:"cursor_column"`
-	Cursor           pgtype.Int8 `json:"cursor"`
+	Limit            int32     `json:"limit"`
+	WhereLikeName    bool      `json:"where_like_name"`
+	SearchName       string    `json:"search_name"`
+	WhereIsWhole     bool      `json:"where_is_whole"`
+	IsWhole          bool      `json:"is_whole"`
+	WhereIsPersonal  bool      `json:"where_is_personal"`
+	IsPersonal       bool      `json:"is_personal"`
+	PersonalMemberID uuid.UUID `json:"personal_member_id"`
+	WhereIsGroup     bool      `json:"where_is_group"`
+	WhereIsGrade     bool      `json:"where_is_grade"`
+	CursorDirection  string    `json:"cursor_direction"`
+	OrderMethod      string    `json:"order_method"`
+	NameCursor       string    `json:"name_cursor"`
+	Cursor           int32     `json:"cursor"`
 }
 
 type GetOrganizationsWithDetailUseKeysetPaginateRow struct {
@@ -650,7 +650,7 @@ func (q *Queries) GetOrganizationsWithDetailUseKeysetPaginate(ctx context.Contex
 		arg.WhereIsGrade,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -752,6 +752,107 @@ func (q *Queries) GetOrganizationsWithDetailUseNumberedPaginate(ctx context.Cont
 	items := []GetOrganizationsWithDetailUseNumberedPaginateRow{}
 	for rows.Next() {
 		var i GetOrganizationsWithDetailUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Group.MGroupsPkey,
+			&i.Group.GroupID,
+			&i.Group.Key,
+			&i.Group.OrganizationID,
+			&i.Grade.MGradesPkey,
+			&i.Grade.GradeID,
+			&i.Grade.Key,
+			&i.Grade.OrganizationID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralOrganizations = `-- name: GetPluralOrganizations :many
+SELECT m_organizations_pkey, organization_id, name, description, is_personal, is_whole, created_at, updated_at FROM m_organizations WHERE organization_id = ANY($3::uuid[])
+ORDER BY
+	m_organizations_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralOrganizationsParams struct {
+	Limit           int32       `json:"limit"`
+	Offset          int32       `json:"offset"`
+	OrganizationIds []uuid.UUID `json:"organization_ids"`
+}
+
+func (q *Queries) GetPluralOrganizations(ctx context.Context, arg GetPluralOrganizationsParams) ([]Organization, error) {
+	rows, err := q.db.Query(ctx, getPluralOrganizations, arg.Limit, arg.Offset, arg.OrganizationIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Organization{}
+	for rows.Next() {
+		var i Organization
+		if err := rows.Scan(
+			&i.MOrganizationsPkey,
+			&i.OrganizationID,
+			&i.Name,
+			&i.Description,
+			&i.IsPersonal,
+			&i.IsWhole,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralOrganizationsWithDetail = `-- name: GetPluralOrganizationsWithDetail :many
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
+LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
+LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
+WHERE organization_id = ANY($3::uuid[])
+ORDER BY
+	m_organizations_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralOrganizationsWithDetailParams struct {
+	Limit           int32       `json:"limit"`
+	Offset          int32       `json:"offset"`
+	OrganizationIds []uuid.UUID `json:"organization_ids"`
+}
+
+type GetPluralOrganizationsWithDetailRow struct {
+	Organization Organization `json:"organization"`
+	Group        Group        `json:"group"`
+	Grade        Grade        `json:"grade"`
+}
+
+func (q *Queries) GetPluralOrganizationsWithDetail(ctx context.Context, arg GetPluralOrganizationsWithDetailParams) ([]GetPluralOrganizationsWithDetailRow, error) {
+	rows, err := q.db.Query(ctx, getPluralOrganizationsWithDetail, arg.Limit, arg.Offset, arg.OrganizationIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralOrganizationsWithDetailRow{}
+	for rows.Next() {
+		var i GetPluralOrganizationsWithDetailRow
 		if err := rows.Scan(
 			&i.Organization.MOrganizationsPkey,
 			&i.Organization.OrganizationID,

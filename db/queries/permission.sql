@@ -16,7 +16,7 @@ DELETE FROM m_permissions WHERE permission_id = $1;
 -- name: DeletePermissionByKey :exec
 DELETE FROM m_permissions WHERE key = $1;
 
--- name: FindPermissionById :one
+-- name: FindPermissionByID :one
 SELECT * FROM m_permissions WHERE permission_id = $1;
 
 -- name: FindPermissionByIDWithCategory :one
@@ -62,18 +62,18 @@ WHERE
 AND
 	CASE WHEN @where_in_category::boolean = true THEN permission_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_permissions.name > @cursor_column OR (m_permissions.name = @cursor_column AND m_permissions_pkey < @cursor)
-				WHEN 'r_name' THEN m_permissions.name < @cursor_column OR (m_permissions.name = @cursor_column AND m_permissions_pkey < @cursor)
-				ELSE m_permissions_pkey < @cursor
+				WHEN 'name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey < @cursor::int)
+				WHEN 'r_name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey < @cursor::int)
+				ELSE m_permissions_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_permissions.name < @cursor_column OR (m_permissions.name = @cursor_column AND m_permissions_pkey > @cursor)
-				WHEN 'r_name' THEN m_permissions.name > @cursor_column OR (m_permissions.name = @cursor_column AND m_permissions_pkey > @cursor)
-				ELSE m_permissions_pkey > @cursor
+				WHEN 'name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey > @cursor::int)
+				WHEN 'r_name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey > @cursor::int)
+				ELSE m_permissions_pkey > @cursor::int
 			END
 	END
 ORDER BY
@@ -81,6 +81,12 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
 	m_permissions_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralPermissions :many
+SELECT * FROM m_permissions WHERE permission_id = ANY(@permission_ids::uuid[])
+ORDER BY
+	m_permissions_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: GetPermissionsWithCategory :many
 SELECT m_permissions.*, m_permission_categories.* FROM m_permissions
@@ -115,18 +121,18 @@ WHERE
 AND
 	CASE WHEN @where_in_category::boolean = true THEN permission_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_permissions.name > @cursor_column OR (m_permissions.name = @cursor_column AND m_permissions_pkey < @cursor)
-				WHEN 'r_name' THEN m_permissions.name < @cursor_column OR (m_permissions.name = @cursor_column AND m_permissions_pkey < @cursor)
-				ELSE m_permissions_pkey < @cursor
+				WHEN 'name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey < @cursor::int)
+				WHEN 'r_name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey < @cursor::int)
+				ELSE m_permissions_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_permissions.name < @cursor_column OR (m_permissions.name = @cursor_column AND m_permissions_pkey > @cursor)
-				WHEN 'r_name' THEN m_permissions.name > @cursor_column OR (m_permissions.name = @cursor_column AND m_permissions_pkey > @cursor)
-				ELSE m_permissions_pkey > @cursor
+				WHEN 'name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey > @cursor::int)
+				WHEN 'r_name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey > @cursor::int)
+				ELSE m_permissions_pkey > @cursor::int
 			END
 	END
 ORDER BY
@@ -134,6 +140,14 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
 	m_permissions_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralPermissionsWithCategory :many
+SELECT m_permissions.*, m_permission_categories.* FROM m_permissions
+JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
+WHERE permission_id = ANY(@permission_ids::uuid[])
+ORDER BY
+	m_permissions_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountPermissions :one
 SELECT COUNT(*) FROM m_permissions

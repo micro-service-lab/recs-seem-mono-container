@@ -44,23 +44,30 @@ LIMIT $1 OFFSET $2;
 -- name: GetAttendanceTypesUseKeysetPaginate :many
 SELECT * FROM m_attendance_types
 WHERE
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_attendance_types_pkey < @cursor)
-				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_attendance_types_pkey < @cursor)
-				ELSE m_attendance_types_pkey < @cursor
+				WHEN 'name' THEN name > @name_cursor OR (name = @name_cursor AND m_attendance_types_pkey < @cursor::int)
+				WHEN 'r_name' THEN name < @name_cursor OR (name = @name_cursor AND m_attendance_types_pkey < @cursor::int)
+				ELSE m_attendance_types_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name < @cursor_column OR (name = @cursor_column AND m_attendance_types_pkey > @cursor)
-				WHEN 'r_name' THEN name > @cursor_column OR (name = @cursor_column AND m_attendance_types_pkey > @cursor)
-				ELSE m_attendance_types_pkey > @cursor
+				WHEN 'name' THEN name < @name_cursor OR (name = @name_cursor AND m_attendance_types_pkey > @cursor::int)
+				WHEN 'r_name' THEN name > @name_cursor OR (name = @name_cursor AND m_attendance_types_pkey > @cursor::int)
+				ELSE m_attendance_types_pkey > @cursor::int
 			END
 	END
 ORDER BY
 	m_attendance_types_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralAttendanceTypes :many
+SELECT * FROM m_attendance_types
+WHERE attendance_type_id = ANY(@attendance_type_ids::uuid[])
+ORDER BY
+	m_attendance_types_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountAttendanceTypes :one
 SELECT COUNT(*) FROM m_attendance_types

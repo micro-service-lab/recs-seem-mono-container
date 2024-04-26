@@ -149,8 +149,11 @@ func (q *Queries) FindAttendanceByID(ctx context.Context, attendanceID uuid.UUID
 }
 
 const findAttendanceByIDWithAll = `-- name: FindAttendanceByIDWithAll :one
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
@@ -160,29 +163,41 @@ WHERE t_attendances.attendance_id = $1
 `
 
 type FindAttendanceByIDWithAllRow struct {
-	Attendance     Attendance     `json:"attendance"`
-	Member         Member         `json:"member"`
-	AttendanceType AttendanceType `json:"attendance_type"`
-	Organization   Organization   `json:"organization"`
-	EarlyLeaving   EarlyLeaving   `json:"early_leaving"`
-	LateArrival    LateArrival    `json:"late_arrival"`
-	Absence        Absence        `json:"absence"`
+	TAttendancesPkey    pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID        uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID    uuid.UUID    `json:"attendance_type_id"`
+	MemberID            uuid.UUID    `json:"member_id"`
+	Description         string       `json:"description"`
+	Date                pgtype.Date  `json:"date"`
+	MailSendFlag        bool         `json:"mail_send_flag"`
+	SendOrganizationID  pgtype.UUID  `json:"send_organization_id"`
+	PostedAt            time.Time    `json:"posted_at"`
+	LastEditedAt        time.Time    `json:"last_edited_at"`
+	Member              Member       `json:"member"`
+	AttendanceTypeID_2  pgtype.UUID  `json:"attendance_type_id_2"`
+	AttendanceTypeName  pgtype.Text  `json:"attendance_type_name"`
+	AttendanceTypeKey   pgtype.Text  `json:"attendance_type_key"`
+	AttendanceTypeColor pgtype.Text  `json:"attendance_type_color"`
+	Organization        Organization `json:"organization"`
+	EarlyLeaving        EarlyLeaving `json:"early_leaving"`
+	LateArrival         LateArrival  `json:"late_arrival"`
+	Absence             Absence      `json:"absence"`
 }
 
 func (q *Queries) FindAttendanceByIDWithAll(ctx context.Context, attendanceID uuid.UUID) (FindAttendanceByIDWithAllRow, error) {
 	row := q.db.QueryRow(ctx, findAttendanceByIDWithAll, attendanceID)
 	var i FindAttendanceByIDWithAllRow
 	err := row.Scan(
-		&i.Attendance.TAttendancesPkey,
-		&i.Attendance.AttendanceID,
-		&i.Attendance.AttendanceTypeID,
-		&i.Attendance.MemberID,
-		&i.Attendance.Description,
-		&i.Attendance.Date,
-		&i.Attendance.MailSendFlag,
-		&i.Attendance.SendOrganizationID,
-		&i.Attendance.PostedAt,
-		&i.Attendance.LastEditedAt,
+		&i.TAttendancesPkey,
+		&i.AttendanceID,
+		&i.AttendanceTypeID,
+		&i.MemberID,
+		&i.Description,
+		&i.Date,
+		&i.MailSendFlag,
+		&i.SendOrganizationID,
+		&i.PostedAt,
+		&i.LastEditedAt,
 		&i.Member.MMembersPkey,
 		&i.Member.MemberID,
 		&i.Member.LoginID,
@@ -197,11 +212,10 @@ func (q *Queries) FindAttendanceByIDWithAll(ctx context.Context, attendanceID uu
 		&i.Member.RoleID,
 		&i.Member.CreatedAt,
 		&i.Member.UpdatedAt,
-		&i.AttendanceType.MAttendanceTypesPkey,
-		&i.AttendanceType.AttendanceTypeID,
-		&i.AttendanceType.Name,
-		&i.AttendanceType.Key,
-		&i.AttendanceType.Color,
+		&i.AttendanceTypeID_2,
+		&i.AttendanceTypeName,
+		&i.AttendanceTypeKey,
+		&i.AttendanceTypeColor,
 		&i.Organization.MOrganizationsPkey,
 		&i.Organization.OrganizationID,
 		&i.Organization.Name,
@@ -226,35 +240,46 @@ func (q *Queries) FindAttendanceByIDWithAll(ctx context.Context, attendanceID uu
 }
 
 const findAttendanceByIDWithAttendanceType = `-- name: FindAttendanceByIDWithAttendanceType :one
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color FROM t_attendances
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE attendance_id = $1
 `
 
 type FindAttendanceByIDWithAttendanceTypeRow struct {
-	Attendance     Attendance     `json:"attendance"`
-	AttendanceType AttendanceType `json:"attendance_type"`
+	TAttendancesPkey    pgtype.Int8 `json:"t_attendances_pkey"`
+	AttendanceID        uuid.UUID   `json:"attendance_id"`
+	AttendanceTypeID    uuid.UUID   `json:"attendance_type_id"`
+	MemberID            uuid.UUID   `json:"member_id"`
+	Description         string      `json:"description"`
+	Date                pgtype.Date `json:"date"`
+	MailSendFlag        bool        `json:"mail_send_flag"`
+	SendOrganizationID  pgtype.UUID `json:"send_organization_id"`
+	PostedAt            time.Time   `json:"posted_at"`
+	LastEditedAt        time.Time   `json:"last_edited_at"`
+	AttendanceTypeID_2  pgtype.UUID `json:"attendance_type_id_2"`
+	AttendanceTypeName  pgtype.Text `json:"attendance_type_name"`
+	AttendanceTypeKey   pgtype.Text `json:"attendance_type_key"`
+	AttendanceTypeColor pgtype.Text `json:"attendance_type_color"`
 }
 
 func (q *Queries) FindAttendanceByIDWithAttendanceType(ctx context.Context, attendanceID uuid.UUID) (FindAttendanceByIDWithAttendanceTypeRow, error) {
 	row := q.db.QueryRow(ctx, findAttendanceByIDWithAttendanceType, attendanceID)
 	var i FindAttendanceByIDWithAttendanceTypeRow
 	err := row.Scan(
-		&i.Attendance.TAttendancesPkey,
-		&i.Attendance.AttendanceID,
-		&i.Attendance.AttendanceTypeID,
-		&i.Attendance.MemberID,
-		&i.Attendance.Description,
-		&i.Attendance.Date,
-		&i.Attendance.MailSendFlag,
-		&i.Attendance.SendOrganizationID,
-		&i.Attendance.PostedAt,
-		&i.Attendance.LastEditedAt,
-		&i.AttendanceType.MAttendanceTypesPkey,
-		&i.AttendanceType.AttendanceTypeID,
-		&i.AttendanceType.Name,
-		&i.AttendanceType.Key,
-		&i.AttendanceType.Color,
+		&i.TAttendancesPkey,
+		&i.AttendanceID,
+		&i.AttendanceTypeID,
+		&i.MemberID,
+		&i.Description,
+		&i.Date,
+		&i.MailSendFlag,
+		&i.SendOrganizationID,
+		&i.PostedAt,
+		&i.LastEditedAt,
+		&i.AttendanceTypeID_2,
+		&i.AttendanceTypeName,
+		&i.AttendanceTypeKey,
+		&i.AttendanceTypeColor,
 	)
 	return i, err
 }
@@ -268,26 +293,35 @@ WHERE t_attendances.attendance_id = $1
 `
 
 type FindAttendanceByIDWithDetailsRow struct {
-	Attendance   Attendance   `json:"attendance"`
-	EarlyLeaving EarlyLeaving `json:"early_leaving"`
-	LateArrival  LateArrival  `json:"late_arrival"`
-	Absence      Absence      `json:"absence"`
+	TAttendancesPkey   pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID    `json:"attendance_type_id"`
+	MemberID           uuid.UUID    `json:"member_id"`
+	Description        string       `json:"description"`
+	Date               pgtype.Date  `json:"date"`
+	MailSendFlag       bool         `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID  `json:"send_organization_id"`
+	PostedAt           time.Time    `json:"posted_at"`
+	LastEditedAt       time.Time    `json:"last_edited_at"`
+	EarlyLeaving       EarlyLeaving `json:"early_leaving"`
+	LateArrival        LateArrival  `json:"late_arrival"`
+	Absence            Absence      `json:"absence"`
 }
 
 func (q *Queries) FindAttendanceByIDWithDetails(ctx context.Context, attendanceID uuid.UUID) (FindAttendanceByIDWithDetailsRow, error) {
 	row := q.db.QueryRow(ctx, findAttendanceByIDWithDetails, attendanceID)
 	var i FindAttendanceByIDWithDetailsRow
 	err := row.Scan(
-		&i.Attendance.TAttendancesPkey,
-		&i.Attendance.AttendanceID,
-		&i.Attendance.AttendanceTypeID,
-		&i.Attendance.MemberID,
-		&i.Attendance.Description,
-		&i.Attendance.Date,
-		&i.Attendance.MailSendFlag,
-		&i.Attendance.SendOrganizationID,
-		&i.Attendance.PostedAt,
-		&i.Attendance.LastEditedAt,
+		&i.TAttendancesPkey,
+		&i.AttendanceID,
+		&i.AttendanceTypeID,
+		&i.MemberID,
+		&i.Description,
+		&i.Date,
+		&i.MailSendFlag,
+		&i.SendOrganizationID,
+		&i.PostedAt,
+		&i.LastEditedAt,
 		&i.EarlyLeaving.TEarlyLeavingsPkey,
 		&i.EarlyLeaving.EarlyLeavingID,
 		&i.EarlyLeaving.AttendanceID,
@@ -306,28 +340,40 @@ func (q *Queries) FindAttendanceByIDWithDetails(ctx context.Context, attendanceI
 const findAttendanceByIDWithMember = `-- name: FindAttendanceByIDWithMember :one
 SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE attendance_id = $1
 `
 
 type FindAttendanceByIDWithMemberRow struct {
-	Attendance Attendance `json:"attendance"`
-	Member     Member     `json:"member"`
+	TAttendancesPkey   pgtype.Int8 `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID   `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID   `json:"attendance_type_id"`
+	MemberID           uuid.UUID   `json:"member_id"`
+	Description        string      `json:"description"`
+	Date               pgtype.Date `json:"date"`
+	MailSendFlag       bool        `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID `json:"send_organization_id"`
+	PostedAt           time.Time   `json:"posted_at"`
+	LastEditedAt       time.Time   `json:"last_edited_at"`
+	Member             Member      `json:"member"`
 }
 
 func (q *Queries) FindAttendanceByIDWithMember(ctx context.Context, attendanceID uuid.UUID) (FindAttendanceByIDWithMemberRow, error) {
 	row := q.db.QueryRow(ctx, findAttendanceByIDWithMember, attendanceID)
 	var i FindAttendanceByIDWithMemberRow
 	err := row.Scan(
-		&i.Attendance.TAttendancesPkey,
-		&i.Attendance.AttendanceID,
-		&i.Attendance.AttendanceTypeID,
-		&i.Attendance.MemberID,
-		&i.Attendance.Description,
-		&i.Attendance.Date,
-		&i.Attendance.MailSendFlag,
-		&i.Attendance.SendOrganizationID,
-		&i.Attendance.PostedAt,
-		&i.Attendance.LastEditedAt,
+		&i.TAttendancesPkey,
+		&i.AttendanceID,
+		&i.AttendanceTypeID,
+		&i.MemberID,
+		&i.Description,
+		&i.Date,
+		&i.MailSendFlag,
+		&i.SendOrganizationID,
+		&i.PostedAt,
+		&i.LastEditedAt,
 		&i.Member.MMembersPkey,
 		&i.Member.MemberID,
 		&i.Member.LoginID,
@@ -353,24 +399,33 @@ WHERE attendance_id = $1
 `
 
 type FindAttendanceByIDWithSendOrganizationRow struct {
-	Attendance   Attendance   `json:"attendance"`
-	Organization Organization `json:"organization"`
+	TAttendancesPkey   pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID    `json:"attendance_type_id"`
+	MemberID           uuid.UUID    `json:"member_id"`
+	Description        string       `json:"description"`
+	Date               pgtype.Date  `json:"date"`
+	MailSendFlag       bool         `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID  `json:"send_organization_id"`
+	PostedAt           time.Time    `json:"posted_at"`
+	LastEditedAt       time.Time    `json:"last_edited_at"`
+	Organization       Organization `json:"organization"`
 }
 
 func (q *Queries) FindAttendanceByIDWithSendOrganization(ctx context.Context, attendanceID uuid.UUID) (FindAttendanceByIDWithSendOrganizationRow, error) {
 	row := q.db.QueryRow(ctx, findAttendanceByIDWithSendOrganization, attendanceID)
 	var i FindAttendanceByIDWithSendOrganizationRow
 	err := row.Scan(
-		&i.Attendance.TAttendancesPkey,
-		&i.Attendance.AttendanceID,
-		&i.Attendance.AttendanceTypeID,
-		&i.Attendance.MemberID,
-		&i.Attendance.Description,
-		&i.Attendance.Date,
-		&i.Attendance.MailSendFlag,
-		&i.Attendance.SendOrganizationID,
-		&i.Attendance.PostedAt,
-		&i.Attendance.LastEditedAt,
+		&i.TAttendancesPkey,
+		&i.AttendanceID,
+		&i.AttendanceTypeID,
+		&i.MemberID,
+		&i.Description,
+		&i.Date,
+		&i.MailSendFlag,
+		&i.SendOrganizationID,
+		&i.PostedAt,
+		&i.LastEditedAt,
 		&i.Organization.MOrganizationsPkey,
 		&i.Organization.OrganizationID,
 		&i.Organization.Name,
@@ -398,18 +453,18 @@ AND
 AND
 	CASE WHEN $12::boolean = true THEN t_attendances.send_organization_id = ANY($13) ELSE TRUE END
 AND
-	CASE $14
+	CASE $14::text
 		WHEN 'next' THEN
 			CASE $15::text
-				WHEN 'date' THEN date > $16 OR (date = $16 AND t_attendances_pkey < $17)
-				WHEN 'r_date' THEN date < $16 OR (date = $16 AND t_attendances_pkey < $17)
-				ELSE t_attendances_pkey < $17
+				WHEN 'date' THEN date > $16 OR (date = $16 AND t_attendances_pkey < $17::int)
+				WHEN 'r_date' THEN date < $16 OR (date = $16 AND t_attendances_pkey < $17::int)
+				ELSE t_attendances_pkey < $17::int
 			END
 		WHEN 'prev' THEN
 			CASE $15::text
-				WHEN 'date' THEN date < $16 OR (date = $16 AND t_attendances_pkey > $17)
-				WHEN 'r_date' THEN date > $16 OR (date = $16 AND t_attendances_pkey > $17)
-				ELSE t_attendances_pkey > $17
+				WHEN 'date' THEN date < $16 OR (date = $16 AND t_attendances_pkey > $17::int)
+				WHEN 'r_date' THEN date > $16 OR (date = $16 AND t_attendances_pkey > $17::int)
+				ELSE t_attendances_pkey > $17::int
 			END
 	END
 ORDER BY
@@ -433,10 +488,10 @@ type GetAttendanceUseKeysetPaginateParams struct {
 	MailSendFlag            bool        `json:"mail_send_flag"`
 	WhereInSendOrganization bool        `json:"where_in_send_organization"`
 	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
-	CursorDirection         interface{} `json:"cursor_direction"`
+	CursorDirection         string      `json:"cursor_direction"`
 	OrderMethod             string      `json:"order_method"`
-	CursorColumn            pgtype.Date `json:"cursor_column"`
-	Cursor                  pgtype.Int8 `json:"cursor"`
+	DateCursor              pgtype.Date `json:"date_cursor"`
+	Cursor                  int32       `json:"cursor"`
 }
 
 func (q *Queries) GetAttendanceUseKeysetPaginate(ctx context.Context, arg GetAttendanceUseKeysetPaginateParams) ([]Attendance, error) {
@@ -456,7 +511,7 @@ func (q *Queries) GetAttendanceUseKeysetPaginate(ctx context.Context, arg GetAtt
 		arg.InSendOrganization,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.DateCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -575,11 +630,14 @@ func (q *Queries) GetAttendanceUseNumberedPaginate(ctx context.Context, arg GetA
 }
 
 const getAttendanceWithAll = `-- name: GetAttendanceWithAll :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE
@@ -617,13 +675,25 @@ type GetAttendanceWithAllParams struct {
 }
 
 type GetAttendanceWithAllRow struct {
-	Attendance     Attendance     `json:"attendance"`
-	Member         Member         `json:"member"`
-	AttendanceType AttendanceType `json:"attendance_type"`
-	Organization   Organization   `json:"organization"`
-	EarlyLeaving   EarlyLeaving   `json:"early_leaving"`
-	LateArrival    LateArrival    `json:"late_arrival"`
-	Absence        Absence        `json:"absence"`
+	TAttendancesPkey    pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID        uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID    uuid.UUID    `json:"attendance_type_id"`
+	MemberID            uuid.UUID    `json:"member_id"`
+	Description         string       `json:"description"`
+	Date                pgtype.Date  `json:"date"`
+	MailSendFlag        bool         `json:"mail_send_flag"`
+	SendOrganizationID  pgtype.UUID  `json:"send_organization_id"`
+	PostedAt            time.Time    `json:"posted_at"`
+	LastEditedAt        time.Time    `json:"last_edited_at"`
+	Member              Member       `json:"member"`
+	AttendanceTypeID_2  pgtype.UUID  `json:"attendance_type_id_2"`
+	AttendanceTypeName  pgtype.Text  `json:"attendance_type_name"`
+	AttendanceTypeKey   pgtype.Text  `json:"attendance_type_key"`
+	AttendanceTypeColor pgtype.Text  `json:"attendance_type_color"`
+	Organization        Organization `json:"organization"`
+	EarlyLeaving        EarlyLeaving `json:"early_leaving"`
+	LateArrival         LateArrival  `json:"late_arrival"`
+	Absence             Absence      `json:"absence"`
 }
 
 func (q *Queries) GetAttendanceWithAll(ctx context.Context, arg GetAttendanceWithAllParams) ([]GetAttendanceWithAllRow, error) {
@@ -650,16 +720,16 @@ func (q *Queries) GetAttendanceWithAll(ctx context.Context, arg GetAttendanceWit
 	for rows.Next() {
 		var i GetAttendanceWithAllRow
 		if err := rows.Scan(
-			&i.Attendance.TAttendancesPkey,
-			&i.Attendance.AttendanceID,
-			&i.Attendance.AttendanceTypeID,
-			&i.Attendance.MemberID,
-			&i.Attendance.Description,
-			&i.Attendance.Date,
-			&i.Attendance.MailSendFlag,
-			&i.Attendance.SendOrganizationID,
-			&i.Attendance.PostedAt,
-			&i.Attendance.LastEditedAt,
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,
 			&i.Member.LoginID,
@@ -674,11 +744,10 @@ func (q *Queries) GetAttendanceWithAll(ctx context.Context, arg GetAttendanceWit
 			&i.Member.RoleID,
 			&i.Member.CreatedAt,
 			&i.Member.UpdatedAt,
-			&i.AttendanceType.MAttendanceTypesPkey,
-			&i.AttendanceType.AttendanceTypeID,
-			&i.AttendanceType.Name,
-			&i.AttendanceType.Key,
-			&i.AttendanceType.Color,
+			&i.AttendanceTypeID_2,
+			&i.AttendanceTypeName,
+			&i.AttendanceTypeKey,
+			&i.AttendanceTypeColor,
 			&i.Organization.MOrganizationsPkey,
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
@@ -710,11 +779,14 @@ func (q *Queries) GetAttendanceWithAll(ctx context.Context, arg GetAttendanceWit
 }
 
 const getAttendanceWithAllUseKeysetPaginate = `-- name: GetAttendanceWithAllUseKeysetPaginate :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE
@@ -730,18 +802,18 @@ AND
 AND
 	CASE WHEN $12::boolean = true THEN t_attendances.send_organization_id = ANY($13) ELSE TRUE END
 AND
-	CASE $14
+	CASE $14::text
 		WHEN 'next' THEN
 			CASE $15::text
-				WHEN 'date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
-				WHEN 'r_date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
-				ELSE t_attendances_pkey < $17
+				WHEN 'date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17::int)
+				WHEN 'r_date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17::int)
+				ELSE t_attendances_pkey < $17::int
 			END
 		WHEN 'prev' THEN
 			CASE $15::text
-				WHEN 'date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
-				WHEN 'r_date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
-				ELSE t_attendances_pkey > $17
+				WHEN 'date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17::int)
+				WHEN 'r_date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17::int)
+				ELSE t_attendances_pkey > $17::int
 			END
 	END
 ORDER BY
@@ -765,20 +837,32 @@ type GetAttendanceWithAllUseKeysetPaginateParams struct {
 	MailSendFlag            bool        `json:"mail_send_flag"`
 	WhereInSendOrganization bool        `json:"where_in_send_organization"`
 	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
-	CursorDirection         interface{} `json:"cursor_direction"`
+	CursorDirection         string      `json:"cursor_direction"`
 	OrderMethod             string      `json:"order_method"`
-	CursorColumn            pgtype.Date `json:"cursor_column"`
-	Cursor                  pgtype.Int8 `json:"cursor"`
+	DateCursor              pgtype.Date `json:"date_cursor"`
+	Cursor                  int32       `json:"cursor"`
 }
 
 type GetAttendanceWithAllUseKeysetPaginateRow struct {
-	Attendance     Attendance     `json:"attendance"`
-	Member         Member         `json:"member"`
-	AttendanceType AttendanceType `json:"attendance_type"`
-	Organization   Organization   `json:"organization"`
-	EarlyLeaving   EarlyLeaving   `json:"early_leaving"`
-	LateArrival    LateArrival    `json:"late_arrival"`
-	Absence        Absence        `json:"absence"`
+	TAttendancesPkey    pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID        uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID    uuid.UUID    `json:"attendance_type_id"`
+	MemberID            uuid.UUID    `json:"member_id"`
+	Description         string       `json:"description"`
+	Date                pgtype.Date  `json:"date"`
+	MailSendFlag        bool         `json:"mail_send_flag"`
+	SendOrganizationID  pgtype.UUID  `json:"send_organization_id"`
+	PostedAt            time.Time    `json:"posted_at"`
+	LastEditedAt        time.Time    `json:"last_edited_at"`
+	Member              Member       `json:"member"`
+	AttendanceTypeID_2  pgtype.UUID  `json:"attendance_type_id_2"`
+	AttendanceTypeName  pgtype.Text  `json:"attendance_type_name"`
+	AttendanceTypeKey   pgtype.Text  `json:"attendance_type_key"`
+	AttendanceTypeColor pgtype.Text  `json:"attendance_type_color"`
+	Organization        Organization `json:"organization"`
+	EarlyLeaving        EarlyLeaving `json:"early_leaving"`
+	LateArrival         LateArrival  `json:"late_arrival"`
+	Absence             Absence      `json:"absence"`
 }
 
 func (q *Queries) GetAttendanceWithAllUseKeysetPaginate(ctx context.Context, arg GetAttendanceWithAllUseKeysetPaginateParams) ([]GetAttendanceWithAllUseKeysetPaginateRow, error) {
@@ -798,7 +882,7 @@ func (q *Queries) GetAttendanceWithAllUseKeysetPaginate(ctx context.Context, arg
 		arg.InSendOrganization,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.DateCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -809,16 +893,16 @@ func (q *Queries) GetAttendanceWithAllUseKeysetPaginate(ctx context.Context, arg
 	for rows.Next() {
 		var i GetAttendanceWithAllUseKeysetPaginateRow
 		if err := rows.Scan(
-			&i.Attendance.TAttendancesPkey,
-			&i.Attendance.AttendanceID,
-			&i.Attendance.AttendanceTypeID,
-			&i.Attendance.MemberID,
-			&i.Attendance.Description,
-			&i.Attendance.Date,
-			&i.Attendance.MailSendFlag,
-			&i.Attendance.SendOrganizationID,
-			&i.Attendance.PostedAt,
-			&i.Attendance.LastEditedAt,
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,
 			&i.Member.LoginID,
@@ -833,11 +917,10 @@ func (q *Queries) GetAttendanceWithAllUseKeysetPaginate(ctx context.Context, arg
 			&i.Member.RoleID,
 			&i.Member.CreatedAt,
 			&i.Member.UpdatedAt,
-			&i.AttendanceType.MAttendanceTypesPkey,
-			&i.AttendanceType.AttendanceTypeID,
-			&i.AttendanceType.Name,
-			&i.AttendanceType.Key,
-			&i.AttendanceType.Color,
+			&i.AttendanceTypeID_2,
+			&i.AttendanceTypeName,
+			&i.AttendanceTypeKey,
+			&i.AttendanceTypeColor,
 			&i.Organization.MOrganizationsPkey,
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
@@ -869,11 +952,14 @@ func (q *Queries) GetAttendanceWithAllUseKeysetPaginate(ctx context.Context, arg
 }
 
 const getAttendanceWithAllUseNumberedPaginate = `-- name: GetAttendanceWithAllUseNumberedPaginate :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE
@@ -914,13 +1000,25 @@ type GetAttendanceWithAllUseNumberedPaginateParams struct {
 }
 
 type GetAttendanceWithAllUseNumberedPaginateRow struct {
-	Attendance     Attendance     `json:"attendance"`
-	Member         Member         `json:"member"`
-	AttendanceType AttendanceType `json:"attendance_type"`
-	Organization   Organization   `json:"organization"`
-	EarlyLeaving   EarlyLeaving   `json:"early_leaving"`
-	LateArrival    LateArrival    `json:"late_arrival"`
-	Absence        Absence        `json:"absence"`
+	TAttendancesPkey    pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID        uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID    uuid.UUID    `json:"attendance_type_id"`
+	MemberID            uuid.UUID    `json:"member_id"`
+	Description         string       `json:"description"`
+	Date                pgtype.Date  `json:"date"`
+	MailSendFlag        bool         `json:"mail_send_flag"`
+	SendOrganizationID  pgtype.UUID  `json:"send_organization_id"`
+	PostedAt            time.Time    `json:"posted_at"`
+	LastEditedAt        time.Time    `json:"last_edited_at"`
+	Member              Member       `json:"member"`
+	AttendanceTypeID_2  pgtype.UUID  `json:"attendance_type_id_2"`
+	AttendanceTypeName  pgtype.Text  `json:"attendance_type_name"`
+	AttendanceTypeKey   pgtype.Text  `json:"attendance_type_key"`
+	AttendanceTypeColor pgtype.Text  `json:"attendance_type_color"`
+	Organization        Organization `json:"organization"`
+	EarlyLeaving        EarlyLeaving `json:"early_leaving"`
+	LateArrival         LateArrival  `json:"late_arrival"`
+	Absence             Absence      `json:"absence"`
 }
 
 func (q *Queries) GetAttendanceWithAllUseNumberedPaginate(ctx context.Context, arg GetAttendanceWithAllUseNumberedPaginateParams) ([]GetAttendanceWithAllUseNumberedPaginateRow, error) {
@@ -949,16 +1047,16 @@ func (q *Queries) GetAttendanceWithAllUseNumberedPaginate(ctx context.Context, a
 	for rows.Next() {
 		var i GetAttendanceWithAllUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Attendance.TAttendancesPkey,
-			&i.Attendance.AttendanceID,
-			&i.Attendance.AttendanceTypeID,
-			&i.Attendance.MemberID,
-			&i.Attendance.Description,
-			&i.Attendance.Date,
-			&i.Attendance.MailSendFlag,
-			&i.Attendance.SendOrganizationID,
-			&i.Attendance.PostedAt,
-			&i.Attendance.LastEditedAt,
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,
 			&i.Member.LoginID,
@@ -973,11 +1071,10 @@ func (q *Queries) GetAttendanceWithAllUseNumberedPaginate(ctx context.Context, a
 			&i.Member.RoleID,
 			&i.Member.CreatedAt,
 			&i.Member.UpdatedAt,
-			&i.AttendanceType.MAttendanceTypesPkey,
-			&i.AttendanceType.AttendanceTypeID,
-			&i.AttendanceType.Name,
-			&i.AttendanceType.Key,
-			&i.AttendanceType.Color,
+			&i.AttendanceTypeID_2,
+			&i.AttendanceTypeName,
+			&i.AttendanceTypeKey,
+			&i.AttendanceTypeColor,
 			&i.Organization.MOrganizationsPkey,
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
@@ -1009,7 +1106,7 @@ func (q *Queries) GetAttendanceWithAllUseNumberedPaginate(ctx context.Context, a
 }
 
 const getAttendanceWithAttendanceType = `-- name: GetAttendanceWithAttendanceType :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color FROM t_attendances
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE
 	CASE WHEN $1::boolean = true THEN t_attendances.attendance_type_id = ANY($2) ELSE TRUE END
@@ -1046,8 +1143,20 @@ type GetAttendanceWithAttendanceTypeParams struct {
 }
 
 type GetAttendanceWithAttendanceTypeRow struct {
-	Attendance     Attendance     `json:"attendance"`
-	AttendanceType AttendanceType `json:"attendance_type"`
+	TAttendancesPkey    pgtype.Int8 `json:"t_attendances_pkey"`
+	AttendanceID        uuid.UUID   `json:"attendance_id"`
+	AttendanceTypeID    uuid.UUID   `json:"attendance_type_id"`
+	MemberID            uuid.UUID   `json:"member_id"`
+	Description         string      `json:"description"`
+	Date                pgtype.Date `json:"date"`
+	MailSendFlag        bool        `json:"mail_send_flag"`
+	SendOrganizationID  pgtype.UUID `json:"send_organization_id"`
+	PostedAt            time.Time   `json:"posted_at"`
+	LastEditedAt        time.Time   `json:"last_edited_at"`
+	AttendanceTypeID_2  pgtype.UUID `json:"attendance_type_id_2"`
+	AttendanceTypeName  pgtype.Text `json:"attendance_type_name"`
+	AttendanceTypeKey   pgtype.Text `json:"attendance_type_key"`
+	AttendanceTypeColor pgtype.Text `json:"attendance_type_color"`
 }
 
 func (q *Queries) GetAttendanceWithAttendanceType(ctx context.Context, arg GetAttendanceWithAttendanceTypeParams) ([]GetAttendanceWithAttendanceTypeRow, error) {
@@ -1074,21 +1183,20 @@ func (q *Queries) GetAttendanceWithAttendanceType(ctx context.Context, arg GetAt
 	for rows.Next() {
 		var i GetAttendanceWithAttendanceTypeRow
 		if err := rows.Scan(
-			&i.Attendance.TAttendancesPkey,
-			&i.Attendance.AttendanceID,
-			&i.Attendance.AttendanceTypeID,
-			&i.Attendance.MemberID,
-			&i.Attendance.Description,
-			&i.Attendance.Date,
-			&i.Attendance.MailSendFlag,
-			&i.Attendance.SendOrganizationID,
-			&i.Attendance.PostedAt,
-			&i.Attendance.LastEditedAt,
-			&i.AttendanceType.MAttendanceTypesPkey,
-			&i.AttendanceType.AttendanceTypeID,
-			&i.AttendanceType.Name,
-			&i.AttendanceType.Key,
-			&i.AttendanceType.Color,
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.AttendanceTypeID_2,
+			&i.AttendanceTypeName,
+			&i.AttendanceTypeKey,
+			&i.AttendanceTypeColor,
 		); err != nil {
 			return nil, err
 		}
@@ -1101,7 +1209,7 @@ func (q *Queries) GetAttendanceWithAttendanceType(ctx context.Context, arg GetAt
 }
 
 const getAttendanceWithAttendanceTypeUseKeysetPaginate = `-- name: GetAttendanceWithAttendanceTypeUseKeysetPaginate :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color FROM t_attendances
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE
 	CASE WHEN $2::boolean = true THEN t_attendances.attendance_type_id = ANY($3) ELSE TRUE END
@@ -1116,18 +1224,18 @@ AND
 AND
 	CASE WHEN $12::boolean = true THEN t_attendances.send_organization_id = ANY($13) ELSE TRUE END
 AND
-	CASE $14
+	CASE $14::text
 		WHEN 'next' THEN
 			CASE $15::text
-				WHEN 'date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
-				WHEN 'r_date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
-				ELSE t_attendances_pkey < $17
+				WHEN 'date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17::int)
+				WHEN 'r_date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17::int)
+				ELSE t_attendances_pkey < $17::int
 			END
 		WHEN 'prev' THEN
 			CASE $15::text
-				WHEN 'date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
-				WHEN 'r_date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
-				ELSE t_attendances_pkey > $17
+				WHEN 'date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17::int)
+				WHEN 'r_date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17::int)
+				ELSE t_attendances_pkey > $17::int
 			END
 	END
 ORDER BY
@@ -1151,15 +1259,27 @@ type GetAttendanceWithAttendanceTypeUseKeysetPaginateParams struct {
 	MailSendFlag            bool        `json:"mail_send_flag"`
 	WhereInSendOrganization bool        `json:"where_in_send_organization"`
 	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
-	CursorDirection         interface{} `json:"cursor_direction"`
+	CursorDirection         string      `json:"cursor_direction"`
 	OrderMethod             string      `json:"order_method"`
-	CursorColumn            pgtype.Date `json:"cursor_column"`
-	Cursor                  pgtype.Int8 `json:"cursor"`
+	DateCursor              pgtype.Date `json:"date_cursor"`
+	Cursor                  int32       `json:"cursor"`
 }
 
 type GetAttendanceWithAttendanceTypeUseKeysetPaginateRow struct {
-	Attendance     Attendance     `json:"attendance"`
-	AttendanceType AttendanceType `json:"attendance_type"`
+	TAttendancesPkey    pgtype.Int8 `json:"t_attendances_pkey"`
+	AttendanceID        uuid.UUID   `json:"attendance_id"`
+	AttendanceTypeID    uuid.UUID   `json:"attendance_type_id"`
+	MemberID            uuid.UUID   `json:"member_id"`
+	Description         string      `json:"description"`
+	Date                pgtype.Date `json:"date"`
+	MailSendFlag        bool        `json:"mail_send_flag"`
+	SendOrganizationID  pgtype.UUID `json:"send_organization_id"`
+	PostedAt            time.Time   `json:"posted_at"`
+	LastEditedAt        time.Time   `json:"last_edited_at"`
+	AttendanceTypeID_2  pgtype.UUID `json:"attendance_type_id_2"`
+	AttendanceTypeName  pgtype.Text `json:"attendance_type_name"`
+	AttendanceTypeKey   pgtype.Text `json:"attendance_type_key"`
+	AttendanceTypeColor pgtype.Text `json:"attendance_type_color"`
 }
 
 func (q *Queries) GetAttendanceWithAttendanceTypeUseKeysetPaginate(ctx context.Context, arg GetAttendanceWithAttendanceTypeUseKeysetPaginateParams) ([]GetAttendanceWithAttendanceTypeUseKeysetPaginateRow, error) {
@@ -1179,7 +1299,7 @@ func (q *Queries) GetAttendanceWithAttendanceTypeUseKeysetPaginate(ctx context.C
 		arg.InSendOrganization,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.DateCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -1190,21 +1310,20 @@ func (q *Queries) GetAttendanceWithAttendanceTypeUseKeysetPaginate(ctx context.C
 	for rows.Next() {
 		var i GetAttendanceWithAttendanceTypeUseKeysetPaginateRow
 		if err := rows.Scan(
-			&i.Attendance.TAttendancesPkey,
-			&i.Attendance.AttendanceID,
-			&i.Attendance.AttendanceTypeID,
-			&i.Attendance.MemberID,
-			&i.Attendance.Description,
-			&i.Attendance.Date,
-			&i.Attendance.MailSendFlag,
-			&i.Attendance.SendOrganizationID,
-			&i.Attendance.PostedAt,
-			&i.Attendance.LastEditedAt,
-			&i.AttendanceType.MAttendanceTypesPkey,
-			&i.AttendanceType.AttendanceTypeID,
-			&i.AttendanceType.Name,
-			&i.AttendanceType.Key,
-			&i.AttendanceType.Color,
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.AttendanceTypeID_2,
+			&i.AttendanceTypeName,
+			&i.AttendanceTypeKey,
+			&i.AttendanceTypeColor,
 		); err != nil {
 			return nil, err
 		}
@@ -1217,7 +1336,7 @@ func (q *Queries) GetAttendanceWithAttendanceTypeUseKeysetPaginate(ctx context.C
 }
 
 const getAttendanceWithAttendanceTypeUseNumberedPaginate = `-- name: GetAttendanceWithAttendanceTypeUseNumberedPaginate :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.m_attendance_types_pkey, m_attendance_types.attendance_type_id, m_attendance_types.name, m_attendance_types.key, m_attendance_types.color FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color FROM t_attendances
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_attendances.attendance_type_id = ANY($4) ELSE TRUE END
@@ -1257,8 +1376,20 @@ type GetAttendanceWithAttendanceTypeUseNumberedPaginateParams struct {
 }
 
 type GetAttendanceWithAttendanceTypeUseNumberedPaginateRow struct {
-	Attendance     Attendance     `json:"attendance"`
-	AttendanceType AttendanceType `json:"attendance_type"`
+	TAttendancesPkey    pgtype.Int8 `json:"t_attendances_pkey"`
+	AttendanceID        uuid.UUID   `json:"attendance_id"`
+	AttendanceTypeID    uuid.UUID   `json:"attendance_type_id"`
+	MemberID            uuid.UUID   `json:"member_id"`
+	Description         string      `json:"description"`
+	Date                pgtype.Date `json:"date"`
+	MailSendFlag        bool        `json:"mail_send_flag"`
+	SendOrganizationID  pgtype.UUID `json:"send_organization_id"`
+	PostedAt            time.Time   `json:"posted_at"`
+	LastEditedAt        time.Time   `json:"last_edited_at"`
+	AttendanceTypeID_2  pgtype.UUID `json:"attendance_type_id_2"`
+	AttendanceTypeName  pgtype.Text `json:"attendance_type_name"`
+	AttendanceTypeKey   pgtype.Text `json:"attendance_type_key"`
+	AttendanceTypeColor pgtype.Text `json:"attendance_type_color"`
 }
 
 func (q *Queries) GetAttendanceWithAttendanceTypeUseNumberedPaginate(ctx context.Context, arg GetAttendanceWithAttendanceTypeUseNumberedPaginateParams) ([]GetAttendanceWithAttendanceTypeUseNumberedPaginateRow, error) {
@@ -1287,21 +1418,20 @@ func (q *Queries) GetAttendanceWithAttendanceTypeUseNumberedPaginate(ctx context
 	for rows.Next() {
 		var i GetAttendanceWithAttendanceTypeUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Attendance.TAttendancesPkey,
-			&i.Attendance.AttendanceID,
-			&i.Attendance.AttendanceTypeID,
-			&i.Attendance.MemberID,
-			&i.Attendance.Description,
-			&i.Attendance.Date,
-			&i.Attendance.MailSendFlag,
-			&i.Attendance.SendOrganizationID,
-			&i.Attendance.PostedAt,
-			&i.Attendance.LastEditedAt,
-			&i.AttendanceType.MAttendanceTypesPkey,
-			&i.AttendanceType.AttendanceTypeID,
-			&i.AttendanceType.Name,
-			&i.AttendanceType.Key,
-			&i.AttendanceType.Color,
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.AttendanceTypeID_2,
+			&i.AttendanceTypeName,
+			&i.AttendanceTypeKey,
+			&i.AttendanceTypeColor,
 		); err != nil {
 			return nil, err
 		}
@@ -1353,10 +1483,19 @@ type GetAttendanceWithDetailsParams struct {
 }
 
 type GetAttendanceWithDetailsRow struct {
-	Attendance   Attendance   `json:"attendance"`
-	EarlyLeaving EarlyLeaving `json:"early_leaving"`
-	LateArrival  LateArrival  `json:"late_arrival"`
-	Absence      Absence      `json:"absence"`
+	TAttendancesPkey   pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID    `json:"attendance_type_id"`
+	MemberID           uuid.UUID    `json:"member_id"`
+	Description        string       `json:"description"`
+	Date               pgtype.Date  `json:"date"`
+	MailSendFlag       bool         `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID  `json:"send_organization_id"`
+	PostedAt           time.Time    `json:"posted_at"`
+	LastEditedAt       time.Time    `json:"last_edited_at"`
+	EarlyLeaving       EarlyLeaving `json:"early_leaving"`
+	LateArrival        LateArrival  `json:"late_arrival"`
+	Absence            Absence      `json:"absence"`
 }
 
 func (q *Queries) GetAttendanceWithDetails(ctx context.Context, arg GetAttendanceWithDetailsParams) ([]GetAttendanceWithDetailsRow, error) {
@@ -1383,16 +1522,16 @@ func (q *Queries) GetAttendanceWithDetails(ctx context.Context, arg GetAttendanc
 	for rows.Next() {
 		var i GetAttendanceWithDetailsRow
 		if err := rows.Scan(
-			&i.Attendance.TAttendancesPkey,
-			&i.Attendance.AttendanceID,
-			&i.Attendance.AttendanceTypeID,
-			&i.Attendance.MemberID,
-			&i.Attendance.Description,
-			&i.Attendance.Date,
-			&i.Attendance.MailSendFlag,
-			&i.Attendance.SendOrganizationID,
-			&i.Attendance.PostedAt,
-			&i.Attendance.LastEditedAt,
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
 			&i.EarlyLeaving.TEarlyLeavingsPkey,
 			&i.EarlyLeaving.EarlyLeavingID,
 			&i.EarlyLeaving.AttendanceID,
@@ -1433,18 +1572,18 @@ AND
 AND
 	CASE WHEN $12::boolean = true THEN t_attendances.send_organization_id = ANY($13) ELSE TRUE END
 AND
-	CASE $14
+	CASE $14::text
 		WHEN 'next' THEN
 			CASE $15::text
-				WHEN 'date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
-				WHEN 'r_date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
-				ELSE t_attendances_pkey < $17
+				WHEN 'date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17::int)
+				WHEN 'r_date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17::int)
+				ELSE t_attendances_pkey < $17::int
 			END
 		WHEN 'prev' THEN
 			CASE $15::text
-				WHEN 'date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
-				WHEN 'r_date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
-				ELSE t_attendances_pkey > $17
+				WHEN 'date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17::int)
+				WHEN 'r_date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17::int)
+				ELSE t_attendances_pkey > $17::int
 			END
 	END
 ORDER BY
@@ -1468,17 +1607,26 @@ type GetAttendanceWithDetailsUseKeysetPaginateParams struct {
 	MailSendFlag            bool        `json:"mail_send_flag"`
 	WhereInSendOrganization bool        `json:"where_in_send_organization"`
 	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
-	CursorDirection         interface{} `json:"cursor_direction"`
+	CursorDirection         string      `json:"cursor_direction"`
 	OrderMethod             string      `json:"order_method"`
-	CursorColumn            pgtype.Date `json:"cursor_column"`
-	Cursor                  pgtype.Int8 `json:"cursor"`
+	DateCursor              pgtype.Date `json:"date_cursor"`
+	Cursor                  int32       `json:"cursor"`
 }
 
 type GetAttendanceWithDetailsUseKeysetPaginateRow struct {
-	Attendance   Attendance   `json:"attendance"`
-	EarlyLeaving EarlyLeaving `json:"early_leaving"`
-	LateArrival  LateArrival  `json:"late_arrival"`
-	Absence      Absence      `json:"absence"`
+	TAttendancesPkey   pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID    `json:"attendance_type_id"`
+	MemberID           uuid.UUID    `json:"member_id"`
+	Description        string       `json:"description"`
+	Date               pgtype.Date  `json:"date"`
+	MailSendFlag       bool         `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID  `json:"send_organization_id"`
+	PostedAt           time.Time    `json:"posted_at"`
+	LastEditedAt       time.Time    `json:"last_edited_at"`
+	EarlyLeaving       EarlyLeaving `json:"early_leaving"`
+	LateArrival        LateArrival  `json:"late_arrival"`
+	Absence            Absence      `json:"absence"`
 }
 
 func (q *Queries) GetAttendanceWithDetailsUseKeysetPaginate(ctx context.Context, arg GetAttendanceWithDetailsUseKeysetPaginateParams) ([]GetAttendanceWithDetailsUseKeysetPaginateRow, error) {
@@ -1498,7 +1646,7 @@ func (q *Queries) GetAttendanceWithDetailsUseKeysetPaginate(ctx context.Context,
 		arg.InSendOrganization,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.DateCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -1509,16 +1657,16 @@ func (q *Queries) GetAttendanceWithDetailsUseKeysetPaginate(ctx context.Context,
 	for rows.Next() {
 		var i GetAttendanceWithDetailsUseKeysetPaginateRow
 		if err := rows.Scan(
-			&i.Attendance.TAttendancesPkey,
-			&i.Attendance.AttendanceID,
-			&i.Attendance.AttendanceTypeID,
-			&i.Attendance.MemberID,
-			&i.Attendance.Description,
-			&i.Attendance.Date,
-			&i.Attendance.MailSendFlag,
-			&i.Attendance.SendOrganizationID,
-			&i.Attendance.PostedAt,
-			&i.Attendance.LastEditedAt,
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
 			&i.EarlyLeaving.TEarlyLeavingsPkey,
 			&i.EarlyLeaving.EarlyLeavingID,
 			&i.EarlyLeaving.AttendanceID,
@@ -1584,10 +1732,19 @@ type GetAttendanceWithDetailsUseNumberedPaginateParams struct {
 }
 
 type GetAttendanceWithDetailsUseNumberedPaginateRow struct {
-	Attendance   Attendance   `json:"attendance"`
-	EarlyLeaving EarlyLeaving `json:"early_leaving"`
-	LateArrival  LateArrival  `json:"late_arrival"`
-	Absence      Absence      `json:"absence"`
+	TAttendancesPkey   pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID    `json:"attendance_type_id"`
+	MemberID           uuid.UUID    `json:"member_id"`
+	Description        string       `json:"description"`
+	Date               pgtype.Date  `json:"date"`
+	MailSendFlag       bool         `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID  `json:"send_organization_id"`
+	PostedAt           time.Time    `json:"posted_at"`
+	LastEditedAt       time.Time    `json:"last_edited_at"`
+	EarlyLeaving       EarlyLeaving `json:"early_leaving"`
+	LateArrival        LateArrival  `json:"late_arrival"`
+	Absence            Absence      `json:"absence"`
 }
 
 func (q *Queries) GetAttendanceWithDetailsUseNumberedPaginate(ctx context.Context, arg GetAttendanceWithDetailsUseNumberedPaginateParams) ([]GetAttendanceWithDetailsUseNumberedPaginateRow, error) {
@@ -1616,16 +1773,16 @@ func (q *Queries) GetAttendanceWithDetailsUseNumberedPaginate(ctx context.Contex
 	for rows.Next() {
 		var i GetAttendanceWithDetailsUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Attendance.TAttendancesPkey,
-			&i.Attendance.AttendanceID,
-			&i.Attendance.AttendanceTypeID,
-			&i.Attendance.MemberID,
-			&i.Attendance.Description,
-			&i.Attendance.Date,
-			&i.Attendance.MailSendFlag,
-			&i.Attendance.SendOrganizationID,
-			&i.Attendance.PostedAt,
-			&i.Attendance.LastEditedAt,
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
 			&i.EarlyLeaving.TEarlyLeavingsPkey,
 			&i.EarlyLeaving.EarlyLeavingID,
 			&i.EarlyLeaving.AttendanceID,
@@ -1651,6 +1808,9 @@ func (q *Queries) GetAttendanceWithDetailsUseNumberedPaginate(ctx context.Contex
 const getAttendanceWithMember = `-- name: GetAttendanceWithMember :many
 SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE
 	CASE WHEN $1::boolean = true THEN t_attendances.attendance_type_id = ANY($2) ELSE TRUE END
 AND
@@ -1686,8 +1846,17 @@ type GetAttendanceWithMemberParams struct {
 }
 
 type GetAttendanceWithMemberRow struct {
-	Attendance Attendance `json:"attendance"`
-	Member     Member     `json:"member"`
+	TAttendancesPkey   pgtype.Int8 `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID   `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID   `json:"attendance_type_id"`
+	MemberID           uuid.UUID   `json:"member_id"`
+	Description        string      `json:"description"`
+	Date               pgtype.Date `json:"date"`
+	MailSendFlag       bool        `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID `json:"send_organization_id"`
+	PostedAt           time.Time   `json:"posted_at"`
+	LastEditedAt       time.Time   `json:"last_edited_at"`
+	Member             Member      `json:"member"`
 }
 
 func (q *Queries) GetAttendanceWithMember(ctx context.Context, arg GetAttendanceWithMemberParams) ([]GetAttendanceWithMemberRow, error) {
@@ -1714,16 +1883,16 @@ func (q *Queries) GetAttendanceWithMember(ctx context.Context, arg GetAttendance
 	for rows.Next() {
 		var i GetAttendanceWithMemberRow
 		if err := rows.Scan(
-			&i.Attendance.TAttendancesPkey,
-			&i.Attendance.AttendanceID,
-			&i.Attendance.AttendanceTypeID,
-			&i.Attendance.MemberID,
-			&i.Attendance.Description,
-			&i.Attendance.Date,
-			&i.Attendance.MailSendFlag,
-			&i.Attendance.SendOrganizationID,
-			&i.Attendance.PostedAt,
-			&i.Attendance.LastEditedAt,
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,
 			&i.Member.LoginID,
@@ -1752,6 +1921,9 @@ func (q *Queries) GetAttendanceWithMember(ctx context.Context, arg GetAttendance
 const getAttendanceWithMemberUseKeysetPaginate = `-- name: GetAttendanceWithMemberUseKeysetPaginate :many
 SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE
 	CASE WHEN $2::boolean = true THEN t_attendances.attendance_type_id = ANY($3) ELSE TRUE END
 AND
@@ -1765,18 +1937,18 @@ AND
 AND
 	CASE WHEN $12::boolean = true THEN t_attendances.send_organization_id = ANY($13) ELSE TRUE END
 AND
-	CASE $14
+	CASE $14::text
 		WHEN 'next' THEN
 			CASE $15::text
-				WHEN 'date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
-				WHEN 'r_date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
-				ELSE t_attendances_pkey < $17
+				WHEN 'date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17::int)
+				WHEN 'r_date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17::int)
+				ELSE t_attendances_pkey < $17::int
 			END
 		WHEN 'prev' THEN
 			CASE $15::text
-				WHEN 'date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
-				WHEN 'r_date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
-				ELSE t_attendances_pkey > $17
+				WHEN 'date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17::int)
+				WHEN 'r_date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17::int)
+				ELSE t_attendances_pkey > $17::int
 			END
 	END
 ORDER BY
@@ -1800,15 +1972,24 @@ type GetAttendanceWithMemberUseKeysetPaginateParams struct {
 	MailSendFlag            bool        `json:"mail_send_flag"`
 	WhereInSendOrganization bool        `json:"where_in_send_organization"`
 	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
-	CursorDirection         interface{} `json:"cursor_direction"`
+	CursorDirection         string      `json:"cursor_direction"`
 	OrderMethod             string      `json:"order_method"`
-	CursorColumn            pgtype.Date `json:"cursor_column"`
-	Cursor                  pgtype.Int8 `json:"cursor"`
+	DateCursor              pgtype.Date `json:"date_cursor"`
+	Cursor                  int32       `json:"cursor"`
 }
 
 type GetAttendanceWithMemberUseKeysetPaginateRow struct {
-	Attendance Attendance `json:"attendance"`
-	Member     Member     `json:"member"`
+	TAttendancesPkey   pgtype.Int8 `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID   `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID   `json:"attendance_type_id"`
+	MemberID           uuid.UUID   `json:"member_id"`
+	Description        string      `json:"description"`
+	Date               pgtype.Date `json:"date"`
+	MailSendFlag       bool        `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID `json:"send_organization_id"`
+	PostedAt           time.Time   `json:"posted_at"`
+	LastEditedAt       time.Time   `json:"last_edited_at"`
+	Member             Member      `json:"member"`
 }
 
 func (q *Queries) GetAttendanceWithMemberUseKeysetPaginate(ctx context.Context, arg GetAttendanceWithMemberUseKeysetPaginateParams) ([]GetAttendanceWithMemberUseKeysetPaginateRow, error) {
@@ -1828,7 +2009,7 @@ func (q *Queries) GetAttendanceWithMemberUseKeysetPaginate(ctx context.Context, 
 		arg.InSendOrganization,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.DateCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -1839,16 +2020,16 @@ func (q *Queries) GetAttendanceWithMemberUseKeysetPaginate(ctx context.Context, 
 	for rows.Next() {
 		var i GetAttendanceWithMemberUseKeysetPaginateRow
 		if err := rows.Scan(
-			&i.Attendance.TAttendancesPkey,
-			&i.Attendance.AttendanceID,
-			&i.Attendance.AttendanceTypeID,
-			&i.Attendance.MemberID,
-			&i.Attendance.Description,
-			&i.Attendance.Date,
-			&i.Attendance.MailSendFlag,
-			&i.Attendance.SendOrganizationID,
-			&i.Attendance.PostedAt,
-			&i.Attendance.LastEditedAt,
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,
 			&i.Member.LoginID,
@@ -1877,6 +2058,9 @@ func (q *Queries) GetAttendanceWithMemberUseKeysetPaginate(ctx context.Context, 
 const getAttendanceWithMemberUseNumberedPaginate = `-- name: GetAttendanceWithMemberUseNumberedPaginate :many
 SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_attendances.attendance_type_id = ANY($4) ELSE TRUE END
 AND
@@ -1915,8 +2099,17 @@ type GetAttendanceWithMemberUseNumberedPaginateParams struct {
 }
 
 type GetAttendanceWithMemberUseNumberedPaginateRow struct {
-	Attendance Attendance `json:"attendance"`
-	Member     Member     `json:"member"`
+	TAttendancesPkey   pgtype.Int8 `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID   `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID   `json:"attendance_type_id"`
+	MemberID           uuid.UUID   `json:"member_id"`
+	Description        string      `json:"description"`
+	Date               pgtype.Date `json:"date"`
+	MailSendFlag       bool        `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID `json:"send_organization_id"`
+	PostedAt           time.Time   `json:"posted_at"`
+	LastEditedAt       time.Time   `json:"last_edited_at"`
+	Member             Member      `json:"member"`
 }
 
 func (q *Queries) GetAttendanceWithMemberUseNumberedPaginate(ctx context.Context, arg GetAttendanceWithMemberUseNumberedPaginateParams) ([]GetAttendanceWithMemberUseNumberedPaginateRow, error) {
@@ -1945,16 +2138,16 @@ func (q *Queries) GetAttendanceWithMemberUseNumberedPaginate(ctx context.Context
 	for rows.Next() {
 		var i GetAttendanceWithMemberUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Attendance.TAttendancesPkey,
-			&i.Attendance.AttendanceID,
-			&i.Attendance.AttendanceTypeID,
-			&i.Attendance.MemberID,
-			&i.Attendance.Description,
-			&i.Attendance.Date,
-			&i.Attendance.MailSendFlag,
-			&i.Attendance.SendOrganizationID,
-			&i.Attendance.PostedAt,
-			&i.Attendance.LastEditedAt,
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,
 			&i.Member.LoginID,
@@ -2018,8 +2211,17 @@ type GetAttendanceWithSendOrganizationParams struct {
 }
 
 type GetAttendanceWithSendOrganizationRow struct {
-	Attendance   Attendance   `json:"attendance"`
-	Organization Organization `json:"organization"`
+	TAttendancesPkey   pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID    `json:"attendance_type_id"`
+	MemberID           uuid.UUID    `json:"member_id"`
+	Description        string       `json:"description"`
+	Date               pgtype.Date  `json:"date"`
+	MailSendFlag       bool         `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID  `json:"send_organization_id"`
+	PostedAt           time.Time    `json:"posted_at"`
+	LastEditedAt       time.Time    `json:"last_edited_at"`
+	Organization       Organization `json:"organization"`
 }
 
 func (q *Queries) GetAttendanceWithSendOrganization(ctx context.Context, arg GetAttendanceWithSendOrganizationParams) ([]GetAttendanceWithSendOrganizationRow, error) {
@@ -2046,16 +2248,16 @@ func (q *Queries) GetAttendanceWithSendOrganization(ctx context.Context, arg Get
 	for rows.Next() {
 		var i GetAttendanceWithSendOrganizationRow
 		if err := rows.Scan(
-			&i.Attendance.TAttendancesPkey,
-			&i.Attendance.AttendanceID,
-			&i.Attendance.AttendanceTypeID,
-			&i.Attendance.MemberID,
-			&i.Attendance.Description,
-			&i.Attendance.Date,
-			&i.Attendance.MailSendFlag,
-			&i.Attendance.SendOrganizationID,
-			&i.Attendance.PostedAt,
-			&i.Attendance.LastEditedAt,
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
 			&i.Organization.MOrganizationsPkey,
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
@@ -2091,17 +2293,17 @@ AND
 AND
 	CASE WHEN $12::boolean = true THEN t_attendances.send_organization_id = ANY($13) ELSE TRUE END
 AND
-	CASE $14
+	CASE $14::text
 		WHEN 'next' THEN
 			CASE $15::text
-				WHEN 'date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
-				WHEN 'r_date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17)
-				ELSE t_attendances_pkey < $17
+				WHEN 'date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17::int)
+				WHEN 'r_date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey < $17::int)
+				ELSE t_attendances_pkey < $17::int
 			END
 		WHEN 'prev' THEN
 			CASE $15::text
-				WHEN 'date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
-				WHEN 'r_date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17)
+				WHEN 'date' THEN t_attendances.date < $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17::int)
+				WHEN 'r_date' THEN t_attendances.date > $16 OR (t_attendances.date = $16 AND t_attendances_pkey > $17::int)
 				ELSE t_attendances_pkey > $17
 			END
 	END
@@ -2126,15 +2328,24 @@ type GetAttendanceWithSendOrganizationUseKeysetPaginateParams struct {
 	MailSendFlag            bool        `json:"mail_send_flag"`
 	WhereInSendOrganization bool        `json:"where_in_send_organization"`
 	InSendOrganization      pgtype.UUID `json:"in_send_organization"`
-	CursorDirection         interface{} `json:"cursor_direction"`
+	CursorDirection         string      `json:"cursor_direction"`
 	OrderMethod             string      `json:"order_method"`
-	CursorColumn            pgtype.Date `json:"cursor_column"`
-	Cursor                  pgtype.Int8 `json:"cursor"`
+	DateCursor              pgtype.Date `json:"date_cursor"`
+	Cursor                  int32       `json:"cursor"`
 }
 
 type GetAttendanceWithSendOrganizationUseKeysetPaginateRow struct {
-	Attendance   Attendance   `json:"attendance"`
-	Organization Organization `json:"organization"`
+	TAttendancesPkey   pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID    `json:"attendance_type_id"`
+	MemberID           uuid.UUID    `json:"member_id"`
+	Description        string       `json:"description"`
+	Date               pgtype.Date  `json:"date"`
+	MailSendFlag       bool         `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID  `json:"send_organization_id"`
+	PostedAt           time.Time    `json:"posted_at"`
+	LastEditedAt       time.Time    `json:"last_edited_at"`
+	Organization       Organization `json:"organization"`
 }
 
 func (q *Queries) GetAttendanceWithSendOrganizationUseKeysetPaginate(ctx context.Context, arg GetAttendanceWithSendOrganizationUseKeysetPaginateParams) ([]GetAttendanceWithSendOrganizationUseKeysetPaginateRow, error) {
@@ -2154,7 +2365,7 @@ func (q *Queries) GetAttendanceWithSendOrganizationUseKeysetPaginate(ctx context
 		arg.InSendOrganization,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.DateCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -2165,16 +2376,16 @@ func (q *Queries) GetAttendanceWithSendOrganizationUseKeysetPaginate(ctx context
 	for rows.Next() {
 		var i GetAttendanceWithSendOrganizationUseKeysetPaginateRow
 		if err := rows.Scan(
-			&i.Attendance.TAttendancesPkey,
-			&i.Attendance.AttendanceID,
-			&i.Attendance.AttendanceTypeID,
-			&i.Attendance.MemberID,
-			&i.Attendance.Description,
-			&i.Attendance.Date,
-			&i.Attendance.MailSendFlag,
-			&i.Attendance.SendOrganizationID,
-			&i.Attendance.PostedAt,
-			&i.Attendance.LastEditedAt,
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
 			&i.Organization.MOrganizationsPkey,
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
@@ -2235,8 +2446,17 @@ type GetAttendanceWithSendOrganizationUseNumberedPaginateParams struct {
 }
 
 type GetAttendanceWithSendOrganizationUseNumberedPaginateRow struct {
-	Attendance   Attendance   `json:"attendance"`
-	Organization Organization `json:"organization"`
+	TAttendancesPkey   pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID    `json:"attendance_type_id"`
+	MemberID           uuid.UUID    `json:"member_id"`
+	Description        string       `json:"description"`
+	Date               pgtype.Date  `json:"date"`
+	MailSendFlag       bool         `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID  `json:"send_organization_id"`
+	PostedAt           time.Time    `json:"posted_at"`
+	LastEditedAt       time.Time    `json:"last_edited_at"`
+	Organization       Organization `json:"organization"`
 }
 
 func (q *Queries) GetAttendanceWithSendOrganizationUseNumberedPaginate(ctx context.Context, arg GetAttendanceWithSendOrganizationUseNumberedPaginateParams) ([]GetAttendanceWithSendOrganizationUseNumberedPaginateRow, error) {
@@ -2265,16 +2485,16 @@ func (q *Queries) GetAttendanceWithSendOrganizationUseNumberedPaginate(ctx conte
 	for rows.Next() {
 		var i GetAttendanceWithSendOrganizationUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Attendance.TAttendancesPkey,
-			&i.Attendance.AttendanceID,
-			&i.Attendance.AttendanceTypeID,
-			&i.Attendance.MemberID,
-			&i.Attendance.Description,
-			&i.Attendance.Date,
-			&i.Attendance.MailSendFlag,
-			&i.Attendance.SendOrganizationID,
-			&i.Attendance.PostedAt,
-			&i.Attendance.LastEditedAt,
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
 			&i.Organization.MOrganizationsPkey,
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
@@ -2346,6 +2566,451 @@ func (q *Queries) GetAttendances(ctx context.Context, arg GetAttendancesParams) 
 		arg.InSendOrganization,
 		arg.OrderMethod,
 	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Attendance{}
+	for rows.Next() {
+		var i Attendance
+		if err := rows.Scan(
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAttendanceWithAll = `-- name: GetPluralAttendanceWithAll :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
+LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
+LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
+LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+WHERE attendance_id = ANY($3::uuid[])
+ORDER BY
+	t_attendances_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralAttendanceWithAllParams struct {
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+}
+
+type GetPluralAttendanceWithAllRow struct {
+	TAttendancesPkey    pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID        uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID    uuid.UUID    `json:"attendance_type_id"`
+	MemberID            uuid.UUID    `json:"member_id"`
+	Description         string       `json:"description"`
+	Date                pgtype.Date  `json:"date"`
+	MailSendFlag        bool         `json:"mail_send_flag"`
+	SendOrganizationID  pgtype.UUID  `json:"send_organization_id"`
+	PostedAt            time.Time    `json:"posted_at"`
+	LastEditedAt        time.Time    `json:"last_edited_at"`
+	Member              Member       `json:"member"`
+	AttendanceTypeID_2  pgtype.UUID  `json:"attendance_type_id_2"`
+	AttendanceTypeName  pgtype.Text  `json:"attendance_type_name"`
+	AttendanceTypeKey   pgtype.Text  `json:"attendance_type_key"`
+	AttendanceTypeColor pgtype.Text  `json:"attendance_type_color"`
+	Organization        Organization `json:"organization"`
+	EarlyLeaving        EarlyLeaving `json:"early_leaving"`
+	LateArrival         LateArrival  `json:"late_arrival"`
+	Absence             Absence      `json:"absence"`
+}
+
+func (q *Queries) GetPluralAttendanceWithAll(ctx context.Context, arg GetPluralAttendanceWithAllParams) ([]GetPluralAttendanceWithAllRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithAll, arg.Limit, arg.Offset, arg.AttendanceIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralAttendanceWithAllRow{}
+	for rows.Next() {
+		var i GetPluralAttendanceWithAllRow
+		if err := rows.Scan(
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.AttendanceTypeID_2,
+			&i.AttendanceTypeName,
+			&i.AttendanceTypeKey,
+			&i.AttendanceTypeColor,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.EarlyLeaving.TEarlyLeavingsPkey,
+			&i.EarlyLeaving.EarlyLeavingID,
+			&i.EarlyLeaving.AttendanceID,
+			&i.EarlyLeaving.LeaveTime,
+			&i.LateArrival.TLateArrivalsPkey,
+			&i.LateArrival.LateArrivalID,
+			&i.LateArrival.AttendanceID,
+			&i.LateArrival.ArriveTime,
+			&i.Absence.TAbsencesPkey,
+			&i.Absence.AbsenceID,
+			&i.Absence.AttendanceID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAttendanceWithAttendanceType = `-- name: GetPluralAttendanceWithAttendanceType :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color FROM t_attendances
+LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+WHERE attendance_id = ANY($3::uuid[])
+ORDER BY
+	t_attendances_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralAttendanceWithAttendanceTypeParams struct {
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+}
+
+type GetPluralAttendanceWithAttendanceTypeRow struct {
+	TAttendancesPkey    pgtype.Int8 `json:"t_attendances_pkey"`
+	AttendanceID        uuid.UUID   `json:"attendance_id"`
+	AttendanceTypeID    uuid.UUID   `json:"attendance_type_id"`
+	MemberID            uuid.UUID   `json:"member_id"`
+	Description         string      `json:"description"`
+	Date                pgtype.Date `json:"date"`
+	MailSendFlag        bool        `json:"mail_send_flag"`
+	SendOrganizationID  pgtype.UUID `json:"send_organization_id"`
+	PostedAt            time.Time   `json:"posted_at"`
+	LastEditedAt        time.Time   `json:"last_edited_at"`
+	AttendanceTypeID_2  pgtype.UUID `json:"attendance_type_id_2"`
+	AttendanceTypeName  pgtype.Text `json:"attendance_type_name"`
+	AttendanceTypeKey   pgtype.Text `json:"attendance_type_key"`
+	AttendanceTypeColor pgtype.Text `json:"attendance_type_color"`
+}
+
+func (q *Queries) GetPluralAttendanceWithAttendanceType(ctx context.Context, arg GetPluralAttendanceWithAttendanceTypeParams) ([]GetPluralAttendanceWithAttendanceTypeRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithAttendanceType, arg.Limit, arg.Offset, arg.AttendanceIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralAttendanceWithAttendanceTypeRow{}
+	for rows.Next() {
+		var i GetPluralAttendanceWithAttendanceTypeRow
+		if err := rows.Scan(
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.AttendanceTypeID_2,
+			&i.AttendanceTypeName,
+			&i.AttendanceTypeKey,
+			&i.AttendanceTypeColor,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAttendanceWithDetails = `-- name: GetPluralAttendanceWithDetails :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
+LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
+LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
+WHERE attendance_id = ANY($3::uuid[])
+ORDER BY
+	t_attendances_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralAttendanceWithDetailsParams struct {
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+}
+
+type GetPluralAttendanceWithDetailsRow struct {
+	TAttendancesPkey   pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID    `json:"attendance_type_id"`
+	MemberID           uuid.UUID    `json:"member_id"`
+	Description        string       `json:"description"`
+	Date               pgtype.Date  `json:"date"`
+	MailSendFlag       bool         `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID  `json:"send_organization_id"`
+	PostedAt           time.Time    `json:"posted_at"`
+	LastEditedAt       time.Time    `json:"last_edited_at"`
+	EarlyLeaving       EarlyLeaving `json:"early_leaving"`
+	LateArrival        LateArrival  `json:"late_arrival"`
+	Absence            Absence      `json:"absence"`
+}
+
+func (q *Queries) GetPluralAttendanceWithDetails(ctx context.Context, arg GetPluralAttendanceWithDetailsParams) ([]GetPluralAttendanceWithDetailsRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithDetails, arg.Limit, arg.Offset, arg.AttendanceIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralAttendanceWithDetailsRow{}
+	for rows.Next() {
+		var i GetPluralAttendanceWithDetailsRow
+		if err := rows.Scan(
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.EarlyLeaving.TEarlyLeavingsPkey,
+			&i.EarlyLeaving.EarlyLeavingID,
+			&i.EarlyLeaving.AttendanceID,
+			&i.EarlyLeaving.LeaveTime,
+			&i.LateArrival.TLateArrivalsPkey,
+			&i.LateArrival.LateArrivalID,
+			&i.LateArrival.AttendanceID,
+			&i.LateArrival.ArriveTime,
+			&i.Absence.TAbsencesPkey,
+			&i.Absence.AbsenceID,
+			&i.Absence.AttendanceID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAttendanceWithMember = `-- name: GetPluralAttendanceWithMember :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
+LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+WHERE attendance_id = ANY($3::uuid[])
+ORDER BY
+	t_attendances_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralAttendanceWithMemberParams struct {
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+}
+
+type GetPluralAttendanceWithMemberRow struct {
+	TAttendancesPkey   pgtype.Int8 `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID   `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID   `json:"attendance_type_id"`
+	MemberID           uuid.UUID   `json:"member_id"`
+	Description        string      `json:"description"`
+	Date               pgtype.Date `json:"date"`
+	MailSendFlag       bool        `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID `json:"send_organization_id"`
+	PostedAt           time.Time   `json:"posted_at"`
+	LastEditedAt       time.Time   `json:"last_edited_at"`
+	Member             Member      `json:"member"`
+}
+
+func (q *Queries) GetPluralAttendanceWithMember(ctx context.Context, arg GetPluralAttendanceWithMemberParams) ([]GetPluralAttendanceWithMemberRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithMember, arg.Limit, arg.Offset, arg.AttendanceIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralAttendanceWithMemberRow{}
+	for rows.Next() {
+		var i GetPluralAttendanceWithMemberRow
+		if err := rows.Scan(
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAttendanceWithSendOrganization = `-- name: GetPluralAttendanceWithSendOrganization :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_attendances
+LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+WHERE attendance_id = ANY($3::uuid[])
+ORDER BY
+	t_attendances_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralAttendanceWithSendOrganizationParams struct {
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+}
+
+type GetPluralAttendanceWithSendOrganizationRow struct {
+	TAttendancesPkey   pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID    `json:"attendance_type_id"`
+	MemberID           uuid.UUID    `json:"member_id"`
+	Description        string       `json:"description"`
+	Date               pgtype.Date  `json:"date"`
+	MailSendFlag       bool         `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID  `json:"send_organization_id"`
+	PostedAt           time.Time    `json:"posted_at"`
+	LastEditedAt       time.Time    `json:"last_edited_at"`
+	Organization       Organization `json:"organization"`
+}
+
+func (q *Queries) GetPluralAttendanceWithSendOrganization(ctx context.Context, arg GetPluralAttendanceWithSendOrganizationParams) ([]GetPluralAttendanceWithSendOrganizationRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithSendOrganization, arg.Limit, arg.Offset, arg.AttendanceIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralAttendanceWithSendOrganizationRow{}
+	for rows.Next() {
+		var i GetPluralAttendanceWithSendOrganizationRow
+		if err := rows.Scan(
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAttendances = `-- name: GetPluralAttendances :many
+SELECT t_attendances_pkey, attendance_id, attendance_type_id, member_id, description, date, mail_send_flag, send_organization_id, posted_at, last_edited_at FROM t_attendances
+WHERE attendance_id = ANY($3::uuid[])
+ORDER BY
+	t_attendances_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralAttendancesParams struct {
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+}
+
+func (q *Queries) GetPluralAttendances(ctx context.Context, arg GetPluralAttendancesParams) ([]Attendance, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendances, arg.Limit, arg.Offset, arg.AttendanceIds)
 	if err != nil {
 		return nil, err
 	}

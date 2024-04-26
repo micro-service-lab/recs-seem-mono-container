@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countRoles = `-- name: CountRoles :one
@@ -95,6 +94,46 @@ func (q *Queries) FindRoleByID(ctx context.Context, roleID uuid.UUID) (Role, err
 	return i, err
 }
 
+const getPluckRoles = `-- name: GetPluckRoles :many
+SELECT role_id, name FROM m_roles
+WHERE
+	role_id = ANY($3::uuid[])
+ORDER BY
+	m_roles_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluckRolesParams struct {
+	Limit   int32       `json:"limit"`
+	Offset  int32       `json:"offset"`
+	RoleIds []uuid.UUID `json:"role_ids"`
+}
+
+type GetPluckRolesRow struct {
+	RoleID uuid.UUID `json:"role_id"`
+	Name   string    `json:"name"`
+}
+
+func (q *Queries) GetPluckRoles(ctx context.Context, arg GetPluckRolesParams) ([]GetPluckRolesRow, error) {
+	rows, err := q.db.Query(ctx, getPluckRoles, arg.Limit, arg.Offset, arg.RoleIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluckRolesRow{}
+	for rows.Next() {
+		var i GetPluckRolesRow
+		if err := rows.Scan(&i.RoleID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getRoles = `-- name: GetRoles :many
 SELECT m_roles_pkey, role_id, name, description, created_at, updated_at FROM m_roles
 WHERE
@@ -143,18 +182,18 @@ SELECT m_roles_pkey, role_id, name, description, created_at, updated_at FROM m_r
 WHERE
 	CASE WHEN $2::boolean = true THEN m_roles.name LIKE '%' || $3::text || '%' ELSE TRUE END
 AND
-	CASE $4
+	CASE $4::text
 		WHEN 'next' THEN
 			CASE $5::text
-				WHEN 'name' THEN name > $6 OR (name = $6 AND m_roles_pkey < $7)
-				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_roles_pkey < $7)
-				ELSE m_roles_pkey < $7
+				WHEN 'name' THEN name > $6 OR (name = $6 AND m_roles_pkey < $7::int)
+				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_roles_pkey < $7::int)
+				ELSE m_roles_pkey < $7::int
 			END
 		WHEN 'prev' THEN
 			CASE $5::text
-				WHEN 'name' THEN name < $6 OR (name = $6 AND m_roles_pkey > $7)
-				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_roles_pkey > $7)
-				ELSE m_roles_pkey > $7
+				WHEN 'name' THEN name < $6 OR (name = $6 AND m_roles_pkey > $7::int)
+				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_roles_pkey > $7::int)
+				ELSE m_roles_pkey > $7::int
 			END
 	END
 ORDER BY
@@ -165,13 +204,13 @@ LIMIT $1
 `
 
 type GetRolesUseKeysetPaginateParams struct {
-	Limit           int32       `json:"limit"`
-	WhereLikeName   bool        `json:"where_like_name"`
-	SearchName      string      `json:"search_name"`
-	CursorDirection interface{} `json:"cursor_direction"`
-	OrderMethod     string      `json:"order_method"`
-	CursorColumn    string      `json:"cursor_column"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	Limit           int32  `json:"limit"`
+	WhereLikeName   bool   `json:"where_like_name"`
+	SearchName      string `json:"search_name"`
+	CursorDirection string `json:"cursor_direction"`
+	OrderMethod     string `json:"order_method"`
+	NameCursor      string `json:"name_cursor"`
+	Cursor          int32  `json:"cursor"`
 }
 
 func (q *Queries) GetRolesUseKeysetPaginate(ctx context.Context, arg GetRolesUseKeysetPaginateParams) ([]Role, error) {
@@ -181,7 +220,7 @@ func (q *Queries) GetRolesUseKeysetPaginate(ctx context.Context, arg GetRolesUse
 		arg.SearchName,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {

@@ -9,7 +9,6 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countPermissionCategories = `-- name: CountPermissionCategories :one
@@ -158,18 +157,18 @@ SELECT m_permission_categories_pkey, permission_category_id, name, description, 
 WHERE
 	CASE WHEN $2::boolean = true THEN m_permission_categories.name LIKE '%' || $3::text || '%' ELSE TRUE END
 AND
-	CASE $4
+	CASE $4::text
 		WHEN 'next' THEN
 			CASE $5::text
-				WHEN 'name' THEN name > $6 OR (name = $6 AND m_permission_categories_pkey < $7)
-				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_permission_categories_pkey < $7)
-				ELSE m_permission_categories_pkey < $7
+				WHEN 'name' THEN name > $6 OR (name = $6 AND m_permission_categories_pkey < $7::int)
+				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_permission_categories_pkey < $7::int)
+				ELSE m_permission_categories_pkey < $7::int
 			END
 		WHEN 'prev' THEN
 			CASE $5::text
-				WHEN 'name' THEN name < $6 OR (name = $6 AND m_permission_categories_pkey > $7)
-				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_permission_categories_pkey > $7)
-				ELSE m_permission_categories_pkey > $7
+				WHEN 'name' THEN name < $6 OR (name = $6 AND m_permission_categories_pkey > $7::int)
+				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_permission_categories_pkey > $7::int)
+				ELSE m_permission_categories_pkey > $7::int
 			END
 	END
 ORDER BY
@@ -180,13 +179,13 @@ LIMIT $1
 `
 
 type GetPermissionCategoriesUseKeysetPaginateParams struct {
-	Limit           int32       `json:"limit"`
-	WhereLikeName   bool        `json:"where_like_name"`
-	SearchName      string      `json:"search_name"`
-	CursorDirection interface{} `json:"cursor_direction"`
-	OrderMethod     string      `json:"order_method"`
-	CursorColumn    string      `json:"cursor_column"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	Limit           int32  `json:"limit"`
+	WhereLikeName   bool   `json:"where_like_name"`
+	SearchName      string `json:"search_name"`
+	CursorDirection string `json:"cursor_direction"`
+	OrderMethod     string `json:"order_method"`
+	NameCursor      string `json:"name_cursor"`
+	Cursor          int32  `json:"cursor"`
 }
 
 func (q *Queries) GetPermissionCategoriesUseKeysetPaginate(ctx context.Context, arg GetPermissionCategoriesUseKeysetPaginateParams) ([]PermissionCategory, error) {
@@ -196,7 +195,7 @@ func (q *Queries) GetPermissionCategoriesUseKeysetPaginate(ctx context.Context, 
 		arg.SearchName,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -250,6 +249,46 @@ func (q *Queries) GetPermissionCategoriesUseNumberedPaginate(ctx context.Context
 		arg.SearchName,
 		arg.OrderMethod,
 	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []PermissionCategory{}
+	for rows.Next() {
+		var i PermissionCategory
+		if err := rows.Scan(
+			&i.MPermissionCategoriesPkey,
+			&i.PermissionCategoryID,
+			&i.Name,
+			&i.Description,
+			&i.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralPermissionCategories = `-- name: GetPluralPermissionCategories :many
+SELECT m_permission_categories_pkey, permission_category_id, name, description, key FROM m_permission_categories
+WHERE permission_category_id = ANY($3::uuid[])
+ORDER BY
+	m_permission_categories_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralPermissionCategoriesParams struct {
+	Limit                 int32       `json:"limit"`
+	Offset                int32       `json:"offset"`
+	PermissionCategoryIds []uuid.UUID `json:"permission_category_ids"`
+}
+
+func (q *Queries) GetPluralPermissionCategories(ctx context.Context, arg GetPluralPermissionCategoriesParams) ([]PermissionCategory, error) {
+	rows, err := q.db.Query(ctx, getPluralPermissionCategories, arg.Limit, arg.Offset, arg.PermissionCategoryIds)
 	if err != nil {
 		return nil, err
 	}

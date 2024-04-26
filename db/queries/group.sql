@@ -40,15 +40,22 @@ LIMIT $1 OFFSET $2;
 -- name: GetGroupsUseKeysetPaginate :many
 SELECT * FROM m_groups
 WHERE
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
-			m_groups_pkey < @cursor
+			m_groups_pkey < @cursor::int
 		WHEN 'prev' THEN
-			m_groups_pkey > @cursor
+			m_groups_pkey > @cursor::int
 	END
 ORDER BY
 	m_groups_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralGroups :many
+SELECT * FROM m_groups
+WHERE organization_id = ANY(@organization_ids::uuid[])
+ORDER BY
+	m_groups_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: GetGroupsWithOrganization :many
 SELECT sqlc.embed(m_groups), sqlc.embed(m_organizations) FROM m_groups
@@ -71,24 +78,32 @@ LIMIT $1 OFFSET $2;
 SELECT sqlc.embed(m_groups), sqlc.embed(m_organizations) FROM m_groups
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_groups_pkey < @cursor)
-				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_groups_pkey < @cursor)
-				ELSE m_groups_pkey < @cursor
+				WHEN 'name' THEN name > @name_cursor OR (name = @name_cursor AND m_groups_pkey < @cursor::int)
+				WHEN 'r_name' THEN name < @name_cursor OR (name = @name_cursor AND m_groups_pkey < @cursor::int)
+				ELSE m_groups_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_groups_pkey < @cursor)
-				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_groups_pkey < @cursor)
-				ELSE m_groups_pkey < @cursor
+				WHEN 'name' THEN name > @name_cursor OR (name = @name_cursor AND m_groups_pkey < @cursor::int)
+				WHEN 'r_name' THEN name < @name_cursor OR (name = @name_cursor AND m_groups_pkey < @cursor::int)
+				ELSE m_groups_pkey < @cursor::int
 			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
 	m_groups_pkey DESC;
+
+-- name: GetPluralGroupsWithOrganization :many
+SELECT sqlc.embed(m_groups), sqlc.embed(m_organizations) FROM m_groups
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+WHERE group_id = ANY(@group_ids::uuid[])
+ORDER BY
+	m_groups_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountGroups :one
 SELECT COUNT(*) FROM m_groups;

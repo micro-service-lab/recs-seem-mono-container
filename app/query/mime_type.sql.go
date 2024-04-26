@@ -9,7 +9,6 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countMimeTypes = `-- name: CountMimeTypes :one
@@ -142,18 +141,18 @@ func (q *Queries) GetMimeTypes(ctx context.Context, orderMethod string) ([]MimeT
 const getMimeTypesUseKeysetPaginate = `-- name: GetMimeTypesUseKeysetPaginate :many
 SELECT m_mime_types_pkey, mime_type_id, name, key FROM m_mime_types
 WHERE
-	CASE $1
+	CASE $1::text
 		WHEN 'next' THEN
 			CASE $2::text
-				WHEN 'name' THEN name > $3 OR (name = $3 AND m_mime_types_pkey < $4)
-				WHEN 'r_name' THEN name < $3 OR (name = $3 AND m_mime_types_pkey < $4)
-				ELSE m_mime_types_pkey < $4
+				WHEN 'name' THEN name > $3 OR (name = $3 AND m_mime_types_pkey < $4::int)
+				WHEN 'r_name' THEN name < $3 OR (name = $3 AND m_mime_types_pkey < $4::int)
+				ELSE m_mime_types_pkey < $4::int
 			END
 		WHEN 'prev' THEN
 			CASE $2::text
-				WHEN 'name' THEN name < $3 OR (name = $3 AND m_mime_types_pkey > $4)
-				WHEN 'r_name' THEN name > $3 OR (name = $3 AND m_mime_types_pkey > $4)
-				ELSE m_mime_types_pkey > $4
+				WHEN 'name' THEN name < $3 OR (name = $3 AND m_mime_types_pkey > $4::int)
+				WHEN 'r_name' THEN name > $3 OR (name = $3 AND m_mime_types_pkey > $4::int)
+				ELSE m_mime_types_pkey > $4::int
 			END
 	END
 ORDER BY
@@ -163,17 +162,17 @@ ORDER BY
 `
 
 type GetMimeTypesUseKeysetPaginateParams struct {
-	CursorDirection interface{} `json:"cursor_direction"`
-	OrderMethod     string      `json:"order_method"`
-	CursorColumn    string      `json:"cursor_column"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	CursorDirection string `json:"cursor_direction"`
+	OrderMethod     string `json:"order_method"`
+	NameCursor      string `json:"name_cursor"`
+	Cursor          int32  `json:"cursor"`
 }
 
 func (q *Queries) GetMimeTypesUseKeysetPaginate(ctx context.Context, arg GetMimeTypesUseKeysetPaginateParams) ([]MimeType, error) {
 	rows, err := q.db.Query(ctx, getMimeTypesUseKeysetPaginate,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -216,6 +215,45 @@ type GetMimeTypesUseNumberedPaginateParams struct {
 
 func (q *Queries) GetMimeTypesUseNumberedPaginate(ctx context.Context, arg GetMimeTypesUseNumberedPaginateParams) ([]MimeType, error) {
 	rows, err := q.db.Query(ctx, getMimeTypesUseNumberedPaginate, arg.Limit, arg.Offset, arg.OrderMethod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []MimeType{}
+	for rows.Next() {
+		var i MimeType
+		if err := rows.Scan(
+			&i.MMimeTypesPkey,
+			&i.MimeTypeID,
+			&i.Name,
+			&i.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMimeTypes = `-- name: GetPluralMimeTypes :many
+SELECT m_mime_types_pkey, mime_type_id, name, key FROM m_mime_types
+WHERE mime_type_id = ANY($3::uuid[])
+ORDER BY
+	m_mime_types_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralMimeTypesParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	MimeTypeIds []uuid.UUID `json:"mime_type_ids"`
+}
+
+func (q *Queries) GetPluralMimeTypes(ctx context.Context, arg GetPluralMimeTypesParams) ([]MimeType, error) {
+	rows, err := q.db.Query(ctx, getPluralMimeTypes, arg.Limit, arg.Offset, arg.MimeTypeIds)
 	if err != nil {
 		return nil, err
 	}

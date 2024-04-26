@@ -94,6 +94,24 @@ func (q *Queries) DeletePermissionByKey(ctx context.Context, key string) error {
 	return err
 }
 
+const findPermissionByID = `-- name: FindPermissionByID :one
+SELECT m_permissions_pkey, permission_id, name, description, key, permission_category_id FROM m_permissions WHERE permission_id = $1
+`
+
+func (q *Queries) FindPermissionByID(ctx context.Context, permissionID uuid.UUID) (Permission, error) {
+	row := q.db.QueryRow(ctx, findPermissionByID, permissionID)
+	var i Permission
+	err := row.Scan(
+		&i.MPermissionsPkey,
+		&i.PermissionID,
+		&i.Name,
+		&i.Description,
+		&i.Key,
+		&i.PermissionCategoryID,
+	)
+	return i, err
+}
+
 const findPermissionByIDWithCategory = `-- name: FindPermissionByIDWithCategory :one
 SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id, m_permission_categories.m_permission_categories_pkey, m_permission_categories.permission_category_id, m_permission_categories.name, m_permission_categories.description, m_permission_categories.key FROM m_permissions
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
@@ -129,24 +147,6 @@ func (q *Queries) FindPermissionByIDWithCategory(ctx context.Context, permission
 		&i.Name_2,
 		&i.Description_2,
 		&i.Key_2,
-	)
-	return i, err
-}
-
-const findPermissionById = `-- name: FindPermissionById :one
-SELECT m_permissions_pkey, permission_id, name, description, key, permission_category_id FROM m_permissions WHERE permission_id = $1
-`
-
-func (q *Queries) FindPermissionById(ctx context.Context, permissionID uuid.UUID) (Permission, error) {
-	row := q.db.QueryRow(ctx, findPermissionById, permissionID)
-	var i Permission
-	err := row.Scan(
-		&i.MPermissionsPkey,
-		&i.PermissionID,
-		&i.Name,
-		&i.Description,
-		&i.Key,
-		&i.PermissionCategoryID,
 	)
 	return i, err
 }
@@ -268,18 +268,18 @@ WHERE
 AND
 	CASE WHEN $4::boolean = true THEN permission_category_id = ANY($5::uuid[]) ELSE TRUE END
 AND
-	CASE $6
+	CASE $6::text
 		WHEN 'next' THEN
 			CASE $7::text
-				WHEN 'name' THEN m_permissions.name > $8 OR (m_permissions.name = $8 AND m_permissions_pkey < $9)
-				WHEN 'r_name' THEN m_permissions.name < $8 OR (m_permissions.name = $8 AND m_permissions_pkey < $9)
-				ELSE m_permissions_pkey < $9
+				WHEN 'name' THEN m_permissions.name > $8 OR (m_permissions.name = $8 AND m_permissions_pkey < $9::int)
+				WHEN 'r_name' THEN m_permissions.name < $8 OR (m_permissions.name = $8 AND m_permissions_pkey < $9::int)
+				ELSE m_permissions_pkey < $9::int
 			END
 		WHEN 'prev' THEN
 			CASE $7::text
-				WHEN 'name' THEN m_permissions.name < $8 OR (m_permissions.name = $8 AND m_permissions_pkey > $9)
-				WHEN 'r_name' THEN m_permissions.name > $8 OR (m_permissions.name = $8 AND m_permissions_pkey > $9)
-				ELSE m_permissions_pkey > $9
+				WHEN 'name' THEN m_permissions.name < $8 OR (m_permissions.name = $8 AND m_permissions_pkey > $9::int)
+				WHEN 'r_name' THEN m_permissions.name > $8 OR (m_permissions.name = $8 AND m_permissions_pkey > $9::int)
+				ELSE m_permissions_pkey > $9::int
 			END
 	END
 ORDER BY
@@ -295,10 +295,10 @@ type GetPermissionsUseKeysetPaginateParams struct {
 	SearchName      string      `json:"search_name"`
 	WhereInCategory bool        `json:"where_in_category"`
 	InCategories    []uuid.UUID `json:"in_categories"`
-	CursorDirection interface{} `json:"cursor_direction"`
+	CursorDirection string      `json:"cursor_direction"`
 	OrderMethod     string      `json:"order_method"`
-	CursorColumn    string      `json:"cursor_column"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	NameCursor      string      `json:"name_cursor"`
+	Cursor          int32       `json:"cursor"`
 }
 
 func (q *Queries) GetPermissionsUseKeysetPaginate(ctx context.Context, arg GetPermissionsUseKeysetPaginateParams) ([]Permission, error) {
@@ -310,7 +310,7 @@ func (q *Queries) GetPermissionsUseKeysetPaginate(ctx context.Context, arg GetPe
 		arg.InCategories,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -477,18 +477,18 @@ WHERE
 AND
 	CASE WHEN $4::boolean = true THEN permission_category_id = ANY($5::uuid[]) ELSE TRUE END
 AND
-	CASE $6
+	CASE $6::text
 		WHEN 'next' THEN
 			CASE $7::text
-				WHEN 'name' THEN m_permissions.name > $8 OR (m_permissions.name = $8 AND m_permissions_pkey < $9)
-				WHEN 'r_name' THEN m_permissions.name < $8 OR (m_permissions.name = $8 AND m_permissions_pkey < $9)
-				ELSE m_permissions_pkey < $9
+				WHEN 'name' THEN m_permissions.name > $8 OR (m_permissions.name = $8 AND m_permissions_pkey < $9::int)
+				WHEN 'r_name' THEN m_permissions.name < $8 OR (m_permissions.name = $8 AND m_permissions_pkey < $9::int)
+				ELSE m_permissions_pkey < $9::int
 			END
 		WHEN 'prev' THEN
 			CASE $7::text
-				WHEN 'name' THEN m_permissions.name < $8 OR (m_permissions.name = $8 AND m_permissions_pkey > $9)
-				WHEN 'r_name' THEN m_permissions.name > $8 OR (m_permissions.name = $8 AND m_permissions_pkey > $9)
-				ELSE m_permissions_pkey > $9
+				WHEN 'name' THEN m_permissions.name < $8 OR (m_permissions.name = $8 AND m_permissions_pkey > $9::int)
+				WHEN 'r_name' THEN m_permissions.name > $8 OR (m_permissions.name = $8 AND m_permissions_pkey > $9::int)
+				ELSE m_permissions_pkey > $9::int
 			END
 	END
 ORDER BY
@@ -504,10 +504,10 @@ type GetPermissionsWithCategoryUseKeysetPaginateParams struct {
 	SearchName      string      `json:"search_name"`
 	WhereInCategory bool        `json:"where_in_category"`
 	InCategories    []uuid.UUID `json:"in_categories"`
-	CursorDirection interface{} `json:"cursor_direction"`
+	CursorDirection string      `json:"cursor_direction"`
 	OrderMethod     string      `json:"order_method"`
-	CursorColumn    string      `json:"cursor_column"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	NameCursor      string      `json:"name_cursor"`
+	Cursor          int32       `json:"cursor"`
 }
 
 type GetPermissionsWithCategoryUseKeysetPaginateRow struct {
@@ -533,7 +533,7 @@ func (q *Queries) GetPermissionsWithCategoryUseKeysetPaginate(ctx context.Contex
 		arg.InCategories,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -621,6 +621,107 @@ func (q *Queries) GetPermissionsWithCategoryUseNumberedPaginate(ctx context.Cont
 	items := []GetPermissionsWithCategoryUseNumberedPaginateRow{}
 	for rows.Next() {
 		var i GetPermissionsWithCategoryUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.MPermissionsPkey,
+			&i.PermissionID,
+			&i.Name,
+			&i.Description,
+			&i.Key,
+			&i.PermissionCategoryID,
+			&i.MPermissionCategoriesPkey,
+			&i.PermissionCategoryID_2,
+			&i.Name_2,
+			&i.Description_2,
+			&i.Key_2,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralPermissions = `-- name: GetPluralPermissions :many
+SELECT m_permissions_pkey, permission_id, name, description, key, permission_category_id FROM m_permissions WHERE permission_id = ANY($3::uuid[])
+ORDER BY
+	m_permissions_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralPermissionsParams struct {
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+	PermissionIds []uuid.UUID `json:"permission_ids"`
+}
+
+func (q *Queries) GetPluralPermissions(ctx context.Context, arg GetPluralPermissionsParams) ([]Permission, error) {
+	rows, err := q.db.Query(ctx, getPluralPermissions, arg.Limit, arg.Offset, arg.PermissionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Permission{}
+	for rows.Next() {
+		var i Permission
+		if err := rows.Scan(
+			&i.MPermissionsPkey,
+			&i.PermissionID,
+			&i.Name,
+			&i.Description,
+			&i.Key,
+			&i.PermissionCategoryID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralPermissionsWithCategory = `-- name: GetPluralPermissionsWithCategory :many
+SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id, m_permission_categories.m_permission_categories_pkey, m_permission_categories.permission_category_id, m_permission_categories.name, m_permission_categories.description, m_permission_categories.key FROM m_permissions
+JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
+WHERE permission_id = ANY($3::uuid[])
+ORDER BY
+	m_permissions_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralPermissionsWithCategoryParams struct {
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+	PermissionIds []uuid.UUID `json:"permission_ids"`
+}
+
+type GetPluralPermissionsWithCategoryRow struct {
+	MPermissionsPkey          pgtype.Int8 `json:"m_permissions_pkey"`
+	PermissionID              uuid.UUID   `json:"permission_id"`
+	Name                      string      `json:"name"`
+	Description               string      `json:"description"`
+	Key                       string      `json:"key"`
+	PermissionCategoryID      uuid.UUID   `json:"permission_category_id"`
+	MPermissionCategoriesPkey pgtype.Int8 `json:"m_permission_categories_pkey"`
+	PermissionCategoryID_2    uuid.UUID   `json:"permission_category_id_2"`
+	Name_2                    string      `json:"name_2"`
+	Description_2             string      `json:"description_2"`
+	Key_2                     string      `json:"key_2"`
+}
+
+func (q *Queries) GetPluralPermissionsWithCategory(ctx context.Context, arg GetPluralPermissionsWithCategoryParams) ([]GetPluralPermissionsWithCategoryRow, error) {
+	rows, err := q.db.Query(ctx, getPluralPermissionsWithCategory, arg.Limit, arg.Offset, arg.PermissionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralPermissionsWithCategoryRow{}
+	for rows.Next() {
+		var i GetPluralPermissionsWithCategoryRow
 		if err := rows.Scan(
 			&i.MPermissionsPkey,
 			&i.PermissionID,

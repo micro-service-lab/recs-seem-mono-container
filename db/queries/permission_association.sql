@@ -37,18 +37,18 @@ WHERE permission_id = $1
 AND
 	CASE WHEN @where_like_name::boolean = true THEN m_work_positions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_work_positions.name > @cursor_column OR (m_work_positions.name = @cursor_column AND m_permission_associations_pkey < @cursor)
-				WHEN 'r_name' THEN m_work_positions.name < @cursor_column OR (m_work_positions.name = @cursor_column AND m_permission_associations_pkey < @cursor)
-				ELSE m_permission_associations_pkey < @cursor
+				WHEN 'name' THEN m_work_positions.name > @name_cursor OR (m_work_positions.name = @name_cursor AND m_permission_associations_pkey < @cursor::int)
+				WHEN 'r_name' THEN m_work_positions.name < @name_cursor OR (m_work_positions.name = @name_cursor AND m_permission_associations_pkey < @cursor::int)
+				ELSE m_permission_associations_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_work_positions.name < @cursor_column OR (m_work_positions.name = @cursor_column AND m_permission_associations_pkey > @cursor)
-				WHEN 'r_name' THEN m_work_positions.name > @cursor_column OR (m_work_positions.name = @cursor_column AND m_permission_associations_pkey > @cursor)
-				ELSE m_permission_associations_pkey > @cursor
+				WHEN 'name' THEN m_work_positions.name < @name_cursor OR (m_work_positions.name = @name_cursor AND m_permission_associations_pkey > @cursor::int)
+				WHEN 'r_name' THEN m_work_positions.name > @name_cursor OR (m_work_positions.name = @name_cursor AND m_permission_associations_pkey > @cursor::int)
+				ELSE m_permission_associations_pkey > @cursor::int
 			END
 	END
 ORDER BY
@@ -56,6 +56,14 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
 	m_permission_associations_pkey DESC
 LIMIT $2;
+
+-- name: GetPluralWorkPositionsOnPermission :many
+SELECT sqlc.embed(m_permission_associations), sqlc.embed(m_work_positions) FROM m_permission_associations
+LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
+WHERE permission_id = ANY(@permission_ids::uuid[])
+ORDER BY
+	m_permission_associations_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountWorkPositionsOnPermission :one
 SELECT COUNT(*) FROM m_permission_associations
@@ -94,18 +102,18 @@ WHERE work_position_id = $1
 AND
 	CASE WHEN @where_like_name::boolean = true THEN m_permissions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_permissions.name > @cursor_column OR (m_permissions.name = @cursor_column AND m_permission_associations_pkey < @cursor)
-				WHEN 'r_name' THEN m_permissions.name < @cursor_column OR (m_permissions.name = @cursor_column AND m_permission_associations_pkey < @cursor)
-				ELSE m_permission_associations_pkey < @cursor
+				WHEN 'name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permission_associations_pkey < @cursor::int)
+				WHEN 'r_name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permission_associations_pkey < @cursor::int)
+				ELSE m_permission_associations_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_permissions.name < @cursor_column OR (m_permissions.name = @cursor_column AND m_permission_associations_pkey > @cursor)
-				WHEN 'r_name' THEN m_permissions.name > @cursor_column OR (m_permissions.name = @cursor_column AND m_permission_associations_pkey > @cursor)
-				ELSE m_permission_associations_pkey > @cursor
+				WHEN 'name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permission_associations_pkey > @cursor::int)
+				WHEN 'r_name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permission_associations_pkey > @cursor::int)
+				ELSE m_permission_associations_pkey > @cursor::int
 			END
 	END
 ORDER BY
@@ -113,6 +121,14 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
 	m_permission_associations_pkey DESC
 LIMIT $2;
+
+-- name: GetPluralPermissionsOnWorkPosition :many
+SELECT sqlc.embed(m_permission_associations), sqlc.embed(m_permissions) FROM m_permission_associations
+LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
+WHERE work_position_id = ANY(@work_position_ids::uuid[])
+ORDER BY
+	m_permission_associations_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountPermissionsOnWorkPosition :one
 SELECT COUNT(*) FROM m_permission_associations

@@ -366,22 +366,22 @@ AND
 AND
 	CASE WHEN $14::boolean = true THEN last_edited_at <= $15 ELSE TRUE END
 AND
-	CASE $16
+	CASE $16::text
 		WHEN 'next' THEN
 			CASE $17::text
-				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19)
-				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19)
-				WHEN 'last_edited_at' THEN last_edited_at > $18 OR (last_edited_at = $18 AND t_messages_pkey < $19)
-				WHEN 'r_last_edited_at' THEN last_edited_at < $18 OR (last_edited_at = $18 AND t_messages_pkey < $19)
-				ELSE t_messages_pkey < $19
+				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
+				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
+				WHEN 'last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
+				ELSE t_messages_pkey < $19::int
 			END
 		WHEN 'prev' THEN
 			CASE $17::text
-				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19)
-				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19)
-				WHEN 'last_edited_at' THEN last_edited_at < $18 OR (last_edited_at = $18 AND t_messages_pkey > $19)
-				WHEN 'r_last_edited_at' THEN last_edited_at > $18 OR (last_edited_at = $18 AND t_messages_pkey > $19)
-				ELSE t_messages_pkey > $19
+				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
+				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
+				WHEN 'last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
+				ELSE t_messages_pkey > $19::int
 			END
 	END
 ORDER BY
@@ -409,10 +409,11 @@ type GetMessagesUseKeysetPaginateParams struct {
 	EarlierLastEditedAt      time.Time   `json:"earlier_last_edited_at"`
 	WhereLaterLastEditedAt   bool        `json:"where_later_last_edited_at"`
 	LaterLastEditedAt        time.Time   `json:"later_last_edited_at"`
-	CursorDirection          interface{} `json:"cursor_direction"`
+	CursorDirection          string      `json:"cursor_direction"`
 	OrderMethod              string      `json:"order_method"`
-	CursorColumn             time.Time   `json:"cursor_column"`
-	Cursor                   pgtype.Int8 `json:"cursor"`
+	PostedAtCursor           time.Time   `json:"posted_at_cursor"`
+	Cursor                   int32       `json:"cursor"`
+	LastEditedAtCursor       time.Time   `json:"last_edited_at_cursor"`
 }
 
 func (q *Queries) GetMessagesUseKeysetPaginate(ctx context.Context, arg GetMessagesUseKeysetPaginateParams) ([]Message, error) {
@@ -434,8 +435,9 @@ func (q *Queries) GetMessagesUseKeysetPaginate(ctx context.Context, arg GetMessa
 		arg.LaterLastEditedAt,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.PostedAtCursor,
 		arg.Cursor,
+		arg.LastEditedAtCursor,
 	)
 	if err != nil {
 		return nil, err
@@ -689,22 +691,22 @@ AND
 AND
 	CASE WHEN $14::boolean = true THEN last_edited_at <= $15 ELSE TRUE END
 AND
-	CASE $16
+	CASE $16::text
 		WHEN 'next' THEN
 			CASE $17::text
-				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19)
-				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19)
-				WHEN 'last_edited_at' THEN last_edited_at > $18 OR (last_edited_at = $18 AND t_messages_pkey < $19)
-				WHEN 'r_last_edited_at' THEN last_edited_at < $18 OR (last_edited_at = $18 AND t_messages_pkey < $19)
-				ELSE t_messages_pkey < $19
+				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
+				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
+				WHEN 'last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
+				ELSE t_messages_pkey < $19::int
 			END
 		WHEN 'prev' THEN
 			CASE $17::text
-				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19)
-				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19)
-				WHEN 'last_edited_at' THEN last_edited_at < $18 OR (last_edited_at = $18 AND t_messages_pkey > $19)
-				WHEN 'r_last_edited_at' THEN last_edited_at > $18 OR (last_edited_at = $18 AND t_messages_pkey > $19)
-				ELSE t_messages_pkey > $19
+				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
+				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
+				WHEN 'last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
+				ELSE t_messages_pkey > $19::int
 			END
 	END
 ORDER BY
@@ -732,10 +734,11 @@ type GetMessagesWithAllUseKeysetPaginateParams struct {
 	EarlierLastEditedAt      time.Time   `json:"earlier_last_edited_at"`
 	WhereLaterLastEditedAt   bool        `json:"where_later_last_edited_at"`
 	LaterLastEditedAt        time.Time   `json:"later_last_edited_at"`
-	CursorDirection          interface{} `json:"cursor_direction"`
+	CursorDirection          string      `json:"cursor_direction"`
 	OrderMethod              string      `json:"order_method"`
-	CursorColumn             time.Time   `json:"cursor_column"`
-	Cursor                   pgtype.Int8 `json:"cursor"`
+	PostedAtCursor           time.Time   `json:"posted_at_cursor"`
+	Cursor                   int32       `json:"cursor"`
+	LastEditedAtCursor       time.Time   `json:"last_edited_at_cursor"`
 }
 
 type GetMessagesWithAllUseKeysetPaginateRow struct {
@@ -763,8 +766,9 @@ func (q *Queries) GetMessagesWithAllUseKeysetPaginate(ctx context.Context, arg G
 		arg.LaterLastEditedAt,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.PostedAtCursor,
 		arg.Cursor,
+		arg.LastEditedAtCursor,
 	)
 	if err != nil {
 		return nil, err
@@ -1053,22 +1057,22 @@ AND
 AND
 	CASE WHEN $14::boolean = true THEN last_edited_at <= $15 ELSE TRUE END
 AND
-	CASE $16
+	CASE $16::text
 		WHEN 'next' THEN
 			CASE $17::text
-				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19)
-				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19)
-				WHEN 'last_edited_at' THEN last_edited_at > $18 OR (last_edited_at = $18 AND t_messages_pkey < $19)
-				WHEN 'r_last_edited_at' THEN last_edited_at < $18 OR (last_edited_at = $18 AND t_messages_pkey < $19)
-				ELSE t_messages_pkey < $19
+				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
+				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
+				WHEN 'last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
+				ELSE t_messages_pkey < $19::int
 			END
 		WHEN 'prev' THEN
 			CASE $17::text
-				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19)
-				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19)
-				WHEN 'last_edited_at' THEN last_edited_at < $18 OR (last_edited_at = $18 AND t_messages_pkey > $19)
-				WHEN 'r_last_edited_at' THEN last_edited_at > $18 OR (last_edited_at = $18 AND t_messages_pkey > $19)
-				ELSE t_messages_pkey > $19
+				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
+				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
+				WHEN 'last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
+				ELSE t_messages_pkey > $19::int
 			END
 	END
 ORDER BY
@@ -1096,10 +1100,11 @@ type GetMessagesWithChatRoomUseKeysetPaginateParams struct {
 	EarlierLastEditedAt      time.Time   `json:"earlier_last_edited_at"`
 	WhereLaterLastEditedAt   bool        `json:"where_later_last_edited_at"`
 	LaterLastEditedAt        time.Time   `json:"later_last_edited_at"`
-	CursorDirection          interface{} `json:"cursor_direction"`
+	CursorDirection          string      `json:"cursor_direction"`
 	OrderMethod              string      `json:"order_method"`
-	CursorColumn             time.Time   `json:"cursor_column"`
-	Cursor                   pgtype.Int8 `json:"cursor"`
+	PostedAtCursor           time.Time   `json:"posted_at_cursor"`
+	Cursor                   int32       `json:"cursor"`
+	LastEditedAtCursor       time.Time   `json:"last_edited_at_cursor"`
 }
 
 type GetMessagesWithChatRoomUseKeysetPaginateRow struct {
@@ -1126,8 +1131,9 @@ func (q *Queries) GetMessagesWithChatRoomUseKeysetPaginate(ctx context.Context, 
 		arg.LaterLastEditedAt,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.PostedAtCursor,
 		arg.Cursor,
+		arg.LastEditedAtCursor,
 	)
 	if err != nil {
 		return nil, err
@@ -1392,22 +1398,22 @@ AND
 AND
 	CASE WHEN $14::boolean = true THEN last_edited_at <= $15 ELSE TRUE END
 AND
-	CASE $16
+	CASE $16::text
 		WHEN 'next' THEN
 			CASE $17::text
-				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19)
-				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19)
-				WHEN 'last_edited_at' THEN last_edited_at > $18 OR (last_edited_at = $18 AND t_messages_pkey < $19)
-				WHEN 'r_last_edited_at' THEN last_edited_at < $18 OR (last_edited_at = $18 AND t_messages_pkey < $19)
-				ELSE t_messages_pkey < $19
+				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
+				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
+				WHEN 'last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
+				ELSE t_messages_pkey < $19::int
 			END
 		WHEN 'prev' THEN
 			CASE $17::text
-				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19)
-				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19)
-				WHEN 'last_edited_at' THEN last_edited_at < $18 OR (last_edited_at = $18 AND t_messages_pkey > $19)
-				WHEN 'r_last_edited_at' THEN last_edited_at > $18 OR (last_edited_at = $18 AND t_messages_pkey > $19)
-				ELSE t_messages_pkey > $19
+				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
+				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
+				WHEN 'last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
+				ELSE t_messages_pkey > $19::int
 			END
 	END
 ORDER BY
@@ -1435,10 +1441,11 @@ type GetMessagesWithSenderUseKeysetPaginateParams struct {
 	EarlierLastEditedAt      time.Time   `json:"earlier_last_edited_at"`
 	WhereLaterLastEditedAt   bool        `json:"where_later_last_edited_at"`
 	LaterLastEditedAt        time.Time   `json:"later_last_edited_at"`
-	CursorDirection          interface{} `json:"cursor_direction"`
+	CursorDirection          string      `json:"cursor_direction"`
 	OrderMethod              string      `json:"order_method"`
-	CursorColumn             time.Time   `json:"cursor_column"`
-	Cursor                   pgtype.Int8 `json:"cursor"`
+	PostedAtCursor           time.Time   `json:"posted_at_cursor"`
+	Cursor                   int32       `json:"cursor"`
+	LastEditedAtCursor       time.Time   `json:"last_edited_at_cursor"`
 }
 
 type GetMessagesWithSenderUseKeysetPaginateRow struct {
@@ -1465,8 +1472,9 @@ func (q *Queries) GetMessagesWithSenderUseKeysetPaginate(ctx context.Context, ar
 		arg.LaterLastEditedAt,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.PostedAtCursor,
 		arg.Cursor,
+		arg.LastEditedAtCursor,
 	)
 	if err != nil {
 		return nil, err
@@ -1586,6 +1594,237 @@ func (q *Queries) GetMessagesWithSenderUseNumberedPaginate(ctx context.Context, 
 	items := []GetMessagesWithSenderUseNumberedPaginateRow{}
 	for rows.Next() {
 		var i GetMessagesWithSenderUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Message.TMessagesPkey,
+			&i.Message.MessageID,
+			&i.Message.ChatRoomID,
+			&i.Message.SenderID,
+			&i.Message.Body,
+			&i.Message.PostedAt,
+			&i.Message.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMessages = `-- name: GetPluralMessages :many
+SELECT t_messages_pkey, message_id, chat_room_id, sender_id, body, posted_at, last_edited_at FROM t_messages WHERE message_id = ANY($3::uuid[])
+ORDER BY
+	t_messages_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralMessagesParams struct {
+	Limit      int32       `json:"limit"`
+	Offset     int32       `json:"offset"`
+	MessageIds []uuid.UUID `json:"message_ids"`
+}
+
+func (q *Queries) GetPluralMessages(ctx context.Context, arg GetPluralMessagesParams) ([]Message, error) {
+	rows, err := q.db.Query(ctx, getPluralMessages, arg.Limit, arg.Offset, arg.MessageIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Message{}
+	for rows.Next() {
+		var i Message
+		if err := rows.Scan(
+			&i.TMessagesPkey,
+			&i.MessageID,
+			&i.ChatRoomID,
+			&i.SenderID,
+			&i.Body,
+			&i.PostedAt,
+			&i.LastEditedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMessagesWithAll = `-- name: GetPluralMessagesWithAll :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
+WHERE message_id = ANY($3::uuid[])
+ORDER BY
+	t_messages_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralMessagesWithAllParams struct {
+	Limit      int32       `json:"limit"`
+	Offset     int32       `json:"offset"`
+	MessageIds []uuid.UUID `json:"message_ids"`
+}
+
+type GetPluralMessagesWithAllRow struct {
+	Message  Message  `json:"message"`
+	ChatRoom ChatRoom `json:"chat_room"`
+	Member   Member   `json:"member"`
+}
+
+func (q *Queries) GetPluralMessagesWithAll(ctx context.Context, arg GetPluralMessagesWithAllParams) ([]GetPluralMessagesWithAllRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMessagesWithAll, arg.Limit, arg.Offset, arg.MessageIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralMessagesWithAllRow{}
+	for rows.Next() {
+		var i GetPluralMessagesWithAllRow
+		if err := rows.Scan(
+			&i.Message.TMessagesPkey,
+			&i.Message.MessageID,
+			&i.Message.ChatRoomID,
+			&i.Message.SenderID,
+			&i.Message.Body,
+			&i.Message.PostedAt,
+			&i.Message.LastEditedAt,
+			&i.ChatRoom.MChatRoomsPkey,
+			&i.ChatRoom.ChatRoomID,
+			&i.ChatRoom.Name,
+			&i.ChatRoom.IsPrivate,
+			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.CreatedAt,
+			&i.ChatRoom.UpdatedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMessagesWithChatRoom = `-- name: GetPluralMessagesWithChatRoom :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
+WHERE message_id = ANY($3::uuid[])
+ORDER BY
+	t_messages_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralMessagesWithChatRoomParams struct {
+	Limit      int32       `json:"limit"`
+	Offset     int32       `json:"offset"`
+	MessageIds []uuid.UUID `json:"message_ids"`
+}
+
+type GetPluralMessagesWithChatRoomRow struct {
+	Message  Message  `json:"message"`
+	ChatRoom ChatRoom `json:"chat_room"`
+}
+
+func (q *Queries) GetPluralMessagesWithChatRoom(ctx context.Context, arg GetPluralMessagesWithChatRoomParams) ([]GetPluralMessagesWithChatRoomRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMessagesWithChatRoom, arg.Limit, arg.Offset, arg.MessageIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralMessagesWithChatRoomRow{}
+	for rows.Next() {
+		var i GetPluralMessagesWithChatRoomRow
+		if err := rows.Scan(
+			&i.Message.TMessagesPkey,
+			&i.Message.MessageID,
+			&i.Message.ChatRoomID,
+			&i.Message.SenderID,
+			&i.Message.Body,
+			&i.Message.PostedAt,
+			&i.Message.LastEditedAt,
+			&i.ChatRoom.MChatRoomsPkey,
+			&i.ChatRoom.ChatRoomID,
+			&i.ChatRoom.Name,
+			&i.ChatRoom.IsPrivate,
+			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.CreatedAt,
+			&i.ChatRoom.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMessagesWithSender = `-- name: GetPluralMessagesWithSender :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
+WHERE message_id = ANY($3::uuid[])
+ORDER BY
+	t_messages_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralMessagesWithSenderParams struct {
+	Limit      int32       `json:"limit"`
+	Offset     int32       `json:"offset"`
+	MessageIds []uuid.UUID `json:"message_ids"`
+}
+
+type GetPluralMessagesWithSenderRow struct {
+	Message Message `json:"message"`
+	Member  Member  `json:"member"`
+}
+
+func (q *Queries) GetPluralMessagesWithSender(ctx context.Context, arg GetPluralMessagesWithSenderParams) ([]GetPluralMessagesWithSenderRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMessagesWithSender, arg.Limit, arg.Offset, arg.MessageIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralMessagesWithSenderRow{}
+	for rows.Next() {
+		var i GetPluralMessagesWithSenderRow
 		if err := rows.Scan(
 			&i.Message.TMessagesPkey,
 			&i.Message.MessageID,

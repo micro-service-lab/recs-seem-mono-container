@@ -9,7 +9,6 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countGroups = `-- name: CountGroups :one
@@ -195,11 +194,11 @@ func (q *Queries) GetGroups(ctx context.Context) ([]Group, error) {
 const getGroupsUseKeysetPaginate = `-- name: GetGroupsUseKeysetPaginate :many
 SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups
 WHERE
-	CASE $2
+	CASE $2::text
 		WHEN 'next' THEN
-			m_groups_pkey < $3
+			m_groups_pkey < $3::int
 		WHEN 'prev' THEN
-			m_groups_pkey > $3
+			m_groups_pkey > $3::int
 	END
 ORDER BY
 	m_groups_pkey DESC
@@ -207,9 +206,9 @@ LIMIT $1
 `
 
 type GetGroupsUseKeysetPaginateParams struct {
-	Limit           int32       `json:"limit"`
-	CursorDirection interface{} `json:"cursor_direction"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	Limit           int32  `json:"limit"`
+	CursorDirection string `json:"cursor_direction"`
+	Cursor          int32  `json:"cursor"`
 }
 
 func (q *Queries) GetGroupsUseKeysetPaginate(ctx context.Context, arg GetGroupsUseKeysetPaginateParams) ([]Group, error) {
@@ -325,18 +324,18 @@ const getGroupsWithOrganizationUseKeysetPaginate = `-- name: GetGroupsWithOrgani
 SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_groups
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE
-	CASE $1
+	CASE $1::text
 		WHEN 'next' THEN
 			CASE $2::text
-				WHEN 'name' THEN name > $3 OR (name = $3 AND m_groups_pkey < $4)
-				WHEN 'r_name' THEN name < $3 OR (name = $3 AND m_groups_pkey < $4)
-				ELSE m_groups_pkey < $4
+				WHEN 'name' THEN name > $3 OR (name = $3 AND m_groups_pkey < $4::int)
+				WHEN 'r_name' THEN name < $3 OR (name = $3 AND m_groups_pkey < $4::int)
+				ELSE m_groups_pkey < $4::int
 			END
 		WHEN 'prev' THEN
 			CASE $2::text
-				WHEN 'name' THEN name > $3 OR (name = $3 AND m_groups_pkey < $4)
-				WHEN 'r_name' THEN name < $3 OR (name = $3 AND m_groups_pkey < $4)
-				ELSE m_groups_pkey < $4
+				WHEN 'name' THEN name > $3 OR (name = $3 AND m_groups_pkey < $4::int)
+				WHEN 'r_name' THEN name < $3 OR (name = $3 AND m_groups_pkey < $4::int)
+				ELSE m_groups_pkey < $4::int
 			END
 	END
 ORDER BY
@@ -346,10 +345,10 @@ ORDER BY
 `
 
 type GetGroupsWithOrganizationUseKeysetPaginateParams struct {
-	CursorDirection interface{} `json:"cursor_direction"`
-	OrderMethod     string      `json:"order_method"`
-	CursorColumn    string      `json:"cursor_column"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	CursorDirection string `json:"cursor_direction"`
+	OrderMethod     string `json:"order_method"`
+	NameCursor      string `json:"name_cursor"`
+	Cursor          int32  `json:"cursor"`
 }
 
 type GetGroupsWithOrganizationUseKeysetPaginateRow struct {
@@ -361,7 +360,7 @@ func (q *Queries) GetGroupsWithOrganizationUseKeysetPaginate(ctx context.Context
 	rows, err := q.db.Query(ctx, getGroupsWithOrganizationUseKeysetPaginate,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -425,6 +424,98 @@ func (q *Queries) GetGroupsWithOrganizationUseNumberedPaginate(ctx context.Conte
 	items := []GetGroupsWithOrganizationUseNumberedPaginateRow{}
 	for rows.Next() {
 		var i GetGroupsWithOrganizationUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Group.MGroupsPkey,
+			&i.Group.GroupID,
+			&i.Group.Key,
+			&i.Group.OrganizationID,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralGroups = `-- name: GetPluralGroups :many
+SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups
+WHERE organization_id = ANY($3::uuid[])
+ORDER BY
+	m_groups_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralGroupsParams struct {
+	Limit           int32       `json:"limit"`
+	Offset          int32       `json:"offset"`
+	OrganizationIds []uuid.UUID `json:"organization_ids"`
+}
+
+func (q *Queries) GetPluralGroups(ctx context.Context, arg GetPluralGroupsParams) ([]Group, error) {
+	rows, err := q.db.Query(ctx, getPluralGroups, arg.Limit, arg.Offset, arg.OrganizationIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Group{}
+	for rows.Next() {
+		var i Group
+		if err := rows.Scan(
+			&i.MGroupsPkey,
+			&i.GroupID,
+			&i.Key,
+			&i.OrganizationID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralGroupsWithOrganization = `-- name: GetPluralGroupsWithOrganization :many
+SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_groups
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+WHERE group_id = ANY($3::uuid[])
+ORDER BY
+	m_groups_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralGroupsWithOrganizationParams struct {
+	Limit    int32       `json:"limit"`
+	Offset   int32       `json:"offset"`
+	GroupIds []uuid.UUID `json:"group_ids"`
+}
+
+type GetPluralGroupsWithOrganizationRow struct {
+	Group        Group        `json:"group"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetPluralGroupsWithOrganization(ctx context.Context, arg GetPluralGroupsWithOrganizationParams) ([]GetPluralGroupsWithOrganizationRow, error) {
+	rows, err := q.db.Query(ctx, getPluralGroupsWithOrganization, arg.Limit, arg.Offset, arg.GroupIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralGroupsWithOrganizationRow{}
+	for rows.Next() {
+		var i GetPluralGroupsWithOrganizationRow
 		if err := rows.Scan(
 			&i.Group.MGroupsPkey,
 			&i.Group.GroupID,

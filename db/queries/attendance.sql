@@ -14,30 +14,36 @@ DELETE FROM t_attendances WHERE attendance_id = $1;
 SELECT * FROM t_attendances WHERE attendance_id = $1;
 
 -- name: FindAttendanceByIDWithMember :one
-SELECT sqlc.embed(t_attendances), sqlc.embed(m_members) FROM t_attendances
+SELECT t_attendances.*, sqlc.embed(m_members) FROM t_attendances
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE attendance_id = $1;
 
 -- name: FindAttendanceByIDWithAttendanceType :one
-SELECT sqlc.embed(t_attendances), sqlc.embed(m_attendance_types) FROM t_attendances
+SELECT t_attendances.*, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color FROM t_attendances
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE attendance_id = $1;
 
 -- name: FindAttendanceByIDWithSendOrganization :one
-SELECT sqlc.embed(t_attendances), sqlc.embed(m_organizations) FROM t_attendances
+SELECT t_attendances.*, sqlc.embed(m_organizations) FROM t_attendances
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = $1;
 
 -- name: FindAttendanceByIDWithDetails :one
-SELECT sqlc.embed(t_attendances), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
+SELECT t_attendances.*, sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 WHERE t_attendances.attendance_id = $1;
 
 -- name: FindAttendanceByIDWithAll :one
-SELECT sqlc.embed(t_attendances), sqlc.embed(m_members), sqlc.embed(m_attendance_types), sqlc.embed(m_organizations), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
+SELECT t_attendances.*, sqlc.embed(m_members), m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, sqlc.embed(m_organizations), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
@@ -99,18 +105,18 @@ AND
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN date > @cursor_column OR (date = @cursor_column AND t_attendances_pkey < @cursor)
-				WHEN 'r_date' THEN date < @cursor_column OR (date = @cursor_column AND t_attendances_pkey < @cursor)
-				ELSE t_attendances_pkey < @cursor
+				WHEN 'date' THEN date > @date_cursor OR (date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_date' THEN date < @date_cursor OR (date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				ELSE t_attendances_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN date < @cursor_column OR (date = @cursor_column AND t_attendances_pkey > @cursor)
-				WHEN 'r_date' THEN date > @cursor_column OR (date = @cursor_column AND t_attendances_pkey > @cursor)
-				ELSE t_attendances_pkey > @cursor
+				WHEN 'date' THEN date < @date_cursor OR (date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_date' THEN date > @date_cursor OR (date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				ELSE t_attendances_pkey > @cursor::int
 			END
 	END
 ORDER BY
@@ -119,9 +125,19 @@ ORDER BY
 	t_attendances_pkey DESC
 LIMIT $1;
 
+-- name: GetPluralAttendances :many
+SELECT * FROM t_attendances
+WHERE attendance_id = ANY(@attendance_ids::uuid[])
+ORDER BY
+	t_attendances_pkey DESC
+LIMIT $1 OFFSET $2;
+
 -- name: GetAttendanceWithMember :many
-SELECT sqlc.embed(t_attendances), sqlc.embed(m_members) FROM t_attendances
+SELECT t_attendances.*, sqlc.embed(m_members) FROM t_attendances
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE
 	CASE WHEN @where_in_attendance_type::boolean = true THEN t_attendances.attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
 AND
@@ -140,8 +156,11 @@ ORDER BY
 	t_attendances_pkey DESC;
 
 -- name: GetAttendanceWithMemberUseNumberedPaginate :many
-SELECT sqlc.embed(t_attendances), sqlc.embed(m_members) FROM t_attendances
+SELECT t_attendances.*, sqlc.embed(m_members) FROM t_attendances
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE
 	CASE WHEN @where_in_attendance_type::boolean = true THEN t_attendances.attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
 AND
@@ -161,8 +180,11 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetAttendanceWithMemberUseKeysetPaginate :many
-SELECT sqlc.embed(t_attendances), sqlc.embed(m_members) FROM t_attendances
+SELECT t_attendances.*, sqlc.embed(m_members) FROM t_attendances
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE
 	CASE WHEN @where_in_attendance_type::boolean = true THEN t_attendances.attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
 AND
@@ -176,18 +198,18 @@ AND
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date > @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey < @cursor)
-				WHEN 'r_date' THEN t_attendances.date < @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey < @cursor)
-				ELSE t_attendances_pkey < @cursor
+				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				ELSE t_attendances_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date < @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey > @cursor)
-				WHEN 'r_date' THEN t_attendances.date > @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey > @cursor)
-				ELSE t_attendances_pkey > @cursor
+				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				ELSE t_attendances_pkey > @cursor::int
 			END
 	END
 ORDER BY
@@ -196,8 +218,19 @@ ORDER BY
 	t_attendances_pkey DESC
 LIMIT $1;
 
+-- name: GetPluralAttendanceWithMember :many
+SELECT t_attendances.*, sqlc.embed(m_members) FROM t_attendances
+LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+WHERE attendance_id = ANY(@attendance_ids::uuid[])
+ORDER BY
+	t_attendances_pkey DESC
+LIMIT $1 OFFSET $2;
+
 -- name: GetAttendanceWithAttendanceType :many
-SELECT sqlc.embed(t_attendances), sqlc.embed(m_attendance_types) FROM t_attendances
+SELECT t_attendances.*, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color FROM t_attendances
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE
 	CASE WHEN @where_in_attendance_type::boolean = true THEN t_attendances.attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
@@ -217,7 +250,7 @@ ORDER BY
 	t_attendances_pkey DESC;
 
 -- name: GetAttendanceWithAttendanceTypeUseNumberedPaginate :many
-SELECT sqlc.embed(t_attendances), sqlc.embed(m_attendance_types) FROM t_attendances
+SELECT t_attendances.*, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color FROM t_attendances
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE
 	CASE WHEN @where_in_attendance_type::boolean = true THEN t_attendances.attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
@@ -238,7 +271,7 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetAttendanceWithAttendanceTypeUseKeysetPaginate :many
-SELECT sqlc.embed(t_attendances), sqlc.embed(m_attendance_types) FROM t_attendances
+SELECT t_attendances.*, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color FROM t_attendances
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE
 	CASE WHEN @where_in_attendance_type::boolean = true THEN t_attendances.attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
@@ -253,18 +286,18 @@ AND
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date > @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey < @cursor)
-				WHEN 'r_date' THEN t_attendances.date < @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey < @cursor)
-				ELSE t_attendances_pkey < @cursor
+				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				ELSE t_attendances_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date < @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey > @cursor)
-				WHEN 'r_date' THEN t_attendances.date > @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey > @cursor)
-				ELSE t_attendances_pkey > @cursor
+				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				ELSE t_attendances_pkey > @cursor::int
 			END
 	END
 ORDER BY
@@ -273,8 +306,16 @@ ORDER BY
 	t_attendances_pkey DESC
 LIMIT $1;
 
+-- name: GetPluralAttendanceWithAttendanceType :many
+SELECT t_attendances.*, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color FROM t_attendances
+LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+WHERE attendance_id = ANY(@attendance_ids::uuid[])
+ORDER BY
+	t_attendances_pkey DESC
+LIMIT $1 OFFSET $2;
+
 -- name: GetAttendanceWithSendOrganization :many
-SELECT sqlc.embed(t_attendances), sqlc.embed(m_organizations) FROM t_attendances
+SELECT t_attendances.*, sqlc.embed(m_organizations) FROM t_attendances
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN @where_in_attendance_type::boolean = true THEN t_attendances.attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
@@ -294,7 +335,7 @@ ORDER BY
 	t_attendances_pkey DESC;
 
 -- name: GetAttendanceWithSendOrganizationUseNumberedPaginate :many
-SELECT sqlc.embed(t_attendances), sqlc.embed(m_organizations) FROM t_attendances
+SELECT t_attendances.*, sqlc.embed(m_organizations) FROM t_attendances
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN @where_in_attendance_type::boolean = true THEN t_attendances.attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
@@ -315,7 +356,7 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetAttendanceWithSendOrganizationUseKeysetPaginate :many
-SELECT sqlc.embed(t_attendances), sqlc.embed(m_organizations) FROM t_attendances
+SELECT t_attendances.*, sqlc.embed(m_organizations) FROM t_attendances
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN @where_in_attendance_type::boolean = true THEN t_attendances.attendance_type_id = ANY(@in_attendance_type) ELSE TRUE END
@@ -330,17 +371,17 @@ AND
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date > @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey < @cursor)
-				WHEN 'r_date' THEN t_attendances.date < @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey < @cursor)
-				ELSE t_attendances_pkey < @cursor
+				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				ELSE t_attendances_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date < @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey > @cursor)
-				WHEN 'r_date' THEN t_attendances.date > @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey > @cursor)
+				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
 				ELSE t_attendances_pkey > @cursor
 			END
 	END
@@ -350,8 +391,16 @@ ORDER BY
 	t_attendances_pkey DESC
 LIMIT $1;
 
+-- name: GetPluralAttendanceWithSendOrganization :many
+SELECT t_attendances.*, sqlc.embed(m_organizations) FROM t_attendances
+LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+WHERE attendance_id = ANY(@attendance_ids::uuid[])
+ORDER BY
+	t_attendances_pkey DESC
+LIMIT $1 OFFSET $2;
+
 -- name: GetAttendanceWithDetails :many
-SELECT sqlc.embed(t_attendances), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
+SELECT t_attendances.*, sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
@@ -373,7 +422,7 @@ ORDER BY
 	t_attendances_pkey DESC;
 
 -- name: GetAttendanceWithDetailsUseNumberedPaginate :many
-SELECT sqlc.embed(t_attendances), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
+SELECT t_attendances.*, sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
@@ -396,7 +445,7 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetAttendanceWithDetailsUseKeysetPaginate :many
-SELECT sqlc.embed(t_attendances), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
+SELECT t_attendances.*, sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
@@ -413,18 +462,18 @@ AND
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date > @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey < @cursor)
-				WHEN 'r_date' THEN t_attendances.date < @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey < @cursor)
-				ELSE t_attendances_pkey < @cursor
+				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				ELSE t_attendances_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date < @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey > @cursor)
-				WHEN 'r_date' THEN t_attendances.date > @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey > @cursor)
-				ELSE t_attendances_pkey > @cursor
+				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				ELSE t_attendances_pkey > @cursor::int
 			END
 	END
 ORDER BY
@@ -433,12 +482,25 @@ ORDER BY
 	t_attendances_pkey DESC
 LIMIT $1;
 
+-- name: GetPluralAttendanceWithDetails :many
+SELECT t_attendances.*, sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
+LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
+LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
+LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
+WHERE attendance_id = ANY(@attendance_ids::uuid[])
+ORDER BY
+	t_attendances_pkey DESC
+LIMIT $1 OFFSET $2;
+
 -- name: GetAttendanceWithAll :many
-SELECT sqlc.embed(t_attendances), sqlc.embed(m_members), sqlc.embed(m_attendance_types), sqlc.embed(m_organizations), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
+SELECT t_attendances.*, sqlc.embed(m_members), m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, sqlc.embed(m_organizations), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE
@@ -459,11 +521,14 @@ ORDER BY
 	t_attendances_pkey DESC;
 
 -- name: GetAttendanceWithAllUseNumberedPaginate :many
-SELECT sqlc.embed(t_attendances), sqlc.embed(m_members), sqlc.embed(m_attendance_types), sqlc.embed(m_organizations), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
+SELECT t_attendances.*, sqlc.embed(m_members), m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, sqlc.embed(m_organizations), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE
@@ -485,11 +550,14 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetAttendanceWithAllUseKeysetPaginate :many
-SELECT sqlc.embed(t_attendances), sqlc.embed(m_members), sqlc.embed(m_attendance_types), sqlc.embed(m_organizations), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
+SELECT t_attendances.*, sqlc.embed(m_members), m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, sqlc.embed(m_organizations), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE
@@ -505,18 +573,18 @@ AND
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date > @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey < @cursor)
-				WHEN 'r_date' THEN t_attendances.date < @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey < @cursor)
-				ELSE t_attendances_pkey < @cursor
+				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				ELSE t_attendances_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date < @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey > @cursor)
-				WHEN 'r_date' THEN t_attendances.date > @cursor_column OR (t_attendances.date = @cursor_column AND t_attendances_pkey > @cursor)
-				ELSE t_attendances_pkey > @cursor
+				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				ELSE t_attendances_pkey > @cursor::int
 			END
 	END
 ORDER BY
@@ -524,6 +592,22 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralAttendanceWithAll :many
+SELECT t_attendances.*, sqlc.embed(m_members), m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, sqlc.embed(m_organizations), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
+LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
+LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
+LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
+LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+WHERE attendance_id = ANY(@attendance_ids::uuid[])
+ORDER BY
+	t_attendances_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountAttendances :one
 SELECT COUNT(*) FROM t_attendances

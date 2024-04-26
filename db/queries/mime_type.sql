@@ -34,24 +34,31 @@ LIMIT $1 OFFSET $2;
 -- name: GetMimeTypesUseKeysetPaginate :many
 SELECT * FROM m_mime_types
 WHERE
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_mime_types_pkey < @cursor)
-				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_mime_types_pkey < @cursor)
-				ELSE m_mime_types_pkey < @cursor
+				WHEN 'name' THEN name > @name_cursor OR (name = @name_cursor AND m_mime_types_pkey < @cursor::int)
+				WHEN 'r_name' THEN name < @name_cursor OR (name = @name_cursor AND m_mime_types_pkey < @cursor::int)
+				ELSE m_mime_types_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name < @cursor_column OR (name = @cursor_column AND m_mime_types_pkey > @cursor)
-				WHEN 'r_name' THEN name > @cursor_column OR (name = @cursor_column AND m_mime_types_pkey > @cursor)
-				ELSE m_mime_types_pkey > @cursor
+				WHEN 'name' THEN name < @name_cursor OR (name = @name_cursor AND m_mime_types_pkey > @cursor::int)
+				WHEN 'r_name' THEN name > @name_cursor OR (name = @name_cursor AND m_mime_types_pkey > @cursor::int)
+				ELSE m_mime_types_pkey > @cursor::int
 			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
 	m_mime_types_pkey DESC;
+
+-- name: GetPluralMimeTypes :many
+SELECT * FROM m_mime_types
+WHERE mime_type_id = ANY(@mime_type_ids::uuid[])
+ORDER BY
+	m_mime_types_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountMimeTypes :one
 SELECT COUNT(*) FROM m_mime_types

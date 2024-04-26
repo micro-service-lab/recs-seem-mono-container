@@ -57,15 +57,22 @@ WHERE
 AND
 	CASE WHEN @where_is_private::boolean = true THEN is_private = @is_private ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
-			m_chat_rooms_pkey < @cursor
+			m_chat_rooms_pkey < @cursor::int
 		WHEN 'prev' THEN
-			m_chat_rooms_pkey > @cursor
+			m_chat_rooms_pkey > @cursor::int
 	END
 ORDER BY
 	m_chat_rooms_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralChatRooms :many
+SELECT * FROM m_chat_rooms
+WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
+ORDER BY
+	m_chat_rooms_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: GetChatRoomsWithOwner :many
 SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members) FROM m_chat_rooms
@@ -96,15 +103,23 @@ WHERE
 AND
 	CASE WHEN @where_is_private::boolean = true THEN is_private = @is_private ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
-			m_chat_rooms_pkey < @cursor
+			m_chat_rooms_pkey < @cursor::int
 		WHEN 'prev' THEN
-			m_chat_rooms_pkey > @cursor
+			m_chat_rooms_pkey > @cursor::int
 	END
 ORDER BY
 	m_chat_rooms_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralChatRoomsWithOwner :many
+SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members) FROM m_chat_rooms
+LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
+WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
+ORDER BY
+	m_chat_rooms_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: GetChatRoomsWithCoverImage :many
 SELECT sqlc.embed(m_chat_rooms), sqlc.embed(t_images), sqlc.embed(t_attachable_items) FROM m_chat_rooms
@@ -138,15 +153,24 @@ WHERE
 AND
 	CASE WHEN @where_is_private::boolean = true THEN is_private = @is_private ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
-			m_chat_rooms_pkey < @cursor
+			m_chat_rooms_pkey < @cursor::int
 		WHEN 'prev' THEN
-			m_chat_rooms_pkey > @cursor
+			m_chat_rooms_pkey > @cursor::int
 	END
 ORDER BY
 	m_chat_rooms_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralChatRoomsWithCoverImage :many
+SELECT sqlc.embed(m_chat_rooms), sqlc.embed(t_images), sqlc.embed(t_attachable_items) FROM m_chat_rooms
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
+ORDER BY
+	m_chat_rooms_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: GetChatRoomsWithAll :many
 SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members), sqlc.embed(t_images), sqlc.embed(t_attachable_items) FROM m_chat_rooms
@@ -183,15 +207,25 @@ WHERE
 AND
 	CASE WHEN @where_is_private::boolean = true THEN is_private = @is_private ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
-			m_chat_rooms_pkey < @cursor
+			m_chat_rooms_pkey < @cursor::int
 		WHEN 'prev' THEN
-			m_chat_rooms_pkey > @cursor
+			m_chat_rooms_pkey > @cursor::int
 	END
 ORDER BY
 	m_chat_rooms_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralChatRoomsWithAll :many
+SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members), sqlc.embed(t_images), sqlc.embed(t_attachable_items) FROM m_chat_rooms
+LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
+ORDER BY
+	m_chat_rooms_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountChatRooms :one
 SELECT COUNT(*) FROM m_chat_rooms

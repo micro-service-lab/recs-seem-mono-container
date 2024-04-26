@@ -13,7 +13,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const countLabIoHistories = `-- name: CountLabIoHistories :one
+const countLabIOHistories = `-- name: CountLabIOHistories :one
 SELECT COUNT(*) FROM t_lab_io_histories
 where
 	CASE WHEN $1::boolean = true THEN member_id = ANY($2) ELSE TRUE END
@@ -27,7 +27,7 @@ AND
 	CASE WHEN $9::boolean = true THEN exited_at <= $10 ELSE TRUE END
 `
 
-type CountLabIoHistoriesParams struct {
+type CountLabIOHistoriesParams struct {
 	WhereInMember         bool               `json:"where_in_member"`
 	InMember              uuid.UUID          `json:"in_member"`
 	WhereEarlierEnteredAt bool               `json:"where_earlier_entered_at"`
@@ -40,8 +40,8 @@ type CountLabIoHistoriesParams struct {
 	LaterExitedAt         pgtype.Timestamptz `json:"later_exited_at"`
 }
 
-func (q *Queries) CountLabIoHistories(ctx context.Context, arg CountLabIoHistoriesParams) (int64, error) {
-	row := q.db.QueryRow(ctx, countLabIoHistories,
+func (q *Queries) CountLabIOHistories(ctx context.Context, arg CountLabIOHistoriesParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countLabIOHistories,
 		arg.WhereInMember,
 		arg.InMember,
 		arg.WhereEarlierEnteredAt,
@@ -58,24 +58,24 @@ func (q *Queries) CountLabIoHistories(ctx context.Context, arg CountLabIoHistori
 	return count, err
 }
 
-type CreateLabIoHistoriesParams struct {
+type CreateLabIOHistoriesParams struct {
 	MemberID  uuid.UUID          `json:"member_id"`
 	EnteredAt time.Time          `json:"entered_at"`
 	ExitedAt  pgtype.Timestamptz `json:"exited_at"`
 }
 
-const createLabIoHistory = `-- name: CreateLabIoHistory :one
+const createLabIOHistory = `-- name: CreateLabIOHistory :one
 INSERT INTO t_lab_io_histories (member_id, entered_at, exited_at) VALUES ($1, $2, $3) RETURNING t_lab_io_histories_pkey, lab_io_history_id, member_id, entered_at, exited_at
 `
 
-type CreateLabIoHistoryParams struct {
+type CreateLabIOHistoryParams struct {
 	MemberID  uuid.UUID          `json:"member_id"`
 	EnteredAt time.Time          `json:"entered_at"`
 	ExitedAt  pgtype.Timestamptz `json:"exited_at"`
 }
 
-func (q *Queries) CreateLabIoHistory(ctx context.Context, arg CreateLabIoHistoryParams) (LabIOHistory, error) {
-	row := q.db.QueryRow(ctx, createLabIoHistory, arg.MemberID, arg.EnteredAt, arg.ExitedAt)
+func (q *Queries) CreateLabIOHistory(ctx context.Context, arg CreateLabIOHistoryParams) (LabIOHistory, error) {
+	row := q.db.QueryRow(ctx, createLabIOHistory, arg.MemberID, arg.EnteredAt, arg.ExitedAt)
 	var i LabIOHistory
 	err := row.Scan(
 		&i.TLabIoHistoriesPkey,
@@ -87,26 +87,26 @@ func (q *Queries) CreateLabIoHistory(ctx context.Context, arg CreateLabIoHistory
 	return i, err
 }
 
-const deleteLabIoHistory = `-- name: DeleteLabIoHistory :exec
+const deleteLabIOHistory = `-- name: DeleteLabIOHistory :exec
 DELETE FROM t_lab_io_histories WHERE lab_io_history_id = $1
 `
 
-func (q *Queries) DeleteLabIoHistory(ctx context.Context, labIoHistoryID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteLabIoHistory, labIoHistoryID)
+func (q *Queries) DeleteLabIOHistory(ctx context.Context, labIoHistoryID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteLabIOHistory, labIoHistoryID)
 	return err
 }
 
-const exitLabIoHistory = `-- name: ExitLabIoHistory :one
+const exitLabIOHistory = `-- name: ExitLabIOHistory :one
 UPDATE t_lab_io_histories SET exited_at = $2 WHERE lab_io_history_id = $1 RETURNING t_lab_io_histories_pkey, lab_io_history_id, member_id, entered_at, exited_at
 `
 
-type ExitLabIoHistoryParams struct {
+type ExitLabIOHistoryParams struct {
 	LabIoHistoryID uuid.UUID          `json:"lab_io_history_id"`
 	ExitedAt       pgtype.Timestamptz `json:"exited_at"`
 }
 
-func (q *Queries) ExitLabIoHistory(ctx context.Context, arg ExitLabIoHistoryParams) (LabIOHistory, error) {
-	row := q.db.QueryRow(ctx, exitLabIoHistory, arg.LabIoHistoryID, arg.ExitedAt)
+func (q *Queries) ExitLabIOHistory(ctx context.Context, arg ExitLabIOHistoryParams) (LabIOHistory, error) {
+	row := q.db.QueryRow(ctx, exitLabIOHistory, arg.LabIoHistoryID, arg.ExitedAt)
 	var i LabIOHistory
 	err := row.Scan(
 		&i.TLabIoHistoriesPkey,
@@ -118,12 +118,12 @@ func (q *Queries) ExitLabIoHistory(ctx context.Context, arg ExitLabIoHistoryPara
 	return i, err
 }
 
-const findLabIoHistoryByID = `-- name: FindLabIoHistoryByID :one
+const findLabIOHistoryByID = `-- name: FindLabIOHistoryByID :one
 SELECT t_lab_io_histories_pkey, lab_io_history_id, member_id, entered_at, exited_at FROM t_lab_io_histories WHERE lab_io_history_id = $1
 `
 
-func (q *Queries) FindLabIoHistoryByID(ctx context.Context, labIoHistoryID uuid.UUID) (LabIOHistory, error) {
-	row := q.db.QueryRow(ctx, findLabIoHistoryByID, labIoHistoryID)
+func (q *Queries) FindLabIOHistoryByID(ctx context.Context, labIoHistoryID uuid.UUID) (LabIOHistory, error) {
+	row := q.db.QueryRow(ctx, findLabIOHistoryByID, labIoHistoryID)
 	var i LabIOHistory
 	err := row.Scan(
 		&i.TLabIoHistoriesPkey,
@@ -135,20 +135,20 @@ func (q *Queries) FindLabIoHistoryByID(ctx context.Context, labIoHistoryID uuid.
 	return i, err
 }
 
-const findLabIoHistoryWithMember = `-- name: FindLabIoHistoryWithMember :one
+const findLabIOHistoryWithMember = `-- name: FindLabIOHistoryWithMember :one
 SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE lab_io_history_id = $1
 `
 
-type FindLabIoHistoryWithMemberRow struct {
+type FindLabIOHistoryWithMemberRow struct {
 	LabIOHistory LabIOHistory `json:"lab_iohistory"`
 	Member       Member       `json:"member"`
 }
 
-func (q *Queries) FindLabIoHistoryWithMember(ctx context.Context, labIoHistoryID uuid.UUID) (FindLabIoHistoryWithMemberRow, error) {
-	row := q.db.QueryRow(ctx, findLabIoHistoryWithMember, labIoHistoryID)
-	var i FindLabIoHistoryWithMemberRow
+func (q *Queries) FindLabIOHistoryWithMember(ctx context.Context, labIoHistoryID uuid.UUID) (FindLabIOHistoryWithMemberRow, error) {
+	row := q.db.QueryRow(ctx, findLabIOHistoryWithMember, labIoHistoryID)
+	var i FindLabIOHistoryWithMemberRow
 	err := row.Scan(
 		&i.LabIOHistory.TLabIoHistoriesPkey,
 		&i.LabIOHistory.LabIoHistoryID,
@@ -173,7 +173,7 @@ func (q *Queries) FindLabIoHistoryWithMember(ctx context.Context, labIoHistoryID
 	return i, err
 }
 
-const getLabIoHistories = `-- name: GetLabIoHistories :many
+const getLabIOHistories = `-- name: GetLabIOHistories :many
 SELECT t_lab_io_histories_pkey, lab_io_history_id, member_id, entered_at, exited_at FROM t_lab_io_histories
 WHERE
 	CASE WHEN $1::boolean = true THEN member_id = ANY($2) ELSE TRUE END
@@ -193,7 +193,7 @@ ORDER BY
 	t_lab_io_histories_pkey DESC
 `
 
-type GetLabIoHistoriesParams struct {
+type GetLabIOHistoriesParams struct {
 	WhereInMember         bool               `json:"where_in_member"`
 	InMember              uuid.UUID          `json:"in_member"`
 	WhereEarlierEnteredAt bool               `json:"where_earlier_entered_at"`
@@ -207,8 +207,8 @@ type GetLabIoHistoriesParams struct {
 	OrderMethod           string             `json:"order_method"`
 }
 
-func (q *Queries) GetLabIoHistories(ctx context.Context, arg GetLabIoHistoriesParams) ([]LabIOHistory, error) {
-	rows, err := q.db.Query(ctx, getLabIoHistories,
+func (q *Queries) GetLabIOHistories(ctx context.Context, arg GetLabIOHistoriesParams) ([]LabIOHistory, error) {
+	rows, err := q.db.Query(ctx, getLabIOHistories,
 		arg.WhereInMember,
 		arg.InMember,
 		arg.WhereEarlierEnteredAt,
@@ -245,7 +245,7 @@ func (q *Queries) GetLabIoHistories(ctx context.Context, arg GetLabIoHistoriesPa
 	return items, nil
 }
 
-const getLabIoHistoriesUseKeysetPaginate = `-- name: GetLabIoHistoriesUseKeysetPaginate :many
+const getLabIOHistoriesUseKeysetPaginate = `-- name: GetLabIOHistoriesUseKeysetPaginate :many
 SELECT t_lab_io_histories_pkey, lab_io_history_id, member_id, entered_at, exited_at FROM t_lab_io_histories
 WHERE
 	CASE WHEN $2::boolean = true THEN member_id = ANY($3) ELSE TRUE END
@@ -258,22 +258,22 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN exited_at <= $11 ELSE TRUE END
 AND
-	CASE $12
+	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'old_enter' THEN entered_at > $14 OR (entered_at = $14 AND t_lab_io_histories_pkey < $15)
-				WHEN 'late_enter' THEN entered_at < $14 OR (entered_at = $14 AND t_lab_io_histories_pkey < $15)
-				WHEN 'old_exit' THEN exited_at > $14 OR (exited_at = $14 AND t_lab_io_histories_pkey < $15)
-				WHEN 'late_exit' THEN exited_at < $14 OR (exited_at = $14 AND t_lab_io_histories_pkey < $15)
-				ELSE t_lab_io_histories_pkey < $15
+				WHEN 'old_enter' THEN entered_at > $14 OR (entered_at = $14 AND t_lab_io_histories_pkey < $15::int)
+				WHEN 'late_enter' THEN entered_at < $14 OR (entered_at = $14 AND t_lab_io_histories_pkey < $15::int)
+				WHEN 'old_exit' THEN exited_at > $16 OR (exited_at = $16 AND t_lab_io_histories_pkey < $15::int)
+				WHEN 'late_exit' THEN exited_at < $16 OR (exited_at = $16 AND t_lab_io_histories_pkey < $15::int)
+				ELSE t_lab_io_histories_pkey < $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'old_enter' THEN entered_at < $14 OR (entered_at = $14 AND t_lab_io_histories_pkey > $15)
-				WHEN 'late_enter' THEN entered_at > $14 OR (entered_at = $14 AND t_lab_io_histories_pkey > $15)
-				WHEN 'old_exit' THEN exited_at < $14 OR (exited_at = $14 AND t_lab_io_histories_pkey > $15)
-				WHEN 'late_exit' THEN exited_at > $14 OR (exited_at = $14 AND t_lab_io_histories_pkey > $15)
-				ELSE t_lab_io_histories_pkey > $15
+				WHEN 'old_enter' THEN entered_at < $14 OR (entered_at = $14 AND t_lab_io_histories_pkey > $15::int)
+				WHEN 'late_enter' THEN entered_at > $14 OR (entered_at = $14 AND t_lab_io_histories_pkey > $15::int)
+				WHEN 'old_exit' THEN exited_at < $16 OR (exited_at = $16 AND t_lab_io_histories_pkey > $15::int)
+				WHEN 'late_exit' THEN exited_at > $16 OR (exited_at = $16 AND t_lab_io_histories_pkey > $15::int)
+				ELSE t_lab_io_histories_pkey > $15::int
 		END
 	END
 ORDER BY
@@ -285,7 +285,7 @@ ORDER BY
 LIMIT $1
 `
 
-type GetLabIoHistoriesUseKeysetPaginateParams struct {
+type GetLabIOHistoriesUseKeysetPaginateParams struct {
 	Limit                 int32              `json:"limit"`
 	WhereInMember         bool               `json:"where_in_member"`
 	InMember              uuid.UUID          `json:"in_member"`
@@ -297,14 +297,15 @@ type GetLabIoHistoriesUseKeysetPaginateParams struct {
 	EarlierExitedAt       pgtype.Timestamptz `json:"earlier_exited_at"`
 	WhereLaterExitedAt    bool               `json:"where_later_exited_at"`
 	LaterExitedAt         pgtype.Timestamptz `json:"later_exited_at"`
-	CursorDirection       interface{}        `json:"cursor_direction"`
+	CursorDirection       string             `json:"cursor_direction"`
 	OrderMethod           string             `json:"order_method"`
-	CursorColumn          time.Time          `json:"cursor_column"`
-	Cursor                pgtype.Int8        `json:"cursor"`
+	EnterCursor           time.Time          `json:"enter_cursor"`
+	Cursor                int32              `json:"cursor"`
+	ExitCursor            pgtype.Timestamptz `json:"exit_cursor"`
 }
 
-func (q *Queries) GetLabIoHistoriesUseKeysetPaginate(ctx context.Context, arg GetLabIoHistoriesUseKeysetPaginateParams) ([]LabIOHistory, error) {
-	rows, err := q.db.Query(ctx, getLabIoHistoriesUseKeysetPaginate,
+func (q *Queries) GetLabIOHistoriesUseKeysetPaginate(ctx context.Context, arg GetLabIOHistoriesUseKeysetPaginateParams) ([]LabIOHistory, error) {
+	rows, err := q.db.Query(ctx, getLabIOHistoriesUseKeysetPaginate,
 		arg.Limit,
 		arg.WhereInMember,
 		arg.InMember,
@@ -318,8 +319,9 @@ func (q *Queries) GetLabIoHistoriesUseKeysetPaginate(ctx context.Context, arg Ge
 		arg.LaterExitedAt,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.EnterCursor,
 		arg.Cursor,
+		arg.ExitCursor,
 	)
 	if err != nil {
 		return nil, err
@@ -345,7 +347,7 @@ func (q *Queries) GetLabIoHistoriesUseKeysetPaginate(ctx context.Context, arg Ge
 	return items, nil
 }
 
-const getLabIoHistoriesUseNumberedPaginate = `-- name: GetLabIoHistoriesUseNumberedPaginate :many
+const getLabIOHistoriesUseNumberedPaginate = `-- name: GetLabIOHistoriesUseNumberedPaginate :many
 SELECT t_lab_io_histories_pkey, lab_io_history_id, member_id, entered_at, exited_at FROM t_lab_io_histories
 WHERE
 	CASE WHEN $3::boolean = true THEN member_id = ANY($4) ELSE TRUE END
@@ -366,7 +368,7 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetLabIoHistoriesUseNumberedPaginateParams struct {
+type GetLabIOHistoriesUseNumberedPaginateParams struct {
 	Limit                 int32              `json:"limit"`
 	Offset                int32              `json:"offset"`
 	WhereInMember         bool               `json:"where_in_member"`
@@ -382,8 +384,8 @@ type GetLabIoHistoriesUseNumberedPaginateParams struct {
 	OrderMethod           string             `json:"order_method"`
 }
 
-func (q *Queries) GetLabIoHistoriesUseNumberedPaginate(ctx context.Context, arg GetLabIoHistoriesUseNumberedPaginateParams) ([]LabIOHistory, error) {
-	rows, err := q.db.Query(ctx, getLabIoHistoriesUseNumberedPaginate,
+func (q *Queries) GetLabIOHistoriesUseNumberedPaginate(ctx context.Context, arg GetLabIOHistoriesUseNumberedPaginateParams) ([]LabIOHistory, error) {
+	rows, err := q.db.Query(ctx, getLabIOHistoriesUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.WhereInMember,
@@ -422,7 +424,7 @@ func (q *Queries) GetLabIoHistoriesUseNumberedPaginate(ctx context.Context, arg 
 	return items, nil
 }
 
-const getLabIoHistoriesWithMember = `-- name: GetLabIoHistoriesWithMember :many
+const getLabIOHistoriesWithMember = `-- name: GetLabIOHistoriesWithMember :many
 SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE
@@ -443,7 +445,7 @@ ORDER BY
 	t_lab_io_histories_pkey DESC
 `
 
-type GetLabIoHistoriesWithMemberParams struct {
+type GetLabIOHistoriesWithMemberParams struct {
 	WhereInMember         bool               `json:"where_in_member"`
 	InMember              uuid.UUID          `json:"in_member"`
 	WhereEarlierEnteredAt bool               `json:"where_earlier_entered_at"`
@@ -457,13 +459,13 @@ type GetLabIoHistoriesWithMemberParams struct {
 	OrderMethod           string             `json:"order_method"`
 }
 
-type GetLabIoHistoriesWithMemberRow struct {
+type GetLabIOHistoriesWithMemberRow struct {
 	LabIOHistory LabIOHistory `json:"lab_iohistory"`
 	Member       Member       `json:"member"`
 }
 
-func (q *Queries) GetLabIoHistoriesWithMember(ctx context.Context, arg GetLabIoHistoriesWithMemberParams) ([]GetLabIoHistoriesWithMemberRow, error) {
-	rows, err := q.db.Query(ctx, getLabIoHistoriesWithMember,
+func (q *Queries) GetLabIOHistoriesWithMember(ctx context.Context, arg GetLabIOHistoriesWithMemberParams) ([]GetLabIOHistoriesWithMemberRow, error) {
+	rows, err := q.db.Query(ctx, getLabIOHistoriesWithMember,
 		arg.WhereInMember,
 		arg.InMember,
 		arg.WhereEarlierEnteredAt,
@@ -480,9 +482,9 @@ func (q *Queries) GetLabIoHistoriesWithMember(ctx context.Context, arg GetLabIoH
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetLabIoHistoriesWithMemberRow{}
+	items := []GetLabIOHistoriesWithMemberRow{}
 	for rows.Next() {
-		var i GetLabIoHistoriesWithMemberRow
+		var i GetLabIOHistoriesWithMemberRow
 		if err := rows.Scan(
 			&i.LabIOHistory.TLabIoHistoriesPkey,
 			&i.LabIOHistory.LabIoHistoryID,
@@ -514,7 +516,7 @@ func (q *Queries) GetLabIoHistoriesWithMember(ctx context.Context, arg GetLabIoH
 	return items, nil
 }
 
-const getLabIoHistoriesWithMemberUseKeysetPaginate = `-- name: GetLabIoHistoriesWithMemberUseKeysetPaginate :many
+const getLabIOHistoriesWithMemberUseKeysetPaginate = `-- name: GetLabIOHistoriesWithMemberUseKeysetPaginate :many
 SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE
@@ -528,22 +530,22 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN exited_at <= $11 ELSE TRUE END
 AND
-	CASE $12
+	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'old_enter' THEN entered_at > $14 OR (entered_at = $14 AND t_lab_io_histories_pkey < $15)
-				WHEN 'late_enter' THEN entered_at < $14 OR (entered_at = $14 AND t_lab_io_histories_pkey < $15)
-				WHEN 'old_exit' THEN exited_at > $14 OR (exited_at = $14 AND t_lab_io_histories_pkey < $15)
-				WHEN 'late_exit' THEN exited_at < $14 OR (exited_at = $14 AND t_lab_io_histories_pkey < $15)
-				ELSE t_lab_io_histories_pkey < $15
+				WHEN 'old_enter' THEN entered_at > $14 OR (entered_at = $14 AND t_lab_io_histories_pkey < $15::int)
+				WHEN 'late_enter' THEN entered_at < $14 OR (entered_at = $14 AND t_lab_io_histories_pkey < $15::int)
+				WHEN 'old_exit' THEN exited_at > $16 OR (exited_at = $16 AND t_lab_io_histories_pkey < $15::int)
+				WHEN 'late_exit' THEN exited_at < $16 OR (exited_at = $16 AND t_lab_io_histories_pkey < $15::int)
+				ELSE t_lab_io_histories_pkey < $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'old_enter' THEN entered_at < $14 OR (entered_at = $14 AND t_lab_io_histories_pkey > $15)
-				WHEN 'late_enter' THEN entered_at > $14 OR (entered_at = $14 AND t_lab_io_histories_pkey > $15)
-				WHEN 'old_exit' THEN exited_at < $14 OR (exited_at = $14 AND t_lab_io_histories_pkey > $15)
-				WHEN 'late_exit' THEN exited_at > $14 OR (exited_at = $14 AND t_lab_io_histories_pkey > $15)
-				ELSE t_lab_io_histories_pkey > $15
+				WHEN 'old_enter' THEN entered_at < $14 OR (entered_at = $14 AND t_lab_io_histories_pkey > $15::int)
+				WHEN 'late_enter' THEN entered_at > $14 OR (entered_at = $14 AND t_lab_io_histories_pkey > $15::int)
+				WHEN 'old_exit' THEN exited_at < $16 OR (exited_at = $16 AND t_lab_io_histories_pkey > $15::int)
+				WHEN 'late_exit' THEN exited_at > $16 OR (exited_at = $16 AND t_lab_io_histories_pkey > $15::int)
+				ELSE t_lab_io_histories_pkey > $15::int
 		END
 	END
 ORDER BY
@@ -555,7 +557,7 @@ ORDER BY
 LIMIT $1
 `
 
-type GetLabIoHistoriesWithMemberUseKeysetPaginateParams struct {
+type GetLabIOHistoriesWithMemberUseKeysetPaginateParams struct {
 	Limit                 int32              `json:"limit"`
 	WhereInMember         bool               `json:"where_in_member"`
 	InMember              uuid.UUID          `json:"in_member"`
@@ -567,19 +569,20 @@ type GetLabIoHistoriesWithMemberUseKeysetPaginateParams struct {
 	EarlierExitedAt       pgtype.Timestamptz `json:"earlier_exited_at"`
 	WhereLaterExitedAt    bool               `json:"where_later_exited_at"`
 	LaterExitedAt         pgtype.Timestamptz `json:"later_exited_at"`
-	CursorDirection       interface{}        `json:"cursor_direction"`
+	CursorDirection       string             `json:"cursor_direction"`
 	OrderMethod           string             `json:"order_method"`
-	CursorColumn          time.Time          `json:"cursor_column"`
-	Cursor                pgtype.Int8        `json:"cursor"`
+	EnterCursor           time.Time          `json:"enter_cursor"`
+	Cursor                int32              `json:"cursor"`
+	ExitCursor            pgtype.Timestamptz `json:"exit_cursor"`
 }
 
-type GetLabIoHistoriesWithMemberUseKeysetPaginateRow struct {
+type GetLabIOHistoriesWithMemberUseKeysetPaginateRow struct {
 	LabIOHistory LabIOHistory `json:"lab_iohistory"`
 	Member       Member       `json:"member"`
 }
 
-func (q *Queries) GetLabIoHistoriesWithMemberUseKeysetPaginate(ctx context.Context, arg GetLabIoHistoriesWithMemberUseKeysetPaginateParams) ([]GetLabIoHistoriesWithMemberUseKeysetPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getLabIoHistoriesWithMemberUseKeysetPaginate,
+func (q *Queries) GetLabIOHistoriesWithMemberUseKeysetPaginate(ctx context.Context, arg GetLabIOHistoriesWithMemberUseKeysetPaginateParams) ([]GetLabIOHistoriesWithMemberUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getLabIOHistoriesWithMemberUseKeysetPaginate,
 		arg.Limit,
 		arg.WhereInMember,
 		arg.InMember,
@@ -593,16 +596,17 @@ func (q *Queries) GetLabIoHistoriesWithMemberUseKeysetPaginate(ctx context.Conte
 		arg.LaterExitedAt,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.EnterCursor,
 		arg.Cursor,
+		arg.ExitCursor,
 	)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetLabIoHistoriesWithMemberUseKeysetPaginateRow{}
+	items := []GetLabIOHistoriesWithMemberUseKeysetPaginateRow{}
 	for rows.Next() {
-		var i GetLabIoHistoriesWithMemberUseKeysetPaginateRow
+		var i GetLabIOHistoriesWithMemberUseKeysetPaginateRow
 		if err := rows.Scan(
 			&i.LabIOHistory.TLabIoHistoriesPkey,
 			&i.LabIOHistory.LabIoHistoryID,
@@ -634,7 +638,7 @@ func (q *Queries) GetLabIoHistoriesWithMemberUseKeysetPaginate(ctx context.Conte
 	return items, nil
 }
 
-const getLabIoHistoriesWithMemberUseNumberedPaginate = `-- name: GetLabIoHistoriesWithMemberUseNumberedPaginate :many
+const getLabIOHistoriesWithMemberUseNumberedPaginate = `-- name: GetLabIOHistoriesWithMemberUseNumberedPaginate :many
 SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE
@@ -656,7 +660,7 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetLabIoHistoriesWithMemberUseNumberedPaginateParams struct {
+type GetLabIOHistoriesWithMemberUseNumberedPaginateParams struct {
 	Limit                 int32              `json:"limit"`
 	Offset                int32              `json:"offset"`
 	WhereInMember         bool               `json:"where_in_member"`
@@ -672,13 +676,13 @@ type GetLabIoHistoriesWithMemberUseNumberedPaginateParams struct {
 	OrderMethod           string             `json:"order_method"`
 }
 
-type GetLabIoHistoriesWithMemberUseNumberedPaginateRow struct {
+type GetLabIOHistoriesWithMemberUseNumberedPaginateRow struct {
 	LabIOHistory LabIOHistory `json:"lab_iohistory"`
 	Member       Member       `json:"member"`
 }
 
-func (q *Queries) GetLabIoHistoriesWithMemberUseNumberedPaginate(ctx context.Context, arg GetLabIoHistoriesWithMemberUseNumberedPaginateParams) ([]GetLabIoHistoriesWithMemberUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getLabIoHistoriesWithMemberUseNumberedPaginate,
+func (q *Queries) GetLabIOHistoriesWithMemberUseNumberedPaginate(ctx context.Context, arg GetLabIOHistoriesWithMemberUseNumberedPaginateParams) ([]GetLabIOHistoriesWithMemberUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getLabIOHistoriesWithMemberUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.WhereInMember,
@@ -697,9 +701,9 @@ func (q *Queries) GetLabIoHistoriesWithMemberUseNumberedPaginate(ctx context.Con
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetLabIoHistoriesWithMemberUseNumberedPaginateRow{}
+	items := []GetLabIOHistoriesWithMemberUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetLabIoHistoriesWithMemberUseNumberedPaginateRow
+		var i GetLabIOHistoriesWithMemberUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.LabIOHistory.TLabIoHistoriesPkey,
 			&i.LabIOHistory.LabIoHistoryID,
@@ -731,19 +735,118 @@ func (q *Queries) GetLabIoHistoriesWithMemberUseNumberedPaginate(ctx context.Con
 	return items, nil
 }
 
-const updateLabIoHistory = `-- name: UpdateLabIoHistory :one
+const getPluralLabIOHistories = `-- name: GetPluralLabIOHistories :many
+SELECT t_lab_io_histories_pkey, lab_io_history_id, member_id, entered_at, exited_at FROM t_lab_io_histories WHERE lab_io_history_id = ANY($3::uuid[])
+ORDER BY
+	t_lab_io_histories_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralLabIOHistoriesParams struct {
+	Limit           int32       `json:"limit"`
+	Offset          int32       `json:"offset"`
+	LabIoHistoryIds []uuid.UUID `json:"lab_io_history_ids"`
+}
+
+func (q *Queries) GetPluralLabIOHistories(ctx context.Context, arg GetPluralLabIOHistoriesParams) ([]LabIOHistory, error) {
+	rows, err := q.db.Query(ctx, getPluralLabIOHistories, arg.Limit, arg.Offset, arg.LabIoHistoryIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []LabIOHistory{}
+	for rows.Next() {
+		var i LabIOHistory
+		if err := rows.Scan(
+			&i.TLabIoHistoriesPkey,
+			&i.LabIoHistoryID,
+			&i.MemberID,
+			&i.EnteredAt,
+			&i.ExitedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralLabIOHistoriesWithMember = `-- name: GetPluralLabIOHistoriesWithMember :many
+SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
+LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
+WHERE lab_io_history_id = ANY($3::uuid[])
+ORDER BY
+	t_lab_io_histories_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralLabIOHistoriesWithMemberParams struct {
+	Limit           int32       `json:"limit"`
+	Offset          int32       `json:"offset"`
+	LabIoHistoryIds []uuid.UUID `json:"lab_io_history_ids"`
+}
+
+type GetPluralLabIOHistoriesWithMemberRow struct {
+	LabIOHistory LabIOHistory `json:"lab_iohistory"`
+	Member       Member       `json:"member"`
+}
+
+func (q *Queries) GetPluralLabIOHistoriesWithMember(ctx context.Context, arg GetPluralLabIOHistoriesWithMemberParams) ([]GetPluralLabIOHistoriesWithMemberRow, error) {
+	rows, err := q.db.Query(ctx, getPluralLabIOHistoriesWithMember, arg.Limit, arg.Offset, arg.LabIoHistoryIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralLabIOHistoriesWithMemberRow{}
+	for rows.Next() {
+		var i GetPluralLabIOHistoriesWithMemberRow
+		if err := rows.Scan(
+			&i.LabIOHistory.TLabIoHistoriesPkey,
+			&i.LabIOHistory.LabIoHistoryID,
+			&i.LabIOHistory.MemberID,
+			&i.LabIOHistory.EnteredAt,
+			&i.LabIOHistory.ExitedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const updateLabIOHistory = `-- name: UpdateLabIOHistory :one
 UPDATE t_lab_io_histories SET member_id = $2, entered_at = $3, exited_at = $4 WHERE lab_io_history_id = $1 RETURNING t_lab_io_histories_pkey, lab_io_history_id, member_id, entered_at, exited_at
 `
 
-type UpdateLabIoHistoryParams struct {
+type UpdateLabIOHistoryParams struct {
 	LabIoHistoryID uuid.UUID          `json:"lab_io_history_id"`
 	MemberID       uuid.UUID          `json:"member_id"`
 	EnteredAt      time.Time          `json:"entered_at"`
 	ExitedAt       pgtype.Timestamptz `json:"exited_at"`
 }
 
-func (q *Queries) UpdateLabIoHistory(ctx context.Context, arg UpdateLabIoHistoryParams) (LabIOHistory, error) {
-	row := q.db.QueryRow(ctx, updateLabIoHistory,
+func (q *Queries) UpdateLabIOHistory(ctx context.Context, arg UpdateLabIOHistoryParams) (LabIOHistory, error) {
+	row := q.db.QueryRow(ctx, updateLabIOHistory,
 		arg.LabIoHistoryID,
 		arg.MemberID,
 		arg.EnteredAt,

@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countEarlyLeavings = `-- name: CountEarlyLeavings :one
@@ -109,11 +108,11 @@ func (q *Queries) GetEarlyLeavings(ctx context.Context) ([]EarlyLeaving, error) 
 const getEarlyLeavingsUseKeysetPaginate = `-- name: GetEarlyLeavingsUseKeysetPaginate :many
 SELECT t_early_leavings_pkey, early_leaving_id, attendance_id, leave_time FROM t_early_leavings
 WHERE
-	CASE $2
+	CASE $2::text
 		WHEN 'next' THEN
-			t_early_leavings_pkey < $3
+			t_early_leavings_pkey < $3::int
 		WHEN 'prev' THEN
-			t_early_leavings_pkey > $3
+			t_early_leavings_pkey > $3::int
 	END
 ORDER BY
 	t_early_leavings_pkey DESC
@@ -121,9 +120,9 @@ LIMIT $1
 `
 
 type GetEarlyLeavingsUseKeysetPaginateParams struct {
-	Limit           int32       `json:"limit"`
-	CursorDirection interface{} `json:"cursor_direction"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	Limit           int32  `json:"limit"`
+	CursorDirection string `json:"cursor_direction"`
+	Cursor          int32  `json:"cursor"`
 }
 
 func (q *Queries) GetEarlyLeavingsUseKeysetPaginate(ctx context.Context, arg GetEarlyLeavingsUseKeysetPaginateParams) ([]EarlyLeaving, error) {
@@ -165,6 +164,45 @@ type GetEarlyLeavingsUseNumberedPaginateParams struct {
 
 func (q *Queries) GetEarlyLeavingsUseNumberedPaginate(ctx context.Context, arg GetEarlyLeavingsUseNumberedPaginateParams) ([]EarlyLeaving, error) {
 	rows, err := q.db.Query(ctx, getEarlyLeavingsUseNumberedPaginate, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []EarlyLeaving{}
+	for rows.Next() {
+		var i EarlyLeaving
+		if err := rows.Scan(
+			&i.TEarlyLeavingsPkey,
+			&i.EarlyLeavingID,
+			&i.AttendanceID,
+			&i.LeaveTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralEarlyLeavings = `-- name: GetPluralEarlyLeavings :many
+SELECT t_early_leavings_pkey, early_leaving_id, attendance_id, leave_time FROM t_early_leavings
+WHERE attendance_id = ANY($3::uuid[])
+ORDER BY
+	t_early_leavings_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralEarlyLeavingsParams struct {
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+}
+
+func (q *Queries) GetPluralEarlyLeavings(ctx context.Context, arg GetPluralEarlyLeavingsParams) ([]EarlyLeaving, error) {
+	rows, err := q.db.Query(ctx, getPluralEarlyLeavings, arg.Limit, arg.Offset, arg.AttendanceIds)
 	if err != nil {
 		return nil, err
 	}

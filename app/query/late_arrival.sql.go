@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countLateArrivals = `-- name: CountLateArrivals :one
@@ -109,11 +108,11 @@ func (q *Queries) GetLateArrivals(ctx context.Context) ([]LateArrival, error) {
 const getLateArrivalsUseKeysetPaginate = `-- name: GetLateArrivalsUseKeysetPaginate :many
 SELECT t_late_arrivals_pkey, late_arrival_id, attendance_id, arrive_time FROM t_late_arrivals
 WHERE
-	CASE $2
+	CASE $2::text
 		WHEN 'next' THEN
-			t_late_arrivals_pkey < $3
+			t_late_arrivals_pkey < $3::int
 		WHEN 'prev' THEN
-			t_late_arrivals_pkey > $3
+			t_late_arrivals_pkey > $3::int
 	END
 ORDER BY
 	t_late_arrivals_pkey DESC
@@ -121,9 +120,9 @@ LIMIT $1
 `
 
 type GetLateArrivalsUseKeysetPaginateParams struct {
-	Limit           int32       `json:"limit"`
-	CursorDirection interface{} `json:"cursor_direction"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	Limit           int32  `json:"limit"`
+	CursorDirection string `json:"cursor_direction"`
+	Cursor          int32  `json:"cursor"`
 }
 
 func (q *Queries) GetLateArrivalsUseKeysetPaginate(ctx context.Context, arg GetLateArrivalsUseKeysetPaginateParams) ([]LateArrival, error) {
@@ -165,6 +164,45 @@ type GetLateArrivalsUseNumberedPaginateParams struct {
 
 func (q *Queries) GetLateArrivalsUseNumberedPaginate(ctx context.Context, arg GetLateArrivalsUseNumberedPaginateParams) ([]LateArrival, error) {
 	rows, err := q.db.Query(ctx, getLateArrivalsUseNumberedPaginate, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []LateArrival{}
+	for rows.Next() {
+		var i LateArrival
+		if err := rows.Scan(
+			&i.TLateArrivalsPkey,
+			&i.LateArrivalID,
+			&i.AttendanceID,
+			&i.ArriveTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralLateArrivals = `-- name: GetPluralLateArrivals :many
+SELECT t_late_arrivals_pkey, late_arrival_id, attendance_id, arrive_time FROM t_late_arrivals
+WHERE attendance_id = ANY($3::uuid[])
+ORDER BY
+	t_late_arrivals_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralLateArrivalsParams struct {
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+}
+
+func (q *Queries) GetPluralLateArrivals(ctx context.Context, arg GetPluralLateArrivalsParams) ([]LateArrival, error) {
+	rows, err := q.db.Query(ctx, getPluralLateArrivals, arg.Limit, arg.Offset, arg.AttendanceIds)
 	if err != nil {
 		return nil, err
 	}

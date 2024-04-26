@@ -9,7 +9,6 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countAttendanceTypes = `-- name: CountAttendanceTypes :one
@@ -156,18 +155,18 @@ func (q *Queries) GetAttendanceTypes(ctx context.Context, arg GetAttendanceTypes
 const getAttendanceTypesUseKeysetPaginate = `-- name: GetAttendanceTypesUseKeysetPaginate :many
 SELECT m_attendance_types_pkey, attendance_type_id, name, key, color FROM m_attendance_types
 WHERE
-	CASE $2
+	CASE $2::text
 		WHEN 'next' THEN
 			CASE $3::text
-				WHEN 'name' THEN name > $4 OR (name = $4 AND m_attendance_types_pkey < $5)
-				WHEN 'r_name' THEN name < $4 OR (name = $4 AND m_attendance_types_pkey < $5)
-				ELSE m_attendance_types_pkey < $5
+				WHEN 'name' THEN name > $4 OR (name = $4 AND m_attendance_types_pkey < $5::int)
+				WHEN 'r_name' THEN name < $4 OR (name = $4 AND m_attendance_types_pkey < $5::int)
+				ELSE m_attendance_types_pkey < $5::int
 			END
 		WHEN 'prev' THEN
 			CASE $3::text
-				WHEN 'name' THEN name < $4 OR (name = $4 AND m_attendance_types_pkey > $5)
-				WHEN 'r_name' THEN name > $4 OR (name = $4 AND m_attendance_types_pkey > $5)
-				ELSE m_attendance_types_pkey > $5
+				WHEN 'name' THEN name < $4 OR (name = $4 AND m_attendance_types_pkey > $5::int)
+				WHEN 'r_name' THEN name > $4 OR (name = $4 AND m_attendance_types_pkey > $5::int)
+				ELSE m_attendance_types_pkey > $5::int
 			END
 	END
 ORDER BY
@@ -176,11 +175,11 @@ LIMIT $1
 `
 
 type GetAttendanceTypesUseKeysetPaginateParams struct {
-	Limit           int32       `json:"limit"`
-	CursorDirection interface{} `json:"cursor_direction"`
-	OrderMethod     string      `json:"order_method"`
-	CursorColumn    string      `json:"cursor_column"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	Limit           int32  `json:"limit"`
+	CursorDirection string `json:"cursor_direction"`
+	OrderMethod     string `json:"order_method"`
+	NameCursor      string `json:"name_cursor"`
+	Cursor          int32  `json:"cursor"`
 }
 
 func (q *Queries) GetAttendanceTypesUseKeysetPaginate(ctx context.Context, arg GetAttendanceTypesUseKeysetPaginateParams) ([]AttendanceType, error) {
@@ -188,7 +187,7 @@ func (q *Queries) GetAttendanceTypesUseKeysetPaginate(ctx context.Context, arg G
 		arg.Limit,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -242,6 +241,46 @@ func (q *Queries) GetAttendanceTypesUseNumberedPaginate(ctx context.Context, arg
 		arg.SearchName,
 		arg.OrderMethod,
 	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []AttendanceType{}
+	for rows.Next() {
+		var i AttendanceType
+		if err := rows.Scan(
+			&i.MAttendanceTypesPkey,
+			&i.AttendanceTypeID,
+			&i.Name,
+			&i.Key,
+			&i.Color,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAttendanceTypes = `-- name: GetPluralAttendanceTypes :many
+SELECT m_attendance_types_pkey, attendance_type_id, name, key, color FROM m_attendance_types
+WHERE attendance_type_id = ANY($3::uuid[])
+ORDER BY
+	m_attendance_types_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralAttendanceTypesParams struct {
+	Limit             int32       `json:"limit"`
+	Offset            int32       `json:"offset"`
+	AttendanceTypeIds []uuid.UUID `json:"attendance_type_ids"`
+}
+
+func (q *Queries) GetPluralAttendanceTypes(ctx context.Context, arg GetPluralAttendanceTypesParams) ([]AttendanceType, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceTypes, arg.Limit, arg.Offset, arg.AttendanceTypeIds)
 	if err != nil {
 		return nil, err
 	}

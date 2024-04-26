@@ -9,7 +9,6 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countRecordTypes = `-- name: CountRecordTypes :one
@@ -106,6 +105,46 @@ func (q *Queries) FindRecordTypeByKey(ctx context.Context, key string) (RecordTy
 	return i, err
 }
 
+const getPluralRecordTypes = `-- name: GetPluralRecordTypes :many
+SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
+WHERE
+	record_type_id = ANY($3::uuid[])
+ORDER BY
+	m_record_types_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralRecordTypesParams struct {
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+	RecordTypeIds []uuid.UUID `json:"record_type_ids"`
+}
+
+func (q *Queries) GetPluralRecordTypes(ctx context.Context, arg GetPluralRecordTypesParams) ([]RecordType, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordTypes, arg.Limit, arg.Offset, arg.RecordTypeIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []RecordType{}
+	for rows.Next() {
+		var i RecordType
+		if err := rows.Scan(
+			&i.MRecordTypesPkey,
+			&i.RecordTypeID,
+			&i.Name,
+			&i.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getRecordTypes = `-- name: GetRecordTypes :many
 SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
 WHERE
@@ -152,18 +191,18 @@ SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
 WHERE
 	CASE WHEN $1::boolean = true THEN m_record_types.name LIKE '%' || $2::text || '%' ELSE TRUE END
 AND
-	CASE $3
+	CASE $3::text
 		WHEN 'next' THEN
 			CASE $4::text
-				WHEN 'name' THEN name > $5 OR (name = $5 AND m_record_types_pkey < $6)
-				WHEN 'r_name' THEN name < $5 OR (name = $5 AND m_record_types_pkey < $6)
-				ELSE m_record_types_pkey < $6
+				WHEN 'name' THEN name > $5 OR (name = $5 AND m_record_types_pkey < $6::int)
+				WHEN 'r_name' THEN name < $5 OR (name = $5 AND m_record_types_pkey < $6::int)
+				ELSE m_record_types_pkey < $6::int
 			END
 		WHEN 'prev' THEN
 			CASE $4::text
-				WHEN 'name' THEN name < $5 OR (name = $5 AND m_record_types_pkey > $6)
-				WHEN 'r_name' THEN name > $5 OR (name = $5 AND m_record_types_pkey > $6)
-				ELSE m_record_types_pkey > $6
+				WHEN 'name' THEN name < $5 OR (name = $5 AND m_record_types_pkey > $6::int)
+				WHEN 'r_name' THEN name > $5 OR (name = $5 AND m_record_types_pkey > $6::int)
+				ELSE m_record_types_pkey > $6::int
 			END
 	END
 ORDER BY
@@ -173,12 +212,12 @@ ORDER BY
 `
 
 type GetRecordTypesUseKeysetPaginateParams struct {
-	WhereLikeName   bool        `json:"where_like_name"`
-	SearchName      string      `json:"search_name"`
-	CursorDirection interface{} `json:"cursor_direction"`
-	OrderMethod     string      `json:"order_method"`
-	CursorColumn    string      `json:"cursor_column"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	WhereLikeName   bool   `json:"where_like_name"`
+	SearchName      string `json:"search_name"`
+	CursorDirection string `json:"cursor_direction"`
+	OrderMethod     string `json:"order_method"`
+	NameCursor      string `json:"name_cursor"`
+	Cursor          int32  `json:"cursor"`
 }
 
 func (q *Queries) GetRecordTypesUseKeysetPaginate(ctx context.Context, arg GetRecordTypesUseKeysetPaginateParams) ([]RecordType, error) {
@@ -187,7 +226,7 @@ func (q *Queries) GetRecordTypesUseKeysetPaginate(ctx context.Context, arg GetRe
 		arg.SearchName,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {

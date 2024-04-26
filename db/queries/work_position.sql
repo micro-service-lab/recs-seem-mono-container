@@ -37,18 +37,18 @@ SELECT * FROM m_work_positions
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_work_positions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_work_positions_pkey < @cursor)
-				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_work_positions_pkey < @cursor)
-				ELSE m_work_positions_pkey < @cursor
+				WHEN 'name' THEN name > @name_cursor OR (name = @name_cursor AND m_work_positions_pkey < @cursor::int)
+				WHEN 'r_name' THEN name < @name_cursor OR (name = @name_cursor AND m_work_positions_pkey < @cursor::int)
+				ELSE m_work_positions_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name < @cursor_column OR (name = @cursor_column AND m_work_positions_pkey > @cursor)
-				WHEN 'r_name' THEN name > @cursor_column OR (name = @cursor_column AND m_work_positions_pkey > @cursor)
-				ELSE m_work_positions_pkey > @cursor
+				WHEN 'name' THEN name < @name_cursor OR (name = @name_cursor AND m_work_positions_pkey > @cursor::int)
+				WHEN 'r_name' THEN name > @name_cursor OR (name = @name_cursor AND m_work_positions_pkey > @cursor::int)
+				ELSE m_work_positions_pkey > @cursor::int
 			END
 	END
 ORDER BY
@@ -56,6 +56,14 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
 	m_work_positions_pkey DESC
 LIMIT $1;
+
+-- name: GetPluckWorkPositions :many
+SELECT work_position_id, name FROM m_work_positions
+WHERE
+	work_position_id = ANY(@work_position_ids::uuid[])
+ORDER BY
+	m_work_positions_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountWorkPositions :one
 SELECT COUNT(*) FROM m_work_positions

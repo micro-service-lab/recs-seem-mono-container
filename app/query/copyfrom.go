@@ -529,13 +529,13 @@ func (q *Queries) CreateImages(ctx context.Context, arg []CreateImagesParams) (i
 	return q.db.CopyFrom(ctx, []string{"t_images"}, []string{"height", "width", "attachable_item_id"}, &iteratorForCreateImages{rows: arg})
 }
 
-// iteratorForCreateLabIoHistories implements pgx.CopyFromSource.
-type iteratorForCreateLabIoHistories struct {
-	rows                 []CreateLabIoHistoriesParams
+// iteratorForCreateLabIOHistories implements pgx.CopyFromSource.
+type iteratorForCreateLabIOHistories struct {
+	rows                 []CreateLabIOHistoriesParams
 	skippedFirstNextCall bool
 }
 
-func (r *iteratorForCreateLabIoHistories) Next() bool {
+func (r *iteratorForCreateLabIOHistories) Next() bool {
 	if len(r.rows) == 0 {
 		return false
 	}
@@ -547,7 +547,7 @@ func (r *iteratorForCreateLabIoHistories) Next() bool {
 	return len(r.rows) > 0
 }
 
-func (r iteratorForCreateLabIoHistories) Values() ([]interface{}, error) {
+func (r iteratorForCreateLabIOHistories) Values() ([]interface{}, error) {
 	return []interface{}{
 		r.rows[0].MemberID,
 		r.rows[0].EnteredAt,
@@ -555,12 +555,12 @@ func (r iteratorForCreateLabIoHistories) Values() ([]interface{}, error) {
 	}, nil
 }
 
-func (r iteratorForCreateLabIoHistories) Err() error {
+func (r iteratorForCreateLabIOHistories) Err() error {
 	return nil
 }
 
-func (q *Queries) CreateLabIoHistories(ctx context.Context, arg []CreateLabIoHistoriesParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"t_lab_io_histories"}, []string{"member_id", "entered_at", "exited_at"}, &iteratorForCreateLabIoHistories{rows: arg})
+func (q *Queries) CreateLabIOHistories(ctx context.Context, arg []CreateLabIOHistoriesParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_lab_io_histories"}, []string{"member_id", "entered_at", "exited_at"}, &iteratorForCreateLabIOHistories{rows: arg})
 }
 
 // iteratorForCreateLateArrivals implements pgx.CopyFromSource.

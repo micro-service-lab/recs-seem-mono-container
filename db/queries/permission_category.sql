@@ -46,18 +46,18 @@ SELECT * FROM m_permission_categories
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_permission_categories.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_permission_categories_pkey < @cursor)
-				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_permission_categories_pkey < @cursor)
-				ELSE m_permission_categories_pkey < @cursor
+				WHEN 'name' THEN name > @name_cursor OR (name = @name_cursor AND m_permission_categories_pkey < @cursor::int)
+				WHEN 'r_name' THEN name < @name_cursor OR (name = @name_cursor AND m_permission_categories_pkey < @cursor::int)
+				ELSE m_permission_categories_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name < @cursor_column OR (name = @cursor_column AND m_permission_categories_pkey > @cursor)
-				WHEN 'r_name' THEN name > @cursor_column OR (name = @cursor_column AND m_permission_categories_pkey > @cursor)
-				ELSE m_permission_categories_pkey > @cursor
+				WHEN 'name' THEN name < @name_cursor OR (name = @name_cursor AND m_permission_categories_pkey > @cursor::int)
+				WHEN 'r_name' THEN name > @name_cursor OR (name = @name_cursor AND m_permission_categories_pkey > @cursor::int)
+				ELSE m_permission_categories_pkey > @cursor::int
 			END
 	END
 ORDER BY
@@ -65,6 +65,13 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_name' THEN m_permission_categories.name END DESC,
 	m_permission_categories_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralPermissionCategories :many
+SELECT * FROM m_permission_categories
+WHERE permission_category_id = ANY(@permission_category_ids::uuid[])
+ORDER BY
+	m_permission_categories_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountPermissionCategories :one
 SELECT COUNT(*) FROM m_permission_categories

@@ -8,7 +8,7 @@ INSERT INTO m_chat_room_belongings (member_id, chat_room_id, added_at) VALUES ($
 DELETE FROM m_chat_room_belongings WHERE member_id = $1 AND chat_room_id = $2;
 
 -- name: GetMembersOnChatRoom :many
-SELECT sqlc.embed(m_chat_room_belongings), sqlc.embed(m_members) FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.*, m_members.* FROM m_chat_room_belongings
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 WHERE chat_room_id = $1
 AND CASE
@@ -22,7 +22,7 @@ ORDER BY
 	m_chat_room_belongings_pkey DESC;
 
 -- name: GetMembersOnChatRoomUseNumberedPaginate :many
-SELECT sqlc.embed(m_chat_room_belongings), sqlc.embed(m_members) FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.*, m_members.* FROM m_chat_room_belongings
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 WHERE chat_room_id = $1
 AND CASE
@@ -37,23 +37,25 @@ ORDER BY
 LIMIT $2 OFFSET $3;
 
 -- name: GetMembersOnChatRoomUseKeysetPaginate :many
-SELECT sqlc.embed(m_chat_room_belongings), sqlc.embed(m_members) FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.*, m_members.* FROM m_chat_room_belongings
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 WHERE chat_room_id = $1
-AND CASE @cursor_direction
+AND CASE @cursor_direction::text
 	WHEN 'next' THEN
 		CASE @order_method::text
-			WHEN 'name' THEN m_members.name > @cursor_column OR (m_members.name = @cursor_column AND m_chat_room_belongings_pkey < @cursor)
-			WHEN 'r_name' THEN m_members.name < @cursor_column OR (m_members.name = @cursor_column AND m_chat_room_belongings_pkey < @cursor)
-			WHEN 'old_add' THEN m_chat_room_belongings.added_at > @cursor_column OR (m_chat_room_belongings.added_at = @cursor_column AND m_chat_room_belongings_pkey < @cursor)
-			WHEN 'late_add' THEN m_chat_room_belongings.added_at < @cursor_column OR (m_chat_room_belongings.added_at = @cursor_column AND m_chat_room_belongings_pkey < @cursor)
+			WHEN 'name' THEN m_members.name > @name_cursor OR (m_members.name = @name_cursor AND m_chat_room_belongings_pkey < @cursor::int)
+			WHEN 'r_name' THEN m_members.name < @name_cursor OR (m_members.name = @name_cursor AND m_chat_room_belongings_pkey < @cursor::int)
+			WHEN 'old_add' THEN m_chat_room_belongings.added_at > @added_at_cursor OR (m_chat_room_belongings.added_at = @added_at_cursor AND m_chat_room_belongings_pkey < @cursor::int)
+			WHEN 'late_add' THEN m_chat_room_belongings.added_at < @added_at_cursor OR (m_chat_room_belongings.added_at = @added_at_cursor AND m_chat_room_belongings_pkey < @cursor::int)
+			ELSE m_chat_room_belongings_pkey < @cursor::int
 		END
 	WHEN 'prev' THEN
 		CASE @order_method::text
-			WHEN 'name' THEN m_members.name < @cursor_column OR (m_members.name = @cursor_column AND m_chat_room_belongings_pkey > @cursor)
-			WHEN 'r_name' THEN m_members.name > @cursor_column OR (m_members.name = @cursor_column AND m_chat_room_belongings_pkey > @cursor)
-			WHEN 'old_add' THEN m_chat_room_belongings.added_at < @cursor_column OR (m_chat_room_belongings.added_at = @cursor_column AND m_chat_room_belongings_pkey > @cursor)
-			WHEN 'late_add' THEN m_chat_room_belongings.added_at > @cursor_column OR (m_chat_room_belongings.added_at = @cursor_column AND m_chat_room_belongings_pkey > @cursor)
+			WHEN 'name' THEN m_members.name < @name_cursor OR (m_members.name = @name_cursor AND m_chat_room_belongings_pkey > @cursor::int)
+			WHEN 'r_name' THEN m_members.name > @name_cursor OR (m_members.name = @name_cursor AND m_chat_room_belongings_pkey > @cursor::int)
+			WHEN 'old_add' THEN m_chat_room_belongings.added_at < @added_at_cursor OR (m_chat_room_belongings.added_at = @added_at_cursor AND m_chat_room_belongings_pkey > @cursor::int)
+			WHEN 'late_add' THEN m_chat_room_belongings.added_at > @added_at_cursor OR (m_chat_room_belongings.added_at = @added_at_cursor AND m_chat_room_belongings_pkey > @cursor::int)
+			ELSE m_chat_room_belongings_pkey > @cursor::int
 		END
 END
 ORDER BY
@@ -64,6 +66,14 @@ ORDER BY
 	m_chat_room_belongings_pkey DESC
 LIMIT $2;
 
+-- name: GetPluralMembersOnChatRoom :many
+SELECT m_chat_room_belongings.*, m_members.* FROM m_chat_room_belongings
+LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
+WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
+ORDER BY
+	m_chat_room_belongings_pkey DESC
+LIMIT $1 OFFSET $2;
+
 -- name: CountMembersOnChatRoom :one
 SELECT COUNT(*) FROM m_chat_room_belongings WHERE chat_room_id = $1
 AND CASE WHEN @where_like_name::boolean = true THEN
@@ -71,7 +81,7 @@ AND CASE WHEN @where_like_name::boolean = true THEN
 	ELSE TRUE END;
 
 -- name: GetChatRoomsOnMember :many
-SELECT sqlc.embed(m_chat_room_belongings), sqlc.embed(m_chat_rooms) FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.*, sqlc.embed(m_chat_rooms) FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = $1
 AND CASE
@@ -91,7 +101,7 @@ ORDER BY
 	m_chat_room_belongings_pkey DESC;
 
 -- name: GetChatRoomsOnMemberUseNumberedPaginate :many
-SELECT sqlc.embed(m_chat_room_belongings), sqlc.embed(m_chat_rooms) FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.*, sqlc.embed(m_chat_rooms) FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = $1
 AND CASE
@@ -112,35 +122,37 @@ ORDER BY
 LIMIT $2 OFFSET $3;
 
 -- name: GetChatRoomsOnMemberUseKeysetPaginate :many
-SELECT sqlc.embed(m_chat_room_belongings), sqlc.embed(m_chat_rooms) FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.*, sqlc.embed(m_chat_rooms) FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = $1
-AND CASE @cursor_direction
+AND CASE @cursor_direction::text
 	WHEN 'next' THEN
 		CASE @order_method::text
-			WHEN 'name' THEN m_chat_rooms.name > @cursor_column OR (m_chat_rooms.name = @cursor_column AND m_chat_room_belongings_pkey < @cursor)
-			WHEN 'r_name' THEN m_chat_rooms.name < @cursor_column OR (m_chat_rooms.name = @cursor_column AND m_chat_room_belongings_pkey < @cursor)
-			WHEN 'old_add' THEN m_chat_room_belongings.added_at > @cursor_column OR (m_chat_room_belongings.added_at = @cursor_column AND m_chat_room_belongings_pkey < @cursor)
-			WHEN 'late_add' THEN m_chat_room_belongings.added_at < @cursor_column OR (m_chat_room_belongings.added_at = @cursor_column AND m_chat_room_belongings_pkey < @cursor)
+			WHEN 'name' THEN m_chat_rooms.name > @name_cursor OR (m_chat_rooms.name = @name_cursor AND m_chat_room_belongings_pkey < @cursor::int)
+			WHEN 'r_name' THEN m_chat_rooms.name < @name_cursor OR (m_chat_rooms.name = @name_cursor AND m_chat_room_belongings_pkey < @cursor::int)
+			WHEN 'old_add' THEN m_chat_room_belongings.added_at > @add_cursor OR (m_chat_room_belongings.added_at = @add_cursor AND m_chat_room_belongings_pkey < @cursor::int)
+			WHEN 'late_add' THEN m_chat_room_belongings.added_at < @add_cursor OR (m_chat_room_belongings.added_at = @add_cursor AND m_chat_room_belongings_pkey < @cursor::int)
 			WHEN 'old_chat' THEN
-				(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) > @cursor_column
-				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = @cursor_column AND m_chat_room_belongings_pkey < @cursor)
+				(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) > @chat_cursor
+				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = @chat_cursor AND m_chat_room_belongings_pkey < @cursor::int)
 			WHEN 'late_chat' THEN
-				(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) < @cursor_column
-				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = @cursor_column AND m_chat_room_belongings_pkey < @cursor)
+				(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) < @chat_cursor
+				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = @chat_cursor AND m_chat_room_belongings_pkey < @cursor::int)
+			ELSE m_chat_room_belongings_pkey < @cursor::int
 		END
 	WHEN 'prev' THEN
 		CASE @order_method::text
-			WHEN 'name' THEN m_chat_rooms.name < @cursor_column OR (m_chat_rooms.name = @cursor_column AND m_chat_room_belongings_pkey > @cursor)
-			WHEN 'r_name' THEN m_chat_rooms.name > @cursor_column OR (m_chat_rooms.name = @cursor_column AND m_chat_room_belongings_pkey > @cursor)
-			WHEN 'old_add' THEN m_chat_room_belongings.added_at < @cursor_column OR (m_chat_room_belongings.added = @cursor_column AND m_chat_room_belongings_pkey > @cursor)
-			WHEN 'late_add' THEN m_chat_room_belongings.added_at > @cursor_column OR (m_chat_room_belongings.added_at = @cursor_column AND m_chat_room_belongings_pkey > @cursor)
+			WHEN 'name' THEN m_chat_rooms.name < @name_cursor OR (m_chat_rooms.name = @name_cursor AND m_chat_room_belongings_pkey > @cursor::int)
+			WHEN 'r_name' THEN m_chat_rooms.name > @name_cursor OR (m_chat_rooms.name = @name_cursor AND m_chat_room_belongings_pkey > @cursor::int)
+			WHEN 'old_add' THEN m_chat_room_belongings.added_at < @add_cursor OR (m_chat_room_belongings.added_at = @add_cursor AND m_chat_room_belongings_pkey > @cursor::int)
+			WHEN 'late_add' THEN m_chat_room_belongings.added_at > @add_cursor OR (m_chat_room_belongings.added_at = @add_cursor AND m_chat_room_belongings_pkey > @cursor::int)
 			WHEN 'old_chat' THEN
-				(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) < @cursor_column
-				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = @cursor_column AND m_chat_room_belongings_pkey > @cursor)
+				(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) < @chat_cursor
+				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = @chat_cursor AND m_chat_room_belongings_pkey > @cursor::int)
 			WHEN 'late_chat' THEN
-				(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) > @cursor_column
-				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = @cursor_column AND m_chat_room_belongings_pkey > @cursor)
+				(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) > @chat_cursor
+				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = @chat_cursor AND m_chat_room_belongings_pkey > @cursor::int)
+			ELSE m_chat_room_belongings_pkey > @cursor::int
 		END
 END
 ORDER BY
@@ -154,6 +166,14 @@ ORDER BY
 		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END DESC,
 	m_chat_room_belongings_pkey DESC
 LIMIT $2;
+
+-- name: GetPluralChatRoomsOnMember :many
+SELECT m_chat_room_belongings.*, sqlc.embed(m_chat_rooms) FROM m_chat_room_belongings
+LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
+WHERE member_id = ANY(@member_ids::uuid[])
+ORDER BY
+	m_chat_room_belongings_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountChatRoomsOnMember :one
 SELECT COUNT(*) FROM m_chat_room_belongings WHERE member_id = $1

@@ -30,6 +30,12 @@ const (
 	NegativeInfinity InfinityModifier = -Infinity
 )
 
+// Int 整数型。
+type Int struct {
+	Int64 int64
+	Valid bool
+}
+
 // String 文字列型。
 type String struct {
 	String string
@@ -48,6 +54,12 @@ type UUID struct {
 	Status Status
 }
 
+// UUIDs UUIDのスライス型。
+type UUIDs struct {
+	UUIDs  []UUID
+	Status Status
+}
+
 // Date 日付型。
 type Date struct {
 	Time             time.Time
@@ -61,3 +73,6 @@ type Timestamptz struct {
 	Status           Status
 	InfinityModifier InfinityModifier
 }
+
+// OID オブジェクトID型。
+type OID uint32

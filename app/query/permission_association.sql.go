@@ -9,7 +9,6 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countPermissionsOnWorkPosition = `-- name: CountPermissionsOnWorkPosition :one
@@ -155,18 +154,18 @@ WHERE work_position_id = $1
 AND
 	CASE WHEN $3::boolean = true THEN m_permissions.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
-	CASE $5
+	CASE $5::text
 		WHEN 'next' THEN
 			CASE $6::text
-				WHEN 'name' THEN m_permissions.name > $7 OR (m_permissions.name = $7 AND m_permission_associations_pkey < $8)
-				WHEN 'r_name' THEN m_permissions.name < $7 OR (m_permissions.name = $7 AND m_permission_associations_pkey < $8)
-				ELSE m_permission_associations_pkey < $8
+				WHEN 'name' THEN m_permissions.name > $7 OR (m_permissions.name = $7 AND m_permission_associations_pkey < $8::int)
+				WHEN 'r_name' THEN m_permissions.name < $7 OR (m_permissions.name = $7 AND m_permission_associations_pkey < $8::int)
+				ELSE m_permission_associations_pkey < $8::int
 			END
 		WHEN 'prev' THEN
 			CASE $6::text
-				WHEN 'name' THEN m_permissions.name < $7 OR (m_permissions.name = $7 AND m_permission_associations_pkey > $8)
-				WHEN 'r_name' THEN m_permissions.name > $7 OR (m_permissions.name = $7 AND m_permission_associations_pkey > $8)
-				ELSE m_permission_associations_pkey > $8
+				WHEN 'name' THEN m_permissions.name < $7 OR (m_permissions.name = $7 AND m_permission_associations_pkey > $8::int)
+				WHEN 'r_name' THEN m_permissions.name > $7 OR (m_permissions.name = $7 AND m_permission_associations_pkey > $8::int)
+				ELSE m_permission_associations_pkey > $8::int
 			END
 	END
 ORDER BY
@@ -177,14 +176,14 @@ LIMIT $2
 `
 
 type GetPermissionsOnWorkPositionUseKeysetPaginateParams struct {
-	WorkPositionID  uuid.UUID   `json:"work_position_id"`
-	Limit           int32       `json:"limit"`
-	WhereLikeName   bool        `json:"where_like_name"`
-	SearchName      string      `json:"search_name"`
-	CursorDirection interface{} `json:"cursor_direction"`
-	OrderMethod     string      `json:"order_method"`
-	CursorColumn    string      `json:"cursor_column"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	WorkPositionID  uuid.UUID `json:"work_position_id"`
+	Limit           int32     `json:"limit"`
+	WhereLikeName   bool      `json:"where_like_name"`
+	SearchName      string    `json:"search_name"`
+	CursorDirection string    `json:"cursor_direction"`
+	OrderMethod     string    `json:"order_method"`
+	NameCursor      string    `json:"name_cursor"`
+	Cursor          int32     `json:"cursor"`
 }
 
 type GetPermissionsOnWorkPositionUseKeysetPaginateRow struct {
@@ -200,7 +199,7 @@ func (q *Queries) GetPermissionsOnWorkPositionUseKeysetPaginate(ctx context.Cont
 		arg.SearchName,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -295,6 +294,106 @@ func (q *Queries) GetPermissionsOnWorkPositionUseNumberedPaginate(ctx context.Co
 	return items, nil
 }
 
+const getPluralPermissionsOnWorkPosition = `-- name: GetPluralPermissionsOnWorkPosition :many
+SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id FROM m_permission_associations
+LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
+WHERE work_position_id = ANY($3::uuid[])
+ORDER BY
+	m_permission_associations_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralPermissionsOnWorkPositionParams struct {
+	Limit           int32       `json:"limit"`
+	Offset          int32       `json:"offset"`
+	WorkPositionIds []uuid.UUID `json:"work_position_ids"`
+}
+
+type GetPluralPermissionsOnWorkPositionRow struct {
+	PermissionAssociation PermissionAssociation `json:"permission_association"`
+	Permission            Permission            `json:"permission"`
+}
+
+func (q *Queries) GetPluralPermissionsOnWorkPosition(ctx context.Context, arg GetPluralPermissionsOnWorkPositionParams) ([]GetPluralPermissionsOnWorkPositionRow, error) {
+	rows, err := q.db.Query(ctx, getPluralPermissionsOnWorkPosition, arg.Limit, arg.Offset, arg.WorkPositionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralPermissionsOnWorkPositionRow{}
+	for rows.Next() {
+		var i GetPluralPermissionsOnWorkPositionRow
+		if err := rows.Scan(
+			&i.PermissionAssociation.MPermissionAssociationsPkey,
+			&i.PermissionAssociation.PermissionID,
+			&i.PermissionAssociation.WorkPositionID,
+			&i.Permission.MPermissionsPkey,
+			&i.Permission.PermissionID,
+			&i.Permission.Name,
+			&i.Permission.Description,
+			&i.Permission.Key,
+			&i.Permission.PermissionCategoryID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralWorkPositionsOnPermission = `-- name: GetPluralWorkPositionsOnPermission :many
+SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_work_positions.m_work_positions_pkey, m_work_positions.work_position_id, m_work_positions.name, m_work_positions.description, m_work_positions.created_at, m_work_positions.updated_at FROM m_permission_associations
+LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
+WHERE permission_id = ANY($3::uuid[])
+ORDER BY
+	m_permission_associations_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralWorkPositionsOnPermissionParams struct {
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+	PermissionIds []uuid.UUID `json:"permission_ids"`
+}
+
+type GetPluralWorkPositionsOnPermissionRow struct {
+	PermissionAssociation PermissionAssociation `json:"permission_association"`
+	WorkPosition          WorkPosition          `json:"work_position"`
+}
+
+func (q *Queries) GetPluralWorkPositionsOnPermission(ctx context.Context, arg GetPluralWorkPositionsOnPermissionParams) ([]GetPluralWorkPositionsOnPermissionRow, error) {
+	rows, err := q.db.Query(ctx, getPluralWorkPositionsOnPermission, arg.Limit, arg.Offset, arg.PermissionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralWorkPositionsOnPermissionRow{}
+	for rows.Next() {
+		var i GetPluralWorkPositionsOnPermissionRow
+		if err := rows.Scan(
+			&i.PermissionAssociation.MPermissionAssociationsPkey,
+			&i.PermissionAssociation.PermissionID,
+			&i.PermissionAssociation.WorkPositionID,
+			&i.WorkPosition.MWorkPositionsPkey,
+			&i.WorkPosition.WorkPositionID,
+			&i.WorkPosition.Name,
+			&i.WorkPosition.Description,
+			&i.WorkPosition.CreatedAt,
+			&i.WorkPosition.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getWorkPositionsOnPermission = `-- name: GetWorkPositionsOnPermission :many
 SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_work_positions.m_work_positions_pkey, m_work_positions.work_position_id, m_work_positions.name, m_work_positions.description, m_work_positions.created_at, m_work_positions.updated_at FROM m_permission_associations
 LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
@@ -361,18 +460,18 @@ WHERE permission_id = $1
 AND
 	CASE WHEN $3::boolean = true THEN m_work_positions.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
-	CASE $5
+	CASE $5::text
 		WHEN 'next' THEN
 			CASE $6::text
-				WHEN 'name' THEN m_work_positions.name > $7 OR (m_work_positions.name = $7 AND m_permission_associations_pkey < $8)
-				WHEN 'r_name' THEN m_work_positions.name < $7 OR (m_work_positions.name = $7 AND m_permission_associations_pkey < $8)
-				ELSE m_permission_associations_pkey < $8
+				WHEN 'name' THEN m_work_positions.name > $7 OR (m_work_positions.name = $7 AND m_permission_associations_pkey < $8::int)
+				WHEN 'r_name' THEN m_work_positions.name < $7 OR (m_work_positions.name = $7 AND m_permission_associations_pkey < $8::int)
+				ELSE m_permission_associations_pkey < $8::int
 			END
 		WHEN 'prev' THEN
 			CASE $6::text
-				WHEN 'name' THEN m_work_positions.name < $7 OR (m_work_positions.name = $7 AND m_permission_associations_pkey > $8)
-				WHEN 'r_name' THEN m_work_positions.name > $7 OR (m_work_positions.name = $7 AND m_permission_associations_pkey > $8)
-				ELSE m_permission_associations_pkey > $8
+				WHEN 'name' THEN m_work_positions.name < $7 OR (m_work_positions.name = $7 AND m_permission_associations_pkey > $8::int)
+				WHEN 'r_name' THEN m_work_positions.name > $7 OR (m_work_positions.name = $7 AND m_permission_associations_pkey > $8::int)
+				ELSE m_permission_associations_pkey > $8::int
 			END
 	END
 ORDER BY
@@ -383,14 +482,14 @@ LIMIT $2
 `
 
 type GetWorkPositionsOnPermissionUseKeysetPaginateParams struct {
-	PermissionID    uuid.UUID   `json:"permission_id"`
-	Limit           int32       `json:"limit"`
-	WhereLikeName   bool        `json:"where_like_name"`
-	SearchName      string      `json:"search_name"`
-	CursorDirection interface{} `json:"cursor_direction"`
-	OrderMethod     string      `json:"order_method"`
-	CursorColumn    string      `json:"cursor_column"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	PermissionID    uuid.UUID `json:"permission_id"`
+	Limit           int32     `json:"limit"`
+	WhereLikeName   bool      `json:"where_like_name"`
+	SearchName      string    `json:"search_name"`
+	CursorDirection string    `json:"cursor_direction"`
+	OrderMethod     string    `json:"order_method"`
+	NameCursor      string    `json:"name_cursor"`
+	Cursor          int32     `json:"cursor"`
 }
 
 type GetWorkPositionsOnPermissionUseKeysetPaginateRow struct {
@@ -406,7 +505,7 @@ func (q *Queries) GetWorkPositionsOnPermissionUseKeysetPaginate(ctx context.Cont
 		arg.SearchName,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {

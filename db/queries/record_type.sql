@@ -46,24 +46,32 @@ SELECT * FROM m_record_types
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_record_types.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @cursor_column OR (name = @cursor_column AND m_record_types_pkey < @cursor)
-				WHEN 'r_name' THEN name < @cursor_column OR (name = @cursor_column AND m_record_types_pkey < @cursor)
-				ELSE m_record_types_pkey < @cursor
+				WHEN 'name' THEN name > @name_cursor OR (name = @name_cursor AND m_record_types_pkey < @cursor::int)
+				WHEN 'r_name' THEN name < @name_cursor OR (name = @name_cursor AND m_record_types_pkey < @cursor::int)
+				ELSE m_record_types_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name < @cursor_column OR (name = @cursor_column AND m_record_types_pkey > @cursor)
-				WHEN 'r_name' THEN name > @cursor_column OR (name = @cursor_column AND m_record_types_pkey > @cursor)
-				ELSE m_record_types_pkey > @cursor
+				WHEN 'name' THEN name < @name_cursor OR (name = @name_cursor AND m_record_types_pkey > @cursor::int)
+				WHEN 'r_name' THEN name > @name_cursor OR (name = @name_cursor AND m_record_types_pkey > @cursor::int)
+				ELSE m_record_types_pkey > @cursor::int
 			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
 	m_record_types_pkey DESC;
+
+-- name: GetPluralRecordTypes :many
+SELECT * FROM m_record_types
+WHERE
+	record_type_id = ANY(@record_type_ids::uuid[])
+ORDER BY
+	m_record_types_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountRecordTypes :one
 SELECT COUNT(*) FROM m_record_types

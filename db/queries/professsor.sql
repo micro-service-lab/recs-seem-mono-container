@@ -29,15 +29,22 @@ LIMIT $1 OFFSET $2;
 -- name: GetProfessorsUseKeysetPaginate :many
 SELECT * FROM m_professors
 WHERE
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
-			m_professors_pkey < @cursor
+			m_professors_pkey < @cursor::int
 		WHEN 'prev' THEN
-			m_professors_pkey > @cursor
+			m_professors_pkey > @cursor::int
 	END
 ORDER BY
 	m_professors_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralProfessors :many
+SELECT * FROM m_professors
+WHERE member_id = ANY(@member_ids::uuid[])
+ORDER BY
+	m_professors_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountProfessors :one
 SELECT COUNT(*) FROM m_professors;

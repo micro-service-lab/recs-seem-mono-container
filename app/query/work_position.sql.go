@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countWorkPositions = `-- name: CountWorkPositions :one
@@ -95,6 +94,46 @@ func (q *Queries) FindWorkPositionByID(ctx context.Context, workPositionID uuid.
 	return i, err
 }
 
+const getPluckWorkPositions = `-- name: GetPluckWorkPositions :many
+SELECT work_position_id, name FROM m_work_positions
+WHERE
+	work_position_id = ANY($3::uuid[])
+ORDER BY
+	m_work_positions_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluckWorkPositionsParams struct {
+	Limit           int32       `json:"limit"`
+	Offset          int32       `json:"offset"`
+	WorkPositionIds []uuid.UUID `json:"work_position_ids"`
+}
+
+type GetPluckWorkPositionsRow struct {
+	WorkPositionID uuid.UUID `json:"work_position_id"`
+	Name           string    `json:"name"`
+}
+
+func (q *Queries) GetPluckWorkPositions(ctx context.Context, arg GetPluckWorkPositionsParams) ([]GetPluckWorkPositionsRow, error) {
+	rows, err := q.db.Query(ctx, getPluckWorkPositions, arg.Limit, arg.Offset, arg.WorkPositionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluckWorkPositionsRow{}
+	for rows.Next() {
+		var i GetPluckWorkPositionsRow
+		if err := rows.Scan(&i.WorkPositionID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getWorkPositions = `-- name: GetWorkPositions :many
 SELECT m_work_positions_pkey, work_position_id, name, description, created_at, updated_at FROM m_work_positions
 WHERE
@@ -143,18 +182,18 @@ SELECT m_work_positions_pkey, work_position_id, name, description, created_at, u
 WHERE
 	CASE WHEN $2::boolean = true THEN m_work_positions.name LIKE '%' || $3::text || '%' ELSE TRUE END
 AND
-	CASE $4
+	CASE $4::text
 		WHEN 'next' THEN
 			CASE $5::text
-				WHEN 'name' THEN name > $6 OR (name = $6 AND m_work_positions_pkey < $7)
-				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_work_positions_pkey < $7)
-				ELSE m_work_positions_pkey < $7
+				WHEN 'name' THEN name > $6 OR (name = $6 AND m_work_positions_pkey < $7::int)
+				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_work_positions_pkey < $7::int)
+				ELSE m_work_positions_pkey < $7::int
 			END
 		WHEN 'prev' THEN
 			CASE $5::text
-				WHEN 'name' THEN name < $6 OR (name = $6 AND m_work_positions_pkey > $7)
-				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_work_positions_pkey > $7)
-				ELSE m_work_positions_pkey > $7
+				WHEN 'name' THEN name < $6 OR (name = $6 AND m_work_positions_pkey > $7::int)
+				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_work_positions_pkey > $7::int)
+				ELSE m_work_positions_pkey > $7::int
 			END
 	END
 ORDER BY
@@ -165,13 +204,13 @@ LIMIT $1
 `
 
 type GetWorkPositionsUseKeysetPaginateParams struct {
-	Limit           int32       `json:"limit"`
-	WhereLikeName   bool        `json:"where_like_name"`
-	SearchName      string      `json:"search_name"`
-	CursorDirection interface{} `json:"cursor_direction"`
-	OrderMethod     string      `json:"order_method"`
-	CursorColumn    string      `json:"cursor_column"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	Limit           int32  `json:"limit"`
+	WhereLikeName   bool   `json:"where_like_name"`
+	SearchName      string `json:"search_name"`
+	CursorDirection string `json:"cursor_direction"`
+	OrderMethod     string `json:"order_method"`
+	NameCursor      string `json:"name_cursor"`
+	Cursor          int32  `json:"cursor"`
 }
 
 func (q *Queries) GetWorkPositionsUseKeysetPaginate(ctx context.Context, arg GetWorkPositionsUseKeysetPaginateParams) ([]WorkPosition, error) {
@@ -181,7 +220,7 @@ func (q *Queries) GetWorkPositionsUseKeysetPaginate(ctx context.Context, arg Get
 		arg.SearchName,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {

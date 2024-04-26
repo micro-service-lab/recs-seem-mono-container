@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countPositionHistories = `-- name: CountPositionHistories :one
@@ -149,6 +148,107 @@ func (q *Queries) FindPositionHistoryByIDWithMember(ctx context.Context, positio
 	return i, err
 }
 
+const getPluralPositionHistories = `-- name: GetPluralPositionHistories :many
+SELECT t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, sent_at FROM t_position_histories WHERE position_history_id = ANY($3::uuid[])
+ORDER BY
+	t_position_histories_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralPositionHistoriesParams struct {
+	Limit              int32       `json:"limit"`
+	Offset             int32       `json:"offset"`
+	PositionHistoryIds []uuid.UUID `json:"position_history_ids"`
+}
+
+func (q *Queries) GetPluralPositionHistories(ctx context.Context, arg GetPluralPositionHistoriesParams) ([]PositionHistory, error) {
+	rows, err := q.db.Query(ctx, getPluralPositionHistories, arg.Limit, arg.Offset, arg.PositionHistoryIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []PositionHistory{}
+	for rows.Next() {
+		var i PositionHistory
+		if err := rows.Scan(
+			&i.TPositionHistoriesPkey,
+			&i.PositionHistoryID,
+			&i.MemberID,
+			&i.XPos,
+			&i.YPos,
+			&i.SentAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralPositionHistoriesWithMember = `-- name: GetPluralPositionHistoriesWithMember :many
+SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.sent_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
+LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
+WHERE position_history_id = ANY($3::uuid[])
+ORDER BY
+	t_position_histories_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralPositionHistoriesWithMemberParams struct {
+	Limit              int32       `json:"limit"`
+	Offset             int32       `json:"offset"`
+	PositionHistoryIds []uuid.UUID `json:"position_history_ids"`
+}
+
+type GetPluralPositionHistoriesWithMemberRow struct {
+	PositionHistory PositionHistory `json:"position_history"`
+	Member          Member          `json:"member"`
+}
+
+func (q *Queries) GetPluralPositionHistoriesWithMember(ctx context.Context, arg GetPluralPositionHistoriesWithMemberParams) ([]GetPluralPositionHistoriesWithMemberRow, error) {
+	rows, err := q.db.Query(ctx, getPluralPositionHistoriesWithMember, arg.Limit, arg.Offset, arg.PositionHistoryIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralPositionHistoriesWithMemberRow{}
+	for rows.Next() {
+		var i GetPluralPositionHistoriesWithMemberRow
+		if err := rows.Scan(
+			&i.PositionHistory.TPositionHistoriesPkey,
+			&i.PositionHistory.PositionHistoryID,
+			&i.PositionHistory.MemberID,
+			&i.PositionHistory.XPos,
+			&i.PositionHistory.YPos,
+			&i.PositionHistory.SentAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPositionHistories = `-- name: GetPositionHistories :many
 SELECT t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, sent_at FROM t_position_histories
 WHERE
@@ -217,18 +317,18 @@ AND
 AND
 	CASE WHEN $6::boolean = true THEN sent_at <= $7 ELSE TRUE END
 AND
-	CASE $8
+	CASE $8::text
 		WHEN 'next' THEN
 			CASE $9::text
-				WHEN 'old_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey < $11)
-				WHEN 'late_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey < $11)
-				ELSE t_position_histories_pkey < $11
+				WHEN 'old_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey < $11::int)
+				WHEN 'late_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey < $11::int)
+				ELSE t_position_histories_pkey < $11::int
 			END
 		WHEN 'prev' THEN
 			CASE $9::text
-				WHEN 'old_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey > $11)
-				WHEN 'late_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey > $11)
-				ELSE t_position_histories_pkey > $11
+				WHEN 'old_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey > $11::int)
+				WHEN 'late_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey > $11::int)
+				ELSE t_position_histories_pkey > $11::int
 		END
 	END
 ORDER BY
@@ -246,10 +346,10 @@ type GetPositionHistoriesUseKeysetPaginateParams struct {
 	EarlierSentAt      time.Time   `json:"earlier_sent_at"`
 	WhereLaterSentAt   bool        `json:"where_later_sent_at"`
 	LaterSentAt        time.Time   `json:"later_sent_at"`
-	CursorDirection    interface{} `json:"cursor_direction"`
+	CursorDirection    string      `json:"cursor_direction"`
 	OrderMethod        string      `json:"order_method"`
-	CursorColumn       time.Time   `json:"cursor_column"`
-	Cursor             pgtype.Int8 `json:"cursor"`
+	SendCursor         time.Time   `json:"send_cursor"`
+	Cursor             int32       `json:"cursor"`
 }
 
 func (q *Queries) GetPositionHistoriesUseKeysetPaginate(ctx context.Context, arg GetPositionHistoriesUseKeysetPaginateParams) ([]PositionHistory, error) {
@@ -263,7 +363,7 @@ func (q *Queries) GetPositionHistoriesUseKeysetPaginate(ctx context.Context, arg
 		arg.LaterSentAt,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.SendCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -444,18 +544,18 @@ AND
 AND
 	CASE WHEN $6::boolean = true THEN sent_at <= $7 ELSE TRUE END
 AND
-	CASE $8
+	CASE $8::text
 		WHEN 'next' THEN
 			CASE $9::text
-				WHEN 'old_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey < $11)
-				WHEN 'late_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey < $11)
-				ELSE t_position_histories_pkey < $11
+				WHEN 'old_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey < $11::int)
+				WHEN 'late_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey < $11::int)
+				ELSE t_position_histories_pkey < $11::int
 			END
 		WHEN 'prev' THEN
 			CASE $9::text
-				WHEN 'old_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey > $11)
-				WHEN 'late_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey > $11)
-				ELSE t_position_histories_pkey > $11
+				WHEN 'old_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey > $11::int)
+				WHEN 'late_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey > $11::int)
+				ELSE t_position_histories_pkey > $11::int
 			END
 	END
 ORDER BY
@@ -473,10 +573,10 @@ type GetPositionHistoriesWithMemberUseKeysetPaginateParams struct {
 	EarlierSentAt      time.Time   `json:"earlier_sent_at"`
 	WhereLaterSentAt   bool        `json:"where_later_sent_at"`
 	LaterSentAt        time.Time   `json:"later_sent_at"`
-	CursorDirection    interface{} `json:"cursor_direction"`
+	CursorDirection    string      `json:"cursor_direction"`
 	OrderMethod        string      `json:"order_method"`
-	CursorColumn       time.Time   `json:"cursor_column"`
-	Cursor             pgtype.Int8 `json:"cursor"`
+	SendCursor         time.Time   `json:"send_cursor"`
+	Cursor             int32       `json:"cursor"`
 }
 
 type GetPositionHistoriesWithMemberUseKeysetPaginateRow struct {
@@ -495,7 +595,7 @@ func (q *Queries) GetPositionHistoriesWithMemberUseKeysetPaginate(ctx context.Co
 		arg.LaterSentAt,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.SendCursor,
 		arg.Cursor,
 	)
 	if err != nil {

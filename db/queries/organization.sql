@@ -75,18 +75,18 @@ AND
 AND
 	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_organizations.name > @cursor_column OR (m_organizations.name = @cursor_column AND m_organizations_pkey < @cursor)
-				WHEN 'r_name' THEN m_organizations.name < @cursor_column OR (m_organizations.name = @cursor_column AND m_organizations_pkey < @cursor)
-				ELSE m_organizations_pkey < @cursor
+				WHEN 'name' THEN m_organizations.name > @name_cursor OR (m_organizations.name = @name_cursor AND m_organizations_pkey < @cursor::int)
+				WHEN 'r_name' THEN m_organizations.name < @name_cursor OR (m_organizations.name = @name_cursor AND m_organizations_pkey < @cursor::int)
+				ELSE m_organizations_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_organizations.name < @cursor_column OR (m_organizations.name = @cursor_column AND m_organizations_pkey > @cursor)
-				WHEN 'r_name' THEN m_organizations.name > @cursor_column OR (m_organizations.name = @cursor_column AND m_organizations_pkey > @cursor)
-				ELSE m_organizations_pkey > @cursor
+				WHEN 'name' THEN m_organizations.name < @name_cursor OR (m_organizations.name = @name_cursor AND m_organizations_pkey > @cursor::int)
+				WHEN 'r_name' THEN m_organizations.name > @name_cursor OR (m_organizations.name = @name_cursor AND m_organizations_pkey > @cursor::int)
+				ELSE m_organizations_pkey > @cursor::int
 			END
 	END
 ORDER BY
@@ -94,6 +94,12 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralOrganizations :many
+SELECT * FROM m_organizations WHERE organization_id = ANY(@organization_ids::uuid[])
+ORDER BY
+	m_organizations_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: GetOrganizationsWithDetail :many
 SELECT sqlc.embed(m_organizations), sqlc.embed(m_groups), sqlc.embed(m_grades) FROM m_organizations
@@ -149,18 +155,18 @@ AND
 AND
 	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_organizations.name > @cursor_column OR (m_organizations.name = @cursor_column AND m_organizations_pkey < @cursor)
-				WHEN 'r_name' THEN m_organizations.name < @cursor_column OR (m_organizations.name = @cursor_column AND m_organizations_pkey < @cursor)
-				ELSE m_organizations_pkey < @cursor
+				WHEN 'name' THEN m_organizations.name > @name_cursor OR (m_organizations.name = @name_cursor AND m_organizations_pkey < @cursor::int)
+				WHEN 'r_name' THEN m_organizations.name < @name_cursor OR (m_organizations.name = @name_cursor AND m_organizations_pkey < @cursor::int)
+				ELSE m_organizations_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_organizations.name < @cursor_column OR (m_organizations.name = @cursor_column AND m_organizations_pkey > @cursor)
-				WHEN 'r_name' THEN m_organizations.name > @cursor_column OR (m_organizations.name = @cursor_column AND m_organizations_pkey > @cursor)
-				ELSE m_organizations_pkey > @cursor
+				WHEN 'name' THEN m_organizations.name < @name_cursor OR (m_organizations.name = @name_cursor AND m_organizations_pkey > @cursor::int)
+				WHEN 'r_name' THEN m_organizations.name > @name_cursor OR (m_organizations.name = @name_cursor AND m_organizations_pkey > @cursor::int)
+				ELSE m_organizations_pkey > @cursor::int
 			END
 	END
 ORDER BY
@@ -168,6 +174,15 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralOrganizationsWithDetail :many
+SELECT sqlc.embed(m_organizations), sqlc.embed(m_groups), sqlc.embed(m_grades) FROM m_organizations
+LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
+LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
+WHERE organization_id = ANY(@organization_ids::uuid[])
+ORDER BY
+	m_organizations_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountOrganizations :one
 SELECT COUNT(*) FROM m_organizations

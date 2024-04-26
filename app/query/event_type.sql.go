@@ -9,7 +9,6 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countEventTypes = `-- name: CountEventTypes :one
@@ -158,18 +157,18 @@ SELECT m_event_types_pkey, event_type_id, name, key, color FROM m_event_types
 WHERE
 	CASE WHEN $2::boolean = true THEN name LIKE '%' || $3::text || '%' ELSE TRUE END
 AND
-	CASE $4
+	CASE $4::text
 		WHEN 'next' THEN
 			CASE $5::text
-				WHEN 'name' THEN name > $6 OR (name = $6 AND m_event_types_pkey < $7)
-				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_event_types_pkey < $7)
-				ELSE m_event_types_pkey < $7
+				WHEN 'name' THEN name > $6 OR (name = $6 AND m_event_types_pkey < $7::int)
+				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_event_types_pkey < $7::int)
+				ELSE m_event_types_pkey < $7::int
 			END
 		WHEN 'prev' THEN
 			CASE $5::text
-				WHEN 'name' THEN name < $6 OR (name = $6 AND m_event_types_pkey > $7)
-				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_event_types_pkey > $7)
-				ELSE m_event_types_pkey > $7
+				WHEN 'name' THEN name < $6 OR (name = $6 AND m_event_types_pkey > $7::int)
+				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_event_types_pkey > $7::int)
+				ELSE m_event_types_pkey > $7::int
 			END
 	END
 ORDER BY
@@ -180,13 +179,13 @@ LIMIT $1
 `
 
 type GetEventTypesUseKeysetPaginateParams struct {
-	Limit           int32       `json:"limit"`
-	WhereLikeName   bool        `json:"where_like_name"`
-	SearchName      string      `json:"search_name"`
-	CursorDirection interface{} `json:"cursor_direction"`
-	OrderMethod     string      `json:"order_method"`
-	CursorColumn    string      `json:"cursor_column"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	Limit           int32  `json:"limit"`
+	WhereLikeName   bool   `json:"where_like_name"`
+	SearchName      string `json:"search_name"`
+	CursorDirection string `json:"cursor_direction"`
+	OrderMethod     string `json:"order_method"`
+	NameCursor      string `json:"name_cursor"`
+	Cursor          int32  `json:"cursor"`
 }
 
 func (q *Queries) GetEventTypesUseKeysetPaginate(ctx context.Context, arg GetEventTypesUseKeysetPaginateParams) ([]EventType, error) {
@@ -196,7 +195,7 @@ func (q *Queries) GetEventTypesUseKeysetPaginate(ctx context.Context, arg GetEve
 		arg.SearchName,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -250,6 +249,45 @@ func (q *Queries) GetEventTypesUseNumberedPaginate(ctx context.Context, arg GetE
 		arg.SearchName,
 		arg.OrderMethod,
 	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []EventType{}
+	for rows.Next() {
+		var i EventType
+		if err := rows.Scan(
+			&i.MEventTypesPkey,
+			&i.EventTypeID,
+			&i.Name,
+			&i.Key,
+			&i.Color,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralEventTypes = `-- name: GetPluralEventTypes :many
+SELECT m_event_types_pkey, event_type_id, name, key, color FROM m_event_types WHERE event_type_id = ANY($3::uuid[])
+ORDER BY
+	m_event_types_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralEventTypesParams struct {
+	Limit        int32       `json:"limit"`
+	Offset       int32       `json:"offset"`
+	EventTypeIds []uuid.UUID `json:"event_type_ids"`
+}
+
+func (q *Queries) GetPluralEventTypes(ctx context.Context, arg GetPluralEventTypesParams) ([]EventType, error) {
+	rows, err := q.db.Query(ctx, getPluralEventTypes, arg.Limit, arg.Offset, arg.EventTypeIds)
 	if err != nil {
 		return nil, err
 	}

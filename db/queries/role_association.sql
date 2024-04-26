@@ -37,18 +37,18 @@ WHERE role_id = $1
 AND
 	CASE WHEN @where_like_name::boolean = true THEN m_policies.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_policies.name > @cursor_column OR (m_policies.name = @cursor_column AND m_role_associations_pkey < @cursor)
-				WHEN 'r_name' THEN m_policies.name < @cursor_column OR (m_policies.name = @cursor_column AND m_role_associations_pkey < @cursor)
-				ELSE m_role_associations_pkey < @cursor
+				WHEN 'name' THEN m_policies.name > @name_cursor OR (m_policies.name = @name_cursor AND m_role_associations_pkey < @cursor::int)
+				WHEN 'r_name' THEN m_policies.name < @name_cursor OR (m_policies.name = @name_cursor AND m_role_associations_pkey < @cursor::int)
+				ELSE m_role_associations_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_policies.name < @cursor_column OR (m_policies.name = @cursor_column AND m_role_associations_pkey > @cursor)
-				WHEN 'r_name' THEN m_policies.name > @cursor_column OR (m_policies.name = @cursor_column AND m_role_associations_pkey > @cursor)
-				ELSE m_role_associations_pkey > @cursor
+				WHEN 'name' THEN m_policies.name < @name_cursor OR (m_policies.name = @name_cursor AND m_role_associations_pkey > @cursor::int)
+				WHEN 'r_name' THEN m_policies.name > @name_cursor OR (m_policies.name = @name_cursor AND m_role_associations_pkey > @cursor::int)
+				ELSE m_role_associations_pkey > @cursor::int
 			END
 	END
 ORDER BY
@@ -56,6 +56,15 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
 	m_role_associations_pkey DESC
 LIMIT $2;
+
+-- name: GetPluralPoliciesOnRole :many
+SELECT sqlc.embed(m_role_associations), sqlc.embed(m_policies) FROM m_role_associations
+LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
+WHERE
+	role_id = ANY(@role_ids::uuid[])
+ORDER BY
+	m_role_associations_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountPoliciesByRoleID :one
 SELECT COUNT(*) FROM m_role_associations
@@ -94,18 +103,18 @@ WHERE policy_id = $1
 AND
 	CASE WHEN @where_like_name::boolean = true THEN m_roles.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_roles.name > @cursor_column OR (m_roles.name = @cursor_column AND m_role_associations_pkey < @cursor)
-				WHEN 'r_name' THEN m_roles.name < @cursor_column OR (m_roles.name = @cursor_column AND m_role_associations_pkey < @cursor)
-				ELSE m_role_associations_pkey < @cursor
+				WHEN 'name' THEN m_roles.name > @name_cursor OR (m_roles.name = @name_cursor AND m_role_associations_pkey < @cursor::int)
+				WHEN 'r_name' THEN m_roles.name < @name_cursor OR (m_roles.name = @name_cursor AND m_role_associations_pkey < @cursor::int)
+				ELSE m_role_associations_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_roles.name < @cursor_column OR (m_roles.name = @cursor_column AND m_role_associations_pkey > @cursor)
-				WHEN 'r_name' THEN m_roles.name > @cursor_column OR (m_roles.name = @cursor_column AND m_role_associations_pkey > @cursor)
-				ELSE m_role_associations_pkey > @cursor
+				WHEN 'name' THEN m_roles.name < @name_cursor OR (m_roles.name = @name_cursor AND m_role_associations_pkey > @cursor::int)
+				WHEN 'r_name' THEN m_roles.name > @name_cursor OR (m_roles.name = @name_cursor AND m_role_associations_pkey > @cursor::int)
+				ELSE m_role_associations_pkey > @cursor::int
 			END
 	END
 ORDER BY
@@ -113,6 +122,15 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
 	m_role_associations_pkey DESC
 LIMIT $2;
+
+-- name: GetPluralRolesOnPolicy :many
+SELECT sqlc.embed(m_role_associations), sqlc.embed(m_roles) FROM m_role_associations
+LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
+WHERE
+	policy_id = ANY(@policy_ids::uuid[])
+ORDER BY
+	m_role_associations_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountRolesByPolicyID :one
 SELECT COUNT(*) FROM m_role_associations

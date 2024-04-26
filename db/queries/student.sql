@@ -11,7 +11,7 @@ DELETE FROM m_students WHERE student_id = $1;
 SELECT * FROM m_students WHERE student_id = $1;
 
 -- name: FindStudentByIDWithMember :one
-SELECT sqlc.embed(m_students), sqlc.embed(m_members) FROM m_students
+SELECT m_students.*, sqlc.embed(m_members) FROM m_students
 LEFT JOIN m_members ON m_students.member_id = m_members.member_id
 WHERE student_id = $1;
 
@@ -29,15 +29,22 @@ LIMIT $1 OFFSET $2;
 -- name: GetStudentsUseKeysetPaginate :many
 SELECT * FROM m_students
 WHERE
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
-			m_students_pkey < @cursor
+			m_students_pkey < @cursor::int
 		WHEN 'prev' THEN
-			m_students_pkey > @cursor
+			m_students_pkey > @cursor::int
 	END
 ORDER BY
 	m_students_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralStudents :many
+SELECT * FROM m_students
+WHERE member_id = ANY(@member_ids::uuid[])
+ORDER BY
+	m_students_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountStudents :one
 SELECT COUNT(*) FROM m_students;

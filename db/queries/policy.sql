@@ -16,7 +16,7 @@ DELETE FROM m_policies WHERE policy_id = $1;
 -- name: DeletePolicyByKey :exec
 DELETE FROM m_policies WHERE key = $1;
 
--- name: FindPolicyById :one
+-- name: FindPolicyByID :one
 SELECT * FROM m_policies WHERE policy_id = $1;
 
 -- name: FindPolicyByIDWithCategory :one
@@ -57,18 +57,18 @@ WHERE
 AND
 	CASE WHEN @where_in_category::boolean = true THEN policy_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_policies.name > @cursor_column OR (m_policies.name = @cursor_column AND m_policies_pkey < @cursor)
-				WHEN 'r_name' THEN m_policies.name < @cursor_column OR (m_policies.name = @cursor_column AND m_policies_pkey < @cursor)
-				ELSE m_policies_pkey < @cursor
+				WHEN 'name' THEN m_policies.name > @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey < @cursor::int)
+				WHEN 'r_name' THEN m_policies.name < @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey < @cursor::int)
+				ELSE m_policies_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_policies.name < @cursor_column OR (m_policies.name = @cursor_column AND m_policies_pkey > @cursor)
-				WHEN 'r_name' THEN m_policies.name > @cursor_column OR (m_policies.name = @cursor_column AND m_policies_pkey > @cursor)
-				ELSE m_policies_pkey > @cursor
+				WHEN 'name' THEN m_policies.name < @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey > @cursor::int)
+				WHEN 'r_name' THEN m_policies.name > @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey > @cursor::int)
+				ELSE m_policies_pkey > @cursor::int
 			END
 	END
 ORDER BY
@@ -76,6 +76,12 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
 	m_policies_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralPolicies :many
+SELECT * FROM m_policies WHERE policy_id = ANY(@policy_ids::uuid[])
+ORDER BY
+	m_policies_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: GetPoliciesWithCategory :many
 SELECT m_policies.*, m_policy_categories.* FROM m_policies
@@ -110,18 +116,18 @@ WHERE
 AND
 	CASE WHEN @where_in_category::boolean = true THEN policy_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 AND
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_policies.name > @cursor_column OR (m_policies.name = @cursor_column AND m_policies_pkey < @cursor)
-				WHEN 'r_name' THEN m_policies.name < @cursor_column OR (m_policies.name = @cursor_column AND m_policies_pkey < @cursor)
-				ELSE m_policies_pkey < @cursor
+				WHEN 'name' THEN m_policies.name > @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey < @cursor::int)
+				WHEN 'r_name' THEN m_policies.name < @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey < @cursor::int)
+				ELSE m_policies_pkey < @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_policies.name < @cursor_column OR (m_policies.name = @cursor_column AND m_policies_pkey > @cursor)
-				WHEN 'r_name' THEN m_policies.name > @cursor_column OR (m_policies.name = @cursor_column AND m_policies_pkey > @cursor)
-				ELSE m_policies_pkey > @cursor
+				WHEN 'name' THEN m_policies.name < @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey > @cursor::int)
+				WHEN 'r_name' THEN m_policies.name > @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey > @cursor::int)
+				ELSE m_policies_pkey > @cursor::int
 			END
 	END
 ORDER BY
@@ -129,6 +135,14 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
 	m_policies_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralPoliciesWithCategory :many
+SELECT m_policies.*, m_policy_categories.* FROM m_policies
+JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
+WHERE policy_id = ANY(@policy_ids::uuid[])
+ORDER BY
+	m_policies_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountPolicies :one
 SELECT COUNT(*) FROM m_policies

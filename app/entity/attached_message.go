@@ -1,9 +1,11 @@
 package entity
 
-import "github.com/google/uuid"
+// AttachedMessageOnMessage メッセージに添付された添付を表す構造体。
+type AttachedMessageOnMessage struct {
+	AttachableItem AttachableItemWithMimeType `json:"attachable_item"`
+}
 
-// AttachedMessage 添付メッセージを表す構造体。
-type AttachedMessage struct {
-	MessageID        uuid.UUID `json:"message_id"`
-	AttachableItemID uuid.UUID `json:"attachable_item_id"`
+// AttachableItemWithOnChatRoom チャットルームに添付された添付を表す構造体。
+type AttachableItemWithOnChatRoom struct {
+	AttachableItem AttachableItemWithMimeType `json:"attachable_item"`
 }

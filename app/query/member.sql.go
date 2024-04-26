@@ -578,18 +578,18 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
 AND
-	CASE $12
+	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15)
-				ELSE m_members_pkey < $15
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				ELSE m_members_pkey < $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15)
-				ELSE m_members_pkey > $15
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				ELSE m_members_pkey > $15::int
 			END
 	END
 ORDER BY
@@ -611,10 +611,10 @@ type GetMembersUseKeysetPaginateParams struct {
 	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
 	WhenInGroup        bool        `json:"when_in_group"`
 	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	CursorDirection    interface{} `json:"cursor_direction"`
+	CursorDirection    string      `json:"cursor_direction"`
 	OrderMethod        string      `json:"order_method"`
-	CursorColumn       string      `json:"cursor_column"`
-	Cursor             pgtype.Int8 `json:"cursor"`
+	NameCursor         string      `json:"name_cursor"`
+	Cursor             int32       `json:"cursor"`
 }
 
 func (q *Queries) GetMembersUseKeysetPaginate(ctx context.Context, arg GetMembersUseKeysetPaginateParams) ([]Member, error) {
@@ -632,7 +632,7 @@ func (q *Queries) GetMembersUseKeysetPaginate(ctx context.Context, arg GetMember
 		arg.InGroupIds,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -889,18 +889,18 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
 AND
-	CASE $12
+	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15)
-				ELSE m_members_pkey < $15
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				ELSE m_members_pkey < $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15)
-				ELSE m_members_pkey > $15
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				ELSE m_members_pkey > $15::int
 			END
 	END
 ORDER BY
@@ -922,10 +922,10 @@ type GetMembersWithAllUseKeysetPaginateParams struct {
 	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
 	WhenInGroup        bool        `json:"when_in_group"`
 	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	CursorDirection    interface{} `json:"cursor_direction"`
+	CursorDirection    string      `json:"cursor_direction"`
 	OrderMethod        string      `json:"order_method"`
-	CursorColumn       string      `json:"cursor_column"`
-	Cursor             pgtype.Int8 `json:"cursor"`
+	NameCursor         string      `json:"name_cursor"`
+	Cursor             int32       `json:"cursor"`
 }
 
 type GetMembersWithAllUseKeysetPaginateRow struct {
@@ -952,7 +952,7 @@ func (q *Queries) GetMembersWithAllUseKeysetPaginate(ctx context.Context, arg Ge
 		arg.InGroupIds,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -1241,18 +1241,18 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
 AND
-	CASE $12
+	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15)
-				ELSE m_members_pkey < $15
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				ELSE m_members_pkey < $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15)
-				ELSE m_members_pkey > $15
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				ELSE m_members_pkey > $15::int
 			END
 	END
 ORDER BY
@@ -1274,10 +1274,10 @@ type GetMembersWithAttendStatusUseKeysetPaginateParams struct {
 	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
 	WhenInGroup        bool        `json:"when_in_group"`
 	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	CursorDirection    interface{} `json:"cursor_direction"`
+	CursorDirection    string      `json:"cursor_direction"`
 	OrderMethod        string      `json:"order_method"`
-	CursorColumn       string      `json:"cursor_column"`
-	Cursor             pgtype.Int8 `json:"cursor"`
+	NameCursor         string      `json:"name_cursor"`
+	Cursor             int32       `json:"cursor"`
 }
 
 type GetMembersWithAttendStatusUseKeysetPaginateRow struct {
@@ -1300,7 +1300,7 @@ func (q *Queries) GetMembersWithAttendStatusUseKeysetPaginate(ctx context.Contex
 		arg.InGroupIds,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -1539,18 +1539,18 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
 AND
-	CASE $12
+	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15)
-				ELSE m_members_pkey < $15
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				ELSE m_members_pkey < $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15)
-				ELSE m_members_pkey > $15
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				ELSE m_members_pkey > $15::int
 			END
 	END
 ORDER BY
@@ -1572,10 +1572,10 @@ type GetMembersWithGradeUseKeysetPaginateParams struct {
 	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
 	WhenInGroup        bool        `json:"when_in_group"`
 	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	CursorDirection    interface{} `json:"cursor_direction"`
+	CursorDirection    string      `json:"cursor_direction"`
 	OrderMethod        string      `json:"order_method"`
-	CursorColumn       string      `json:"cursor_column"`
-	Cursor             pgtype.Int8 `json:"cursor"`
+	NameCursor         string      `json:"name_cursor"`
+	Cursor             int32       `json:"cursor"`
 }
 
 type GetMembersWithGradeUseKeysetPaginateRow struct {
@@ -1598,7 +1598,7 @@ func (q *Queries) GetMembersWithGradeUseKeysetPaginate(ctx context.Context, arg 
 		arg.InGroupIds,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -1838,18 +1838,18 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
 AND
-	CASE $12
+	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15)
-				ELSE m_members_pkey < $15
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				ELSE m_members_pkey < $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15)
-				ELSE m_members_pkey > $15
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				ELSE m_members_pkey > $15::int
 			END
 	END
 ORDER BY
@@ -1871,10 +1871,10 @@ type GetMembersWithGroupUseKeysetPaginateParams struct {
 	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
 	WhenInGroup        bool        `json:"when_in_group"`
 	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	CursorDirection    interface{} `json:"cursor_direction"`
+	CursorDirection    string      `json:"cursor_direction"`
 	OrderMethod        string      `json:"order_method"`
-	CursorColumn       string      `json:"cursor_column"`
-	Cursor             pgtype.Int8 `json:"cursor"`
+	NameCursor         string      `json:"name_cursor"`
+	Cursor             int32       `json:"cursor"`
 }
 
 type GetMembersWithGroupUseKeysetPaginateRow struct {
@@ -1897,7 +1897,7 @@ func (q *Queries) GetMembersWithGroupUseKeysetPaginate(ctx context.Context, arg 
 		arg.InGroupIds,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -2139,18 +2139,18 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
 AND
-	CASE $12
+	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15)
-				ELSE m_members_pkey < $15
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				ELSE m_members_pkey < $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15)
-				ELSE m_members_pkey > $15
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				ELSE m_members_pkey > $15::int
 			END
 	END
 ORDER BY
@@ -2172,10 +2172,10 @@ type GetMembersWithPersonalOrganizationUseKeysetPaginateParams struct {
 	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
 	WhenInGroup        bool        `json:"when_in_group"`
 	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	CursorDirection    interface{} `json:"cursor_direction"`
+	CursorDirection    string      `json:"cursor_direction"`
 	OrderMethod        string      `json:"order_method"`
-	CursorColumn       string      `json:"cursor_column"`
-	Cursor             pgtype.Int8 `json:"cursor"`
+	NameCursor         string      `json:"name_cursor"`
+	Cursor             int32       `json:"cursor"`
 }
 
 type GetMembersWithPersonalOrganizationUseKeysetPaginateRow struct {
@@ -2198,7 +2198,7 @@ func (q *Queries) GetMembersWithPersonalOrganizationUseKeysetPaginate(ctx contex
 		arg.InGroupIds,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -2445,18 +2445,18 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
 AND
-	CASE $12
+	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15)
-				ELSE m_members_pkey < $15
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				ELSE m_members_pkey < $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15)
-				ELSE m_members_pkey > $15
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				ELSE m_members_pkey > $15::int
 			END
 	END
 ORDER BY
@@ -2478,10 +2478,10 @@ type GetMembersWithRoleUseKeysetPaginateParams struct {
 	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
 	WhenInGroup        bool        `json:"when_in_group"`
 	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	CursorDirection    interface{} `json:"cursor_direction"`
+	CursorDirection    string      `json:"cursor_direction"`
 	OrderMethod        string      `json:"order_method"`
-	CursorColumn       string      `json:"cursor_column"`
-	Cursor             pgtype.Int8 `json:"cursor"`
+	NameCursor         string      `json:"name_cursor"`
+	Cursor             int32       `json:"cursor"`
 }
 
 type GetMembersWithRoleUseKeysetPaginateRow struct {
@@ -2504,7 +2504,7 @@ func (q *Queries) GetMembersWithRoleUseKeysetPaginate(ctx context.Context, arg G
 		arg.InGroupIds,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -2610,6 +2610,446 @@ func (q *Queries) GetMembersWithRoleUseNumberedPaginate(ctx context.Context, arg
 	items := []GetMembersWithRoleUseNumberedPaginateRow{}
 	for rows.Next() {
 		var i GetMembersWithRoleUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Role.MRolesPkey,
+			&i.Role.RoleID,
+			&i.Role.Name,
+			&i.Role.Description,
+			&i.Role.CreatedAt,
+			&i.Role.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMembers = `-- name: GetPluralMembers :many
+SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE member_id = ANY($3::uuid[])
+ORDER BY
+	m_members_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralMembersParams struct {
+	Limit     int32       `json:"limit"`
+	Offset    int32       `json:"offset"`
+	MemberIds []uuid.UUID `json:"member_ids"`
+}
+
+func (q *Queries) GetPluralMembers(ctx context.Context, arg GetPluralMembersParams) ([]Member, error) {
+	rows, err := q.db.Query(ctx, getPluralMembers, arg.Limit, arg.Offset, arg.MemberIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Member{}
+	for rows.Next() {
+		var i Member
+		if err := rows.Scan(
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMembersWithAll = `-- name: GetPluralMembersWithAll :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
+LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
+WHERE member_id = ANY($3::uuid[])
+ORDER BY
+	m_members_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralMembersWithAllParams struct {
+	Limit     int32       `json:"limit"`
+	Offset    int32       `json:"offset"`
+	MemberIds []uuid.UUID `json:"member_ids"`
+}
+
+type GetPluralMembersWithAllRow struct {
+	Member       Member       `json:"member"`
+	AttendStatus AttendStatus `json:"attend_status"`
+	Grade        Grade        `json:"grade"`
+	Group        Group        `json:"group"`
+	Organization Organization `json:"organization"`
+	Role         Role         `json:"role"`
+}
+
+func (q *Queries) GetPluralMembersWithAll(ctx context.Context, arg GetPluralMembersWithAllParams) ([]GetPluralMembersWithAllRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithAll, arg.Limit, arg.Offset, arg.MemberIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralMembersWithAllRow{}
+	for rows.Next() {
+		var i GetPluralMembersWithAllRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.AttendStatus.MAttendStatusesPkey,
+			&i.AttendStatus.AttendStatusID,
+			&i.AttendStatus.Name,
+			&i.AttendStatus.Key,
+			&i.Grade.MGradesPkey,
+			&i.Grade.GradeID,
+			&i.Grade.Key,
+			&i.Grade.OrganizationID,
+			&i.Group.MGroupsPkey,
+			&i.Group.GroupID,
+			&i.Group.Key,
+			&i.Group.OrganizationID,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Role.MRolesPkey,
+			&i.Role.RoleID,
+			&i.Role.Name,
+			&i.Role.Description,
+			&i.Role.CreatedAt,
+			&i.Role.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMembersWithAttendStatus = `-- name: GetPluralMembersWithAttendStatus :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+WHERE member_id = ANY($3::uuid[])
+ORDER BY
+	m_members_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralMembersWithAttendStatusParams struct {
+	Limit     int32       `json:"limit"`
+	Offset    int32       `json:"offset"`
+	MemberIds []uuid.UUID `json:"member_ids"`
+}
+
+type GetPluralMembersWithAttendStatusRow struct {
+	Member       Member       `json:"member"`
+	AttendStatus AttendStatus `json:"attend_status"`
+}
+
+func (q *Queries) GetPluralMembersWithAttendStatus(ctx context.Context, arg GetPluralMembersWithAttendStatusParams) ([]GetPluralMembersWithAttendStatusRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithAttendStatus, arg.Limit, arg.Offset, arg.MemberIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralMembersWithAttendStatusRow{}
+	for rows.Next() {
+		var i GetPluralMembersWithAttendStatusRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.AttendStatus.MAttendStatusesPkey,
+			&i.AttendStatus.AttendStatusID,
+			&i.AttendStatus.Name,
+			&i.AttendStatus.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMembersWithGrade = `-- name: GetPluralMembersWithGrade :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+WHERE member_id = ANY($3::uuid[])
+ORDER BY
+	m_members_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralMembersWithGradeParams struct {
+	Limit     int32       `json:"limit"`
+	Offset    int32       `json:"offset"`
+	MemberIds []uuid.UUID `json:"member_ids"`
+}
+
+type GetPluralMembersWithGradeRow struct {
+	Member Member `json:"member"`
+	Grade  Grade  `json:"grade"`
+}
+
+func (q *Queries) GetPluralMembersWithGrade(ctx context.Context, arg GetPluralMembersWithGradeParams) ([]GetPluralMembersWithGradeRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithGrade, arg.Limit, arg.Offset, arg.MemberIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralMembersWithGradeRow{}
+	for rows.Next() {
+		var i GetPluralMembersWithGradeRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Grade.MGradesPkey,
+			&i.Grade.GradeID,
+			&i.Grade.Key,
+			&i.Grade.OrganizationID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMembersWithGroup = `-- name: GetPluralMembersWithGroup :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+WHERE member_id = ANY($3::uuid[])
+ORDER BY
+	m_members_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralMembersWithGroupParams struct {
+	Limit     int32       `json:"limit"`
+	Offset    int32       `json:"offset"`
+	MemberIds []uuid.UUID `json:"member_ids"`
+}
+
+type GetPluralMembersWithGroupRow struct {
+	Member Member `json:"member"`
+	Group  Group  `json:"group"`
+}
+
+func (q *Queries) GetPluralMembersWithGroup(ctx context.Context, arg GetPluralMembersWithGroupParams) ([]GetPluralMembersWithGroupRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithGroup, arg.Limit, arg.Offset, arg.MemberIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralMembersWithGroupRow{}
+	for rows.Next() {
+		var i GetPluralMembersWithGroupRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Group.MGroupsPkey,
+			&i.Group.GroupID,
+			&i.Group.Key,
+			&i.Group.OrganizationID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMembersWithPersonalOrganization = `-- name: GetPluralMembersWithPersonalOrganization :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_members
+LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
+WHERE member_id = ANY($3::uuid[])
+ORDER BY
+	m_members_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralMembersWithPersonalOrganizationParams struct {
+	Limit     int32       `json:"limit"`
+	Offset    int32       `json:"offset"`
+	MemberIds []uuid.UUID `json:"member_ids"`
+}
+
+type GetPluralMembersWithPersonalOrganizationRow struct {
+	Member       Member       `json:"member"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetPluralMembersWithPersonalOrganization(ctx context.Context, arg GetPluralMembersWithPersonalOrganizationParams) ([]GetPluralMembersWithPersonalOrganizationRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithPersonalOrganization, arg.Limit, arg.Offset, arg.MemberIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralMembersWithPersonalOrganizationRow{}
+	for rows.Next() {
+		var i GetPluralMembersWithPersonalOrganizationRow
+		if err := rows.Scan(
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMembersWithRole = `-- name: GetPluralMembersWithRole :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
+WHERE member_id = ANY($3::uuid[])
+ORDER BY
+	m_members_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralMembersWithRoleParams struct {
+	Limit     int32       `json:"limit"`
+	Offset    int32       `json:"offset"`
+	MemberIds []uuid.UUID `json:"member_ids"`
+}
+
+type GetPluralMembersWithRoleRow struct {
+	Member Member `json:"member"`
+	Role   Role   `json:"role"`
+}
+
+func (q *Queries) GetPluralMembersWithRole(ctx context.Context, arg GetPluralMembersWithRoleParams) ([]GetPluralMembersWithRoleRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithRole, arg.Limit, arg.Offset, arg.MemberIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralMembersWithRoleRow{}
+	for rows.Next() {
+		var i GetPluralMembersWithRoleRow
 		if err := rows.Scan(
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,

@@ -61,17 +61,19 @@ WHERE student_id = $1
 `
 
 type FindStudentByIDWithMemberRow struct {
-	Student Student `json:"student"`
-	Member  Member  `json:"member"`
+	MStudentsPkey pgtype.Int8 `json:"m_students_pkey"`
+	StudentID     uuid.UUID   `json:"student_id"`
+	MemberID      uuid.UUID   `json:"member_id"`
+	Member        Member      `json:"member"`
 }
 
 func (q *Queries) FindStudentByIDWithMember(ctx context.Context, studentID uuid.UUID) (FindStudentByIDWithMemberRow, error) {
 	row := q.db.QueryRow(ctx, findStudentByIDWithMember, studentID)
 	var i FindStudentByIDWithMemberRow
 	err := row.Scan(
-		&i.Student.MStudentsPkey,
-		&i.Student.StudentID,
-		&i.Student.MemberID,
+		&i.MStudentsPkey,
+		&i.StudentID,
+		&i.MemberID,
 		&i.Member.MMembersPkey,
 		&i.Member.MemberID,
 		&i.Member.LoginID,
@@ -88,6 +90,40 @@ func (q *Queries) FindStudentByIDWithMember(ctx context.Context, studentID uuid.
 		&i.Member.UpdatedAt,
 	)
 	return i, err
+}
+
+const getPluralStudents = `-- name: GetPluralStudents :many
+SELECT m_students_pkey, student_id, member_id FROM m_students
+WHERE member_id = ANY($3::uuid[])
+ORDER BY
+	m_students_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralStudentsParams struct {
+	Limit     int32       `json:"limit"`
+	Offset    int32       `json:"offset"`
+	MemberIds []uuid.UUID `json:"member_ids"`
+}
+
+func (q *Queries) GetPluralStudents(ctx context.Context, arg GetPluralStudentsParams) ([]Student, error) {
+	rows, err := q.db.Query(ctx, getPluralStudents, arg.Limit, arg.Offset, arg.MemberIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Student{}
+	for rows.Next() {
+		var i Student
+		if err := rows.Scan(&i.MStudentsPkey, &i.StudentID, &i.MemberID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getStudents = `-- name: GetStudents :many
@@ -119,11 +155,11 @@ func (q *Queries) GetStudents(ctx context.Context) ([]Student, error) {
 const getStudentsUseKeysetPaginate = `-- name: GetStudentsUseKeysetPaginate :many
 SELECT m_students_pkey, student_id, member_id FROM m_students
 WHERE
-	CASE $2
+	CASE $2::text
 		WHEN 'next' THEN
-			m_students_pkey < $3
+			m_students_pkey < $3::int
 		WHEN 'prev' THEN
-			m_students_pkey > $3
+			m_students_pkey > $3::int
 	END
 ORDER BY
 	m_students_pkey DESC
@@ -131,9 +167,9 @@ LIMIT $1
 `
 
 type GetStudentsUseKeysetPaginateParams struct {
-	Limit           int32       `json:"limit"`
-	CursorDirection interface{} `json:"cursor_direction"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	Limit           int32  `json:"limit"`
+	CursorDirection string `json:"cursor_direction"`
+	Cursor          int32  `json:"cursor"`
 }
 
 func (q *Queries) GetStudentsUseKeysetPaginate(ctx context.Context, arg GetStudentsUseKeysetPaginateParams) ([]Student, error) {

@@ -9,7 +9,6 @@ import (
 	"context"
 
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countFiles = `-- name: CountFiles :one
@@ -116,11 +115,11 @@ func (q *Queries) GetFiles(ctx context.Context) ([]File, error) {
 const getFilesUseKeysetPaginate = `-- name: GetFilesUseKeysetPaginate :many
 SELECT t_files_pkey, file_id, attachable_item_id FROM t_files
 WHERE
-	CASE $2
+	CASE $2::text
 		WHEN 'next' THEN
-			t_files_pkey < $3
+			t_files_pkey < $3::int
 		WHEN 'prev' THEN
-			t_files_pkey > $3
+			t_files_pkey > $3::int
 	END
 ORDER BY
 	t_files_pkey DESC
@@ -128,9 +127,9 @@ LIMIT $1
 `
 
 type GetFilesUseKeysetPaginateParams struct {
-	Limit           int32       `json:"limit"`
-	CursorDirection interface{} `json:"cursor_direction"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	Limit           int32  `json:"limit"`
+	CursorDirection string `json:"cursor_direction"`
+	Cursor          int32  `json:"cursor"`
 }
 
 func (q *Queries) GetFilesUseKeysetPaginate(ctx context.Context, arg GetFilesUseKeysetPaginateParams) ([]File, error) {
@@ -237,11 +236,11 @@ SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_atta
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE
-	CASE $2
+	CASE $2::text
 		WHEN 'next' THEN
-			t_files_pkey < $3
+			t_files_pkey < $3::int
 		WHEN 'prev' THEN
-			t_files_pkey > $3
+			t_files_pkey > $3::int
 	END
 ORDER BY
 	t_files_pkey DESC
@@ -249,9 +248,9 @@ LIMIT $1
 `
 
 type GetFilesWithAttachableItemUseKeysetPaginateParams struct {
-	Limit           int32       `json:"limit"`
-	CursorDirection interface{} `json:"cursor_direction"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	Limit           int32  `json:"limit"`
+	CursorDirection string `json:"cursor_direction"`
+	Cursor          int32  `json:"cursor"`
 }
 
 type GetFilesWithAttachableItemUseKeysetPaginateRow struct {
@@ -322,6 +321,95 @@ func (q *Queries) GetFilesWithAttachableItemUseNumberedPaginate(ctx context.Cont
 	items := []GetFilesWithAttachableItemUseNumberedPaginateRow{}
 	for rows.Next() {
 		var i GetFilesWithAttachableItemUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.File.TFilesPkey,
+			&i.File.FileID,
+			&i.File.AttachableItemID,
+			&i.AttachableItem.TAttachableItemsPkey,
+			&i.AttachableItem.AttachableItemID,
+			&i.AttachableItem.Url,
+			&i.AttachableItem.Size,
+			&i.AttachableItem.MimeTypeID,
+			&i.MimeType.MMimeTypesPkey,
+			&i.MimeType.MimeTypeID,
+			&i.MimeType.Name,
+			&i.MimeType.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralFiles = `-- name: GetPluralFiles :many
+SELECT t_files_pkey, file_id, attachable_item_id FROM t_files
+WHERE attachable_item_id = ANY($3::uuid[])
+ORDER BY
+	t_files_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralFilesParams struct {
+	Limit             int32       `json:"limit"`
+	Offset            int32       `json:"offset"`
+	AttachableItemIds []uuid.UUID `json:"attachable_item_ids"`
+}
+
+func (q *Queries) GetPluralFiles(ctx context.Context, arg GetPluralFilesParams) ([]File, error) {
+	rows, err := q.db.Query(ctx, getPluralFiles, arg.Limit, arg.Offset, arg.AttachableItemIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []File{}
+	for rows.Next() {
+		var i File
+		if err := rows.Scan(&i.TFilesPkey, &i.FileID, &i.AttachableItemID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralFilesWithAttachableItem = `-- name: GetPluralFilesWithAttachableItem :many
+SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_files
+LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+WHERE attachable_item_id = ANY($3::uuid[])
+ORDER BY
+	t_files_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralFilesWithAttachableItemParams struct {
+	Limit             int32       `json:"limit"`
+	Offset            int32       `json:"offset"`
+	AttachableItemIds []uuid.UUID `json:"attachable_item_ids"`
+}
+
+type GetPluralFilesWithAttachableItemRow struct {
+	File           File           `json:"file"`
+	AttachableItem AttachableItem `json:"attachable_item"`
+	MimeType       MimeType       `json:"mime_type"`
+}
+
+func (q *Queries) GetPluralFilesWithAttachableItem(ctx context.Context, arg GetPluralFilesWithAttachableItemParams) ([]GetPluralFilesWithAttachableItemRow, error) {
+	rows, err := q.db.Query(ctx, getPluralFilesWithAttachableItem, arg.Limit, arg.Offset, arg.AttachableItemIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralFilesWithAttachableItemRow{}
+	for rows.Next() {
+		var i GetPluralFilesWithAttachableItemRow
 		if err := rows.Scan(
 			&i.File.TFilesPkey,
 			&i.File.FileID,

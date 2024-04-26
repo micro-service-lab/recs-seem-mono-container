@@ -24,15 +24,22 @@ LIMIT $1 OFFSET $2;
 -- name: GetLateArrivalsUseKeysetPaginate :many
 SELECT * FROM t_late_arrivals
 WHERE
-	CASE @cursor_direction
+	CASE @cursor_direction::text
 		WHEN 'next' THEN
-			t_late_arrivals_pkey < @cursor
+			t_late_arrivals_pkey < @cursor::int
 		WHEN 'prev' THEN
-			t_late_arrivals_pkey > @cursor
+			t_late_arrivals_pkey > @cursor::int
 	END
 ORDER BY
 	t_late_arrivals_pkey DESC
 LIMIT $1;
+
+-- name: GetPluralLateArrivals :many
+SELECT * FROM t_late_arrivals
+WHERE attendance_id = ANY(@attendance_ids::uuid[])
+ORDER BY
+	t_late_arrivals_pkey DESC
+LIMIT $1 OFFSET $2;
 
 -- name: CountLateArrivals :one
 SELECT COUNT(*) FROM t_late_arrivals;

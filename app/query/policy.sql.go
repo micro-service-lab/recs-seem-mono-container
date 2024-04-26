@@ -94,6 +94,24 @@ func (q *Queries) DeletePolicyByKey(ctx context.Context, key string) error {
 	return err
 }
 
+const findPolicyByID = `-- name: FindPolicyByID :one
+SELECT m_policies_pkey, policy_id, name, description, key, policy_category_id FROM m_policies WHERE policy_id = $1
+`
+
+func (q *Queries) FindPolicyByID(ctx context.Context, policyID uuid.UUID) (Policy, error) {
+	row := q.db.QueryRow(ctx, findPolicyByID, policyID)
+	var i Policy
+	err := row.Scan(
+		&i.MPoliciesPkey,
+		&i.PolicyID,
+		&i.Name,
+		&i.Description,
+		&i.Key,
+		&i.PolicyCategoryID,
+	)
+	return i, err
+}
+
 const findPolicyByIDWithCategory = `-- name: FindPolicyByIDWithCategory :one
 SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id, m_policy_categories.m_policy_categories_pkey, m_policy_categories.policy_category_id, m_policy_categories.name, m_policy_categories.description, m_policy_categories.key FROM m_policies
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
@@ -133,24 +151,6 @@ func (q *Queries) FindPolicyByIDWithCategory(ctx context.Context, policyID uuid.
 	return i, err
 }
 
-const findPolicyById = `-- name: FindPolicyById :one
-SELECT m_policies_pkey, policy_id, name, description, key, policy_category_id FROM m_policies WHERE policy_id = $1
-`
-
-func (q *Queries) FindPolicyById(ctx context.Context, policyID uuid.UUID) (Policy, error) {
-	row := q.db.QueryRow(ctx, findPolicyById, policyID)
-	var i Policy
-	err := row.Scan(
-		&i.MPoliciesPkey,
-		&i.PolicyID,
-		&i.Name,
-		&i.Description,
-		&i.Key,
-		&i.PolicyCategoryID,
-	)
-	return i, err
-}
-
 const findPolicyByKey = `-- name: FindPolicyByKey :one
 SELECT m_policies_pkey, policy_id, name, description, key, policy_category_id FROM m_policies WHERE key = $1
 `
@@ -167,6 +167,107 @@ func (q *Queries) FindPolicyByKey(ctx context.Context, key string) (Policy, erro
 		&i.PolicyCategoryID,
 	)
 	return i, err
+}
+
+const getPluralPolicies = `-- name: GetPluralPolicies :many
+SELECT m_policies_pkey, policy_id, name, description, key, policy_category_id FROM m_policies WHERE policy_id = ANY($3::uuid[])
+ORDER BY
+	m_policies_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralPoliciesParams struct {
+	Limit     int32       `json:"limit"`
+	Offset    int32       `json:"offset"`
+	PolicyIds []uuid.UUID `json:"policy_ids"`
+}
+
+func (q *Queries) GetPluralPolicies(ctx context.Context, arg GetPluralPoliciesParams) ([]Policy, error) {
+	rows, err := q.db.Query(ctx, getPluralPolicies, arg.Limit, arg.Offset, arg.PolicyIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Policy{}
+	for rows.Next() {
+		var i Policy
+		if err := rows.Scan(
+			&i.MPoliciesPkey,
+			&i.PolicyID,
+			&i.Name,
+			&i.Description,
+			&i.Key,
+			&i.PolicyCategoryID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralPoliciesWithCategory = `-- name: GetPluralPoliciesWithCategory :many
+SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id, m_policy_categories.m_policy_categories_pkey, m_policy_categories.policy_category_id, m_policy_categories.name, m_policy_categories.description, m_policy_categories.key FROM m_policies
+JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
+WHERE policy_id = ANY($3::uuid[])
+ORDER BY
+	m_policies_pkey DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralPoliciesWithCategoryParams struct {
+	Limit     int32       `json:"limit"`
+	Offset    int32       `json:"offset"`
+	PolicyIds []uuid.UUID `json:"policy_ids"`
+}
+
+type GetPluralPoliciesWithCategoryRow struct {
+	MPoliciesPkey         pgtype.Int8 `json:"m_policies_pkey"`
+	PolicyID              uuid.UUID   `json:"policy_id"`
+	Name                  string      `json:"name"`
+	Description           string      `json:"description"`
+	Key                   string      `json:"key"`
+	PolicyCategoryID      uuid.UUID   `json:"policy_category_id"`
+	MPolicyCategoriesPkey pgtype.Int8 `json:"m_policy_categories_pkey"`
+	PolicyCategoryID_2    uuid.UUID   `json:"policy_category_id_2"`
+	Name_2                string      `json:"name_2"`
+	Description_2         string      `json:"description_2"`
+	Key_2                 string      `json:"key_2"`
+}
+
+func (q *Queries) GetPluralPoliciesWithCategory(ctx context.Context, arg GetPluralPoliciesWithCategoryParams) ([]GetPluralPoliciesWithCategoryRow, error) {
+	rows, err := q.db.Query(ctx, getPluralPoliciesWithCategory, arg.Limit, arg.Offset, arg.PolicyIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralPoliciesWithCategoryRow{}
+	for rows.Next() {
+		var i GetPluralPoliciesWithCategoryRow
+		if err := rows.Scan(
+			&i.MPoliciesPkey,
+			&i.PolicyID,
+			&i.Name,
+			&i.Description,
+			&i.Key,
+			&i.PolicyCategoryID,
+			&i.MPolicyCategoriesPkey,
+			&i.PolicyCategoryID_2,
+			&i.Name_2,
+			&i.Description_2,
+			&i.Key_2,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getPolicies = `-- name: GetPolicies :many
@@ -229,18 +330,18 @@ WHERE
 AND
 	CASE WHEN $4::boolean = true THEN policy_category_id = ANY($5::uuid[]) ELSE TRUE END
 AND
-	CASE $6
+	CASE $6::text
 		WHEN 'next' THEN
 			CASE $7::text
-				WHEN 'name' THEN m_policies.name > $8 OR (m_policies.name = $8 AND m_policies_pkey < $9)
-				WHEN 'r_name' THEN m_policies.name < $8 OR (m_policies.name = $8 AND m_policies_pkey < $9)
-				ELSE m_policies_pkey < $9
+				WHEN 'name' THEN m_policies.name > $8 OR (m_policies.name = $8 AND m_policies_pkey < $9::int)
+				WHEN 'r_name' THEN m_policies.name < $8 OR (m_policies.name = $8 AND m_policies_pkey < $9::int)
+				ELSE m_policies_pkey < $9::int
 			END
 		WHEN 'prev' THEN
 			CASE $7::text
-				WHEN 'name' THEN m_policies.name < $8 OR (m_policies.name = $8 AND m_policies_pkey > $9)
-				WHEN 'r_name' THEN m_policies.name > $8 OR (m_policies.name = $8 AND m_policies_pkey > $9)
-				ELSE m_policies_pkey > $9
+				WHEN 'name' THEN m_policies.name < $8 OR (m_policies.name = $8 AND m_policies_pkey > $9::int)
+				WHEN 'r_name' THEN m_policies.name > $8 OR (m_policies.name = $8 AND m_policies_pkey > $9::int)
+				ELSE m_policies_pkey > $9::int
 			END
 	END
 ORDER BY
@@ -256,10 +357,10 @@ type GetPoliciesUseKeysetPaginateParams struct {
 	SearchName      string      `json:"search_name"`
 	WhereInCategory bool        `json:"where_in_category"`
 	InCategories    []uuid.UUID `json:"in_categories"`
-	CursorDirection interface{} `json:"cursor_direction"`
+	CursorDirection string      `json:"cursor_direction"`
 	OrderMethod     string      `json:"order_method"`
-	CursorColumn    string      `json:"cursor_column"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	NameCursor      string      `json:"name_cursor"`
+	Cursor          int32       `json:"cursor"`
 }
 
 func (q *Queries) GetPoliciesUseKeysetPaginate(ctx context.Context, arg GetPoliciesUseKeysetPaginateParams) ([]Policy, error) {
@@ -271,7 +372,7 @@ func (q *Queries) GetPoliciesUseKeysetPaginate(ctx context.Context, arg GetPolic
 		arg.InCategories,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {
@@ -438,18 +539,18 @@ WHERE
 AND
 	CASE WHEN $4::boolean = true THEN policy_category_id = ANY($5::uuid[]) ELSE TRUE END
 AND
-	CASE $6
+	CASE $6::text
 		WHEN 'next' THEN
 			CASE $7::text
-				WHEN 'name' THEN m_policies.name > $8 OR (m_policies.name = $8 AND m_policies_pkey < $9)
-				WHEN 'r_name' THEN m_policies.name < $8 OR (m_policies.name = $8 AND m_policies_pkey < $9)
-				ELSE m_policies_pkey < $9
+				WHEN 'name' THEN m_policies.name > $8 OR (m_policies.name = $8 AND m_policies_pkey < $9::int)
+				WHEN 'r_name' THEN m_policies.name < $8 OR (m_policies.name = $8 AND m_policies_pkey < $9::int)
+				ELSE m_policies_pkey < $9::int
 			END
 		WHEN 'prev' THEN
 			CASE $7::text
-				WHEN 'name' THEN m_policies.name < $8 OR (m_policies.name = $8 AND m_policies_pkey > $9)
-				WHEN 'r_name' THEN m_policies.name > $8 OR (m_policies.name = $8 AND m_policies_pkey > $9)
-				ELSE m_policies_pkey > $9
+				WHEN 'name' THEN m_policies.name < $8 OR (m_policies.name = $8 AND m_policies_pkey > $9::int)
+				WHEN 'r_name' THEN m_policies.name > $8 OR (m_policies.name = $8 AND m_policies_pkey > $9::int)
+				ELSE m_policies_pkey > $9::int
 			END
 	END
 ORDER BY
@@ -465,10 +566,10 @@ type GetPoliciesWithCategoryUseKeysetPaginateParams struct {
 	SearchName      string      `json:"search_name"`
 	WhereInCategory bool        `json:"where_in_category"`
 	InCategories    []uuid.UUID `json:"in_categories"`
-	CursorDirection interface{} `json:"cursor_direction"`
+	CursorDirection string      `json:"cursor_direction"`
 	OrderMethod     string      `json:"order_method"`
-	CursorColumn    string      `json:"cursor_column"`
-	Cursor          pgtype.Int8 `json:"cursor"`
+	NameCursor      string      `json:"name_cursor"`
+	Cursor          int32       `json:"cursor"`
 }
 
 type GetPoliciesWithCategoryUseKeysetPaginateRow struct {
@@ -494,7 +595,7 @@ func (q *Queries) GetPoliciesWithCategoryUseKeysetPaginate(ctx context.Context, 
 		arg.InCategories,
 		arg.CursorDirection,
 		arg.OrderMethod,
-		arg.CursorColumn,
+		arg.NameCursor,
 		arg.Cursor,
 	)
 	if err != nil {

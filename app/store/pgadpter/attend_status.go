@@ -327,6 +327,7 @@ func getAttendStatuses(
 		pointsNext := false
 		limit := cp.Limit.Int64
 		var e []query.AttendStatus
+		var subCursor string
 
 		if !isFirst {
 			decodedCursor, err := store.DecodeCursor(cp.Cursor)
@@ -344,6 +345,7 @@ func getAttendStatuses(
 				if !ok {
 					return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("invalid cursor")
 				}
+				subCursor = attendStatusNameCursorKey
 			}
 			p := query.GetAttendStatusesUseKeysetPaginateParams{
 				WhereLikeName:   where.WhereLikeName,
@@ -376,15 +378,21 @@ func getAttendStatuses(
 		if hasPagination {
 			e = e[:limit]
 		}
+		var firstValue, lastValue any
+		switch subCursor {
+		case attendStatusNameCursorKey:
+			firstValue = e[0].Name
+			lastValue = e[limit-1].Name
+		}
 		firstData := store.CursorData{
 			ID:    entity.Int(e[0].MAttendStatusesPkey),
-			Name:  attendStatusNameCursorKey,
-			Value: e[0].Name,
+			Name:  subCursor,
+			Value: firstValue,
 		}
 		lastData := store.CursorData{
 			ID:    entity.Int(e[limit-1].MAttendStatusesPkey),
-			Name:  attendStatusNameCursorKey,
-			Value: e[limit-1].Name,
+			Name:  subCursor,
+			Value: lastValue,
 		}
 		pageInfo := store.CalculatePagination(isFirst, hasPagination, pointsNext, firstData, lastData)
 

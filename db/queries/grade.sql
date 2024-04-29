@@ -29,12 +29,12 @@ WHERE key = $1;
 -- name: GetGrades :many
 SELECT * FROM m_grades
 ORDER BY
-	m_grades_pkey DESC;
+	m_grades_pkey ASC;
 
 -- name: GetGradesUseNumberedPaginate :many
 SELECT * FROM m_grades
 ORDER BY
-	m_grades_pkey DESC
+	m_grades_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetGradesUseKeysetPaginate :many
@@ -42,19 +42,19 @@ SELECT * FROM m_grades
 WHERE
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
-			m_grades_pkey < @cursor::int
-		WHEN 'prev' THEN
 			m_grades_pkey > @cursor::int
+		WHEN 'prev' THEN
+			m_grades_pkey < @cursor::int
 	END
 ORDER BY
-	m_grades_pkey DESC
+	m_grades_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralGrades :many
 SELECT * FROM m_grades
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
-	m_grades_pkey DESC
+	m_grades_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetGradesWithOrganization :many
@@ -63,7 +63,7 @@ LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organiza
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
-	m_grades_pkey DESC;
+	m_grades_pkey ASC;
 
 -- name: GetGradesWithOrganizationUseNumberedPaginate :many
 SELECT sqlc.embed(m_grades), sqlc.embed(m_organizations) FROM m_grades
@@ -71,7 +71,7 @@ LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organiza
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
-	m_grades_pkey DESC
+	m_grades_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetGradesWithOrganizationUseKeysetPaginate :many
@@ -81,21 +81,21 @@ WHERE
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @name_cursor OR (name = @name_cursor AND m_grades_pkey < @cursor::int)
-				WHEN 'r_name' THEN name < @name_cursor OR (name = @name_cursor AND m_grades_pkey < @cursor::int)
-				ELSE m_grades_pkey < @cursor::int
+				WHEN 'name' THEN name > @name_cursor OR (name = @name_cursor AND m_grades_pkey > @cursor::int)
+				WHEN 'r_name' THEN name < @name_cursor OR (name = @name_cursor AND m_grades_pkey > @cursor::int)
+				ELSE m_grades_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name < @name_cursor OR (name = @name_cursor AND m_grades_pkey > @cursor::int)
-				WHEN 'r_name' THEN name > @name_cursor OR (name = @name_cursor AND m_grades_pkey > @cursor::int)
-				ELSE m_grades_pkey > @cursor::int
+				WHEN 'name' THEN name < @name_cursor OR (name = @name_cursor AND m_grades_pkey < @cursor::int)
+				WHEN 'r_name' THEN name > @name_cursor OR (name = @name_cursor AND m_grades_pkey < @cursor::int)
+				ELSE m_grades_pkey < @cursor::int
 			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
-	m_grades_pkey DESC
+	m_grades_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralGradesWithOrganization :many
@@ -103,7 +103,7 @@ SELECT sqlc.embed(m_grades), sqlc.embed(m_organizations) FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
-	m_grades_pkey DESC
+	m_grades_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: CountGrades :one

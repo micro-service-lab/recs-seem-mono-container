@@ -126,42 +126,45 @@
 <!-- public.m_chat_rooms -->
 <g id="node3" class="node">
 <title>public.m_chat_rooms</title>
-<polygon fill="#efefef" stroke="transparent" points="697,-992.5 697,-1027.5 1009,-1027.5 1009,-992.5 697,-992.5"/>
-<polygon fill="none" stroke="#000000" points="697,-992.5 697,-1027.5 1009,-1027.5 1009,-992.5 697,-992.5"/>
-<text text-anchor="start" x="703.7034" y="-1005.3" font-family="Arial Bold" font-size="18.00" fill="#000000">public.m_chat_rooms</text>
-<text text-anchor="start" x="874.7286" y="-1005.3" font-family="Arial" font-size="14.00" fill="#000000">    </text>
-<text text-anchor="start" x="908.9334" y="-1005.3" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
-<polygon fill="none" stroke="#000000" points="697,-962.5 697,-992.5 1009,-992.5 1009,-962.5 697,-962.5"/>
-<text text-anchor="start" x="704" y="-973.9" font-family="Arial" font-size="14.00" fill="#000000">m_chat_rooms_pkey    </text>
-<text text-anchor="start" x="868.1206" y="-973.9" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
-<polygon fill="none" stroke="#000000" points="697,-932.5 697,-962.5 1009,-962.5 1009,-932.5 697,-932.5"/>
-<text text-anchor="start" x="704" y="-943.9" font-family="Arial" font-size="14.00" fill="#000000">chat_room_id    </text>
-<text text-anchor="start" x="823.0014" y="-943.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="#000000" points="697,-902.5 697,-932.5 1009,-932.5 1009,-902.5 697,-902.5"/>
-<text text-anchor="start" x="704" y="-913.9" font-family="Arial" font-size="14.00" fill="#000000">name    </text>
-<text text-anchor="start" x="773.2132" y="-913.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
-<polygon fill="none" stroke="#000000" points="697,-872.5 697,-902.5 1009,-902.5 1009,-872.5 697,-872.5"/>
-<text text-anchor="start" x="704" y="-883.9" font-family="Arial" font-size="14.00" fill="#000000">is_private    </text>
-<text text-anchor="start" x="798.0996" y="-883.9" font-family="Arial" font-size="14.00" fill="#666666">[boolean]</text>
-<polygon fill="none" stroke="#000000" points="697,-842.5 697,-872.5 1009,-872.5 1009,-842.5 697,-842.5"/>
-<text text-anchor="start" x="704" y="-853.9" font-family="Arial" font-size="14.00" fill="#000000">cover_image_id    </text>
-<text text-anchor="start" x="837" y="-853.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="#000000" points="697,-812.5 697,-842.5 1009,-842.5 1009,-812.5 697,-812.5"/>
-<text text-anchor="start" x="704" y="-823.9" font-family="Arial" font-size="14.00" fill="#000000">owner_id    </text>
-<text text-anchor="start" x="794.9916" y="-823.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="#000000" points="697,-782.5 697,-812.5 1009,-812.5 1009,-782.5 697,-782.5"/>
-<text text-anchor="start" x="704" y="-793.9" font-family="Arial" font-size="14.00" fill="#000000">created_at    </text>
-<text text-anchor="start" x="804.3422" y="-793.9" font-family="Arial" font-size="14.00" fill="#666666">[timestamp with time zone]</text>
-<polygon fill="none" stroke="#000000" points="697,-752.5 697,-782.5 1009,-782.5 1009,-752.5 697,-752.5"/>
-<text text-anchor="start" x="704" y="-763.9" font-family="Arial" font-size="14.00" fill="#000000">updated_at    </text>
-<text text-anchor="start" x="808.2468" y="-763.9" font-family="Arial" font-size="14.00" fill="#666666">[timestamp with time zone]</text>
+<polygon fill="#efefef" stroke="transparent" points="697,-1007.5 697,-1042.5 1009,-1042.5 1009,-1007.5 697,-1007.5"/>
+<polygon fill="none" stroke="#000000" points="697,-1007.5 697,-1042.5 1009,-1042.5 1009,-1007.5 697,-1007.5"/>
+<text text-anchor="start" x="703.7034" y="-1020.3" font-family="Arial Bold" font-size="18.00" fill="#000000">public.m_chat_rooms</text>
+<text text-anchor="start" x="874.7286" y="-1020.3" font-family="Arial" font-size="14.00" fill="#000000">    </text>
+<text text-anchor="start" x="908.9334" y="-1020.3" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
+<polygon fill="none" stroke="#000000" points="697,-977.5 697,-1007.5 1009,-1007.5 1009,-977.5 697,-977.5"/>
+<text text-anchor="start" x="704" y="-988.9" font-family="Arial" font-size="14.00" fill="#000000">m_chat_rooms_pkey    </text>
+<text text-anchor="start" x="868.1206" y="-988.9" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
+<polygon fill="none" stroke="#000000" points="697,-947.5 697,-977.5 1009,-977.5 1009,-947.5 697,-947.5"/>
+<text text-anchor="start" x="704" y="-958.9" font-family="Arial" font-size="14.00" fill="#000000">chat_room_id    </text>
+<text text-anchor="start" x="823.0014" y="-958.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="#000000" points="697,-917.5 697,-947.5 1009,-947.5 1009,-917.5 697,-917.5"/>
+<text text-anchor="start" x="704" y="-928.9" font-family="Arial" font-size="14.00" fill="#000000">name    </text>
+<text text-anchor="start" x="773.2132" y="-928.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
+<polygon fill="none" stroke="#000000" points="697,-887.5 697,-917.5 1009,-917.5 1009,-887.5 697,-887.5"/>
+<text text-anchor="start" x="704" y="-898.9" font-family="Arial" font-size="14.00" fill="#000000">is_private    </text>
+<text text-anchor="start" x="798.0996" y="-898.9" font-family="Arial" font-size="14.00" fill="#666666">[boolean]</text>
+<polygon fill="none" stroke="#000000" points="697,-857.5 697,-887.5 1009,-887.5 1009,-857.5 697,-857.5"/>
+<text text-anchor="start" x="704" y="-868.9" font-family="Arial" font-size="14.00" fill="#000000">cover_image_id    </text>
+<text text-anchor="start" x="837" y="-868.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="#000000" points="697,-827.5 697,-857.5 1009,-857.5 1009,-827.5 697,-827.5"/>
+<text text-anchor="start" x="704" y="-838.9" font-family="Arial" font-size="14.00" fill="#000000">owner_id    </text>
+<text text-anchor="start" x="794.9916" y="-838.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="#000000" points="697,-797.5 697,-827.5 1009,-827.5 1009,-797.5 697,-797.5"/>
+<text text-anchor="start" x="704" y="-808.9" font-family="Arial" font-size="14.00" fill="#000000">from_organization    </text>
+<text text-anchor="start" x="850.2244" y="-808.9" font-family="Arial" font-size="14.00" fill="#666666">[boolean]</text>
+<polygon fill="none" stroke="#000000" points="697,-767.5 697,-797.5 1009,-797.5 1009,-767.5 697,-767.5"/>
+<text text-anchor="start" x="704" y="-778.9" font-family="Arial" font-size="14.00" fill="#000000">created_at    </text>
+<text text-anchor="start" x="804.3422" y="-778.9" font-family="Arial" font-size="14.00" fill="#666666">[timestamp with time zone]</text>
+<polygon fill="none" stroke="#000000" points="697,-737.5 697,-767.5 1009,-767.5 1009,-737.5 697,-737.5"/>
+<text text-anchor="start" x="704" y="-748.9" font-family="Arial" font-size="14.00" fill="#000000">updated_at    </text>
+<text text-anchor="start" x="808.2468" y="-748.9" font-family="Arial" font-size="14.00" fill="#666666">[timestamp with time zone]</text>
 </g>
 <!-- public.m_chat_rooms&#45;&gt;public.t_images -->
 <g id="edge2" class="edge">
 <title>public.m_chat_rooms:cover_image_id&#45;&gt;public.t_images:image_id</title>
-<path fill="none" stroke="#000000" d="M686.9112,-856.7027C636.5937,-847.958 678.7565,-769.0903 697,-710 717.0012,-645.2166 762.9988,-648.7834 783,-584 799.5856,-530.2798 839.2222,-457.5 783,-457.5"/>
-<polygon fill="#000000" stroke="#000000" points="687.0311,-856.7121 696.6454,-861.986 692.0155,-857.106 697,-857.5 697,-857.5 697,-857.5 692.0155,-857.106 697.3546,-853.014 687.0311,-856.7121 687.0311,-856.7121"/>
-<text text-anchor="start" x="704.1515" y="-867.5" font-family="Arial" font-size="10.00" fill="#000000">FOREIGN KEY (cover_image_id) REFERENCES t_images(image_id) ON UPDATE SET NULL ON DELETE SET NULL</text>
+<path fill="none" stroke="#000000" d="M686.7615,-871.8355C623.0521,-862.9191 672.6644,-766.144 697,-695 717.1982,-635.9513 762.8018,-643.0487 783,-584 801.1963,-530.8038 839.2222,-457.5 783,-457.5"/>
+<polygon fill="#000000" stroke="#000000" points="687.021,-871.8522 696.7085,-876.9906 692.0105,-872.1761 697,-872.5 697,-872.5 697,-872.5 692.0105,-872.1761 697.2915,-868.0094 687.021,-871.8522 687.021,-871.8522"/>
+<text text-anchor="start" x="704.1515" y="-882.5" font-family="Arial" font-size="10.00" fill="#000000">FOREIGN KEY (cover_image_id) REFERENCES t_images(image_id) ON UPDATE SET NULL ON DELETE SET NULL</text>
 </g>
 </g>
 </svg>

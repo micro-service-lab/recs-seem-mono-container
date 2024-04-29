@@ -1,11 +1,9 @@
 package main
 
 import (
-	"bufio"
 	"context"
 	"fmt"
 	"math/rand"
-	"os"
 	"path/filepath"
 	"strings"
 	"time"
@@ -36,9 +34,10 @@ func (s DB) Rollback(ctx context.Context) {
 	mg.CtxDeps(ctx, s.rollback)
 }
 
-// Seed loads seed data.
-func (s DB) Seed(ctx context.Context) {
-	mg.CtxDeps(ctx, s.seed)
+// Seed loads seed data.(options can be specified by colon-separated)
+func (s DB) Seed(ctx context.Context, target string) {
+	targetsArr := strings.Split(target, ":")
+	mg.CtxDeps(ctx, s.seedGenerator(targetsArr...))
 }
 
 // Force forces version.
@@ -53,7 +52,7 @@ func (s DB) Drop(ctx context.Context) {
 
 // Reset resets database.
 func (s DB) Reset(ctx context.Context) {
-	mg.SerialCtxDeps(ctx, s.drop, s.create, s.migrate, s.seed)
+	mg.SerialCtxDeps(ctx, s.drop, s.create, s.migrate, s.seedGenerator("all", "-f"))
 }
 
 // Fake inserts fake data.
@@ -135,41 +134,26 @@ func (s *DB) rollback() error {
 	return nil
 }
 
-func (s *DB) seed(_ context.Context) error {
-	cfg, err := config.Get()
-	if err != nil {
-		return fmt.Errorf("get config: %w", err)
-	}
+func (s *DB) seedGenerator(targets ...string) func() error {
+	return func() error {
+		repoRoot, err := utils.RepoRoot()
+		if err != nil {
+			return fmt.Errorf("get repo root: %w", err)
+		}
 
-	repoRoot, err := utils.RepoRoot()
-	if err != nil {
-		return fmt.Errorf("get repo root: %w", err)
-	}
+		cmdFile := filepath.Join(repoRoot, "cmd", "cli", "main.go")
 
-	seedDir := filepath.Join(repoRoot, "db", "seeds")
-	rankTxt := filepath.Join(seedDir, "seed_rank.txt")
+		args := []string{
+			"run", cmdFile, "seed",
+		}
+		args = append(args, targets...)
 
-	if !utils.Exists(rankTxt) {
-		return fmt.Errorf("seed_rank.txt not found")
-	}
-
-	rankFile, err := os.Open(filepath.Clean(rankTxt))
-	if err != nil {
-		return fmt.Errorf("open seed_rank.txt: %w", err)
-	}
-	defer rankFile.Close()
-
-	sc := bufio.NewScanner(rankFile)
-
-	for sc.Scan() {
-		line := sc.Text()
-		seedFile := filepath.Clean(filepath.Join(seedDir, line+".sql"))
-		if err := sh.RunV("psql", cfg.DBUrl, "-f", seedFile); err != nil {
+		if err := sh.RunV("go", args...); err != nil {
 			return fmt.Errorf("execute seed file: %w", err)
 		}
-	}
 
-	return nil
+		return nil
+	}
 }
 
 func (s *DB) forceVersionGenerator(version string) func() error {

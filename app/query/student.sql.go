@@ -96,7 +96,7 @@ const getPluralStudents = `-- name: GetPluralStudents :many
 SELECT m_students_pkey, student_id, member_id FROM m_students
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	m_students_pkey DESC
+	m_students_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -129,7 +129,7 @@ func (q *Queries) GetPluralStudents(ctx context.Context, arg GetPluralStudentsPa
 const getStudents = `-- name: GetStudents :many
 SELECT m_students_pkey, student_id, member_id FROM m_students
 ORDER BY
-	m_students_pkey DESC
+	m_students_pkey ASC
 `
 
 func (q *Queries) GetStudents(ctx context.Context) ([]Student, error) {
@@ -157,12 +157,12 @@ SELECT m_students_pkey, student_id, member_id FROM m_students
 WHERE
 	CASE $2::text
 		WHEN 'next' THEN
-			m_students_pkey < $3::int
-		WHEN 'prev' THEN
 			m_students_pkey > $3::int
+		WHEN 'prev' THEN
+			m_students_pkey < $3::int
 	END
 ORDER BY
-	m_students_pkey DESC
+	m_students_pkey ASC
 LIMIT $1
 `
 
@@ -195,7 +195,7 @@ func (q *Queries) GetStudentsUseKeysetPaginate(ctx context.Context, arg GetStude
 const getStudentsUseNumberedPaginate = `-- name: GetStudentsUseNumberedPaginate :many
 SELECT m_students_pkey, student_id, member_id FROM m_students
 ORDER BY
-	m_students_pkey DESC
+	m_students_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

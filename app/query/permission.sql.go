@@ -217,7 +217,7 @@ AND
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN $5::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permissions_pkey DESC
+	m_permissions_pkey ASC
 `
 
 type GetPermissionsParams struct {
@@ -271,21 +271,21 @@ AND
 	CASE $6::text
 		WHEN 'next' THEN
 			CASE $7::text
-				WHEN 'name' THEN m_permissions.name > $8 OR (m_permissions.name = $8 AND m_permissions_pkey < $9::int)
-				WHEN 'r_name' THEN m_permissions.name < $8 OR (m_permissions.name = $8 AND m_permissions_pkey < $9::int)
-				ELSE m_permissions_pkey < $9::int
+				WHEN 'name' THEN m_permissions.name > $8 OR (m_permissions.name = $8 AND m_permissions_pkey > $9::int)
+				WHEN 'r_name' THEN m_permissions.name < $8 OR (m_permissions.name = $8 AND m_permissions_pkey > $9::int)
+				ELSE m_permissions_pkey > $9::int
 			END
 		WHEN 'prev' THEN
 			CASE $7::text
-				WHEN 'name' THEN m_permissions.name < $8 OR (m_permissions.name = $8 AND m_permissions_pkey > $9::int)
-				WHEN 'r_name' THEN m_permissions.name > $8 OR (m_permissions.name = $8 AND m_permissions_pkey > $9::int)
-				ELSE m_permissions_pkey > $9::int
+				WHEN 'name' THEN m_permissions.name < $8 OR (m_permissions.name = $8 AND m_permissions_pkey < $9::int)
+				WHEN 'r_name' THEN m_permissions.name > $8 OR (m_permissions.name = $8 AND m_permissions_pkey < $9::int)
+				ELSE m_permissions_pkey < $9::int
 			END
 	END
 ORDER BY
 	CASE WHEN $7::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN $7::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permissions_pkey DESC
+	m_permissions_pkey ASC
 LIMIT $1
 `
 
@@ -347,7 +347,7 @@ AND
 ORDER BY
 	CASE WHEN $7::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN $7::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permissions_pkey DESC
+	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -406,7 +406,7 @@ AND
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN $5::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permissions_pkey DESC
+	m_permissions_pkey ASC
 `
 
 type GetPermissionsWithCategoryParams struct {
@@ -480,21 +480,21 @@ AND
 	CASE $6::text
 		WHEN 'next' THEN
 			CASE $7::text
-				WHEN 'name' THEN m_permissions.name > $8 OR (m_permissions.name = $8 AND m_permissions_pkey < $9::int)
-				WHEN 'r_name' THEN m_permissions.name < $8 OR (m_permissions.name = $8 AND m_permissions_pkey < $9::int)
-				ELSE m_permissions_pkey < $9::int
+				WHEN 'name' THEN m_permissions.name > $8 OR (m_permissions.name = $8 AND m_permissions_pkey > $9::int)
+				WHEN 'r_name' THEN m_permissions.name < $8 OR (m_permissions.name = $8 AND m_permissions_pkey > $9::int)
+				ELSE m_permissions_pkey > $9::int
 			END
 		WHEN 'prev' THEN
 			CASE $7::text
-				WHEN 'name' THEN m_permissions.name < $8 OR (m_permissions.name = $8 AND m_permissions_pkey > $9::int)
-				WHEN 'r_name' THEN m_permissions.name > $8 OR (m_permissions.name = $8 AND m_permissions_pkey > $9::int)
-				ELSE m_permissions_pkey > $9::int
+				WHEN 'name' THEN m_permissions.name < $8 OR (m_permissions.name = $8 AND m_permissions_pkey < $9::int)
+				WHEN 'r_name' THEN m_permissions.name > $8 OR (m_permissions.name = $8 AND m_permissions_pkey < $9::int)
+				ELSE m_permissions_pkey < $9::int
 			END
 	END
 ORDER BY
 	CASE WHEN $7::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN $7::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permissions_pkey DESC
+	m_permissions_pkey ASC
 LIMIT $1
 `
 
@@ -576,7 +576,7 @@ AND
 ORDER BY
 	CASE WHEN $7::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN $7::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permissions_pkey DESC
+	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -647,7 +647,7 @@ func (q *Queries) GetPermissionsWithCategoryUseNumberedPaginate(ctx context.Cont
 const getPluralPermissions = `-- name: GetPluralPermissions :many
 SELECT m_permissions_pkey, permission_id, name, description, key, permission_category_id FROM m_permissions WHERE permission_id = ANY($3::uuid[])
 ORDER BY
-	m_permissions_pkey DESC
+	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -689,7 +689,7 @@ SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissi
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE permission_id = ANY($3::uuid[])
 ORDER BY
-	m_permissions_pkey DESC
+	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

@@ -16,7 +16,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
-	m_permission_associations_pkey DESC;
+	m_permission_associations_pkey ASC;
 
 -- name: GetWorkPositionsOnPermissionUseNumberedPaginate :many
 SELECT sqlc.embed(m_permission_associations), sqlc.embed(m_work_positions) FROM m_permission_associations
@@ -27,7 +27,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
-	m_permission_associations_pkey DESC
+	m_permission_associations_pkey ASC
 LIMIT $2 OFFSET $3;
 
 -- name: GetWorkPositionsOnPermissionUseKeysetPaginate :many
@@ -40,21 +40,21 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_work_positions.name > @name_cursor OR (m_work_positions.name = @name_cursor AND m_permission_associations_pkey < @cursor::int)
-				WHEN 'r_name' THEN m_work_positions.name < @name_cursor OR (m_work_positions.name = @name_cursor AND m_permission_associations_pkey < @cursor::int)
-				ELSE m_permission_associations_pkey < @cursor::int
+				WHEN 'name' THEN m_work_positions.name > @name_cursor OR (m_work_positions.name = @name_cursor AND m_permission_associations_pkey > @cursor::int)
+				WHEN 'r_name' THEN m_work_positions.name < @name_cursor OR (m_work_positions.name = @name_cursor AND m_permission_associations_pkey > @cursor::int)
+				ELSE m_permission_associations_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_work_positions.name < @name_cursor OR (m_work_positions.name = @name_cursor AND m_permission_associations_pkey > @cursor::int)
-				WHEN 'r_name' THEN m_work_positions.name > @name_cursor OR (m_work_positions.name = @name_cursor AND m_permission_associations_pkey > @cursor::int)
-				ELSE m_permission_associations_pkey > @cursor::int
+				WHEN 'name' THEN m_work_positions.name < @name_cursor OR (m_work_positions.name = @name_cursor AND m_permission_associations_pkey < @cursor::int)
+				WHEN 'r_name' THEN m_work_positions.name > @name_cursor OR (m_work_positions.name = @name_cursor AND m_permission_associations_pkey < @cursor::int)
+				ELSE m_permission_associations_pkey < @cursor::int
 			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
-	m_permission_associations_pkey DESC
+	m_permission_associations_pkey ASC
 LIMIT $2;
 
 -- name: GetPluralWorkPositionsOnPermission :many
@@ -62,7 +62,7 @@ SELECT sqlc.embed(m_permission_associations), sqlc.embed(m_work_positions) FROM 
 LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
 WHERE permission_id = ANY(@permission_ids::uuid[])
 ORDER BY
-	m_permission_associations_pkey DESC
+	m_permission_associations_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: CountWorkPositionsOnPermission :one
@@ -81,7 +81,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permission_associations_pkey DESC;
+	m_permission_associations_pkey ASC;
 
 -- name: GetPermissionsOnWorkPositionUseNumberedPaginate :many
 SELECT sqlc.embed(m_permission_associations), sqlc.embed(m_permissions) FROM m_permission_associations
@@ -92,7 +92,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permission_associations_pkey DESC
+	m_permission_associations_pkey ASC
 LIMIT $2 OFFSET $3;
 
 -- name: GetPermissionsOnWorkPositionUseKeysetPaginate :many
@@ -105,21 +105,21 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permission_associations_pkey < @cursor::int)
-				WHEN 'r_name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permission_associations_pkey < @cursor::int)
-				ELSE m_permission_associations_pkey < @cursor::int
+				WHEN 'name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permission_associations_pkey > @cursor::int)
+				WHEN 'r_name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permission_associations_pkey > @cursor::int)
+				ELSE m_permission_associations_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permission_associations_pkey > @cursor::int)
-				WHEN 'r_name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permission_associations_pkey > @cursor::int)
-				ELSE m_permission_associations_pkey > @cursor::int
+				WHEN 'name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permission_associations_pkey < @cursor::int)
+				WHEN 'r_name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permission_associations_pkey < @cursor::int)
+				ELSE m_permission_associations_pkey < @cursor::int
 			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permission_associations_pkey DESC
+	m_permission_associations_pkey ASC
 LIMIT $2;
 
 -- name: GetPluralPermissionsOnWorkPosition :many
@@ -127,7 +127,7 @@ SELECT sqlc.embed(m_permission_associations), sqlc.embed(m_permissions) FROM m_p
 LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
 WHERE work_position_id = ANY(@work_position_ids::uuid[])
 ORDER BY
-	m_permission_associations_pkey DESC
+	m_permission_associations_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: CountPermissionsOnWorkPosition :one

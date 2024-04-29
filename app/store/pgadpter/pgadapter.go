@@ -4,6 +4,7 @@ package pgadapter
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
@@ -17,6 +18,7 @@ import (
 
 // PgAdapter is a Postgres adapter for the store package.
 type PgAdapter struct {
+	mu      sync.Mutex
 	query   *query.Queries
 	pool    *pgxpool.Pool
 	clocker clock.Clock
@@ -54,6 +56,8 @@ func NewPgAdapter(ctx context.Context, clocker clock.Clock, cfg config.Config) (
 
 // Begin starts a transaction.
 func (a *PgAdapter) Begin(ctx context.Context) (store.Sd, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	tx, err := a.pool.Begin(ctx)
 	if err != nil {
 		return store.Sd(uuid.Nil), fmt.Errorf("failed to begin transaction: %w", err)
@@ -66,6 +70,8 @@ func (a *PgAdapter) Begin(ctx context.Context) (store.Sd, error) {
 
 // Commit commits a transaction.
 func (a *PgAdapter) Commit(ctx context.Context, id store.Sd) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	_, ok := a.qtxMap[id]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -85,6 +91,8 @@ func (a *PgAdapter) Commit(ctx context.Context, id store.Sd) error {
 
 // Rollback rolls back a transaction.
 func (a *PgAdapter) Rollback(ctx context.Context, id store.Sd) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
 	_, ok := a.qtxMap[id]
 	if !ok {
 		return store.ErrNotFoundDescriptor

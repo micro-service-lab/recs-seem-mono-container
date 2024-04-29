@@ -274,6 +274,7 @@ func (r iteratorForCreateChatRooms) Values() ([]interface{}, error) {
 		r.rows[0].IsPrivate,
 		r.rows[0].CoverImageID,
 		r.rows[0].OwnerID,
+		r.rows[0].FromOrganization,
 		r.rows[0].CreatedAt,
 		r.rows[0].UpdatedAt,
 	}, nil
@@ -284,7 +285,7 @@ func (r iteratorForCreateChatRooms) Err() error {
 }
 
 func (q *Queries) CreateChatRooms(ctx context.Context, arg []CreateChatRoomsParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"m_chat_rooms"}, []string{"name", "is_private", "cover_image_id", "owner_id", "created_at", "updated_at"}, &iteratorForCreateChatRooms{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"m_chat_rooms"}, []string{"name", "is_private", "cover_image_id", "owner_id", "from_organization", "created_at", "updated_at"}, &iteratorForCreateChatRooms{rows: arg})
 }
 
 // iteratorForCreateEarlyLeavings implements pgx.CopyFromSource.
@@ -731,6 +732,7 @@ func (r iteratorForCreateOrganizations) Values() ([]interface{}, error) {
 		r.rows[0].Description,
 		r.rows[0].IsPersonal,
 		r.rows[0].IsWhole,
+		r.rows[0].ChatRoomID,
 		r.rows[0].CreatedAt,
 		r.rows[0].UpdatedAt,
 	}, nil
@@ -741,7 +743,7 @@ func (r iteratorForCreateOrganizations) Err() error {
 }
 
 func (q *Queries) CreateOrganizations(ctx context.Context, arg []CreateOrganizationsParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"m_organizations"}, []string{"name", "description", "is_personal", "is_whole", "created_at", "updated_at"}, &iteratorForCreateOrganizations{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"m_organizations"}, []string{"name", "description", "is_personal", "is_whole", "chat_room_id", "created_at", "updated_at"}, &iteratorForCreateOrganizations{rows: arg})
 }
 
 // iteratorForCreatePermissionAssociations implements pgx.CopyFromSource.

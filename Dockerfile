@@ -29,7 +29,7 @@ FROM golang:1.21 as build-server
 
 WORKDIR /src
 COPY . .
-RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /go/bin/app .
+RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /go/bin/app ./cmd/http/main.go
 
 # hadolint ignore=DL3006
 FROM gcr.io/distroless/static-debian12:nonroot as prod

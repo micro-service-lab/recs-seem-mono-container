@@ -48,7 +48,7 @@ func dev() error {
 		"--continue",
 		"--headless",
 		"--listen", fmt.Sprintf(":%d", port),
-		"."); err != nil {
+		"cmd/http/main.go"); err != nil {
 		return fmt.Errorf("run server: %w", err)
 	}
 

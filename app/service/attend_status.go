@@ -7,8 +7,40 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 )
+
+// EventStatusKey イベントステータスキー。
+type AttendStatusKey string
+
+const (
+	// AttendStatusKeyPresent 出席。
+	AttendStatusKeyPresent AttendStatusKey = "present"
+	// AttendStatusKeyAbsent 欠席。
+	AttendStatusKeyAbsent AttendStatusKey = "absent"
+	// AttendStatusKeyTemporarilyAbsent 一時欠席。
+	AttendStatusKeyTemporarilyAbsent AttendStatusKey = "temporarily_absent"
+	// AttendStatusKeyGoHome 退室。
+	AttendStatusKeyGoHome AttendStatusKey = "go_home"
+	// AttendStatusKeyNotAttend 未出席。
+	AttendStatusKeyNotAttend AttendStatusKey = "not_attend"
+)
+
+// AttendStatus 出席状況。
+type AttendStatus struct {
+	Key  string
+	Name string
+}
+
+// AttendStatues 出席状況一覧。
+var AttendStatues = []AttendStatus{
+	{Key: "present", Name: "出席"},
+	{Key: "absent", Name: "欠席"},
+	{Key: "temporarily_absent", Name: "一時欠席"},
+	{Key: "go_home", Name: "退室"},
+	{Key: "not_attend", Name: "未出席"},
+}
 
 // ManageAttendStatus 出席状況管理サービス。
 type ManageAttendStatus struct {
@@ -17,7 +49,7 @@ type ManageAttendStatus struct {
 
 // CreateAttendStatus 出席状況を作成する。
 func (m *ManageAttendStatus) CreateAttendStatus(ctx context.Context, name, key string) (entity.AttendStatus, error) {
-	p := store.CreateAttendStatusParam{
+	p := parameter.CreateAttendStatusParam{
 		Name: name,
 		Key:  key,
 	}
@@ -29,7 +61,7 @@ func (m *ManageAttendStatus) CreateAttendStatus(ctx context.Context, name, key s
 }
 
 // CreateAttendStatuses 出席状況を複数作成する。
-func (m *ManageAttendStatus) CreateAttendStatuses(ctx context.Context, ps []store.CreateAttendStatusParam) (int64, error) {
+func (m *ManageAttendStatus) CreateAttendStatuses(ctx context.Context, ps []parameter.CreateAttendStatusParam) (int64, error) {
 	es, err := m.db.CreateAttendStatuses(ctx, ps)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create attend statuses: %w", err)
@@ -41,7 +73,7 @@ func (m *ManageAttendStatus) CreateAttendStatuses(ctx context.Context, ps []stor
 func (m *ManageAttendStatus) UpdateAttendStatus(
 	ctx context.Context, id uuid.UUID, name, key string,
 ) (entity.AttendStatus, error) {
-	p := store.UpdateAttendStatusParams{
+	p := parameter.UpdateAttendStatusParams{
 		Name: name,
 		Key:  key,
 	}
@@ -83,34 +115,34 @@ func (m *ManageAttendStatus) FindAttendStatusByKey(ctx context.Context, key stri
 func (m *ManageAttendStatus) GetAttendStatuses(
 	ctx context.Context,
 	whereSearchName string,
-	order store.AttendStatusOrderMethod,
-	pg Pagination,
-	limit int64,
-	cursor string,
-	offset int64,
-	withCount bool,
+	order parameter.AttendStatusOrderMethod,
+	pg parameter.Pagination,
+	limit parameter.Limit,
+	cursor parameter.Cursor,
+	offset parameter.Offset,
+	withCount parameter.WithCount,
 ) (store.ListResult[entity.AttendStatus], error) {
 	wc := store.WithCountParam{
-		Valid: withCount,
+		Valid: bool(withCount),
 	}
 	var np store.NumberedPaginationParam
 	var cp store.CursorPaginationParam
-	where := store.WhereAttendStatusParam{
+	where := parameter.WhereAttendStatusParam{
 		WhereLikeName: whereSearchName != "",
 		SearchName:    whereSearchName,
 	}
 	switch pg {
-	case NumberedPagination:
+	case parameter.NumberedPagination:
 		np = store.NumberedPaginationParam{
 			Valid:  true,
-			Offset: entity.Int{Int64: offset},
-			Limit:  entity.Int{Int64: limit},
+			Offset: entity.Int{Int64: int64(offset)},
+			Limit:  entity.Int{Int64: int64(limit)},
 		}
-	case CursorPagination:
+	case parameter.CursorPagination:
 		cp = store.CursorPaginationParam{
 			Valid:  true,
-			Cursor: cursor,
-			Limit:  entity.Int{Int64: limit},
+			Cursor: string(cursor),
+			Limit:  entity.Int{Int64: int64(limit)},
 		}
 	_:
 	}
@@ -119,4 +151,20 @@ func (m *ManageAttendStatus) GetAttendStatuses(
 		return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("failed to get attend statuses: %w", err)
 	}
 	return r, nil
+}
+
+// GetAttendStatusesCount 出席状況の数を取得する。
+func (m *ManageAttendStatus) GetAttendStatusesCount(
+	ctx context.Context,
+	whereSearchName string,
+) (int64, error) {
+	p := parameter.WhereAttendStatusParam{
+		WhereLikeName: whereSearchName != "",
+		SearchName:    whereSearchName,
+	}
+	c, err := m.db.CountAttendStatuses(ctx, p)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get attend statuses count: %w", err)
+	}
+	return c, nil
 }

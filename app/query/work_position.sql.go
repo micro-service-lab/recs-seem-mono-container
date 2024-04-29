@@ -99,7 +99,7 @@ SELECT work_position_id, name FROM m_work_positions
 WHERE
 	work_position_id = ANY($3::uuid[])
 ORDER BY
-	m_work_positions_pkey DESC
+	m_work_positions_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -141,7 +141,7 @@ WHERE
 ORDER BY
 	CASE WHEN $3::text = 'name' THEN m_work_positions.name END ASC,
 	CASE WHEN $3::text = 'r_name' THEN m_work_positions.name END DESC,
-	m_work_positions_pkey DESC
+	m_work_positions_pkey ASC
 `
 
 type GetWorkPositionsParams struct {
@@ -185,21 +185,21 @@ AND
 	CASE $4::text
 		WHEN 'next' THEN
 			CASE $5::text
-				WHEN 'name' THEN name > $6 OR (name = $6 AND m_work_positions_pkey < $7::int)
-				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_work_positions_pkey < $7::int)
-				ELSE m_work_positions_pkey < $7::int
+				WHEN 'name' THEN name > $6 OR (name = $6 AND m_work_positions_pkey > $7::int)
+				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_work_positions_pkey > $7::int)
+				ELSE m_work_positions_pkey > $7::int
 			END
 		WHEN 'prev' THEN
 			CASE $5::text
-				WHEN 'name' THEN name < $6 OR (name = $6 AND m_work_positions_pkey > $7::int)
-				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_work_positions_pkey > $7::int)
-				ELSE m_work_positions_pkey > $7::int
+				WHEN 'name' THEN name < $6 OR (name = $6 AND m_work_positions_pkey < $7::int)
+				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_work_positions_pkey < $7::int)
+				ELSE m_work_positions_pkey < $7::int
 			END
 	END
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_work_positions.name END ASC,
 	CASE WHEN $5::text = 'r_name' THEN m_work_positions.name END DESC,
-	m_work_positions_pkey DESC
+	m_work_positions_pkey ASC
 LIMIT $1
 `
 
@@ -255,7 +255,7 @@ WHERE
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_work_positions.name END ASC,
 	CASE WHEN $5::text = 'r_name' THEN m_work_positions.name END DESC,
-	m_work_positions_pkey DESC
+	m_work_positions_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

@@ -38,7 +38,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
 	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
 	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
-	t_lab_io_histories_pkey DESC;
+	t_lab_io_histories_pkey ASC;
 
 -- name: GetLabIOHistoriesUseNumberedPaginate :many
 SELECT * FROM t_lab_io_histories
@@ -57,7 +57,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
 	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
 	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
-	t_lab_io_histories_pkey DESC
+	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetLabIOHistoriesUseKeysetPaginate :many
@@ -76,19 +76,19 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'old_enter' THEN entered_at > @enter_cursor OR (entered_at = @enter_cursor AND t_lab_io_histories_pkey < @cursor::int)
-				WHEN 'late_enter' THEN entered_at < @enter_cursor OR (entered_at = @enter_cursor AND t_lab_io_histories_pkey < @cursor::int)
-				WHEN 'old_exit' THEN exited_at > @exit_cursor OR (exited_at = @exit_cursor AND t_lab_io_histories_pkey < @cursor::int)
-				WHEN 'late_exit' THEN exited_at < @exit_cursor OR (exited_at = @exit_cursor AND t_lab_io_histories_pkey < @cursor::int)
-				ELSE t_lab_io_histories_pkey < @cursor::int
+				WHEN 'old_enter' THEN entered_at > @enter_cursor OR (entered_at = @enter_cursor AND t_lab_io_histories_pkey > @cursor::int)
+				WHEN 'late_enter' THEN entered_at < @enter_cursor OR (entered_at = @enter_cursor AND t_lab_io_histories_pkey > @cursor::int)
+				WHEN 'old_exit' THEN exited_at > @exit_cursor OR (exited_at = @exit_cursor AND t_lab_io_histories_pkey > @cursor::int)
+				WHEN 'late_exit' THEN exited_at < @exit_cursor OR (exited_at = @exit_cursor AND t_lab_io_histories_pkey > @cursor::int)
+				ELSE t_lab_io_histories_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'old_enter' THEN entered_at < @enter_cursor OR (entered_at = @enter_cursor AND t_lab_io_histories_pkey > @cursor::int)
-				WHEN 'late_enter' THEN entered_at > @enter_cursor OR (entered_at = @enter_cursor AND t_lab_io_histories_pkey > @cursor::int)
-				WHEN 'old_exit' THEN exited_at < @exit_cursor OR (exited_at = @exit_cursor AND t_lab_io_histories_pkey > @cursor::int)
-				WHEN 'late_exit' THEN exited_at > @exit_cursor OR (exited_at = @exit_cursor AND t_lab_io_histories_pkey > @cursor::int)
-				ELSE t_lab_io_histories_pkey > @cursor::int
+				WHEN 'old_enter' THEN entered_at < @enter_cursor OR (entered_at = @enter_cursor AND t_lab_io_histories_pkey < @cursor::int)
+				WHEN 'late_enter' THEN entered_at > @enter_cursor OR (entered_at = @enter_cursor AND t_lab_io_histories_pkey < @cursor::int)
+				WHEN 'old_exit' THEN exited_at < @exit_cursor OR (exited_at = @exit_cursor AND t_lab_io_histories_pkey < @cursor::int)
+				WHEN 'late_exit' THEN exited_at > @exit_cursor OR (exited_at = @exit_cursor AND t_lab_io_histories_pkey < @cursor::int)
+				ELSE t_lab_io_histories_pkey < @cursor::int
 		END
 	END
 ORDER BY
@@ -96,13 +96,13 @@ ORDER BY
 	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
 	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
 	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
-	t_lab_io_histories_pkey DESC
+	t_lab_io_histories_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralLabIOHistories :many
 SELECT * FROM t_lab_io_histories WHERE lab_io_history_id = ANY(@lab_io_history_ids::uuid[])
 ORDER BY
-	t_lab_io_histories_pkey DESC
+	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetLabIOHistoriesWithMember :many
@@ -123,7 +123,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
 	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
 	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
-	t_lab_io_histories_pkey DESC;
+	t_lab_io_histories_pkey ASC;
 
 -- name: GetLabIOHistoriesWithMemberUseNumberedPaginate :many
 SELECT sqlc.embed(t_lab_io_histories), sqlc.embed(m_members) FROM t_lab_io_histories
@@ -143,7 +143,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
 	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
 	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
-	t_lab_io_histories_pkey DESC
+	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetLabIOHistoriesWithMemberUseKeysetPaginate :many
@@ -163,19 +163,19 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'old_enter' THEN entered_at > @enter_cursor OR (entered_at = @enter_cursor AND t_lab_io_histories_pkey < @cursor::int)
-				WHEN 'late_enter' THEN entered_at < @enter_cursor OR (entered_at = @enter_cursor AND t_lab_io_histories_pkey < @cursor::int)
-				WHEN 'old_exit' THEN exited_at > @exit_cursor OR (exited_at = @exit_cursor AND t_lab_io_histories_pkey < @cursor::int)
-				WHEN 'late_exit' THEN exited_at < @exit_cursor OR (exited_at = @exit_cursor AND t_lab_io_histories_pkey < @cursor::int)
-				ELSE t_lab_io_histories_pkey < @cursor::int
+				WHEN 'old_enter' THEN entered_at > @enter_cursor OR (entered_at = @enter_cursor AND t_lab_io_histories_pkey > @cursor::int)
+				WHEN 'late_enter' THEN entered_at < @enter_cursor OR (entered_at = @enter_cursor AND t_lab_io_histories_pkey > @cursor::int)
+				WHEN 'old_exit' THEN exited_at > @exit_cursor OR (exited_at = @exit_cursor AND t_lab_io_histories_pkey > @cursor::int)
+				WHEN 'late_exit' THEN exited_at < @exit_cursor OR (exited_at = @exit_cursor AND t_lab_io_histories_pkey > @cursor::int)
+				ELSE t_lab_io_histories_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'old_enter' THEN entered_at < @enter_cursor OR (entered_at = @enter_cursor AND t_lab_io_histories_pkey > @cursor::int)
-				WHEN 'late_enter' THEN entered_at > @enter_cursor OR (entered_at = @enter_cursor AND t_lab_io_histories_pkey > @cursor::int)
-				WHEN 'old_exit' THEN exited_at < @exit_cursor OR (exited_at = @exit_cursor AND t_lab_io_histories_pkey > @cursor::int)
-				WHEN 'late_exit' THEN exited_at > @exit_cursor OR (exited_at = @exit_cursor AND t_lab_io_histories_pkey > @cursor::int)
-				ELSE t_lab_io_histories_pkey > @cursor::int
+				WHEN 'old_enter' THEN entered_at < @enter_cursor OR (entered_at = @enter_cursor AND t_lab_io_histories_pkey < @cursor::int)
+				WHEN 'late_enter' THEN entered_at > @enter_cursor OR (entered_at = @enter_cursor AND t_lab_io_histories_pkey < @cursor::int)
+				WHEN 'old_exit' THEN exited_at < @exit_cursor OR (exited_at = @exit_cursor AND t_lab_io_histories_pkey < @cursor::int)
+				WHEN 'late_exit' THEN exited_at > @exit_cursor OR (exited_at = @exit_cursor AND t_lab_io_histories_pkey < @cursor::int)
+				ELSE t_lab_io_histories_pkey < @cursor::int
 		END
 	END
 ORDER BY
@@ -183,7 +183,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
 	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
 	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
-	t_lab_io_histories_pkey DESC
+	t_lab_io_histories_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralLabIOHistoriesWithMember :many
@@ -191,7 +191,7 @@ SELECT sqlc.embed(t_lab_io_histories), sqlc.embed(m_members) FROM t_lab_io_histo
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE lab_io_history_id = ANY(@lab_io_history_ids::uuid[])
 ORDER BY
-	t_lab_io_histories_pkey DESC
+	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: CountLabIOHistories :one

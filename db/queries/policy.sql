@@ -36,7 +36,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
-	m_policies_pkey DESC;
+	m_policies_pkey ASC;
 
 -- name: GetPoliciesUseNumberedPaginate :many
 SELECT * FROM m_policies
@@ -47,7 +47,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
-	m_policies_pkey DESC
+	m_policies_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetPoliciesUseKeysetPaginate :many
@@ -60,27 +60,27 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_policies.name > @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey < @cursor::int)
-				WHEN 'r_name' THEN m_policies.name < @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey < @cursor::int)
-				ELSE m_policies_pkey < @cursor::int
+				WHEN 'name' THEN m_policies.name > @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey > @cursor::int)
+				WHEN 'r_name' THEN m_policies.name < @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey > @cursor::int)
+				ELSE m_policies_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_policies.name < @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey > @cursor::int)
-				WHEN 'r_name' THEN m_policies.name > @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey > @cursor::int)
-				ELSE m_policies_pkey > @cursor::int
+				WHEN 'name' THEN m_policies.name < @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey < @cursor::int)
+				WHEN 'r_name' THEN m_policies.name > @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey < @cursor::int)
+				ELSE m_policies_pkey < @cursor::int
 			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
-	m_policies_pkey DESC
+	m_policies_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralPolicies :many
 SELECT * FROM m_policies WHERE policy_id = ANY(@policy_ids::uuid[])
 ORDER BY
-	m_policies_pkey DESC
+	m_policies_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetPoliciesWithCategory :many
@@ -93,7 +93,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
-	m_policies_pkey DESC;
+	m_policies_pkey ASC;
 
 -- name: GetPoliciesWithCategoryUseNumberedPaginate :many
 SELECT m_policies.*, m_policy_categories.* FROM m_policies
@@ -105,7 +105,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
-	m_policies_pkey DESC
+	m_policies_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetPoliciesWithCategoryUseKeysetPaginate :many
@@ -119,21 +119,21 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_policies.name > @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey < @cursor::int)
-				WHEN 'r_name' THEN m_policies.name < @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey < @cursor::int)
-				ELSE m_policies_pkey < @cursor::int
+				WHEN 'name' THEN m_policies.name > @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey > @cursor::int)
+				WHEN 'r_name' THEN m_policies.name < @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey > @cursor::int)
+				ELSE m_policies_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_policies.name < @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey > @cursor::int)
-				WHEN 'r_name' THEN m_policies.name > @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey > @cursor::int)
-				ELSE m_policies_pkey > @cursor::int
+				WHEN 'name' THEN m_policies.name < @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey < @cursor::int)
+				WHEN 'r_name' THEN m_policies.name > @name_cursor OR (m_policies.name = @name_cursor AND m_policies_pkey < @cursor::int)
+				ELSE m_policies_pkey < @cursor::int
 			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
-	m_policies_pkey DESC
+	m_policies_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralPoliciesWithCategory :many
@@ -141,7 +141,7 @@ SELECT m_policies.*, m_policy_categories.* FROM m_policies
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE policy_id = ANY(@policy_ids::uuid[])
 ORDER BY
-	m_policies_pkey DESC
+	m_policies_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: CountPolicies :one

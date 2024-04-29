@@ -273,7 +273,7 @@ func (q *Queries) FindMemberByIDWithGroup(ctx context.Context, memberID uuid.UUI
 }
 
 const findMemberByIDWithPersonalOrganization = `-- name: FindMemberByIDWithPersonalOrganization :one
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE member_id = $1
 `
@@ -309,6 +309,7 @@ func (q *Queries) FindMemberByIDWithPersonalOrganization(ctx context.Context, me
 		&i.Organization.IsWhole,
 		&i.Organization.CreatedAt,
 		&i.Organization.UpdatedAt,
+		&i.Organization.ChatRoomID,
 	)
 	return i, err
 }
@@ -379,7 +380,7 @@ func (q *Queries) FindMemberByLoginID(ctx context.Context, loginID string) (Memb
 }
 
 const findMemberWithAll = `-- name: FindMemberWithAll :one
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
@@ -435,6 +436,7 @@ func (q *Queries) FindMemberWithAll(ctx context.Context, memberID uuid.UUID) (Fi
 		&i.Organization.IsWhole,
 		&i.Organization.CreatedAt,
 		&i.Organization.UpdatedAt,
+		&i.Organization.ChatRoomID,
 		&i.Role.MRolesPkey,
 		&i.Role.RoleID,
 		&i.Role.Name,
@@ -501,7 +503,7 @@ AND
 ORDER BY
 	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 `
 
 type GetMembersParams struct {
@@ -581,21 +583,21 @@ AND
 	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				ELSE m_members_pkey < $15::int
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				ELSE m_members_pkey > $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				ELSE m_members_pkey > $15::int
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				ELSE m_members_pkey < $15::int
 			END
 	END
 ORDER BY
 	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1
 `
 
@@ -683,7 +685,7 @@ AND
 ORDER BY
 	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -753,7 +755,7 @@ func (q *Queries) GetMembersUseNumberedPaginate(ctx context.Context, arg GetMemb
 }
 
 const getMembersWithAll = `-- name: GetMembersWithAll :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
@@ -772,7 +774,7 @@ AND
 ORDER BY
 	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 `
 
 type GetMembersWithAllParams struct {
@@ -854,6 +856,7 @@ func (q *Queries) GetMembersWithAll(ctx context.Context, arg GetMembersWithAllPa
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 			&i.Role.MRolesPkey,
 			&i.Role.RoleID,
 			&i.Role.Name,
@@ -872,7 +875,7 @@ func (q *Queries) GetMembersWithAll(ctx context.Context, arg GetMembersWithAllPa
 }
 
 const getMembersWithAllUseKeysetPaginate = `-- name: GetMembersWithAllUseKeysetPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
@@ -892,21 +895,21 @@ AND
 	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				ELSE m_members_pkey < $15::int
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				ELSE m_members_pkey > $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				ELSE m_members_pkey > $15::int
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				ELSE m_members_pkey < $15::int
 			END
 	END
 ORDER BY
 	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1
 `
 
@@ -997,6 +1000,7 @@ func (q *Queries) GetMembersWithAllUseKeysetPaginate(ctx context.Context, arg Ge
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 			&i.Role.MRolesPkey,
 			&i.Role.RoleID,
 			&i.Role.Name,
@@ -1015,7 +1019,7 @@ func (q *Queries) GetMembersWithAllUseKeysetPaginate(ctx context.Context, arg Ge
 }
 
 const getMembersWithAllUseNumberedPaginate = `-- name: GetMembersWithAllUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
@@ -1034,7 +1038,7 @@ AND
 ORDER BY
 	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -1121,6 +1125,7 @@ func (q *Queries) GetMembersWithAllUseNumberedPaginate(ctx context.Context, arg 
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 			&i.Role.MRolesPkey,
 			&i.Role.RoleID,
 			&i.Role.Name,
@@ -1154,7 +1159,7 @@ AND
 ORDER BY
 	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 `
 
 type GetMembersWithAttendStatusParams struct {
@@ -1244,21 +1249,21 @@ AND
 	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				ELSE m_members_pkey < $15::int
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				ELSE m_members_pkey > $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				ELSE m_members_pkey > $15::int
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				ELSE m_members_pkey < $15::int
 			END
 	END
 ORDER BY
 	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1
 `
 
@@ -1356,7 +1361,7 @@ AND
 ORDER BY
 	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -1451,7 +1456,7 @@ AND
 ORDER BY
 	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 `
 
 type GetMembersWithGradeParams struct {
@@ -1542,21 +1547,21 @@ AND
 	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				ELSE m_members_pkey < $15::int
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				ELSE m_members_pkey > $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				ELSE m_members_pkey > $15::int
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				ELSE m_members_pkey < $15::int
 			END
 	END
 ORDER BY
 	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1
 `
 
@@ -1655,7 +1660,7 @@ AND
 ORDER BY
 	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -1750,7 +1755,7 @@ AND
 ORDER BY
 	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 `
 
 type GetMembersWithGroupParams struct {
@@ -1841,21 +1846,21 @@ AND
 	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				ELSE m_members_pkey < $15::int
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				ELSE m_members_pkey > $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				ELSE m_members_pkey > $15::int
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				ELSE m_members_pkey < $15::int
 			END
 	END
 ORDER BY
 	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1
 `
 
@@ -1954,7 +1959,7 @@ AND
 ORDER BY
 	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -2033,7 +2038,7 @@ func (q *Queries) GetMembersWithGroupUseNumberedPaginate(ctx context.Context, ar
 }
 
 const getMembersWithPersonalOrganization = `-- name: GetMembersWithPersonalOrganization :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
@@ -2048,7 +2053,7 @@ AND
 ORDER BY
 	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 `
 
 type GetMembersWithPersonalOrganizationParams struct {
@@ -2114,6 +2119,7 @@ func (q *Queries) GetMembersWithPersonalOrganization(ctx context.Context, arg Ge
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -2126,7 +2132,7 @@ func (q *Queries) GetMembersWithPersonalOrganization(ctx context.Context, arg Ge
 }
 
 const getMembersWithPersonalOrganizationUseKeysetPaginate = `-- name: GetMembersWithPersonalOrganizationUseKeysetPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
@@ -2142,21 +2148,21 @@ AND
 	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				ELSE m_members_pkey < $15::int
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				ELSE m_members_pkey > $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				ELSE m_members_pkey > $15::int
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				ELSE m_members_pkey < $15::int
 			END
 	END
 ORDER BY
 	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1
 `
 
@@ -2231,6 +2237,7 @@ func (q *Queries) GetMembersWithPersonalOrganizationUseKeysetPaginate(ctx contex
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -2243,7 +2250,7 @@ func (q *Queries) GetMembersWithPersonalOrganizationUseKeysetPaginate(ctx contex
 }
 
 const getMembersWithPersonalOrganizationUseNumberedPaginate = `-- name: GetMembersWithPersonalOrganizationUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
@@ -2258,7 +2265,7 @@ AND
 ORDER BY
 	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -2329,6 +2336,7 @@ func (q *Queries) GetMembersWithPersonalOrganizationUseNumberedPaginate(ctx cont
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -2356,7 +2364,7 @@ AND
 ORDER BY
 	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 `
 
 type GetMembersWithRoleParams struct {
@@ -2448,21 +2456,21 @@ AND
 	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				ELSE m_members_pkey < $15::int
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				ELSE m_members_pkey > $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				ELSE m_members_pkey > $15::int
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				ELSE m_members_pkey < $15::int
 			END
 	END
 ORDER BY
 	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1
 `
 
@@ -2562,7 +2570,7 @@ AND
 ORDER BY
 	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -2645,7 +2653,7 @@ func (q *Queries) GetMembersWithRoleUseNumberedPaginate(ctx context.Context, arg
 const getPluralMembers = `-- name: GetPluralMembers :many
 SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -2691,7 +2699,7 @@ func (q *Queries) GetPluralMembers(ctx context.Context, arg GetPluralMembersPara
 }
 
 const getPluralMembersWithAll = `-- name: GetPluralMembersWithAll :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
@@ -2699,7 +2707,7 @@ LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organization
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -2762,6 +2770,7 @@ func (q *Queries) GetPluralMembersWithAll(ctx context.Context, arg GetPluralMemb
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 			&i.Role.MRolesPkey,
 			&i.Role.RoleID,
 			&i.Role.Name,
@@ -2784,7 +2793,7 @@ SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_memb
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -2844,7 +2853,7 @@ LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -2904,7 +2913,7 @@ LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -2959,11 +2968,11 @@ func (q *Queries) GetPluralMembersWithGroup(ctx context.Context, arg GetPluralMe
 }
 
 const getPluralMembersWithPersonalOrganization = `-- name: GetPluralMembersWithPersonalOrganization :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -3010,6 +3019,7 @@ func (q *Queries) GetPluralMembersWithPersonalOrganization(ctx context.Context, 
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -3026,7 +3036,7 @@ SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_memb
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	m_members_pkey DESC
+	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

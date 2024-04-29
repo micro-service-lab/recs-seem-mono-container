@@ -117,7 +117,7 @@ WHERE
 ORDER BY
 	CASE WHEN $3::text = 'name' THEN m_permission_categories.name END ASC,
 	CASE WHEN $3::text = 'r_name' THEN m_permission_categories.name END DESC,
-	m_permission_categories_pkey DESC
+	m_permission_categories_pkey ASC
 `
 
 type GetPermissionCategoriesParams struct {
@@ -160,21 +160,21 @@ AND
 	CASE $4::text
 		WHEN 'next' THEN
 			CASE $5::text
-				WHEN 'name' THEN name > $6 OR (name = $6 AND m_permission_categories_pkey < $7::int)
-				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_permission_categories_pkey < $7::int)
-				ELSE m_permission_categories_pkey < $7::int
+				WHEN 'name' THEN name > $6 OR (name = $6 AND m_permission_categories_pkey > $7::int)
+				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_permission_categories_pkey > $7::int)
+				ELSE m_permission_categories_pkey > $7::int
 			END
 		WHEN 'prev' THEN
 			CASE $5::text
-				WHEN 'name' THEN name < $6 OR (name = $6 AND m_permission_categories_pkey > $7::int)
-				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_permission_categories_pkey > $7::int)
-				ELSE m_permission_categories_pkey > $7::int
+				WHEN 'name' THEN name < $6 OR (name = $6 AND m_permission_categories_pkey < $7::int)
+				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_permission_categories_pkey < $7::int)
+				ELSE m_permission_categories_pkey < $7::int
 			END
 	END
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_permission_categories.name END ASC,
 	CASE WHEN $5::text = 'r_name' THEN m_permission_categories.name END DESC,
-	m_permission_categories_pkey DESC
+	m_permission_categories_pkey ASC
 LIMIT $1
 `
 
@@ -229,7 +229,7 @@ WHERE
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_permission_categories.name END ASC,
 	CASE WHEN $5::text = 'r_name' THEN m_permission_categories.name END DESC,
-	m_permission_categories_pkey DESC
+	m_permission_categories_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -277,7 +277,7 @@ const getPluralPermissionCategories = `-- name: GetPluralPermissionCategories :m
 SELECT m_permission_categories_pkey, permission_category_id, name, description, key FROM m_permission_categories
 WHERE permission_category_id = ANY($3::uuid[])
 ORDER BY
-	m_permission_categories_pkey DESC
+	m_permission_categories_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

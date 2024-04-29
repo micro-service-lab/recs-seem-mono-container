@@ -27,7 +27,7 @@ type AttachableItem struct {
 
 type AttachedMessage struct {
 	TAttachedMessagesPkey pgtype.Int8 `json:"t_attached_messages_pkey"`
-	MessageID             uuid.UUID   `json:"message_id"`
+	MessageID             pgtype.UUID `json:"message_id"`
 	AttachableItemID      uuid.UUID   `json:"attachable_item_id"`
 }
 
@@ -60,14 +60,15 @@ type AttendanceType struct {
 }
 
 type ChatRoom struct {
-	MChatRoomsPkey pgtype.Int8 `json:"m_chat_rooms_pkey"`
-	ChatRoomID     uuid.UUID   `json:"chat_room_id"`
-	Name           pgtype.Text `json:"name"`
-	IsPrivate      bool        `json:"is_private"`
-	CoverImageID   pgtype.UUID `json:"cover_image_id"`
-	OwnerID        pgtype.UUID `json:"owner_id"`
-	CreatedAt      time.Time   `json:"created_at"`
-	UpdatedAt      time.Time   `json:"updated_at"`
+	MChatRoomsPkey   pgtype.Int8 `json:"m_chat_rooms_pkey"`
+	ChatRoomID       uuid.UUID   `json:"chat_room_id"`
+	Name             pgtype.Text `json:"name"`
+	IsPrivate        bool        `json:"is_private"`
+	CoverImageID     pgtype.UUID `json:"cover_image_id"`
+	OwnerID          pgtype.UUID `json:"owner_id"`
+	FromOrganization bool        `json:"from_organization"`
+	CreatedAt        time.Time   `json:"created_at"`
+	UpdatedAt        time.Time   `json:"updated_at"`
 }
 
 type ChatRoomBelonging struct {
@@ -195,6 +196,7 @@ type Organization struct {
 	IsWhole            bool        `json:"is_whole"`
 	CreatedAt          time.Time   `json:"created_at"`
 	UpdatedAt          time.Time   `json:"updated_at"`
+	ChatRoomID         pgtype.UUID `json:"chat_room_id"`
 }
 
 type Permission struct {

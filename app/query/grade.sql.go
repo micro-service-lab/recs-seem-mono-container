@@ -83,7 +83,7 @@ func (q *Queries) FindGradeByID(ctx context.Context, gradeID uuid.UUID) (Grade, 
 }
 
 const findGradeByIDWithOrganization = `-- name: FindGradeByIDWithOrganization :one
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE grade_id = $1
 `
@@ -109,6 +109,7 @@ func (q *Queries) FindGradeByIDWithOrganization(ctx context.Context, gradeID uui
 		&i.Organization.IsWhole,
 		&i.Organization.CreatedAt,
 		&i.Organization.UpdatedAt,
+		&i.Organization.ChatRoomID,
 	)
 	return i, err
 }
@@ -130,7 +131,7 @@ func (q *Queries) FindGradeByKey(ctx context.Context, key string) (Grade, error)
 }
 
 const findGradeByKeyWithOrganization = `-- name: FindGradeByKeyWithOrganization :one
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE key = $1
 `
@@ -156,6 +157,7 @@ func (q *Queries) FindGradeByKeyWithOrganization(ctx context.Context, key string
 		&i.Organization.IsWhole,
 		&i.Organization.CreatedAt,
 		&i.Organization.UpdatedAt,
+		&i.Organization.ChatRoomID,
 	)
 	return i, err
 }
@@ -163,7 +165,7 @@ func (q *Queries) FindGradeByKeyWithOrganization(ctx context.Context, key string
 const getGrades = `-- name: GetGrades :many
 SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades
 ORDER BY
-	m_grades_pkey DESC
+	m_grades_pkey ASC
 `
 
 func (q *Queries) GetGrades(ctx context.Context) ([]Grade, error) {
@@ -196,12 +198,12 @@ SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades
 WHERE
 	CASE $2::text
 		WHEN 'next' THEN
-			m_grades_pkey < $3::int
-		WHEN 'prev' THEN
 			m_grades_pkey > $3::int
+		WHEN 'prev' THEN
+			m_grades_pkey < $3::int
 	END
 ORDER BY
-	m_grades_pkey DESC
+	m_grades_pkey ASC
 LIMIT $1
 `
 
@@ -239,7 +241,7 @@ func (q *Queries) GetGradesUseKeysetPaginate(ctx context.Context, arg GetGradesU
 const getGradesUseNumberedPaginate = `-- name: GetGradesUseNumberedPaginate :many
 SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades
 ORDER BY
-	m_grades_pkey DESC
+	m_grades_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -274,12 +276,12 @@ func (q *Queries) GetGradesUseNumberedPaginate(ctx context.Context, arg GetGrade
 }
 
 const getGradesWithOrganization = `-- name: GetGradesWithOrganization :many
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 ORDER BY
 	CASE WHEN $1::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN $1::text = 'r_name' THEN m_organizations.name END DESC,
-	m_grades_pkey DESC
+	m_grades_pkey ASC
 `
 
 type GetGradesWithOrganizationRow struct {
@@ -309,6 +311,7 @@ func (q *Queries) GetGradesWithOrganization(ctx context.Context, orderMethod str
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -321,27 +324,27 @@ func (q *Queries) GetGradesWithOrganization(ctx context.Context, orderMethod str
 }
 
 const getGradesWithOrganizationUseKeysetPaginate = `-- name: GetGradesWithOrganizationUseKeysetPaginate :many
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE
 	CASE $2::text
 		WHEN 'next' THEN
 			CASE $3::text
-				WHEN 'name' THEN name > $4 OR (name = $4 AND m_grades_pkey < $5::int)
-				WHEN 'r_name' THEN name < $4 OR (name = $4 AND m_grades_pkey < $5::int)
-				ELSE m_grades_pkey < $5::int
+				WHEN 'name' THEN name > $4 OR (name = $4 AND m_grades_pkey > $5::int)
+				WHEN 'r_name' THEN name < $4 OR (name = $4 AND m_grades_pkey > $5::int)
+				ELSE m_grades_pkey > $5::int
 			END
 		WHEN 'prev' THEN
 			CASE $3::text
-				WHEN 'name' THEN name < $4 OR (name = $4 AND m_grades_pkey > $5::int)
-				WHEN 'r_name' THEN name > $4 OR (name = $4 AND m_grades_pkey > $5::int)
-				ELSE m_grades_pkey > $5::int
+				WHEN 'name' THEN name < $4 OR (name = $4 AND m_grades_pkey < $5::int)
+				WHEN 'r_name' THEN name > $4 OR (name = $4 AND m_grades_pkey < $5::int)
+				ELSE m_grades_pkey < $5::int
 			END
 	END
 ORDER BY
 	CASE WHEN $3::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN $3::text = 'r_name' THEN m_organizations.name END DESC,
-	m_grades_pkey DESC
+	m_grades_pkey ASC
 LIMIT $1
 `
 
@@ -386,6 +389,7 @@ func (q *Queries) GetGradesWithOrganizationUseKeysetPaginate(ctx context.Context
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -398,12 +402,12 @@ func (q *Queries) GetGradesWithOrganizationUseKeysetPaginate(ctx context.Context
 }
 
 const getGradesWithOrganizationUseNumberedPaginate = `-- name: GetGradesWithOrganizationUseNumberedPaginate :many
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 ORDER BY
 	CASE WHEN $3::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN $3::text = 'r_name' THEN m_organizations.name END DESC,
-	m_grades_pkey DESC
+	m_grades_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -440,6 +444,7 @@ func (q *Queries) GetGradesWithOrganizationUseNumberedPaginate(ctx context.Conte
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -455,7 +460,7 @@ const getPluralGrades = `-- name: GetPluralGrades :many
 SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades
 WHERE organization_id = ANY($3::uuid[])
 ORDER BY
-	m_grades_pkey DESC
+	m_grades_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -491,11 +496,11 @@ func (q *Queries) GetPluralGrades(ctx context.Context, arg GetPluralGradesParams
 }
 
 const getPluralGradesWithOrganization = `-- name: GetPluralGradesWithOrganization :many
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE organization_id = ANY($3::uuid[])
 ORDER BY
-	m_grades_pkey DESC
+	m_grades_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -532,6 +537,7 @@ func (q *Queries) GetPluralGradesWithOrganization(ctx context.Context, arg GetPl
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 		); err != nil {
 			return nil, err
 		}

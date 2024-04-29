@@ -5,6 +5,7 @@ CREATE TABLE m_chat_rooms (
 	is_private BOOLEAN NOT NULL,
 	cover_image_id UUID,
 	owner_id UUID,
+	from_organization BOOLEAN NOT NULL,
 	created_at TIMESTAMPTZ NOT NULL,
 	updated_at TIMESTAMPTZ NOT NULL
 );

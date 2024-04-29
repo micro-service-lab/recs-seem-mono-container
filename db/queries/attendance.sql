@@ -68,7 +68,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey DESC;
+	t_attendances_pkey ASC;
 
 -- name: GetAttendanceUseNumberedPaginate :many
 SELECT * FROM t_attendances
@@ -87,7 +87,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetAttendanceUseKeysetPaginate :many
@@ -108,28 +108,28 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN date > @date_cursor OR (date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				WHEN 'r_date' THEN date < @date_cursor OR (date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				ELSE t_attendances_pkey < @cursor::int
+				WHEN 'date' THEN date > @date_cursor OR (date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_date' THEN date < @date_cursor OR (date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				ELSE t_attendances_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN date < @date_cursor OR (date = @date_cursor AND t_attendances_pkey > @cursor::int)
-				WHEN 'r_date' THEN date > @date_cursor OR (date = @date_cursor AND t_attendances_pkey > @cursor::int)
-				ELSE t_attendances_pkey > @cursor::int
+				WHEN 'date' THEN date < @date_cursor OR (date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_date' THEN date > @date_cursor OR (date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				ELSE t_attendances_pkey < @cursor::int
 			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN date END DESC,
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralAttendances :many
 SELECT * FROM t_attendances
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetAttendanceWithMember :many
@@ -153,7 +153,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey DESC;
+	t_attendances_pkey ASC;
 
 -- name: GetAttendanceWithMemberUseNumberedPaginate :many
 SELECT t_attendances.*, sqlc.embed(m_members) FROM t_attendances
@@ -176,7 +176,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetAttendanceWithMemberUseKeysetPaginate :many
@@ -201,21 +201,21 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				ELSE t_attendances_pkey < @cursor::int
+				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				ELSE t_attendances_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
-				ELSE t_attendances_pkey > @cursor::int
+				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				ELSE t_attendances_pkey < @cursor::int
 			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralAttendanceWithMember :many
@@ -226,7 +226,7 @@ LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetAttendanceWithAttendanceType :many
@@ -247,7 +247,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey DESC;
+	t_attendances_pkey ASC;
 
 -- name: GetAttendanceWithAttendanceTypeUseNumberedPaginate :many
 SELECT t_attendances.*, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color FROM t_attendances
@@ -267,7 +267,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetAttendanceWithAttendanceTypeUseKeysetPaginate :many
@@ -289,21 +289,21 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				ELSE t_attendances_pkey < @cursor::int
+				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				ELSE t_attendances_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
-				ELSE t_attendances_pkey > @cursor::int
+				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				ELSE t_attendances_pkey < @cursor::int
 			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralAttendanceWithAttendanceType :many
@@ -311,7 +311,7 @@ SELECT t_attendances.*, m_attendance_types.attendance_type_id, m_attendance_type
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetAttendanceWithSendOrganization :many
@@ -332,7 +332,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey DESC;
+	t_attendances_pkey ASC;
 
 -- name: GetAttendanceWithSendOrganizationUseNumberedPaginate :many
 SELECT t_attendances.*, sqlc.embed(m_organizations) FROM t_attendances
@@ -352,7 +352,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetAttendanceWithSendOrganizationUseKeysetPaginate :many
@@ -374,21 +374,21 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				ELSE t_attendances_pkey < @cursor::int
+				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				ELSE t_attendances_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
 				ELSE t_attendances_pkey > @cursor
 			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralAttendanceWithSendOrganization :many
@@ -396,7 +396,7 @@ SELECT t_attendances.*, sqlc.embed(m_organizations) FROM t_attendances
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetAttendanceWithDetails :many
@@ -419,7 +419,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey DESC;
+	t_attendances_pkey ASC;
 
 -- name: GetAttendanceWithDetailsUseNumberedPaginate :many
 SELECT t_attendances.*, sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
@@ -441,7 +441,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetAttendanceWithDetailsUseKeysetPaginate :many
@@ -465,21 +465,21 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				ELSE t_attendances_pkey < @cursor::int
+				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				ELSE t_attendances_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
-				ELSE t_attendances_pkey > @cursor::int
+				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				ELSE t_attendances_pkey < @cursor::int
 			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralAttendanceWithDetails :many
@@ -489,7 +489,7 @@ LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.atten
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetAttendanceWithAll :many
@@ -518,7 +518,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey DESC;
+	t_attendances_pkey ASC;
 
 -- name: GetAttendanceWithAllUseNumberedPaginate :many
 SELECT t_attendances.*, sqlc.embed(m_members), m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, sqlc.embed(m_organizations), sqlc.embed(t_early_leavings), sqlc.embed(t_late_arrivals), sqlc.embed(t_absences) FROM t_attendances
@@ -546,7 +546,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetAttendanceWithAllUseKeysetPaginate :many
@@ -576,21 +576,21 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				ELSE t_attendances_pkey < @cursor::int
+				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				ELSE t_attendances_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
-				ELSE t_attendances_pkey > @cursor::int
+				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				ELSE t_attendances_pkey < @cursor::int
 			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
 	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralAttendanceWithAll :many
@@ -606,7 +606,7 @@ LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	t_attendances_pkey DESC
+	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: CountAttendances :one

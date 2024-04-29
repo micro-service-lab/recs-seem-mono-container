@@ -41,7 +41,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permissions_pkey DESC;
+	m_permissions_pkey ASC;
 
 -- name: GetPermissionsUseNumberedPaginate :many
 SELECT * FROM m_permissions
@@ -52,7 +52,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permissions_pkey DESC
+	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetPermissionsUseKeysetPaginate :many
@@ -65,27 +65,27 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey < @cursor::int)
-				WHEN 'r_name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey < @cursor::int)
-				ELSE m_permissions_pkey < @cursor::int
+				WHEN 'name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey > @cursor::int)
+				WHEN 'r_name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey > @cursor::int)
+				ELSE m_permissions_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey > @cursor::int)
-				WHEN 'r_name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey > @cursor::int)
-				ELSE m_permissions_pkey > @cursor::int
+				WHEN 'name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey < @cursor::int)
+				WHEN 'r_name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey < @cursor::int)
+				ELSE m_permissions_pkey < @cursor::int
 			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permissions_pkey DESC
+	m_permissions_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralPermissions :many
 SELECT * FROM m_permissions WHERE permission_id = ANY(@permission_ids::uuid[])
 ORDER BY
-	m_permissions_pkey DESC
+	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetPermissionsWithCategory :many
@@ -98,7 +98,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permissions_pkey DESC;
+	m_permissions_pkey ASC;
 
 -- name: GetPermissionsWithCategoryUseNumberedPaginate :many
 SELECT m_permissions.*, m_permission_categories.* FROM m_permissions
@@ -110,7 +110,7 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permissions_pkey DESC
+	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetPermissionsWithCategoryUseKeysetPaginate :many
@@ -124,21 +124,21 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey < @cursor::int)
-				WHEN 'r_name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey < @cursor::int)
-				ELSE m_permissions_pkey < @cursor::int
+				WHEN 'name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey > @cursor::int)
+				WHEN 'r_name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey > @cursor::int)
+				ELSE m_permissions_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey > @cursor::int)
-				WHEN 'r_name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey > @cursor::int)
-				ELSE m_permissions_pkey > @cursor::int
+				WHEN 'name' THEN m_permissions.name < @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey < @cursor::int)
+				WHEN 'r_name' THEN m_permissions.name > @name_cursor OR (m_permissions.name = @name_cursor AND m_permissions_pkey < @cursor::int)
+				ELSE m_permissions_pkey < @cursor::int
 			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permissions_pkey DESC
+	m_permissions_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralPermissionsWithCategory :many
@@ -146,7 +146,7 @@ SELECT m_permissions.*, m_permission_categories.* FROM m_permissions
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE permission_id = ANY(@permission_ids::uuid[])
 ORDER BY
-	m_permissions_pkey DESC
+	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: CountPermissions :one

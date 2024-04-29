@@ -140,7 +140,7 @@ func (q *Queries) FindMessageByID(ctx context.Context, messageID uuid.UUID) (Mes
 }
 
 const findMessageByIDWithAll = `-- name: FindMessageByIDWithAll :one
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE message_id = $1
@@ -169,6 +169,7 @@ func (q *Queries) FindMessageByIDWithAll(ctx context.Context, messageID uuid.UUI
 		&i.ChatRoom.IsPrivate,
 		&i.ChatRoom.CoverImageID,
 		&i.ChatRoom.OwnerID,
+		&i.ChatRoom.FromOrganization,
 		&i.ChatRoom.CreatedAt,
 		&i.ChatRoom.UpdatedAt,
 		&i.Member.MMembersPkey,
@@ -190,7 +191,7 @@ func (q *Queries) FindMessageByIDWithAll(ctx context.Context, messageID uuid.UUI
 }
 
 const findMessageByIDWithChatRoom = `-- name: FindMessageByIDWithChatRoom :one
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 WHERE message_id = $1
 `
@@ -217,6 +218,7 @@ func (q *Queries) FindMessageByIDWithChatRoom(ctx context.Context, messageID uui
 		&i.ChatRoom.IsPrivate,
 		&i.ChatRoom.CoverImageID,
 		&i.ChatRoom.OwnerID,
+		&i.ChatRoom.FromOrganization,
 		&i.ChatRoom.CreatedAt,
 		&i.ChatRoom.UpdatedAt,
 	)
@@ -284,7 +286,7 @@ ORDER BY
 	CASE WHEN $15::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $15::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $15::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 `
 
 type GetMessagesParams struct {
@@ -369,19 +371,19 @@ AND
 	CASE $16::text
 		WHEN 'next' THEN
 			CASE $17::text
-				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
-				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
-				WHEN 'last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
-				ELSE t_messages_pkey < $19::int
+				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
+				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
+				WHEN 'last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
+				ELSE t_messages_pkey > $19::int
 			END
 		WHEN 'prev' THEN
 			CASE $17::text
-				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
-				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
-				WHEN 'last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
-				ELSE t_messages_pkey > $19::int
+				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
+				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
+				WHEN 'last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
+				ELSE t_messages_pkey < $19::int
 			END
 	END
 ORDER BY
@@ -389,7 +391,7 @@ ORDER BY
 	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1
 `
 
@@ -486,7 +488,7 @@ ORDER BY
 	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -557,7 +559,7 @@ func (q *Queries) GetMessagesUseNumberedPaginate(ctx context.Context, arg GetMes
 }
 
 const getMessagesWithAll = `-- name: GetMessagesWithAll :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE
@@ -579,7 +581,7 @@ ORDER BY
 	CASE WHEN $15::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $15::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $15::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 `
 
 type GetMessagesWithAllParams struct {
@@ -645,6 +647,7 @@ func (q *Queries) GetMessagesWithAll(ctx context.Context, arg GetMessagesWithAll
 			&i.ChatRoom.IsPrivate,
 			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
 			&i.ChatRoom.UpdatedAt,
 			&i.Member.MMembersPkey,
@@ -673,7 +676,7 @@ func (q *Queries) GetMessagesWithAll(ctx context.Context, arg GetMessagesWithAll
 }
 
 const getMessagesWithAllUseKeysetPaginate = `-- name: GetMessagesWithAllUseKeysetPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE
@@ -694,19 +697,19 @@ AND
 	CASE $16::text
 		WHEN 'next' THEN
 			CASE $17::text
-				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
-				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
-				WHEN 'last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
-				ELSE t_messages_pkey < $19::int
+				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
+				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
+				WHEN 'last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
+				ELSE t_messages_pkey > $19::int
 			END
 		WHEN 'prev' THEN
 			CASE $17::text
-				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
-				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
-				WHEN 'last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
-				ELSE t_messages_pkey > $19::int
+				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
+				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
+				WHEN 'last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
+				ELSE t_messages_pkey < $19::int
 			END
 	END
 ORDER BY
@@ -714,7 +717,7 @@ ORDER BY
 	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1
 `
 
@@ -791,6 +794,7 @@ func (q *Queries) GetMessagesWithAllUseKeysetPaginate(ctx context.Context, arg G
 			&i.ChatRoom.IsPrivate,
 			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
 			&i.ChatRoom.UpdatedAt,
 			&i.Member.MMembersPkey,
@@ -819,7 +823,7 @@ func (q *Queries) GetMessagesWithAllUseKeysetPaginate(ctx context.Context, arg G
 }
 
 const getMessagesWithAllUseNumberedPaginate = `-- name: GetMessagesWithAllUseNumberedPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE
@@ -841,7 +845,7 @@ ORDER BY
 	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -912,6 +916,7 @@ func (q *Queries) GetMessagesWithAllUseNumberedPaginate(ctx context.Context, arg
 			&i.ChatRoom.IsPrivate,
 			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
 			&i.ChatRoom.UpdatedAt,
 			&i.Member.MMembersPkey,
@@ -940,7 +945,7 @@ func (q *Queries) GetMessagesWithAllUseNumberedPaginate(ctx context.Context, arg
 }
 
 const getMessagesWithChatRoom = `-- name: GetMessagesWithChatRoom :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 WHERE
 	CASE WHEN $1::boolean = true THEN t_messages.chat_room_id = ANY($2) ELSE TRUE END
@@ -961,7 +966,7 @@ ORDER BY
 	CASE WHEN $15::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $15::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $15::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 `
 
 type GetMessagesWithChatRoomParams struct {
@@ -1026,6 +1031,7 @@ func (q *Queries) GetMessagesWithChatRoom(ctx context.Context, arg GetMessagesWi
 			&i.ChatRoom.IsPrivate,
 			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
 			&i.ChatRoom.UpdatedAt,
 		); err != nil {
@@ -1040,7 +1046,7 @@ func (q *Queries) GetMessagesWithChatRoom(ctx context.Context, arg GetMessagesWi
 }
 
 const getMessagesWithChatRoomUseKeysetPaginate = `-- name: GetMessagesWithChatRoomUseKeysetPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 WHERE
 	CASE WHEN $2::boolean = true THEN t_messages.chat_room_id = ANY($3) ELSE TRUE END
@@ -1060,19 +1066,19 @@ AND
 	CASE $16::text
 		WHEN 'next' THEN
 			CASE $17::text
-				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
-				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
-				WHEN 'last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
-				ELSE t_messages_pkey < $19::int
+				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
+				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
+				WHEN 'last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
+				ELSE t_messages_pkey > $19::int
 			END
 		WHEN 'prev' THEN
 			CASE $17::text
-				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
-				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
-				WHEN 'last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
-				ELSE t_messages_pkey > $19::int
+				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
+				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
+				WHEN 'last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
+				ELSE t_messages_pkey < $19::int
 			END
 	END
 ORDER BY
@@ -1080,7 +1086,7 @@ ORDER BY
 	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1
 `
 
@@ -1156,6 +1162,7 @@ func (q *Queries) GetMessagesWithChatRoomUseKeysetPaginate(ctx context.Context, 
 			&i.ChatRoom.IsPrivate,
 			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
 			&i.ChatRoom.UpdatedAt,
 		); err != nil {
@@ -1170,7 +1177,7 @@ func (q *Queries) GetMessagesWithChatRoomUseKeysetPaginate(ctx context.Context, 
 }
 
 const getMessagesWithChatRoomUseNumberedPaginate = `-- name: GetMessagesWithChatRoomUseNumberedPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_messages.chat_room_id = ANY($4) ELSE TRUE END
@@ -1191,7 +1198,7 @@ ORDER BY
 	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -1261,6 +1268,7 @@ func (q *Queries) GetMessagesWithChatRoomUseNumberedPaginate(ctx context.Context
 			&i.ChatRoom.IsPrivate,
 			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
 			&i.ChatRoom.UpdatedAt,
 		); err != nil {
@@ -1296,7 +1304,7 @@ ORDER BY
 	CASE WHEN $15::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $15::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $15::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 `
 
 type GetMessagesWithSenderParams struct {
@@ -1401,19 +1409,19 @@ AND
 	CASE $16::text
 		WHEN 'next' THEN
 			CASE $17::text
-				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
-				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
-				WHEN 'last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
-				ELSE t_messages_pkey < $19::int
+				WHEN 'posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
+				WHEN 'r_posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
+				WHEN 'last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
+				ELSE t_messages_pkey > $19::int
 			END
 		WHEN 'prev' THEN
 			CASE $17::text
-				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
-				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey > $19::int)
-				WHEN 'last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey > $19::int)
-				ELSE t_messages_pkey > $19::int
+				WHEN 'posted_at' THEN posted_at < $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
+				WHEN 'r_posted_at' THEN posted_at > $18 OR (posted_at = $18 AND t_messages_pkey < $19::int)
+				WHEN 'last_edited_at' THEN last_edited_at < $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $20 OR (last_edited_at = $20 AND t_messages_pkey < $19::int)
+				ELSE t_messages_pkey < $19::int
 			END
 	END
 ORDER BY
@@ -1421,7 +1429,7 @@ ORDER BY
 	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1
 `
 
@@ -1538,7 +1546,7 @@ ORDER BY
 	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -1630,7 +1638,7 @@ func (q *Queries) GetMessagesWithSenderUseNumberedPaginate(ctx context.Context, 
 const getPluralMessages = `-- name: GetPluralMessages :many
 SELECT t_messages_pkey, message_id, chat_room_id, sender_id, body, posted_at, last_edited_at FROM t_messages WHERE message_id = ANY($3::uuid[])
 ORDER BY
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -1669,12 +1677,12 @@ func (q *Queries) GetPluralMessages(ctx context.Context, arg GetPluralMessagesPa
 }
 
 const getPluralMessagesWithAll = `-- name: GetPluralMessagesWithAll :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE message_id = ANY($3::uuid[])
 ORDER BY
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -1713,6 +1721,7 @@ func (q *Queries) GetPluralMessagesWithAll(ctx context.Context, arg GetPluralMes
 			&i.ChatRoom.IsPrivate,
 			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
 			&i.ChatRoom.UpdatedAt,
 			&i.Member.MMembersPkey,
@@ -1741,11 +1750,11 @@ func (q *Queries) GetPluralMessagesWithAll(ctx context.Context, arg GetPluralMes
 }
 
 const getPluralMessagesWithChatRoom = `-- name: GetPluralMessagesWithChatRoom :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 WHERE message_id = ANY($3::uuid[])
 ORDER BY
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -1783,6 +1792,7 @@ func (q *Queries) GetPluralMessagesWithChatRoom(ctx context.Context, arg GetPlur
 			&i.ChatRoom.IsPrivate,
 			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
 			&i.ChatRoom.UpdatedAt,
 		); err != nil {
@@ -1801,7 +1811,7 @@ SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_i
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE message_id = ANY($3::uuid[])
 ORDER BY
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

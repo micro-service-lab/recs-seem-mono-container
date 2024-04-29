@@ -83,7 +83,7 @@ func (q *Queries) FindGroupByID(ctx context.Context, groupID uuid.UUID) (Group, 
 }
 
 const findGroupByIDWithOrganization = `-- name: FindGroupByIDWithOrganization :one
-SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_groups
+SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE group_id = $1
 `
@@ -109,6 +109,7 @@ func (q *Queries) FindGroupByIDWithOrganization(ctx context.Context, groupID uui
 		&i.Organization.IsWhole,
 		&i.Organization.CreatedAt,
 		&i.Organization.UpdatedAt,
+		&i.Organization.ChatRoomID,
 	)
 	return i, err
 }
@@ -130,7 +131,7 @@ func (q *Queries) FindGroupByKey(ctx context.Context, key string) (Group, error)
 }
 
 const findGroupByKeyWithOrganization = `-- name: FindGroupByKeyWithOrganization :one
-SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_groups
+SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE key = $1
 `
@@ -156,6 +157,7 @@ func (q *Queries) FindGroupByKeyWithOrganization(ctx context.Context, key string
 		&i.Organization.IsWhole,
 		&i.Organization.CreatedAt,
 		&i.Organization.UpdatedAt,
+		&i.Organization.ChatRoomID,
 	)
 	return i, err
 }
@@ -163,7 +165,7 @@ func (q *Queries) FindGroupByKeyWithOrganization(ctx context.Context, key string
 const getGroups = `-- name: GetGroups :many
 SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups
 ORDER BY
-	m_groups_pkey DESC
+	m_groups_pkey ASC
 `
 
 func (q *Queries) GetGroups(ctx context.Context) ([]Group, error) {
@@ -196,12 +198,12 @@ SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups
 WHERE
 	CASE $2::text
 		WHEN 'next' THEN
-			m_groups_pkey < $3::int
-		WHEN 'prev' THEN
 			m_groups_pkey > $3::int
+		WHEN 'prev' THEN
+			m_groups_pkey < $3::int
 	END
 ORDER BY
-	m_groups_pkey DESC
+	m_groups_pkey ASC
 LIMIT $1
 `
 
@@ -239,7 +241,7 @@ func (q *Queries) GetGroupsUseKeysetPaginate(ctx context.Context, arg GetGroupsU
 const getGroupsUseNumberedPaginate = `-- name: GetGroupsUseNumberedPaginate :many
 SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups
 ORDER BY
-	m_groups_pkey DESC
+	m_groups_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -274,12 +276,12 @@ func (q *Queries) GetGroupsUseNumberedPaginate(ctx context.Context, arg GetGroup
 }
 
 const getGroupsWithOrganization = `-- name: GetGroupsWithOrganization :many
-SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_groups
+SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 ORDER BY
 	CASE WHEN $1::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN $1::text = 'r_name' THEN m_organizations.name END DESC,
-	m_groups_pkey DESC
+	m_groups_pkey ASC
 `
 
 type GetGroupsWithOrganizationRow struct {
@@ -309,6 +311,7 @@ func (q *Queries) GetGroupsWithOrganization(ctx context.Context, orderMethod str
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -321,27 +324,27 @@ func (q *Queries) GetGroupsWithOrganization(ctx context.Context, orderMethod str
 }
 
 const getGroupsWithOrganizationUseKeysetPaginate = `-- name: GetGroupsWithOrganizationUseKeysetPaginate :many
-SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_groups
+SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE
 	CASE $1::text
 		WHEN 'next' THEN
 			CASE $2::text
-				WHEN 'name' THEN name > $3 OR (name = $3 AND m_groups_pkey < $4::int)
-				WHEN 'r_name' THEN name < $3 OR (name = $3 AND m_groups_pkey < $4::int)
-				ELSE m_groups_pkey < $4::int
+				WHEN 'name' THEN name > $3 OR (name = $3 AND m_groups_pkey > $4::int)
+				WHEN 'r_name' THEN name < $3 OR (name = $3 AND m_groups_pkey > $4::int)
+				ELSE m_groups_pkey > $4::int
 			END
 		WHEN 'prev' THEN
 			CASE $2::text
-				WHEN 'name' THEN name > $3 OR (name = $3 AND m_groups_pkey < $4::int)
-				WHEN 'r_name' THEN name < $3 OR (name = $3 AND m_groups_pkey < $4::int)
-				ELSE m_groups_pkey < $4::int
+				WHEN 'name' THEN name > $3 OR (name = $3 AND m_groups_pkey > $4::int)
+				WHEN 'r_name' THEN name < $3 OR (name = $3 AND m_groups_pkey > $4::int)
+				ELSE m_groups_pkey > $4::int
 			END
 	END
 ORDER BY
 	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN $2::text = 'r_name' THEN m_organizations.name END DESC,
-	m_groups_pkey DESC
+	m_groups_pkey ASC
 `
 
 type GetGroupsWithOrganizationUseKeysetPaginateParams struct {
@@ -383,6 +386,7 @@ func (q *Queries) GetGroupsWithOrganizationUseKeysetPaginate(ctx context.Context
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -395,12 +399,12 @@ func (q *Queries) GetGroupsWithOrganizationUseKeysetPaginate(ctx context.Context
 }
 
 const getGroupsWithOrganizationUseNumberedPaginate = `-- name: GetGroupsWithOrganizationUseNumberedPaginate :many
-SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_groups
+SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 ORDER BY
 	CASE WHEN $3::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN $3::text = 'r_name' THEN m_organizations.name END DESC,
-	m_groups_pkey DESC
+	m_groups_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -437,6 +441,7 @@ func (q *Queries) GetGroupsWithOrganizationUseNumberedPaginate(ctx context.Conte
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -452,7 +457,7 @@ const getPluralGroups = `-- name: GetPluralGroups :many
 SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups
 WHERE organization_id = ANY($3::uuid[])
 ORDER BY
-	m_groups_pkey DESC
+	m_groups_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -488,11 +493,11 @@ func (q *Queries) GetPluralGroups(ctx context.Context, arg GetPluralGroupsParams
 }
 
 const getPluralGroupsWithOrganization = `-- name: GetPluralGroupsWithOrganization :many
-SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM m_groups
+SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE group_id = ANY($3::uuid[])
 ORDER BY
-	m_groups_pkey DESC
+	m_groups_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -529,6 +534,7 @@ func (q *Queries) GetPluralGroupsWithOrganization(ctx context.Context, arg GetPl
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 		); err != nil {
 			return nil, err
 		}

@@ -151,7 +151,7 @@ func (q *Queries) FindPositionHistoryByIDWithMember(ctx context.Context, positio
 const getPluralPositionHistories = `-- name: GetPluralPositionHistories :many
 SELECT t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, sent_at FROM t_position_histories WHERE position_history_id = ANY($3::uuid[])
 ORDER BY
-	t_position_histories_pkey DESC
+	t_position_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -193,7 +193,7 @@ SELECT t_position_histories.t_position_histories_pkey, t_position_histories.posi
 LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE position_history_id = ANY($3::uuid[])
 ORDER BY
-	t_position_histories_pkey DESC
+	t_position_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -260,7 +260,7 @@ AND
 ORDER BY
 	CASE WHEN $7::text = 'old_send' THEN sent_at END ASC,
 	CASE WHEN $7::text = 'late_send' THEN sent_at END DESC,
-	t_position_histories_pkey DESC
+	t_position_histories_pkey ASC
 `
 
 type GetPositionHistoriesParams struct {
@@ -320,21 +320,21 @@ AND
 	CASE $8::text
 		WHEN 'next' THEN
 			CASE $9::text
-				WHEN 'old_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey < $11::int)
-				WHEN 'late_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey < $11::int)
-				ELSE t_position_histories_pkey < $11::int
+				WHEN 'old_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey > $11::int)
+				WHEN 'late_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey > $11::int)
+				ELSE t_position_histories_pkey > $11::int
 			END
 		WHEN 'prev' THEN
 			CASE $9::text
-				WHEN 'old_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey > $11::int)
-				WHEN 'late_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey > $11::int)
-				ELSE t_position_histories_pkey > $11::int
+				WHEN 'old_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey < $11::int)
+				WHEN 'late_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey < $11::int)
+				ELSE t_position_histories_pkey < $11::int
 		END
 	END
 ORDER BY
 	CASE WHEN $9::text = 'old_send' THEN sent_at END ASC,
 	CASE WHEN $9::text = 'late_send' THEN sent_at END DESC,
-	t_position_histories_pkey DESC
+	t_position_histories_pkey ASC
 LIMIT $1
 `
 
@@ -402,7 +402,7 @@ AND
 ORDER BY
 	CASE WHEN $9::text = 'old_send' THEN sent_at END ASC,
 	CASE WHEN $9::text = 'late_send' THEN sent_at END DESC,
-	t_position_histories_pkey DESC
+	t_position_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -467,7 +467,7 @@ AND
 ORDER BY
 	CASE WHEN $7::text = 'old_send' THEN sent_at END ASC,
 	CASE WHEN $7::text = 'late_send' THEN sent_at END DESC,
-	t_position_histories_pkey DESC
+	t_position_histories_pkey ASC
 `
 
 type GetPositionHistoriesWithMemberParams struct {
@@ -547,21 +547,21 @@ AND
 	CASE $8::text
 		WHEN 'next' THEN
 			CASE $9::text
-				WHEN 'old_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey < $11::int)
-				WHEN 'late_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey < $11::int)
-				ELSE t_position_histories_pkey < $11::int
+				WHEN 'old_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey > $11::int)
+				WHEN 'late_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey > $11::int)
+				ELSE t_position_histories_pkey > $11::int
 			END
 		WHEN 'prev' THEN
 			CASE $9::text
-				WHEN 'old_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey > $11::int)
-				WHEN 'late_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey > $11::int)
-				ELSE t_position_histories_pkey > $11::int
+				WHEN 'old_send' THEN sent_at < $10 OR (sent_at = $10 AND t_position_histories_pkey < $11::int)
+				WHEN 'late_send' THEN sent_at > $10 OR (sent_at = $10 AND t_position_histories_pkey < $11::int)
+				ELSE t_position_histories_pkey < $11::int
 			END
 	END
 ORDER BY
 	CASE WHEN $9::text = 'old_send' THEN sent_at END ASC,
 	CASE WHEN $9::text = 'late_send' THEN sent_at END DESC,
-	t_position_histories_pkey DESC
+	t_position_histories_pkey ASC
 LIMIT $1
 `
 
@@ -649,7 +649,7 @@ AND
 ORDER BY
 	CASE WHEN $9::text = 'old_send' THEN sent_at END ASC,
 	CASE WHEN $9::text = 'late_send' THEN sent_at END DESC,
-	t_position_histories_pkey DESC
+	t_position_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

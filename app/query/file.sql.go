@@ -89,7 +89,7 @@ func (q *Queries) FindFileByIDWithAttachableItem(ctx context.Context, fileID uui
 const getFiles = `-- name: GetFiles :many
 SELECT t_files_pkey, file_id, attachable_item_id FROM t_files
 ORDER BY
-	t_files_pkey DESC
+	t_files_pkey ASC
 `
 
 func (q *Queries) GetFiles(ctx context.Context) ([]File, error) {
@@ -117,12 +117,12 @@ SELECT t_files_pkey, file_id, attachable_item_id FROM t_files
 WHERE
 	CASE $2::text
 		WHEN 'next' THEN
-			t_files_pkey < $3::int
-		WHEN 'prev' THEN
 			t_files_pkey > $3::int
+		WHEN 'prev' THEN
+			t_files_pkey < $3::int
 	END
 ORDER BY
-	t_files_pkey DESC
+	t_files_pkey ASC
 LIMIT $1
 `
 
@@ -155,7 +155,7 @@ func (q *Queries) GetFilesUseKeysetPaginate(ctx context.Context, arg GetFilesUse
 const getFilesUseNumberedPaginate = `-- name: GetFilesUseNumberedPaginate :many
 SELECT t_files_pkey, file_id, attachable_item_id FROM t_files
 ORDER BY
-	t_files_pkey DESC
+	t_files_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -189,7 +189,7 @@ SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_atta
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
-	t_files_pkey DESC
+	t_files_pkey ASC
 `
 
 type GetFilesWithAttachableItemRow struct {
@@ -238,12 +238,12 @@ LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_ty
 WHERE
 	CASE $2::text
 		WHEN 'next' THEN
-			t_files_pkey < $3::int
-		WHEN 'prev' THEN
 			t_files_pkey > $3::int
+		WHEN 'prev' THEN
+			t_files_pkey < $3::int
 	END
 ORDER BY
-	t_files_pkey DESC
+	t_files_pkey ASC
 LIMIT $1
 `
 
@@ -297,7 +297,7 @@ SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_atta
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
-	t_files_pkey DESC
+	t_files_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -349,7 +349,7 @@ const getPluralFiles = `-- name: GetPluralFiles :many
 SELECT t_files_pkey, file_id, attachable_item_id FROM t_files
 WHERE attachable_item_id = ANY($3::uuid[])
 ORDER BY
-	t_files_pkey DESC
+	t_files_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -385,7 +385,7 @@ LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE attachable_item_id = ANY($3::uuid[])
 ORDER BY
-	t_files_pkey DESC
+	t_files_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

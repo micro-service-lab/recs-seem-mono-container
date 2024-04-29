@@ -117,7 +117,7 @@ WHERE
 ORDER BY
 	CASE WHEN $3::text = 'name' THEN name END ASC,
 	CASE WHEN $3::text = 'r_name' THEN name END DESC,
-	m_attendance_types_pkey DESC
+	m_attendance_types_pkey ASC
 `
 
 type GetAttendanceTypesParams struct {
@@ -158,19 +158,19 @@ WHERE
 	CASE $2::text
 		WHEN 'next' THEN
 			CASE $3::text
-				WHEN 'name' THEN name > $4 OR (name = $4 AND m_attendance_types_pkey < $5::int)
-				WHEN 'r_name' THEN name < $4 OR (name = $4 AND m_attendance_types_pkey < $5::int)
-				ELSE m_attendance_types_pkey < $5::int
+				WHEN 'name' THEN name > $4 OR (name = $4 AND m_attendance_types_pkey > $5::int)
+				WHEN 'r_name' THEN name < $4 OR (name = $4 AND m_attendance_types_pkey > $5::int)
+				ELSE m_attendance_types_pkey > $5::int
 			END
 		WHEN 'prev' THEN
 			CASE $3::text
-				WHEN 'name' THEN name < $4 OR (name = $4 AND m_attendance_types_pkey > $5::int)
-				WHEN 'r_name' THEN name > $4 OR (name = $4 AND m_attendance_types_pkey > $5::int)
-				ELSE m_attendance_types_pkey > $5::int
+				WHEN 'name' THEN name < $4 OR (name = $4 AND m_attendance_types_pkey < $5::int)
+				WHEN 'r_name' THEN name > $4 OR (name = $4 AND m_attendance_types_pkey < $5::int)
+				ELSE m_attendance_types_pkey < $5::int
 			END
 	END
 ORDER BY
-	m_attendance_types_pkey DESC
+	m_attendance_types_pkey ASC
 LIMIT $1
 `
 
@@ -221,7 +221,7 @@ WHERE
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN name END ASC,
 	CASE WHEN $5::text = 'r_name' THEN name END DESC,
-	m_attendance_types_pkey DESC
+	m_attendance_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -269,7 +269,7 @@ const getPluralAttendanceTypes = `-- name: GetPluralAttendanceTypes :many
 SELECT m_attendance_types_pkey, attendance_type_id, name, key, color FROM m_attendance_types
 WHERE attendance_type_id = ANY($3::uuid[])
 ORDER BY
-	m_attendance_types_pkey DESC
+	m_attendance_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

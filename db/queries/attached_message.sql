@@ -15,7 +15,7 @@ LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachabl
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE message_id = $1
 ORDER BY
-	t_attached_messages_pkey DESC;
+	t_attached_messages_pkey ASC;
 
 -- name: GetAttachableItemsOnMessageUseNumberedPaginate :many
 SELECT t_attachable_items.*, t_images.image_id, t_images.height as image_height, t_images.width as image_width, t_files.file_id FROM t_attached_messages
@@ -25,7 +25,7 @@ LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachabl
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE message_id = $1
 ORDER BY
-	t_attached_messages_pkey DESC
+	t_attached_messages_pkey ASC
 LIMIT $2 OFFSET $3;
 
 -- name: GetAttachableItemsOnMessageUseKeysetPaginate :many
@@ -38,12 +38,12 @@ WHERE message_id = $1
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
-			t_attached_messages_pkey < @cursor::int
-		WHEN 'prev' THEN
 			t_attached_messages_pkey > @cursor::int
+		WHEN 'prev' THEN
+			t_attached_messages_pkey < @cursor::int
 	END
 ORDER BY
-	t_attached_messages_pkey DESC
+	t_attached_messages_pkey ASC
 LIMIT $2;
 
 -- name: GetPluralAttachableItemsOnMessage :many
@@ -54,7 +54,7 @@ LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachabl
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
-	t_attached_messages_pkey DESC
+	t_attached_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: CountAttachableItemsOnMessage :one
@@ -70,7 +70,7 @@ WHERE message_id IN (
 	SELECT message_id FROM t_messages WHERE chat_room_id = $1
 )
 ORDER BY
-	t_attached_messages_pkey DESC;
+	t_attached_messages_pkey ASC;
 
 -- name: GetAttachedMessagesOnChatRoomUseNumberedPaginate :many
 SELECT t_attachable_items.*, t_images.image_id, t_images.height as image_height, t_images.width as image_width, t_files.file_id FROM t_attached_messages
@@ -82,7 +82,7 @@ WHERE message_id IN (
 	SELECT message_id FROM t_messages WHERE chat_room_id = $1
 )
 ORDER BY
-	t_attached_messages_pkey DESC
+	t_attached_messages_pkey ASC
 LIMIT $2 OFFSET $3;
 
 -- name: GetAttachedMessagesOnChatRoomUseKeysetPaginate :many
@@ -97,12 +97,12 @@ WHERE message_id IN (
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
-			t_attached_messages_pkey < @cursor::int
-		WHEN 'prev' THEN
 			t_attached_messages_pkey > @cursor::int
+		WHEN 'prev' THEN
+			t_attached_messages_pkey < @cursor::int
 	END
 ORDER BY
-	t_attached_messages_pkey DESC
+	t_attached_messages_pkey ASC
 LIMIT $2;
 
 -- name: GetPluralAttachedMessagesOnChatRoom :many
@@ -115,7 +115,7 @@ WHERE message_id IN (
 	SELECT message_id FROM t_messages WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
 )
 ORDER BY
-	t_attached_messages_pkey DESC
+	t_attached_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: CountAttachedMessagesOnChatRoom :one

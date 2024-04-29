@@ -21,14 +21,14 @@ SELECT * FROM m_mime_types
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
-	m_mime_types_pkey DESC;
+	m_mime_types_pkey ASC;
 
 -- name: GetMimeTypesUseNumberedPaginate :many
 SELECT * FROM m_mime_types
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
-	m_mime_types_pkey DESC
+	m_mime_types_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetMimeTypesUseKeysetPaginate :many
@@ -37,27 +37,27 @@ WHERE
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name > @name_cursor OR (name = @name_cursor AND m_mime_types_pkey < @cursor::int)
-				WHEN 'r_name' THEN name < @name_cursor OR (name = @name_cursor AND m_mime_types_pkey < @cursor::int)
-				ELSE m_mime_types_pkey < @cursor::int
+				WHEN 'name' THEN name > @name_cursor OR (name = @name_cursor AND m_mime_types_pkey > @cursor::int)
+				WHEN 'r_name' THEN name < @name_cursor OR (name = @name_cursor AND m_mime_types_pkey > @cursor::int)
+				ELSE m_mime_types_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'name' THEN name < @name_cursor OR (name = @name_cursor AND m_mime_types_pkey > @cursor::int)
-				WHEN 'r_name' THEN name > @name_cursor OR (name = @name_cursor AND m_mime_types_pkey > @cursor::int)
-				ELSE m_mime_types_pkey > @cursor::int
+				WHEN 'name' THEN name < @name_cursor OR (name = @name_cursor AND m_mime_types_pkey < @cursor::int)
+				WHEN 'r_name' THEN name > @name_cursor OR (name = @name_cursor AND m_mime_types_pkey < @cursor::int)
+				ELSE m_mime_types_pkey < @cursor::int
 			END
 	END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
-	m_mime_types_pkey DESC;
+	m_mime_types_pkey ASC;
 
 -- name: GetPluralMimeTypes :many
 SELECT * FROM m_mime_types
 WHERE mime_type_id = ANY(@mime_type_ids::uuid[])
 ORDER BY
-	m_mime_types_pkey DESC
+	m_mime_types_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: CountMimeTypes :one

@@ -1,5 +1,4 @@
-// Package app provides a server application.
-package app
+package api
 
 import (
 	"fmt"
@@ -31,8 +30,8 @@ type App struct {
 	middlewares []func(http.Handler) http.Handler
 }
 
-// New App を生成して返す。
-func New(api *API, options *Options) *App {
+// NewApp App を生成して返す。
+func NewApp(api *API, options *AppOptions) *App {
 	app := &App{
 		api:         api,
 		middlewares: make([]func(http.Handler) http.Handler, 0),
@@ -88,8 +87,8 @@ func (s *App) root() http.HandlerFunc {
 	}
 }
 
-// Options サーバーアプリケーションのオプション設定を表す。
-type Options struct {
+// AppOptions サーバーアプリケーションのオプション設定を表す。
+type AppOptions struct {
 	// APIBasePath API のベースパス
 	APIBasePath string
 	// StorageBasePath ストレージのベースパス

@@ -14,12 +14,14 @@
 | is_whole | boolean | false | false |  |  |  |
 | created_at | timestamp with time zone |  | false |  |  |  |
 | updated_at | timestamp with time zone |  | false |  |  |  |
+| chat_room_id | uuid |  | true |  | [public.m_chat_rooms](public.m_chat_rooms.md) |  |
 
 ## Constraints
 
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
 | m_organizations_pkey | PRIMARY KEY | PRIMARY KEY (m_organizations_pkey) |
+| fk_m_organizations_chat_room_id | FOREIGN KEY | FOREIGN KEY (chat_room_id) REFERENCES m_chat_rooms(chat_room_id) ON UPDATE RESTRICT ON DELETE RESTRICT |
 
 ## Indexes
 

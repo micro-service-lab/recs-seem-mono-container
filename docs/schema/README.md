@@ -10,7 +10,7 @@
 | [public.m_roles](public.m_roles.md) | 6 |  | BASE TABLE |
 | [public.m_role_associations](public.m_role_associations.md) | 3 |  | BASE TABLE |
 | [public.m_attend_statuses](public.m_attend_statuses.md) | 4 |  | BASE TABLE |
-| [public.m_organizations](public.m_organizations.md) | 8 |  | BASE TABLE |
+| [public.m_organizations](public.m_organizations.md) | 9 |  | BASE TABLE |
 | [public.m_permission_categories](public.m_permission_categories.md) | 5 |  | BASE TABLE |
 | [public.m_work_positions](public.m_work_positions.md) | 6 |  | BASE TABLE |
 | [public.m_permissions](public.m_permissions.md) | 6 |  | BASE TABLE |
@@ -32,7 +32,7 @@
 | [public.t_late_arrivals](public.t_late_arrivals.md) | 4 |  | BASE TABLE |
 | [public.t_absences](public.t_absences.md) | 3 |  | BASE TABLE |
 | [public.t_lab_io_histories](public.t_lab_io_histories.md) | 5 |  | BASE TABLE |
-| [public.m_chat_rooms](public.m_chat_rooms.md) | 8 |  | BASE TABLE |
+| [public.m_chat_rooms](public.m_chat_rooms.md) | 9 |  | BASE TABLE |
 | [public.t_messages](public.t_messages.md) | 7 |  | BASE TABLE |
 | [public.t_position_histories](public.t_position_histories.md) | 6 |  | BASE TABLE |
 | [public.m_chat_room_belongings](public.m_chat_room_belongings.md) | 4 |  | BASE TABLE |

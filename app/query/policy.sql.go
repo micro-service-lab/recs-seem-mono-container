@@ -172,7 +172,7 @@ func (q *Queries) FindPolicyByKey(ctx context.Context, key string) (Policy, erro
 const getPluralPolicies = `-- name: GetPluralPolicies :many
 SELECT m_policies_pkey, policy_id, name, description, key, policy_category_id FROM m_policies WHERE policy_id = ANY($3::uuid[])
 ORDER BY
-	m_policies_pkey DESC
+	m_policies_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -214,7 +214,7 @@ SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_poli
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE policy_id = ANY($3::uuid[])
 ORDER BY
-	m_policies_pkey DESC
+	m_policies_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -279,7 +279,7 @@ AND
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_policies.name END ASC,
 	CASE WHEN $5::text = 'r_name' THEN m_policies.name END DESC,
-	m_policies_pkey DESC
+	m_policies_pkey ASC
 `
 
 type GetPoliciesParams struct {
@@ -333,21 +333,21 @@ AND
 	CASE $6::text
 		WHEN 'next' THEN
 			CASE $7::text
-				WHEN 'name' THEN m_policies.name > $8 OR (m_policies.name = $8 AND m_policies_pkey < $9::int)
-				WHEN 'r_name' THEN m_policies.name < $8 OR (m_policies.name = $8 AND m_policies_pkey < $9::int)
-				ELSE m_policies_pkey < $9::int
+				WHEN 'name' THEN m_policies.name > $8 OR (m_policies.name = $8 AND m_policies_pkey > $9::int)
+				WHEN 'r_name' THEN m_policies.name < $8 OR (m_policies.name = $8 AND m_policies_pkey > $9::int)
+				ELSE m_policies_pkey > $9::int
 			END
 		WHEN 'prev' THEN
 			CASE $7::text
-				WHEN 'name' THEN m_policies.name < $8 OR (m_policies.name = $8 AND m_policies_pkey > $9::int)
-				WHEN 'r_name' THEN m_policies.name > $8 OR (m_policies.name = $8 AND m_policies_pkey > $9::int)
-				ELSE m_policies_pkey > $9::int
+				WHEN 'name' THEN m_policies.name < $8 OR (m_policies.name = $8 AND m_policies_pkey < $9::int)
+				WHEN 'r_name' THEN m_policies.name > $8 OR (m_policies.name = $8 AND m_policies_pkey < $9::int)
+				ELSE m_policies_pkey < $9::int
 			END
 	END
 ORDER BY
 	CASE WHEN $7::text = 'name' THEN m_policies.name END ASC,
 	CASE WHEN $7::text = 'r_name' THEN m_policies.name END DESC,
-	m_policies_pkey DESC
+	m_policies_pkey ASC
 LIMIT $1
 `
 
@@ -409,7 +409,7 @@ AND
 ORDER BY
 	CASE WHEN $7::text = 'name' THEN m_policies.name END ASC,
 	CASE WHEN $7::text = 'r_name' THEN m_policies.name END DESC,
-	m_policies_pkey DESC
+	m_policies_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -468,7 +468,7 @@ AND
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_policies.name END ASC,
 	CASE WHEN $5::text = 'r_name' THEN m_policies.name END DESC,
-	m_policies_pkey DESC
+	m_policies_pkey ASC
 `
 
 type GetPoliciesWithCategoryParams struct {
@@ -542,21 +542,21 @@ AND
 	CASE $6::text
 		WHEN 'next' THEN
 			CASE $7::text
-				WHEN 'name' THEN m_policies.name > $8 OR (m_policies.name = $8 AND m_policies_pkey < $9::int)
-				WHEN 'r_name' THEN m_policies.name < $8 OR (m_policies.name = $8 AND m_policies_pkey < $9::int)
-				ELSE m_policies_pkey < $9::int
+				WHEN 'name' THEN m_policies.name > $8 OR (m_policies.name = $8 AND m_policies_pkey > $9::int)
+				WHEN 'r_name' THEN m_policies.name < $8 OR (m_policies.name = $8 AND m_policies_pkey > $9::int)
+				ELSE m_policies_pkey > $9::int
 			END
 		WHEN 'prev' THEN
 			CASE $7::text
-				WHEN 'name' THEN m_policies.name < $8 OR (m_policies.name = $8 AND m_policies_pkey > $9::int)
-				WHEN 'r_name' THEN m_policies.name > $8 OR (m_policies.name = $8 AND m_policies_pkey > $9::int)
-				ELSE m_policies_pkey > $9::int
+				WHEN 'name' THEN m_policies.name < $8 OR (m_policies.name = $8 AND m_policies_pkey < $9::int)
+				WHEN 'r_name' THEN m_policies.name > $8 OR (m_policies.name = $8 AND m_policies_pkey < $9::int)
+				ELSE m_policies_pkey < $9::int
 			END
 	END
 ORDER BY
 	CASE WHEN $7::text = 'name' THEN m_policies.name END ASC,
 	CASE WHEN $7::text = 'r_name' THEN m_policies.name END DESC,
-	m_policies_pkey DESC
+	m_policies_pkey ASC
 LIMIT $1
 `
 
@@ -638,7 +638,7 @@ AND
 ORDER BY
 	CASE WHEN $7::text = 'name' THEN m_policies.name END ASC,
 	CASE WHEN $7::text = 'r_name' THEN m_policies.name END DESC,
-	m_policies_pkey DESC
+	m_policies_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

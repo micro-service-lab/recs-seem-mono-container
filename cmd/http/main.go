@@ -15,11 +15,9 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app"
-	pgadapter "github.com/micro-service-lab/recs-seem-mono-container/app/store/pgadpter"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/api"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
-	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock/fakeclock"
-	"github.com/micro-service-lab/recs-seem-mono-container/internal/config"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/faketime"
 )
 
@@ -31,9 +29,10 @@ const (
 )
 
 func main() {
-	cfg, err := config.Get()
+	ctr := app.NewContainer()
 	ctx := context.Background()
-	if err != nil {
+
+	if err := ctr.Init(ctx); err != nil {
 		log.Fatal(err)
 	}
 
@@ -43,24 +42,17 @@ func main() {
 		NoColor: runtime.GOOS == "windows",
 	}))
 
-	clk := clock.New()
-	if cfg.FakeTime.Enabled {
+	if ctr.Config.FakeTime.Enabled {
 		log.Println("Fake time mode is enabled")
 
-		fakeClk := fakeclock.New(cfg.FakeTime.Time)
-		clk = fakeClk
+		fakeClk := fakeclock.New(ctr.Config.FakeTime.Time)
 
 		r.Mount("/faketime", faketime.NewAPI(fakeClk, "/faketime"))
 	}
 
-	s, err := pgadapter.NewPgAdapter(ctx, clk, *cfg)
-	if err != nil {
-		log.Fatal(err)
-	}
+	auth := auth.New([]byte(ctr.Config.AuthSecret), ctr.Config.SecretIssuer)
 
-	auth := auth.New([]byte(cfg.AuthSecret), cfg.SecretIssuer)
-
-	api := app.NewAPI(clk, auth, s)
+	apiI := api.NewAPI(ctr.Clocker, auth, ctr.ServiceManager)
 
 	middlewares := make([]func(http.Handler) http.Handler, 0, 2) //nolint:gomnd
 	// if cfg.ClientOrigin != "" {
@@ -74,9 +66,9 @@ func main() {
 	// 	}))
 	// }
 	// middlewares = append(middlewares, app.AuthMiddleware(time.Now, auth, db, app.DefaultAPIBasePath))
-	api.Use(middlewares...)
+	apiI.Use(middlewares...)
 
-	srvApp := app.New(api, &app.Options{})
+	srvApp := api.NewApp(apiI, &api.AppOptions{})
 	r.Mount("/", srvApp.Handler())
 
 	srv := &http.Server{
@@ -86,7 +78,7 @@ func main() {
 	}
 	defer srv.Close()
 
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.Port))
+	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", ctr.Config.Port))
 	if err != nil {
 		log.Fatal(err)
 	}

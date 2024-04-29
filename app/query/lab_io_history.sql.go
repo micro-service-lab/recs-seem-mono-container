@@ -190,7 +190,7 @@ ORDER BY
 	CASE WHEN $11::text = 'late_enter' THEN entered_at END DESC,
 	CASE WHEN $11::text = 'old_exit' THEN exited_at END ASC,
 	CASE WHEN $11::text = 'late_exit' THEN exited_at END DESC,
-	t_lab_io_histories_pkey DESC
+	t_lab_io_histories_pkey ASC
 `
 
 type GetLabIOHistoriesParams struct {
@@ -261,19 +261,19 @@ AND
 	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'old_enter' THEN entered_at > $14 OR (entered_at = $14 AND t_lab_io_histories_pkey < $15::int)
-				WHEN 'late_enter' THEN entered_at < $14 OR (entered_at = $14 AND t_lab_io_histories_pkey < $15::int)
-				WHEN 'old_exit' THEN exited_at > $16 OR (exited_at = $16 AND t_lab_io_histories_pkey < $15::int)
-				WHEN 'late_exit' THEN exited_at < $16 OR (exited_at = $16 AND t_lab_io_histories_pkey < $15::int)
-				ELSE t_lab_io_histories_pkey < $15::int
+				WHEN 'old_enter' THEN entered_at > $14 OR (entered_at = $14 AND t_lab_io_histories_pkey > $15::int)
+				WHEN 'late_enter' THEN entered_at < $14 OR (entered_at = $14 AND t_lab_io_histories_pkey > $15::int)
+				WHEN 'old_exit' THEN exited_at > $16 OR (exited_at = $16 AND t_lab_io_histories_pkey > $15::int)
+				WHEN 'late_exit' THEN exited_at < $16 OR (exited_at = $16 AND t_lab_io_histories_pkey > $15::int)
+				ELSE t_lab_io_histories_pkey > $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'old_enter' THEN entered_at < $14 OR (entered_at = $14 AND t_lab_io_histories_pkey > $15::int)
-				WHEN 'late_enter' THEN entered_at > $14 OR (entered_at = $14 AND t_lab_io_histories_pkey > $15::int)
-				WHEN 'old_exit' THEN exited_at < $16 OR (exited_at = $16 AND t_lab_io_histories_pkey > $15::int)
-				WHEN 'late_exit' THEN exited_at > $16 OR (exited_at = $16 AND t_lab_io_histories_pkey > $15::int)
-				ELSE t_lab_io_histories_pkey > $15::int
+				WHEN 'old_enter' THEN entered_at < $14 OR (entered_at = $14 AND t_lab_io_histories_pkey < $15::int)
+				WHEN 'late_enter' THEN entered_at > $14 OR (entered_at = $14 AND t_lab_io_histories_pkey < $15::int)
+				WHEN 'old_exit' THEN exited_at < $16 OR (exited_at = $16 AND t_lab_io_histories_pkey < $15::int)
+				WHEN 'late_exit' THEN exited_at > $16 OR (exited_at = $16 AND t_lab_io_histories_pkey < $15::int)
+				ELSE t_lab_io_histories_pkey < $15::int
 		END
 	END
 ORDER BY
@@ -281,7 +281,7 @@ ORDER BY
 	CASE WHEN $13::text = 'late_enter' THEN entered_at END DESC,
 	CASE WHEN $13::text = 'old_exit' THEN exited_at END ASC,
 	CASE WHEN $13::text = 'late_exit' THEN exited_at END DESC,
-	t_lab_io_histories_pkey DESC
+	t_lab_io_histories_pkey ASC
 LIMIT $1
 `
 
@@ -364,7 +364,7 @@ ORDER BY
 	CASE WHEN $13::text = 'late_enter' THEN entered_at END DESC,
 	CASE WHEN $13::text = 'old_exit' THEN exited_at END ASC,
 	CASE WHEN $13::text = 'late_exit' THEN exited_at END DESC,
-	t_lab_io_histories_pkey DESC
+	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -442,7 +442,7 @@ ORDER BY
 	CASE WHEN $11::text = 'late_enter' THEN entered_at END DESC,
 	CASE WHEN $11::text = 'old_exit' THEN exited_at END ASC,
 	CASE WHEN $11::text = 'late_exit' THEN exited_at END DESC,
-	t_lab_io_histories_pkey DESC
+	t_lab_io_histories_pkey ASC
 `
 
 type GetLabIOHistoriesWithMemberParams struct {
@@ -533,19 +533,19 @@ AND
 	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'old_enter' THEN entered_at > $14 OR (entered_at = $14 AND t_lab_io_histories_pkey < $15::int)
-				WHEN 'late_enter' THEN entered_at < $14 OR (entered_at = $14 AND t_lab_io_histories_pkey < $15::int)
-				WHEN 'old_exit' THEN exited_at > $16 OR (exited_at = $16 AND t_lab_io_histories_pkey < $15::int)
-				WHEN 'late_exit' THEN exited_at < $16 OR (exited_at = $16 AND t_lab_io_histories_pkey < $15::int)
-				ELSE t_lab_io_histories_pkey < $15::int
+				WHEN 'old_enter' THEN entered_at > $14 OR (entered_at = $14 AND t_lab_io_histories_pkey > $15::int)
+				WHEN 'late_enter' THEN entered_at < $14 OR (entered_at = $14 AND t_lab_io_histories_pkey > $15::int)
+				WHEN 'old_exit' THEN exited_at > $16 OR (exited_at = $16 AND t_lab_io_histories_pkey > $15::int)
+				WHEN 'late_exit' THEN exited_at < $16 OR (exited_at = $16 AND t_lab_io_histories_pkey > $15::int)
+				ELSE t_lab_io_histories_pkey > $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'old_enter' THEN entered_at < $14 OR (entered_at = $14 AND t_lab_io_histories_pkey > $15::int)
-				WHEN 'late_enter' THEN entered_at > $14 OR (entered_at = $14 AND t_lab_io_histories_pkey > $15::int)
-				WHEN 'old_exit' THEN exited_at < $16 OR (exited_at = $16 AND t_lab_io_histories_pkey > $15::int)
-				WHEN 'late_exit' THEN exited_at > $16 OR (exited_at = $16 AND t_lab_io_histories_pkey > $15::int)
-				ELSE t_lab_io_histories_pkey > $15::int
+				WHEN 'old_enter' THEN entered_at < $14 OR (entered_at = $14 AND t_lab_io_histories_pkey < $15::int)
+				WHEN 'late_enter' THEN entered_at > $14 OR (entered_at = $14 AND t_lab_io_histories_pkey < $15::int)
+				WHEN 'old_exit' THEN exited_at < $16 OR (exited_at = $16 AND t_lab_io_histories_pkey < $15::int)
+				WHEN 'late_exit' THEN exited_at > $16 OR (exited_at = $16 AND t_lab_io_histories_pkey < $15::int)
+				ELSE t_lab_io_histories_pkey < $15::int
 		END
 	END
 ORDER BY
@@ -553,7 +553,7 @@ ORDER BY
 	CASE WHEN $13::text = 'late_enter' THEN entered_at END DESC,
 	CASE WHEN $13::text = 'old_exit' THEN exited_at END ASC,
 	CASE WHEN $13::text = 'late_exit' THEN exited_at END DESC,
-	t_lab_io_histories_pkey DESC
+	t_lab_io_histories_pkey ASC
 LIMIT $1
 `
 
@@ -656,7 +656,7 @@ ORDER BY
 	CASE WHEN $13::text = 'late_enter' THEN entered_at END DESC,
 	CASE WHEN $13::text = 'old_exit' THEN exited_at END ASC,
 	CASE WHEN $13::text = 'late_exit' THEN exited_at END DESC,
-	t_lab_io_histories_pkey DESC
+	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -738,7 +738,7 @@ func (q *Queries) GetLabIOHistoriesWithMemberUseNumberedPaginate(ctx context.Con
 const getPluralLabIOHistories = `-- name: GetPluralLabIOHistories :many
 SELECT t_lab_io_histories_pkey, lab_io_history_id, member_id, entered_at, exited_at FROM t_lab_io_histories WHERE lab_io_history_id = ANY($3::uuid[])
 ORDER BY
-	t_lab_io_histories_pkey DESC
+	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -779,7 +779,7 @@ SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_his
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE lab_io_history_id = ANY($3::uuid[])
 ORDER BY
-	t_lab_io_histories_pkey DESC
+	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

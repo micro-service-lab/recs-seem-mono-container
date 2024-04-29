@@ -28,3 +28,4 @@ packages:
 - name: go-delve/delve@v1.21.2
   registry: local
 - name: k1LoW/tbls@v1.74.0
+- name: spf13/cobra-cli@v1.3.0

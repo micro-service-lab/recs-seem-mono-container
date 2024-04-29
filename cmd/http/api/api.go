@@ -1,4 +1,5 @@
-package app
+// Package api provides a server application.
+package api
 
 import (
 	"encoding/json"
@@ -9,8 +10,8 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
-	"github.com/micro-service-lab/recs-seem-mono-container/app/handler/response"
-	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 )
@@ -21,19 +22,19 @@ type API struct {
 	clk clock.Clock
 	// auth 認証サービス
 	auth auth.Auth
-	// db データベースハンドラ
-	db store.Store
+	// svc サービスハンドラ
+	svc service.ManagerInterface
 
 	// middlewares API で使用する HTTP ミドルウェア
 	middlewares []func(http.Handler) http.Handler
 }
 
 // NewAPI API を生成して返す。
-func NewAPI(clk clock.Clock, auth auth.Auth, db store.Store) *API {
+func NewAPI(clk clock.Clock, auth auth.Auth, svc service.ManagerInterface) *API {
 	return &API{
 		clk:         clk,
 		auth:        auth,
-		db:          db,
+		svc:         svc,
 		middlewares: make([]func(http.Handler) http.Handler, 0),
 	}
 }
@@ -55,6 +56,8 @@ func (s *API) Handler() http.Handler {
 	)
 
 	r.Post("/ping", s.pingHandler)
+
+	r.Group(AttendStatusHandler(s.svc))
 
 	r.NotFound(s.notFound)
 	r.MethodNotAllowed(s.methodNotAllowed)
@@ -91,7 +94,7 @@ func (s *API) pingHandler(w http.ResponseWriter, r *http.Request) {
 		errAtr := response.ApplicationErrorAttributes{
 			"error": "invalid json",
 		}
-		err := response.Writer(r.Context(), w, response.Validation, nil, errAtr)
+		err := response.JsonResponseWriter(r.Context(), w, response.Validation, nil, errAtr)
 		if err != nil {
 			log.Printf("[ERROR] response writing failed: %+v", err)
 		}
@@ -104,21 +107,21 @@ func (s *API) pingHandler(w http.ResponseWriter, r *http.Request) {
 		ReceivedTime: receivedTime,
 	}
 
-	err := response.Writer(r.Context(), w, response.Success, resp, nil)
+	err := response.JsonResponseWriter(r.Context(), w, response.Success, resp, nil)
 	if err != nil {
 		log.Printf("[ERROR] response writing failed: %+v", err)
 	}
 }
 
 func (s *API) notFound(w http.ResponseWriter, r *http.Request) {
-	err := response.Writer(r.Context(), w, response.NotFound, nil, nil)
+	err := response.JsonResponseWriter(r.Context(), w, response.NotFound, nil, nil)
 	if err != nil {
 		log.Printf("[ERROR] response writing failed: %+v", err)
 	}
 }
 
 func (s *API) methodNotAllowed(w http.ResponseWriter, r *http.Request) {
-	err := response.Writer(r.Context(), w, response.MethodNotAllowed, nil, nil)
+	err := response.JsonResponseWriter(r.Context(), w, response.MethodNotAllowed, nil, nil)
 	if err != nil {
 		log.Printf("[ERROR] response writing failed: %+v", err)
 	}

@@ -16,7 +16,7 @@ const countAttachableItemsOnMessage = `-- name: CountAttachableItemsOnMessage :o
 SELECT COUNT(*) FROM t_attached_messages WHERE message_id = $1
 `
 
-func (q *Queries) CountAttachableItemsOnMessage(ctx context.Context, messageID uuid.UUID) (int64, error) {
+func (q *Queries) CountAttachableItemsOnMessage(ctx context.Context, messageID pgtype.UUID) (int64, error) {
 	row := q.db.QueryRow(ctx, countAttachableItemsOnMessage, messageID)
 	var count int64
 	err := row.Scan(&count)
@@ -42,8 +42,8 @@ INSERT INTO t_attached_messages (message_id, attachable_item_id) VALUES ($1, $2)
 `
 
 type CreateAttachedMessageParams struct {
-	MessageID        uuid.UUID `json:"message_id"`
-	AttachableItemID uuid.UUID `json:"attachable_item_id"`
+	MessageID        pgtype.UUID `json:"message_id"`
+	AttachableItemID uuid.UUID   `json:"attachable_item_id"`
 }
 
 func (q *Queries) CreateAttachedMessage(ctx context.Context, arg CreateAttachedMessageParams) (AttachedMessage, error) {
@@ -54,8 +54,8 @@ func (q *Queries) CreateAttachedMessage(ctx context.Context, arg CreateAttachedM
 }
 
 type CreateAttachedMessagesParams struct {
-	MessageID        uuid.UUID `json:"message_id"`
-	AttachableItemID uuid.UUID `json:"attachable_item_id"`
+	MessageID        pgtype.UUID `json:"message_id"`
+	AttachableItemID uuid.UUID   `json:"attachable_item_id"`
 }
 
 const deleteAttachedMessage = `-- name: DeleteAttachedMessage :exec
@@ -63,8 +63,8 @@ DELETE FROM t_attached_messages WHERE message_id = $1 AND attachable_item_id = $
 `
 
 type DeleteAttachedMessageParams struct {
-	MessageID        uuid.UUID `json:"message_id"`
-	AttachableItemID uuid.UUID `json:"attachable_item_id"`
+	MessageID        pgtype.UUID `json:"message_id"`
+	AttachableItemID uuid.UUID   `json:"attachable_item_id"`
 }
 
 func (q *Queries) DeleteAttachedMessage(ctx context.Context, arg DeleteAttachedMessageParams) error {
@@ -80,7 +80,7 @@ LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachabl
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE message_id = $1
 ORDER BY
-	t_attached_messages_pkey DESC
+	t_attached_messages_pkey ASC
 `
 
 type GetAttachableItemsOnMessageRow struct {
@@ -95,7 +95,7 @@ type GetAttachableItemsOnMessageRow struct {
 	FileID               pgtype.UUID   `json:"file_id"`
 }
 
-func (q *Queries) GetAttachableItemsOnMessage(ctx context.Context, messageID uuid.UUID) ([]GetAttachableItemsOnMessageRow, error) {
+func (q *Queries) GetAttachableItemsOnMessage(ctx context.Context, messageID pgtype.UUID) ([]GetAttachableItemsOnMessageRow, error) {
 	rows, err := q.db.Query(ctx, getAttachableItemsOnMessage, messageID)
 	if err != nil {
 		return nil, err
@@ -135,20 +135,20 @@ WHERE message_id = $1
 AND
 	CASE $3::text
 		WHEN 'next' THEN
-			t_attached_messages_pkey < $4::int
-		WHEN 'prev' THEN
 			t_attached_messages_pkey > $4::int
+		WHEN 'prev' THEN
+			t_attached_messages_pkey < $4::int
 	END
 ORDER BY
-	t_attached_messages_pkey DESC
+	t_attached_messages_pkey ASC
 LIMIT $2
 `
 
 type GetAttachableItemsOnMessageUseKeysetPaginateParams struct {
-	MessageID       uuid.UUID `json:"message_id"`
-	Limit           int32     `json:"limit"`
-	CursorDirection string    `json:"cursor_direction"`
-	Cursor          int32     `json:"cursor"`
+	MessageID       pgtype.UUID `json:"message_id"`
+	Limit           int32       `json:"limit"`
+	CursorDirection string      `json:"cursor_direction"`
+	Cursor          int32       `json:"cursor"`
 }
 
 type GetAttachableItemsOnMessageUseKeysetPaginateRow struct {
@@ -206,14 +206,14 @@ LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachabl
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE message_id = $1
 ORDER BY
-	t_attached_messages_pkey DESC
+	t_attached_messages_pkey ASC
 LIMIT $2 OFFSET $3
 `
 
 type GetAttachableItemsOnMessageUseNumberedPaginateParams struct {
-	MessageID uuid.UUID `json:"message_id"`
-	Limit     int32     `json:"limit"`
-	Offset    int32     `json:"offset"`
+	MessageID pgtype.UUID `json:"message_id"`
+	Limit     int32       `json:"limit"`
+	Offset    int32       `json:"offset"`
 }
 
 type GetAttachableItemsOnMessageUseNumberedPaginateRow struct {
@@ -268,7 +268,7 @@ WHERE message_id IN (
 	SELECT message_id FROM t_messages WHERE chat_room_id = $1
 )
 ORDER BY
-	t_attached_messages_pkey DESC
+	t_attached_messages_pkey ASC
 `
 
 type GetAttachedMessagesOnChatRoomRow struct {
@@ -325,12 +325,12 @@ WHERE message_id IN (
 AND
 	CASE $3::text
 		WHEN 'next' THEN
-			t_attached_messages_pkey < $4::int
-		WHEN 'prev' THEN
 			t_attached_messages_pkey > $4::int
+		WHEN 'prev' THEN
+			t_attached_messages_pkey < $4::int
 	END
 ORDER BY
-	t_attached_messages_pkey DESC
+	t_attached_messages_pkey ASC
 LIMIT $2
 `
 
@@ -398,7 +398,7 @@ WHERE message_id IN (
 	SELECT message_id FROM t_messages WHERE chat_room_id = $1
 )
 ORDER BY
-	t_attached_messages_pkey DESC
+	t_attached_messages_pkey ASC
 LIMIT $2 OFFSET $3
 `
 
@@ -458,7 +458,7 @@ LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachabl
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE message_id = ANY($3::uuid[])
 ORDER BY
-	t_attached_messages_pkey DESC
+	t_attached_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -520,7 +520,7 @@ WHERE message_id IN (
 	SELECT message_id FROM t_messages WHERE chat_room_id = ANY($3::uuid[])
 )
 ORDER BY
-	t_attached_messages_pkey DESC
+	t_attached_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

@@ -7,12 +7,13 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 )
 
 func countAttendStatuses(
-	ctx context.Context, qtx *query.Queries, where store.WhereAttendStatusParam,
+	ctx context.Context, qtx *query.Queries, where parameter.WhereAttendStatusParam,
 ) (int64, error) {
 	p := query.CountAttendStatusesParams{
 		WhereLikeName: where.WhereLikeName,
@@ -26,7 +27,7 @@ func countAttendStatuses(
 }
 
 // CountAttendStatuses 出席ステータス数を取得する。
-func (a *PgAdapter) CountAttendStatuses(ctx context.Context, where store.WhereAttendStatusParam) (int64, error) {
+func (a *PgAdapter) CountAttendStatuses(ctx context.Context, where parameter.WhereAttendStatusParam) (int64, error) {
 	c, err := countAttendStatuses(ctx, a.query, where)
 	if err != nil {
 		return 0, fmt.Errorf("failed to count attend status: %w", err)
@@ -36,7 +37,7 @@ func (a *PgAdapter) CountAttendStatuses(ctx context.Context, where store.WhereAt
 
 // CountAttendStatusesWithSd SD付きで出席ステータス数を取得する。
 func (a *PgAdapter) CountAttendStatusesWithSd(
-	ctx context.Context, sd store.Sd, where store.WhereAttendStatusParam,
+	ctx context.Context, sd store.Sd, where parameter.WhereAttendStatusParam,
 ) (int64, error) {
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
@@ -50,7 +51,7 @@ func (a *PgAdapter) CountAttendStatusesWithSd(
 }
 
 func createAttendStatus(
-	ctx context.Context, qtx *query.Queries, param store.CreateAttendStatusParam,
+	ctx context.Context, qtx *query.Queries, param parameter.CreateAttendStatusParam,
 ) (entity.AttendStatus, error) {
 	p := query.CreateAttendStatusParams{
 		Name: param.Name,
@@ -70,7 +71,7 @@ func createAttendStatus(
 
 // CreateAttendStatus 出席ステータスを作成する。
 func (a *PgAdapter) CreateAttendStatus(
-	ctx context.Context, param store.CreateAttendStatusParam,
+	ctx context.Context, param parameter.CreateAttendStatusParam,
 ) (entity.AttendStatus, error) {
 	e, err := createAttendStatus(ctx, a.query, param)
 	if err != nil {
@@ -81,7 +82,7 @@ func (a *PgAdapter) CreateAttendStatus(
 
 // CreateAttendStatusWithSd SD付きで出席ステータスを作成する。
 func (a *PgAdapter) CreateAttendStatusWithSd(
-	ctx context.Context, sd store.Sd, param store.CreateAttendStatusParam,
+	ctx context.Context, sd store.Sd, param parameter.CreateAttendStatusParam,
 ) (entity.AttendStatus, error) {
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
@@ -95,7 +96,7 @@ func (a *PgAdapter) CreateAttendStatusWithSd(
 }
 
 func createAttendStatuses(
-	ctx context.Context, qtx *query.Queries, params []store.CreateAttendStatusParam,
+	ctx context.Context, qtx *query.Queries, params []parameter.CreateAttendStatusParam,
 ) (int64, error) {
 	p := make([]query.CreateAttendStatusesParams, len(params))
 	for i, param := range params {
@@ -113,7 +114,7 @@ func createAttendStatuses(
 
 // CreateAttendStatuses 出席ステータスを作成する。
 func (a *PgAdapter) CreateAttendStatuses(
-	ctx context.Context, params []store.CreateAttendStatusParam,
+	ctx context.Context, params []parameter.CreateAttendStatusParam,
 ) (int64, error) {
 	c, err := createAttendStatuses(ctx, a.query, params)
 	if err != nil {
@@ -124,7 +125,7 @@ func (a *PgAdapter) CreateAttendStatuses(
 
 // CreateAttendStatusesWithSd SD付きで出席ステータスを作成する。
 func (a *PgAdapter) CreateAttendStatusesWithSd(
-	ctx context.Context, sd store.Sd, params []store.CreateAttendStatusParam,
+	ctx context.Context, sd store.Sd, params []parameter.CreateAttendStatusParam,
 ) (int64, error) {
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
@@ -283,9 +284,15 @@ const (
 	attendStatusNameCursorKey = "name"
 )
 
+type AttendStatusCursor struct {
+	CursorID         int32
+	NameCursor       string
+	CursorPointsNext bool
+}
+
 func getAttendStatuses(
-	ctx context.Context, qtx *query.Queries, where store.WhereAttendStatusParam,
-	order store.AttendStatusOrderMethod,
+	ctx context.Context, qtx *query.Queries, where parameter.WhereAttendStatusParam,
+	order parameter.AttendStatusOrderMethod,
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
@@ -293,13 +300,18 @@ func getAttendStatuses(
 	var withCount int64
 	if wc.Valid {
 		var err error
-		withCount, err = qtx.CountAbsences(ctx)
+		p := query.CountAttendStatusesParams{
+			WhereLikeName: where.WhereLikeName,
+			SearchName:    where.SearchName,
+		}
+		withCount, err = qtx.CountAttendStatuses(ctx, p)
 		if err != nil {
 			return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("failed to count attend status: %w", err)
 		}
 	}
 	wcAtr := store.WithCountAttribute{
 		Count: withCount,
+		Valid: wc.Valid,
 	}
 	if np.Valid {
 		p := query.GetAttendStatusesUseNumberedPaginateParams{
@@ -328,23 +340,24 @@ func getAttendStatuses(
 		limit := cp.Limit.Int64
 		var e []query.AttendStatus
 		var subCursor string
+		var decodedCursor store.Cursor
+		var err error
 
 		if !isFirst {
-			decodedCursor, err := store.DecodeCursor(cp.Cursor)
+			decodedCursor, err = store.DecodeCursor(cp.Cursor)
 			if err != nil {
-				return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("failed to decode cursor: %w", err)
+				isFirst = true
+				cp.Cursor = ""
 			}
-			pointsNext = decodedCursor[store.CursorPointsNext] == true
-			ID, ok := decodedCursor[store.CursorID].(int32)
-			if !ok {
-				return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("invalid cursor")
-			}
+		}
+
+		if !isFirst {
+			pointsNext = decodedCursor.CursorPointsNext == true
+			ID := decodedCursor.CursorID
+
 			var nameCursor string
-			if store.AttendStatusOrderMethodName.IsMatch("name") || store.AttendStatusOrderMethodReverseName.IsMatch("r_name") {
-				nameCursor, ok = decodedCursor[attendStatusNameCursorKey].(string)
-				if !ok {
-					return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("invalid cursor")
-				}
+			if string(parameter.AttendStatusOrderMethodName) == "name" || string(parameter.AttendStatusOrderMethodReverseName) == "r_name" {
+				decodedCursor.SubCursorValue(&nameCursor)
 				subCursor = attendStatusNameCursorKey
 			}
 			p := query.GetAttendStatusesUseKeysetPaginateParams{
@@ -354,7 +367,7 @@ func getAttendStatuses(
 				Limit:           int32(limit) + 1,
 				CursorDirection: "next",
 				NameCursor:      nameCursor,
-				Cursor:          ID,
+				Cursor:          int32(ID),
 			}
 			e, err = qtx.GetAttendStatusesUseKeysetPaginate(ctx, p)
 			if err != nil {
@@ -374,15 +387,22 @@ func getAttendStatuses(
 				return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("failed to get attend statuses: %w", err)
 			}
 		}
+		if len(e) == 0 {
+			return store.ListResult[entity.AttendStatus]{Data: []entity.AttendStatus{}, WithCount: wcAtr}, nil
+		}
 		hasPagination := len(e) > int(limit)
 		if hasPagination {
 			e = e[:limit]
 		}
 		var firstValue, lastValue any
+		lastIndex := len(e) - 1
+		if lastIndex < 0 {
+			lastIndex = 0
+		}
 		switch subCursor {
 		case attendStatusNameCursorKey:
 			firstValue = e[0].Name
-			lastValue = e[limit-1].Name
+			lastValue = e[lastIndex].Name
 		}
 		firstData := store.CursorData{
 			ID:    entity.Int(e[0].MAttendStatusesPkey),
@@ -390,7 +410,7 @@ func getAttendStatuses(
 			Value: firstValue,
 		}
 		lastData := store.CursorData{
-			ID:    entity.Int(e[limit-1].MAttendStatusesPkey),
+			ID:    entity.Int(e[lastIndex].MAttendStatusesPkey),
 			Name:  subCursor,
 			Value: lastValue,
 		}
@@ -429,8 +449,8 @@ func getAttendStatuses(
 // GetAttendStatuses 出席ステータスを取得する。
 func (a *PgAdapter) GetAttendStatuses(
 	ctx context.Context,
-	where store.WhereAttendStatusParam,
-	order store.AttendStatusOrderMethod,
+	where parameter.WhereAttendStatusParam,
+	order parameter.AttendStatusOrderMethod,
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
@@ -446,8 +466,8 @@ func (a *PgAdapter) GetAttendStatuses(
 func (a *PgAdapter) GetAttendStatusesWithSd(
 	ctx context.Context,
 	sd store.Sd,
-	where store.WhereAttendStatusParam,
-	order store.AttendStatusOrderMethod,
+	where parameter.WhereAttendStatusParam,
+	order parameter.AttendStatusOrderMethod,
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
@@ -463,8 +483,61 @@ func (a *PgAdapter) GetAttendStatusesWithSd(
 	return r, nil
 }
 
+func getPluralAttendStatuses(
+	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
+) (store.ListResult[entity.AttendStatus], error) {
+	uids := make([]uuid.UUID, len(ids))
+	for i, v := range ids {
+		uids[i] = v
+	}
+	p := query.GetPluralAttendStatusesParams{
+		AttendStatusIds: uids,
+		Offset:          int32(np.Offset.Int64),
+		Limit:           int32(np.Limit.Int64),
+	}
+	e, err := qtx.GetPluralAttendStatuses(ctx, p)
+	if err != nil {
+		return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("failed to get plural attend statuses: %w", err)
+	}
+	entities := make([]entity.AttendStatus, len(e))
+	for i, v := range e {
+		entities[i] = entity.AttendStatus{
+			AttendStatusID: v.AttendStatusID,
+			Name:           v.Name,
+			Key:            v.Key,
+		}
+	}
+	return store.ListResult[entity.AttendStatus]{Data: entities}, nil
+}
+
+// GetPluralAttendStatuses 出席ステータスを取得する。
+func (a *PgAdapter) GetPluralAttendStatuses(
+	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
+) (store.ListResult[entity.AttendStatus], error) {
+	r, err := getPluralAttendStatuses(ctx, a.query, ids, np)
+	if err != nil {
+		return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("failed to get plural attend statuses: %w", err)
+	}
+	return r, nil
+}
+
+// GetPluralAttendStatusesWithSd SD付きで出席ステータスを取得する。
+func (a *PgAdapter) GetPluralAttendStatusesWithSd(
+	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
+) (store.ListResult[entity.AttendStatus], error) {
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ListResult[entity.AttendStatus]{}, store.ErrNotFoundDescriptor
+	}
+	r, err := getPluralAttendStatuses(ctx, qtx, ids, np)
+	if err != nil {
+		return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("failed to get plural attend statuses: %w", err)
+	}
+	return r, nil
+}
+
 func updateAttendStatus(
-	ctx context.Context, qtx *query.Queries, attendStatusID uuid.UUID, param store.UpdateAttendStatusParams,
+	ctx context.Context, qtx *query.Queries, attendStatusID uuid.UUID, param parameter.UpdateAttendStatusParams,
 ) (entity.AttendStatus, error) {
 	p := query.UpdateAttendStatusParams{
 		AttendStatusID: attendStatusID,
@@ -485,7 +558,7 @@ func updateAttendStatus(
 
 // UpdateAttendStatus 出席ステータスを更新する。
 func (a *PgAdapter) UpdateAttendStatus(
-	ctx context.Context, attendStatusID uuid.UUID, param store.UpdateAttendStatusParams,
+	ctx context.Context, attendStatusID uuid.UUID, param parameter.UpdateAttendStatusParams,
 ) (entity.AttendStatus, error) {
 	e, err := updateAttendStatus(ctx, a.query, attendStatusID, param)
 	if err != nil {
@@ -496,7 +569,7 @@ func (a *PgAdapter) UpdateAttendStatus(
 
 // UpdateAttendStatusWithSd SD付きで出席ステータスを更新する。
 func (a *PgAdapter) UpdateAttendStatusWithSd(
-	ctx context.Context, sd store.Sd, attendStatusID uuid.UUID, param store.UpdateAttendStatusParams,
+	ctx context.Context, sd store.Sd, attendStatusID uuid.UUID, param parameter.UpdateAttendStatusParams,
 ) (entity.AttendStatus, error) {
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
@@ -510,7 +583,7 @@ func (a *PgAdapter) UpdateAttendStatusWithSd(
 }
 
 func updateAttendStatusByKey(
-	ctx context.Context, qtx *query.Queries, key string, param store.UpdateAttendStatusByKeyParams,
+	ctx context.Context, qtx *query.Queries, key string, param parameter.UpdateAttendStatusByKeyParams,
 ) (entity.AttendStatus, error) {
 	p := query.UpdateAttendStatusByKeyParams{
 		Key:  key,
@@ -530,7 +603,7 @@ func updateAttendStatusByKey(
 
 // UpdateAttendStatusByKey 出席ステータスを更新する。
 func (a *PgAdapter) UpdateAttendStatusByKey(
-	ctx context.Context, key string, param store.UpdateAttendStatusByKeyParams,
+	ctx context.Context, key string, param parameter.UpdateAttendStatusByKeyParams,
 ) (entity.AttendStatus, error) {
 	e, err := updateAttendStatusByKey(ctx, a.query, key, param)
 	if err != nil {
@@ -541,7 +614,7 @@ func (a *PgAdapter) UpdateAttendStatusByKey(
 
 // UpdateAttendStatusByKeyWithSd SD付きで出席ステータスを更新する。
 func (a *PgAdapter) UpdateAttendStatusByKeyWithSd(
-	ctx context.Context, sd store.Sd, key string, param store.UpdateAttendStatusByKeyParams,
+	ctx context.Context, sd store.Sd, key string, param parameter.UpdateAttendStatusByKeyParams,
 ) (entity.AttendStatus, error) {
 	qtx, ok := a.qtxMap[sd]
 	if !ok {

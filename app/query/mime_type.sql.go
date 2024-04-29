@@ -110,7 +110,7 @@ SELECT m_mime_types_pkey, mime_type_id, name, key FROM m_mime_types
 ORDER BY
 	CASE WHEN $1::text = 'name' THEN name END ASC,
 	CASE WHEN $1::text = 'r_name' THEN name END DESC,
-	m_mime_types_pkey DESC
+	m_mime_types_pkey ASC
 `
 
 func (q *Queries) GetMimeTypes(ctx context.Context, orderMethod string) ([]MimeType, error) {
@@ -144,21 +144,21 @@ WHERE
 	CASE $1::text
 		WHEN 'next' THEN
 			CASE $2::text
-				WHEN 'name' THEN name > $3 OR (name = $3 AND m_mime_types_pkey < $4::int)
-				WHEN 'r_name' THEN name < $3 OR (name = $3 AND m_mime_types_pkey < $4::int)
-				ELSE m_mime_types_pkey < $4::int
+				WHEN 'name' THEN name > $3 OR (name = $3 AND m_mime_types_pkey > $4::int)
+				WHEN 'r_name' THEN name < $3 OR (name = $3 AND m_mime_types_pkey > $4::int)
+				ELSE m_mime_types_pkey > $4::int
 			END
 		WHEN 'prev' THEN
 			CASE $2::text
-				WHEN 'name' THEN name < $3 OR (name = $3 AND m_mime_types_pkey > $4::int)
-				WHEN 'r_name' THEN name > $3 OR (name = $3 AND m_mime_types_pkey > $4::int)
-				ELSE m_mime_types_pkey > $4::int
+				WHEN 'name' THEN name < $3 OR (name = $3 AND m_mime_types_pkey < $4::int)
+				WHEN 'r_name' THEN name > $3 OR (name = $3 AND m_mime_types_pkey < $4::int)
+				ELSE m_mime_types_pkey < $4::int
 			END
 	END
 ORDER BY
 	CASE WHEN $2::text = 'name' THEN name END ASC,
 	CASE WHEN $2::text = 'r_name' THEN name END DESC,
-	m_mime_types_pkey DESC
+	m_mime_types_pkey ASC
 `
 
 type GetMimeTypesUseKeysetPaginateParams struct {
@@ -203,7 +203,7 @@ SELECT m_mime_types_pkey, mime_type_id, name, key FROM m_mime_types
 ORDER BY
 	CASE WHEN $3::text = 'name' THEN name END ASC,
 	CASE WHEN $3::text = 'r_name' THEN name END DESC,
-	m_mime_types_pkey DESC
+	m_mime_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -242,7 +242,7 @@ const getPluralMimeTypes = `-- name: GetPluralMimeTypes :many
 SELECT m_mime_types_pkey, mime_type_id, name, key FROM m_mime_types
 WHERE mime_type_id = ANY($3::uuid[])
 ORDER BY
-	m_mime_types_pkey DESC
+	m_mime_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

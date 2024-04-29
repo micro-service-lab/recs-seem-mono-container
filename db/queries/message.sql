@@ -50,7 +50,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC;
+	t_messages_pkey ASC;
 
 -- name: GetMessagesUseNumberedPaginate :many
 SELECT * FROM t_messages
@@ -73,7 +73,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetMessagesUseKeysetPaginate :many
@@ -96,19 +96,19 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'posted_at' THEN posted_at > @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey < @cursor::int)
-				WHEN 'r_posted_at' THEN posted_at < @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey < @cursor::int)
-				WHEN 'last_edited_at' THEN last_edited_at > @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey < @cursor::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at < @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey < @cursor::int)
-				ELSE t_messages_pkey < @cursor::int
+				WHEN 'posted_at' THEN posted_at > @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey > @cursor::int)
+				WHEN 'r_posted_at' THEN posted_at < @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey > @cursor::int)
+				WHEN 'last_edited_at' THEN last_edited_at > @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey > @cursor::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey > @cursor::int)
+				ELSE t_messages_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'posted_at' THEN posted_at < @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey > @cursor::int)
-				WHEN 'r_posted_at' THEN posted_at > @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey > @cursor::int)
-				WHEN 'last_edited_at' THEN last_edited_at < @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey > @cursor::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at > @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey > @cursor::int)
-				ELSE t_messages_pkey > @cursor::int
+				WHEN 'posted_at' THEN posted_at < @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey < @cursor::int)
+				WHEN 'r_posted_at' THEN posted_at > @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey < @cursor::int)
+				WHEN 'last_edited_at' THEN last_edited_at < @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey < @cursor::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey < @cursor::int)
+				ELSE t_messages_pkey < @cursor::int
 			END
 	END
 ORDER BY
@@ -116,13 +116,13 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralMessages :many
 SELECT * FROM t_messages WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetMessagesWithChatRoom :many
@@ -147,7 +147,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC;
+	t_messages_pkey ASC;
 
 -- name: GetMessagesWithChatRoomUseNumberedPaginate :many
 SELECT sqlc.embed(t_messages), sqlc.embed(m_chat_rooms) FROM t_messages
@@ -171,7 +171,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetMessagesWithChatRoomUseKeysetPaginate :many
@@ -195,19 +195,19 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'posted_at' THEN posted_at > @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey < @cursor::int)
-				WHEN 'r_posted_at' THEN posted_at < @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey < @cursor::int)
-				WHEN 'last_edited_at' THEN last_edited_at > @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey < @cursor::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at < @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey < @cursor::int)
-				ELSE t_messages_pkey < @cursor::int
+				WHEN 'posted_at' THEN posted_at > @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey > @cursor::int)
+				WHEN 'r_posted_at' THEN posted_at < @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey > @cursor::int)
+				WHEN 'last_edited_at' THEN last_edited_at > @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey > @cursor::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey > @cursor::int)
+				ELSE t_messages_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'posted_at' THEN posted_at < @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey > @cursor::int)
-				WHEN 'r_posted_at' THEN posted_at > @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey > @cursor::int)
-				WHEN 'last_edited_at' THEN last_edited_at < @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey > @cursor::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at > @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey > @cursor::int)
-				ELSE t_messages_pkey > @cursor::int
+				WHEN 'posted_at' THEN posted_at < @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey < @cursor::int)
+				WHEN 'r_posted_at' THEN posted_at > @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey < @cursor::int)
+				WHEN 'last_edited_at' THEN last_edited_at < @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey < @cursor::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey < @cursor::int)
+				ELSE t_messages_pkey < @cursor::int
 			END
 	END
 ORDER BY
@@ -215,7 +215,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralMessagesWithChatRoom :many
@@ -223,7 +223,7 @@ SELECT sqlc.embed(t_messages), sqlc.embed(m_chat_rooms) FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetMessagesWithSender :many
@@ -248,7 +248,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC;
+	t_messages_pkey ASC;
 
 -- name: GetMessagesWithSenderUseNumberedPaginate :many
 SELECT sqlc.embed(t_messages), sqlc.embed(m_members) FROM t_messages
@@ -272,7 +272,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetMessagesWithSenderUseKeysetPaginate :many
@@ -296,19 +296,19 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'posted_at' THEN posted_at > @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey < @cursor::int)
-				WHEN 'r_posted_at' THEN posted_at < @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey < @cursor::int)
-				WHEN 'last_edited_at' THEN last_edited_at > @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey < @cursor::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at < @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey < @cursor::int)
-				ELSE t_messages_pkey < @cursor::int
+				WHEN 'posted_at' THEN posted_at > @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey > @cursor::int)
+				WHEN 'r_posted_at' THEN posted_at < @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey > @cursor::int)
+				WHEN 'last_edited_at' THEN last_edited_at > @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey > @cursor::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey > @cursor::int)
+				ELSE t_messages_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'posted_at' THEN posted_at < @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey > @cursor::int)
-				WHEN 'r_posted_at' THEN posted_at > @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey > @cursor::int)
-				WHEN 'last_edited_at' THEN last_edited_at < @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey > @cursor::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at > @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey > @cursor::int)
-				ELSE t_messages_pkey > @cursor::int
+				WHEN 'posted_at' THEN posted_at < @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey < @cursor::int)
+				WHEN 'r_posted_at' THEN posted_at > @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey < @cursor::int)
+				WHEN 'last_edited_at' THEN last_edited_at < @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey < @cursor::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey < @cursor::int)
+				ELSE t_messages_pkey < @cursor::int
 			END
 	END
 ORDER BY
@@ -316,7 +316,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralMessagesWithSender :many
@@ -324,7 +324,7 @@ SELECT sqlc.embed(t_messages), sqlc.embed(m_members) FROM t_messages
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetMessagesWithAll :many
@@ -350,7 +350,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC;
+	t_messages_pkey ASC;
 
 -- name: GetMessagesWithAllUseNumberedPaginate :many
 SELECT sqlc.embed(t_messages), sqlc.embed(m_chat_rooms), sqlc.embed(m_members) FROM t_messages
@@ -375,7 +375,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetMessagesWithAllUseKeysetPaginate :many
@@ -400,19 +400,19 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'posted_at' THEN posted_at > @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey < @cursor::int)
-				WHEN 'r_posted_at' THEN posted_at < @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey < @cursor::int)
-				WHEN 'last_edited_at' THEN last_edited_at > @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey < @cursor::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at < @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey < @cursor::int)
-				ELSE t_messages_pkey < @cursor::int
+				WHEN 'posted_at' THEN posted_at > @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey > @cursor::int)
+				WHEN 'r_posted_at' THEN posted_at < @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey > @cursor::int)
+				WHEN 'last_edited_at' THEN last_edited_at > @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey > @cursor::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey > @cursor::int)
+				ELSE t_messages_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'posted_at' THEN posted_at < @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey > @cursor::int)
-				WHEN 'r_posted_at' THEN posted_at > @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey > @cursor::int)
-				WHEN 'last_edited_at' THEN last_edited_at < @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey > @cursor::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at > @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey > @cursor::int)
-				ELSE t_messages_pkey > @cursor::int
+				WHEN 'posted_at' THEN posted_at < @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey < @cursor::int)
+				WHEN 'r_posted_at' THEN posted_at > @posted_at_cursor OR (posted_at = @posted_at_cursor AND t_messages_pkey < @cursor::int)
+				WHEN 'last_edited_at' THEN last_edited_at < @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey < @cursor::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > @last_edited_at_cursor OR (last_edited_at = @last_edited_at_cursor AND t_messages_pkey < @cursor::int)
+				ELSE t_messages_pkey < @cursor::int
 			END
 	END
 ORDER BY
@@ -420,7 +420,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralMessagesWithAll :many
@@ -429,7 +429,7 @@ LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
-	t_messages_pkey DESC
+	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: CountMessages :one

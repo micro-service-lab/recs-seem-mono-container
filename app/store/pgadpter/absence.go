@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 )
@@ -41,7 +42,7 @@ func (a *PgAdapter) CountAbsencesWithSd(ctx context.Context, sd store.Sd) (int64
 	return c, nil
 }
 
-func createAbsence(ctx context.Context, qtx *query.Queries, param store.CreateAbsenceParam) (entity.Absence, error) {
+func createAbsence(ctx context.Context, qtx *query.Queries, param parameter.CreateAbsenceParam) (entity.Absence, error) {
 	e, err := qtx.CreateAbsence(ctx, param.AttendanceID)
 	if err != nil {
 		return entity.Absence{}, fmt.Errorf("failed to create absence: %w", err)
@@ -54,7 +55,7 @@ func createAbsence(ctx context.Context, qtx *query.Queries, param store.CreateAb
 }
 
 // CreateAbsence 欠席を作成する。
-func (a *PgAdapter) CreateAbsence(ctx context.Context, param store.CreateAbsenceParam) (entity.Absence, error) {
+func (a *PgAdapter) CreateAbsence(ctx context.Context, param parameter.CreateAbsenceParam) (entity.Absence, error) {
 	e, err := createAbsence(ctx, a.query, param)
 	if err != nil {
 		return entity.Absence{}, fmt.Errorf("failed to create absence: %w", err)
@@ -64,7 +65,7 @@ func (a *PgAdapter) CreateAbsence(ctx context.Context, param store.CreateAbsence
 
 // CreateAbsenceWithSd SD付きで欠席を作成する。
 func (a *PgAdapter) CreateAbsenceWithSd(
-	ctx context.Context, sd store.Sd, param store.CreateAbsenceParam,
+	ctx context.Context, sd store.Sd, param parameter.CreateAbsenceParam,
 ) (entity.Absence, error) {
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
@@ -77,7 +78,7 @@ func (a *PgAdapter) CreateAbsenceWithSd(
 	return e, nil
 }
 
-func createAbsences(ctx context.Context, qtx *query.Queries, params []store.CreateAbsenceParam) (int64, error) {
+func createAbsences(ctx context.Context, qtx *query.Queries, params []parameter.CreateAbsenceParam) (int64, error) {
 	aIDs := make([]uuid.UUID, len(params))
 	for i, p := range params {
 		aIDs[i] = p.AttendanceID
@@ -90,7 +91,7 @@ func createAbsences(ctx context.Context, qtx *query.Queries, params []store.Crea
 }
 
 // CreateAbsences 欠席を作成する。
-func (a *PgAdapter) CreateAbsences(ctx context.Context, params []store.CreateAbsenceParam) (int64, error) {
+func (a *PgAdapter) CreateAbsences(ctx context.Context, params []parameter.CreateAbsenceParam) (int64, error) {
 	e, err := createAbsences(ctx, a.query, params)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create absences: %w", err)
@@ -100,7 +101,7 @@ func (a *PgAdapter) CreateAbsences(ctx context.Context, params []store.CreateAbs
 
 // CreateAbsencesWithSd SD付きで欠席を作成する。
 func (a *PgAdapter) CreateAbsencesWithSd(
-	ctx context.Context, sd store.Sd, params []store.CreateAbsenceParam,
+	ctx context.Context, sd store.Sd, params []parameter.CreateAbsenceParam,
 ) (int64, error) {
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
@@ -225,15 +226,12 @@ func getAbsencesList(
 			if err != nil {
 				return store.ListResult[entity.Absence]{}, fmt.Errorf("failed to decode cursor: %w", err)
 			}
-			pointsNext = decodedCursor[store.CursorPointsNext] == true
-			ID, ok := decodedCursor[store.CursorID].(int32)
-			if !ok {
-				return store.ListResult[entity.Absence]{}, fmt.Errorf("invalid cursor")
-			}
+			pointsNext = decodedCursor.CursorPointsNext == true
+			ID := decodedCursor.CursorID
 			p := query.GetAbsencesUseKeysetPaginateParams{
 				Limit:           int32(limit) + 1,
 				CursorDirection: "next",
-				Cursor:          ID,
+				Cursor:          int32(ID),
 			}
 			ql, err = qtx.GetAbsencesUseKeysetPaginate(ctx, p)
 			if err != nil {
@@ -305,4 +303,51 @@ func (a *PgAdapter) GetAbsencesWithSd(
 		return store.ListResult[entity.Absence]{}, store.ErrNotFoundDescriptor
 	}
 	return getAbsencesList(ctx, qtx, np, cp, wc)
+}
+
+func getPluralAbsences(
+	ctx context.Context,
+	qtx *query.Queries,
+	ids []uuid.UUID,
+	np store.NumberedPaginationParam,
+) (store.ListResult[entity.Absence], error) {
+	aIDs := make([]uuid.UUID, len(ids))
+	for i, id := range ids {
+		aIDs[i] = id
+	}
+	p := query.GetPluralAbsencesParams{
+		AbsenceIds: aIDs,
+		Limit:      int32(np.Limit.Int64),
+		Offset:     int32(np.Offset.Int64),
+	}
+	ql, err := qtx.GetPluralAbsences(ctx, p)
+	if err != nil {
+		return store.ListResult[entity.Absence]{}, fmt.Errorf("failed to get plural absences: %w", err)
+	}
+	entities := make([]entity.Absence, len(ql))
+	for i, e := range ql {
+		entities[i] = entity.Absence{
+			AbsenceID:    e.AbsenceID,
+			AttendanceID: e.AttendanceID,
+		}
+	}
+	return store.ListResult[entity.Absence]{Data: entities}, nil
+}
+
+// GetPluralAbsences 複数の欠席を取得する。
+func (a *PgAdapter) GetPluralAbsences(
+	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
+) (store.ListResult[entity.Absence], error) {
+	return getPluralAbsences(ctx, a.query, ids, np)
+}
+
+// GetPluralAbsencesWithSd SD付きで複数の欠席を取得する。
+func (a *PgAdapter) GetPluralAbsencesWithSd(
+	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
+) (store.ListResult[entity.Absence], error) {
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ListResult[entity.Absence]{}, store.ErrNotFoundDescriptor
+	}
+	return getPluralAbsences(ctx, qtx, ids, np)
 }

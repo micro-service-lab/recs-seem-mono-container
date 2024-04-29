@@ -154,7 +154,7 @@ LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_
 WHERE
 	CASE WHEN $1::boolean = true THEN mime_type_id = $2 ELSE TRUE END
 ORDER BY
-	t_attachable_items_pkey DESC
+	t_attachable_items_pkey ASC
 `
 
 type GetAttachableItemsParams struct {
@@ -216,7 +216,7 @@ WHERE
 			t_attachable_items_pkey > $3
 	END
 ORDER BY
-	t_attachable_items_pkey DESC
+	t_attachable_items_pkey ASC
 LIMIT $1
 `
 
@@ -275,7 +275,7 @@ LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_
 WHERE
 	CASE WHEN $3::boolean = true THEN mime_type_id = $4 ELSE TRUE END
 ORDER BY
-	t_attachable_items_pkey DESC
+	t_attachable_items_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -341,7 +341,7 @@ LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_
 WHERE
 	CASE WHEN $1::boolean = true THEN t_attachable_items.mime_type_id = $2 ELSE TRUE END
 ORDER BY
-	t_attachable_items_pkey DESC
+	t_attachable_items_pkey ASC
 `
 
 type GetAttachableItemsWithMimeTypeParams struct {
@@ -405,12 +405,12 @@ LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_
 WHERE
 	CASE $2::text
 		WHEN 'next' THEN
-			t_attachable_items_pkey < $3::int
-		WHEN 'prev' THEN
 			t_attachable_items_pkey > $3::int
+		WHEN 'prev' THEN
+			t_attachable_items_pkey < $3::int
 	END
 ORDER BY
-	t_attachable_items_pkey DESC
+	t_attachable_items_pkey ASC
 LIMIT $1
 `
 
@@ -476,7 +476,7 @@ LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_
 WHERE
 	CASE WHEN $3::boolean = true THEN t_attachable_items.mime_type_id = $4 ELSE TRUE END
 ORDER BY
-	t_attachable_items_pkey DESC
+	t_attachable_items_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -546,7 +546,7 @@ LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachabl
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE attachable_item_id = ANY($3::uuid[])
 ORDER BY
-	t_attachable_items_pkey DESC
+	t_attachable_items_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -605,7 +605,7 @@ LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachabl
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE attachable_item_id = ANY($3::uuid[])
 ORDER BY
-	t_attachable_items_pkey DESC
+	t_attachable_items_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

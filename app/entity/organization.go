@@ -11,4 +11,5 @@ type Organization struct {
 	Description    String    `json:"description"`
 	IsPersonal     bool      `json:"is_personal"`
 	IsWhole        bool      `json:"is_whole"`
+	ChatRoomID     UUID      `json:"chat_room_id"`
 }

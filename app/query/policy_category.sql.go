@@ -114,7 +114,7 @@ const getPluralPolicyCategories = `-- name: GetPluralPolicyCategories :many
 SELECT m_policy_categories_pkey, policy_category_id, name, description, key FROM m_policy_categories
 WHERE policy_category_id = ANY($3::uuid[])
 ORDER BY
-	m_policy_categories_pkey DESC
+	m_policy_categories_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -157,7 +157,7 @@ WHERE
 ORDER BY
 	CASE WHEN $3::text = 'name' THEN m_policy_categories.name END ASC,
 	CASE WHEN $3::text = 'r_name' THEN m_policy_categories.name END DESC,
-	m_policy_categories_pkey DESC
+	m_policy_categories_pkey ASC
 `
 
 type GetPolicyCategoriesParams struct {
@@ -200,21 +200,21 @@ AND
 	CASE $3::text
 		WHEN 'next' THEN
 			CASE $4::text
-				WHEN 'name' THEN name > $5 OR (name = $5 AND m_policy_categories_pkey < $6::int)
-				WHEN 'r_name' THEN name < $5 OR (name = $5 AND m_policy_categories_pkey < $6::int)
-				ELSE m_policy_categories_pkey < $6::int
+				WHEN 'name' THEN name > $5 OR (name = $5 AND m_policy_categories_pkey > $6::int)
+				WHEN 'r_name' THEN name < $5 OR (name = $5 AND m_policy_categories_pkey > $6::int)
+				ELSE m_policy_categories_pkey > $6::int
 			END
 		WHEN 'prev' THEN
 			CASE $4::text
-				WHEN 'name' THEN name < $5 OR (name = $5 AND m_policy_categories_pkey > $6::int)
-				WHEN 'r_name' THEN name > $5 OR (name = $5 AND m_policy_categories_pkey > $6::int)
-				ELSE m_policy_categories_pkey > $6::int
+				WHEN 'name' THEN name < $5 OR (name = $5 AND m_policy_categories_pkey < $6::int)
+				WHEN 'r_name' THEN name > $5 OR (name = $5 AND m_policy_categories_pkey < $6::int)
+				ELSE m_policy_categories_pkey < $6::int
 			END
 	END
 ORDER BY
 	CASE WHEN $4::text = 'name' THEN m_policy_categories.name END ASC,
 	CASE WHEN $4::text = 'r_name' THEN m_policy_categories.name END DESC,
-	m_policy_categories_pkey DESC
+	m_policy_categories_pkey ASC
 `
 
 type GetPolicyCategoriesUseKeysetPaginateParams struct {
@@ -266,7 +266,7 @@ WHERE
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_policy_categories.name END ASC,
 	CASE WHEN $5::text = 'r_name' THEN m_policy_categories.name END DESC,
-	m_policy_categories_pkey DESC
+	m_policy_categories_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

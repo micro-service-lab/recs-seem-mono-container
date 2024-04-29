@@ -143,7 +143,7 @@ func (q *Queries) FindRecordByID(ctx context.Context, recordID uuid.UUID) (Recor
 }
 
 const findRecordByIDWithAll = `-- name: FindRecordByIDWithAll :one
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
@@ -184,6 +184,7 @@ func (q *Queries) FindRecordByIDWithAll(ctx context.Context, recordID uuid.UUID)
 		&i.Organization.IsWhole,
 		&i.Organization.CreatedAt,
 		&i.Organization.UpdatedAt,
+		&i.Organization.ChatRoomID,
 		&i.Member.MMembersPkey,
 		&i.Member.MemberID,
 		&i.Member.LoginID,
@@ -246,7 +247,7 @@ func (q *Queries) FindRecordByIDWithLastEditedBy(ctx context.Context, recordID u
 }
 
 const findRecordByIDWithOrganization = `-- name: FindRecordByIDWithOrganization :one
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM t_records
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 WHERE record_id = $1
 `
@@ -278,6 +279,7 @@ func (q *Queries) FindRecordByIDWithOrganization(ctx context.Context, recordID u
 		&i.Organization.IsWhole,
 		&i.Organization.CreatedAt,
 		&i.Organization.UpdatedAt,
+		&i.Organization.ChatRoomID,
 	)
 	return i, err
 }
@@ -361,7 +363,7 @@ func (q *Queries) FindRecordByIDWithRecordType(ctx context.Context, recordID uui
 const getPluralRecords = `-- name: GetPluralRecords :many
 SELECT t_records_pkey, record_id, record_type_id, title, body, organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_records WHERE record_id = ANY($3::uuid[])
 ORDER BY
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -403,14 +405,14 @@ func (q *Queries) GetPluralRecords(ctx context.Context, arg GetPluralRecordsPara
 }
 
 const getPluralRecordsWithAll = `-- name: GetPluralRecordsWithAll :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 LEFT JOIN m_members AS m_members_2 ON t_records.last_edited_by = m_members_2.member_id
 WHERE record_id = ANY($3::uuid[])
 ORDER BY
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -460,6 +462,7 @@ func (q *Queries) GetPluralRecordsWithAll(ctx context.Context, arg GetPluralReco
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,
 			&i.Member.LoginID,
@@ -504,7 +507,7 @@ SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, 
 LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE record_id = ANY($3::uuid[])
 ORDER BY
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -565,11 +568,11 @@ func (q *Queries) GetPluralRecordsWithLastEditedBy(ctx context.Context, arg GetP
 }
 
 const getPluralRecordsWithOrganization = `-- name: GetPluralRecordsWithOrganization :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM t_records
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 WHERE record_id = ANY($3::uuid[])
 ORDER BY
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -612,6 +615,7 @@ func (q *Queries) GetPluralRecordsWithOrganization(ctx context.Context, arg GetP
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -628,7 +632,7 @@ SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, 
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 WHERE record_id = ANY($3::uuid[])
 ORDER BY
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -693,7 +697,7 @@ SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, 
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 WHERE record_id = ANY($3::uuid[])
 ORDER BY
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -762,7 +766,7 @@ ORDER BY
 	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 `
 
 type GetRecordsParams struct {
@@ -838,23 +842,23 @@ AND
 	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'title' THEN title > $14 OR (title = $14 AND t_records_pkey < $15::int)
-				WHEN 'r_title' THEN title < $14 OR (title = $14 AND t_records_pkey < $15::int)
-				WHEN 'posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
-				WHEN 'r_posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
-				WHEN 'last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
-				ELSE t_records_pkey < $15::int
+				WHEN 'title' THEN title > $14 OR (title = $14 AND t_records_pkey > $15::int)
+				WHEN 'r_title' THEN title < $14 OR (title = $14 AND t_records_pkey > $15::int)
+				WHEN 'posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
+				WHEN 'r_posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
+				WHEN 'last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
+				ELSE t_records_pkey > $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'title' THEN title < $14 OR (title = $14 AND t_records_pkey > $15::int)
-				WHEN 'r_title' THEN title > $14 OR (title = $14 AND t_records_pkey > $15::int)
-				WHEN 'posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
-				WHEN 'r_posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
-				WHEN 'last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
-				ELSE t_records_pkey > $15::int
+				WHEN 'title' THEN title < $14 OR (title = $14 AND t_records_pkey < $15::int)
+				WHEN 'r_title' THEN title > $14 OR (title = $14 AND t_records_pkey < $15::int)
+				WHEN 'posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
+				WHEN 'r_posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
+				WHEN 'last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
+				ELSE t_records_pkey < $15::int
 			END
 	END
 ORDER BY
@@ -864,7 +868,7 @@ ORDER BY
 	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1
 `
 
@@ -956,7 +960,7 @@ ORDER BY
 	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -1022,7 +1026,7 @@ func (q *Queries) GetRecordsUseNumberedPaginate(ctx context.Context, arg GetReco
 }
 
 const getRecordsWithAll = `-- name: GetRecordsWithAll :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
@@ -1044,7 +1048,7 @@ ORDER BY
 	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 `
 
 type GetRecordsWithAllParams struct {
@@ -1113,6 +1117,7 @@ func (q *Queries) GetRecordsWithAll(ctx context.Context, arg GetRecordsWithAllPa
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,
 			&i.Member.LoginID,
@@ -1153,7 +1158,7 @@ func (q *Queries) GetRecordsWithAll(ctx context.Context, arg GetRecordsWithAllPa
 }
 
 const getRecordsWithAllUseKeysetPaginate = `-- name: GetRecordsWithAllUseKeysetPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
@@ -1172,23 +1177,23 @@ AND
 	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'title' THEN title > $14 OR (title = $14 AND t_records_pkey < $15::int)
-				WHEN 'r_title' THEN title < $14 OR (title = $14 AND t_records_pkey < $15::int)
-				WHEN 'posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
-				WHEN 'r_posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
-				WHEN 'last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
-				ELSE t_records_pkey < $15::int
+				WHEN 'title' THEN title > $14 OR (title = $14 AND t_records_pkey > $15::int)
+				WHEN 'r_title' THEN title < $14 OR (title = $14 AND t_records_pkey > $15::int)
+				WHEN 'posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
+				WHEN 'r_posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
+				WHEN 'last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
+				ELSE t_records_pkey > $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'title' THEN title < $14 OR (title = $14 AND t_records_pkey > $15::int)
-				WHEN 'r_title' THEN title > $14 OR (title = $14 AND t_records_pkey > $15::int)
-				WHEN 'posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
-				WHEN 'r_posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
-				WHEN 'last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
-				ELSE t_records_pkey > $15::int
+				WHEN 'title' THEN title < $14 OR (title = $14 AND t_records_pkey < $15::int)
+				WHEN 'r_title' THEN title > $14 OR (title = $14 AND t_records_pkey < $15::int)
+				WHEN 'posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
+				WHEN 'r_posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
+				WHEN 'last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
+				ELSE t_records_pkey < $15::int
 			END
 	END
 ORDER BY
@@ -1198,7 +1203,7 @@ ORDER BY
 	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1
 `
 
@@ -1280,6 +1285,7 @@ func (q *Queries) GetRecordsWithAllUseKeysetPaginate(ctx context.Context, arg Ge
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,
 			&i.Member.LoginID,
@@ -1320,7 +1326,7 @@ func (q *Queries) GetRecordsWithAllUseKeysetPaginate(ctx context.Context, arg Ge
 }
 
 const getRecordsWithAllUseNumberedPaginate = `-- name: GetRecordsWithAllUseNumberedPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
@@ -1342,7 +1348,7 @@ ORDER BY
 	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -1416,6 +1422,7 @@ func (q *Queries) GetRecordsWithAllUseNumberedPaginate(ctx context.Context, arg 
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,
 			&i.Member.LoginID,
@@ -1475,7 +1482,7 @@ ORDER BY
 	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 `
 
 type GetRecordsWithLastEditedByParams struct {
@@ -1571,23 +1578,23 @@ AND
 	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'title' THEN title > $14 OR (title = $14 AND t_records_pkey < $15::int)
-				WHEN 'r_title' THEN title < $14 OR (title = $14 AND t_records_pkey < $15::int)
-				WHEN 'posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
-				WHEN 'r_posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
-				WHEN 'last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
-				ELSE t_records_pkey < $15::int
+				WHEN 'title' THEN title > $14 OR (title = $14 AND t_records_pkey > $15::int)
+				WHEN 'r_title' THEN title < $14 OR (title = $14 AND t_records_pkey > $15::int)
+				WHEN 'posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
+				WHEN 'r_posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
+				WHEN 'last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
+				ELSE t_records_pkey > $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'title' THEN title < $14 OR (title = $14 AND t_records_pkey > $15::int)
-				WHEN 'r_title' THEN title > $14 OR (title = $14 AND t_records_pkey > $15::int)
-				WHEN 'posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
-				WHEN 'r_posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
-				WHEN 'last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
-				ELSE t_records_pkey > $15::int
+				WHEN 'title' THEN title < $14 OR (title = $14 AND t_records_pkey < $15::int)
+				WHEN 'r_title' THEN title > $14 OR (title = $14 AND t_records_pkey < $15::int)
+				WHEN 'posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
+				WHEN 'r_posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
+				WHEN 'last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
+				ELSE t_records_pkey < $15::int
 			END
 	END
 ORDER BY
@@ -1597,7 +1604,7 @@ ORDER BY
 	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1
 `
 
@@ -1709,7 +1716,7 @@ ORDER BY
 	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -1794,7 +1801,7 @@ func (q *Queries) GetRecordsWithLastEditedByUseNumberedPaginate(ctx context.Cont
 }
 
 const getRecordsWithOrganization = `-- name: GetRecordsWithOrganization :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM t_records
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $1::boolean = true THEN record_type_id = ANY($2) ELSE TRUE END
@@ -1813,7 +1820,7 @@ ORDER BY
 	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 `
 
 type GetRecordsWithOrganizationParams struct {
@@ -1875,6 +1882,7 @@ func (q *Queries) GetRecordsWithOrganization(ctx context.Context, arg GetRecords
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -1887,7 +1895,7 @@ func (q *Queries) GetRecordsWithOrganization(ctx context.Context, arg GetRecords
 }
 
 const getRecordsWithOrganizationUseKeysetPaginate = `-- name: GetRecordsWithOrganizationUseKeysetPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM t_records
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $2::boolean = true THEN record_type_id = ANY($3) ELSE TRUE END
@@ -1903,23 +1911,23 @@ AND
 	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'title' THEN title > $14 OR (title = $14 AND t_records_pkey < $15::int)
-				WHEN 'r_title' THEN title < $14 OR (title = $14 AND t_records_pkey < $15::int)
-				WHEN 'posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
-				WHEN 'r_posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
-				WHEN 'last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
-				ELSE t_records_pkey < $15::int
+				WHEN 'title' THEN title > $14 OR (title = $14 AND t_records_pkey > $15::int)
+				WHEN 'r_title' THEN title < $14 OR (title = $14 AND t_records_pkey > $15::int)
+				WHEN 'posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
+				WHEN 'r_posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
+				WHEN 'last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
+				ELSE t_records_pkey > $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'title' THEN title < $14 OR (title = $14 AND t_records_pkey > $15::int)
-				WHEN 'r_title' THEN title > $14 OR (title = $14 AND t_records_pkey > $15::int)
-				WHEN 'posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
-				WHEN 'r_posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
-				WHEN 'last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
-				ELSE t_records_pkey > $15::int
+				WHEN 'title' THEN title < $14 OR (title = $14 AND t_records_pkey < $15::int)
+				WHEN 'r_title' THEN title > $14 OR (title = $14 AND t_records_pkey < $15::int)
+				WHEN 'posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
+				WHEN 'r_posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
+				WHEN 'last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
+				ELSE t_records_pkey < $15::int
 			END
 	END
 ORDER BY
@@ -1929,7 +1937,7 @@ ORDER BY
 	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1
 `
 
@@ -2004,6 +2012,7 @@ func (q *Queries) GetRecordsWithOrganizationUseKeysetPaginate(ctx context.Contex
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -2016,7 +2025,7 @@ func (q *Queries) GetRecordsWithOrganizationUseKeysetPaginate(ctx context.Contex
 }
 
 const getRecordsWithOrganizationUseNumberedPaginate = `-- name: GetRecordsWithOrganizationUseNumberedPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM t_records
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $3::boolean = true THEN record_type_id = ANY($4) ELSE TRUE END
@@ -2035,7 +2044,7 @@ ORDER BY
 	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -2102,6 +2111,7 @@ func (q *Queries) GetRecordsWithOrganizationUseNumberedPaginate(ctx context.Cont
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
 			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -2133,7 +2143,7 @@ ORDER BY
 	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 `
 
 type GetRecordsWithPostedByParams struct {
@@ -2229,23 +2239,23 @@ AND
 	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'title' THEN title > $14 OR (title = $14 AND t_records_pkey < $15::int)
-				WHEN 'r_title' THEN title < $14 OR (title = $14 AND t_records_pkey < $15::int)
-				WHEN 'posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
-				WHEN 'r_posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
-				WHEN 'last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
-				ELSE t_records_pkey < $15::int
+				WHEN 'title' THEN title > $14 OR (title = $14 AND t_records_pkey > $15::int)
+				WHEN 'r_title' THEN title < $14 OR (title = $14 AND t_records_pkey > $15::int)
+				WHEN 'posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
+				WHEN 'r_posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
+				WHEN 'last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
+				ELSE t_records_pkey > $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'title' THEN title < $14 OR (title = $14 AND t_records_pkey > $15::int)
-				WHEN 'r_title' THEN title > $14 OR (title = $14 AND t_records_pkey > $15::int)
-				WHEN 'posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
-				WHEN 'r_posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
-				WHEN 'last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
-				ELSE t_records_pkey > $15::int
+				WHEN 'title' THEN title < $14 OR (title = $14 AND t_records_pkey < $15::int)
+				WHEN 'r_title' THEN title > $14 OR (title = $14 AND t_records_pkey < $15::int)
+				WHEN 'posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
+				WHEN 'r_posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
+				WHEN 'last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
+				ELSE t_records_pkey < $15::int
 			END
 	END
 ORDER BY
@@ -2255,7 +2265,7 @@ ORDER BY
 	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1
 `
 
@@ -2367,7 +2377,7 @@ ORDER BY
 	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -2471,7 +2481,7 @@ ORDER BY
 	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 `
 
 type GetRecordsWithRecordTypeParams struct {
@@ -2557,23 +2567,23 @@ AND
 	CASE $12::text
 		WHEN 'next' THEN
 			CASE $13::text
-				WHEN 'title' THEN title > $14 OR (title = $14 AND t_records_pkey < $15::int)
-				WHEN 'r_title' THEN title < $14 OR (title = $14 AND t_records_pkey < $15::int)
-				WHEN 'posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
-				WHEN 'r_posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
-				WHEN 'last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
-				ELSE t_records_pkey < $15::int
+				WHEN 'title' THEN title > $14 OR (title = $14 AND t_records_pkey > $15::int)
+				WHEN 'r_title' THEN title < $14 OR (title = $14 AND t_records_pkey > $15::int)
+				WHEN 'posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
+				WHEN 'r_posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
+				WHEN 'last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
+				ELSE t_records_pkey > $15::int
 			END
 		WHEN 'prev' THEN
 			CASE $13::text
-				WHEN 'title' THEN title < $14 OR (title = $14 AND t_records_pkey > $15::int)
-				WHEN 'r_title' THEN title > $14 OR (title = $14 AND t_records_pkey > $15::int)
-				WHEN 'posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
-				WHEN 'r_posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey > $15::int)
-				WHEN 'last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
-				WHEN 'r_last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey > $15::int)
-				ELSE t_records_pkey > $15::int
+				WHEN 'title' THEN title < $14 OR (title = $14 AND t_records_pkey < $15::int)
+				WHEN 'r_title' THEN title > $14 OR (title = $14 AND t_records_pkey < $15::int)
+				WHEN 'posted_at' THEN posted_at < $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
+				WHEN 'r_posted_at' THEN posted_at > $16 OR (posted_at = $16 AND t_records_pkey < $15::int)
+				WHEN 'last_edited_at' THEN last_edited_at < $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
+				WHEN 'r_last_edited_at' THEN last_edited_at > $17 OR (last_edited_at = $17 AND t_records_pkey < $15::int)
+				ELSE t_records_pkey < $15::int
 			END
 	END
 ORDER BY
@@ -2583,7 +2593,7 @@ ORDER BY
 	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1
 `
 
@@ -2685,7 +2695,7 @@ ORDER BY
 	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
 	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
 	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey DESC
+	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

@@ -77,7 +77,7 @@ func (q *Queries) FindLateArrivalByID(ctx context.Context, lateArrivalID uuid.UU
 const getLateArrivals = `-- name: GetLateArrivals :many
 SELECT t_late_arrivals_pkey, late_arrival_id, attendance_id, arrive_time FROM t_late_arrivals
 ORDER BY
-	t_late_arrivals_pkey DESC
+	t_late_arrivals_pkey ASC
 `
 
 func (q *Queries) GetLateArrivals(ctx context.Context) ([]LateArrival, error) {
@@ -110,12 +110,12 @@ SELECT t_late_arrivals_pkey, late_arrival_id, attendance_id, arrive_time FROM t_
 WHERE
 	CASE $2::text
 		WHEN 'next' THEN
-			t_late_arrivals_pkey < $3::int
-		WHEN 'prev' THEN
 			t_late_arrivals_pkey > $3::int
+		WHEN 'prev' THEN
+			t_late_arrivals_pkey < $3::int
 	END
 ORDER BY
-	t_late_arrivals_pkey DESC
+	t_late_arrivals_pkey ASC
 LIMIT $1
 `
 
@@ -153,7 +153,7 @@ func (q *Queries) GetLateArrivalsUseKeysetPaginate(ctx context.Context, arg GetL
 const getLateArrivalsUseNumberedPaginate = `-- name: GetLateArrivalsUseNumberedPaginate :many
 SELECT t_late_arrivals_pkey, late_arrival_id, attendance_id, arrive_time FROM t_late_arrivals
 ORDER BY
-	t_late_arrivals_pkey DESC
+	t_late_arrivals_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -191,7 +191,7 @@ const getPluralLateArrivals = `-- name: GetPluralLateArrivals :many
 SELECT t_late_arrivals_pkey, late_arrival_id, attendance_id, arrive_time FROM t_late_arrivals
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
-	t_late_arrivals_pkey DESC
+	t_late_arrivals_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

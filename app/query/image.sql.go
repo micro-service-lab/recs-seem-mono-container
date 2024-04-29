@@ -116,7 +116,7 @@ func (q *Queries) FindImageByIDWithAttachableItem(ctx context.Context, imageID u
 const getImages = `-- name: GetImages :many
 SELECT t_images_pkey, image_id, height, width, attachable_item_id FROM t_images
 ORDER BY
-	t_images_pkey DESC
+	t_images_pkey ASC
 `
 
 func (q *Queries) GetImages(ctx context.Context) ([]Image, error) {
@@ -150,12 +150,12 @@ SELECT t_images_pkey, image_id, height, width, attachable_item_id FROM t_images
 WHERE
 	CASE $2::text
 		WHEN 'next' THEN
-			t_images_pkey < $3::int
-		WHEN 'prev' THEN
 			t_images_pkey > $3::int
+		WHEN 'prev' THEN
+			t_images_pkey < $3::int
 	END
 ORDER BY
-	t_images_pkey DESC
+	t_images_pkey ASC
 LIMIT $1
 `
 
@@ -194,7 +194,7 @@ func (q *Queries) GetImagesUseKeysetPaginate(ctx context.Context, arg GetImagesU
 const getImagesUseNumberedPaginate = `-- name: GetImagesUseNumberedPaginate :many
 SELECT t_images_pkey, image_id, height, width, attachable_item_id FROM t_images
 ORDER BY
-	t_images_pkey DESC
+	t_images_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -234,7 +234,7 @@ SELECT t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.widt
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
-	t_images_pkey DESC
+	t_images_pkey ASC
 `
 
 type GetImagesWithAttachableItemRow struct {
@@ -285,12 +285,12 @@ LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_ty
 WHERE
 	CASE $2::text
 		WHEN 'next' THEN
-			t_images_pkey < $3::int
-		WHEN 'prev' THEN
 			t_images_pkey > $3::int
+		WHEN 'prev' THEN
+			t_images_pkey < $3::int
 	END
 ORDER BY
-	t_images_pkey DESC
+	t_images_pkey ASC
 LIMIT $1
 `
 
@@ -346,7 +346,7 @@ SELECT t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.widt
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
-	t_images_pkey DESC
+	t_images_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -400,7 +400,7 @@ const getPluralImages = `-- name: GetPluralImages :many
 SELECT t_images_pkey, image_id, height, width, attachable_item_id FROM t_images
 WHERE attachable_item_id = ANY($3::uuid[])
 ORDER BY
-	t_images_pkey DESC
+	t_images_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -442,7 +442,7 @@ LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE attachable_item_id = ANY($3::uuid[])
 ORDER BY
-	t_images_pkey DESC
+	t_images_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

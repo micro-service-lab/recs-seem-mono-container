@@ -96,7 +96,7 @@ func (q *Queries) DeleteChatRoomBelonging(ctx context.Context, arg DeleteChatRoo
 }
 
 const getChatRoomsOnMember = `-- name: GetChatRoomsOnMember :many
-SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = $1
 AND CASE
@@ -113,7 +113,7 @@ ORDER BY
 	CASE WHEN $4::text = 'late_chat' THEN
 		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
 	END DESC,
-	m_chat_room_belongings_pkey DESC
+	m_chat_room_belongings_pkey ASC
 `
 
 type GetChatRoomsOnMemberParams struct {
@@ -156,6 +156,7 @@ func (q *Queries) GetChatRoomsOnMember(ctx context.Context, arg GetChatRoomsOnMe
 			&i.ChatRoom.IsPrivate,
 			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
 			&i.ChatRoom.UpdatedAt,
 		); err != nil {
@@ -170,37 +171,37 @@ func (q *Queries) GetChatRoomsOnMember(ctx context.Context, arg GetChatRoomsOnMe
 }
 
 const getChatRoomsOnMemberUseKeysetPaginate = `-- name: GetChatRoomsOnMemberUseKeysetPaginate :many
-SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = $1
 AND CASE $3::text
 	WHEN 'next' THEN
 		CASE $4::text
-			WHEN 'name' THEN m_chat_rooms.name > $5 OR (m_chat_rooms.name = $5 AND m_chat_room_belongings_pkey < $6::int)
-			WHEN 'r_name' THEN m_chat_rooms.name < $5 OR (m_chat_rooms.name = $5 AND m_chat_room_belongings_pkey < $6::int)
-			WHEN 'old_add' THEN m_chat_room_belongings.added_at > $7 OR (m_chat_room_belongings.added_at = $7 AND m_chat_room_belongings_pkey < $6::int)
-			WHEN 'late_add' THEN m_chat_room_belongings.added_at < $7 OR (m_chat_room_belongings.added_at = $7 AND m_chat_room_belongings_pkey < $6::int)
+			WHEN 'name' THEN m_chat_rooms.name > $5 OR (m_chat_rooms.name = $5 AND m_chat_room_belongings_pkey > $6::int)
+			WHEN 'r_name' THEN m_chat_rooms.name < $5 OR (m_chat_rooms.name = $5 AND m_chat_room_belongings_pkey > $6::int)
+			WHEN 'old_add' THEN m_chat_room_belongings.added_at > $7 OR (m_chat_room_belongings.added_at = $7 AND m_chat_room_belongings_pkey > $6::int)
+			WHEN 'late_add' THEN m_chat_room_belongings.added_at < $7 OR (m_chat_room_belongings.added_at = $7 AND m_chat_room_belongings_pkey > $6::int)
 			WHEN 'old_chat' THEN
 				(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) > $8
-				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = $8 AND m_chat_room_belongings_pkey < $6::int)
+				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = $8 AND m_chat_room_belongings_pkey > $6::int)
 			WHEN 'late_chat' THEN
 				(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) < $8
-				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = $8 AND m_chat_room_belongings_pkey < $6::int)
-			ELSE m_chat_room_belongings_pkey < $6::int
+				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = $8 AND m_chat_room_belongings_pkey > $6::int)
+			ELSE m_chat_room_belongings_pkey > $6::int
 		END
 	WHEN 'prev' THEN
 		CASE $4::text
-			WHEN 'name' THEN m_chat_rooms.name < $5 OR (m_chat_rooms.name = $5 AND m_chat_room_belongings_pkey > $6::int)
-			WHEN 'r_name' THEN m_chat_rooms.name > $5 OR (m_chat_rooms.name = $5 AND m_chat_room_belongings_pkey > $6::int)
-			WHEN 'old_add' THEN m_chat_room_belongings.added_at < $7 OR (m_chat_room_belongings.added_at = $7 AND m_chat_room_belongings_pkey > $6::int)
-			WHEN 'late_add' THEN m_chat_room_belongings.added_at > $7 OR (m_chat_room_belongings.added_at = $7 AND m_chat_room_belongings_pkey > $6::int)
+			WHEN 'name' THEN m_chat_rooms.name < $5 OR (m_chat_rooms.name = $5 AND m_chat_room_belongings_pkey < $6::int)
+			WHEN 'r_name' THEN m_chat_rooms.name > $5 OR (m_chat_rooms.name = $5 AND m_chat_room_belongings_pkey < $6::int)
+			WHEN 'old_add' THEN m_chat_room_belongings.added_at < $7 OR (m_chat_room_belongings.added_at = $7 AND m_chat_room_belongings_pkey < $6::int)
+			WHEN 'late_add' THEN m_chat_room_belongings.added_at > $7 OR (m_chat_room_belongings.added_at = $7 AND m_chat_room_belongings_pkey < $6::int)
 			WHEN 'old_chat' THEN
 				(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) < $8
-				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = $8 AND m_chat_room_belongings_pkey > $6::int)
+				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = $8 AND m_chat_room_belongings_pkey < $6::int)
 			WHEN 'late_chat' THEN
 				(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) > $8
-				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = $8 AND m_chat_room_belongings_pkey > $6::int)
-			ELSE m_chat_room_belongings_pkey > $6::int
+				OR ((SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = $8 AND m_chat_room_belongings_pkey < $6::int)
+			ELSE m_chat_room_belongings_pkey < $6::int
 		END
 END
 ORDER BY
@@ -212,7 +213,7 @@ ORDER BY
 		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END ASC,
 	CASE WHEN $4::text = 'late_chat' THEN
 		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END DESC,
-	m_chat_room_belongings_pkey DESC
+	m_chat_room_belongings_pkey ASC
 LIMIT $2
 `
 
@@ -264,6 +265,7 @@ func (q *Queries) GetChatRoomsOnMemberUseKeysetPaginate(ctx context.Context, arg
 			&i.ChatRoom.IsPrivate,
 			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
 			&i.ChatRoom.UpdatedAt,
 		); err != nil {
@@ -278,7 +280,7 @@ func (q *Queries) GetChatRoomsOnMemberUseKeysetPaginate(ctx context.Context, arg
 }
 
 const getChatRoomsOnMemberUseNumberedPaginate = `-- name: GetChatRoomsOnMemberUseNumberedPaginate :many
-SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = $1
 AND CASE
@@ -295,7 +297,7 @@ ORDER BY
 	CASE WHEN $6::text = 'late_chat' THEN
 		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
 	END DESC,
-	m_chat_room_belongings_pkey DESC
+	m_chat_room_belongings_pkey ASC
 LIMIT $2 OFFSET $3
 `
 
@@ -343,6 +345,7 @@ func (q *Queries) GetChatRoomsOnMemberUseNumberedPaginate(ctx context.Context, a
 			&i.ChatRoom.IsPrivate,
 			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
 			&i.ChatRoom.UpdatedAt,
 		); err != nil {
@@ -368,7 +371,7 @@ ORDER BY
 	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
 	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
 	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
-	m_chat_room_belongings_pkey DESC
+	m_chat_room_belongings_pkey ASC
 `
 
 type GetMembersOnChatRoomParams struct {
@@ -450,19 +453,19 @@ WHERE chat_room_id = $1
 AND CASE $3::text
 	WHEN 'next' THEN
 		CASE $4::text
-			WHEN 'name' THEN m_members.name > $5 OR (m_members.name = $5 AND m_chat_room_belongings_pkey < $6::int)
-			WHEN 'r_name' THEN m_members.name < $5 OR (m_members.name = $5 AND m_chat_room_belongings_pkey < $6::int)
-			WHEN 'old_add' THEN m_chat_room_belongings.added_at > $7 OR (m_chat_room_belongings.added_at = $7 AND m_chat_room_belongings_pkey < $6::int)
-			WHEN 'late_add' THEN m_chat_room_belongings.added_at < $7 OR (m_chat_room_belongings.added_at = $7 AND m_chat_room_belongings_pkey < $6::int)
-			ELSE m_chat_room_belongings_pkey < $6::int
+			WHEN 'name' THEN m_members.name > $5 OR (m_members.name = $5 AND m_chat_room_belongings_pkey > $6::int)
+			WHEN 'r_name' THEN m_members.name < $5 OR (m_members.name = $5 AND m_chat_room_belongings_pkey > $6::int)
+			WHEN 'old_add' THEN m_chat_room_belongings.added_at > $7 OR (m_chat_room_belongings.added_at = $7 AND m_chat_room_belongings_pkey > $6::int)
+			WHEN 'late_add' THEN m_chat_room_belongings.added_at < $7 OR (m_chat_room_belongings.added_at = $7 AND m_chat_room_belongings_pkey > $6::int)
+			ELSE m_chat_room_belongings_pkey > $6::int
 		END
 	WHEN 'prev' THEN
 		CASE $4::text
-			WHEN 'name' THEN m_members.name < $5 OR (m_members.name = $5 AND m_chat_room_belongings_pkey > $6::int)
-			WHEN 'r_name' THEN m_members.name > $5 OR (m_members.name = $5 AND m_chat_room_belongings_pkey > $6::int)
-			WHEN 'old_add' THEN m_chat_room_belongings.added_at < $7 OR (m_chat_room_belongings.added_at = $7 AND m_chat_room_belongings_pkey > $6::int)
-			WHEN 'late_add' THEN m_chat_room_belongings.added_at > $7 OR (m_chat_room_belongings.added_at = $7 AND m_chat_room_belongings_pkey > $6::int)
-			ELSE m_chat_room_belongings_pkey > $6::int
+			WHEN 'name' THEN m_members.name < $5 OR (m_members.name = $5 AND m_chat_room_belongings_pkey < $6::int)
+			WHEN 'r_name' THEN m_members.name > $5 OR (m_members.name = $5 AND m_chat_room_belongings_pkey < $6::int)
+			WHEN 'old_add' THEN m_chat_room_belongings.added_at < $7 OR (m_chat_room_belongings.added_at = $7 AND m_chat_room_belongings_pkey < $6::int)
+			WHEN 'late_add' THEN m_chat_room_belongings.added_at > $7 OR (m_chat_room_belongings.added_at = $7 AND m_chat_room_belongings_pkey < $6::int)
+			ELSE m_chat_room_belongings_pkey < $6::int
 		END
 END
 ORDER BY
@@ -470,7 +473,7 @@ ORDER BY
 	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
 	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
 	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
-	m_chat_room_belongings_pkey DESC
+	m_chat_room_belongings_pkey ASC
 LIMIT $2
 `
 
@@ -564,7 +567,7 @@ ORDER BY
 	CASE WHEN $6::text = 'r_name' THEN m_members.name END DESC,
 	CASE WHEN $6::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
 	CASE WHEN $6::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
-	m_chat_room_belongings_pkey DESC
+	m_chat_room_belongings_pkey ASC
 LIMIT $2 OFFSET $3
 `
 
@@ -645,11 +648,11 @@ func (q *Queries) GetMembersOnChatRoomUseNumberedPaginate(ctx context.Context, a
 }
 
 const getPluralChatRoomsOnMember = `-- name: GetPluralChatRoomsOnMember :many
-SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	m_chat_room_belongings_pkey DESC
+	m_chat_room_belongings_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -687,6 +690,7 @@ func (q *Queries) GetPluralChatRoomsOnMember(ctx context.Context, arg GetPluralC
 			&i.ChatRoom.IsPrivate,
 			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
 			&i.ChatRoom.UpdatedAt,
 		); err != nil {
@@ -705,7 +709,7 @@ SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belonging
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 WHERE chat_room_id = ANY($3::uuid[])
 ORDER BY
-	m_chat_room_belongings_pkey DESC
+	m_chat_room_belongings_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

@@ -117,7 +117,7 @@ WHERE
 ORDER BY
 	CASE WHEN $3::text = 'name' THEN name END ASC,
 	CASE WHEN $3::text = 'r_name' THEN name END DESC,
-	m_event_types_pkey DESC
+	m_event_types_pkey ASC
 `
 
 type GetEventTypesParams struct {
@@ -160,21 +160,21 @@ AND
 	CASE $4::text
 		WHEN 'next' THEN
 			CASE $5::text
-				WHEN 'name' THEN name > $6 OR (name = $6 AND m_event_types_pkey < $7::int)
-				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_event_types_pkey < $7::int)
-				ELSE m_event_types_pkey < $7::int
+				WHEN 'name' THEN name > $6 OR (name = $6 AND m_event_types_pkey > $7::int)
+				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_event_types_pkey > $7::int)
+				ELSE m_event_types_pkey > $7::int
 			END
 		WHEN 'prev' THEN
 			CASE $5::text
-				WHEN 'name' THEN name < $6 OR (name = $6 AND m_event_types_pkey > $7::int)
-				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_event_types_pkey > $7::int)
-				ELSE m_event_types_pkey > $7::int
+				WHEN 'name' THEN name < $6 OR (name = $6 AND m_event_types_pkey < $7::int)
+				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_event_types_pkey < $7::int)
+				ELSE m_event_types_pkey < $7::int
 			END
 	END
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN name END ASC,
 	CASE WHEN $5::text = 'r_name' THEN name END DESC,
-	m_event_types_pkey DESC
+	m_event_types_pkey ASC
 LIMIT $1
 `
 
@@ -229,7 +229,7 @@ WHERE
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN name END ASC,
 	CASE WHEN $5::text = 'r_name' THEN name END DESC,
-	m_event_types_pkey DESC
+	m_event_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -276,7 +276,7 @@ func (q *Queries) GetEventTypesUseNumberedPaginate(ctx context.Context, arg GetE
 const getPluralEventTypes = `-- name: GetPluralEventTypes :many
 SELECT m_event_types_pkey, event_type_id, name, key, color FROM m_event_types WHERE event_type_id = ANY($3::uuid[])
 ORDER BY
-	m_event_types_pkey DESC
+	m_event_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

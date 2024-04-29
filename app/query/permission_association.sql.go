@@ -97,7 +97,7 @@ AND
 ORDER BY
 	CASE WHEN $4::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN $4::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permission_associations_pkey DESC
+	m_permission_associations_pkey ASC
 `
 
 type GetPermissionsOnWorkPositionParams struct {
@@ -157,21 +157,21 @@ AND
 	CASE $5::text
 		WHEN 'next' THEN
 			CASE $6::text
-				WHEN 'name' THEN m_permissions.name > $7 OR (m_permissions.name = $7 AND m_permission_associations_pkey < $8::int)
-				WHEN 'r_name' THEN m_permissions.name < $7 OR (m_permissions.name = $7 AND m_permission_associations_pkey < $8::int)
-				ELSE m_permission_associations_pkey < $8::int
+				WHEN 'name' THEN m_permissions.name > $7 OR (m_permissions.name = $7 AND m_permission_associations_pkey > $8::int)
+				WHEN 'r_name' THEN m_permissions.name < $7 OR (m_permissions.name = $7 AND m_permission_associations_pkey > $8::int)
+				ELSE m_permission_associations_pkey > $8::int
 			END
 		WHEN 'prev' THEN
 			CASE $6::text
-				WHEN 'name' THEN m_permissions.name < $7 OR (m_permissions.name = $7 AND m_permission_associations_pkey > $8::int)
-				WHEN 'r_name' THEN m_permissions.name > $7 OR (m_permissions.name = $7 AND m_permission_associations_pkey > $8::int)
-				ELSE m_permission_associations_pkey > $8::int
+				WHEN 'name' THEN m_permissions.name < $7 OR (m_permissions.name = $7 AND m_permission_associations_pkey < $8::int)
+				WHEN 'r_name' THEN m_permissions.name > $7 OR (m_permissions.name = $7 AND m_permission_associations_pkey < $8::int)
+				ELSE m_permission_associations_pkey < $8::int
 			END
 	END
 ORDER BY
 	CASE WHEN $6::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN $6::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permission_associations_pkey DESC
+	m_permission_associations_pkey ASC
 LIMIT $2
 `
 
@@ -239,7 +239,7 @@ AND
 ORDER BY
 	CASE WHEN $6::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN $6::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permission_associations_pkey DESC
+	m_permission_associations_pkey ASC
 LIMIT $2 OFFSET $3
 `
 
@@ -299,7 +299,7 @@ SELECT m_permission_associations.m_permission_associations_pkey, m_permission_as
 LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
 WHERE work_position_id = ANY($3::uuid[])
 ORDER BY
-	m_permission_associations_pkey DESC
+	m_permission_associations_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -349,7 +349,7 @@ SELECT m_permission_associations.m_permission_associations_pkey, m_permission_as
 LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
 WHERE permission_id = ANY($3::uuid[])
 ORDER BY
-	m_permission_associations_pkey DESC
+	m_permission_associations_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -403,7 +403,7 @@ AND
 ORDER BY
 	CASE WHEN $4::text = 'name' THEN m_work_positions.name END ASC,
 	CASE WHEN $4::text = 'r_name' THEN m_work_positions.name END DESC,
-	m_permission_associations_pkey DESC
+	m_permission_associations_pkey ASC
 `
 
 type GetWorkPositionsOnPermissionParams struct {
@@ -463,21 +463,21 @@ AND
 	CASE $5::text
 		WHEN 'next' THEN
 			CASE $6::text
-				WHEN 'name' THEN m_work_positions.name > $7 OR (m_work_positions.name = $7 AND m_permission_associations_pkey < $8::int)
-				WHEN 'r_name' THEN m_work_positions.name < $7 OR (m_work_positions.name = $7 AND m_permission_associations_pkey < $8::int)
-				ELSE m_permission_associations_pkey < $8::int
+				WHEN 'name' THEN m_work_positions.name > $7 OR (m_work_positions.name = $7 AND m_permission_associations_pkey > $8::int)
+				WHEN 'r_name' THEN m_work_positions.name < $7 OR (m_work_positions.name = $7 AND m_permission_associations_pkey > $8::int)
+				ELSE m_permission_associations_pkey > $8::int
 			END
 		WHEN 'prev' THEN
 			CASE $6::text
-				WHEN 'name' THEN m_work_positions.name < $7 OR (m_work_positions.name = $7 AND m_permission_associations_pkey > $8::int)
-				WHEN 'r_name' THEN m_work_positions.name > $7 OR (m_work_positions.name = $7 AND m_permission_associations_pkey > $8::int)
-				ELSE m_permission_associations_pkey > $8::int
+				WHEN 'name' THEN m_work_positions.name < $7 OR (m_work_positions.name = $7 AND m_permission_associations_pkey < $8::int)
+				WHEN 'r_name' THEN m_work_positions.name > $7 OR (m_work_positions.name = $7 AND m_permission_associations_pkey < $8::int)
+				ELSE m_permission_associations_pkey < $8::int
 			END
 	END
 ORDER BY
 	CASE WHEN $6::text = 'name' THEN m_work_positions.name END ASC,
 	CASE WHEN $6::text = 'r_name' THEN m_work_positions.name END DESC,
-	m_permission_associations_pkey DESC
+	m_permission_associations_pkey ASC
 LIMIT $2
 `
 
@@ -545,7 +545,7 @@ AND
 ORDER BY
 	CASE WHEN $6::text = 'name' THEN m_work_positions.name END ASC,
 	CASE WHEN $6::text = 'r_name' THEN m_work_positions.name END DESC,
-	m_permission_associations_pkey DESC
+	m_permission_associations_pkey ASC
 LIMIT $2 OFFSET $3
 `
 

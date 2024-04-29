@@ -1,11 +1,11 @@
-package app
+package api
 
 import (
 	"log"
 	"net/http"
 	"strings"
 
-	"github.com/micro-service-lab/recs-seem-mono-container/app/handler/response"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 )
 
 // allowContentTypeMiddleware リクエストの Content-Type が指定したものでなければ 415 で応答するミドルウェアを返す。
@@ -32,7 +32,7 @@ func allowContentTypeMiddleware(contentTypes ...string) func(next http.Handler) 
 				return
 			}
 
-			err := response.Writer(r.Context(), w, response.UnsupportedMediaType, nil, nil)
+			err := response.JsonResponseWriter(r.Context(), w, response.UnsupportedMediaType, nil, nil)
 			if err != nil {
 				log.Printf("failed to write response: %v", err)
 			}

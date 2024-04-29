@@ -77,7 +77,7 @@ func (q *Queries) FindEarlyLeavingByID(ctx context.Context, earlyLeavingID uuid.
 const getEarlyLeavings = `-- name: GetEarlyLeavings :many
 SELECT t_early_leavings_pkey, early_leaving_id, attendance_id, leave_time FROM t_early_leavings
 ORDER BY
-	t_early_leavings_pkey DESC
+	t_early_leavings_pkey ASC
 `
 
 func (q *Queries) GetEarlyLeavings(ctx context.Context) ([]EarlyLeaving, error) {
@@ -110,12 +110,12 @@ SELECT t_early_leavings_pkey, early_leaving_id, attendance_id, leave_time FROM t
 WHERE
 	CASE $2::text
 		WHEN 'next' THEN
-			t_early_leavings_pkey < $3::int
-		WHEN 'prev' THEN
 			t_early_leavings_pkey > $3::int
+		WHEN 'prev' THEN
+			t_early_leavings_pkey < $3::int
 	END
 ORDER BY
-	t_early_leavings_pkey DESC
+	t_early_leavings_pkey ASC
 LIMIT $1
 `
 
@@ -153,7 +153,7 @@ func (q *Queries) GetEarlyLeavingsUseKeysetPaginate(ctx context.Context, arg Get
 const getEarlyLeavingsUseNumberedPaginate = `-- name: GetEarlyLeavingsUseNumberedPaginate :many
 SELECT t_early_leavings_pkey, early_leaving_id, attendance_id, leave_time FROM t_early_leavings
 ORDER BY
-	t_early_leavings_pkey DESC
+	t_early_leavings_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -191,7 +191,7 @@ const getPluralEarlyLeavings = `-- name: GetPluralEarlyLeavings :many
 SELECT t_early_leavings_pkey, early_leaving_id, attendance_id, leave_time FROM t_early_leavings
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
-	t_early_leavings_pkey DESC
+	t_early_leavings_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

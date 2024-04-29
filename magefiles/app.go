@@ -53,9 +53,9 @@ func (a App) Rollback(ctx context.Context) {
 	mg.CtxDeps(ctx, a.rollback)
 }
 
-// Seed loads seed data.
-func (a App) Seed(ctx context.Context) {
-	mg.CtxDeps(ctx, a.seed)
+// Seed loads seed data.(options can be specified by colon-separated)
+func (a App) Seed(ctx context.Context, target string) {
+	mg.CtxDeps(ctx, a.seedGenerator(target))
 }
 
 // Tabledoc generates table documentation.
@@ -170,13 +170,14 @@ func (a App) rollback() error {
 	return nil
 }
 
-func (a App) seed() error {
-	if err := sh.RunV(
-		"docker", "compose", "exec", "mono-api", "mage", "-d", "/app/server", "db:seed"); err != nil {
-		return fmt.Errorf("create database: %w", err)
+func (a App) seedGenerator(target string) func() error {
+	return func() error {
+		if err := sh.RunV(
+			"docker", "compose", "exec", "mono-api", "mage", "-d", "/app/server", "db:seed", target); err != nil {
+			return fmt.Errorf("create database: %w", err)
+		}
+		return nil
 	}
-
-	return nil
 }
 
 func (a App) tabledoc() error {

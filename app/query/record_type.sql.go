@@ -110,7 +110,7 @@ SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
 WHERE
 	record_type_id = ANY($3::uuid[])
 ORDER BY
-	m_record_types_pkey DESC
+	m_record_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -152,7 +152,7 @@ WHERE
 ORDER BY
 	CASE WHEN $3::text = 'name' THEN name END ASC,
 	CASE WHEN $3::text = 'r_name' THEN name END DESC,
-	m_record_types_pkey DESC
+	m_record_types_pkey ASC
 `
 
 type GetRecordTypesParams struct {
@@ -194,21 +194,21 @@ AND
 	CASE $3::text
 		WHEN 'next' THEN
 			CASE $4::text
-				WHEN 'name' THEN name > $5 OR (name = $5 AND m_record_types_pkey < $6::int)
-				WHEN 'r_name' THEN name < $5 OR (name = $5 AND m_record_types_pkey < $6::int)
-				ELSE m_record_types_pkey < $6::int
+				WHEN 'name' THEN name > $5 OR (name = $5 AND m_record_types_pkey > $6::int)
+				WHEN 'r_name' THEN name < $5 OR (name = $5 AND m_record_types_pkey > $6::int)
+				ELSE m_record_types_pkey > $6::int
 			END
 		WHEN 'prev' THEN
 			CASE $4::text
-				WHEN 'name' THEN name < $5 OR (name = $5 AND m_record_types_pkey > $6::int)
-				WHEN 'r_name' THEN name > $5 OR (name = $5 AND m_record_types_pkey > $6::int)
-				ELSE m_record_types_pkey > $6::int
+				WHEN 'name' THEN name < $5 OR (name = $5 AND m_record_types_pkey < $6::int)
+				WHEN 'r_name' THEN name > $5 OR (name = $5 AND m_record_types_pkey < $6::int)
+				ELSE m_record_types_pkey < $6::int
 			END
 	END
 ORDER BY
 	CASE WHEN $4::text = 'name' THEN name END ASC,
 	CASE WHEN $4::text = 'r_name' THEN name END DESC,
-	m_record_types_pkey DESC
+	m_record_types_pkey ASC
 `
 
 type GetRecordTypesUseKeysetPaginateParams struct {
@@ -259,7 +259,7 @@ WHERE
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN name END ASC,
 	CASE WHEN $5::text = 'r_name' THEN name END DESC,
-	m_record_types_pkey DESC
+	m_record_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
 

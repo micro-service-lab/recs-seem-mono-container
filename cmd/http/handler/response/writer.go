@@ -7,8 +7,8 @@ import (
 	"net/http"
 )
 
-// Writer writes a response to the client.
-func Writer(
+// JsonResponseWriter writes a response to the client.
+func JsonResponseWriter(
 	_ context.Context, w http.ResponseWriter, rType APIResponseType, data any, errAttr ApplicationErrorAttributes,
 ) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")

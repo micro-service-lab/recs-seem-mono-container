@@ -56,7 +56,7 @@ func (q *Queries) FindAbsenceByID(ctx context.Context, absenceID uuid.UUID) (Abs
 const getAbsences = `-- name: GetAbsences :many
 SELECT t_absences_pkey, absence_id, attendance_id FROM t_absences
 ORDER BY
-	t_absences_pkey DESC
+	t_absences_pkey ASC
 `
 
 func (q *Queries) GetAbsences(ctx context.Context) ([]Absence, error) {
@@ -84,12 +84,12 @@ SELECT t_absences_pkey, absence_id, attendance_id FROM t_absences
 WHERE
 	CASE $2::text
 		WHEN 'next' THEN
-			t_absences_pkey < $3::int
-		WHEN 'prev' THEN
 			t_absences_pkey > $3::int
+		WHEN 'prev' THEN
+			t_absences_pkey < $3::int
 	END
 ORDER BY
-	t_absences_pkey DESC
+	t_absences_pkey ASC
 LIMIT $1
 `
 
@@ -122,7 +122,7 @@ func (q *Queries) GetAbsencesUseKeysetPaginate(ctx context.Context, arg GetAbsen
 const getAbsencesUseNumberedPaginate = `-- name: GetAbsencesUseNumberedPaginate :many
 SELECT t_absences_pkey, absence_id, attendance_id FROM t_absences
 ORDER BY
-	t_absences_pkey DESC
+	t_absences_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -153,20 +153,20 @@ func (q *Queries) GetAbsencesUseNumberedPaginate(ctx context.Context, arg GetAbs
 
 const getPluralAbsences = `-- name: GetPluralAbsences :many
 SELECT t_absences_pkey, absence_id, attendance_id FROM t_absences
-WHERE attendance_id = ANY($3::uuid[])
+WHERE absence_id = ANY($3::uuid[])
 ORDER BY
-	t_absences_pkey DESC
+	t_absences_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralAbsencesParams struct {
-	Limit         int32       `json:"limit"`
-	Offset        int32       `json:"offset"`
-	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+	Limit      int32       `json:"limit"`
+	Offset     int32       `json:"offset"`
+	AbsenceIds []uuid.UUID `json:"absence_ids"`
 }
 
 func (q *Queries) GetPluralAbsences(ctx context.Context, arg GetPluralAbsencesParams) ([]Absence, error) {
-	rows, err := q.db.Query(ctx, getPluralAbsences, arg.Limit, arg.Offset, arg.AttendanceIds)
+	rows, err := q.db.Query(ctx, getPluralAbsences, arg.Limit, arg.Offset, arg.AbsenceIds)
 	if err != nil {
 		return nil, err
 	}

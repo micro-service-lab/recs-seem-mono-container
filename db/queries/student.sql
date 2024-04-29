@@ -18,12 +18,12 @@ WHERE student_id = $1;
 -- name: GetStudents :many
 SELECT * FROM m_students
 ORDER BY
-	m_students_pkey DESC;
+	m_students_pkey ASC;
 
 -- name: GetStudentsUseNumberedPaginate :many
 SELECT * FROM m_students
 ORDER BY
-	m_students_pkey DESC
+	m_students_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetStudentsUseKeysetPaginate :many
@@ -31,19 +31,19 @@ SELECT * FROM m_students
 WHERE
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
-			m_students_pkey < @cursor::int
-		WHEN 'prev' THEN
 			m_students_pkey > @cursor::int
+		WHEN 'prev' THEN
+			m_students_pkey < @cursor::int
 	END
 ORDER BY
-	m_students_pkey DESC
+	m_students_pkey ASC
 LIMIT $1;
 
 -- name: GetPluralStudents :many
 SELECT * FROM m_students
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	m_students_pkey DESC
+	m_students_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: CountStudents :one

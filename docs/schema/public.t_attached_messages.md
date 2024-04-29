@@ -7,7 +7,7 @@
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | t_attached_messages_pkey | bigint | nextval('t_attached_messages_t_attached_messages_pkey_seq'::regclass) | false |  |  |  |
-| message_id | uuid |  | false |  | [public.t_messages](public.t_messages.md) |  |
+| message_id | uuid |  | true |  | [public.t_messages](public.t_messages.md) |  |
 | attachable_item_id | uuid |  | false |  | [public.t_attachable_items](public.t_attachable_items.md) |  |
 
 ## Constraints
@@ -15,7 +15,7 @@
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
 | fk_t_attached_messages_attachable_item_id | FOREIGN KEY | FOREIGN KEY (attachable_item_id) REFERENCES t_attachable_items(attachable_item_id) ON UPDATE RESTRICT ON DELETE RESTRICT |
-| fk_t_attached_messages_message_id | FOREIGN KEY | FOREIGN KEY (message_id) REFERENCES t_messages(message_id) ON UPDATE CASCADE ON DELETE CASCADE |
+| fk_t_attached_messages_message_id | FOREIGN KEY | FOREIGN KEY (message_id) REFERENCES t_messages(message_id) ON UPDATE SET NULL ON DELETE SET NULL |
 | t_attached_messages_pkey | PRIMARY KEY | PRIMARY KEY (t_attached_messages_pkey) |
 
 ## Indexes

@@ -11,7 +11,7 @@
 | member_id | uuid |  | false |  | [public.m_members](public.m_members.md) |  |
 | x_pos | double precision |  | false |  |  |  |
 | y_pos | double precision |  | false |  |  |  |
-| send_at | timestamp with time zone |  | false |  |  |  |
+| sent_at | timestamp with time zone |  | false |  |  |  |
 
 ## Constraints
 

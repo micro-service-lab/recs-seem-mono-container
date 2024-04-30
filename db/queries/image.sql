@@ -37,7 +37,8 @@ WHERE
 			t_images_pkey < @cursor::int
 	END
 ORDER BY
-	t_images_pkey ASC
+	CASE WHEN @cursor_direction::text = 'next' THEN t_images_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_images_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralImages :many
@@ -74,7 +75,8 @@ WHERE
 			t_images_pkey < @cursor::int
 	END
 ORDER BY
-	t_images_pkey ASC
+	CASE WHEN @cursor_direction::text = 'next' THEN t_images_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_images_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralImagesWithAttachableItem :many

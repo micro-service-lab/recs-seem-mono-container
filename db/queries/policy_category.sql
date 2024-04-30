@@ -61,9 +61,13 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_policy_categories.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_policy_categories.name END DESC,
-	m_policy_categories_pkey ASC;
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_policy_categories.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_policy_categories.name END DESC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_policy_categories.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_policy_categories.name END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN m_policy_categories_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_policy_categories_pkey END DESC
+LIMIT $1;
 
 -- name: GetPluralPolicyCategories :many
 SELECT * FROM m_policy_categories

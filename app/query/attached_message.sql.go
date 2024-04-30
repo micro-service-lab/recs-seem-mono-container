@@ -140,7 +140,8 @@ AND
 			t_attached_messages_pkey < $4::int
 	END
 ORDER BY
-	t_attached_messages_pkey ASC
+	CASE WHEN $3::text = 'next' THEN t_attached_messages_pkey END ASC,
+	CASE WHEN $3::text = 'prev' THEN t_attached_messages_pkey END DESC
 LIMIT $2
 `
 
@@ -330,7 +331,8 @@ AND
 			t_attached_messages_pkey < $4::int
 	END
 ORDER BY
-	t_attached_messages_pkey ASC
+	CASE WHEN $3::text = 'next' THEN t_attached_messages_pkey END ASC,
+	CASE WHEN $3::text = 'prev' THEN t_attached_messages_pkey END DESC
 LIMIT $2
 `
 

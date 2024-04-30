@@ -216,7 +216,8 @@ WHERE
 			t_attachable_items_pkey > $3
 	END
 ORDER BY
-	t_attachable_items_pkey ASC
+	CASE WHEN $2::text = 'next' THEN t_attachable_items_pkey END ASC,
+	CASE WHEN $2::text = 'prev' THEN t_attachable_items_pkey END DESC
 LIMIT $1
 `
 
@@ -410,7 +411,8 @@ WHERE
 			t_attachable_items_pkey < $3::int
 	END
 ORDER BY
-	t_attachable_items_pkey ASC
+	CASE WHEN $2::text = 'next' THEN t_attachable_items_pkey END ASC,
+	CASE WHEN $2::text = 'prev' THEN t_attachable_items_pkey END DESC
 LIMIT $1
 `
 

@@ -172,9 +172,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN name END DESC,
-	m_event_types_pkey ASC
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN name END ASC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN name END DESC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN name END ASC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN name END DESC,
+	CASE WHEN $4::text = 'next' THEN m_event_types_pkey END ASC,
+	CASE WHEN $4::text = 'prev' THEN m_event_types_pkey END DESC
 LIMIT $1
 `
 

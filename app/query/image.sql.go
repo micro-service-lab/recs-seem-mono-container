@@ -155,7 +155,8 @@ WHERE
 			t_images_pkey < $3::int
 	END
 ORDER BY
-	t_images_pkey ASC
+	CASE WHEN $2::text = 'next' THEN t_images_pkey END ASC,
+	CASE WHEN $2::text = 'prev' THEN t_images_pkey END DESC
 LIMIT $1
 `
 
@@ -290,7 +291,8 @@ WHERE
 			t_images_pkey < $3::int
 	END
 ORDER BY
-	t_images_pkey ASC
+	CASE WHEN $2::text = 'next' THEN t_images_pkey END ASC,
+	CASE WHEN $2::text = 'prev' THEN t_images_pkey END DESC
 LIMIT $1
 `
 

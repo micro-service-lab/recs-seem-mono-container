@@ -51,7 +51,8 @@ WHERE
 			t_attachable_items_pkey > @cursor
 	END
 ORDER BY
-	t_attachable_items_pkey ASC
+	CASE WHEN @cursor_direction::text = 'next' THEN t_attachable_items_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_attachable_items_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralAttachableItems :many
@@ -97,7 +98,8 @@ WHERE
 			t_attachable_items_pkey < @cursor::int
 	END
 ORDER BY
-	t_attachable_items_pkey ASC
+	CASE WHEN @cursor_direction::text = 'next' THEN t_attachable_items_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_attachable_items_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralAttachableItemsWithMimeType :many

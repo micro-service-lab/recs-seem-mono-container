@@ -169,9 +169,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permission_associations_pkey ASC
+	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_permissions.name END ASC,
+	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_permissions.name END DESC,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_permissions.name END ASC,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_permissions.name END DESC,
+	CASE WHEN $5::text = 'next' THEN m_permission_associations_pkey END ASC,
+	CASE WHEN $5::text = 'prev' THEN m_permission_associations_pkey END DESC
 LIMIT $2
 `
 
@@ -475,9 +478,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_work_positions.name END DESC,
-	m_permission_associations_pkey ASC
+	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_work_positions.name END ASC,
+	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_work_positions.name END DESC,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_work_positions.name END ASC,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_work_positions.name END DESC,
+	CASE WHEN $5::text = 'next' THEN m_permission_associations_pkey END ASC,
+	CASE WHEN $5::text = 'prev' THEN m_permission_associations_pkey END DESC
 LIMIT $2
 `
 

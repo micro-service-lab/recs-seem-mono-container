@@ -107,9 +107,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
-	m_organizations_pkey ASC
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN m_organizations_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_organizations_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralOrganizations :many
@@ -187,9 +190,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
-	m_organizations_pkey ASC
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN m_organizations_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_organizations_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralOrganizationsWithDetail :many
@@ -267,9 +273,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
-	m_organizations_pkey ASC
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN m_organizations_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_organizations_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralOrganizationsWithChatRoom :many
@@ -352,9 +361,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
-	m_organizations_pkey ASC
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN m_organizations_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_organizations_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralOrganizationsWithAll :many

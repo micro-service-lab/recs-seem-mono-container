@@ -162,7 +162,8 @@ WHERE
 			m_students_pkey < $3::int
 	END
 ORDER BY
-	m_students_pkey ASC
+	CASE WHEN $2::text = 'next' THEN m_students_pkey END ASC,
+	CASE WHEN $2::text = 'prev' THEN m_students_pkey END DESC
 LIMIT $1
 `
 

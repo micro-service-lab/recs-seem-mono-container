@@ -351,7 +351,8 @@ AND
 			m_chat_rooms_pkey < $11::int
 	END
 ORDER BY
-	m_chat_rooms_pkey ASC
+	CASE WHEN $10::text = 'next' THEN m_chat_rooms_pkey END ASC,
+	CASE WHEN $10::text = 'prev' THEN m_chat_rooms_pkey END DESC
 LIMIT $1
 `
 
@@ -599,7 +600,8 @@ AND
 			m_chat_rooms_pkey < $11::int
 	END
 ORDER BY
-	m_chat_rooms_pkey ASC
+	CASE WHEN $10::text = 'next' THEN m_chat_rooms_pkey END ASC,
+	CASE WHEN $10::text = 'prev' THEN m_chat_rooms_pkey END DESC
 LIMIT $1
 `
 
@@ -895,7 +897,8 @@ AND
 			m_chat_rooms_pkey < $11::int
 	END
 ORDER BY
-	m_chat_rooms_pkey ASC
+	CASE WHEN $10::text = 'next' THEN m_chat_rooms_pkey END ASC,
+	CASE WHEN $10::text = 'prev' THEN m_chat_rooms_pkey END DESC
 LIMIT $1
 `
 
@@ -1161,7 +1164,8 @@ AND
 			m_chat_rooms_pkey < $11::int
 	END
 ORDER BY
-	m_chat_rooms_pkey ASC
+	CASE WHEN $10::text = 'next' THEN m_chat_rooms_pkey END ASC,
+	CASE WHEN $10::text = 'prev' THEN m_chat_rooms_pkey END DESC
 LIMIT $1
 `
 

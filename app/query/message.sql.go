@@ -387,11 +387,16 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $17::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey ASC
+	CASE WHEN $17::text = 'posted_at' AND $16::text = 'next' THEN posted_at END ASC,
+	CASE WHEN $17::text = 'posted_at' AND $16::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'next' THEN posted_at END DESC,
+	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'prev' THEN posted_at END ASC,
+	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'next' THEN last_edited_at END DESC,
+	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'prev' THEN last_edited_at END ASC,
+	CASE WHEN $16::text = 'next' THEN t_messages_pkey END ASC,
+	CASE WHEN $16::text = 'prev' THEN t_messages_pkey END DESC
 LIMIT $1
 `
 
@@ -713,11 +718,16 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $17::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey ASC
+	CASE WHEN $17::text = 'posted_at' AND $16::text = 'next' THEN posted_at END ASC,
+	CASE WHEN $17::text = 'posted_at' AND $16::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'next' THEN posted_at END DESC,
+	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'prev' THEN posted_at END ASC,
+	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'next' THEN last_edited_at END DESC,
+	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'prev' THEN last_edited_at END ASC,
+	CASE WHEN $16::text = 'next' THEN t_messages_pkey END ASC,
+	CASE WHEN $16::text = 'prev' THEN t_messages_pkey END DESC
 LIMIT $1
 `
 
@@ -1082,11 +1092,16 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $17::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey ASC
+	CASE WHEN $17::text = 'posted_at' AND $16::text = 'next' THEN posted_at END ASC,
+	CASE WHEN $17::text = 'posted_at' AND $16::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'next' THEN posted_at END DESC,
+	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'prev' THEN posted_at END ASC,
+	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'next' THEN last_edited_at END DESC,
+	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'prev' THEN last_edited_at END ASC,
+	CASE WHEN $16::text = 'next' THEN t_messages_pkey END ASC,
+	CASE WHEN $16::text = 'prev' THEN t_messages_pkey END DESC
 LIMIT $1
 `
 
@@ -1425,11 +1440,16 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $17::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey ASC
+	CASE WHEN $17::text = 'posted_at' AND $16::text = 'next' THEN posted_at END ASC,
+	CASE WHEN $17::text = 'posted_at' AND $16::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'next' THEN posted_at END DESC,
+	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'prev' THEN posted_at END ASC,
+	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'next' THEN last_edited_at END DESC,
+	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'prev' THEN last_edited_at END ASC,
+	CASE WHEN $16::text = 'next' THEN t_messages_pkey END ASC,
+	CASE WHEN $16::text = 'prev' THEN t_messages_pkey END DESC
 LIMIT $1
 `
 

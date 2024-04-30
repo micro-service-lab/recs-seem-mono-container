@@ -43,7 +43,8 @@ AND
 			t_attached_messages_pkey < @cursor::int
 	END
 ORDER BY
-	t_attached_messages_pkey ASC
+	CASE WHEN @cursor_direction::text = 'next' THEN t_attached_messages_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_attached_messages_pkey END DESC
 LIMIT $2;
 
 -- name: GetPluralAttachableItemsOnMessage :many
@@ -102,7 +103,8 @@ AND
 			t_attached_messages_pkey < @cursor::int
 	END
 ORDER BY
-	t_attached_messages_pkey ASC
+	CASE WHEN @cursor_direction::text = 'next' THEN t_attached_messages_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_attached_messages_pkey END DESC
 LIMIT $2;
 
 -- name: GetPluralAttachedMessagesOnChatRoom :many

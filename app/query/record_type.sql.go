@@ -189,29 +189,34 @@ func (q *Queries) GetRecordTypes(ctx context.Context, arg GetRecordTypesParams) 
 const getRecordTypesUseKeysetPaginate = `-- name: GetRecordTypesUseKeysetPaginate :many
 SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
 WHERE
-	CASE WHEN $1::boolean = true THEN m_record_types.name LIKE '%' || $2::text || '%' ELSE TRUE END
+	CASE WHEN $2::boolean = true THEN m_record_types.name LIKE '%' || $3::text || '%' ELSE TRUE END
 AND
-	CASE $3::text
+	CASE $4::text
 		WHEN 'next' THEN
-			CASE $4::text
-				WHEN 'name' THEN name > $5 OR (name = $5 AND m_record_types_pkey > $6::int)
-				WHEN 'r_name' THEN name < $5 OR (name = $5 AND m_record_types_pkey > $6::int)
-				ELSE m_record_types_pkey > $6::int
+			CASE $5::text
+				WHEN 'name' THEN name > $6 OR (name = $6 AND m_record_types_pkey > $7::int)
+				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_record_types_pkey > $7::int)
+				ELSE m_record_types_pkey > $7::int
 			END
 		WHEN 'prev' THEN
-			CASE $4::text
-				WHEN 'name' THEN name < $5 OR (name = $5 AND m_record_types_pkey < $6::int)
-				WHEN 'r_name' THEN name > $5 OR (name = $5 AND m_record_types_pkey < $6::int)
-				ELSE m_record_types_pkey < $6::int
+			CASE $5::text
+				WHEN 'name' THEN name < $6 OR (name = $6 AND m_record_types_pkey < $7::int)
+				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_record_types_pkey < $7::int)
+				ELSE m_record_types_pkey < $7::int
 			END
 	END
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN name END DESC,
-	m_record_types_pkey ASC
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN name END ASC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN name END DESC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN name END ASC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN name END DESC,
+	CASE WHEN $4::text = 'next' THEN m_record_types_pkey END ASC,
+	CASE WHEN $4::text = 'prev' THEN m_record_types_pkey END DESC
+LIMIT $1
 `
 
 type GetRecordTypesUseKeysetPaginateParams struct {
+	Limit           int32  `json:"limit"`
 	WhereLikeName   bool   `json:"where_like_name"`
 	SearchName      string `json:"search_name"`
 	CursorDirection string `json:"cursor_direction"`
@@ -222,6 +227,7 @@ type GetRecordTypesUseKeysetPaginateParams struct {
 
 func (q *Queries) GetRecordTypesUseKeysetPaginate(ctx context.Context, arg GetRecordTypesUseKeysetPaginateParams) ([]RecordType, error) {
 	rows, err := q.db.Query(ctx, getRecordTypesUseKeysetPaginate,
+		arg.Limit,
 		arg.WhereLikeName,
 		arg.SearchName,
 		arg.CursorDirection,

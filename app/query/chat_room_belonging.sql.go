@@ -205,15 +205,24 @@ AND CASE $3::text
 		END
 END
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_chat_rooms.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_chat_rooms.name END DESC,
-	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN $4::text = 'old_chat' THEN
+	CASE WHEN $4::text = 'name' AND $3::text = 'next' THEN m_chat_rooms.name END ASC,
+	CASE WHEN $4::text = 'name' AND $3::text = 'prev' THEN m_chat_rooms.name END DESC,
+	CASE WHEN $4::text = 'r_name' AND $3::text = 'next' THEN m_chat_rooms.name END ASC,
+	CASE WHEN $4::text = 'r_name' AND $3::text = 'prev' THEN m_chat_rooms.name END DESC,
+	CASE WHEN $4::text = 'old_add' AND $3::text = 'next' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN $4::text = 'old_add' AND $3::text = 'prev' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN $4::text = 'late_add' AND $3::text = 'next' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN $4::text = 'late_add' AND $3::text = 'prev' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN $4::text = 'old_chat' AND $3::text = 'next' THEN
 		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END ASC,
-	CASE WHEN $4::text = 'late_chat' THEN
+	CASE WHEN $4::text = 'old_chat' AND $3::text = 'prev' THEN
 		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END DESC,
-	m_chat_room_belongings_pkey ASC
+	CASE WHEN $4::text = 'late_chat' AND $3::text = 'next' THEN
+		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END ASC,
+	CASE WHEN $4::text = 'late_chat' AND $3::text = 'prev' THEN
+		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END DESC,
+	CASE WHEN $3::text = 'next' THEN m_chat_room_belongings_pkey END ASC,
+	CASE WHEN $3::text = 'prev' THEN m_chat_room_belongings_pkey END DESC
 LIMIT $2
 `
 
@@ -469,11 +478,16 @@ AND CASE $3::text
 		END
 END
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
-	m_chat_room_belongings_pkey ASC
+	CASE WHEN $4::text = 'name' AND $3::text = 'next' THEN m_members.name END ASC,
+	CASE WHEN $4::text = 'name' AND $3::text = 'prev' THEN m_members.name END DESC,
+	CASE WHEN $4::text = 'r_name' AND $3::text = 'next' THEN m_members.name END ASC,
+	CASE WHEN $4::text = 'r_name' AND $3::text = 'prev' THEN m_members.name END DESC,
+	CASE WHEN $4::text = 'old_add' AND $3::text = 'next' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN $4::text = 'old_add' AND $3::text = 'prev' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN $4::text = 'late_add' AND $3::text = 'next' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN $4::text = 'late_add' AND $3::text = 'prev' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN $3::text = 'next' THEN m_chat_room_belongings_pkey END ASC,
+	CASE WHEN $3::text = 'prev' THEN m_chat_room_belongings_pkey END DESC
 LIMIT $2
 `
 

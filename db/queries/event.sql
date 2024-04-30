@@ -127,9 +127,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
-	t_events_pkey ASC
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralEvents :many
@@ -222,9 +225,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
-	t_events_pkey ASC
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralEventsWithType :many
@@ -319,9 +325,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
-	t_events_pkey ASC
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralEventsWithOrganization :many
@@ -416,9 +425,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
-	t_events_pkey ASC
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralEventsWithSendOrganization :many
@@ -513,9 +525,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
-	t_events_pkey ASC
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralEventsWithPostUser :many
@@ -610,9 +625,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
-	t_events_pkey ASC
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralEventsWithLastEditUser :many
@@ -719,9 +737,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
-	t_events_pkey ASC
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralEventsWithAll :many

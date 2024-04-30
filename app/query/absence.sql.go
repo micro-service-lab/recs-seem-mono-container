@@ -89,7 +89,8 @@ WHERE
 			t_absences_pkey < $3::int
 	END
 ORDER BY
-	t_absences_pkey ASC
+	CASE WHEN $2::text = 'next' THEN t_absences_pkey END ASC,
+	CASE WHEN $2::text = 'prev' THEN t_absences_pkey END DESC
 LIMIT $1
 `
 

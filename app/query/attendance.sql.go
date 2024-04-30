@@ -470,9 +470,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $15::text = 'date' THEN date END ASC,
-	CASE WHEN $15::text = 'r_date' THEN date END DESC,
-	t_attendances_pkey ASC
+	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC,
+	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC,
+	CASE WHEN $14::text = 'next' THEN t_attendances_pkey END ASC,
+	CASE WHEN $14::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1
 `
 
@@ -820,9 +823,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey ASC
+	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC,
+	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC,
+	CASE WHEN $14::text = 'next' THEN t_attendances_pkey END ASC,
+	CASE WHEN $14::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1
 `
 
@@ -1244,9 +1250,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey ASC
+	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC,
+	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC,
+	CASE WHEN $14::text = 'next' THEN t_attendances_pkey END ASC,
+	CASE WHEN $14::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1
 `
 
@@ -1592,9 +1601,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey ASC
+	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC,
+	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC,
+	CASE WHEN $14::text = 'next' THEN t_attendances_pkey END ASC,
+	CASE WHEN $14::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1
 `
 
@@ -1957,9 +1969,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey ASC
+	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC,
+	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC,
+	CASE WHEN $14::text = 'next' THEN t_attendances_pkey END ASC,
+	CASE WHEN $14::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1
 `
 
@@ -2314,9 +2329,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey ASC
+	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC,
+	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC,
+	CASE WHEN $14::text = 'next' THEN t_attendances_pkey END ASC,
+	CASE WHEN $14::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1
 `
 

@@ -159,7 +159,8 @@ WHERE
 			m_professors_pkey < $3::int
 	END
 ORDER BY
-	m_professors_pkey ASC
+	CASE WHEN $2::text = 'next' THEN m_professors_pkey END ASC,
+	CASE WHEN $2::text = 'prev' THEN m_professors_pkey END DESC
 LIMIT $1
 `
 

@@ -120,13 +120,20 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey ASC
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END ASC,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END DESC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_records_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralRecords :many
@@ -217,13 +224,20 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey ASC
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END ASC,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END DESC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_records_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralRecordsWithRecordType :many
@@ -316,13 +330,20 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey ASC
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END ASC,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END DESC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_records_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralRecordsWithOrganization :many
@@ -415,13 +436,20 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey ASC
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END ASC,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END DESC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_records_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralRecordsWithPostedBy :many
@@ -514,13 +542,20 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey ASC
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END ASC,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END DESC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_records_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralRecordsWithLastEditedBy :many
@@ -622,13 +657,20 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey ASC
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END ASC,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END DESC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_records_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralRecordsWithAll :many

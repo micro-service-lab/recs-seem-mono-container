@@ -61,9 +61,13 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
-	m_record_types_pkey ASC;
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN name END DESC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN name END ASC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN name END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN m_record_types_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_record_types_pkey END DESC
+LIMIT $1;
 
 -- name: GetPluralRecordTypes :many
 SELECT * FROM m_record_types

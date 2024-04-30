@@ -31,7 +31,8 @@ WHERE
 			t_late_arrivals_pkey < @cursor::int
 	END
 ORDER BY
-	t_late_arrivals_pkey ASC
+	CASE WHEN @cursor_direction::text = 'next' THEN t_late_arrivals_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_late_arrivals_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralLateArrivals :many

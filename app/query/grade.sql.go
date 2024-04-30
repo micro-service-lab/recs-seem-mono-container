@@ -203,7 +203,8 @@ WHERE
 			m_grades_pkey < $3::int
 	END
 ORDER BY
-	m_grades_pkey ASC
+	CASE WHEN $2::text = 'next' THEN m_grades_pkey END ASC,
+	CASE WHEN $2::text = 'prev' THEN m_grades_pkey END DESC
 LIMIT $1
 `
 
@@ -342,9 +343,12 @@ WHERE
 			END
 	END
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $3::text = 'r_name' THEN m_organizations.name END DESC,
-	m_grades_pkey ASC
+	CASE WHEN $3::text = 'name' AND $2::text = 'next' THEN m_organizations.name END ASC,
+	CASE WHEN $3::text = 'name' AND $2::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN $3::text = 'r_name' AND $2::text = 'next' THEN m_organizations.name END ASC,
+	CASE WHEN $3::text = 'r_name' AND $2::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN $2::text = 'next' THEN m_grades_pkey END ASC,
+	CASE WHEN $2::text = 'prev' THEN m_grades_pkey END DESC
 LIMIT $1
 `
 

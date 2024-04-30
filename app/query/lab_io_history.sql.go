@@ -277,11 +277,16 @@ AND
 		END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN $13::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN $13::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN $13::text = 'late_exit' THEN exited_at END DESC,
-	t_lab_io_histories_pkey ASC
+	CASE WHEN $13::text = 'old_enter' AND $12::text = 'next' THEN entered_at END ASC,
+	CASE WHEN $13::text = 'old_enter' AND $12::text = 'prev' THEN entered_at END DESC,
+	CASE WHEN $13::text = 'late_enter' AND $12::text = 'next' THEN entered_at END DESC,
+	CASE WHEN $13::text = 'late_enter' AND $12::text = 'prev' THEN entered_at END ASC,
+	CASE WHEN $13::text = 'old_exit' AND $12::text = 'next' THEN exited_at END ASC,
+	CASE WHEN $13::text = 'old_exit' AND $12::text = 'prev' THEN exited_at END DESC,
+	CASE WHEN $13::text = 'late_exit' AND $12::text = 'next' THEN exited_at END DESC,
+	CASE WHEN $13::text = 'late_exit' AND $12::text = 'prev' THEN exited_at END ASC,
+	CASE WHEN $12::text = 'next' THEN t_lab_io_histories_pkey END ASC,
+	CASE WHEN $12::text = 'prev' THEN t_lab_io_histories_pkey END DESC
 LIMIT $1
 `
 
@@ -549,11 +554,16 @@ AND
 		END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN $13::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN $13::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN $13::text = 'late_exit' THEN exited_at END DESC,
-	t_lab_io_histories_pkey ASC
+	CASE WHEN $13::text = 'old_enter' AND $12::text = 'next' THEN entered_at END ASC,
+	CASE WHEN $13::text = 'old_enter' AND $12::text = 'prev' THEN entered_at END DESC,
+	CASE WHEN $13::text = 'late_enter' AND $12::text = 'next' THEN entered_at END DESC,
+	CASE WHEN $13::text = 'late_enter' AND $12::text = 'prev' THEN entered_at END ASC,
+	CASE WHEN $13::text = 'old_exit' AND $12::text = 'next' THEN exited_at END ASC,
+	CASE WHEN $13::text = 'old_exit' AND $12::text = 'prev' THEN exited_at END DESC,
+	CASE WHEN $13::text = 'late_exit' AND $12::text = 'next' THEN exited_at END DESC,
+	CASE WHEN $13::text = 'late_exit' AND $12::text = 'prev' THEN exited_at END ASC,
+	CASE WHEN $12::text = 'next' THEN t_lab_io_histories_pkey END ASC,
+	CASE WHEN $12::text = 'prev' THEN t_lab_io_histories_pkey END DESC
 LIMIT $1
 `
 

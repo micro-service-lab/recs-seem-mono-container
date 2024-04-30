@@ -52,9 +52,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
-	m_role_associations_pkey ASC
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_policies.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_policies.name END DESC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_policies.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_policies.name END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN m_role_associations_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_role_associations_pkey END DESC
 LIMIT $2;
 
 -- name: GetPluralPoliciesOnRole :many
@@ -118,9 +121,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
-	m_role_associations_pkey ASC
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_roles.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_roles.name END DESC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_roles.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_roles.name END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN m_role_associations_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_role_associations_pkey END DESC
 LIMIT $2;
 
 -- name: GetPluralRolesOnPolicy :many

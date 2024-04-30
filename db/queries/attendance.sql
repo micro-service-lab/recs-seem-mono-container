@@ -120,9 +120,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN date END ASC,
-	CASE WHEN @order_method::text = 'r_date' THEN date END DESC,
-	t_attendances_pkey ASC
+	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'next' THEN date END ASC,
+	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'prev' THEN date END DESC,
+	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'next' THEN date END DESC,
+	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'prev' THEN date END ASC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_attendances_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralAttendances :many
@@ -213,9 +216,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey ASC
+	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'next' THEN date END ASC,
+	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'prev' THEN date END DESC,
+	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'next' THEN date END DESC,
+	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'prev' THEN date END ASC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_attendances_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralAttendanceWithMember :many
@@ -301,9 +307,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey ASC
+	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'next' THEN date END ASC,
+	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'prev' THEN date END DESC,
+	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'next' THEN date END DESC,
+	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'prev' THEN date END ASC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_attendances_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralAttendanceWithAttendanceType :many
@@ -386,9 +395,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey ASC
+	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'next' THEN date END ASC,
+	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'prev' THEN date END DESC,
+	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'next' THEN date END DESC,
+	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'prev' THEN date END ASC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_attendances_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralAttendanceWithSendOrganization :many
@@ -477,9 +489,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey ASC
+	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'next' THEN date END ASC,
+	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'prev' THEN date END DESC,
+	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'next' THEN date END DESC,
+	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'prev' THEN date END ASC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_attendances_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralAttendanceWithDetails :many
@@ -588,9 +603,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
-	t_attendances_pkey ASC
+	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'next' THEN date END ASC,
+	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'prev' THEN date END DESC,
+	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'next' THEN date END DESC,
+	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'prev' THEN date END ASC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_attendances_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralAttendanceWithAll :many

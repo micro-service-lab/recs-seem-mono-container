@@ -47,7 +47,8 @@ WHERE
 			m_groups_pkey < @cursor::int
 	END
 ORDER BY
-	m_groups_pkey ASC
+	CASE WHEN @cursor_direction::text = 'next' THEN m_groups_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_groups_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralGroups :many
@@ -93,9 +94,13 @@ WHERE
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
-	m_groups_pkey ASC;
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN m_groups_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_groups_pkey END DESC
+LIMIT $1;
 
 -- name: GetPluralGroupsWithOrganization :many
 SELECT sqlc.embed(m_groups), sqlc.embed(m_organizations) FROM m_groups

@@ -862,13 +862,20 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'title' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey ASC
+	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC,
+	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END ASC,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END DESC,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END ASC,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $12::text = 'next' THEN t_records_pkey END ASC,
+	CASE WHEN $12::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1
 `
 
@@ -1197,13 +1204,20 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'title' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey ASC
+	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC,
+	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END ASC,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END DESC,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END ASC,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $12::text = 'next' THEN t_records_pkey END ASC,
+	CASE WHEN $12::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1
 `
 
@@ -1598,13 +1612,20 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'title' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey ASC
+	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC,
+	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END ASC,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END DESC,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END ASC,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $12::text = 'next' THEN t_records_pkey END ASC,
+	CASE WHEN $12::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1
 `
 
@@ -1931,13 +1952,20 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'title' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey ASC
+	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC,
+	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END ASC,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END DESC,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END ASC,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $12::text = 'next' THEN t_records_pkey END ASC,
+	CASE WHEN $12::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1
 `
 
@@ -2259,13 +2287,20 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'title' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey ASC
+	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC,
+	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END ASC,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END DESC,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END ASC,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $12::text = 'next' THEN t_records_pkey END ASC,
+	CASE WHEN $12::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1
 `
 
@@ -2587,13 +2622,20 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'title' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_records_pkey ASC
+	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC,
+	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END ASC,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END DESC,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END ASC,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $12::text = 'next' THEN t_records_pkey END ASC,
+	CASE WHEN $12::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1
 `
 

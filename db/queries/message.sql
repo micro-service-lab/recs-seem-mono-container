@@ -112,11 +112,16 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey ASC
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END ASC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_messages_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_messages_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralMessages :many
@@ -211,11 +216,16 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey ASC
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END ASC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_messages_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_messages_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralMessagesWithChatRoom :many
@@ -312,11 +322,16 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey ASC
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END ASC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_messages_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_messages_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralMessagesWithSender :many
@@ -416,11 +431,16 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
-	t_messages_pkey ASC
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END ASC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_messages_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_messages_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralMessagesWithAll :many

@@ -166,9 +166,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN m_attend_statuses.name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN m_attend_statuses.name END DESC,
-	m_attend_statuses_pkey ASC
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_attend_statuses.name END ASC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_attend_statuses.name END DESC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_attend_statuses.name END DESC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_attend_statuses.name END ASC,
+	CASE WHEN $4::text = 'next' THEN m_attend_statuses_pkey END ASC,
+	CASE WHEN $4::text = 'prev' THEN m_attend_statuses_pkey END DESC
 LIMIT $1
 `
 

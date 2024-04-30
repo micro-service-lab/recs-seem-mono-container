@@ -361,12 +361,11 @@ func setField(refField reflect.Value, refTypeField reflect.StructField, opts Opt
 		return err
 	}
 
-	if len(value) > 0 { // 値が空でない場合
-		// フィールドに値を設定する
-		return set(refField, refTypeField, value, opts.FuncMap)
+	if len(value) == 0 {
+		value = []string{""}
 	}
 
-	return nil
+	return set(refField, refTypeField, value, opts.FuncMap)
 }
 
 // フィールド名からキー(タグの名前)を生成する
@@ -380,7 +379,6 @@ type FieldParams struct {
 	Key             string
 	DefaultValue    []string
 	HasDefaultValue bool
-	Required        bool
 }
 
 // フィールドのメタデータを解析する
@@ -403,7 +401,6 @@ func parseFieldParams(field reflect.StructField, opts Options) (FieldParams, err
 	result := FieldParams{
 		OwnKey:          ownKey,
 		Key:             opts.Prefix + ownKey,
-		Required:        opts.RequiredIfNoDef,
 		DefaultValue:    defaultValues,
 		HasDefaultValue: hasDefaultValue,
 	}
@@ -412,8 +409,6 @@ func parseFieldParams(field reflect.StructField, opts Options) (FieldParams, err
 		switch tag {
 		case "":
 			continue
-		case "required":
-			result.Required = true
 		default:
 			return FieldParams{}, newNoSupportedTagOptionError(tag)
 		}
@@ -423,15 +418,11 @@ func parseFieldParams(field reflect.StructField, opts Options) (FieldParams, err
 }
 
 func get(fieldParams FieldParams, opts Options) (val []string, err error) {
-	var exists, isDefault bool
+	var isDefault bool
 
-	val, exists, isDefault = getOr(fieldParams.Key, fieldParams.DefaultValue, fieldParams.HasDefaultValue, opts.Param)
+	val, isDefault = getOr(fieldParams.Key, fieldParams.DefaultValue, fieldParams.HasDefaultValue, opts.Param)
 
 	opts.rawParams[fieldParams.OwnKey] = val
-
-	if fieldParams.Required && !exists && len(fieldParams.OwnKey) > 0 { // 必須パラメータであり、値がなく、queryParamタグがある場合
-		return []string{}, newQueryParamIsNotSet(fieldParams.Key)
-	}
 
 	if opts.OnSet != nil { // 値が設定されたときに実行される関数がある場合
 		if fieldParams.OwnKey != "" { // queryParamタグがある場合
@@ -447,19 +438,19 @@ func parseKeyForOption(key string) (string, []string) {
 	return opts[0], opts[1:]
 }
 
-func getOr(key string, defaultValue []string, defExists bool, param map[string][]string) (val []string, exists bool, isDefault bool) {
+func getOr(key string, defaultValue []string, defExists bool, param map[string][]string) (val []string, isDefault bool) {
 	// 値を取得する
 	value, exists := param[key]
 	switch {
 	case (!exists || key == "") && defExists: // paramにはなく、default値がある場合
-		return defaultValue, true, true
+		return defaultValue, true
 	case exists && len(value) == 0 && defExists: // paramにはあるが、値がなく、default値がある場合
-		return defaultValue, true, true
+		return defaultValue, true
 	case !exists: // paramになく、default値もない場合
-		return []string{}, false, false
+		return []string{}, false
 	}
 
-	return value, true, false
+	return value, true
 }
 
 func set(field reflect.Value, sf reflect.StructField, value []string, funcMap map[reflect.Type]ParserFunc) error {

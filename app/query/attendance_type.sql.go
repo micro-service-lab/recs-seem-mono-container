@@ -170,7 +170,12 @@ WHERE
 			END
 	END
 ORDER BY
-	m_attendance_types_pkey ASC
+	CASE WHEN $3::text = 'name' AND $2::text = 'next' THEN name END ASC,
+	CASE WHEN $3::text = 'name' AND $2::text = 'prev' THEN name END DESC,
+	CASE WHEN $3::text = 'r_name' AND $2::text = 'next' THEN name END ASC,
+	CASE WHEN $3::text = 'r_name' AND $2::text = 'prev' THEN name END DESC,
+	CASE WHEN $2::text = 'next' THEN m_attendance_types_pkey END ASC,
+	CASE WHEN $2::text = 'prev' THEN m_attendance_types_pkey END DESC
 LIMIT $1
 `
 

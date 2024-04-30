@@ -37,7 +37,7 @@ type AttendStatus struct {
 var AttendStatues = []AttendStatus{
 	{Key: "present", Name: "出席"},
 	{Key: "absent", Name: "欠席"},
-	{Key: "temporarily_absent", Name: "一時欠席"},
+	{Key: "temporarily_absent", Name: "一時退席"},
 	{Key: "go_home", Name: "退室"},
 	{Key: "not_attend", Name: "未出席"},
 }

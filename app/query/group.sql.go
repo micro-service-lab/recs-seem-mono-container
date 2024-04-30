@@ -203,7 +203,8 @@ WHERE
 			m_groups_pkey < $3::int
 	END
 ORDER BY
-	m_groups_pkey ASC
+	CASE WHEN $2::text = 'next' THEN m_groups_pkey END ASC,
+	CASE WHEN $2::text = 'prev' THEN m_groups_pkey END DESC
 LIMIT $1
 `
 
@@ -327,27 +328,32 @@ const getGroupsWithOrganizationUseKeysetPaginate = `-- name: GetGroupsWithOrgani
 SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE
-	CASE $1::text
+	CASE $2::text
 		WHEN 'next' THEN
-			CASE $2::text
-				WHEN 'name' THEN name > $3 OR (name = $3 AND m_groups_pkey > $4::int)
-				WHEN 'r_name' THEN name < $3 OR (name = $3 AND m_groups_pkey > $4::int)
-				ELSE m_groups_pkey > $4::int
+			CASE $3::text
+				WHEN 'name' THEN name > $4 OR (name = $4 AND m_groups_pkey > $5::int)
+				WHEN 'r_name' THEN name < $4 OR (name = $4 AND m_groups_pkey > $5::int)
+				ELSE m_groups_pkey > $5::int
 			END
 		WHEN 'prev' THEN
-			CASE $2::text
-				WHEN 'name' THEN name > $3 OR (name = $3 AND m_groups_pkey > $4::int)
-				WHEN 'r_name' THEN name < $3 OR (name = $3 AND m_groups_pkey > $4::int)
-				ELSE m_groups_pkey > $4::int
+			CASE $3::text
+				WHEN 'name' THEN name > $4 OR (name = $4 AND m_groups_pkey > $5::int)
+				WHEN 'r_name' THEN name < $4 OR (name = $4 AND m_groups_pkey > $5::int)
+				ELSE m_groups_pkey > $5::int
 			END
 	END
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_organizations.name END DESC,
-	m_groups_pkey ASC
+	CASE WHEN $3::text = 'name' AND $2::text = 'next' THEN m_organizations.name END ASC,
+	CASE WHEN $3::text = 'name' AND $2::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN $3::text = 'r_name' AND $2::text = 'next' THEN m_organizations.name END ASC,
+	CASE WHEN $3::text = 'r_name' AND $2::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN $2::text = 'next' THEN m_groups_pkey END ASC,
+	CASE WHEN $2::text = 'prev' THEN m_groups_pkey END DESC
+LIMIT $1
 `
 
 type GetGroupsWithOrganizationUseKeysetPaginateParams struct {
+	Limit           int32  `json:"limit"`
 	CursorDirection string `json:"cursor_direction"`
 	OrderMethod     string `json:"order_method"`
 	NameCursor      string `json:"name_cursor"`
@@ -361,6 +367,7 @@ type GetGroupsWithOrganizationUseKeysetPaginateRow struct {
 
 func (q *Queries) GetGroupsWithOrganizationUseKeysetPaginate(ctx context.Context, arg GetGroupsWithOrganizationUseKeysetPaginateParams) ([]GetGroupsWithOrganizationUseKeysetPaginateRow, error) {
 	rows, err := q.db.Query(ctx, getGroupsWithOrganizationUseKeysetPaginate,
+		arg.Limit,
 		arg.CursorDirection,
 		arg.OrderMethod,
 		arg.NameCursor,

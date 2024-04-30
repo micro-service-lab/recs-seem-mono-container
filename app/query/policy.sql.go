@@ -345,9 +345,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $7::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN $7::text = 'r_name' THEN m_policies.name END DESC,
-	m_policies_pkey ASC
+	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_policies.name END ASC,
+	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_policies.name END DESC,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_policies.name END ASC,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_policies.name END DESC,
+	CASE WHEN $6::text = 'next' THEN m_policies_pkey END ASC,
+	CASE WHEN $6::text = 'prev' THEN m_policies_pkey END DESC
 LIMIT $1
 `
 
@@ -554,9 +557,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $7::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN $7::text = 'r_name' THEN m_policies.name END DESC,
-	m_policies_pkey ASC
+	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_policies.name END ASC,
+	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_policies.name END DESC,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_policies.name END ASC,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_policies.name END DESC,
+	CASE WHEN $6::text = 'next' THEN m_policies_pkey END ASC,
+	CASE WHEN $6::text = 'prev' THEN m_policies_pkey END DESC
 LIMIT $1
 `
 

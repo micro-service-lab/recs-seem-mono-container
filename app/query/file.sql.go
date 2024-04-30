@@ -122,7 +122,8 @@ WHERE
 			t_files_pkey < $3::int
 	END
 ORDER BY
-	t_files_pkey ASC
+	CASE WHEN $2::text = 'next' THEN t_files_pkey END ASC,
+	CASE WHEN $2::text = 'prev' THEN t_files_pkey END DESC
 LIMIT $1
 `
 
@@ -243,7 +244,8 @@ WHERE
 			t_files_pkey < $3::int
 	END
 ORDER BY
-	t_files_pkey ASC
+	CASE WHEN $2::text = 'next' THEN t_files_pkey END ASC,
+	CASE WHEN $2::text = 'prev' THEN t_files_pkey END DESC
 LIMIT $1
 `
 

@@ -52,9 +52,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
-	m_work_positions_pkey ASC
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_work_positions.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_work_positions.name END DESC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_work_positions.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_work_positions.name END DESC,
+	CASE WHEN @cursor_direction::text = 'next' THEN m_work_positions_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_work_positions_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluckWorkPositions :many

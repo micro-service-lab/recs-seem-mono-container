@@ -172,9 +172,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN m_permission_categories.name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN m_permission_categories.name END DESC,
-	m_permission_categories_pkey ASC
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_permission_categories.name END ASC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_permission_categories.name END DESC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_permission_categories.name END ASC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_permission_categories.name END DESC,
+	CASE WHEN $4::text = 'next' THEN m_permission_categories_pkey END ASC,
+	CASE WHEN $4::text = 'prev' THEN m_permission_categories_pkey END DESC
 LIMIT $1
 `
 

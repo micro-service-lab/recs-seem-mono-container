@@ -195,29 +195,34 @@ func (q *Queries) GetPolicyCategories(ctx context.Context, arg GetPolicyCategori
 const getPolicyCategoriesUseKeysetPaginate = `-- name: GetPolicyCategoriesUseKeysetPaginate :many
 SELECT m_policy_categories_pkey, policy_category_id, name, description, key FROM m_policy_categories
 WHERE
-	CASE WHEN $1::boolean = true THEN m_policy_categories.name LIKE '%' || $2::text || '%' ELSE TRUE END
+	CASE WHEN $2::boolean = true THEN m_policy_categories.name LIKE '%' || $3::text || '%' ELSE TRUE END
 AND
-	CASE $3::text
+	CASE $4::text
 		WHEN 'next' THEN
-			CASE $4::text
-				WHEN 'name' THEN name > $5 OR (name = $5 AND m_policy_categories_pkey > $6::int)
-				WHEN 'r_name' THEN name < $5 OR (name = $5 AND m_policy_categories_pkey > $6::int)
-				ELSE m_policy_categories_pkey > $6::int
+			CASE $5::text
+				WHEN 'name' THEN name > $6 OR (name = $6 AND m_policy_categories_pkey > $7::int)
+				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_policy_categories_pkey > $7::int)
+				ELSE m_policy_categories_pkey > $7::int
 			END
 		WHEN 'prev' THEN
-			CASE $4::text
-				WHEN 'name' THEN name < $5 OR (name = $5 AND m_policy_categories_pkey < $6::int)
-				WHEN 'r_name' THEN name > $5 OR (name = $5 AND m_policy_categories_pkey < $6::int)
-				ELSE m_policy_categories_pkey < $6::int
+			CASE $5::text
+				WHEN 'name' THEN name < $6 OR (name = $6 AND m_policy_categories_pkey < $7::int)
+				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_policy_categories_pkey < $7::int)
+				ELSE m_policy_categories_pkey < $7::int
 			END
 	END
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_policy_categories.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_policy_categories.name END DESC,
-	m_policy_categories_pkey ASC
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_policy_categories.name END ASC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_policy_categories.name END DESC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_policy_categories.name END ASC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_policy_categories.name END DESC,
+	CASE WHEN $4::text = 'next' THEN m_policy_categories_pkey END ASC,
+	CASE WHEN $4::text = 'prev' THEN m_policy_categories_pkey END DESC
+LIMIT $1
 `
 
 type GetPolicyCategoriesUseKeysetPaginateParams struct {
+	Limit           int32  `json:"limit"`
 	WhereLikeName   bool   `json:"where_like_name"`
 	SearchName      string `json:"search_name"`
 	CursorDirection string `json:"cursor_direction"`
@@ -228,6 +233,7 @@ type GetPolicyCategoriesUseKeysetPaginateParams struct {
 
 func (q *Queries) GetPolicyCategoriesUseKeysetPaginate(ctx context.Context, arg GetPolicyCategoriesUseKeysetPaginateParams) ([]PolicyCategory, error) {
 	rows, err := q.db.Query(ctx, getPolicyCategoriesUseKeysetPaginate,
+		arg.Limit,
 		arg.WhereLikeName,
 		arg.SearchName,
 		arg.CursorDirection,

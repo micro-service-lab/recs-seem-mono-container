@@ -36,7 +36,8 @@ WHERE
 			m_students_pkey < @cursor::int
 	END
 ORDER BY
-	m_students_pkey ASC
+	CASE WHEN @cursor_direction::text = 'next' THEN m_students_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_students_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralStudents :many

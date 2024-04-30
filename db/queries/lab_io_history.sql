@@ -92,11 +92,16 @@ AND
 		END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
-	t_lab_io_histories_pkey ASC
+	CASE WHEN @order_method::text = 'old_enter' AND @cursor_direction::text = 'next' THEN entered_at END ASC,
+	CASE WHEN @order_method::text = 'old_enter' AND @cursor_direction::text = 'prev' THEN entered_at END DESC,
+	CASE WHEN @order_method::text = 'late_enter' AND @cursor_direction::text = 'next' THEN entered_at END DESC,
+	CASE WHEN @order_method::text = 'late_enter' AND @cursor_direction::text = 'prev' THEN entered_at END ASC,
+	CASE WHEN @order_method::text = 'old_exit' AND @cursor_direction::text = 'next' THEN exited_at END ASC,
+	CASE WHEN @order_method::text = 'old_exit' AND @cursor_direction::text = 'prev' THEN exited_at END DESC,
+	CASE WHEN @order_method::text = 'late_exit' AND @cursor_direction::text = 'next' THEN exited_at END DESC,
+	CASE WHEN @order_method::text = 'late_exit' AND @cursor_direction::text = 'prev' THEN exited_at END ASC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_lab_io_histories_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_lab_io_histories_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralLabIOHistories :many
@@ -179,11 +184,16 @@ AND
 		END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
-	t_lab_io_histories_pkey ASC
+	CASE WHEN @order_method::text = 'old_enter' AND @cursor_direction::text = 'next' THEN entered_at END ASC,
+	CASE WHEN @order_method::text = 'old_enter' AND @cursor_direction::text = 'prev' THEN entered_at END DESC,
+	CASE WHEN @order_method::text = 'late_enter' AND @cursor_direction::text = 'next' THEN entered_at END DESC,
+	CASE WHEN @order_method::text = 'late_enter' AND @cursor_direction::text = 'prev' THEN entered_at END ASC,
+	CASE WHEN @order_method::text = 'old_exit' AND @cursor_direction::text = 'next' THEN exited_at END ASC,
+	CASE WHEN @order_method::text = 'old_exit' AND @cursor_direction::text = 'prev' THEN exited_at END DESC,
+	CASE WHEN @order_method::text = 'late_exit' AND @cursor_direction::text = 'next' THEN exited_at END DESC,
+	CASE WHEN @order_method::text = 'late_exit' AND @cursor_direction::text = 'prev' THEN exited_at END ASC,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_lab_io_histories_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_lab_io_histories_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralLabIOHistoriesWithMember :many

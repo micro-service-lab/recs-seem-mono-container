@@ -76,7 +76,8 @@ AND
 			m_chat_rooms_pkey < @cursor::int
 	END
 ORDER BY
-	m_chat_rooms_pkey ASC
+	CASE WHEN @cursor_direction::text = 'next' THEN m_chat_rooms_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_chat_rooms_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralChatRooms :many
@@ -134,7 +135,8 @@ AND
 			m_chat_rooms_pkey < @cursor::int
 	END
 ORDER BY
-	m_chat_rooms_pkey ASC
+	CASE WHEN @cursor_direction::text = 'next' THEN m_chat_rooms_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_chat_rooms_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralChatRoomsWithOwner :many
@@ -196,7 +198,8 @@ AND
 			m_chat_rooms_pkey < @cursor::int
 	END
 ORDER BY
-	m_chat_rooms_pkey ASC
+	CASE WHEN @cursor_direction::text = 'next' THEN m_chat_rooms_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_chat_rooms_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralChatRoomsWithCoverImage :many
@@ -262,7 +265,8 @@ AND
 			m_chat_rooms_pkey < @cursor::int
 	END
 ORDER BY
-	m_chat_rooms_pkey ASC
+	CASE WHEN @cursor_direction::text = 'next' THEN m_chat_rooms_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_chat_rooms_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralChatRoomsWithAll :many

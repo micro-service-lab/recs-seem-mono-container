@@ -297,6 +297,7 @@ func getAttendStatuses(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.AttendStatus], error) {
+	fmt.Println("order", order)
 	var withCount int64
 	if wc.Valid {
 		var err error
@@ -335,37 +336,64 @@ func getAttendStatuses(
 		}
 		return store.ListResult[entity.AttendStatus]{Data: entities, WithCount: wcAtr}, nil
 	} else if cp.Valid {
-		isFirst := cp.Cursor == ""
-		pointsNext := false
-		limit := cp.Limit.Int64
-		var e []query.AttendStatus
-		var subCursor string
-		var decodedCursor store.Cursor
 		var err error
-
+		isFirst := cp.Cursor == "" // 初回のリクエストかどうか
+		pointsNext := false        // ページネーションの方向(true: 次データ, false: 前データ)
+		limit := cp.Limit.Int64
+		var e []query.AttendStatus // 結果リストデータ
+		var subCursor string
+		// サブカーソルに何を使用するか
+		switch string(order) {
+		case string(parameter.AttendStatusOrderMethodName):
+			subCursor = attendStatusNameCursorKey
+		case string(parameter.AttendStatusOrderMethodReverseName):
+			subCursor = attendStatusNameCursorKey
+		}
+		// カーソルのデコード+チェック
+		var decodedCursor store.Cursor
+		var nameCursor string
+		var ok bool
 		if !isFirst {
-			decodedCursor, err = store.DecodeCursor(cp.Cursor)
-			if err != nil {
+			cursorCheck := func(cur string) bool {
+				decodedCursor, err = store.DecodeCursor(cur)
+				if err != nil {
+					return false
+				}
+				if decodedCursor.SubCursorName != subCursor {
+					return false
+				}
+
+				switch subCursor {
+				case attendStatusNameCursorKey:
+					nameCursor, ok = decodedCursor.SubCursor.(string)
+				}
+				if !ok {
+					return false
+				}
+				return true
+			}
+			if !cursorCheck(cp.Cursor) {
 				isFirst = true
 				cp.Cursor = ""
 			}
 		}
 
 		if !isFirst {
+			// 今回の指定カーソルの方向を引き継ぐ
 			pointsNext = decodedCursor.CursorPointsNext == true
-			ID := decodedCursor.CursorID
-
-			var nameCursor string
-			if string(parameter.AttendStatusOrderMethodName) == "name" || string(parameter.AttendStatusOrderMethodReverseName) == "r_name" {
-				decodedCursor.SubCursorValue(&nameCursor)
-				subCursor = attendStatusNameCursorKey
+			var cursorDir string
+			if pointsNext {
+				cursorDir = "next"
+			} else {
+				cursorDir = "prev"
 			}
+			ID := decodedCursor.CursorID
 			p := query.GetAttendStatusesUseKeysetPaginateParams{
 				WhereLikeName:   where.WhereLikeName,
 				SearchName:      where.SearchName,
 				OrderMethod:     string(order),
 				Limit:           int32(limit) + 1,
-				CursorDirection: "next",
+				CursorDirection: cursorDir,
 				NameCursor:      nameCursor,
 				Cursor:          int32(ID),
 			}
@@ -394,8 +422,9 @@ func getAttendStatuses(
 		if hasPagination {
 			e = e[:limit]
 		}
+		eLen := len(e)
 		var firstValue, lastValue any
-		lastIndex := len(e) - 1
+		lastIndex := eLen - 1
 		if lastIndex < 0 {
 			lastIndex = 0
 		}
@@ -414,7 +443,12 @@ func getAttendStatuses(
 			Name:  subCursor,
 			Value: lastValue,
 		}
-		pageInfo := store.CalculatePagination(isFirst, hasPagination, pointsNext, firstData, lastData)
+		var pageInfo store.CursorPaginationAttribute
+		if pointsNext || isFirst {
+			pageInfo = store.CalculatePagination(isFirst, hasPagination, pointsNext, firstData, lastData)
+		} else {
+			pageInfo = store.CalculatePagination(isFirst, hasPagination, pointsNext, lastData, firstData)
+		}
 
 		entities := make([]entity.AttendStatus, len(e))
 		for i, v := range e {

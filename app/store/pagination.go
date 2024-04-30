@@ -4,7 +4,6 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"reflect"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
 )
@@ -49,23 +48,16 @@ type CursorPaginationAttribute struct {
 
 // Cursor カーソルを表す構造体。
 type Cursor struct {
-	Valid            bool   `json:"-"`
+	Valid            bool   `json:"valid"`
 	CursorID         int64  `json:"id"`
 	CursorPointsNext bool   `json:"points_next"`
 	SubCursorName    string `json:"sub_cursor_name"`
 	SubCursor        any    `json:"sub_cursor"`
 }
 
-func (c Cursor) SubCursorValue(v interface{}) {
-	rv := reflect.ValueOf(v)
-	if rv.Kind() != reflect.Pointer || rv.IsNil() {
-		return
-	}
-	fmt.Println(rv.Kind(), rv.Elem().Kind())
-}
-
 // CreateCursor カーソルを生成する。
 func CreateCursor(id int64, pointsNext bool, name string, value any) Cursor {
+	fmt.Println("id: ", id, "pointsNext: ", pointsNext, "name: ", name, "value: ", value)
 	c := Cursor{
 		Valid:            true,
 		CursorID:         id,
@@ -78,18 +70,17 @@ func CreateCursor(id int64, pointsNext bool, name string, value any) Cursor {
 
 // GeneratePager ページネーション情報を生成する。
 func GeneratePager(next, prev Cursor) CursorPaginationAttribute {
-	cpa := CursorPaginationAttribute{}
-	if next.Valid {
-		cpa.NextCursor = encodeCursor(next)
+	return CursorPaginationAttribute{
+		NextCursor: encodeCursor(next),
+		PrevCursor: encodeCursor(prev),
 	}
-	if prev.Valid {
-		cpa.PrevCursor = encodeCursor(prev)
-	}
-	return cpa
 }
 
 // encodeCursor カーソルをエンコードする。
 func encodeCursor(cursor Cursor) string {
+	if !cursor.Valid {
+		return ""
+	}
 	serializedCursor, err := json.Marshal(cursor)
 	if err != nil {
 		return ""
@@ -124,6 +115,7 @@ type CursorData struct {
 func CalculatePagination(
 	isFirstPage, hasPagination, pointsNext bool, firstData, lastData CursorData,
 ) CursorPaginationAttribute {
+	fmt.Println("isFirstPage: ", isFirstPage, "hasPagination: ", hasPagination, "pointsNext: ", pointsNext, "firstData: ", firstData, "lastData: ", lastData)
 	pagination := CursorPaginationAttribute{}
 	nextCur := Cursor{}
 	prevCur := Cursor{}

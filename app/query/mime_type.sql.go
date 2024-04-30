@@ -141,27 +141,32 @@ func (q *Queries) GetMimeTypes(ctx context.Context, orderMethod string) ([]MimeT
 const getMimeTypesUseKeysetPaginate = `-- name: GetMimeTypesUseKeysetPaginate :many
 SELECT m_mime_types_pkey, mime_type_id, name, key FROM m_mime_types
 WHERE
-	CASE $1::text
+	CASE $2::text
 		WHEN 'next' THEN
-			CASE $2::text
-				WHEN 'name' THEN name > $3 OR (name = $3 AND m_mime_types_pkey > $4::int)
-				WHEN 'r_name' THEN name < $3 OR (name = $3 AND m_mime_types_pkey > $4::int)
-				ELSE m_mime_types_pkey > $4::int
+			CASE $3::text
+				WHEN 'name' THEN name > $4 OR (name = $4 AND m_mime_types_pkey > $5::int)
+				WHEN 'r_name' THEN name < $4 OR (name = $4 AND m_mime_types_pkey > $5::int)
+				ELSE m_mime_types_pkey > $5::int
 			END
 		WHEN 'prev' THEN
-			CASE $2::text
-				WHEN 'name' THEN name < $3 OR (name = $3 AND m_mime_types_pkey < $4::int)
-				WHEN 'r_name' THEN name > $3 OR (name = $3 AND m_mime_types_pkey < $4::int)
-				ELSE m_mime_types_pkey < $4::int
+			CASE $3::text
+				WHEN 'name' THEN name < $4 OR (name = $4 AND m_mime_types_pkey < $5::int)
+				WHEN 'r_name' THEN name > $4 OR (name = $4 AND m_mime_types_pkey < $5::int)
+				ELSE m_mime_types_pkey < $5::int
 			END
 	END
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN name END DESC,
-	m_mime_types_pkey ASC
+	CASE WHEN $3::text = 'name' AND $2::text = 'next' THEN name END ASC,
+	CASE WHEN $3::text = 'name' AND $2::text = 'prev' THEN name END DESC,
+	CASE WHEN $3::text = 'r_name' AND $2::text = 'next' THEN name END ASC,
+	CASE WHEN $3::text = 'r_name' AND $2::text = 'prev' THEN name END DESC,
+	CASE WHEN $2::text = 'next' THEN m_mime_types_pkey END ASC,
+	CASE WHEN $2::text = 'prev' THEN m_mime_types_pkey END DESC
+LIMIT $1
 `
 
 type GetMimeTypesUseKeysetPaginateParams struct {
+	Limit           int32  `json:"limit"`
 	CursorDirection string `json:"cursor_direction"`
 	OrderMethod     string `json:"order_method"`
 	NameCursor      string `json:"name_cursor"`
@@ -170,6 +175,7 @@ type GetMimeTypesUseKeysetPaginateParams struct {
 
 func (q *Queries) GetMimeTypesUseKeysetPaginate(ctx context.Context, arg GetMimeTypesUseKeysetPaginateParams) ([]MimeType, error) {
 	rows, err := q.db.Query(ctx, getMimeTypesUseKeysetPaginate,
+		arg.Limit,
 		arg.CursorDirection,
 		arg.OrderMethod,
 		arg.NameCursor,

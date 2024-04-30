@@ -31,7 +31,8 @@ WHERE
 			t_early_leavings_pkey < @cursor::int
 	END
 ORDER BY
-	t_early_leavings_pkey ASC
+	CASE WHEN @cursor_direction::text = 'next' THEN t_early_leavings_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_early_leavings_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralEarlyLeavings :many

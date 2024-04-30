@@ -271,9 +271,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_policies.name END DESC,
-	m_role_associations_pkey ASC
+	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_policies.name END ASC,
+	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_policies.name END DESC,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_policies.name END ASC,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_policies.name END DESC,
+	CASE WHEN $5::text = 'next' THEN m_role_associations_pkey END ASC,
+	CASE WHEN $5::text = 'prev' THEN m_role_associations_pkey END DESC
 LIMIT $2
 `
 
@@ -477,9 +480,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_roles.name END DESC,
-	m_role_associations_pkey ASC
+	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_roles.name END ASC,
+	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_roles.name END DESC,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_roles.name END ASC,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_roles.name END DESC,
+	CASE WHEN $5::text = 'next' THEN m_role_associations_pkey END ASC,
+	CASE WHEN $5::text = 'prev' THEN m_role_associations_pkey END DESC
 LIMIT $2
 `
 

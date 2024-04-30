@@ -197,9 +197,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN m_work_positions.name END DESC,
-	m_work_positions_pkey ASC
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_work_positions.name END ASC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_work_positions.name END DESC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_work_positions.name END ASC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_work_positions.name END DESC,
+	CASE WHEN $4::text = 'next' THEN m_work_positions_pkey END ASC,
+	CASE WHEN $4::text = 'prev' THEN m_work_positions_pkey END DESC
 LIMIT $1
 `
 

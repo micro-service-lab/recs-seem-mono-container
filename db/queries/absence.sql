@@ -31,7 +31,8 @@ WHERE
 			t_absences_pkey < @cursor::int
 	END
 ORDER BY
-	t_absences_pkey ASC
+	CASE WHEN @cursor_direction::text = 'next' THEN t_absences_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_absences_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralAbsences :many

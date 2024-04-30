@@ -283,9 +283,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $7::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN $7::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permissions_pkey ASC
+	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_permissions.name END ASC,
+	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_permissions.name END DESC,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_permissions.name END ASC,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_permissions.name END DESC,
+	CASE WHEN $6::text = 'next' THEN m_permissions_pkey END ASC,
+	CASE WHEN $6::text = 'prev' THEN m_permissions_pkey END DESC
 LIMIT $1
 `
 
@@ -492,9 +495,12 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $7::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN $7::text = 'r_name' THEN m_permissions.name END DESC,
-	m_permissions_pkey ASC
+	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_permissions.name END ASC,
+	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_permissions.name END DESC,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_permissions.name END ASC,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_permissions.name END DESC,
+	CASE WHEN $6::text = 'next' THEN m_permissions_pkey END ASC,
+	CASE WHEN $6::text = 'prev' THEN m_permissions_pkey END DESC
 LIMIT $1
 `
 

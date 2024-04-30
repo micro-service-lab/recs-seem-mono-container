@@ -37,7 +37,8 @@ WHERE
 			t_files_pkey < @cursor::int
 	END
 ORDER BY
-	t_files_pkey ASC
+	CASE WHEN @cursor_direction::text = 'next' THEN t_files_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_files_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralFiles :many
@@ -74,7 +75,8 @@ WHERE
 			t_files_pkey < @cursor::int
 	END
 ORDER BY
-	t_files_pkey ASC
+	CASE WHEN @cursor_direction::text = 'next' THEN t_files_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_files_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralFilesWithAttachableItem :many

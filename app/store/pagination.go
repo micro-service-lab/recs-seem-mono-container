@@ -3,10 +3,14 @@ package store
 import (
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 )
+
+var ErrDataNoRecord = errors.New("no record")
 
 const (
 	// CursorID カーソルID。
@@ -57,7 +61,6 @@ type Cursor struct {
 
 // CreateCursor カーソルを生成する。
 func CreateCursor(id int64, pointsNext bool, name string, value any) Cursor {
-	fmt.Println("id: ", id, "pointsNext: ", pointsNext, "name: ", name, "value: ", value)
 	c := Cursor{
 		Valid:            true,
 		CursorID:         id,
@@ -95,7 +98,6 @@ func DecodeCursor(cursor string) (Cursor, error) {
 	if err != nil {
 		return Cursor{}, fmt.Errorf("failed to decode cursor: %w", err)
 	}
-	fmt.Println("decodedCursor: ", string(decodedCursor))
 
 	var cur Cursor
 	if err := json.Unmarshal(decodedCursor, &cur); err != nil {
@@ -115,7 +117,6 @@ type CursorData struct {
 func CalculatePagination(
 	isFirstPage, hasPagination, pointsNext bool, firstData, lastData CursorData,
 ) CursorPaginationAttribute {
-	fmt.Println("isFirstPage: ", isFirstPage, "hasPagination: ", hasPagination, "pointsNext: ", pointsNext, "firstData: ", firstData, "lastData: ", lastData)
 	pagination := CursorPaginationAttribute{}
 	nextCur := Cursor{}
 	prevCur := Cursor{}
@@ -142,4 +143,98 @@ func CalculatePagination(
 		}
 	}
 	return pagination
+}
+
+// GetCursorData カーソルデータを取得する。
+func GetCursorData[T any](
+	cursor string,
+	order parameter.OrderMethod,
+	limit int32,
+	runQWithCursor RunQueryWithCursorParamsFunc[T],
+	runQWithNumbered RunQueryWithNumberedParamsFunc[T],
+	selector CursorIDAndValueSelector[T],
+) ([]T, CursorPaginationAttribute, error) {
+	var err error
+	isFirst := cursor == "" // 初回のリクエストかどうか
+	pointsNext := false     // ページネーションの方向(true: 次データ, false: 前データ)
+	subCursor := order.GetCursorKeyName()
+	// カーソルのデコード+チェック
+	var decodedCursor Cursor
+	var cursorData any
+	var data []T
+	if !isFirst {
+		cursorCheck := func(cur string) bool {
+			decodedCursor, err = DecodeCursor(cur)
+			if err != nil {
+				return false
+			}
+			if decodedCursor.SubCursorName != subCursor {
+				return false
+			}
+			cursorData = decodedCursor.SubCursor
+			return true
+		}
+		if !cursorCheck(cursor) {
+			isFirst = true
+			cursor = ""
+		}
+	}
+
+	if !isFirst {
+		// 今回の指定カーソルの方向を引き継ぐ
+		pointsNext = decodedCursor.CursorPointsNext == true
+		var cursorDir string
+		if pointsNext {
+			cursorDir = "next"
+		} else {
+			cursorDir = "prev"
+		}
+		ID := decodedCursor.CursorID
+		data, err = runQWithCursor(subCursor, order.GetStringValue(), limit+1, cursorDir, int32(ID), cursorData)
+		if err != nil {
+			return nil, CursorPaginationAttribute{}, fmt.Errorf("failed to run query with cursor params: %w", err)
+		}
+	} else {
+		data, err = runQWithNumbered(order.GetStringValue(), limit+1, 0)
+		if err != nil {
+			return nil, CursorPaginationAttribute{}, fmt.Errorf("failed to run query with numbered params: %w", err)
+		}
+	}
+
+	// dataの要素数が0である場合
+	if len(data) == 0 {
+		return nil, CursorPaginationAttribute{}, ErrDataNoRecord
+	}
+	hasPagination := len(data) > int(limit)
+	if hasPagination {
+		data = data[:limit]
+	}
+	eLen := len(data)
+
+	var firstValue, lastValue any
+	lastIndex := eLen - 1
+	if lastIndex < 0 {
+		lastIndex = 0
+	}
+	firstID, firstValue := selector(subCursor, data[0])
+	lastID, lastValue := selector(subCursor, data[lastIndex])
+
+	firstData := CursorData{
+		ID:    firstID,
+		Name:  subCursor,
+		Value: firstValue,
+	}
+	lastData := CursorData{
+		ID:    lastID,
+		Name:  subCursor,
+		Value: lastValue,
+	}
+	var pageInfo CursorPaginationAttribute
+	if pointsNext || isFirst {
+		pageInfo = CalculatePagination(isFirst, hasPagination, pointsNext, firstData, lastData)
+	} else {
+		pageInfo = CalculatePagination(isFirst, hasPagination, pointsNext, lastData, firstData)
+	}
+
+	return data, pageInfo, nil
 }

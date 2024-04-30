@@ -85,3 +85,11 @@ func ParseWithCountParam(v string) (any, error) {
 	}
 	return WithCount(b), nil
 }
+
+// OrderMethod 並び替え方法。
+type OrderMethod interface {
+	// GetCursorKeyName はカーソルキー名を取得する。
+	GetCursorKeyName() string
+	// GetStringValue は文字列に変換する。
+	GetStringValue() string
+}

@@ -33,11 +33,11 @@ type Absence interface {
 	FindAbsenceByIDWithSd(ctx context.Context, sd Sd, absenceID uuid.UUID) (entity.Absence, error)
 	// GetAbsences 欠席を取得する。
 	GetAbsences(
-		ctx context.Context, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam,
+		ctx context.Context, order parameter.AbsenceOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam,
 	) (ListResult[entity.Absence], error)
 	// GetAbsencesWithSd SD付きで欠席を取得する。
 	GetAbsencesWithSd(
-		ctx context.Context, sd Sd, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam,
+		ctx context.Context, sd Sd, order parameter.AbsenceOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam,
 	) (ListResult[entity.Absence], error)
 	// GetPluralAbsences 欠席を取得する。
 	GetPluralAbsences(ctx context.Context, ids []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Absence], error)

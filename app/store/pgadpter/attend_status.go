@@ -280,10 +280,6 @@ func (a *PgAdapter) FindAttendStatusByKeyWithSd(
 	return e, nil
 }
 
-const (
-	attendStatusNameCursorKey = "name"
-)
-
 type AttendStatusCursor struct {
 	CursorID         int32
 	NameCursor       string
@@ -297,187 +293,78 @@ func getAttendStatuses(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.AttendStatus], error) {
-	fmt.Println("order", order)
-	var withCount int64
-	if wc.Valid {
-		var err error
+	eConvFunc := func(e query.AttendStatus) (entity.AttendStatus, error) {
+		return entity.AttendStatus{
+			AttendStatusID: e.AttendStatusID,
+			Name:           e.Name,
+			Key:            e.Key,
+		}, nil
+	}
+	runCFunc := func() (int64, error) {
 		p := query.CountAttendStatusesParams{
 			WhereLikeName: where.WhereLikeName,
 			SearchName:    where.SearchName,
 		}
-		withCount, err = qtx.CountAttendStatuses(ctx, p)
-		if err != nil {
-			return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("failed to count attend status: %w", err)
+		return qtx.CountAttendStatuses(ctx, p)
+	}
+	runQFunc := func(orderMethod string) ([]query.AttendStatus, error) {
+		p := query.GetAttendStatusesParams{
+			WhereLikeName: where.WhereLikeName,
+			SearchName:    where.SearchName,
+			OrderMethod:   orderMethod,
 		}
+		return qtx.GetAttendStatuses(ctx, p)
 	}
-	wcAtr := store.WithCountAttribute{
-		Count: withCount,
-		Valid: wc.Valid,
+	runQCPFunc := func(subCursor string, orderMethod string, limit int32, cursorDir string, cursor int32, subCursorValue any) ([]query.AttendStatus, error) {
+		var nameCursor string
+		switch subCursor {
+		case parameter.AttendStatusNameCursorKey:
+			nameCursor = subCursorValue.(string)
+		}
+		p := query.GetAttendStatusesUseKeysetPaginateParams{
+			WhereLikeName:   where.WhereLikeName,
+			SearchName:      where.SearchName,
+			OrderMethod:     orderMethod,
+			Limit:           limit,
+			CursorDirection: cursorDir,
+			Cursor:          cursor,
+			NameCursor:      nameCursor,
+		}
+		return qtx.GetAttendStatusesUseKeysetPaginate(ctx, p)
 	}
-	if np.Valid {
+	runQNPFunc := func(orderMethod string, limit int32, offset int32) ([]query.AttendStatus, error) {
 		p := query.GetAttendStatusesUseNumberedPaginateParams{
 			WhereLikeName: where.WhereLikeName,
 			SearchName:    where.SearchName,
-			OrderMethod:   string(order),
-			Offset:        int32(np.Offset.Int64),
-			Limit:         int32(np.Limit.Int64),
+			OrderMethod:   orderMethod,
+			Offset:        offset,
+			Limit:         limit,
 		}
-		e, err := qtx.GetAttendStatusesUseNumberedPaginate(ctx, p)
-		if err != nil {
-			return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("failed to get attend statuses: %w", err)
-		}
-		entities := make([]entity.AttendStatus, len(e))
-		for i, v := range e {
-			entities[i] = entity.AttendStatus{
-				AttendStatusID: v.AttendStatusID,
-				Name:           v.Name,
-				Key:            v.Key,
-			}
-		}
-		return store.ListResult[entity.AttendStatus]{Data: entities, WithCount: wcAtr}, nil
-	} else if cp.Valid {
-		var err error
-		isFirst := cp.Cursor == "" // 初回のリクエストかどうか
-		pointsNext := false        // ページネーションの方向(true: 次データ, false: 前データ)
-		limit := cp.Limit.Int64
-		var e []query.AttendStatus // 結果リストデータ
-		var subCursor string
-		// サブカーソルに何を使用するか
-		switch string(order) {
-		case string(parameter.AttendStatusOrderMethodName):
-			subCursor = attendStatusNameCursorKey
-		case string(parameter.AttendStatusOrderMethodReverseName):
-			subCursor = attendStatusNameCursorKey
-		}
-		// カーソルのデコード+チェック
-		var decodedCursor store.Cursor
-		var nameCursor string
-		var ok bool
-		if !isFirst {
-			cursorCheck := func(cur string) bool {
-				decodedCursor, err = store.DecodeCursor(cur)
-				if err != nil {
-					return false
-				}
-				if decodedCursor.SubCursorName != subCursor {
-					return false
-				}
-
-				switch subCursor {
-				case attendStatusNameCursorKey:
-					nameCursor, ok = decodedCursor.SubCursor.(string)
-				}
-				if !ok {
-					return false
-				}
-				return true
-			}
-			if !cursorCheck(cp.Cursor) {
-				isFirst = true
-				cp.Cursor = ""
-			}
-		}
-
-		if !isFirst {
-			// 今回の指定カーソルの方向を引き継ぐ
-			pointsNext = decodedCursor.CursorPointsNext == true
-			var cursorDir string
-			if pointsNext {
-				cursorDir = "next"
-			} else {
-				cursorDir = "prev"
-			}
-			ID := decodedCursor.CursorID
-			p := query.GetAttendStatusesUseKeysetPaginateParams{
-				WhereLikeName:   where.WhereLikeName,
-				SearchName:      where.SearchName,
-				OrderMethod:     string(order),
-				Limit:           int32(limit) + 1,
-				CursorDirection: cursorDir,
-				NameCursor:      nameCursor,
-				Cursor:          int32(ID),
-			}
-			e, err = qtx.GetAttendStatusesUseKeysetPaginate(ctx, p)
-			if err != nil {
-				return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("failed to get attend statuses: %w", err)
-			}
-		} else {
-			p := query.GetAttendStatusesUseNumberedPaginateParams{
-				WhereLikeName: where.WhereLikeName,
-				SearchName:    where.SearchName,
-				OrderMethod:   string(order),
-				Offset:        0,
-				Limit:         int32(limit) + 1,
-			}
-			var err error
-			e, err = qtx.GetAttendStatusesUseNumberedPaginate(ctx, p)
-			if err != nil {
-				return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("failed to get attend statuses: %w", err)
-			}
-		}
-		if len(e) == 0 {
-			return store.ListResult[entity.AttendStatus]{Data: []entity.AttendStatus{}, WithCount: wcAtr}, nil
-		}
-		hasPagination := len(e) > int(limit)
-		if hasPagination {
-			e = e[:limit]
-		}
-		eLen := len(e)
-		var firstValue, lastValue any
-		lastIndex := eLen - 1
-		if lastIndex < 0 {
-			lastIndex = 0
-		}
+		return qtx.GetAttendStatusesUseNumberedPaginate(ctx, p)
+	}
+	selector := func(subCursor string, e query.AttendStatus) (entity.Int, any) {
 		switch subCursor {
-		case attendStatusNameCursorKey:
-			firstValue = e[0].Name
-			lastValue = e[lastIndex].Name
+		case parameter.AttendStatusDefaultCursorKey:
+			return entity.Int(e.MAttendStatusesPkey), nil
+		case parameter.AttendStatusNameCursorKey:
+			return entity.Int(e.MAttendStatusesPkey), e.Name
 		}
-		firstData := store.CursorData{
-			ID:    entity.Int(e[0].MAttendStatusesPkey),
-			Name:  subCursor,
-			Value: firstValue,
-		}
-		lastData := store.CursorData{
-			ID:    entity.Int(e[lastIndex].MAttendStatusesPkey),
-			Name:  subCursor,
-			Value: lastValue,
-		}
-		var pageInfo store.CursorPaginationAttribute
-		if pointsNext || isFirst {
-			pageInfo = store.CalculatePagination(isFirst, hasPagination, pointsNext, firstData, lastData)
-		} else {
-			pageInfo = store.CalculatePagination(isFirst, hasPagination, pointsNext, lastData, firstData)
-		}
+		return entity.Int(e.MAttendStatusesPkey), nil
+	}
 
-		entities := make([]entity.AttendStatus, len(e))
-		for i, v := range e {
-			entities[i] = entity.AttendStatus{
-				AttendStatusID: v.AttendStatusID,
-				Name:           v.Name,
-				Key:            v.Key,
-			}
-		}
-		return store.ListResult[entity.AttendStatus]{Data: entities, CursorPagination: pageInfo, WithCount: wcAtr}, nil
-	}
-	p := query.GetAttendStatusesParams{
-		WhereLikeName: where.WhereLikeName,
-		SearchName:    where.SearchName,
-		OrderMethod:   string(order),
-	}
-	e, err := qtx.GetAttendStatuses(ctx, p)
-	if err != nil {
-		return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("failed to get attend statuses: %w", err)
-	}
-	entities := make([]entity.AttendStatus, len(e))
-	for i, v := range e {
-		entities[i] = entity.AttendStatus{
-			AttendStatusID: v.AttendStatusID,
-			Name:           v.Name,
-			Key:            v.Key,
-		}
-	}
-	return store.ListResult[entity.AttendStatus]{Data: entities, WithCount: wcAtr}, nil
+	return store.RunListQuery(
+		ctx,
+		order,
+		np,
+		cp,
+		wc,
+		eConvFunc,
+		runCFunc,
+		runQFunc,
+		runQCPFunc,
+		runQNPFunc,
+		selector,
+	)
 }
 
 // GetAttendStatuses 出席ステータスを取得する。

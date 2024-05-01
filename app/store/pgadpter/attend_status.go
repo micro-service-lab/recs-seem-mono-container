@@ -280,6 +280,7 @@ func (a *PgAdapter) FindAttendStatusByKeyWithSd(
 	return e, nil
 }
 
+// AttendStatusCursor is a cursor for AttendStatus.
 type AttendStatusCursor struct {
 	CursorID         int32
 	NameCursor       string
@@ -305,7 +306,11 @@ func getAttendStatuses(
 			WhereLikeName: where.WhereLikeName,
 			SearchName:    where.SearchName,
 		}
-		return qtx.CountAttendStatuses(ctx, p)
+		r, err := qtx.CountAttendStatuses(ctx, p)
+		if err != nil {
+			return 0, fmt.Errorf("failed to count attend statuses: %w", err)
+		}
+		return r, nil
 	}
 	runQFunc := func(orderMethod string) ([]query.AttendStatus, error) {
 		p := query.GetAttendStatusesParams{
@@ -313,13 +318,23 @@ func getAttendStatuses(
 			SearchName:    where.SearchName,
 			OrderMethod:   orderMethod,
 		}
-		return qtx.GetAttendStatuses(ctx, p)
+		r, err := qtx.GetAttendStatuses(ctx, p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get attend statuses: %w", err)
+		}
+		return r, nil
 	}
-	runQCPFunc := func(subCursor string, orderMethod string, limit int32, cursorDir string, cursor int32, subCursorValue any) ([]query.AttendStatus, error) {
+	runQCPFunc := func(subCursor, orderMethod string,
+		limit int32, cursorDir string, cursor int32, subCursorValue any,
+	) ([]query.AttendStatus, error) {
 		var nameCursor string
+		var ok bool
 		switch subCursor {
 		case parameter.AttendStatusNameCursorKey:
-			nameCursor = subCursorValue.(string)
+			nameCursor, ok = subCursorValue.(string)
+			if !ok {
+				nameCursor = ""
+			}
 		}
 		p := query.GetAttendStatusesUseKeysetPaginateParams{
 			WhereLikeName:   where.WhereLikeName,
@@ -330,9 +345,13 @@ func getAttendStatuses(
 			Cursor:          cursor,
 			NameCursor:      nameCursor,
 		}
-		return qtx.GetAttendStatusesUseKeysetPaginate(ctx, p)
+		r, err := qtx.GetAttendStatusesUseKeysetPaginate(ctx, p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get attend statuses: %w", err)
+		}
+		return r, nil
 	}
-	runQNPFunc := func(orderMethod string, limit int32, offset int32) ([]query.AttendStatus, error) {
+	runQNPFunc := func(orderMethod string, limit, offset int32) ([]query.AttendStatus, error) {
 		p := query.GetAttendStatusesUseNumberedPaginateParams{
 			WhereLikeName: where.WhereLikeName,
 			SearchName:    where.SearchName,
@@ -340,7 +359,11 @@ func getAttendStatuses(
 			Offset:        offset,
 			Limit:         limit,
 		}
-		return qtx.GetAttendStatusesUseNumberedPaginate(ctx, p)
+		r, err := qtx.GetAttendStatusesUseNumberedPaginate(ctx, p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get attend statuses: %w", err)
+		}
+		return r, nil
 	}
 	selector := func(subCursor string, e query.AttendStatus) (entity.Int, any) {
 		switch subCursor {
@@ -352,7 +375,7 @@ func getAttendStatuses(
 		return entity.Int(e.MAttendStatusesPkey), nil
 	}
 
-	return store.RunListQuery(
+	res, err := store.RunListQuery(
 		ctx,
 		order,
 		np,
@@ -365,6 +388,10 @@ func getAttendStatuses(
 		runQNPFunc,
 		selector,
 	)
+	if err != nil {
+		return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("failed to get attend statuses: %w", err)
+	}
+	return res, nil
 }
 
 // GetAttendStatuses 出席ステータスを取得する。
@@ -407,12 +434,8 @@ func (a *PgAdapter) GetAttendStatusesWithSd(
 func getPluralAttendStatuses(
 	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttendStatus], error) {
-	uids := make([]uuid.UUID, len(ids))
-	for i, v := range ids {
-		uids[i] = v
-	}
 	p := query.GetPluralAttendStatusesParams{
-		AttendStatusIds: uids,
+		AttendStatusIds: ids,
 		Offset:          int32(np.Offset.Int64),
 		Limit:           int32(np.Limit.Int64),
 	}

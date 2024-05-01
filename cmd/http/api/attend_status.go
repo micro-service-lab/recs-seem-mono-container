@@ -2,10 +2,12 @@ package api
 
 import (
 	"github.com/go-chi/chi/v5"
+
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler"
 )
 
+// AttendStatusHandler is a handler for attend statuses.
 func AttendStatusHandler(svc service.ManagerInterface) func(r chi.Router) {
 	getHandler := handler.GetAttendStatues{
 		Service: svc,

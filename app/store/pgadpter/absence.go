@@ -197,10 +197,18 @@ func getAbsencesList(
 		}, nil
 	}
 	runCFunc := func() (int64, error) {
-		return qtx.CountAbsences(ctx)
+		r, err := qtx.CountAbsences(ctx)
+		if err != nil {
+			return 0, fmt.Errorf("failed to count absences: %w", err)
+		}
+		return r, nil
 	}
 	runQFunc := func(_ string) ([]query.Absence, error) {
-		return qtx.GetAbsences(ctx)
+		r, err := qtx.GetAbsences(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get absences: %w", err)
+		}
+		return r, nil
 	}
 	runQCPFunc := func(
 		_, _ string, limit int32, cursorDir string, cursor int32, _ any,
@@ -210,7 +218,11 @@ func getAbsencesList(
 			CursorDirection: cursorDir,
 			Cursor:          cursor,
 		}
-		return qtx.GetAbsencesUseKeysetPaginate(ctx, p)
+		r, err := qtx.GetAbsencesUseKeysetPaginate(ctx, p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get absences: %w", err)
+		}
+		return r, nil
 	}
 	runQNPFunc := func(
 		_ string, limit, offset int32,
@@ -219,7 +231,11 @@ func getAbsencesList(
 			Offset: offset,
 			Limit:  limit,
 		}
-		return qtx.GetAbsencesUseNumberedPaginate(ctx, p)
+		r, err := qtx.GetAbsencesUseNumberedPaginate(ctx, p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get absences: %w", err)
+		}
+		return r, nil
 	}
 	selector := func(subCursor string, e query.Absence) (entity.Int, any) {
 		switch subCursor {

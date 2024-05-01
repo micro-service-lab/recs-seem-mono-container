@@ -11,6 +11,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+
 	"github.com/micro-service-lab/recs-seem-mono-container/app"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/api"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
@@ -31,7 +32,7 @@ func run(ctx context.Context) error {
 	ctr := app.NewContainer()
 
 	if err := ctr.Init(ctx); err != nil {
-		return err
+		return fmt.Errorf("failed to initialize container: %w", err)
 	}
 
 	r := chi.NewRouter()
@@ -71,7 +72,7 @@ func run(ctx context.Context) error {
 
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", ctr.Config.Port))
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to listen: %w", err)
 	}
 
 	srv := NewServer(listener, r, ctr.Close)

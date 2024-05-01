@@ -1,8 +1,9 @@
-// Package query provides a query parameter parser.
+// Package queryparam provides a query parameter parser.
 package queryparam
 
 import (
 	"encoding"
+	"fmt"
 	"net/url"
 	"reflect"
 	"strconv"
@@ -14,109 +15,106 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/agerror"
 )
 
-// nolint: gochecknoglobals
-var (
-	defaultBuiltInParsers = map[reflect.Kind]ParserFunc{
-		reflect.Bool: func(v string) (interface{}, error) {
-			b, err := strconv.ParseBool(v)
-			if err != nil {
-				return false, nil
-			}
-			return b, nil
-		},
-		reflect.String: func(v string) (interface{}, error) {
-			return v, nil
-		},
-		reflect.Int: func(v string) (interface{}, error) {
-			i, err := strconv.ParseInt(v, 10, 32)
-			if err != nil {
-				return 0, nil
-			}
-			return int(i), nil
-		},
-		reflect.Int16: func(v string) (interface{}, error) {
-			i, err := strconv.ParseInt(v, 10, 16)
-			if err != nil {
-				return 0, nil
-			}
-			return int16(i), nil
-		},
-		reflect.Int32: func(v string) (interface{}, error) {
-			i, err := strconv.ParseInt(v, 10, 32)
-			if err != nil {
-				return 0, nil
-			}
-			return int32(i), nil
-		},
-		reflect.Int64: func(v string) (interface{}, error) {
-			i, err := strconv.ParseInt(v, 10, 64)
-			if err != nil {
-				return 0, nil
-			}
-			return i, nil
-		},
-		reflect.Int8: func(v string) (interface{}, error) {
-			i, err := strconv.ParseInt(v, 10, 8)
-			if err != nil {
-				return 0, nil
-			}
-			return int8(i), nil
-		},
-		reflect.Uint: func(v string) (interface{}, error) {
-			i, err := strconv.ParseUint(v, 10, 32)
-			if err != nil {
-				return 0, nil
-			}
-			return uint(i), nil
-		},
-		reflect.Uint16: func(v string) (interface{}, error) {
-			i, err := strconv.ParseUint(v, 10, 16)
-			if err != nil {
-				return 0, nil
-			}
-			return uint16(i), nil
-		},
-		reflect.Uint32: func(v string) (interface{}, error) {
-			i, err := strconv.ParseUint(v, 10, 32)
-			if err != nil {
-				return 0, nil
-			}
-			return uint32(i), nil
-		},
-		reflect.Uint64: func(v string) (interface{}, error) {
-			i, err := strconv.ParseUint(v, 10, 64)
-			if err != nil {
-				return 0, nil
-			}
-			return i, nil
-		},
-		reflect.Uint8: func(v string) (interface{}, error) {
-			i, err := strconv.ParseUint(v, 10, 8)
-			if err != nil {
-				return 0, nil
-			}
-			return uint8(i), nil
-		},
-		reflect.Float64: func(v string) (interface{}, error) {
-			f, err := strconv.ParseFloat(v, 64)
-			if err != nil {
-				return 0, nil
-			}
-			return f, nil
-		},
-		reflect.Float32: func(v string) (interface{}, error) {
-			f, err := strconv.ParseFloat(v, 32)
-			if err != nil {
-				return 0, nil
-			}
-			return float32(f), nil
-		},
-	}
-)
+var defaultBuiltInParsers = map[reflect.Kind]ParserFunc{
+	reflect.Bool: func(v string) (any, error) {
+		b, err := strconv.ParseBool(v)
+		if err != nil {
+			return false, nil
+		}
+		return b, nil
+	},
+	reflect.String: func(v string) (any, error) {
+		return v, nil
+	},
+	reflect.Int: func(v string) (any, error) {
+		i, err := strconv.ParseInt(v, 10, 32)
+		if err != nil {
+			return 0, nil
+		}
+		return int(i), nil
+	},
+	reflect.Int16: func(v string) (any, error) {
+		i, err := strconv.ParseInt(v, 10, 16)
+		if err != nil {
+			return 0, nil
+		}
+		return int16(i), nil
+	},
+	reflect.Int32: func(v string) (any, error) {
+		i, err := strconv.ParseInt(v, 10, 32)
+		if err != nil {
+			return 0, nil
+		}
+		return int32(i), nil
+	},
+	reflect.Int64: func(v string) (any, error) {
+		i, err := strconv.ParseInt(v, 10, 64)
+		if err != nil {
+			return 0, nil
+		}
+		return i, nil
+	},
+	reflect.Int8: func(v string) (any, error) {
+		i, err := strconv.ParseInt(v, 10, 8)
+		if err != nil {
+			return 0, nil
+		}
+		return int8(i), nil
+	},
+	reflect.Uint: func(v string) (any, error) {
+		i, err := strconv.ParseUint(v, 10, 32)
+		if err != nil {
+			return 0, nil
+		}
+		return uint(i), nil
+	},
+	reflect.Uint16: func(v string) (any, error) {
+		i, err := strconv.ParseUint(v, 10, 16)
+		if err != nil {
+			return 0, nil
+		}
+		return uint16(i), nil
+	},
+	reflect.Uint32: func(v string) (any, error) {
+		i, err := strconv.ParseUint(v, 10, 32)
+		if err != nil {
+			return 0, nil
+		}
+		return uint32(i), nil
+	},
+	reflect.Uint64: func(v string) (any, error) {
+		i, err := strconv.ParseUint(v, 10, 64)
+		if err != nil {
+			return 0, nil
+		}
+		return i, nil
+	},
+	reflect.Uint8: func(v string) (any, error) {
+		i, err := strconv.ParseUint(v, 10, 8)
+		if err != nil {
+			return 0, nil
+		}
+		return uint8(i), nil
+	},
+	reflect.Float64: func(v string) (any, error) {
+		f, err := strconv.ParseFloat(v, 64)
+		if err != nil {
+			return 0, nil
+		}
+		return f, nil
+	},
+	reflect.Float32: func(v string) (any, error) {
+		f, err := strconv.ParseFloat(v, 32)
+		if err != nil {
+			return 0, nil
+		}
+		return float32(f), nil
+	},
+}
 
 func defaultTypeParsers() map[reflect.Type]ParserFunc {
 	return map[reflect.Type]ParserFunc{
-		reflect.TypeOf(time.Nanosecond): func(v string) (interface{}, error) {
+		reflect.TypeOf(time.Nanosecond): func(v string) (any, error) {
 			s, err := time.ParseDuration(v)
 			if err != nil {
 				return time.Duration(0), nil
@@ -127,13 +125,14 @@ func defaultTypeParsers() map[reflect.Type]ParserFunc {
 }
 
 // ParserFunc defines the signature of a function that can be used within `CustomParsers`.
-type ParserFunc func(v string) (interface{}, error)
+type ParserFunc func(v string) (any, error)
 
 // OnSetFn is a hook that can be run when a value is set.
-type OnSetFn func(tag string, value interface{}, isDefault bool)
+type OnSetFn func(tag string, value any, isDefault bool)
 
 // processFieldFn is a function which takes all information about a field and processes it.
-type processFieldFn func(refField reflect.Value, refTypeField reflect.StructField, opts Options, fieldParams FieldParams) error
+type processFieldFn func(
+	refField reflect.Value, refTypeField reflect.StructField, opts Options, fieldParams FieldParams) error
 
 // Options for the parser.
 type Options struct {
@@ -167,14 +166,6 @@ type Options struct {
 
 	// Used internally. maps the param key to its resolved string value.
 	rawParams map[string][]string
-}
-
-func (opts *Options) getRawParam(s string) []string {
-	val := opts.rawParams[s]
-	if len(val) == 0 {
-		return opts.Param[s]
-	}
-	return val
 }
 
 func defaultOptions(param url.Values) Options {
@@ -238,25 +229,25 @@ func NewParser(param url.Values) *Parser {
 
 // Parse parses a struct containing `queryParam` tags and loads its values from
 // query params.
-func (p *Parser) Parse(v interface{}) error {
+func (p *Parser) Parse(v any) error {
 	return parseInternal(v, setField, defaultOptions(p.Param))
 }
 
 // ParseWithOptions parses a struct containing `queryParam` tags and loads its values from
 // query params.
-func (p *Parser) ParseWithOptions(v interface{}, opts Options) error {
+func (p *Parser) ParseWithOptions(v any, opts Options) error {
 	return parseInternal(v, setField, customOptions(p.Param, opts))
 }
 
 // GetFieldParams parses a struct containing `queryParam` tags and returns information about
 // tags it found.
-func (p *Parser) GetFieldParams(v interface{}) ([]FieldParams, error) {
+func (p *Parser) GetFieldParams(v any) ([]FieldParams, error) {
 	return p.GetFieldParamsWithOptions(v, defaultOptions(p.Param))
 }
 
 // GetFieldParamsWithOptions parses a struct containing `queryParam` tags and returns information about
 // tags it found.
-func (p *Parser) GetFieldParamsWithOptions(v interface{}, opts Options) ([]FieldParams, error) {
+func (p *Parser) GetFieldParamsWithOptions(v any, opts Options) ([]FieldParams, error) {
 	// フィールドのメタデータ
 	var result []FieldParams
 	err := parseInternal(
@@ -276,7 +267,7 @@ func (p *Parser) GetFieldParamsWithOptions(v interface{}, opts Options) ([]Field
 	return result, nil
 }
 
-func parseInternal(v interface{}, processField processFieldFn, opts Options) error {
+func parseInternal(v any, processField processFieldFn, opts Options) error {
 	// 値がポインタ型であることを確認する
 	ptrRef := reflect.ValueOf(v)
 	if ptrRef.Kind() != reflect.Ptr {
@@ -304,6 +295,7 @@ func doParse(ref reflect.Value, processField processFieldFn, opts Options) error
 		refTypeField := refType.Field(i)
 
 		if err := doParseField(refField, refTypeField, processField, opts); err != nil {
+			//nolint: errorlint
 			if val, ok := err.(agerror.AggregateError); ok {
 				agrErr.Errors = append(agrErr.Errors, val.Errors...)
 			} else {
@@ -320,7 +312,9 @@ func doParse(ref reflect.Value, processField processFieldFn, opts Options) error
 }
 
 // フィールドごとの処理を行う
-func doParseField(refField reflect.Value, refTypeField reflect.StructField, processField processFieldFn, opts Options) error {
+func doParseField(
+	refField reflect.Value, refTypeField reflect.StructField, processField processFieldFn, opts Options,
+) error {
 	if !refField.CanSet() { // フィールドが設定可能でない場合
 		return nil
 	}
@@ -328,9 +322,14 @@ func doParseField(refField reflect.Value, refTypeField reflect.StructField, proc
 		// ポインタの指す先の処理を再帰的に行う
 		return parseInternal(refField.Interface(), processField, optionsWithParamPrefix(refTypeField, opts))
 	}
-	if reflect.Struct == refField.Kind() && refField.CanAddr() && refField.Type().Name() == "" { // フィールドが構造体であり、アドレスを取得可能であり、名前が空の場合
+	if reflect.Struct == refField.Kind() &&
+		refField.CanAddr() && refField.Type().Name() == "" { // フィールドが構造体であり、アドレスを取得可能であり、名前が空の場合
 		// 無名構造体の中の処理を再帰的に行う
-		return parseInternal(refField.Addr().Interface(), processField, optionsWithParamPrefix(refTypeField, opts))
+		err := parseInternal(
+			refField.Addr().Interface(), processField, optionsWithParamPrefix(refTypeField, opts))
+		if err != nil {
+			return fmt.Errorf("failed to parse field %s: %w", refTypeField.Name, err)
+		}
 	}
 
 	params, err := parseFieldParams(refTypeField, opts) // フィールドのメタデータを解析する
@@ -356,10 +355,7 @@ func doParseField(refField reflect.Value, refTypeField reflect.StructField, proc
 // Parseする際のprocessFieldFnの実装
 func setField(refField reflect.Value, refTypeField reflect.StructField, opts Options, fieldParams FieldParams) error {
 	// default値なども考慮しながら値を取得する
-	value, err := get(fieldParams, opts)
-	if err != nil {
-		return err
-	}
+	value := get(fieldParams, opts)
 
 	if len(value) == 0 {
 		value = []string{""}
@@ -417,7 +413,7 @@ func parseFieldParams(field reflect.StructField, opts Options) (FieldParams, err
 	return result, nil
 }
 
-func get(fieldParams FieldParams, opts Options) (val []string, err error) {
+func get(fieldParams FieldParams, opts Options) (val []string) {
 	var isDefault bool
 
 	val, isDefault = getOr(fieldParams.Key, fieldParams.DefaultValue, fieldParams.HasDefaultValue, opts.Param)
@@ -429,7 +425,7 @@ func get(fieldParams FieldParams, opts Options) (val []string, err error) {
 			opts.OnSet(fieldParams.Key, val, isDefault) // 設定されたフックを実行
 		}
 	}
-	return val, err
+	return val
 }
 
 // split the env tag's key into the expected key and desired option, if any.
@@ -438,7 +434,9 @@ func parseKeyForOption(key string) (string, []string) {
 	return opts[0], opts[1:]
 }
 
-func getOr(key string, defaultValue []string, defExists bool, param map[string][]string) (val []string, isDefault bool) {
+func getOr(
+	key string, defaultValue []string, defExists bool, param map[string][]string,
+) (val []string, isDefault bool) {
 	// 値を取得する
 	value, exists := param[key]
 	switch {
@@ -490,6 +488,7 @@ func set(field reflect.Value, sf reflect.StructField, value []string, funcMap ma
 		return nil
 	}
 
+	//nolint: exhaustive
 	switch field.Kind() {
 	case reflect.Slice: // フィールドがスライス型である場合
 		return handleSlice(field, value, sf, funcMap)
@@ -498,7 +497,9 @@ func set(field reflect.Value, sf reflect.StructField, value []string, funcMap ma
 	return newNoParserError(sf)
 }
 
-func handleSlice(field reflect.Value, value []string, sf reflect.StructField, funcMap map[reflect.Type]ParserFunc) error {
+func handleSlice(
+	field reflect.Value, value []string, sf reflect.StructField, funcMap map[reflect.Type]ParserFunc,
+) error {
 	typee := sf.Type.Elem()          // 配列の要素の型を取得する
 	if typee.Kind() == reflect.Ptr { // 配列の要素の型がポインタ型である場合
 		typee = typee.Elem() // ポインタが示す型を取得する
@@ -562,7 +563,10 @@ func parseTextUnmarshalers(field reflect.Value, data []string, sf reflect.Struct
 		} else { // ポインタ型でない場合
 			sv = sv.Addr() // アドレスを取得する
 		}
-		tm := sv.Interface().(encoding.TextUnmarshaler)
+		tm, ok := sv.Interface().(encoding.TextUnmarshaler)
+		if !ok { // TextUnmarshalerでない場合
+			return newParseError(sf, fmt.Errorf("field %s is not a TextUnmarshaler", sf.Name))
+		}
 		if err := tm.UnmarshalText([]byte(v)); err != nil { // TextUnmarshalerであるデータを解析する
 			return newParseError(sf, err)
 		}

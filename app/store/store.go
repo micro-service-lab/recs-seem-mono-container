@@ -25,6 +25,8 @@ type Store interface {
 	Commit(context.Context, Sd) error
 	// Rollback トランザクションをロールバックする。
 	Rollback(context.Context, Sd) error
+	// Cleanup ストアをクリーンアップする。
+	Cleanup(context.Context) error
 
 	Absence
 	AttendStatus

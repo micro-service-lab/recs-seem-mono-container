@@ -16,7 +16,7 @@ func Serve(ctx context.Context) {
 func serve() error {
 	env := map[string]string{}
 
-	if err := sh.RunWithV(env, "go", "run", "cmd/http/main.go"); err != nil {
+	if err := sh.RunWithV(env, "go", "run", "cmd/http/main.go", "cmd/http/server.go"); err != nil {
 		return fmt.Errorf("run server: %w", err)
 	}
 

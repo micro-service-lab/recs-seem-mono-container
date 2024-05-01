@@ -109,3 +109,17 @@ func (a *PgAdapter) Rollback(ctx context.Context, id store.Sd) error {
 	}
 	return nil
 }
+
+// Cleanup cleans up the store.
+func (a *PgAdapter) Cleanup(ctx context.Context) error {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	for id := range a.qtxMap {
+		delete(a.qtxMap, id)
+	}
+	for id := range a.txMap {
+		delete(a.txMap, id)
+	}
+	a.pool.Close()
+	return nil
+}

@@ -32,7 +32,8 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "files.associations": {
-    ".env.example": "dotenv"
+    ".env.example": "dotenv",
+    "*.json.golden": "json"
   },
   "go.lintOnSave": "workspace",
   "go.lintTool": "golangci-lint",

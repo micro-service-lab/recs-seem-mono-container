@@ -57,3 +57,12 @@ func (c *Container) Init(ctx context.Context) error {
 
 	return nil
 }
+
+// Close closes the container.
+func (c *Container) Close() error {
+	if err := c.Store.Cleanup(context.Background()); err != nil {
+		return err
+	}
+
+	return nil
+}

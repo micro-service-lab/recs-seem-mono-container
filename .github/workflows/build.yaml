@@ -24,7 +24,7 @@ jobs:
       - name: Build go
         env:
           CGO_ENABLED: 0
-        run: go build -o /tmp/app cmd/http/main.go
+        run: go build -o /tmp/app cmd/http/main.go cmd/http/server.go
   build-docker:
     name: Build docker image
     runs-on: ubuntu-latest

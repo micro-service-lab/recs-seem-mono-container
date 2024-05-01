@@ -3,17 +3,14 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"runtime"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-
 	"github.com/micro-service-lab/recs-seem-mono-container/app"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/api"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
@@ -21,19 +18,20 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/faketime"
 )
 
-const (
-	// readTimeout リクエスト読み取りのタイムアウト。
-	readTimeout = 5 * time.Second
-	// writeTimeout レスポンス書き込みのタイムアウト。
-	writeTimeout = 10 * time.Second
-)
-
 func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	if err := run(ctx); err != nil {
+		log.Fatalf("failed to run: %+v", err)
+	}
+}
+
+func run(ctx context.Context) error {
 	ctr := app.NewContainer()
-	ctx := context.Background()
 
 	if err := ctr.Init(ctx); err != nil {
-		log.Fatal(err)
+		return err
 	}
 
 	r := chi.NewRouter()
@@ -71,28 +69,11 @@ func main() {
 	srvApp := api.NewApp(apiI, &api.AppOptions{})
 	r.Mount("/", srvApp.Handler())
 
-	srv := &http.Server{
-		Handler:      r,
-		ReadTimeout:  readTimeout,
-		WriteTimeout: writeTimeout,
-	}
-	defer srv.Close()
-
 	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", ctr.Config.Port))
 	if err != nil {
-		log.Fatal(err)
-	}
-	defer listener.Close()
-
-	ePort, ok := listener.Addr().(*net.TCPAddr)
-	if !ok {
-		log.Fatal("failed to get port")
+		return err
 	}
 
-	port := ePort.Port
-
-	log.Printf("Server listening on port %d", port)
-	if err := srv.Serve(listener); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		log.Fatal(err)
-	}
+	srv := NewServer(listener, r, ctr.Close)
+	return srv.Run(ctx)
 }

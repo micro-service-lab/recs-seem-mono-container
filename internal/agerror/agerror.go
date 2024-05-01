@@ -1,4 +1,4 @@
-// Package error provides aggregated error handling.
+// Package agerror provides aggregated error handling.
 package agerror
 
 import (
@@ -31,7 +31,7 @@ func NewAggregateError(prefix string) AggregateError {
 	}
 }
 
-// Add adds an error to the AggregateError.
+// Error adds an error to the AggregateError.
 func (e AggregateError) Error() string {
 	var sb strings.Builder
 

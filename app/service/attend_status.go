@@ -11,7 +11,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 )
 
-// EventStatusKey イベントステータスキー。
+// AttendStatusKey 出席状況キー。
 type AttendStatusKey string
 
 const (
@@ -61,7 +61,9 @@ func (m *ManageAttendStatus) CreateAttendStatus(ctx context.Context, name, key s
 }
 
 // CreateAttendStatuses 出席状況を複数作成する。
-func (m *ManageAttendStatus) CreateAttendStatuses(ctx context.Context, ps []parameter.CreateAttendStatusParam) (int64, error) {
+func (m *ManageAttendStatus) CreateAttendStatuses(
+	ctx context.Context, ps []parameter.CreateAttendStatusParam,
+) (int64, error) {
 	es, err := m.db.CreateAttendStatuses(ctx, ps)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create attend statuses: %w", err)
@@ -144,7 +146,7 @@ func (m *ManageAttendStatus) GetAttendStatuses(
 			Cursor: string(cursor),
 			Limit:  entity.Int{Int64: int64(limit)},
 		}
-	_:
+	case parameter.NonePagination:
 	}
 	r, err := m.db.GetAttendStatuses(ctx, where, order, np, cp, wc)
 	if err != nil {

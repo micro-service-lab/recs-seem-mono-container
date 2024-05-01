@@ -1,7 +1,9 @@
+// Package app provides the application container.
 package app
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
@@ -28,7 +30,7 @@ func NewContainer() *Container {
 func (c *Container) Init(ctx context.Context) error {
 	cfg, err := config.Get()
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get config: %w", err)
 	}
 
 	c.Config = cfg
@@ -47,7 +49,7 @@ func (c *Container) Init(ctx context.Context) error {
 		*cfg,
 	)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create store: %w", err)
 	}
 	c.Store = str
 
@@ -61,7 +63,7 @@ func (c *Container) Init(ctx context.Context) error {
 // Close closes the container.
 func (c *Container) Close() error {
 	if err := c.Store.Cleanup(context.Background()); err != nil {
-		return err
+		return fmt.Errorf("failed to cleanup store: %w", err)
 	}
 
 	return nil

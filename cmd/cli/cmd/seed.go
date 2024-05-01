@@ -1,6 +1,3 @@
-/*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
@@ -9,18 +6,21 @@ import (
 
 	"github.com/briandowns/spinner"
 	"github.com/fatih/color"
-	"github.com/micro-service-lab/recs-seem-mono-container/app/batch"
 	"github.com/spf13/cobra"
+
+	"github.com/micro-service-lab/recs-seem-mono-container/app/batch"
 )
 
 var force bool
 
+// ValidTarget is a list of valid seed targets.
 var ValidTarget = []string{"attend_status"}
 
 // seedCmd represents the seed command
 var seedCmd = &cobra.Command{
 	Use:   "seed",
 	Short: "Inserts initial data into the database",
+	//nolint: lll
 	Long: `Inserting initial data into the database will insert the data necessary for the application to operate into the database.
 
 The seed command is executed when the application is started for the first time.`,
@@ -34,9 +34,9 @@ var seedAttendStatusesCmd = &cobra.Command{
 
 The seed command is executed when the application is started for the first time.`,
 	Args: cobra.NoArgs,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(cmd *cobra.Command, _ []string) {
 		color.HiCyan("seed attend statuses called...")
-		s := spinner.New(spinner.CharSets[11], 100*time.Millisecond)
+		s := spinner.New(spinner.CharSets[11], spinnerFrequency*time.Millisecond)
 		s.Start()
 
 		ctx := cmd.Context()
@@ -44,7 +44,7 @@ The seed command is executed when the application is started for the first time.
 			count, err := AppContainer.ServiceManager.GetAttendStatusesCount(ctx, "")
 			if err != nil {
 				s.Stop()
-				color.Red(fmt.Errorf("Failed to get attend statuses count: %w", err).Error())
+				color.Red(fmt.Errorf("failed to get attend statuses count: %w", err).Error())
 				return
 			}
 			if count > 0 {
@@ -59,7 +59,7 @@ The seed command is executed when the application is started for the first time.
 		err := b.Run(ctx)
 		if err != nil {
 			s.Stop()
-			color.Red(fmt.Errorf("Failed to insert attend statuses: %w", err).Error())
+			color.Red(fmt.Errorf("failed to insert attend statuses: %w", err).Error())
 			return
 		}
 		s.Stop()

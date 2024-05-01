@@ -50,9 +50,12 @@ type (
 	// RunQueryFunc クエリを実行する関数。
 	RunQueryFunc[T any] func(orderMethod string) ([]T, error)
 	// RunQueryWithCursorParamsFunc カーソルパラメータを持つクエリを実行する関数。
-	RunQueryWithCursorParamsFunc[T any] func(subCursor string, orderMethod string, limit int32, cursorDir string, cursor int32, subCursorValue any) ([]T, error)
+	RunQueryWithCursorParamsFunc[T any] func(
+		subCursor, orderMethod string, limit int32,
+		cursorDir string, cursor int32, subCursorValue any) ([]T, error)
 	// RunQueryWithNumberedParamsFunc ページネーションパラメータを持つクエリを実行する関数。
-	RunQueryWithNumberedParamsFunc[T any] func(orderMethod string, limit int32, offset int32) ([]T, error)
+	RunQueryWithNumberedParamsFunc[T any] func(
+		orderMethod string, limit, offset int32) ([]T, error)
 	// CursorIDAndValueSelector カーソルIDと値を選択する関数。
 	CursorIDAndValueSelector[T any] func(subCursor string, e T) (entity.Int, any)
 )

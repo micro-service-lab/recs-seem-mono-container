@@ -111,7 +111,7 @@ func (a *PgAdapter) Rollback(ctx context.Context, id store.Sd) error {
 }
 
 // Cleanup cleans up the store.
-func (a *PgAdapter) Cleanup(ctx context.Context) error {
+func (a *PgAdapter) Cleanup(_ context.Context) error {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	for id := range a.qtxMap {

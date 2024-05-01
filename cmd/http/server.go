@@ -21,12 +21,14 @@ const (
 	writeTimeout = 10 * time.Second
 )
 
+// Server は HTTP サーバを表す。
 type Server struct {
 	srv     *http.Server
 	l       net.Listener
 	cleanup func() error
 }
 
+// NewServer は新しい Server を生成する。
 func NewServer(l net.Listener, mux http.Handler, cleanup func() error) *Server {
 	return &Server{
 		srv: &http.Server{
@@ -39,6 +41,7 @@ func NewServer(l net.Listener, mux http.Handler, cleanup func() error) *Server {
 	}
 }
 
+// Run はサーバを起動する。
 func (s *Server) Run(ctx context.Context) error {
 	ePort, ok := s.l.Addr().(*net.TCPAddr)
 	if !ok {
@@ -54,7 +57,7 @@ func (s *Server) Run(ctx context.Context) error {
 		if err := s.srv.Serve(s.l); err != nil &&
 			err != http.ErrServerClosed {
 			log.Printf("failed to close: %+v", err)
-			return err
+			return fmt.Errorf("failed to serve: %w", err)
 		}
 		return nil
 	})
@@ -64,18 +67,23 @@ func (s *Server) Run(ctx context.Context) error {
 		log.Printf("failed to shutdown: %+v", err)
 	}
 	// グレースフルシャットダウンの終了を待つ。
-	return eg.Wait()
+	err := eg.Wait()
+	if err != nil {
+		return fmt.Errorf("failed to wait error group: %w", err)
+	}
+	return nil
 }
 
+// Close はサーバを終了する。
 func (s *Server) Close() error {
 	if err := s.l.Close(); err != nil {
-		return err
+		return fmt.Errorf("failed to close listener: %w", err)
 	}
 	if err := s.srv.Close(); err != nil {
-		return err
+		return fmt.Errorf("failed to close server: %w", err)
 	}
 	if err := s.cleanup(); err != nil {
-		return err
+		return fmt.Errorf("failed to cleanup: %w", err)
 	}
 	return nil
 }

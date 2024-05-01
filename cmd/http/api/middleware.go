@@ -32,7 +32,7 @@ func allowContentTypeMiddleware(contentTypes ...string) func(next http.Handler) 
 				return
 			}
 
-			err := response.JsonResponseWriter(r.Context(), w, response.UnsupportedMediaType, nil, nil)
+			err := response.JSONResponseWriter(r.Context(), w, response.UnsupportedMediaType, nil, nil)
 			if err != nil {
 				log.Printf("failed to write response: %v", err)
 			}

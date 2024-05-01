@@ -94,7 +94,7 @@ func (s *API) pingHandler(w http.ResponseWriter, r *http.Request) {
 		errAtr := response.ApplicationErrorAttributes{
 			"error": "invalid json",
 		}
-		err := response.JsonResponseWriter(r.Context(), w, response.Validation, nil, errAtr)
+		err := response.JSONResponseWriter(r.Context(), w, response.Validation, nil, errAtr)
 		if err != nil {
 			log.Printf("[ERROR] response writing failed: %+v", err)
 		}
@@ -107,21 +107,21 @@ func (s *API) pingHandler(w http.ResponseWriter, r *http.Request) {
 		ReceivedTime: receivedTime,
 	}
 
-	err := response.JsonResponseWriter(r.Context(), w, response.Success, resp, nil)
+	err := response.JSONResponseWriter(r.Context(), w, response.Success, resp, nil)
 	if err != nil {
 		log.Printf("[ERROR] response writing failed: %+v", err)
 	}
 }
 
 func (s *API) notFound(w http.ResponseWriter, r *http.Request) {
-	err := response.JsonResponseWriter(r.Context(), w, response.NotFound, nil, nil)
+	err := response.JSONResponseWriter(r.Context(), w, response.NotFound, nil, nil)
 	if err != nil {
 		log.Printf("[ERROR] response writing failed: %+v", err)
 	}
 }
 
 func (s *API) methodNotAllowed(w http.ResponseWriter, r *http.Request) {
-	err := response.JsonResponseWriter(r.Context(), w, response.MethodNotAllowed, nil, nil)
+	err := response.JSONResponseWriter(r.Context(), w, response.MethodNotAllowed, nil, nil)
 	if err != nil {
 		log.Printf("[ERROR] response writing failed: %+v", err)
 	}

@@ -13,10 +13,12 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 )
 
+// GetAttendStatues is a handler for getting attend statuses.
 type GetAttendStatues struct {
 	Service service.ManagerInterface
 }
 
+// GetAttendStatusesParam is a parameter for GetAttendStatues.
 type GetAttendStatusesParam struct {
 	SearchName string                            `queryParam:"search_name"`
 	Order      parameter.AttendStatusOrderMethod `queryParam:"order"`
@@ -40,10 +42,23 @@ func (h *GetAttendStatues) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	parse := queryparam.NewParser(r.URL.Query())
 	var param GetAttendStatusesParam
-	parse.ParseWithOptions(&param, queryparam.Options{
+	err := parse.ParseWithOptions(&param, queryparam.Options{
 		TagName: "queryParam",
 		FuncMap: parseFuncMap,
 	})
+	if err != nil {
+		log.Printf("failed to parse query: %v", err)
+		handled, err := errhandle.ErrorHandle(ctx, w, err)
+		if err != nil {
+			log.Printf("failed to handle error: %v", err)
+		}
+		if !handled {
+			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
+				log.Printf("failed to write response: %v", err)
+			}
+		}
+		return
+	}
 	fmt.Printf("param: %+v\n", param)
 	attendStatuses, err := h.Service.GetAttendStatuses(
 		ctx,
@@ -57,12 +72,19 @@ func (h *GetAttendStatues) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	)
 	if err != nil {
 		log.Printf("failed to get attend statuses: %v", err)
-		errhandle.ErrorHandle(ctx, w, err)
+		handled, err := errhandle.ErrorHandle(ctx, w, err)
+		if err != nil {
+			log.Printf("failed to handle error: %v", err)
+		}
+		if !handled {
+			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
+				log.Printf("failed to write response: %v", err)
+			}
+		}
 		return
 	}
-	err = response.JsonResponseWriter(ctx, w, response.Success, attendStatuses, nil)
+	err = response.JSONResponseWriter(ctx, w, response.Success, attendStatuses, nil)
 	if err != nil {
 		log.Printf("failed to write response: %v", err)
 	}
-	return
 }

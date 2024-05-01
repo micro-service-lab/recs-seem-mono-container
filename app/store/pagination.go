@@ -10,6 +10,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 )
 
+// ErrDataNoRecord レコードが存在しないエラー。
 var ErrDataNoRecord = errors.New("no record")
 
 const (
@@ -176,13 +177,12 @@ func GetCursorData[T any](
 		}
 		if !cursorCheck(cursor) {
 			isFirst = true
-			cursor = ""
 		}
 	}
 
 	if !isFirst {
 		// 今回の指定カーソルの方向を引き継ぐ
-		pointsNext = decodedCursor.CursorPointsNext == true
+		pointsNext = decodedCursor.CursorPointsNext
 		var cursorDir string
 		if pointsNext {
 			cursorDir = "next"

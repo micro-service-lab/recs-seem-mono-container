@@ -1,3 +1,4 @@
+// Package cmd contains the command line interface for the application.
 /*
 Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 
@@ -24,10 +25,17 @@ package cmd
 import (
 	"os"
 
-	"github.com/micro-service-lab/recs-seem-mono-container/app"
 	"github.com/spf13/cobra"
+
+	"github.com/micro-service-lab/recs-seem-mono-container/app"
 )
 
+const (
+	// spinnerFrequency is the frequency of the spinner.
+	spinnerFrequency = 100
+)
+
+// AppContainer is a container for the application.
 var AppContainer *app.Container
 
 // rootCmd represents the base command when called without any subcommands

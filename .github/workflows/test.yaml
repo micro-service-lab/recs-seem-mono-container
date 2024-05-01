@@ -4,8 +4,15 @@ on:
   workflow_call:
   workflow_dispatch:
 
-permissions:
-  contents: read
+env:
+  db_host: localhost
+  db_port: 5432
+  db_user: postgres
+  db_password: postgres
+  db_name: mono-db
+  db_url: postgres://postgres:postgres@postgres:5432/mono-db
+  redis_host: localhost
+  redis_port: 6379
 
 jobs:
   test-go:
@@ -17,9 +24,9 @@ jobs:
         image: postgres:16
         # Provide the password for postgres
         env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_DB: mono-db
+          POSTGRES_PASSWORD: ${{ env.db_password }}
+          POSTGRES_USER: ${{ env.db_user }}
+          POSTGRES_DB: ${{ env.db_name }}
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -42,7 +49,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Setup go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
           go-version: "1.21"
           check-latest: true
@@ -58,12 +65,13 @@ jobs:
           go clean -testcache
           gotestsum ./... -- -race -coverprofile=coverage.out
         env:
-          POSTGRES_HOST: postgres
-          POSTGRES_PORT: 5432
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: mono-db
-          REDIS_HOST: localhost
-          REDIS_PORT: 6379
+          DB_HOST: ${{ env.db_host }}
+          DB_PORT: ${{ env.db_port }}
+          DB_USER: ${{ env.db_user }}
+          DB_PASSWORD: ${{ env.db_password }}
+          DB_DB: ${{ env.db_name }}
+          DB_URL: ${{ env.db_url }}
+          REDIS_HOST: ${{ env.redis_host }}
+          REDIS_PORT: ${{ env.redis_port }}
       - name: report coverage
         uses: k1LoW/octocov-action@v1

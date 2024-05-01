@@ -42,7 +42,9 @@ func (a *PgAdapter) CountAbsencesWithSd(ctx context.Context, sd store.Sd) (int64
 	return c, nil
 }
 
-func createAbsence(ctx context.Context, qtx *query.Queries, param parameter.CreateAbsenceParam) (entity.Absence, error) {
+func createAbsence(
+	ctx context.Context, qtx *query.Queries, param parameter.CreateAbsenceParam,
+) (entity.Absence, error) {
 	e, err := qtx.CreateAbsence(ctx, param.AttendanceID)
 	if err != nil {
 		return entity.Absence{}, fmt.Errorf("failed to create absence: %w", err)
@@ -200,7 +202,9 @@ func getAbsencesList(
 	runQFunc := func(_ string) ([]query.Absence, error) {
 		return qtx.GetAbsences(ctx)
 	}
-	runQCPFunc := func(_ string, _ string, limit int32, cursorDir string, cursor int32, _ any) ([]query.Absence, error) {
+	runQCPFunc := func(
+		_, _ string, limit int32, cursorDir string, cursor int32, _ any,
+	) ([]query.Absence, error) {
 		p := query.GetAbsencesUseKeysetPaginateParams{
 			Limit:           limit,
 			CursorDirection: cursorDir,
@@ -208,7 +212,9 @@ func getAbsencesList(
 		}
 		return qtx.GetAbsencesUseKeysetPaginate(ctx, p)
 	}
-	runQNPFunc := func(orderMethod string, limit int32, offset int32) ([]query.Absence, error) {
+	runQNPFunc := func(
+		_ string, limit, offset int32,
+	) ([]query.Absence, error) {
 		p := query.GetAbsencesUseNumberedPaginateParams{
 			Offset: offset,
 			Limit:  limit,
@@ -223,7 +229,7 @@ func getAbsencesList(
 		return entity.Int(e.TAbsencesPkey), nil
 	}
 
-	return store.RunListQuery(
+	res, err := store.RunListQuery(
 		ctx,
 		order,
 		np,
@@ -236,11 +242,16 @@ func getAbsencesList(
 		runQNPFunc,
 		selector,
 	)
+	if err != nil {
+		return store.ListResult[entity.Absence]{}, fmt.Errorf("failed to get absences list: %w", err)
+	}
+	return res, nil
 }
 
 // GetAbsences 欠席を取得する。
 func (a *PgAdapter) GetAbsences(
-	ctx context.Context, order parameter.AbsenceOrderMethod, np store.NumberedPaginationParam, cp store.CursorPaginationParam, wc store.WithCountParam,
+	ctx context.Context, order parameter.AbsenceOrderMethod,
+	np store.NumberedPaginationParam, cp store.CursorPaginationParam, wc store.WithCountParam,
 ) (store.ListResult[entity.Absence], error) {
 	return getAbsencesList(ctx, a.query, order, np, cp, wc)
 }
@@ -267,12 +278,8 @@ func getPluralAbsences(
 	ids []uuid.UUID,
 	np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Absence], error) {
-	aIDs := make([]uuid.UUID, len(ids))
-	for i, id := range ids {
-		aIDs[i] = id
-	}
 	p := query.GetPluralAbsencesParams{
-		AbsenceIds: aIDs,
+		AbsenceIds: ids,
 		Limit:      int32(np.Limit.Int64),
 		Offset:     int32(np.Offset.Int64),
 	}

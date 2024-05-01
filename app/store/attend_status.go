@@ -77,7 +77,8 @@ type AttendStatus interface {
 		ctx context.Context, attendStatusID uuid.UUID, param parameter.UpdateAttendStatusParams) (entity.AttendStatus, error)
 	// UpdateAttendStatusWithSd SD付きで出席ステータスを更新する。
 	UpdateAttendStatusWithSd(
-		ctx context.Context, sd Sd, attendStatusID uuid.UUID, param parameter.UpdateAttendStatusParams) (entity.AttendStatus, error)
+		ctx context.Context, sd Sd, attendStatusID uuid.UUID,
+		param parameter.UpdateAttendStatusParams) (entity.AttendStatus, error)
 	// UpdateAttendStatusByKey 出席ステータスを更新する。
 	UpdateAttendStatusByKey(
 		ctx context.Context, key string, param parameter.UpdateAttendStatusByKeyParams) (entity.AttendStatus, error)

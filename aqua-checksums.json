@@ -231,6 +231,11 @@
       "algorithm": "sha256"
     },
     {
+      "id": "github_release/github.com/matryer/moq/v0.3.4/moq_Linux_x86_64.tar.gz",
+      "checksum": "9D2AD5DA83EAAAA60A544D84D03D15CC1004D50E690E50532BB4CCA816A650AA",
+      "algorithm": "sha256"
+    },
+    {
       "id": "github_release/github.com/rhysd/actionlint/v1.6.26/actionlint_1.6.26_darwin_amd64.tar.gz",
       "checksum": "BFA890E77A8508603C785AF09A30BBAB3A3255D291D8D27EFC3F20AC8E303A8E",
       "algorithm": "sha256"

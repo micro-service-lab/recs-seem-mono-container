@@ -29,3 +29,4 @@ packages:
   registry: local
 - name: k1LoW/tbls@v1.74.0
 - name: spf13/cobra-cli@v1.3.0
+- name: matryer/moq@v0.3.4

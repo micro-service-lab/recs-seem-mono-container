@@ -261,11 +261,6 @@
       "algorithm": "sha256"
     },
     {
-      "id": "github_release/github.com/sqlc-dev/sqlc/v1.24.0/sqlc_1.24.0_linux_amd64.tar.gz",
-      "checksum": "F3D1BE92EE57B448BC628A912906BB8B7F49929D36C6D36CEB18033EBE42D760",
-      "algorithm": "sha256"
-    },
-    {
       "id": "http/downloads.sqlc.dev/sqlc_1.26.0_darwin_amd64.tar.gz",
       "checksum": "5FC0885BDEE4CD64A08047EEEF31A2C3FEECF02C376237EE60EEF271DD016E4A",
       "algorithm": "sha256"

@@ -10,7 +10,31 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/uuid"
+	"github.com/stretchr/testify/require"
 )
+
+var fixedUUIDs []uuid.UUID
+
+// MaxUUIDs is the maximum number of fixed UUIDs.
+const MaxUUIDs = 10
+
+func init() {
+	fixedUUIDs = make([]uuid.UUID, 0, MaxUUIDs)
+	for i := 0; i < MaxUUIDs; i++ {
+		fixedUUIDs = append(fixedUUIDs, uuid.New())
+	}
+}
+
+// FixedUUID returns a fixed UUID.
+func FixedUUID(t *testing.T, i int) uuid.UUID {
+	t.Helper()
+
+	if i < 0 || i >= MaxUUIDs {
+		require.FailNow(t, "invalid index")
+	}
+	return fixedUUIDs[i]
+}
 
 // AssertJSON asserts that the JSON bytes are equal.
 func AssertJSON(t *testing.T, want, got []byte) {

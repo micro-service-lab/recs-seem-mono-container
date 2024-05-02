@@ -231,8 +231,33 @@
       "algorithm": "sha256"
     },
     {
+      "id": "github_release/github.com/matryer/moq/v0.3.4/moq_Linux_arm64.tar.gz",
+      "checksum": "610E45D1698F7ADA966452DC394A92A04B0B6A4D00C20B11D9B6D3607BD08967",
+      "algorithm": "sha256"
+    },
+    {
       "id": "github_release/github.com/matryer/moq/v0.3.4/moq_Linux_x86_64.tar.gz",
       "checksum": "9D2AD5DA83EAAAA60A544D84D03D15CC1004D50E690E50532BB4CCA816A650AA",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/matryer/moq/v0.3.4/moq_Windows_arm64.tar.gz",
+      "checksum": "E6EEF8CF46BE082F2D296EAEC96C7BA89AFE9F0C12B1271177741EE17FCBEB0C",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/matryer/moq/v0.3.4/moq_Windows_x86_64.tar.gz",
+      "checksum": "DFECB383AB1F2D2C169D3873A2A66E472E0000B6A5CD835577CD71E0921C53EC",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/matryer/moq/v0.3.4/moq_macOS_arm64.tar.gz",
+      "checksum": "48093AE2BC3167E5B23B6632E53947ADAAB178C6D3201E58D8E604FD5D85BF18",
+      "algorithm": "sha256"
+    },
+    {
+      "id": "github_release/github.com/matryer/moq/v0.3.4/moq_macOS_x86_64.tar.gz",
+      "checksum": "5801E7F3460378DA308FBC4DF7AC537682B8193B186F7DEB60D2F4767F6D817B",
       "algorithm": "sha256"
     },
     {

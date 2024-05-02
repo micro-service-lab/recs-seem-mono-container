@@ -344,7 +344,8 @@ func doParseField(
 		return err
 	}
 
-	if reflect.Struct == refField.Kind() { // フィールドが構造体である場合
+	if reflect.Struct == refField.Kind() && params.Dive { // フィールドが構造体であり、Diveがtrueの場合
+		fmt.Println("++++++++++++Dive")
 		// 構造体の中の処理を再帰的に行う(定義済み構造体)
 		return doParse(refField, processField, optionsWithParamPrefix(refTypeField, opts))
 	}
@@ -375,6 +376,7 @@ type FieldParams struct {
 	Key             string
 	DefaultValue    []string
 	HasDefaultValue bool
+	Dive            bool
 }
 
 // フィールドのメタデータを解析する
@@ -388,7 +390,7 @@ func parseFieldParams(field reflect.StructField, opts Options) (FieldParams, err
 	// デフォルト設定の取得
 	defaultValue, hasDefaultValue := field.Tag.Lookup("paramDefault")
 
-	defaultValueSeparator, hasDefaultValueSeparator := field.Tag.Lookup("paramDefaultSeparator")
+	defaultValueSeparator, hasDefaultValueSeparator := field.Tag.Lookup("paramSeparator")
 	if !hasDefaultValueSeparator {
 		defaultValueSeparator = opts.DefaultValueSeparator
 	}
@@ -405,6 +407,8 @@ func parseFieldParams(field reflect.StructField, opts Options) (FieldParams, err
 		switch tag {
 		case "":
 			continue
+		case "dive":
+			result.Dive = true
 		default:
 			return FieldParams{}, newNoSupportedTagOptionError(tag)
 		}
@@ -520,6 +524,9 @@ func handleSlice(
 
 	result := reflect.MakeSlice(sf.Type, 0, len(value)) // 要素の型とデータ数を指定してスライスを作成する
 	for _, v := range value {
+		if v == "" { // データが空の場合
+			continue
+		}
 		r, err := parserFunc(v) // パーサー関数を実行する
 		if err != nil {
 			return newParseError(sf, err)

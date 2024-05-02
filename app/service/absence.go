@@ -6,5 +6,5 @@ import (
 
 // ManageAbsence 欠席管理サービス。
 type ManageAbsence struct {
-	db store.Store
+	DB store.Store
 }

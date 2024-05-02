@@ -14,6 +14,8 @@ var ErrNotFoundDescriptor = fmt.Errorf("not found descriptor")
 // Sd Storeディスクリプタ。
 type Sd uuid.UUID
 
+//go:generate moq -out store_mock.go . Store
+
 // Store 永続化関連のアダプタを提供するインターフェース。
 type Store interface {
 	// WithTx トランザクションを開始する。

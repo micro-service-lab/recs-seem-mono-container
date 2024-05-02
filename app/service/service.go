@@ -20,12 +20,12 @@ type Manager struct {
 // NewManager creates a new Manager.
 func NewManager(db store.Store) *Manager {
 	return &Manager{
-		ManageAttendStatus: ManageAttendStatus{db: db},
-		ManageAbsence:      ManageAbsence{db: db},
+		ManageAttendStatus: ManageAttendStatus{DB: db},
+		ManageAbsence:      ManageAbsence{DB: db},
 	}
 }
 
-var _ ManagerInterface = (*Manager)(nil)
+//go:generate moq -out service_mock.go . ManagerInterface
 
 // ManagerInterface is a interface for manager.
 type ManagerInterface interface {

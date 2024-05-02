@@ -273,10 +273,10 @@ func TestGetCursorData(t *testing.T) {
 	}
 	reqData := testutils.LoadFile(t, "testdata/pagination/in.json.golden")
 	for n, tt := range tests {
-		tt := tt
+		ttt := tt
 		t.Run(n, func(t *testing.T) {
 			t.Parallel()
-			result := make([]DummyStatuses, tt.reqTurn)
+			result := make([]DummyStatuses, ttt.reqTurn)
 			// DummyStatusのデータを作成
 			var dummyStatuses DummyStatuses
 			err := json.Unmarshal(reqData, &dummyStatuses)
@@ -348,11 +348,11 @@ func TestGetCursorData(t *testing.T) {
 
 			cursor := ""
 
-			for i := 0; i < tt.reqTurn; i++ {
+			for i := 0; i < ttt.reqTurn; i++ {
 				res, pi, err := store.GetCursorData[DummyStatus](
 					cursor,
-					tt.order,
-					tt.limit,
+					ttt.order,
+					ttt.limit,
 					runQCPFunc,
 					runQNPFunc,
 					selector,
@@ -361,14 +361,14 @@ func TestGetCursorData(t *testing.T) {
 					t.Errorf("failed to get cursor data: %v", err)
 				}
 				result[i] = res
-				if i < len(tt.dirs) {
-					if tt.dirs[i] == Next {
+				if i < len(ttt.dirs) {
+					if ttt.dirs[i] == Next {
 						cursor = pi.NextCursor
 					} else {
 						cursor = pi.PrevCursor
 					}
 				}
-				if i < len(tt.cursorRewrite) && tt.cursorRewrite[i] {
+				if i < len(ttt.cursorRewrite) && ttt.cursorRewrite[i] {
 					cursor = cursor + "invalid"
 				}
 			}
@@ -377,7 +377,7 @@ func TestGetCursorData(t *testing.T) {
 				t.Fatalf("failed to marshal response: %v", err)
 			}
 
-			testutils.AssertJSON(t, testutils.LoadFile(t, tt.want.rspFile), got)
+			testutils.AssertJSON(t, testutils.LoadFile(t, ttt.want.rspFile), got)
 		})
 	}
 }

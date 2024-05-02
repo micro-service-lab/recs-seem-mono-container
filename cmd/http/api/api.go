@@ -57,7 +57,7 @@ func (s *API) Handler() http.Handler {
 
 	r.Post("/ping", s.pingHandler)
 
-	r.Group(AttendStatusHandler(s.svc))
+	r.Mount("/attend_statuses", AttendStatusHandler(s.svc))
 
 	r.NotFound(s.notFound)
 	r.MethodNotAllowed(s.methodNotAllowed)

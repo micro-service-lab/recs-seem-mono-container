@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"reflect"
@@ -59,7 +58,6 @@ func (h *GetAttendStatues) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	fmt.Printf("param: %+v\n", param)
 	attendStatuses, err := h.Service.GetAttendStatuses(
 		ctx,
 		param.SearchName,

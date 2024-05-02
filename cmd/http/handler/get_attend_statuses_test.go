@@ -21,7 +21,8 @@ import (
 )
 
 func TestGetAttendStatues_ServeHTTP(t *testing.T) {
-	fd, err := factory.NewAttendStatuses(3)
+	t.Parallel()
+	fd, err := factory.NewAttendStatuses(10)
 	require.NoError(t, err)
 	type wants struct {
 		resType response.APIResponseType
@@ -231,6 +232,7 @@ func TestGetAttendStatues_ServeHTTP(t *testing.T) {
 	for ni, tc := range cases {
 		tcc := tc
 		t.Run(ni, func(t *testing.T) {
+			t.Parallel()
 			w := httptest.NewRecorder()
 			r := httptest.NewRequest(http.MethodGet, "/attend_statuses", nil)
 			q := r.URL.Query()

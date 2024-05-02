@@ -19,6 +19,7 @@ const (
 )
 
 func TestGetCursorData(t *testing.T) {
+	t.Parallel()
 	type want struct {
 		rspFile string
 	}

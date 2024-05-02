@@ -14,6 +14,7 @@ import (
 )
 
 func TestManageAttendStatus_CreateAttendStatus(t *testing.T) {
+	t.Parallel()
 	storeMock := &store.StoreMock{
 		CreateAttendStatusFunc: func(
 			_ context.Context, p parameter.CreateAttendStatusParam,
@@ -39,6 +40,7 @@ func TestManageAttendStatus_CreateAttendStatus(t *testing.T) {
 }
 
 func TestManageAttendStatus_CreateAttendStatuses(t *testing.T) {
+	t.Parallel()
 	storeMock := &store.StoreMock{
 		CreateAttendStatusesFunc: func(
 			_ context.Context, ps []parameter.CreateAttendStatusParam,
@@ -60,6 +62,7 @@ func TestManageAttendStatus_CreateAttendStatuses(t *testing.T) {
 }
 
 func TestManageAttendStatus_UpdateAttendStatus(t *testing.T) {
+	t.Parallel()
 	storeMock := &store.StoreMock{
 		UpdateAttendStatusFunc: func(
 			_ context.Context, id uuid.UUID, p parameter.UpdateAttendStatusParams,
@@ -86,6 +89,7 @@ func TestManageAttendStatus_UpdateAttendStatus(t *testing.T) {
 }
 
 func TestManageAttendStatus_DeleteAttendStatus(t *testing.T) {
+	t.Parallel()
 	storeMock := &store.StoreMock{
 		DeleteAttendStatusFunc: func(_ context.Context, _ uuid.UUID) error {
 			return nil
@@ -101,6 +105,7 @@ func TestManageAttendStatus_DeleteAttendStatus(t *testing.T) {
 }
 
 func TestManageAttendStatus_FindAttendStatusByID(t *testing.T) {
+	t.Parallel()
 	storeMock := &store.StoreMock{
 		FindAttendStatusByIDFunc: func(_ context.Context, id uuid.UUID) (entity.AttendStatus, error) {
 			return entity.AttendStatus{
@@ -123,6 +128,7 @@ func TestManageAttendStatus_FindAttendStatusByID(t *testing.T) {
 }
 
 func TestManageAttendStatus_GetAttendStatuses(t *testing.T) {
+	t.Parallel()
 	data := []entity.AttendStatus{
 		{
 			AttendStatusID: uuid.New(),
@@ -170,6 +176,7 @@ func TestManageAttendStatus_GetAttendStatuses(t *testing.T) {
 }
 
 func TestManageAttendStatus_GetAttendStatusesCount(t *testing.T) {
+	t.Parallel()
 	s := service.ManageAttendStatus{
 		DB: &store.StoreMock{
 			CountAttendStatusesFunc: func(_ context.Context, _ parameter.WhereAttendStatusParam) (int64, error) {

@@ -7,7 +7,7 @@ import (
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
-	pgadapter "github.com/micro-service-lab/recs-seem-mono-container/app/store/pgadpter"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/store/pgadapter"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock/fakeclock"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/config"

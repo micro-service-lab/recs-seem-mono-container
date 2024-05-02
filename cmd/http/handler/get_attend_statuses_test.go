@@ -104,8 +104,8 @@ func TestGetAttendStatues_ServeHTTP(t *testing.T) {
 			want: wants{
 				resType: response.Success,
 				data: store.ListResult[entity.AttendStatus]{
-					Data:             []entity.AttendStatus{},
-					WithCount:        store.WithCountAttribute{Count: 0},
+					Data:             fd.FilterByName("no result").ForEntity(),
+					WithCount:        store.WithCountAttribute{Count: fd.CountContainsName("no result")},
 					CursorPagination: store.CursorPaginationAttribute{},
 				},
 				errAttr: nil,

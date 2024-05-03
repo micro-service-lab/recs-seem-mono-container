@@ -30,6 +30,12 @@ type Config struct {
 	AuthSecret   string `env:"AUTH_SECRET,required"`
 	SecretIssuer string `env:"SECRET_ISSUER,required"`
 
+	// ClientOrigin クライアントのオリジン
+	ClientOrigin ClientOrigin `env:"CLIENT_ORIGIN"`
+
+	// DebugCORS CORS デバッグモード
+	DebugCORS bool `env:"DEBUG_CORS"`
+
 	AppDebug bool `env:"APP_DEBUG"`
 	// development, staging, production
 	AppEnv EnvironmentMode `env:"APP_ENV" envDefault:"production"`
@@ -44,6 +50,7 @@ var parseFuncMap = map[reflect.Type]env.ParserFunc{
 	reflect.TypeOf(ProductionEnv):  parseEnvironmentMode,
 	reflect.TypeOf(FakeTimeMode{}): parseFakeTimeMode,
 	reflect.TypeOf(InfoLevel):      parseLogLevel,
+	reflect.TypeOf(ClientOrigin{}): parseClientOrigin,
 }
 
 // Get Get application settings from environment variables.

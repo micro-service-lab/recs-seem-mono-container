@@ -83,7 +83,7 @@ func (q *Queries) FindGroupByID(ctx context.Context, groupID uuid.UUID) (Group, 
 }
 
 const findGroupByIDWithOrganization = `-- name: FindGroupByIDWithOrganization :one
-SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
+SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE group_id = $1
 `
@@ -105,6 +105,7 @@ func (q *Queries) FindGroupByIDWithOrganization(ctx context.Context, groupID uui
 		&i.Organization.OrganizationID,
 		&i.Organization.Name,
 		&i.Organization.Description,
+		&i.Organization.Color,
 		&i.Organization.IsPersonal,
 		&i.Organization.IsWhole,
 		&i.Organization.CreatedAt,
@@ -131,7 +132,7 @@ func (q *Queries) FindGroupByKey(ctx context.Context, key string) (Group, error)
 }
 
 const findGroupByKeyWithOrganization = `-- name: FindGroupByKeyWithOrganization :one
-SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
+SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE key = $1
 `
@@ -153,6 +154,7 @@ func (q *Queries) FindGroupByKeyWithOrganization(ctx context.Context, key string
 		&i.Organization.OrganizationID,
 		&i.Organization.Name,
 		&i.Organization.Description,
+		&i.Organization.Color,
 		&i.Organization.IsPersonal,
 		&i.Organization.IsWhole,
 		&i.Organization.CreatedAt,
@@ -277,7 +279,7 @@ func (q *Queries) GetGroupsUseNumberedPaginate(ctx context.Context, arg GetGroup
 }
 
 const getGroupsWithOrganization = `-- name: GetGroupsWithOrganization :many
-SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
+SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 ORDER BY
 	CASE WHEN $1::text = 'name' THEN m_organizations.name END ASC,
@@ -308,6 +310,7 @@ func (q *Queries) GetGroupsWithOrganization(ctx context.Context, orderMethod str
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
 			&i.Organization.Description,
+			&i.Organization.Color,
 			&i.Organization.IsPersonal,
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
@@ -325,7 +328,7 @@ func (q *Queries) GetGroupsWithOrganization(ctx context.Context, orderMethod str
 }
 
 const getGroupsWithOrganizationUseKeysetPaginate = `-- name: GetGroupsWithOrganizationUseKeysetPaginate :many
-SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
+SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE
 	CASE $2::text
@@ -389,6 +392,7 @@ func (q *Queries) GetGroupsWithOrganizationUseKeysetPaginate(ctx context.Context
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
 			&i.Organization.Description,
+			&i.Organization.Color,
 			&i.Organization.IsPersonal,
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
@@ -406,7 +410,7 @@ func (q *Queries) GetGroupsWithOrganizationUseKeysetPaginate(ctx context.Context
 }
 
 const getGroupsWithOrganizationUseNumberedPaginate = `-- name: GetGroupsWithOrganizationUseNumberedPaginate :many
-SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
+SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 ORDER BY
 	CASE WHEN $3::text = 'name' THEN m_organizations.name END ASC,
@@ -444,6 +448,7 @@ func (q *Queries) GetGroupsWithOrganizationUseNumberedPaginate(ctx context.Conte
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
 			&i.Organization.Description,
+			&i.Organization.Color,
 			&i.Organization.IsPersonal,
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
@@ -500,7 +505,7 @@ func (q *Queries) GetPluralGroups(ctx context.Context, arg GetPluralGroupsParams
 }
 
 const getPluralGroupsWithOrganization = `-- name: GetPluralGroupsWithOrganization :many
-SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
+SELECT m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_groups
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE group_id = ANY($3::uuid[])
 ORDER BY
@@ -537,6 +542,7 @@ func (q *Queries) GetPluralGroupsWithOrganization(ctx context.Context, arg GetPl
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
 			&i.Organization.Description,
+			&i.Organization.Color,
 			&i.Organization.IsPersonal,
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,

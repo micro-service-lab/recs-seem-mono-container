@@ -35,4 +35,5 @@ type Store interface {
 	AttendStatus
 	AttendanceType
 	EventType
+	PermissionCategory
 }

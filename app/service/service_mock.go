@@ -40,6 +40,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreateEventTypesFunc: func(ctx context.Context, ps []parameter.CreateEventTypeParam) (int64, error) {
 //				panic("mock out the CreateEventTypes method")
 //			},
+//			CreatePermissionCategoriesFunc: func(ctx context.Context, ps []parameter.CreatePermissionCategoryParam) (int64, error) {
+//				panic("mock out the CreatePermissionCategories method")
+//			},
+//			CreatePermissionCategoryFunc: func(ctx context.Context, name string, key string, description string) (entity.PermissionCategory, error) {
+//				panic("mock out the CreatePermissionCategory method")
+//			},
 //			DeleteAttendStatusFunc: func(ctx context.Context, id uuid.UUID) error {
 //				panic("mock out the DeleteAttendStatus method")
 //			},
@@ -48,6 +54,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			DeleteEventTypeFunc: func(ctx context.Context, id uuid.UUID) error {
 //				panic("mock out the DeleteEventType method")
+//			},
+//			DeletePermissionCategoryFunc: func(ctx context.Context, id uuid.UUID) error {
+//				panic("mock out the DeletePermissionCategory method")
 //			},
 //			FindAttendStatusByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error) {
 //				panic("mock out the FindAttendStatusByID method")
@@ -67,6 +76,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			FindEventTypeByKeyFunc: func(ctx context.Context, key string) (entity.EventType, error) {
 //				panic("mock out the FindEventTypeByKey method")
 //			},
+//			FindPermissionCategoryByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.PermissionCategory, error) {
+//				panic("mock out the FindPermissionCategoryByID method")
+//			},
+//			FindPermissionCategoryByKeyFunc: func(ctx context.Context, key string) (entity.PermissionCategory, error) {
+//				panic("mock out the FindPermissionCategoryByKey method")
+//			},
 //			GetAttendStatusesFunc: func(ctx context.Context, whereSearchName string, order parameter.AttendStatusOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendStatus], error) {
 //				panic("mock out the GetAttendStatuses method")
 //			},
@@ -85,6 +100,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			GetEventTypesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
 //				panic("mock out the GetEventTypesCount method")
 //			},
+//			GetPermissionCategoriesFunc: func(ctx context.Context, whereSearchName string, order parameter.PermissionCategoryOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PermissionCategory], error) {
+//				panic("mock out the GetPermissionCategories method")
+//			},
+//			GetPermissionCategoriesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
+//				panic("mock out the GetPermissionCategoriesCount method")
+//			},
 //			UpdateAttendStatusFunc: func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error) {
 //				panic("mock out the UpdateAttendStatus method")
 //			},
@@ -93,6 +114,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			UpdateEventTypeFunc: func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.EventType, error) {
 //				panic("mock out the UpdateEventType method")
+//			},
+//			UpdatePermissionCategoryFunc: func(ctx context.Context, id uuid.UUID, name string, key string, description string) (entity.PermissionCategory, error) {
+//				panic("mock out the UpdatePermissionCategory method")
 //			},
 //		}
 //
@@ -119,6 +143,12 @@ type ManagerInterfaceMock struct {
 	// CreateEventTypesFunc mocks the CreateEventTypes method.
 	CreateEventTypesFunc func(ctx context.Context, ps []parameter.CreateEventTypeParam) (int64, error)
 
+	// CreatePermissionCategoriesFunc mocks the CreatePermissionCategories method.
+	CreatePermissionCategoriesFunc func(ctx context.Context, ps []parameter.CreatePermissionCategoryParam) (int64, error)
+
+	// CreatePermissionCategoryFunc mocks the CreatePermissionCategory method.
+	CreatePermissionCategoryFunc func(ctx context.Context, name string, key string, description string) (entity.PermissionCategory, error)
+
 	// DeleteAttendStatusFunc mocks the DeleteAttendStatus method.
 	DeleteAttendStatusFunc func(ctx context.Context, id uuid.UUID) error
 
@@ -127,6 +157,9 @@ type ManagerInterfaceMock struct {
 
 	// DeleteEventTypeFunc mocks the DeleteEventType method.
 	DeleteEventTypeFunc func(ctx context.Context, id uuid.UUID) error
+
+	// DeletePermissionCategoryFunc mocks the DeletePermissionCategory method.
+	DeletePermissionCategoryFunc func(ctx context.Context, id uuid.UUID) error
 
 	// FindAttendStatusByIDFunc mocks the FindAttendStatusByID method.
 	FindAttendStatusByIDFunc func(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error)
@@ -146,6 +179,12 @@ type ManagerInterfaceMock struct {
 	// FindEventTypeByKeyFunc mocks the FindEventTypeByKey method.
 	FindEventTypeByKeyFunc func(ctx context.Context, key string) (entity.EventType, error)
 
+	// FindPermissionCategoryByIDFunc mocks the FindPermissionCategoryByID method.
+	FindPermissionCategoryByIDFunc func(ctx context.Context, id uuid.UUID) (entity.PermissionCategory, error)
+
+	// FindPermissionCategoryByKeyFunc mocks the FindPermissionCategoryByKey method.
+	FindPermissionCategoryByKeyFunc func(ctx context.Context, key string) (entity.PermissionCategory, error)
+
 	// GetAttendStatusesFunc mocks the GetAttendStatuses method.
 	GetAttendStatusesFunc func(ctx context.Context, whereSearchName string, order parameter.AttendStatusOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendStatus], error)
 
@@ -164,6 +203,12 @@ type ManagerInterfaceMock struct {
 	// GetEventTypesCountFunc mocks the GetEventTypesCount method.
 	GetEventTypesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
 
+	// GetPermissionCategoriesFunc mocks the GetPermissionCategories method.
+	GetPermissionCategoriesFunc func(ctx context.Context, whereSearchName string, order parameter.PermissionCategoryOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PermissionCategory], error)
+
+	// GetPermissionCategoriesCountFunc mocks the GetPermissionCategoriesCount method.
+	GetPermissionCategoriesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
+
 	// UpdateAttendStatusFunc mocks the UpdateAttendStatus method.
 	UpdateAttendStatusFunc func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error)
 
@@ -172,6 +217,9 @@ type ManagerInterfaceMock struct {
 
 	// UpdateEventTypeFunc mocks the UpdateEventType method.
 	UpdateEventTypeFunc func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.EventType, error)
+
+	// UpdatePermissionCategoryFunc mocks the UpdatePermissionCategory method.
+	UpdatePermissionCategoryFunc func(ctx context.Context, id uuid.UUID, name string, key string, description string) (entity.PermissionCategory, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -227,6 +275,24 @@ type ManagerInterfaceMock struct {
 			// Ps is the ps argument value.
 			Ps []parameter.CreateEventTypeParam
 		}
+		// CreatePermissionCategories holds details about calls to the CreatePermissionCategories method.
+		CreatePermissionCategories []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ps is the ps argument value.
+			Ps []parameter.CreatePermissionCategoryParam
+		}
+		// CreatePermissionCategory holds details about calls to the CreatePermissionCategory method.
+		CreatePermissionCategory []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Name is the name argument value.
+			Name string
+			// Key is the key argument value.
+			Key string
+			// Description is the description argument value.
+			Description string
+		}
 		// DeleteAttendStatus holds details about calls to the DeleteAttendStatus method.
 		DeleteAttendStatus []struct {
 			// Ctx is the ctx argument value.
@@ -243,6 +309,13 @@ type ManagerInterfaceMock struct {
 		}
 		// DeleteEventType holds details about calls to the DeleteEventType method.
 		DeleteEventType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// DeletePermissionCategory holds details about calls to the DeletePermissionCategory method.
+		DeletePermissionCategory []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// ID is the id argument value.
@@ -285,6 +358,20 @@ type ManagerInterfaceMock struct {
 		}
 		// FindEventTypeByKey holds details about calls to the FindEventTypeByKey method.
 		FindEventTypeByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// FindPermissionCategoryByID holds details about calls to the FindPermissionCategoryByID method.
+		FindPermissionCategoryByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// FindPermissionCategoryByKey holds details about calls to the FindPermissionCategoryByKey method.
+		FindPermissionCategoryByKey []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Key is the key argument value.
@@ -368,6 +455,32 @@ type ManagerInterfaceMock struct {
 			// WhereSearchName is the whereSearchName argument value.
 			WhereSearchName string
 		}
+		// GetPermissionCategories holds details about calls to the GetPermissionCategories method.
+		GetPermissionCategories []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// Order is the order argument value.
+			Order parameter.PermissionCategoryOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetPermissionCategoriesCount holds details about calls to the GetPermissionCategoriesCount method.
+		GetPermissionCategoriesCount []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+		}
 		// UpdateAttendStatus holds details about calls to the UpdateAttendStatus method.
 		UpdateAttendStatus []struct {
 			// Ctx is the ctx argument value.
@@ -405,31 +518,52 @@ type ManagerInterfaceMock struct {
 			// Color is the color argument value.
 			Color string
 		}
+		// UpdatePermissionCategory holds details about calls to the UpdatePermissionCategory method.
+		UpdatePermissionCategory []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+			// Name is the name argument value.
+			Name string
+			// Key is the key argument value.
+			Key string
+			// Description is the description argument value.
+			Description string
+		}
 	}
-	lockCreateAttendStatus      sync.RWMutex
-	lockCreateAttendStatuses    sync.RWMutex
-	lockCreateAttendanceType    sync.RWMutex
-	lockCreateAttendanceTypes   sync.RWMutex
-	lockCreateEventType         sync.RWMutex
-	lockCreateEventTypes        sync.RWMutex
-	lockDeleteAttendStatus      sync.RWMutex
-	lockDeleteAttendanceType    sync.RWMutex
-	lockDeleteEventType         sync.RWMutex
-	lockFindAttendStatusByID    sync.RWMutex
-	lockFindAttendStatusByKey   sync.RWMutex
-	lockFindAttendanceTypeByID  sync.RWMutex
-	lockFindAttendanceTypeByKey sync.RWMutex
-	lockFindEventTypeByID       sync.RWMutex
-	lockFindEventTypeByKey      sync.RWMutex
-	lockGetAttendStatuses       sync.RWMutex
-	lockGetAttendStatusesCount  sync.RWMutex
-	lockGetAttendanceTypes      sync.RWMutex
-	lockGetAttendanceTypesCount sync.RWMutex
-	lockGetEventTypes           sync.RWMutex
-	lockGetEventTypesCount      sync.RWMutex
-	lockUpdateAttendStatus      sync.RWMutex
-	lockUpdateAttendanceType    sync.RWMutex
-	lockUpdateEventType         sync.RWMutex
+	lockCreateAttendStatus           sync.RWMutex
+	lockCreateAttendStatuses         sync.RWMutex
+	lockCreateAttendanceType         sync.RWMutex
+	lockCreateAttendanceTypes        sync.RWMutex
+	lockCreateEventType              sync.RWMutex
+	lockCreateEventTypes             sync.RWMutex
+	lockCreatePermissionCategories   sync.RWMutex
+	lockCreatePermissionCategory     sync.RWMutex
+	lockDeleteAttendStatus           sync.RWMutex
+	lockDeleteAttendanceType         sync.RWMutex
+	lockDeleteEventType              sync.RWMutex
+	lockDeletePermissionCategory     sync.RWMutex
+	lockFindAttendStatusByID         sync.RWMutex
+	lockFindAttendStatusByKey        sync.RWMutex
+	lockFindAttendanceTypeByID       sync.RWMutex
+	lockFindAttendanceTypeByKey      sync.RWMutex
+	lockFindEventTypeByID            sync.RWMutex
+	lockFindEventTypeByKey           sync.RWMutex
+	lockFindPermissionCategoryByID   sync.RWMutex
+	lockFindPermissionCategoryByKey  sync.RWMutex
+	lockGetAttendStatuses            sync.RWMutex
+	lockGetAttendStatusesCount       sync.RWMutex
+	lockGetAttendanceTypes           sync.RWMutex
+	lockGetAttendanceTypesCount      sync.RWMutex
+	lockGetEventTypes                sync.RWMutex
+	lockGetEventTypesCount           sync.RWMutex
+	lockGetPermissionCategories      sync.RWMutex
+	lockGetPermissionCategoriesCount sync.RWMutex
+	lockUpdateAttendStatus           sync.RWMutex
+	lockUpdateAttendanceType         sync.RWMutex
+	lockUpdateEventType              sync.RWMutex
+	lockUpdatePermissionCategory     sync.RWMutex
 }
 
 // CreateAttendStatus calls CreateAttendStatusFunc.
@@ -668,6 +802,86 @@ func (mock *ManagerInterfaceMock) CreateEventTypesCalls() []struct {
 	return calls
 }
 
+// CreatePermissionCategories calls CreatePermissionCategoriesFunc.
+func (mock *ManagerInterfaceMock) CreatePermissionCategories(ctx context.Context, ps []parameter.CreatePermissionCategoryParam) (int64, error) {
+	if mock.CreatePermissionCategoriesFunc == nil {
+		panic("ManagerInterfaceMock.CreatePermissionCategoriesFunc: method is nil but ManagerInterface.CreatePermissionCategories was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ps  []parameter.CreatePermissionCategoryParam
+	}{
+		Ctx: ctx,
+		Ps:  ps,
+	}
+	mock.lockCreatePermissionCategories.Lock()
+	mock.calls.CreatePermissionCategories = append(mock.calls.CreatePermissionCategories, callInfo)
+	mock.lockCreatePermissionCategories.Unlock()
+	return mock.CreatePermissionCategoriesFunc(ctx, ps)
+}
+
+// CreatePermissionCategoriesCalls gets all the calls that were made to CreatePermissionCategories.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreatePermissionCategoriesCalls())
+func (mock *ManagerInterfaceMock) CreatePermissionCategoriesCalls() []struct {
+	Ctx context.Context
+	Ps  []parameter.CreatePermissionCategoryParam
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ps  []parameter.CreatePermissionCategoryParam
+	}
+	mock.lockCreatePermissionCategories.RLock()
+	calls = mock.calls.CreatePermissionCategories
+	mock.lockCreatePermissionCategories.RUnlock()
+	return calls
+}
+
+// CreatePermissionCategory calls CreatePermissionCategoryFunc.
+func (mock *ManagerInterfaceMock) CreatePermissionCategory(ctx context.Context, name string, key string, description string) (entity.PermissionCategory, error) {
+	if mock.CreatePermissionCategoryFunc == nil {
+		panic("ManagerInterfaceMock.CreatePermissionCategoryFunc: method is nil but ManagerInterface.CreatePermissionCategory was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		Name        string
+		Key         string
+		Description string
+	}{
+		Ctx:         ctx,
+		Name:        name,
+		Key:         key,
+		Description: description,
+	}
+	mock.lockCreatePermissionCategory.Lock()
+	mock.calls.CreatePermissionCategory = append(mock.calls.CreatePermissionCategory, callInfo)
+	mock.lockCreatePermissionCategory.Unlock()
+	return mock.CreatePermissionCategoryFunc(ctx, name, key, description)
+}
+
+// CreatePermissionCategoryCalls gets all the calls that were made to CreatePermissionCategory.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreatePermissionCategoryCalls())
+func (mock *ManagerInterfaceMock) CreatePermissionCategoryCalls() []struct {
+	Ctx         context.Context
+	Name        string
+	Key         string
+	Description string
+} {
+	var calls []struct {
+		Ctx         context.Context
+		Name        string
+		Key         string
+		Description string
+	}
+	mock.lockCreatePermissionCategory.RLock()
+	calls = mock.calls.CreatePermissionCategory
+	mock.lockCreatePermissionCategory.RUnlock()
+	return calls
+}
+
 // DeleteAttendStatus calls DeleteAttendStatusFunc.
 func (mock *ManagerInterfaceMock) DeleteAttendStatus(ctx context.Context, id uuid.UUID) error {
 	if mock.DeleteAttendStatusFunc == nil {
@@ -773,6 +987,42 @@ func (mock *ManagerInterfaceMock) DeleteEventTypeCalls() []struct {
 	mock.lockDeleteEventType.RLock()
 	calls = mock.calls.DeleteEventType
 	mock.lockDeleteEventType.RUnlock()
+	return calls
+}
+
+// DeletePermissionCategory calls DeletePermissionCategoryFunc.
+func (mock *ManagerInterfaceMock) DeletePermissionCategory(ctx context.Context, id uuid.UUID) error {
+	if mock.DeletePermissionCategoryFunc == nil {
+		panic("ManagerInterfaceMock.DeletePermissionCategoryFunc: method is nil but ManagerInterface.DeletePermissionCategory was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockDeletePermissionCategory.Lock()
+	mock.calls.DeletePermissionCategory = append(mock.calls.DeletePermissionCategory, callInfo)
+	mock.lockDeletePermissionCategory.Unlock()
+	return mock.DeletePermissionCategoryFunc(ctx, id)
+}
+
+// DeletePermissionCategoryCalls gets all the calls that were made to DeletePermissionCategory.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeletePermissionCategoryCalls())
+func (mock *ManagerInterfaceMock) DeletePermissionCategoryCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockDeletePermissionCategory.RLock()
+	calls = mock.calls.DeletePermissionCategory
+	mock.lockDeletePermissionCategory.RUnlock()
 	return calls
 }
 
@@ -989,6 +1239,78 @@ func (mock *ManagerInterfaceMock) FindEventTypeByKeyCalls() []struct {
 	mock.lockFindEventTypeByKey.RLock()
 	calls = mock.calls.FindEventTypeByKey
 	mock.lockFindEventTypeByKey.RUnlock()
+	return calls
+}
+
+// FindPermissionCategoryByID calls FindPermissionCategoryByIDFunc.
+func (mock *ManagerInterfaceMock) FindPermissionCategoryByID(ctx context.Context, id uuid.UUID) (entity.PermissionCategory, error) {
+	if mock.FindPermissionCategoryByIDFunc == nil {
+		panic("ManagerInterfaceMock.FindPermissionCategoryByIDFunc: method is nil but ManagerInterface.FindPermissionCategoryByID was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockFindPermissionCategoryByID.Lock()
+	mock.calls.FindPermissionCategoryByID = append(mock.calls.FindPermissionCategoryByID, callInfo)
+	mock.lockFindPermissionCategoryByID.Unlock()
+	return mock.FindPermissionCategoryByIDFunc(ctx, id)
+}
+
+// FindPermissionCategoryByIDCalls gets all the calls that were made to FindPermissionCategoryByID.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindPermissionCategoryByIDCalls())
+func (mock *ManagerInterfaceMock) FindPermissionCategoryByIDCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockFindPermissionCategoryByID.RLock()
+	calls = mock.calls.FindPermissionCategoryByID
+	mock.lockFindPermissionCategoryByID.RUnlock()
+	return calls
+}
+
+// FindPermissionCategoryByKey calls FindPermissionCategoryByKeyFunc.
+func (mock *ManagerInterfaceMock) FindPermissionCategoryByKey(ctx context.Context, key string) (entity.PermissionCategory, error) {
+	if mock.FindPermissionCategoryByKeyFunc == nil {
+		panic("ManagerInterfaceMock.FindPermissionCategoryByKeyFunc: method is nil but ManagerInterface.FindPermissionCategoryByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockFindPermissionCategoryByKey.Lock()
+	mock.calls.FindPermissionCategoryByKey = append(mock.calls.FindPermissionCategoryByKey, callInfo)
+	mock.lockFindPermissionCategoryByKey.Unlock()
+	return mock.FindPermissionCategoryByKeyFunc(ctx, key)
+}
+
+// FindPermissionCategoryByKeyCalls gets all the calls that were made to FindPermissionCategoryByKey.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindPermissionCategoryByKeyCalls())
+func (mock *ManagerInterfaceMock) FindPermissionCategoryByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockFindPermissionCategoryByKey.RLock()
+	calls = mock.calls.FindPermissionCategoryByKey
+	mock.lockFindPermissionCategoryByKey.RUnlock()
 	return calls
 }
 
@@ -1280,6 +1602,102 @@ func (mock *ManagerInterfaceMock) GetEventTypesCountCalls() []struct {
 	return calls
 }
 
+// GetPermissionCategories calls GetPermissionCategoriesFunc.
+func (mock *ManagerInterfaceMock) GetPermissionCategories(ctx context.Context, whereSearchName string, order parameter.PermissionCategoryOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PermissionCategory], error) {
+	if mock.GetPermissionCategoriesFunc == nil {
+		panic("ManagerInterfaceMock.GetPermissionCategoriesFunc: method is nil but ManagerInterface.GetPermissionCategories was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		WhereSearchName string
+		Order           parameter.PermissionCategoryOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}{
+		Ctx:             ctx,
+		WhereSearchName: whereSearchName,
+		Order:           order,
+		Pg:              pg,
+		Limit:           limit,
+		Cursor:          cursor,
+		Offset:          offset,
+		WithCount:       withCount,
+	}
+	mock.lockGetPermissionCategories.Lock()
+	mock.calls.GetPermissionCategories = append(mock.calls.GetPermissionCategories, callInfo)
+	mock.lockGetPermissionCategories.Unlock()
+	return mock.GetPermissionCategoriesFunc(ctx, whereSearchName, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetPermissionCategoriesCalls gets all the calls that were made to GetPermissionCategories.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetPermissionCategoriesCalls())
+func (mock *ManagerInterfaceMock) GetPermissionCategoriesCalls() []struct {
+	Ctx             context.Context
+	WhereSearchName string
+	Order           parameter.PermissionCategoryOrderMethod
+	Pg              parameter.Pagination
+	Limit           parameter.Limit
+	Cursor          parameter.Cursor
+	Offset          parameter.Offset
+	WithCount       parameter.WithCount
+} {
+	var calls []struct {
+		Ctx             context.Context
+		WhereSearchName string
+		Order           parameter.PermissionCategoryOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}
+	mock.lockGetPermissionCategories.RLock()
+	calls = mock.calls.GetPermissionCategories
+	mock.lockGetPermissionCategories.RUnlock()
+	return calls
+}
+
+// GetPermissionCategoriesCount calls GetPermissionCategoriesCountFunc.
+func (mock *ManagerInterfaceMock) GetPermissionCategoriesCount(ctx context.Context, whereSearchName string) (int64, error) {
+	if mock.GetPermissionCategoriesCountFunc == nil {
+		panic("ManagerInterfaceMock.GetPermissionCategoriesCountFunc: method is nil but ManagerInterface.GetPermissionCategoriesCount was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		WhereSearchName string
+	}{
+		Ctx:             ctx,
+		WhereSearchName: whereSearchName,
+	}
+	mock.lockGetPermissionCategoriesCount.Lock()
+	mock.calls.GetPermissionCategoriesCount = append(mock.calls.GetPermissionCategoriesCount, callInfo)
+	mock.lockGetPermissionCategoriesCount.Unlock()
+	return mock.GetPermissionCategoriesCountFunc(ctx, whereSearchName)
+}
+
+// GetPermissionCategoriesCountCalls gets all the calls that were made to GetPermissionCategoriesCount.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetPermissionCategoriesCountCalls())
+func (mock *ManagerInterfaceMock) GetPermissionCategoriesCountCalls() []struct {
+	Ctx             context.Context
+	WhereSearchName string
+} {
+	var calls []struct {
+		Ctx             context.Context
+		WhereSearchName string
+	}
+	mock.lockGetPermissionCategoriesCount.RLock()
+	calls = mock.calls.GetPermissionCategoriesCount
+	mock.lockGetPermissionCategoriesCount.RUnlock()
+	return calls
+}
+
 // UpdateAttendStatus calls UpdateAttendStatusFunc.
 func (mock *ManagerInterfaceMock) UpdateAttendStatus(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error) {
 	if mock.UpdateAttendStatusFunc == nil {
@@ -1417,5 +1835,53 @@ func (mock *ManagerInterfaceMock) UpdateEventTypeCalls() []struct {
 	mock.lockUpdateEventType.RLock()
 	calls = mock.calls.UpdateEventType
 	mock.lockUpdateEventType.RUnlock()
+	return calls
+}
+
+// UpdatePermissionCategory calls UpdatePermissionCategoryFunc.
+func (mock *ManagerInterfaceMock) UpdatePermissionCategory(ctx context.Context, id uuid.UUID, name string, key string, description string) (entity.PermissionCategory, error) {
+	if mock.UpdatePermissionCategoryFunc == nil {
+		panic("ManagerInterfaceMock.UpdatePermissionCategoryFunc: method is nil but ManagerInterface.UpdatePermissionCategory was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		ID          uuid.UUID
+		Name        string
+		Key         string
+		Description string
+	}{
+		Ctx:         ctx,
+		ID:          id,
+		Name:        name,
+		Key:         key,
+		Description: description,
+	}
+	mock.lockUpdatePermissionCategory.Lock()
+	mock.calls.UpdatePermissionCategory = append(mock.calls.UpdatePermissionCategory, callInfo)
+	mock.lockUpdatePermissionCategory.Unlock()
+	return mock.UpdatePermissionCategoryFunc(ctx, id, name, key, description)
+}
+
+// UpdatePermissionCategoryCalls gets all the calls that were made to UpdatePermissionCategory.
+// Check the length with:
+//
+//	len(mockedManagerInterface.UpdatePermissionCategoryCalls())
+func (mock *ManagerInterfaceMock) UpdatePermissionCategoryCalls() []struct {
+	Ctx         context.Context
+	ID          uuid.UUID
+	Name        string
+	Key         string
+	Description string
+} {
+	var calls []struct {
+		Ctx         context.Context
+		ID          uuid.UUID
+		Name        string
+		Key         string
+		Description string
+	}
+	mock.lockUpdatePermissionCategory.RLock()
+	calls = mock.calls.UpdatePermissionCategory
+	mock.lockUpdatePermissionCategory.RUnlock()
 	return calls
 }

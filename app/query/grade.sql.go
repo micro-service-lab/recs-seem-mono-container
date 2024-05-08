@@ -83,7 +83,7 @@ func (q *Queries) FindGradeByID(ctx context.Context, gradeID uuid.UUID) (Grade, 
 }
 
 const findGradeByIDWithOrganization = `-- name: FindGradeByIDWithOrganization :one
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE grade_id = $1
 `
@@ -105,6 +105,7 @@ func (q *Queries) FindGradeByIDWithOrganization(ctx context.Context, gradeID uui
 		&i.Organization.OrganizationID,
 		&i.Organization.Name,
 		&i.Organization.Description,
+		&i.Organization.Color,
 		&i.Organization.IsPersonal,
 		&i.Organization.IsWhole,
 		&i.Organization.CreatedAt,
@@ -131,7 +132,7 @@ func (q *Queries) FindGradeByKey(ctx context.Context, key string) (Grade, error)
 }
 
 const findGradeByKeyWithOrganization = `-- name: FindGradeByKeyWithOrganization :one
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE key = $1
 `
@@ -153,6 +154,7 @@ func (q *Queries) FindGradeByKeyWithOrganization(ctx context.Context, key string
 		&i.Organization.OrganizationID,
 		&i.Organization.Name,
 		&i.Organization.Description,
+		&i.Organization.Color,
 		&i.Organization.IsPersonal,
 		&i.Organization.IsWhole,
 		&i.Organization.CreatedAt,
@@ -277,7 +279,7 @@ func (q *Queries) GetGradesUseNumberedPaginate(ctx context.Context, arg GetGrade
 }
 
 const getGradesWithOrganization = `-- name: GetGradesWithOrganization :many
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 ORDER BY
 	CASE WHEN $1::text = 'name' THEN m_organizations.name END ASC,
@@ -308,6 +310,7 @@ func (q *Queries) GetGradesWithOrganization(ctx context.Context, orderMethod str
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
 			&i.Organization.Description,
+			&i.Organization.Color,
 			&i.Organization.IsPersonal,
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
@@ -325,7 +328,7 @@ func (q *Queries) GetGradesWithOrganization(ctx context.Context, orderMethod str
 }
 
 const getGradesWithOrganizationUseKeysetPaginate = `-- name: GetGradesWithOrganizationUseKeysetPaginate :many
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE
 	CASE $2::text
@@ -389,6 +392,7 @@ func (q *Queries) GetGradesWithOrganizationUseKeysetPaginate(ctx context.Context
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
 			&i.Organization.Description,
+			&i.Organization.Color,
 			&i.Organization.IsPersonal,
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
@@ -406,7 +410,7 @@ func (q *Queries) GetGradesWithOrganizationUseKeysetPaginate(ctx context.Context
 }
 
 const getGradesWithOrganizationUseNumberedPaginate = `-- name: GetGradesWithOrganizationUseNumberedPaginate :many
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 ORDER BY
 	CASE WHEN $3::text = 'name' THEN m_organizations.name END ASC,
@@ -444,6 +448,7 @@ func (q *Queries) GetGradesWithOrganizationUseNumberedPaginate(ctx context.Conte
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
 			&i.Organization.Description,
+			&i.Organization.Color,
 			&i.Organization.IsPersonal,
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
@@ -500,7 +505,7 @@ func (q *Queries) GetPluralGrades(ctx context.Context, arg GetPluralGradesParams
 }
 
 const getPluralGradesWithOrganization = `-- name: GetPluralGradesWithOrganization :many
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE organization_id = ANY($3::uuid[])
 ORDER BY
@@ -537,6 +542,7 @@ func (q *Queries) GetPluralGradesWithOrganization(ctx context.Context, arg GetPl
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
 			&i.Organization.Description,
+			&i.Organization.Color,
 			&i.Organization.IsPersonal,
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,

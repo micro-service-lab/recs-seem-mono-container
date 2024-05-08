@@ -54,6 +54,12 @@ var _ Store = &StoreMock{}
 //			CountEventTypesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereEventTypeParam) (int64, error) {
 //				panic("mock out the CountEventTypesWithSd method")
 //			},
+//			CountPermissionCategoriesFunc: func(ctx context.Context, where parameter.WherePermissionCategoryParam) (int64, error) {
+//				panic("mock out the CountPermissionCategories method")
+//			},
+//			CountPermissionCategoriesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WherePermissionCategoryParam) (int64, error) {
+//				panic("mock out the CountPermissionCategoriesWithSd method")
+//			},
 //			CreateAbsenceFunc: func(ctx context.Context, param parameter.CreateAbsenceParam) (entity.Absence, error) {
 //				panic("mock out the CreateAbsence method")
 //			},
@@ -102,6 +108,18 @@ var _ Store = &StoreMock{}
 //			CreateEventTypesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateEventTypeParam) (int64, error) {
 //				panic("mock out the CreateEventTypesWithSd method")
 //			},
+//			CreatePermissionCategoriesFunc: func(ctx context.Context, params []parameter.CreatePermissionCategoryParam) (int64, error) {
+//				panic("mock out the CreatePermissionCategories method")
+//			},
+//			CreatePermissionCategoriesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreatePermissionCategoryParam) (int64, error) {
+//				panic("mock out the CreatePermissionCategoriesWithSd method")
+//			},
+//			CreatePermissionCategoryFunc: func(ctx context.Context, param parameter.CreatePermissionCategoryParam) (entity.PermissionCategory, error) {
+//				panic("mock out the CreatePermissionCategory method")
+//			},
+//			CreatePermissionCategoryWithSdFunc: func(ctx context.Context, sd Sd, param parameter.CreatePermissionCategoryParam) (entity.PermissionCategory, error) {
+//				panic("mock out the CreatePermissionCategoryWithSd method")
+//			},
 //			DeleteAbsenceFunc: func(ctx context.Context, absenceID uuid.UUID) error {
 //				panic("mock out the DeleteAbsence method")
 //			},
@@ -143,6 +161,18 @@ var _ Store = &StoreMock{}
 //			},
 //			DeleteEventTypeWithSdFunc: func(ctx context.Context, sd Sd, eventTypeID uuid.UUID) error {
 //				panic("mock out the DeleteEventTypeWithSd method")
+//			},
+//			DeletePermissionCategoryFunc: func(ctx context.Context, permissionCategoryID uuid.UUID) error {
+//				panic("mock out the DeletePermissionCategory method")
+//			},
+//			DeletePermissionCategoryByKeyFunc: func(ctx context.Context, key string) error {
+//				panic("mock out the DeletePermissionCategoryByKey method")
+//			},
+//			DeletePermissionCategoryByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) error {
+//				panic("mock out the DeletePermissionCategoryByKeyWithSd method")
+//			},
+//			DeletePermissionCategoryWithSdFunc: func(ctx context.Context, sd Sd, permissionCategoryID uuid.UUID) error {
+//				panic("mock out the DeletePermissionCategoryWithSd method")
 //			},
 //			FindAbsenceByIDFunc: func(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error) {
 //				panic("mock out the FindAbsenceByID method")
@@ -186,6 +216,18 @@ var _ Store = &StoreMock{}
 //			FindEventTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.EventType, error) {
 //				panic("mock out the FindEventTypeByKeyWithSd method")
 //			},
+//			FindPermissionCategoryByIDFunc: func(ctx context.Context, permissionCategoryID uuid.UUID) (entity.PermissionCategory, error) {
+//				panic("mock out the FindPermissionCategoryByID method")
+//			},
+//			FindPermissionCategoryByIDWithSdFunc: func(ctx context.Context, sd Sd, permissionCategoryID uuid.UUID) (entity.PermissionCategory, error) {
+//				panic("mock out the FindPermissionCategoryByIDWithSd method")
+//			},
+//			FindPermissionCategoryByKeyFunc: func(ctx context.Context, key string) (entity.PermissionCategory, error) {
+//				panic("mock out the FindPermissionCategoryByKey method")
+//			},
+//			FindPermissionCategoryByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.PermissionCategory, error) {
+//				panic("mock out the FindPermissionCategoryByKeyWithSd method")
+//			},
 //			GetAbsencesFunc: func(ctx context.Context, order parameter.AbsenceOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Absence], error) {
 //				panic("mock out the GetAbsences method")
 //			},
@@ -210,6 +252,12 @@ var _ Store = &StoreMock{}
 //			GetEventTypesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereEventTypeParam, order parameter.EventTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.EventType], error) {
 //				panic("mock out the GetEventTypesWithSd method")
 //			},
+//			GetPermissionCategoriesFunc: func(ctx context.Context, where parameter.WherePermissionCategoryParam, order parameter.PermissionCategoryOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PermissionCategory], error) {
+//				panic("mock out the GetPermissionCategories method")
+//			},
+//			GetPermissionCategoriesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WherePermissionCategoryParam, order parameter.PermissionCategoryOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PermissionCategory], error) {
+//				panic("mock out the GetPermissionCategoriesWithSd method")
+//			},
 //			GetPluralAbsencesFunc: func(ctx context.Context, ids []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Absence], error) {
 //				panic("mock out the GetPluralAbsences method")
 //			},
@@ -233,6 +281,12 @@ var _ Store = &StoreMock{}
 //			},
 //			GetPluralEventTypesWithSdFunc: func(ctx context.Context, sd Sd, EventTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.EventType], error) {
 //				panic("mock out the GetPluralEventTypesWithSd method")
+//			},
+//			GetPluralPermissionCategoriesFunc: func(ctx context.Context, PermissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error) {
+//				panic("mock out the GetPluralPermissionCategories method")
+//			},
+//			GetPluralPermissionCategoriesWithSdFunc: func(ctx context.Context, sd Sd, PermissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error) {
+//				panic("mock out the GetPluralPermissionCategoriesWithSd method")
 //			},
 //			RollbackFunc: func(contextMoqParam context.Context, sd Sd) error {
 //				panic("mock out the Rollback method")
@@ -273,6 +327,18 @@ var _ Store = &StoreMock{}
 //			UpdateEventTypeWithSdFunc: func(ctx context.Context, sd Sd, eventTypeID uuid.UUID, param parameter.UpdateEventTypeParams) (entity.EventType, error) {
 //				panic("mock out the UpdateEventTypeWithSd method")
 //			},
+//			UpdatePermissionCategoryFunc: func(ctx context.Context, permissionCategoryID uuid.UUID, param parameter.UpdatePermissionCategoryParams) (entity.PermissionCategory, error) {
+//				panic("mock out the UpdatePermissionCategory method")
+//			},
+//			UpdatePermissionCategoryByKeyFunc: func(ctx context.Context, key string, param parameter.UpdatePermissionCategoryByKeyParams) (entity.PermissionCategory, error) {
+//				panic("mock out the UpdatePermissionCategoryByKey method")
+//			},
+//			UpdatePermissionCategoryByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string, param parameter.UpdatePermissionCategoryByKeyParams) (entity.PermissionCategory, error) {
+//				panic("mock out the UpdatePermissionCategoryByKeyWithSd method")
+//			},
+//			UpdatePermissionCategoryWithSdFunc: func(ctx context.Context, sd Sd, permissionCategoryID uuid.UUID, param parameter.UpdatePermissionCategoryParams) (entity.PermissionCategory, error) {
+//				panic("mock out the UpdatePermissionCategoryWithSd method")
+//			},
 //		}
 //
 //		// use mockedStore in code that requires Store
@@ -312,6 +378,12 @@ type StoreMock struct {
 
 	// CountEventTypesWithSdFunc mocks the CountEventTypesWithSd method.
 	CountEventTypesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereEventTypeParam) (int64, error)
+
+	// CountPermissionCategoriesFunc mocks the CountPermissionCategories method.
+	CountPermissionCategoriesFunc func(ctx context.Context, where parameter.WherePermissionCategoryParam) (int64, error)
+
+	// CountPermissionCategoriesWithSdFunc mocks the CountPermissionCategoriesWithSd method.
+	CountPermissionCategoriesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WherePermissionCategoryParam) (int64, error)
 
 	// CreateAbsenceFunc mocks the CreateAbsence method.
 	CreateAbsenceFunc func(ctx context.Context, param parameter.CreateAbsenceParam) (entity.Absence, error)
@@ -361,6 +433,18 @@ type StoreMock struct {
 	// CreateEventTypesWithSdFunc mocks the CreateEventTypesWithSd method.
 	CreateEventTypesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateEventTypeParam) (int64, error)
 
+	// CreatePermissionCategoriesFunc mocks the CreatePermissionCategories method.
+	CreatePermissionCategoriesFunc func(ctx context.Context, params []parameter.CreatePermissionCategoryParam) (int64, error)
+
+	// CreatePermissionCategoriesWithSdFunc mocks the CreatePermissionCategoriesWithSd method.
+	CreatePermissionCategoriesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreatePermissionCategoryParam) (int64, error)
+
+	// CreatePermissionCategoryFunc mocks the CreatePermissionCategory method.
+	CreatePermissionCategoryFunc func(ctx context.Context, param parameter.CreatePermissionCategoryParam) (entity.PermissionCategory, error)
+
+	// CreatePermissionCategoryWithSdFunc mocks the CreatePermissionCategoryWithSd method.
+	CreatePermissionCategoryWithSdFunc func(ctx context.Context, sd Sd, param parameter.CreatePermissionCategoryParam) (entity.PermissionCategory, error)
+
 	// DeleteAbsenceFunc mocks the DeleteAbsence method.
 	DeleteAbsenceFunc func(ctx context.Context, absenceID uuid.UUID) error
 
@@ -402,6 +486,18 @@ type StoreMock struct {
 
 	// DeleteEventTypeWithSdFunc mocks the DeleteEventTypeWithSd method.
 	DeleteEventTypeWithSdFunc func(ctx context.Context, sd Sd, eventTypeID uuid.UUID) error
+
+	// DeletePermissionCategoryFunc mocks the DeletePermissionCategory method.
+	DeletePermissionCategoryFunc func(ctx context.Context, permissionCategoryID uuid.UUID) error
+
+	// DeletePermissionCategoryByKeyFunc mocks the DeletePermissionCategoryByKey method.
+	DeletePermissionCategoryByKeyFunc func(ctx context.Context, key string) error
+
+	// DeletePermissionCategoryByKeyWithSdFunc mocks the DeletePermissionCategoryByKeyWithSd method.
+	DeletePermissionCategoryByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) error
+
+	// DeletePermissionCategoryWithSdFunc mocks the DeletePermissionCategoryWithSd method.
+	DeletePermissionCategoryWithSdFunc func(ctx context.Context, sd Sd, permissionCategoryID uuid.UUID) error
 
 	// FindAbsenceByIDFunc mocks the FindAbsenceByID method.
 	FindAbsenceByIDFunc func(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error)
@@ -445,6 +541,18 @@ type StoreMock struct {
 	// FindEventTypeByKeyWithSdFunc mocks the FindEventTypeByKeyWithSd method.
 	FindEventTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.EventType, error)
 
+	// FindPermissionCategoryByIDFunc mocks the FindPermissionCategoryByID method.
+	FindPermissionCategoryByIDFunc func(ctx context.Context, permissionCategoryID uuid.UUID) (entity.PermissionCategory, error)
+
+	// FindPermissionCategoryByIDWithSdFunc mocks the FindPermissionCategoryByIDWithSd method.
+	FindPermissionCategoryByIDWithSdFunc func(ctx context.Context, sd Sd, permissionCategoryID uuid.UUID) (entity.PermissionCategory, error)
+
+	// FindPermissionCategoryByKeyFunc mocks the FindPermissionCategoryByKey method.
+	FindPermissionCategoryByKeyFunc func(ctx context.Context, key string) (entity.PermissionCategory, error)
+
+	// FindPermissionCategoryByKeyWithSdFunc mocks the FindPermissionCategoryByKeyWithSd method.
+	FindPermissionCategoryByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.PermissionCategory, error)
+
 	// GetAbsencesFunc mocks the GetAbsences method.
 	GetAbsencesFunc func(ctx context.Context, order parameter.AbsenceOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Absence], error)
 
@@ -469,6 +577,12 @@ type StoreMock struct {
 	// GetEventTypesWithSdFunc mocks the GetEventTypesWithSd method.
 	GetEventTypesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereEventTypeParam, order parameter.EventTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.EventType], error)
 
+	// GetPermissionCategoriesFunc mocks the GetPermissionCategories method.
+	GetPermissionCategoriesFunc func(ctx context.Context, where parameter.WherePermissionCategoryParam, order parameter.PermissionCategoryOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PermissionCategory], error)
+
+	// GetPermissionCategoriesWithSdFunc mocks the GetPermissionCategoriesWithSd method.
+	GetPermissionCategoriesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WherePermissionCategoryParam, order parameter.PermissionCategoryOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PermissionCategory], error)
+
 	// GetPluralAbsencesFunc mocks the GetPluralAbsences method.
 	GetPluralAbsencesFunc func(ctx context.Context, ids []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Absence], error)
 
@@ -492,6 +606,12 @@ type StoreMock struct {
 
 	// GetPluralEventTypesWithSdFunc mocks the GetPluralEventTypesWithSd method.
 	GetPluralEventTypesWithSdFunc func(ctx context.Context, sd Sd, EventTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.EventType], error)
+
+	// GetPluralPermissionCategoriesFunc mocks the GetPluralPermissionCategories method.
+	GetPluralPermissionCategoriesFunc func(ctx context.Context, PermissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error)
+
+	// GetPluralPermissionCategoriesWithSdFunc mocks the GetPluralPermissionCategoriesWithSd method.
+	GetPluralPermissionCategoriesWithSdFunc func(ctx context.Context, sd Sd, PermissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error)
 
 	// RollbackFunc mocks the Rollback method.
 	RollbackFunc func(contextMoqParam context.Context, sd Sd) error
@@ -531,6 +651,18 @@ type StoreMock struct {
 
 	// UpdateEventTypeWithSdFunc mocks the UpdateEventTypeWithSd method.
 	UpdateEventTypeWithSdFunc func(ctx context.Context, sd Sd, eventTypeID uuid.UUID, param parameter.UpdateEventTypeParams) (entity.EventType, error)
+
+	// UpdatePermissionCategoryFunc mocks the UpdatePermissionCategory method.
+	UpdatePermissionCategoryFunc func(ctx context.Context, permissionCategoryID uuid.UUID, param parameter.UpdatePermissionCategoryParams) (entity.PermissionCategory, error)
+
+	// UpdatePermissionCategoryByKeyFunc mocks the UpdatePermissionCategoryByKey method.
+	UpdatePermissionCategoryByKeyFunc func(ctx context.Context, key string, param parameter.UpdatePermissionCategoryByKeyParams) (entity.PermissionCategory, error)
+
+	// UpdatePermissionCategoryByKeyWithSdFunc mocks the UpdatePermissionCategoryByKeyWithSd method.
+	UpdatePermissionCategoryByKeyWithSdFunc func(ctx context.Context, sd Sd, key string, param parameter.UpdatePermissionCategoryByKeyParams) (entity.PermissionCategory, error)
+
+	// UpdatePermissionCategoryWithSdFunc mocks the UpdatePermissionCategoryWithSd method.
+	UpdatePermissionCategoryWithSdFunc func(ctx context.Context, sd Sd, permissionCategoryID uuid.UUID, param parameter.UpdatePermissionCategoryParams) (entity.PermissionCategory, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -610,6 +742,22 @@ type StoreMock struct {
 			Sd Sd
 			// Where is the where argument value.
 			Where parameter.WhereEventTypeParam
+		}
+		// CountPermissionCategories holds details about calls to the CountPermissionCategories method.
+		CountPermissionCategories []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WherePermissionCategoryParam
+		}
+		// CountPermissionCategoriesWithSd holds details about calls to the CountPermissionCategoriesWithSd method.
+		CountPermissionCategoriesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WherePermissionCategoryParam
 		}
 		// CreateAbsence holds details about calls to the CreateAbsence method.
 		CreateAbsence []struct {
@@ -739,6 +887,38 @@ type StoreMock struct {
 			// Params is the params argument value.
 			Params []parameter.CreateEventTypeParam
 		}
+		// CreatePermissionCategories holds details about calls to the CreatePermissionCategories method.
+		CreatePermissionCategories []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.CreatePermissionCategoryParam
+		}
+		// CreatePermissionCategoriesWithSd holds details about calls to the CreatePermissionCategoriesWithSd method.
+		CreatePermissionCategoriesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Params is the params argument value.
+			Params []parameter.CreatePermissionCategoryParam
+		}
+		// CreatePermissionCategory holds details about calls to the CreatePermissionCategory method.
+		CreatePermissionCategory []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Param is the param argument value.
+			Param parameter.CreatePermissionCategoryParam
+		}
+		// CreatePermissionCategoryWithSd holds details about calls to the CreatePermissionCategoryWithSd method.
+		CreatePermissionCategoryWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Param is the param argument value.
+			Param parameter.CreatePermissionCategoryParam
+		}
 		// DeleteAbsence holds details about calls to the DeleteAbsence method.
 		DeleteAbsence []struct {
 			// Ctx is the ctx argument value.
@@ -851,6 +1031,38 @@ type StoreMock struct {
 			// EventTypeID is the eventTypeID argument value.
 			EventTypeID uuid.UUID
 		}
+		// DeletePermissionCategory holds details about calls to the DeletePermissionCategory method.
+		DeletePermissionCategory []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PermissionCategoryID is the permissionCategoryID argument value.
+			PermissionCategoryID uuid.UUID
+		}
+		// DeletePermissionCategoryByKey holds details about calls to the DeletePermissionCategoryByKey method.
+		DeletePermissionCategoryByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// DeletePermissionCategoryByKeyWithSd holds details about calls to the DeletePermissionCategoryByKeyWithSd method.
+		DeletePermissionCategoryByKeyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
+		}
+		// DeletePermissionCategoryWithSd holds details about calls to the DeletePermissionCategoryWithSd method.
+		DeletePermissionCategoryWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// PermissionCategoryID is the permissionCategoryID argument value.
+			PermissionCategoryID uuid.UUID
+		}
 		// FindAbsenceByID holds details about calls to the FindAbsenceByID method.
 		FindAbsenceByID []struct {
 			// Ctx is the ctx argument value.
@@ -956,6 +1168,38 @@ type StoreMock struct {
 		}
 		// FindEventTypeByKeyWithSd holds details about calls to the FindEventTypeByKeyWithSd method.
 		FindEventTypeByKeyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
+		}
+		// FindPermissionCategoryByID holds details about calls to the FindPermissionCategoryByID method.
+		FindPermissionCategoryByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PermissionCategoryID is the permissionCategoryID argument value.
+			PermissionCategoryID uuid.UUID
+		}
+		// FindPermissionCategoryByIDWithSd holds details about calls to the FindPermissionCategoryByIDWithSd method.
+		FindPermissionCategoryByIDWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// PermissionCategoryID is the permissionCategoryID argument value.
+			PermissionCategoryID uuid.UUID
+		}
+		// FindPermissionCategoryByKey holds details about calls to the FindPermissionCategoryByKey method.
+		FindPermissionCategoryByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// FindPermissionCategoryByKeyWithSd holds details about calls to the FindPermissionCategoryByKeyWithSd method.
+		FindPermissionCategoryByKeyWithSd []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Sd is the sd argument value.
@@ -1087,6 +1331,38 @@ type StoreMock struct {
 			// Wc is the wc argument value.
 			Wc WithCountParam
 		}
+		// GetPermissionCategories holds details about calls to the GetPermissionCategories method.
+		GetPermissionCategories []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WherePermissionCategoryParam
+			// Order is the order argument value.
+			Order parameter.PermissionCategoryOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetPermissionCategoriesWithSd holds details about calls to the GetPermissionCategoriesWithSd method.
+		GetPermissionCategoriesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WherePermissionCategoryParam
+			// Order is the order argument value.
+			Order parameter.PermissionCategoryOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
 		// GetPluralAbsences holds details about calls to the GetPluralAbsences method.
 		GetPluralAbsences []struct {
 			// Ctx is the ctx argument value.
@@ -1164,6 +1440,26 @@ type StoreMock struct {
 			Sd Sd
 			// EventTypeIDs is the EventTypeIDs argument value.
 			EventTypeIDs []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralPermissionCategories holds details about calls to the GetPluralPermissionCategories method.
+		GetPluralPermissionCategories []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PermissionCategoryIDs is the PermissionCategoryIDs argument value.
+			PermissionCategoryIDs []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralPermissionCategoriesWithSd holds details about calls to the GetPluralPermissionCategoriesWithSd method.
+		GetPluralPermissionCategoriesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// PermissionCategoryIDs is the PermissionCategoryIDs argument value.
+			PermissionCategoryIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 		}
@@ -1294,91 +1590,153 @@ type StoreMock struct {
 			// Param is the param argument value.
 			Param parameter.UpdateEventTypeParams
 		}
+		// UpdatePermissionCategory holds details about calls to the UpdatePermissionCategory method.
+		UpdatePermissionCategory []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PermissionCategoryID is the permissionCategoryID argument value.
+			PermissionCategoryID uuid.UUID
+			// Param is the param argument value.
+			Param parameter.UpdatePermissionCategoryParams
+		}
+		// UpdatePermissionCategoryByKey holds details about calls to the UpdatePermissionCategoryByKey method.
+		UpdatePermissionCategoryByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+			// Param is the param argument value.
+			Param parameter.UpdatePermissionCategoryByKeyParams
+		}
+		// UpdatePermissionCategoryByKeyWithSd holds details about calls to the UpdatePermissionCategoryByKeyWithSd method.
+		UpdatePermissionCategoryByKeyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
+			// Param is the param argument value.
+			Param parameter.UpdatePermissionCategoryByKeyParams
+		}
+		// UpdatePermissionCategoryWithSd holds details about calls to the UpdatePermissionCategoryWithSd method.
+		UpdatePermissionCategoryWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// PermissionCategoryID is the permissionCategoryID argument value.
+			PermissionCategoryID uuid.UUID
+			// Param is the param argument value.
+			Param parameter.UpdatePermissionCategoryParams
+		}
 	}
-	lockBegin                           sync.RWMutex
-	lockCleanup                         sync.RWMutex
-	lockCommit                          sync.RWMutex
-	lockCountAbsences                   sync.RWMutex
-	lockCountAbsencesWithSd             sync.RWMutex
-	lockCountAttendStatuses             sync.RWMutex
-	lockCountAttendStatusesWithSd       sync.RWMutex
-	lockCountAttendanceTypes            sync.RWMutex
-	lockCountAttendanceTypesWithSd      sync.RWMutex
-	lockCountEventTypes                 sync.RWMutex
-	lockCountEventTypesWithSd           sync.RWMutex
-	lockCreateAbsence                   sync.RWMutex
-	lockCreateAbsenceWithSd             sync.RWMutex
-	lockCreateAbsences                  sync.RWMutex
-	lockCreateAbsencesWithSd            sync.RWMutex
-	lockCreateAttendStatus              sync.RWMutex
-	lockCreateAttendStatusWithSd        sync.RWMutex
-	lockCreateAttendStatuses            sync.RWMutex
-	lockCreateAttendStatusesWithSd      sync.RWMutex
-	lockCreateAttendanceType            sync.RWMutex
-	lockCreateAttendanceTypeWithSd      sync.RWMutex
-	lockCreateAttendanceTypes           sync.RWMutex
-	lockCreateAttendanceTypesWithSd     sync.RWMutex
-	lockCreateEventType                 sync.RWMutex
-	lockCreateEventTypeWithSd           sync.RWMutex
-	lockCreateEventTypes                sync.RWMutex
-	lockCreateEventTypesWithSd          sync.RWMutex
-	lockDeleteAbsence                   sync.RWMutex
-	lockDeleteAbsenceWithSd             sync.RWMutex
-	lockDeleteAttendStatus              sync.RWMutex
-	lockDeleteAttendStatusByKey         sync.RWMutex
-	lockDeleteAttendStatusByKeyWithSd   sync.RWMutex
-	lockDeleteAttendStatusWithSd        sync.RWMutex
-	lockDeleteAttendanceType            sync.RWMutex
-	lockDeleteAttendanceTypeByKey       sync.RWMutex
-	lockDeleteAttendanceTypeByKeyWithSd sync.RWMutex
-	lockDeleteAttendanceTypeWithSd      sync.RWMutex
-	lockDeleteEventType                 sync.RWMutex
-	lockDeleteEventTypeByKey            sync.RWMutex
-	lockDeleteEventTypeByKeyWithSd      sync.RWMutex
-	lockDeleteEventTypeWithSd           sync.RWMutex
-	lockFindAbsenceByID                 sync.RWMutex
-	lockFindAbsenceByIDWithSd           sync.RWMutex
-	lockFindAttendStatusByID            sync.RWMutex
-	lockFindAttendStatusByIDWithSd      sync.RWMutex
-	lockFindAttendStatusByKey           sync.RWMutex
-	lockFindAttendStatusByKeyWithSd     sync.RWMutex
-	lockFindAttendanceTypeByID          sync.RWMutex
-	lockFindAttendanceTypeByIDWithSd    sync.RWMutex
-	lockFindAttendanceTypeByKey         sync.RWMutex
-	lockFindAttendanceTypeByKeyWithSd   sync.RWMutex
-	lockFindEventTypeByID               sync.RWMutex
-	lockFindEventTypeByIDWithSd         sync.RWMutex
-	lockFindEventTypeByKey              sync.RWMutex
-	lockFindEventTypeByKeyWithSd        sync.RWMutex
-	lockGetAbsences                     sync.RWMutex
-	lockGetAbsencesWithSd               sync.RWMutex
-	lockGetAttendStatuses               sync.RWMutex
-	lockGetAttendStatusesWithSd         sync.RWMutex
-	lockGetAttendanceTypes              sync.RWMutex
-	lockGetAttendanceTypesWithSd        sync.RWMutex
-	lockGetEventTypes                   sync.RWMutex
-	lockGetEventTypesWithSd             sync.RWMutex
-	lockGetPluralAbsences               sync.RWMutex
-	lockGetPluralAbsencesWithSd         sync.RWMutex
-	lockGetPluralAttendStatuses         sync.RWMutex
-	lockGetPluralAttendStatusesWithSd   sync.RWMutex
-	lockGetPluralAttendanceTypes        sync.RWMutex
-	lockGetPluralAttendanceTypesWithSd  sync.RWMutex
-	lockGetPluralEventTypes             sync.RWMutex
-	lockGetPluralEventTypesWithSd       sync.RWMutex
-	lockRollback                        sync.RWMutex
-	lockUpdateAttendStatus              sync.RWMutex
-	lockUpdateAttendStatusByKey         sync.RWMutex
-	lockUpdateAttendStatusByKeyWithSd   sync.RWMutex
-	lockUpdateAttendStatusWithSd        sync.RWMutex
-	lockUpdateAttendanceType            sync.RWMutex
-	lockUpdateAttendanceTypeByKey       sync.RWMutex
-	lockUpdateAttendanceTypeByKeyWithSd sync.RWMutex
-	lockUpdateAttendanceTypeWithSd      sync.RWMutex
-	lockUpdateEventType                 sync.RWMutex
-	lockUpdateEventTypeByKey            sync.RWMutex
-	lockUpdateEventTypeByKeyWithSd      sync.RWMutex
-	lockUpdateEventTypeWithSd           sync.RWMutex
+	lockBegin                               sync.RWMutex
+	lockCleanup                             sync.RWMutex
+	lockCommit                              sync.RWMutex
+	lockCountAbsences                       sync.RWMutex
+	lockCountAbsencesWithSd                 sync.RWMutex
+	lockCountAttendStatuses                 sync.RWMutex
+	lockCountAttendStatusesWithSd           sync.RWMutex
+	lockCountAttendanceTypes                sync.RWMutex
+	lockCountAttendanceTypesWithSd          sync.RWMutex
+	lockCountEventTypes                     sync.RWMutex
+	lockCountEventTypesWithSd               sync.RWMutex
+	lockCountPermissionCategories           sync.RWMutex
+	lockCountPermissionCategoriesWithSd     sync.RWMutex
+	lockCreateAbsence                       sync.RWMutex
+	lockCreateAbsenceWithSd                 sync.RWMutex
+	lockCreateAbsences                      sync.RWMutex
+	lockCreateAbsencesWithSd                sync.RWMutex
+	lockCreateAttendStatus                  sync.RWMutex
+	lockCreateAttendStatusWithSd            sync.RWMutex
+	lockCreateAttendStatuses                sync.RWMutex
+	lockCreateAttendStatusesWithSd          sync.RWMutex
+	lockCreateAttendanceType                sync.RWMutex
+	lockCreateAttendanceTypeWithSd          sync.RWMutex
+	lockCreateAttendanceTypes               sync.RWMutex
+	lockCreateAttendanceTypesWithSd         sync.RWMutex
+	lockCreateEventType                     sync.RWMutex
+	lockCreateEventTypeWithSd               sync.RWMutex
+	lockCreateEventTypes                    sync.RWMutex
+	lockCreateEventTypesWithSd              sync.RWMutex
+	lockCreatePermissionCategories          sync.RWMutex
+	lockCreatePermissionCategoriesWithSd    sync.RWMutex
+	lockCreatePermissionCategory            sync.RWMutex
+	lockCreatePermissionCategoryWithSd      sync.RWMutex
+	lockDeleteAbsence                       sync.RWMutex
+	lockDeleteAbsenceWithSd                 sync.RWMutex
+	lockDeleteAttendStatus                  sync.RWMutex
+	lockDeleteAttendStatusByKey             sync.RWMutex
+	lockDeleteAttendStatusByKeyWithSd       sync.RWMutex
+	lockDeleteAttendStatusWithSd            sync.RWMutex
+	lockDeleteAttendanceType                sync.RWMutex
+	lockDeleteAttendanceTypeByKey           sync.RWMutex
+	lockDeleteAttendanceTypeByKeyWithSd     sync.RWMutex
+	lockDeleteAttendanceTypeWithSd          sync.RWMutex
+	lockDeleteEventType                     sync.RWMutex
+	lockDeleteEventTypeByKey                sync.RWMutex
+	lockDeleteEventTypeByKeyWithSd          sync.RWMutex
+	lockDeleteEventTypeWithSd               sync.RWMutex
+	lockDeletePermissionCategory            sync.RWMutex
+	lockDeletePermissionCategoryByKey       sync.RWMutex
+	lockDeletePermissionCategoryByKeyWithSd sync.RWMutex
+	lockDeletePermissionCategoryWithSd      sync.RWMutex
+	lockFindAbsenceByID                     sync.RWMutex
+	lockFindAbsenceByIDWithSd               sync.RWMutex
+	lockFindAttendStatusByID                sync.RWMutex
+	lockFindAttendStatusByIDWithSd          sync.RWMutex
+	lockFindAttendStatusByKey               sync.RWMutex
+	lockFindAttendStatusByKeyWithSd         sync.RWMutex
+	lockFindAttendanceTypeByID              sync.RWMutex
+	lockFindAttendanceTypeByIDWithSd        sync.RWMutex
+	lockFindAttendanceTypeByKey             sync.RWMutex
+	lockFindAttendanceTypeByKeyWithSd       sync.RWMutex
+	lockFindEventTypeByID                   sync.RWMutex
+	lockFindEventTypeByIDWithSd             sync.RWMutex
+	lockFindEventTypeByKey                  sync.RWMutex
+	lockFindEventTypeByKeyWithSd            sync.RWMutex
+	lockFindPermissionCategoryByID          sync.RWMutex
+	lockFindPermissionCategoryByIDWithSd    sync.RWMutex
+	lockFindPermissionCategoryByKey         sync.RWMutex
+	lockFindPermissionCategoryByKeyWithSd   sync.RWMutex
+	lockGetAbsences                         sync.RWMutex
+	lockGetAbsencesWithSd                   sync.RWMutex
+	lockGetAttendStatuses                   sync.RWMutex
+	lockGetAttendStatusesWithSd             sync.RWMutex
+	lockGetAttendanceTypes                  sync.RWMutex
+	lockGetAttendanceTypesWithSd            sync.RWMutex
+	lockGetEventTypes                       sync.RWMutex
+	lockGetEventTypesWithSd                 sync.RWMutex
+	lockGetPermissionCategories             sync.RWMutex
+	lockGetPermissionCategoriesWithSd       sync.RWMutex
+	lockGetPluralAbsences                   sync.RWMutex
+	lockGetPluralAbsencesWithSd             sync.RWMutex
+	lockGetPluralAttendStatuses             sync.RWMutex
+	lockGetPluralAttendStatusesWithSd       sync.RWMutex
+	lockGetPluralAttendanceTypes            sync.RWMutex
+	lockGetPluralAttendanceTypesWithSd      sync.RWMutex
+	lockGetPluralEventTypes                 sync.RWMutex
+	lockGetPluralEventTypesWithSd           sync.RWMutex
+	lockGetPluralPermissionCategories       sync.RWMutex
+	lockGetPluralPermissionCategoriesWithSd sync.RWMutex
+	lockRollback                            sync.RWMutex
+	lockUpdateAttendStatus                  sync.RWMutex
+	lockUpdateAttendStatusByKey             sync.RWMutex
+	lockUpdateAttendStatusByKeyWithSd       sync.RWMutex
+	lockUpdateAttendStatusWithSd            sync.RWMutex
+	lockUpdateAttendanceType                sync.RWMutex
+	lockUpdateAttendanceTypeByKey           sync.RWMutex
+	lockUpdateAttendanceTypeByKeyWithSd     sync.RWMutex
+	lockUpdateAttendanceTypeWithSd          sync.RWMutex
+	lockUpdateEventType                     sync.RWMutex
+	lockUpdateEventTypeByKey                sync.RWMutex
+	lockUpdateEventTypeByKeyWithSd          sync.RWMutex
+	lockUpdateEventTypeWithSd               sync.RWMutex
+	lockUpdatePermissionCategory            sync.RWMutex
+	lockUpdatePermissionCategoryByKey       sync.RWMutex
+	lockUpdatePermissionCategoryByKeyWithSd sync.RWMutex
+	lockUpdatePermissionCategoryWithSd      sync.RWMutex
 }
 
 // Begin calls BeginFunc.
@@ -1774,6 +2132,82 @@ func (mock *StoreMock) CountEventTypesWithSdCalls() []struct {
 	mock.lockCountEventTypesWithSd.RLock()
 	calls = mock.calls.CountEventTypesWithSd
 	mock.lockCountEventTypesWithSd.RUnlock()
+	return calls
+}
+
+// CountPermissionCategories calls CountPermissionCategoriesFunc.
+func (mock *StoreMock) CountPermissionCategories(ctx context.Context, where parameter.WherePermissionCategoryParam) (int64, error) {
+	if mock.CountPermissionCategoriesFunc == nil {
+		panic("StoreMock.CountPermissionCategoriesFunc: method is nil but Store.CountPermissionCategories was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WherePermissionCategoryParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+	}
+	mock.lockCountPermissionCategories.Lock()
+	mock.calls.CountPermissionCategories = append(mock.calls.CountPermissionCategories, callInfo)
+	mock.lockCountPermissionCategories.Unlock()
+	return mock.CountPermissionCategoriesFunc(ctx, where)
+}
+
+// CountPermissionCategoriesCalls gets all the calls that were made to CountPermissionCategories.
+// Check the length with:
+//
+//	len(mockedStore.CountPermissionCategoriesCalls())
+func (mock *StoreMock) CountPermissionCategoriesCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WherePermissionCategoryParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WherePermissionCategoryParam
+	}
+	mock.lockCountPermissionCategories.RLock()
+	calls = mock.calls.CountPermissionCategories
+	mock.lockCountPermissionCategories.RUnlock()
+	return calls
+}
+
+// CountPermissionCategoriesWithSd calls CountPermissionCategoriesWithSdFunc.
+func (mock *StoreMock) CountPermissionCategoriesWithSd(ctx context.Context, sd Sd, where parameter.WherePermissionCategoryParam) (int64, error) {
+	if mock.CountPermissionCategoriesWithSdFunc == nil {
+		panic("StoreMock.CountPermissionCategoriesWithSdFunc: method is nil but Store.CountPermissionCategoriesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WherePermissionCategoryParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+	}
+	mock.lockCountPermissionCategoriesWithSd.Lock()
+	mock.calls.CountPermissionCategoriesWithSd = append(mock.calls.CountPermissionCategoriesWithSd, callInfo)
+	mock.lockCountPermissionCategoriesWithSd.Unlock()
+	return mock.CountPermissionCategoriesWithSdFunc(ctx, sd, where)
+}
+
+// CountPermissionCategoriesWithSdCalls gets all the calls that were made to CountPermissionCategoriesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountPermissionCategoriesWithSdCalls())
+func (mock *StoreMock) CountPermissionCategoriesWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WherePermissionCategoryParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WherePermissionCategoryParam
+	}
+	mock.lockCountPermissionCategoriesWithSd.RLock()
+	calls = mock.calls.CountPermissionCategoriesWithSd
+	mock.lockCountPermissionCategoriesWithSd.RUnlock()
 	return calls
 }
 
@@ -2385,6 +2819,158 @@ func (mock *StoreMock) CreateEventTypesWithSdCalls() []struct {
 	return calls
 }
 
+// CreatePermissionCategories calls CreatePermissionCategoriesFunc.
+func (mock *StoreMock) CreatePermissionCategories(ctx context.Context, params []parameter.CreatePermissionCategoryParam) (int64, error) {
+	if mock.CreatePermissionCategoriesFunc == nil {
+		panic("StoreMock.CreatePermissionCategoriesFunc: method is nil but Store.CreatePermissionCategories was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.CreatePermissionCategoryParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockCreatePermissionCategories.Lock()
+	mock.calls.CreatePermissionCategories = append(mock.calls.CreatePermissionCategories, callInfo)
+	mock.lockCreatePermissionCategories.Unlock()
+	return mock.CreatePermissionCategoriesFunc(ctx, params)
+}
+
+// CreatePermissionCategoriesCalls gets all the calls that were made to CreatePermissionCategories.
+// Check the length with:
+//
+//	len(mockedStore.CreatePermissionCategoriesCalls())
+func (mock *StoreMock) CreatePermissionCategoriesCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.CreatePermissionCategoryParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.CreatePermissionCategoryParam
+	}
+	mock.lockCreatePermissionCategories.RLock()
+	calls = mock.calls.CreatePermissionCategories
+	mock.lockCreatePermissionCategories.RUnlock()
+	return calls
+}
+
+// CreatePermissionCategoriesWithSd calls CreatePermissionCategoriesWithSdFunc.
+func (mock *StoreMock) CreatePermissionCategoriesWithSd(ctx context.Context, sd Sd, params []parameter.CreatePermissionCategoryParam) (int64, error) {
+	if mock.CreatePermissionCategoriesWithSdFunc == nil {
+		panic("StoreMock.CreatePermissionCategoriesWithSdFunc: method is nil but Store.CreatePermissionCategoriesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreatePermissionCategoryParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		Params: params,
+	}
+	mock.lockCreatePermissionCategoriesWithSd.Lock()
+	mock.calls.CreatePermissionCategoriesWithSd = append(mock.calls.CreatePermissionCategoriesWithSd, callInfo)
+	mock.lockCreatePermissionCategoriesWithSd.Unlock()
+	return mock.CreatePermissionCategoriesWithSdFunc(ctx, sd, params)
+}
+
+// CreatePermissionCategoriesWithSdCalls gets all the calls that were made to CreatePermissionCategoriesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreatePermissionCategoriesWithSdCalls())
+func (mock *StoreMock) CreatePermissionCategoriesWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	Params []parameter.CreatePermissionCategoryParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreatePermissionCategoryParam
+	}
+	mock.lockCreatePermissionCategoriesWithSd.RLock()
+	calls = mock.calls.CreatePermissionCategoriesWithSd
+	mock.lockCreatePermissionCategoriesWithSd.RUnlock()
+	return calls
+}
+
+// CreatePermissionCategory calls CreatePermissionCategoryFunc.
+func (mock *StoreMock) CreatePermissionCategory(ctx context.Context, param parameter.CreatePermissionCategoryParam) (entity.PermissionCategory, error) {
+	if mock.CreatePermissionCategoryFunc == nil {
+		panic("StoreMock.CreatePermissionCategoryFunc: method is nil but Store.CreatePermissionCategory was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Param parameter.CreatePermissionCategoryParam
+	}{
+		Ctx:   ctx,
+		Param: param,
+	}
+	mock.lockCreatePermissionCategory.Lock()
+	mock.calls.CreatePermissionCategory = append(mock.calls.CreatePermissionCategory, callInfo)
+	mock.lockCreatePermissionCategory.Unlock()
+	return mock.CreatePermissionCategoryFunc(ctx, param)
+}
+
+// CreatePermissionCategoryCalls gets all the calls that were made to CreatePermissionCategory.
+// Check the length with:
+//
+//	len(mockedStore.CreatePermissionCategoryCalls())
+func (mock *StoreMock) CreatePermissionCategoryCalls() []struct {
+	Ctx   context.Context
+	Param parameter.CreatePermissionCategoryParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Param parameter.CreatePermissionCategoryParam
+	}
+	mock.lockCreatePermissionCategory.RLock()
+	calls = mock.calls.CreatePermissionCategory
+	mock.lockCreatePermissionCategory.RUnlock()
+	return calls
+}
+
+// CreatePermissionCategoryWithSd calls CreatePermissionCategoryWithSdFunc.
+func (mock *StoreMock) CreatePermissionCategoryWithSd(ctx context.Context, sd Sd, param parameter.CreatePermissionCategoryParam) (entity.PermissionCategory, error) {
+	if mock.CreatePermissionCategoryWithSdFunc == nil {
+		panic("StoreMock.CreatePermissionCategoryWithSdFunc: method is nil but Store.CreatePermissionCategoryWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreatePermissionCategoryParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Param: param,
+	}
+	mock.lockCreatePermissionCategoryWithSd.Lock()
+	mock.calls.CreatePermissionCategoryWithSd = append(mock.calls.CreatePermissionCategoryWithSd, callInfo)
+	mock.lockCreatePermissionCategoryWithSd.Unlock()
+	return mock.CreatePermissionCategoryWithSdFunc(ctx, sd, param)
+}
+
+// CreatePermissionCategoryWithSdCalls gets all the calls that were made to CreatePermissionCategoryWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreatePermissionCategoryWithSdCalls())
+func (mock *StoreMock) CreatePermissionCategoryWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Param parameter.CreatePermissionCategoryParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreatePermissionCategoryParam
+	}
+	mock.lockCreatePermissionCategoryWithSd.RLock()
+	calls = mock.calls.CreatePermissionCategoryWithSd
+	mock.lockCreatePermissionCategoryWithSd.RUnlock()
+	return calls
+}
+
 // DeleteAbsence calls DeleteAbsenceFunc.
 func (mock *StoreMock) DeleteAbsence(ctx context.Context, absenceID uuid.UUID) error {
 	if mock.DeleteAbsenceFunc == nil {
@@ -2914,6 +3500,158 @@ func (mock *StoreMock) DeleteEventTypeWithSdCalls() []struct {
 	mock.lockDeleteEventTypeWithSd.RLock()
 	calls = mock.calls.DeleteEventTypeWithSd
 	mock.lockDeleteEventTypeWithSd.RUnlock()
+	return calls
+}
+
+// DeletePermissionCategory calls DeletePermissionCategoryFunc.
+func (mock *StoreMock) DeletePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID) error {
+	if mock.DeletePermissionCategoryFunc == nil {
+		panic("StoreMock.DeletePermissionCategoryFunc: method is nil but Store.DeletePermissionCategory was just called")
+	}
+	callInfo := struct {
+		Ctx                  context.Context
+		PermissionCategoryID uuid.UUID
+	}{
+		Ctx:                  ctx,
+		PermissionCategoryID: permissionCategoryID,
+	}
+	mock.lockDeletePermissionCategory.Lock()
+	mock.calls.DeletePermissionCategory = append(mock.calls.DeletePermissionCategory, callInfo)
+	mock.lockDeletePermissionCategory.Unlock()
+	return mock.DeletePermissionCategoryFunc(ctx, permissionCategoryID)
+}
+
+// DeletePermissionCategoryCalls gets all the calls that were made to DeletePermissionCategory.
+// Check the length with:
+//
+//	len(mockedStore.DeletePermissionCategoryCalls())
+func (mock *StoreMock) DeletePermissionCategoryCalls() []struct {
+	Ctx                  context.Context
+	PermissionCategoryID uuid.UUID
+} {
+	var calls []struct {
+		Ctx                  context.Context
+		PermissionCategoryID uuid.UUID
+	}
+	mock.lockDeletePermissionCategory.RLock()
+	calls = mock.calls.DeletePermissionCategory
+	mock.lockDeletePermissionCategory.RUnlock()
+	return calls
+}
+
+// DeletePermissionCategoryByKey calls DeletePermissionCategoryByKeyFunc.
+func (mock *StoreMock) DeletePermissionCategoryByKey(ctx context.Context, key string) error {
+	if mock.DeletePermissionCategoryByKeyFunc == nil {
+		panic("StoreMock.DeletePermissionCategoryByKeyFunc: method is nil but Store.DeletePermissionCategoryByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockDeletePermissionCategoryByKey.Lock()
+	mock.calls.DeletePermissionCategoryByKey = append(mock.calls.DeletePermissionCategoryByKey, callInfo)
+	mock.lockDeletePermissionCategoryByKey.Unlock()
+	return mock.DeletePermissionCategoryByKeyFunc(ctx, key)
+}
+
+// DeletePermissionCategoryByKeyCalls gets all the calls that were made to DeletePermissionCategoryByKey.
+// Check the length with:
+//
+//	len(mockedStore.DeletePermissionCategoryByKeyCalls())
+func (mock *StoreMock) DeletePermissionCategoryByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockDeletePermissionCategoryByKey.RLock()
+	calls = mock.calls.DeletePermissionCategoryByKey
+	mock.lockDeletePermissionCategoryByKey.RUnlock()
+	return calls
+}
+
+// DeletePermissionCategoryByKeyWithSd calls DeletePermissionCategoryByKeyWithSdFunc.
+func (mock *StoreMock) DeletePermissionCategoryByKeyWithSd(ctx context.Context, sd Sd, key string) error {
+	if mock.DeletePermissionCategoryByKeyWithSdFunc == nil {
+		panic("StoreMock.DeletePermissionCategoryByKeyWithSdFunc: method is nil but Store.DeletePermissionCategoryByKeyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}{
+		Ctx: ctx,
+		Sd:  sd,
+		Key: key,
+	}
+	mock.lockDeletePermissionCategoryByKeyWithSd.Lock()
+	mock.calls.DeletePermissionCategoryByKeyWithSd = append(mock.calls.DeletePermissionCategoryByKeyWithSd, callInfo)
+	mock.lockDeletePermissionCategoryByKeyWithSd.Unlock()
+	return mock.DeletePermissionCategoryByKeyWithSdFunc(ctx, sd, key)
+}
+
+// DeletePermissionCategoryByKeyWithSdCalls gets all the calls that were made to DeletePermissionCategoryByKeyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeletePermissionCategoryByKeyWithSdCalls())
+func (mock *StoreMock) DeletePermissionCategoryByKeyWithSdCalls() []struct {
+	Ctx context.Context
+	Sd  Sd
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}
+	mock.lockDeletePermissionCategoryByKeyWithSd.RLock()
+	calls = mock.calls.DeletePermissionCategoryByKeyWithSd
+	mock.lockDeletePermissionCategoryByKeyWithSd.RUnlock()
+	return calls
+}
+
+// DeletePermissionCategoryWithSd calls DeletePermissionCategoryWithSdFunc.
+func (mock *StoreMock) DeletePermissionCategoryWithSd(ctx context.Context, sd Sd, permissionCategoryID uuid.UUID) error {
+	if mock.DeletePermissionCategoryWithSdFunc == nil {
+		panic("StoreMock.DeletePermissionCategoryWithSdFunc: method is nil but Store.DeletePermissionCategoryWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                  context.Context
+		Sd                   Sd
+		PermissionCategoryID uuid.UUID
+	}{
+		Ctx:                  ctx,
+		Sd:                   sd,
+		PermissionCategoryID: permissionCategoryID,
+	}
+	mock.lockDeletePermissionCategoryWithSd.Lock()
+	mock.calls.DeletePermissionCategoryWithSd = append(mock.calls.DeletePermissionCategoryWithSd, callInfo)
+	mock.lockDeletePermissionCategoryWithSd.Unlock()
+	return mock.DeletePermissionCategoryWithSdFunc(ctx, sd, permissionCategoryID)
+}
+
+// DeletePermissionCategoryWithSdCalls gets all the calls that were made to DeletePermissionCategoryWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeletePermissionCategoryWithSdCalls())
+func (mock *StoreMock) DeletePermissionCategoryWithSdCalls() []struct {
+	Ctx                  context.Context
+	Sd                   Sd
+	PermissionCategoryID uuid.UUID
+} {
+	var calls []struct {
+		Ctx                  context.Context
+		Sd                   Sd
+		PermissionCategoryID uuid.UUID
+	}
+	mock.lockDeletePermissionCategoryWithSd.RLock()
+	calls = mock.calls.DeletePermissionCategoryWithSd
+	mock.lockDeletePermissionCategoryWithSd.RUnlock()
 	return calls
 }
 
@@ -3449,6 +4187,158 @@ func (mock *StoreMock) FindEventTypeByKeyWithSdCalls() []struct {
 	return calls
 }
 
+// FindPermissionCategoryByID calls FindPermissionCategoryByIDFunc.
+func (mock *StoreMock) FindPermissionCategoryByID(ctx context.Context, permissionCategoryID uuid.UUID) (entity.PermissionCategory, error) {
+	if mock.FindPermissionCategoryByIDFunc == nil {
+		panic("StoreMock.FindPermissionCategoryByIDFunc: method is nil but Store.FindPermissionCategoryByID was just called")
+	}
+	callInfo := struct {
+		Ctx                  context.Context
+		PermissionCategoryID uuid.UUID
+	}{
+		Ctx:                  ctx,
+		PermissionCategoryID: permissionCategoryID,
+	}
+	mock.lockFindPermissionCategoryByID.Lock()
+	mock.calls.FindPermissionCategoryByID = append(mock.calls.FindPermissionCategoryByID, callInfo)
+	mock.lockFindPermissionCategoryByID.Unlock()
+	return mock.FindPermissionCategoryByIDFunc(ctx, permissionCategoryID)
+}
+
+// FindPermissionCategoryByIDCalls gets all the calls that were made to FindPermissionCategoryByID.
+// Check the length with:
+//
+//	len(mockedStore.FindPermissionCategoryByIDCalls())
+func (mock *StoreMock) FindPermissionCategoryByIDCalls() []struct {
+	Ctx                  context.Context
+	PermissionCategoryID uuid.UUID
+} {
+	var calls []struct {
+		Ctx                  context.Context
+		PermissionCategoryID uuid.UUID
+	}
+	mock.lockFindPermissionCategoryByID.RLock()
+	calls = mock.calls.FindPermissionCategoryByID
+	mock.lockFindPermissionCategoryByID.RUnlock()
+	return calls
+}
+
+// FindPermissionCategoryByIDWithSd calls FindPermissionCategoryByIDWithSdFunc.
+func (mock *StoreMock) FindPermissionCategoryByIDWithSd(ctx context.Context, sd Sd, permissionCategoryID uuid.UUID) (entity.PermissionCategory, error) {
+	if mock.FindPermissionCategoryByIDWithSdFunc == nil {
+		panic("StoreMock.FindPermissionCategoryByIDWithSdFunc: method is nil but Store.FindPermissionCategoryByIDWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                  context.Context
+		Sd                   Sd
+		PermissionCategoryID uuid.UUID
+	}{
+		Ctx:                  ctx,
+		Sd:                   sd,
+		PermissionCategoryID: permissionCategoryID,
+	}
+	mock.lockFindPermissionCategoryByIDWithSd.Lock()
+	mock.calls.FindPermissionCategoryByIDWithSd = append(mock.calls.FindPermissionCategoryByIDWithSd, callInfo)
+	mock.lockFindPermissionCategoryByIDWithSd.Unlock()
+	return mock.FindPermissionCategoryByIDWithSdFunc(ctx, sd, permissionCategoryID)
+}
+
+// FindPermissionCategoryByIDWithSdCalls gets all the calls that were made to FindPermissionCategoryByIDWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindPermissionCategoryByIDWithSdCalls())
+func (mock *StoreMock) FindPermissionCategoryByIDWithSdCalls() []struct {
+	Ctx                  context.Context
+	Sd                   Sd
+	PermissionCategoryID uuid.UUID
+} {
+	var calls []struct {
+		Ctx                  context.Context
+		Sd                   Sd
+		PermissionCategoryID uuid.UUID
+	}
+	mock.lockFindPermissionCategoryByIDWithSd.RLock()
+	calls = mock.calls.FindPermissionCategoryByIDWithSd
+	mock.lockFindPermissionCategoryByIDWithSd.RUnlock()
+	return calls
+}
+
+// FindPermissionCategoryByKey calls FindPermissionCategoryByKeyFunc.
+func (mock *StoreMock) FindPermissionCategoryByKey(ctx context.Context, key string) (entity.PermissionCategory, error) {
+	if mock.FindPermissionCategoryByKeyFunc == nil {
+		panic("StoreMock.FindPermissionCategoryByKeyFunc: method is nil but Store.FindPermissionCategoryByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockFindPermissionCategoryByKey.Lock()
+	mock.calls.FindPermissionCategoryByKey = append(mock.calls.FindPermissionCategoryByKey, callInfo)
+	mock.lockFindPermissionCategoryByKey.Unlock()
+	return mock.FindPermissionCategoryByKeyFunc(ctx, key)
+}
+
+// FindPermissionCategoryByKeyCalls gets all the calls that were made to FindPermissionCategoryByKey.
+// Check the length with:
+//
+//	len(mockedStore.FindPermissionCategoryByKeyCalls())
+func (mock *StoreMock) FindPermissionCategoryByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockFindPermissionCategoryByKey.RLock()
+	calls = mock.calls.FindPermissionCategoryByKey
+	mock.lockFindPermissionCategoryByKey.RUnlock()
+	return calls
+}
+
+// FindPermissionCategoryByKeyWithSd calls FindPermissionCategoryByKeyWithSdFunc.
+func (mock *StoreMock) FindPermissionCategoryByKeyWithSd(ctx context.Context, sd Sd, key string) (entity.PermissionCategory, error) {
+	if mock.FindPermissionCategoryByKeyWithSdFunc == nil {
+		panic("StoreMock.FindPermissionCategoryByKeyWithSdFunc: method is nil but Store.FindPermissionCategoryByKeyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}{
+		Ctx: ctx,
+		Sd:  sd,
+		Key: key,
+	}
+	mock.lockFindPermissionCategoryByKeyWithSd.Lock()
+	mock.calls.FindPermissionCategoryByKeyWithSd = append(mock.calls.FindPermissionCategoryByKeyWithSd, callInfo)
+	mock.lockFindPermissionCategoryByKeyWithSd.Unlock()
+	return mock.FindPermissionCategoryByKeyWithSdFunc(ctx, sd, key)
+}
+
+// FindPermissionCategoryByKeyWithSdCalls gets all the calls that were made to FindPermissionCategoryByKeyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindPermissionCategoryByKeyWithSdCalls())
+func (mock *StoreMock) FindPermissionCategoryByKeyWithSdCalls() []struct {
+	Ctx context.Context
+	Sd  Sd
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}
+	mock.lockFindPermissionCategoryByKeyWithSd.RLock()
+	calls = mock.calls.FindPermissionCategoryByKeyWithSd
+	mock.lockFindPermissionCategoryByKeyWithSd.RUnlock()
+	return calls
+}
+
 // GetAbsences calls GetAbsencesFunc.
 func (mock *StoreMock) GetAbsences(ctx context.Context, order parameter.AbsenceOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Absence], error) {
 	if mock.GetAbsencesFunc == nil {
@@ -3873,6 +4763,114 @@ func (mock *StoreMock) GetEventTypesWithSdCalls() []struct {
 	return calls
 }
 
+// GetPermissionCategories calls GetPermissionCategoriesFunc.
+func (mock *StoreMock) GetPermissionCategories(ctx context.Context, where parameter.WherePermissionCategoryParam, order parameter.PermissionCategoryOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PermissionCategory], error) {
+	if mock.GetPermissionCategoriesFunc == nil {
+		panic("StoreMock.GetPermissionCategoriesFunc: method is nil but Store.GetPermissionCategories was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WherePermissionCategoryParam
+		Order parameter.PermissionCategoryOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetPermissionCategories.Lock()
+	mock.calls.GetPermissionCategories = append(mock.calls.GetPermissionCategories, callInfo)
+	mock.lockGetPermissionCategories.Unlock()
+	return mock.GetPermissionCategoriesFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetPermissionCategoriesCalls gets all the calls that were made to GetPermissionCategories.
+// Check the length with:
+//
+//	len(mockedStore.GetPermissionCategoriesCalls())
+func (mock *StoreMock) GetPermissionCategoriesCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WherePermissionCategoryParam
+	Order parameter.PermissionCategoryOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WherePermissionCategoryParam
+		Order parameter.PermissionCategoryOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetPermissionCategories.RLock()
+	calls = mock.calls.GetPermissionCategories
+	mock.lockGetPermissionCategories.RUnlock()
+	return calls
+}
+
+// GetPermissionCategoriesWithSd calls GetPermissionCategoriesWithSdFunc.
+func (mock *StoreMock) GetPermissionCategoriesWithSd(ctx context.Context, sd Sd, where parameter.WherePermissionCategoryParam, order parameter.PermissionCategoryOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PermissionCategory], error) {
+	if mock.GetPermissionCategoriesWithSdFunc == nil {
+		panic("StoreMock.GetPermissionCategoriesWithSdFunc: method is nil but Store.GetPermissionCategoriesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WherePermissionCategoryParam
+		Order parameter.PermissionCategoryOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetPermissionCategoriesWithSd.Lock()
+	mock.calls.GetPermissionCategoriesWithSd = append(mock.calls.GetPermissionCategoriesWithSd, callInfo)
+	mock.lockGetPermissionCategoriesWithSd.Unlock()
+	return mock.GetPermissionCategoriesWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetPermissionCategoriesWithSdCalls gets all the calls that were made to GetPermissionCategoriesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPermissionCategoriesWithSdCalls())
+func (mock *StoreMock) GetPermissionCategoriesWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WherePermissionCategoryParam
+	Order parameter.PermissionCategoryOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WherePermissionCategoryParam
+		Order parameter.PermissionCategoryOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetPermissionCategoriesWithSd.RLock()
+	calls = mock.calls.GetPermissionCategoriesWithSd
+	mock.lockGetPermissionCategoriesWithSd.RUnlock()
+	return calls
+}
+
 // GetPluralAbsences calls GetPluralAbsencesFunc.
 func (mock *StoreMock) GetPluralAbsences(ctx context.Context, ids []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Absence], error) {
 	if mock.GetPluralAbsencesFunc == nil {
@@ -4206,6 +5204,90 @@ func (mock *StoreMock) GetPluralEventTypesWithSdCalls() []struct {
 	mock.lockGetPluralEventTypesWithSd.RLock()
 	calls = mock.calls.GetPluralEventTypesWithSd
 	mock.lockGetPluralEventTypesWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralPermissionCategories calls GetPluralPermissionCategoriesFunc.
+func (mock *StoreMock) GetPluralPermissionCategories(ctx context.Context, PermissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error) {
+	if mock.GetPluralPermissionCategoriesFunc == nil {
+		panic("StoreMock.GetPluralPermissionCategoriesFunc: method is nil but Store.GetPluralPermissionCategories was just called")
+	}
+	callInfo := struct {
+		Ctx                   context.Context
+		PermissionCategoryIDs []uuid.UUID
+		Np                    NumberedPaginationParam
+	}{
+		Ctx:                   ctx,
+		PermissionCategoryIDs: PermissionCategoryIDs,
+		Np:                    np,
+	}
+	mock.lockGetPluralPermissionCategories.Lock()
+	mock.calls.GetPluralPermissionCategories = append(mock.calls.GetPluralPermissionCategories, callInfo)
+	mock.lockGetPluralPermissionCategories.Unlock()
+	return mock.GetPluralPermissionCategoriesFunc(ctx, PermissionCategoryIDs, np)
+}
+
+// GetPluralPermissionCategoriesCalls gets all the calls that were made to GetPluralPermissionCategories.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralPermissionCategoriesCalls())
+func (mock *StoreMock) GetPluralPermissionCategoriesCalls() []struct {
+	Ctx                   context.Context
+	PermissionCategoryIDs []uuid.UUID
+	Np                    NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx                   context.Context
+		PermissionCategoryIDs []uuid.UUID
+		Np                    NumberedPaginationParam
+	}
+	mock.lockGetPluralPermissionCategories.RLock()
+	calls = mock.calls.GetPluralPermissionCategories
+	mock.lockGetPluralPermissionCategories.RUnlock()
+	return calls
+}
+
+// GetPluralPermissionCategoriesWithSd calls GetPluralPermissionCategoriesWithSdFunc.
+func (mock *StoreMock) GetPluralPermissionCategoriesWithSd(ctx context.Context, sd Sd, PermissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error) {
+	if mock.GetPluralPermissionCategoriesWithSdFunc == nil {
+		panic("StoreMock.GetPluralPermissionCategoriesWithSdFunc: method is nil but Store.GetPluralPermissionCategoriesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                   context.Context
+		Sd                    Sd
+		PermissionCategoryIDs []uuid.UUID
+		Np                    NumberedPaginationParam
+	}{
+		Ctx:                   ctx,
+		Sd:                    sd,
+		PermissionCategoryIDs: PermissionCategoryIDs,
+		Np:                    np,
+	}
+	mock.lockGetPluralPermissionCategoriesWithSd.Lock()
+	mock.calls.GetPluralPermissionCategoriesWithSd = append(mock.calls.GetPluralPermissionCategoriesWithSd, callInfo)
+	mock.lockGetPluralPermissionCategoriesWithSd.Unlock()
+	return mock.GetPluralPermissionCategoriesWithSdFunc(ctx, sd, PermissionCategoryIDs, np)
+}
+
+// GetPluralPermissionCategoriesWithSdCalls gets all the calls that were made to GetPluralPermissionCategoriesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralPermissionCategoriesWithSdCalls())
+func (mock *StoreMock) GetPluralPermissionCategoriesWithSdCalls() []struct {
+	Ctx                   context.Context
+	Sd                    Sd
+	PermissionCategoryIDs []uuid.UUID
+	Np                    NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx                   context.Context
+		Sd                    Sd
+		PermissionCategoryIDs []uuid.UUID
+		Np                    NumberedPaginationParam
+	}
+	mock.lockGetPluralPermissionCategoriesWithSd.RLock()
+	calls = mock.calls.GetPluralPermissionCategoriesWithSd
+	mock.lockGetPluralPermissionCategoriesWithSd.RUnlock()
 	return calls
 }
 
@@ -4746,5 +5828,173 @@ func (mock *StoreMock) UpdateEventTypeWithSdCalls() []struct {
 	mock.lockUpdateEventTypeWithSd.RLock()
 	calls = mock.calls.UpdateEventTypeWithSd
 	mock.lockUpdateEventTypeWithSd.RUnlock()
+	return calls
+}
+
+// UpdatePermissionCategory calls UpdatePermissionCategoryFunc.
+func (mock *StoreMock) UpdatePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID, param parameter.UpdatePermissionCategoryParams) (entity.PermissionCategory, error) {
+	if mock.UpdatePermissionCategoryFunc == nil {
+		panic("StoreMock.UpdatePermissionCategoryFunc: method is nil but Store.UpdatePermissionCategory was just called")
+	}
+	callInfo := struct {
+		Ctx                  context.Context
+		PermissionCategoryID uuid.UUID
+		Param                parameter.UpdatePermissionCategoryParams
+	}{
+		Ctx:                  ctx,
+		PermissionCategoryID: permissionCategoryID,
+		Param:                param,
+	}
+	mock.lockUpdatePermissionCategory.Lock()
+	mock.calls.UpdatePermissionCategory = append(mock.calls.UpdatePermissionCategory, callInfo)
+	mock.lockUpdatePermissionCategory.Unlock()
+	return mock.UpdatePermissionCategoryFunc(ctx, permissionCategoryID, param)
+}
+
+// UpdatePermissionCategoryCalls gets all the calls that were made to UpdatePermissionCategory.
+// Check the length with:
+//
+//	len(mockedStore.UpdatePermissionCategoryCalls())
+func (mock *StoreMock) UpdatePermissionCategoryCalls() []struct {
+	Ctx                  context.Context
+	PermissionCategoryID uuid.UUID
+	Param                parameter.UpdatePermissionCategoryParams
+} {
+	var calls []struct {
+		Ctx                  context.Context
+		PermissionCategoryID uuid.UUID
+		Param                parameter.UpdatePermissionCategoryParams
+	}
+	mock.lockUpdatePermissionCategory.RLock()
+	calls = mock.calls.UpdatePermissionCategory
+	mock.lockUpdatePermissionCategory.RUnlock()
+	return calls
+}
+
+// UpdatePermissionCategoryByKey calls UpdatePermissionCategoryByKeyFunc.
+func (mock *StoreMock) UpdatePermissionCategoryByKey(ctx context.Context, key string, param parameter.UpdatePermissionCategoryByKeyParams) (entity.PermissionCategory, error) {
+	if mock.UpdatePermissionCategoryByKeyFunc == nil {
+		panic("StoreMock.UpdatePermissionCategoryByKeyFunc: method is nil but Store.UpdatePermissionCategoryByKey was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Key   string
+		Param parameter.UpdatePermissionCategoryByKeyParams
+	}{
+		Ctx:   ctx,
+		Key:   key,
+		Param: param,
+	}
+	mock.lockUpdatePermissionCategoryByKey.Lock()
+	mock.calls.UpdatePermissionCategoryByKey = append(mock.calls.UpdatePermissionCategoryByKey, callInfo)
+	mock.lockUpdatePermissionCategoryByKey.Unlock()
+	return mock.UpdatePermissionCategoryByKeyFunc(ctx, key, param)
+}
+
+// UpdatePermissionCategoryByKeyCalls gets all the calls that were made to UpdatePermissionCategoryByKey.
+// Check the length with:
+//
+//	len(mockedStore.UpdatePermissionCategoryByKeyCalls())
+func (mock *StoreMock) UpdatePermissionCategoryByKeyCalls() []struct {
+	Ctx   context.Context
+	Key   string
+	Param parameter.UpdatePermissionCategoryByKeyParams
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Key   string
+		Param parameter.UpdatePermissionCategoryByKeyParams
+	}
+	mock.lockUpdatePermissionCategoryByKey.RLock()
+	calls = mock.calls.UpdatePermissionCategoryByKey
+	mock.lockUpdatePermissionCategoryByKey.RUnlock()
+	return calls
+}
+
+// UpdatePermissionCategoryByKeyWithSd calls UpdatePermissionCategoryByKeyWithSdFunc.
+func (mock *StoreMock) UpdatePermissionCategoryByKeyWithSd(ctx context.Context, sd Sd, key string, param parameter.UpdatePermissionCategoryByKeyParams) (entity.PermissionCategory, error) {
+	if mock.UpdatePermissionCategoryByKeyWithSdFunc == nil {
+		panic("StoreMock.UpdatePermissionCategoryByKeyWithSdFunc: method is nil but Store.UpdatePermissionCategoryByKeyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Key   string
+		Param parameter.UpdatePermissionCategoryByKeyParams
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Key:   key,
+		Param: param,
+	}
+	mock.lockUpdatePermissionCategoryByKeyWithSd.Lock()
+	mock.calls.UpdatePermissionCategoryByKeyWithSd = append(mock.calls.UpdatePermissionCategoryByKeyWithSd, callInfo)
+	mock.lockUpdatePermissionCategoryByKeyWithSd.Unlock()
+	return mock.UpdatePermissionCategoryByKeyWithSdFunc(ctx, sd, key, param)
+}
+
+// UpdatePermissionCategoryByKeyWithSdCalls gets all the calls that were made to UpdatePermissionCategoryByKeyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.UpdatePermissionCategoryByKeyWithSdCalls())
+func (mock *StoreMock) UpdatePermissionCategoryByKeyWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Key   string
+	Param parameter.UpdatePermissionCategoryByKeyParams
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Key   string
+		Param parameter.UpdatePermissionCategoryByKeyParams
+	}
+	mock.lockUpdatePermissionCategoryByKeyWithSd.RLock()
+	calls = mock.calls.UpdatePermissionCategoryByKeyWithSd
+	mock.lockUpdatePermissionCategoryByKeyWithSd.RUnlock()
+	return calls
+}
+
+// UpdatePermissionCategoryWithSd calls UpdatePermissionCategoryWithSdFunc.
+func (mock *StoreMock) UpdatePermissionCategoryWithSd(ctx context.Context, sd Sd, permissionCategoryID uuid.UUID, param parameter.UpdatePermissionCategoryParams) (entity.PermissionCategory, error) {
+	if mock.UpdatePermissionCategoryWithSdFunc == nil {
+		panic("StoreMock.UpdatePermissionCategoryWithSdFunc: method is nil but Store.UpdatePermissionCategoryWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                  context.Context
+		Sd                   Sd
+		PermissionCategoryID uuid.UUID
+		Param                parameter.UpdatePermissionCategoryParams
+	}{
+		Ctx:                  ctx,
+		Sd:                   sd,
+		PermissionCategoryID: permissionCategoryID,
+		Param:                param,
+	}
+	mock.lockUpdatePermissionCategoryWithSd.Lock()
+	mock.calls.UpdatePermissionCategoryWithSd = append(mock.calls.UpdatePermissionCategoryWithSd, callInfo)
+	mock.lockUpdatePermissionCategoryWithSd.Unlock()
+	return mock.UpdatePermissionCategoryWithSdFunc(ctx, sd, permissionCategoryID, param)
+}
+
+// UpdatePermissionCategoryWithSdCalls gets all the calls that were made to UpdatePermissionCategoryWithSd.
+// Check the length with:
+//
+//	len(mockedStore.UpdatePermissionCategoryWithSdCalls())
+func (mock *StoreMock) UpdatePermissionCategoryWithSdCalls() []struct {
+	Ctx                  context.Context
+	Sd                   Sd
+	PermissionCategoryID uuid.UUID
+	Param                parameter.UpdatePermissionCategoryParams
+} {
+	var calls []struct {
+		Ctx                  context.Context
+		Sd                   Sd
+		PermissionCategoryID uuid.UUID
+		Param                parameter.UpdatePermissionCategoryParams
+	}
+	mock.lockUpdatePermissionCategoryWithSd.RLock()
+	calls = mock.calls.UpdatePermissionCategoryWithSd
+	mock.lockUpdatePermissionCategoryWithSd.RUnlock()
 	return calls
 }

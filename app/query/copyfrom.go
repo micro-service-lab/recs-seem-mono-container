@@ -730,6 +730,7 @@ func (r iteratorForCreateOrganizations) Values() ([]interface{}, error) {
 	return []interface{}{
 		r.rows[0].Name,
 		r.rows[0].Description,
+		r.rows[0].Color,
 		r.rows[0].IsPersonal,
 		r.rows[0].IsWhole,
 		r.rows[0].ChatRoomID,
@@ -743,7 +744,7 @@ func (r iteratorForCreateOrganizations) Err() error {
 }
 
 func (q *Queries) CreateOrganizations(ctx context.Context, arg []CreateOrganizationsParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"m_organizations"}, []string{"name", "description", "is_personal", "is_whole", "chat_room_id", "created_at", "updated_at"}, &iteratorForCreateOrganizations{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"m_organizations"}, []string{"name", "description", "color", "is_personal", "is_whole", "chat_room_id", "created_at", "updated_at"}, &iteratorForCreateOrganizations{rows: arg})
 }
 
 // iteratorForCreatePermissionAssociations implements pgx.CopyFromSource.

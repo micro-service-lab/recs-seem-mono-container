@@ -192,6 +192,7 @@ type Organization struct {
 	OrganizationID     uuid.UUID   `json:"organization_id"`
 	Name               string      `json:"name"`
 	Description        pgtype.Text `json:"description"`
+	Color              pgtype.Text `json:"color"`
 	IsPersonal         bool        `json:"is_personal"`
 	IsWhole            bool        `json:"is_whole"`
 	CreatedAt          time.Time   `json:"created_at"`

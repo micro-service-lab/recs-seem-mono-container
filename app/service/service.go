@@ -17,15 +17,17 @@ type Manager struct {
 	ManageAttendStatus
 	ManageAttendanceType
 	ManageEventType
+	ManagePermissionCategory
 }
 
 // NewManager creates a new Manager.
 func NewManager(db store.Store) *Manager {
 	return &Manager{
-		ManageAttendStatus:   ManageAttendStatus{DB: db},
-		ManageAbsence:        ManageAbsence{DB: db},
-		ManageAttendanceType: ManageAttendanceType{DB: db},
-		ManageEventType:      ManageEventType{DB: db},
+		ManageAttendStatus:       ManageAttendStatus{DB: db},
+		ManageAbsence:            ManageAbsence{DB: db},
+		ManageAttendanceType:     ManageAttendanceType{DB: db},
+		ManageEventType:          ManageEventType{DB: db},
+		ManagePermissionCategory: ManagePermissionCategory{DB: db},
 	}
 }
 
@@ -36,6 +38,7 @@ type ManagerInterface interface {
 	AttendStatusManager
 	AttendanceTypeManager
 	EventTypeManager
+	PermissionCategoryManager
 }
 
 // AttendStatusManager is a interface for attend status service.
@@ -99,6 +102,28 @@ type EventTypeManager interface {
 		withCount parameter.WithCount,
 	) (store.ListResult[entity.EventType], error)
 	GetEventTypesCount(ctx context.Context, whereSearchName string) (int64, error)
+}
+
+// PermissionCategoryManager is a interface for event type service.
+type PermissionCategoryManager interface {
+	CreatePermissionCategory(ctx context.Context, name, key, description string) (entity.PermissionCategory, error)
+	CreatePermissionCategories(ctx context.Context, ps []parameter.CreatePermissionCategoryParam) (int64, error)
+	UpdatePermissionCategory(
+		ctx context.Context, id uuid.UUID, name, key, description string) (entity.PermissionCategory, error)
+	DeletePermissionCategory(ctx context.Context, id uuid.UUID) error
+	FindPermissionCategoryByID(ctx context.Context, id uuid.UUID) (entity.PermissionCategory, error)
+	FindPermissionCategoryByKey(ctx context.Context, key string) (entity.PermissionCategory, error)
+	GetPermissionCategories(
+		ctx context.Context,
+		whereSearchName string,
+		order parameter.PermissionCategoryOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.PermissionCategory], error)
+	GetPermissionCategoriesCount(ctx context.Context, whereSearchName string) (int64, error)
 }
 
 var _ ManagerInterface = (*Manager)(nil)

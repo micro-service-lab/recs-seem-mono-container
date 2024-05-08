@@ -86,7 +86,7 @@ The seed command is executed when the application is started for the first time.
 			count, err := AppContainer.ServiceManager.GetAttendanceTypesCount(ctx, "")
 			if err != nil {
 				s.Stop()
-				color.Red(fmt.Errorf("failed to get attendances count: %w", err).Error())
+				color.Red(fmt.Errorf("failed to get attendance types count: %w", err).Error())
 				return
 			}
 			if count > 0 {
@@ -127,7 +127,7 @@ The seed command is executed when the application is started for the first time.
 			count, err := AppContainer.ServiceManager.GetEventTypesCount(ctx, "")
 			if err != nil {
 				s.Stop()
-				color.Red(fmt.Errorf("failed to get events count: %w", err).Error())
+				color.Red(fmt.Errorf("failed to get event types count: %w", err).Error())
 				return
 			}
 			if count > 0 {
@@ -150,6 +150,47 @@ The seed command is executed when the application is started for the first time.
 	},
 }
 
+// seedPermissionCategoriesCmd inserts permission categories.
+var seedPermissionCategoriesCmd = &cobra.Command{
+	Use:   "permission_category",
+	Short: "Inserts permission categories",
+	Long: `Inserting permission categories will insert the data necessary for the application to operate into the database.
+
+The seed command is executed when the application is started for the first time.`,
+	Args: cobra.NoArgs,
+	Run: func(cmd *cobra.Command, _ []string) {
+		color.HiCyan("seed permission categories called...")
+		s := spinner.New(spinner.CharSets[11], spinnerFrequency*time.Millisecond)
+		s.Start()
+
+		ctx := cmd.Context()
+		if !force {
+			count, err := AppContainer.ServiceManager.GetPermissionCategoriesCount(ctx, "")
+			if err != nil {
+				s.Stop()
+				color.Red(fmt.Errorf("failed to get permission categories count: %w", err).Error())
+				return
+			}
+			if count > 0 {
+				s.Stop()
+				color.Yellow("Event types already exist. Use --force to seed again")
+				return
+			}
+		}
+		b := batch.InitPermissionCategories{
+			Manager: &AppContainer.ServiceManager,
+		}
+		err := b.Run(ctx)
+		if err != nil {
+			s.Stop()
+			color.Red(fmt.Errorf("failed to insert permission categories: %w", err).Error())
+			return
+		}
+		s.Stop()
+		color.Green("Event types inserted successfully")
+	},
+}
+
 // seedAllCmd inserts all seed data.
 var seedAllCmd = &cobra.Command{
 	Use:   "all",
@@ -164,6 +205,7 @@ The seed command is executed when the application is started for the first time.
 			seedAttendStatusesCmd.Run,
 			seedAttendanceTypesCmd.Run,
 			seedEventTypesCmd.Run,
+			seedPermissionCategoriesCmd.Run,
 		}
 		var wg sync.WaitGroup
 		wg.Add(len(cmds))
@@ -184,6 +226,7 @@ func init() {
 	seedCmd.AddCommand(seedAttendStatusesCmd)
 	seedCmd.AddCommand(seedAttendanceTypesCmd)
 	seedCmd.AddCommand(seedEventTypesCmd)
+	seedCmd.AddCommand(seedPermissionCategoriesCmd)
 
 	seedCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "Force seed")
 }

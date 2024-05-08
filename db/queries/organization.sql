@@ -1,11 +1,11 @@
 -- name: CreateOrganizations :copyfrom
-INSERT INTO m_organizations (name, description, is_personal, is_whole, chat_room_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7);
+INSERT INTO m_organizations (name, description, color, is_personal, is_whole, chat_room_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
 
 -- name: CreateOrganization :one
-INSERT INTO m_organizations (name, description, is_personal, is_whole, chat_room_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;
+INSERT INTO m_organizations (name, description, color, is_personal, is_whole, chat_room_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;
 
 -- name: UpdateOrganization :one
-UPDATE m_organizations SET name = $2, description = $3, updated_at = $4 WHERE organization_id = $1 RETURNING *;
+UPDATE m_organizations SET name = $2, color = $3, description = $4, updated_at = $5 WHERE organization_id = $1 RETURNING *;
 
 -- name: DeleteOrganization :exec
 DELETE FROM m_organizations WHERE organization_id = $1;

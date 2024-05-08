@@ -8,6 +8,7 @@ import (
 type Organization struct {
 	OrganizationID uuid.UUID `json:"organization_id"`
 	Name           string    `json:"name"`
+	Color          string    `json:"color"`
 	Description    String    `json:"description"`
 	IsPersonal     bool      `json:"is_personal"`
 	IsWhole        bool      `json:"is_whole"`

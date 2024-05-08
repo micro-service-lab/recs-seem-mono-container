@@ -1,35 +1,35 @@
 package parameter
 
-// CreateAttendanceTypeParam 出席ステータス作成のパラメータ。
+// CreateAttendanceTypeParam 出欠状況タイプ作成のパラメータ。
 type CreateAttendanceTypeParam struct {
 	Name  string
 	Key   string
 	Color string
 }
 
-// UpdateAttendanceTypeParams 出席ステータス更新のパラメータ。
+// UpdateAttendanceTypeParams 出欠状況タイプ更新のパラメータ。
 type UpdateAttendanceTypeParams struct {
 	Name  string
 	Key   string
 	Color string
 }
 
-// UpdateAttendanceTypeByKeyParams 出席ステータス更新のパラメータ。
+// UpdateAttendanceTypeByKeyParams 出欠状況タイプ更新のパラメータ。
 type UpdateAttendanceTypeByKeyParams struct {
 	Name  string
 	Color string
 }
 
-// WhereAttendanceTypeParam 出席ステータス検索のパラメータ。
+// WhereAttendanceTypeParam 出欠状況タイプ検索のパラメータ。
 type WhereAttendanceTypeParam struct {
 	WhereLikeName bool
 	SearchName    string
 }
 
-// AttendanceTypeOrderMethod 出席ステータスの並び替え方法。
+// AttendanceTypeOrderMethod 出欠状況タイプの並び替え方法。
 type AttendanceTypeOrderMethod string
 
-// ParseAttendanceTypeOrderMethod は出席ステータスの並び替え方法をパースする。
+// ParseAttendanceTypeOrderMethod は出欠状況タイプの並び替え方法をパースする。
 func ParseAttendanceTypeOrderMethod(v string) (any, error) {
 	if v == "" {
 		return AttendanceTypeOrderMethodDefault, nil

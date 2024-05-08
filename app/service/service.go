@@ -16,6 +16,7 @@ type Manager struct {
 	ManageAbsence
 	ManageAttendStatus
 	ManageAttendanceType
+	ManageEventType
 }
 
 // NewManager creates a new Manager.
@@ -24,6 +25,7 @@ func NewManager(db store.Store) *Manager {
 		ManageAttendStatus:   ManageAttendStatus{DB: db},
 		ManageAbsence:        ManageAbsence{DB: db},
 		ManageAttendanceType: ManageAttendanceType{DB: db},
+		ManageEventType:      ManageEventType{DB: db},
 	}
 }
 
@@ -33,6 +35,7 @@ func NewManager(db store.Store) *Manager {
 type ManagerInterface interface {
 	AttendStatusManager
 	AttendanceTypeManager
+	EventTypeManager
 }
 
 // AttendStatusManager is a interface for attend status service.
@@ -56,7 +59,7 @@ type AttendStatusManager interface {
 	GetAttendStatusesCount(ctx context.Context, whereSearchName string) (int64, error)
 }
 
-// AttendanceTypeManager is a interface for attend status service.
+// AttendanceTypeManager is a interface for attendance type service.
 type AttendanceTypeManager interface {
 	CreateAttendanceType(ctx context.Context, name, key, color string) (entity.AttendanceType, error)
 	CreateAttendanceTypes(ctx context.Context, ps []parameter.CreateAttendanceTypeParam) (int64, error)
@@ -75,6 +78,27 @@ type AttendanceTypeManager interface {
 		withCount parameter.WithCount,
 	) (store.ListResult[entity.AttendanceType], error)
 	GetAttendanceTypesCount(ctx context.Context, whereSearchName string) (int64, error)
+}
+
+// EventTypeManager is a interface for event type service.
+type EventTypeManager interface {
+	CreateEventType(ctx context.Context, name, key, color string) (entity.EventType, error)
+	CreateEventTypes(ctx context.Context, ps []parameter.CreateEventTypeParam) (int64, error)
+	UpdateEventType(ctx context.Context, id uuid.UUID, name, key, color string) (entity.EventType, error)
+	DeleteEventType(ctx context.Context, id uuid.UUID) error
+	FindEventTypeByID(ctx context.Context, id uuid.UUID) (entity.EventType, error)
+	FindEventTypeByKey(ctx context.Context, key string) (entity.EventType, error)
+	GetEventTypes(
+		ctx context.Context,
+		whereSearchName string,
+		order parameter.EventTypeOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.EventType], error)
+	GetEventTypesCount(ctx context.Context, whereSearchName string) (int64, error)
 }
 
 var _ ManagerInterface = (*Manager)(nil)

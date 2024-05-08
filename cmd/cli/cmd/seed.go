@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/briandowns/spinner"
@@ -108,10 +109,81 @@ The seed command is executed when the application is started for the first time.
 	},
 }
 
+// seedEventTypesCmd inserts event types.
+var seedEventTypesCmd = &cobra.Command{
+	Use:   "event_type",
+	Short: "Inserts event types",
+	Long: `Inserting event types will insert the data necessary for the application to operate into the database.
+
+The seed command is executed when the application is started for the first time.`,
+	Args: cobra.NoArgs,
+	Run: func(cmd *cobra.Command, _ []string) {
+		color.HiCyan("seed event types called...")
+		s := spinner.New(spinner.CharSets[11], spinnerFrequency*time.Millisecond)
+		s.Start()
+
+		ctx := cmd.Context()
+		if !force {
+			count, err := AppContainer.ServiceManager.GetEventTypesCount(ctx, "")
+			if err != nil {
+				s.Stop()
+				color.Red(fmt.Errorf("failed to get events count: %w", err).Error())
+				return
+			}
+			if count > 0 {
+				s.Stop()
+				color.Yellow("Event types already exist. Use --force to seed again")
+				return
+			}
+		}
+		b := batch.InitEventTypes{
+			Manager: &AppContainer.ServiceManager,
+		}
+		err := b.Run(ctx)
+		if err != nil {
+			s.Stop()
+			color.Red(fmt.Errorf("failed to insert event types: %w", err).Error())
+			return
+		}
+		s.Stop()
+		color.Green("Event types inserted successfully")
+	},
+}
+
+// seedAllCmd inserts all seed data.
+var seedAllCmd = &cobra.Command{
+	Use:   "all",
+	Short: "Inserts all seed data",
+	Long: `Inserting all seed data will insert the data necessary for the application to operate into the database.
+
+The seed command is executed when the application is started for the first time.`,
+	Args: cobra.NoArgs,
+	Run: func(cmd *cobra.Command, args []string) {
+		color.HiCyan("seed all called...")
+		cmds := []func(cmd *cobra.Command, args []string){
+			seedAttendStatusesCmd.Run,
+			seedAttendanceTypesCmd.Run,
+			seedEventTypesCmd.Run,
+		}
+		var wg sync.WaitGroup
+		wg.Add(len(cmds))
+		for _, c := range cmds {
+			go func(c func(cmd *cobra.Command, args []string)) {
+				defer wg.Done()
+				c(cmd, args)
+			}(c)
+		}
+		wg.Wait()
+		color.Green("All seed data inserted successfully")
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(seedCmd)
+	seedCmd.AddCommand(seedAllCmd)
 	seedCmd.AddCommand(seedAttendStatusesCmd)
 	seedCmd.AddCommand(seedAttendanceTypesCmd)
+	seedCmd.AddCommand(seedEventTypesCmd)
 
 	seedCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "Force seed")
 }

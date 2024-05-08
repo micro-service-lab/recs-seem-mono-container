@@ -9,7 +9,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler"
 )
 
-// AttendanceTypeHandler is a handler for attend statuses.
+// AttendanceTypeHandler is a handler for attendance types.
 func AttendanceTypeHandler(svc service.ManagerInterface) http.Handler {
 	getHandler := handler.GetAttendanceTypes{
 		Service: svc,

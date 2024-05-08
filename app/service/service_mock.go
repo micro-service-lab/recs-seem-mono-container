@@ -34,11 +34,20 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreateAttendanceTypesFunc: func(ctx context.Context, ps []parameter.CreateAttendanceTypeParam) (int64, error) {
 //				panic("mock out the CreateAttendanceTypes method")
 //			},
+//			CreateEventTypeFunc: func(ctx context.Context, name string, key string, color string) (entity.EventType, error) {
+//				panic("mock out the CreateEventType method")
+//			},
+//			CreateEventTypesFunc: func(ctx context.Context, ps []parameter.CreateEventTypeParam) (int64, error) {
+//				panic("mock out the CreateEventTypes method")
+//			},
 //			DeleteAttendStatusFunc: func(ctx context.Context, id uuid.UUID) error {
 //				panic("mock out the DeleteAttendStatus method")
 //			},
 //			DeleteAttendanceTypeFunc: func(ctx context.Context, id uuid.UUID) error {
 //				panic("mock out the DeleteAttendanceType method")
+//			},
+//			DeleteEventTypeFunc: func(ctx context.Context, id uuid.UUID) error {
+//				panic("mock out the DeleteEventType method")
 //			},
 //			FindAttendStatusByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error) {
 //				panic("mock out the FindAttendStatusByID method")
@@ -52,6 +61,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			FindAttendanceTypeByKeyFunc: func(ctx context.Context, key string) (entity.AttendanceType, error) {
 //				panic("mock out the FindAttendanceTypeByKey method")
 //			},
+//			FindEventTypeByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.EventType, error) {
+//				panic("mock out the FindEventTypeByID method")
+//			},
+//			FindEventTypeByKeyFunc: func(ctx context.Context, key string) (entity.EventType, error) {
+//				panic("mock out the FindEventTypeByKey method")
+//			},
 //			GetAttendStatusesFunc: func(ctx context.Context, whereSearchName string, order parameter.AttendStatusOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendStatus], error) {
 //				panic("mock out the GetAttendStatuses method")
 //			},
@@ -64,11 +79,20 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			GetAttendanceTypesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
 //				panic("mock out the GetAttendanceTypesCount method")
 //			},
+//			GetEventTypesFunc: func(ctx context.Context, whereSearchName string, order parameter.EventTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.EventType], error) {
+//				panic("mock out the GetEventTypes method")
+//			},
+//			GetEventTypesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
+//				panic("mock out the GetEventTypesCount method")
+//			},
 //			UpdateAttendStatusFunc: func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error) {
 //				panic("mock out the UpdateAttendStatus method")
 //			},
 //			UpdateAttendanceTypeFunc: func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.AttendanceType, error) {
 //				panic("mock out the UpdateAttendanceType method")
+//			},
+//			UpdateEventTypeFunc: func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.EventType, error) {
+//				panic("mock out the UpdateEventType method")
 //			},
 //		}
 //
@@ -89,11 +113,20 @@ type ManagerInterfaceMock struct {
 	// CreateAttendanceTypesFunc mocks the CreateAttendanceTypes method.
 	CreateAttendanceTypesFunc func(ctx context.Context, ps []parameter.CreateAttendanceTypeParam) (int64, error)
 
+	// CreateEventTypeFunc mocks the CreateEventType method.
+	CreateEventTypeFunc func(ctx context.Context, name string, key string, color string) (entity.EventType, error)
+
+	// CreateEventTypesFunc mocks the CreateEventTypes method.
+	CreateEventTypesFunc func(ctx context.Context, ps []parameter.CreateEventTypeParam) (int64, error)
+
 	// DeleteAttendStatusFunc mocks the DeleteAttendStatus method.
 	DeleteAttendStatusFunc func(ctx context.Context, id uuid.UUID) error
 
 	// DeleteAttendanceTypeFunc mocks the DeleteAttendanceType method.
 	DeleteAttendanceTypeFunc func(ctx context.Context, id uuid.UUID) error
+
+	// DeleteEventTypeFunc mocks the DeleteEventType method.
+	DeleteEventTypeFunc func(ctx context.Context, id uuid.UUID) error
 
 	// FindAttendStatusByIDFunc mocks the FindAttendStatusByID method.
 	FindAttendStatusByIDFunc func(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error)
@@ -107,6 +140,12 @@ type ManagerInterfaceMock struct {
 	// FindAttendanceTypeByKeyFunc mocks the FindAttendanceTypeByKey method.
 	FindAttendanceTypeByKeyFunc func(ctx context.Context, key string) (entity.AttendanceType, error)
 
+	// FindEventTypeByIDFunc mocks the FindEventTypeByID method.
+	FindEventTypeByIDFunc func(ctx context.Context, id uuid.UUID) (entity.EventType, error)
+
+	// FindEventTypeByKeyFunc mocks the FindEventTypeByKey method.
+	FindEventTypeByKeyFunc func(ctx context.Context, key string) (entity.EventType, error)
+
 	// GetAttendStatusesFunc mocks the GetAttendStatuses method.
 	GetAttendStatusesFunc func(ctx context.Context, whereSearchName string, order parameter.AttendStatusOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendStatus], error)
 
@@ -119,11 +158,20 @@ type ManagerInterfaceMock struct {
 	// GetAttendanceTypesCountFunc mocks the GetAttendanceTypesCount method.
 	GetAttendanceTypesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
 
+	// GetEventTypesFunc mocks the GetEventTypes method.
+	GetEventTypesFunc func(ctx context.Context, whereSearchName string, order parameter.EventTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.EventType], error)
+
+	// GetEventTypesCountFunc mocks the GetEventTypesCount method.
+	GetEventTypesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
+
 	// UpdateAttendStatusFunc mocks the UpdateAttendStatus method.
 	UpdateAttendStatusFunc func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error)
 
 	// UpdateAttendanceTypeFunc mocks the UpdateAttendanceType method.
 	UpdateAttendanceTypeFunc func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.AttendanceType, error)
+
+	// UpdateEventTypeFunc mocks the UpdateEventType method.
+	UpdateEventTypeFunc func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.EventType, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -161,6 +209,24 @@ type ManagerInterfaceMock struct {
 			// Ps is the ps argument value.
 			Ps []parameter.CreateAttendanceTypeParam
 		}
+		// CreateEventType holds details about calls to the CreateEventType method.
+		CreateEventType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Name is the name argument value.
+			Name string
+			// Key is the key argument value.
+			Key string
+			// Color is the color argument value.
+			Color string
+		}
+		// CreateEventTypes holds details about calls to the CreateEventTypes method.
+		CreateEventTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ps is the ps argument value.
+			Ps []parameter.CreateEventTypeParam
+		}
 		// DeleteAttendStatus holds details about calls to the DeleteAttendStatus method.
 		DeleteAttendStatus []struct {
 			// Ctx is the ctx argument value.
@@ -170,6 +236,13 @@ type ManagerInterfaceMock struct {
 		}
 		// DeleteAttendanceType holds details about calls to the DeleteAttendanceType method.
 		DeleteAttendanceType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// DeleteEventType holds details about calls to the DeleteEventType method.
+		DeleteEventType []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// ID is the id argument value.
@@ -198,6 +271,20 @@ type ManagerInterfaceMock struct {
 		}
 		// FindAttendanceTypeByKey holds details about calls to the FindAttendanceTypeByKey method.
 		FindAttendanceTypeByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// FindEventTypeByID holds details about calls to the FindEventTypeByID method.
+		FindEventTypeByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// FindEventTypeByKey holds details about calls to the FindEventTypeByKey method.
+		FindEventTypeByKey []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Key is the key argument value.
@@ -255,6 +342,32 @@ type ManagerInterfaceMock struct {
 			// WhereSearchName is the whereSearchName argument value.
 			WhereSearchName string
 		}
+		// GetEventTypes holds details about calls to the GetEventTypes method.
+		GetEventTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// Order is the order argument value.
+			Order parameter.EventTypeOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetEventTypesCount holds details about calls to the GetEventTypesCount method.
+		GetEventTypesCount []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+		}
 		// UpdateAttendStatus holds details about calls to the UpdateAttendStatus method.
 		UpdateAttendStatus []struct {
 			// Ctx is the ctx argument value.
@@ -279,23 +392,44 @@ type ManagerInterfaceMock struct {
 			// Color is the color argument value.
 			Color string
 		}
+		// UpdateEventType holds details about calls to the UpdateEventType method.
+		UpdateEventType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+			// Name is the name argument value.
+			Name string
+			// Key is the key argument value.
+			Key string
+			// Color is the color argument value.
+			Color string
+		}
 	}
 	lockCreateAttendStatus      sync.RWMutex
 	lockCreateAttendStatuses    sync.RWMutex
 	lockCreateAttendanceType    sync.RWMutex
 	lockCreateAttendanceTypes   sync.RWMutex
+	lockCreateEventType         sync.RWMutex
+	lockCreateEventTypes        sync.RWMutex
 	lockDeleteAttendStatus      sync.RWMutex
 	lockDeleteAttendanceType    sync.RWMutex
+	lockDeleteEventType         sync.RWMutex
 	lockFindAttendStatusByID    sync.RWMutex
 	lockFindAttendStatusByKey   sync.RWMutex
 	lockFindAttendanceTypeByID  sync.RWMutex
 	lockFindAttendanceTypeByKey sync.RWMutex
+	lockFindEventTypeByID       sync.RWMutex
+	lockFindEventTypeByKey      sync.RWMutex
 	lockGetAttendStatuses       sync.RWMutex
 	lockGetAttendStatusesCount  sync.RWMutex
 	lockGetAttendanceTypes      sync.RWMutex
 	lockGetAttendanceTypesCount sync.RWMutex
+	lockGetEventTypes           sync.RWMutex
+	lockGetEventTypesCount      sync.RWMutex
 	lockUpdateAttendStatus      sync.RWMutex
 	lockUpdateAttendanceType    sync.RWMutex
+	lockUpdateEventType         sync.RWMutex
 }
 
 // CreateAttendStatus calls CreateAttendStatusFunc.
@@ -454,6 +588,86 @@ func (mock *ManagerInterfaceMock) CreateAttendanceTypesCalls() []struct {
 	return calls
 }
 
+// CreateEventType calls CreateEventTypeFunc.
+func (mock *ManagerInterfaceMock) CreateEventType(ctx context.Context, name string, key string, color string) (entity.EventType, error) {
+	if mock.CreateEventTypeFunc == nil {
+		panic("ManagerInterfaceMock.CreateEventTypeFunc: method is nil but ManagerInterface.CreateEventType was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Name  string
+		Key   string
+		Color string
+	}{
+		Ctx:   ctx,
+		Name:  name,
+		Key:   key,
+		Color: color,
+	}
+	mock.lockCreateEventType.Lock()
+	mock.calls.CreateEventType = append(mock.calls.CreateEventType, callInfo)
+	mock.lockCreateEventType.Unlock()
+	return mock.CreateEventTypeFunc(ctx, name, key, color)
+}
+
+// CreateEventTypeCalls gets all the calls that were made to CreateEventType.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateEventTypeCalls())
+func (mock *ManagerInterfaceMock) CreateEventTypeCalls() []struct {
+	Ctx   context.Context
+	Name  string
+	Key   string
+	Color string
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Name  string
+		Key   string
+		Color string
+	}
+	mock.lockCreateEventType.RLock()
+	calls = mock.calls.CreateEventType
+	mock.lockCreateEventType.RUnlock()
+	return calls
+}
+
+// CreateEventTypes calls CreateEventTypesFunc.
+func (mock *ManagerInterfaceMock) CreateEventTypes(ctx context.Context, ps []parameter.CreateEventTypeParam) (int64, error) {
+	if mock.CreateEventTypesFunc == nil {
+		panic("ManagerInterfaceMock.CreateEventTypesFunc: method is nil but ManagerInterface.CreateEventTypes was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ps  []parameter.CreateEventTypeParam
+	}{
+		Ctx: ctx,
+		Ps:  ps,
+	}
+	mock.lockCreateEventTypes.Lock()
+	mock.calls.CreateEventTypes = append(mock.calls.CreateEventTypes, callInfo)
+	mock.lockCreateEventTypes.Unlock()
+	return mock.CreateEventTypesFunc(ctx, ps)
+}
+
+// CreateEventTypesCalls gets all the calls that were made to CreateEventTypes.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateEventTypesCalls())
+func (mock *ManagerInterfaceMock) CreateEventTypesCalls() []struct {
+	Ctx context.Context
+	Ps  []parameter.CreateEventTypeParam
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ps  []parameter.CreateEventTypeParam
+	}
+	mock.lockCreateEventTypes.RLock()
+	calls = mock.calls.CreateEventTypes
+	mock.lockCreateEventTypes.RUnlock()
+	return calls
+}
+
 // DeleteAttendStatus calls DeleteAttendStatusFunc.
 func (mock *ManagerInterfaceMock) DeleteAttendStatus(ctx context.Context, id uuid.UUID) error {
 	if mock.DeleteAttendStatusFunc == nil {
@@ -523,6 +737,42 @@ func (mock *ManagerInterfaceMock) DeleteAttendanceTypeCalls() []struct {
 	mock.lockDeleteAttendanceType.RLock()
 	calls = mock.calls.DeleteAttendanceType
 	mock.lockDeleteAttendanceType.RUnlock()
+	return calls
+}
+
+// DeleteEventType calls DeleteEventTypeFunc.
+func (mock *ManagerInterfaceMock) DeleteEventType(ctx context.Context, id uuid.UUID) error {
+	if mock.DeleteEventTypeFunc == nil {
+		panic("ManagerInterfaceMock.DeleteEventTypeFunc: method is nil but ManagerInterface.DeleteEventType was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockDeleteEventType.Lock()
+	mock.calls.DeleteEventType = append(mock.calls.DeleteEventType, callInfo)
+	mock.lockDeleteEventType.Unlock()
+	return mock.DeleteEventTypeFunc(ctx, id)
+}
+
+// DeleteEventTypeCalls gets all the calls that were made to DeleteEventType.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeleteEventTypeCalls())
+func (mock *ManagerInterfaceMock) DeleteEventTypeCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockDeleteEventType.RLock()
+	calls = mock.calls.DeleteEventType
+	mock.lockDeleteEventType.RUnlock()
 	return calls
 }
 
@@ -667,6 +917,78 @@ func (mock *ManagerInterfaceMock) FindAttendanceTypeByKeyCalls() []struct {
 	mock.lockFindAttendanceTypeByKey.RLock()
 	calls = mock.calls.FindAttendanceTypeByKey
 	mock.lockFindAttendanceTypeByKey.RUnlock()
+	return calls
+}
+
+// FindEventTypeByID calls FindEventTypeByIDFunc.
+func (mock *ManagerInterfaceMock) FindEventTypeByID(ctx context.Context, id uuid.UUID) (entity.EventType, error) {
+	if mock.FindEventTypeByIDFunc == nil {
+		panic("ManagerInterfaceMock.FindEventTypeByIDFunc: method is nil but ManagerInterface.FindEventTypeByID was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockFindEventTypeByID.Lock()
+	mock.calls.FindEventTypeByID = append(mock.calls.FindEventTypeByID, callInfo)
+	mock.lockFindEventTypeByID.Unlock()
+	return mock.FindEventTypeByIDFunc(ctx, id)
+}
+
+// FindEventTypeByIDCalls gets all the calls that were made to FindEventTypeByID.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindEventTypeByIDCalls())
+func (mock *ManagerInterfaceMock) FindEventTypeByIDCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockFindEventTypeByID.RLock()
+	calls = mock.calls.FindEventTypeByID
+	mock.lockFindEventTypeByID.RUnlock()
+	return calls
+}
+
+// FindEventTypeByKey calls FindEventTypeByKeyFunc.
+func (mock *ManagerInterfaceMock) FindEventTypeByKey(ctx context.Context, key string) (entity.EventType, error) {
+	if mock.FindEventTypeByKeyFunc == nil {
+		panic("ManagerInterfaceMock.FindEventTypeByKeyFunc: method is nil but ManagerInterface.FindEventTypeByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockFindEventTypeByKey.Lock()
+	mock.calls.FindEventTypeByKey = append(mock.calls.FindEventTypeByKey, callInfo)
+	mock.lockFindEventTypeByKey.Unlock()
+	return mock.FindEventTypeByKeyFunc(ctx, key)
+}
+
+// FindEventTypeByKeyCalls gets all the calls that were made to FindEventTypeByKey.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindEventTypeByKeyCalls())
+func (mock *ManagerInterfaceMock) FindEventTypeByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockFindEventTypeByKey.RLock()
+	calls = mock.calls.FindEventTypeByKey
+	mock.lockFindEventTypeByKey.RUnlock()
 	return calls
 }
 
@@ -862,6 +1184,102 @@ func (mock *ManagerInterfaceMock) GetAttendanceTypesCountCalls() []struct {
 	return calls
 }
 
+// GetEventTypes calls GetEventTypesFunc.
+func (mock *ManagerInterfaceMock) GetEventTypes(ctx context.Context, whereSearchName string, order parameter.EventTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.EventType], error) {
+	if mock.GetEventTypesFunc == nil {
+		panic("ManagerInterfaceMock.GetEventTypesFunc: method is nil but ManagerInterface.GetEventTypes was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		WhereSearchName string
+		Order           parameter.EventTypeOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}{
+		Ctx:             ctx,
+		WhereSearchName: whereSearchName,
+		Order:           order,
+		Pg:              pg,
+		Limit:           limit,
+		Cursor:          cursor,
+		Offset:          offset,
+		WithCount:       withCount,
+	}
+	mock.lockGetEventTypes.Lock()
+	mock.calls.GetEventTypes = append(mock.calls.GetEventTypes, callInfo)
+	mock.lockGetEventTypes.Unlock()
+	return mock.GetEventTypesFunc(ctx, whereSearchName, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetEventTypesCalls gets all the calls that were made to GetEventTypes.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetEventTypesCalls())
+func (mock *ManagerInterfaceMock) GetEventTypesCalls() []struct {
+	Ctx             context.Context
+	WhereSearchName string
+	Order           parameter.EventTypeOrderMethod
+	Pg              parameter.Pagination
+	Limit           parameter.Limit
+	Cursor          parameter.Cursor
+	Offset          parameter.Offset
+	WithCount       parameter.WithCount
+} {
+	var calls []struct {
+		Ctx             context.Context
+		WhereSearchName string
+		Order           parameter.EventTypeOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}
+	mock.lockGetEventTypes.RLock()
+	calls = mock.calls.GetEventTypes
+	mock.lockGetEventTypes.RUnlock()
+	return calls
+}
+
+// GetEventTypesCount calls GetEventTypesCountFunc.
+func (mock *ManagerInterfaceMock) GetEventTypesCount(ctx context.Context, whereSearchName string) (int64, error) {
+	if mock.GetEventTypesCountFunc == nil {
+		panic("ManagerInterfaceMock.GetEventTypesCountFunc: method is nil but ManagerInterface.GetEventTypesCount was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		WhereSearchName string
+	}{
+		Ctx:             ctx,
+		WhereSearchName: whereSearchName,
+	}
+	mock.lockGetEventTypesCount.Lock()
+	mock.calls.GetEventTypesCount = append(mock.calls.GetEventTypesCount, callInfo)
+	mock.lockGetEventTypesCount.Unlock()
+	return mock.GetEventTypesCountFunc(ctx, whereSearchName)
+}
+
+// GetEventTypesCountCalls gets all the calls that were made to GetEventTypesCount.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetEventTypesCountCalls())
+func (mock *ManagerInterfaceMock) GetEventTypesCountCalls() []struct {
+	Ctx             context.Context
+	WhereSearchName string
+} {
+	var calls []struct {
+		Ctx             context.Context
+		WhereSearchName string
+	}
+	mock.lockGetEventTypesCount.RLock()
+	calls = mock.calls.GetEventTypesCount
+	mock.lockGetEventTypesCount.RUnlock()
+	return calls
+}
+
 // UpdateAttendStatus calls UpdateAttendStatusFunc.
 func (mock *ManagerInterfaceMock) UpdateAttendStatus(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error) {
 	if mock.UpdateAttendStatusFunc == nil {
@@ -951,5 +1369,53 @@ func (mock *ManagerInterfaceMock) UpdateAttendanceTypeCalls() []struct {
 	mock.lockUpdateAttendanceType.RLock()
 	calls = mock.calls.UpdateAttendanceType
 	mock.lockUpdateAttendanceType.RUnlock()
+	return calls
+}
+
+// UpdateEventType calls UpdateEventTypeFunc.
+func (mock *ManagerInterfaceMock) UpdateEventType(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.EventType, error) {
+	if mock.UpdateEventTypeFunc == nil {
+		panic("ManagerInterfaceMock.UpdateEventTypeFunc: method is nil but ManagerInterface.UpdateEventType was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		ID    uuid.UUID
+		Name  string
+		Key   string
+		Color string
+	}{
+		Ctx:   ctx,
+		ID:    id,
+		Name:  name,
+		Key:   key,
+		Color: color,
+	}
+	mock.lockUpdateEventType.Lock()
+	mock.calls.UpdateEventType = append(mock.calls.UpdateEventType, callInfo)
+	mock.lockUpdateEventType.Unlock()
+	return mock.UpdateEventTypeFunc(ctx, id, name, key, color)
+}
+
+// UpdateEventTypeCalls gets all the calls that were made to UpdateEventType.
+// Check the length with:
+//
+//	len(mockedManagerInterface.UpdateEventTypeCalls())
+func (mock *ManagerInterfaceMock) UpdateEventTypeCalls() []struct {
+	Ctx   context.Context
+	ID    uuid.UUID
+	Name  string
+	Key   string
+	Color string
+} {
+	var calls []struct {
+		Ctx   context.Context
+		ID    uuid.UUID
+		Name  string
+		Key   string
+		Color string
+	}
+	mock.lockUpdateEventType.RLock()
+	calls = mock.calls.UpdateEventType
+	mock.lockUpdateEventType.RUnlock()
 	return calls
 }

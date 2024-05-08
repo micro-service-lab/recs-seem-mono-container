@@ -3,20 +3,23 @@ package main
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"fmt"
 	"log"
 	"net"
 	"net/http"
 	"runtime"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httprate"
+	httprateredis "github.com/go-chi/httprate-redis"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/api"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/cors"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/recoverer"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock/fakeclock"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/faketime"
@@ -28,6 +31,7 @@ const (
 )
 
 func main() {
+	log.Default()
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
@@ -44,10 +48,15 @@ func run(ctx context.Context) error {
 	}
 
 	r := chi.NewRouter()
+	// TODO: slog に変更する
 	r.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{
 		Logger:  log.Default(),
 		NoColor: runtime.GOOS == "windows",
 	}))
+	r.Use(recoverer.NewWithOpts(recoverer.Options{
+		Handler: recoverer.Handler,
+	}))
+	r.Use(middleware.CleanPath)
 
 	if ctr.Config.FakeTime.Enabled {
 		log.Println("Fake time mode is enabled")
@@ -61,7 +70,8 @@ func run(ctx context.Context) error {
 
 	apiI := api.NewAPI(ctr.Clocker, auth, ctr.ServiceManager)
 
-	middlewares := make([]func(http.Handler) http.Handler, 0, 2) //nolint:gomnd
+	middlewares := make([]func(http.Handler) http.Handler, 0, 3) //nolint:gomnd
+	// CORS ミドルウェアを追加
 	if ctr.Config.ClientOrigin != nil && len(ctr.Config.ClientOrigin) > 0 {
 		log.Println("CORS is enabled")
 		middlewares = append(middlewares, cors.Handler(cors.Options{
@@ -69,56 +79,38 @@ func run(ctx context.Context) error {
 			AllowedMethods: []string{http.MethodPost, http.MethodGet},
 			AllowedHeaders: []string{"Authorization", "Content-Type", "X-Request-Id", "Accept", "X-CSRF-Token"},
 			MaxAge:         corsMaxAge,
-			ErrorHandler: func(w http.ResponseWriter, _ *http.Request, c cors.Cors, err error) bool {
-				_, ok := err.(cors.Error)
-				if ok {
-					c.Log.Printf("CORS error: %v", err)
-					res := struct {
-						Message string `json:"message"`
-					}{
-						Message: "CORS error: " + err.Error(),
-					}
-					w.Header().Set("Content-Type", "application/json")
-					noOrigin := false
-					switch {
-					case errors.Is(err, &cors.PreflightEmptyOriginError{}):
-						fallthrough
-					case errors.Is(err, &cors.ActualMissingOriginError{}):
-						noOrigin = true
-					case errors.Is(err, &cors.PreflightNotOptionMethodError{}):
-						fallthrough
-					case errors.Is(err, &cors.PreflightNotAllowedMethodError{}):
-						fallthrough
-					case errors.Is(err, &cors.ActualMethodNotAllowedError{}):
-						w.WriteHeader(http.StatusMethodNotAllowed)
-					default:
-						w.WriteHeader(http.StatusForbidden)
-					}
-					// For requests that do not conform to the browser's same-origin policy (no Origin header,
-					// such as postman, is given), pass through processing.
-					if noOrigin {
-						return true
-					}
-					if err := json.NewEncoder(w).Encode(res); err != nil {
-						c.Log.Printf("CORS error encoding failed: %v", err)
-					}
-					return false
-				}
-				res := struct {
-					Message string `json:"message"`
-				}{
-					Message: "CORS error: An unexpected error has occurred",
-				}
-				if err := json.NewEncoder(w).Encode(res); err != nil {
-					c.Log.Printf("CORS error encoding failed: %v", err)
-				}
-				return false
-			},
+			ErrorHandler:   cors.AppHandler,
 			// AllowCredentials: true, // jwtをクッキーに保存する場合はtrueにする
 			Debug: ctr.Config.DebugCORS,
 		}))
 	}
+	// AuthMiddleware を追加
 	// middlewares = append(middlewares, app.AuthMiddleware(time.Now, auth, db, app.DefaultAPIBasePath))
+
+	// RateLimitMiddleware を追加
+	middlewares = append(middlewares, httprate.Limit(
+		2,             // requests
+		1*time.Minute, // per duration
+		httprate.WithLimitHandler(func(w http.ResponseWriter, r *http.Request) {
+			limit := w.Header().Get("X-RateLimit-Limit")
+			reset := w.Header().Get("X-RateLimit-Reset")
+			retryAfter := w.Header().Get("Retry-After")
+			errAttr := map[string]any{
+				"limit":      limit,
+				"resetTime":  reset,
+				"retryAfter": retryAfter,
+			}
+			if err := response.JSONResponseWriter(r.Context(), w, response.ThrottleRequests, nil, errAttr); err != nil {
+				log.Printf("[ERROR] response writing failed: %+v", err)
+			}
+		}),
+		httprateredis.WithRedisLimitCounter(&httprateredis.Config{
+			Host:     ctr.Config.RedisHost,
+			Port:     ctr.Config.RedisPort,
+			Password: ctr.Config.RedisPassword,
+			DBIndex:  ctr.Config.RedisDB,
+		}),
+	))
 	apiI.Use(middlewares...)
 
 	srvApp := api.NewApp(apiI, &api.AppOptions{})

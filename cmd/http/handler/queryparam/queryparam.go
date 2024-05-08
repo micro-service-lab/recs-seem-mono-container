@@ -345,7 +345,6 @@ func doParseField(
 	}
 
 	if reflect.Struct == refField.Kind() && params.Dive { // フィールドが構造体であり、Diveがtrueの場合
-		fmt.Println("++++++++++++Dive")
 		// 構造体の中の処理を再帰的に行う(定義済み構造体)
 		return doParse(refField, processField, optionsWithParamPrefix(refTypeField, opts))
 	}

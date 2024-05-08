@@ -3,6 +3,7 @@ services:
     container_name: mono-api
     ports:
       - 8080:${PORT}
+      - 2345:${DEBUGGING_PORT}
     build:
       context: .
       dockerfile: Dockerfile

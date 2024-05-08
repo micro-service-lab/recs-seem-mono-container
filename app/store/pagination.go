@@ -3,15 +3,11 @@ package store
 import (
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 )
-
-// ErrDataNoRecord レコードが存在しないエラー。
-var ErrDataNoRecord = errors.New("no record")
 
 const (
 	// CursorID カーソルID。

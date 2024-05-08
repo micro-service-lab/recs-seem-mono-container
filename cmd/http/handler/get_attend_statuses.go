@@ -28,7 +28,7 @@ type GetAttendStatusesParam struct {
 	WithCount  parameter.WithCount               `queryParam:"with_count"`
 }
 
-var parseFuncMap = map[reflect.Type]queryparam.ParserFunc{
+var getAttendStatusesParseFuncMap = map[reflect.Type]queryparam.ParserFunc{
 	reflect.TypeOf(parameter.AttendStatusOrderMethodName): parameter.ParseAttendStatusOrderMethod,
 	reflect.TypeOf(parameter.Limit(0)):                    parameter.ParseLimitParam,
 	reflect.TypeOf(parameter.Offset(0)):                   parameter.ParseOffsetParam,
@@ -43,7 +43,7 @@ func (h *GetAttendStatues) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	var param GetAttendStatusesParam
 	err := parse.ParseWithOptions(&param, queryparam.Options{
 		TagName: "queryParam",
-		FuncMap: parseFuncMap,
+		FuncMap: getAttendStatusesParseFuncMap,
 	})
 	if err != nil {
 		log.Printf("failed to parse query: %v", err)

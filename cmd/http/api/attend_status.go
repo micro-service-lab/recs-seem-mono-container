@@ -14,8 +14,16 @@ func AttendStatusHandler(svc service.ManagerInterface) http.Handler {
 	getHandler := handler.GetAttendStatues{
 		Service: svc,
 	}
+	findHandler := handler.FindAttendStatus{
+		Service: svc,
+	}
+	findByKeyHandler := handler.FindAttendStatusByKey{
+		Service: svc,
+	}
 	r := chi.NewRouter()
 	r.Get("/", getHandler.ServeHTTP)
+	r.Get(uuidPath("/{attend_status_id:uuid}"), findHandler.ServeHTTP)
+	r.Get("/{attend_status_key}", findByKeyHandler.ServeHTTP)
 
 	return r
 }

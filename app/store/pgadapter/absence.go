@@ -2,9 +2,11 @@ package pgadapter
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
@@ -119,6 +121,9 @@ func (a *PgAdapter) CreateAbsencesWithSd(
 func deleteAbsence(ctx context.Context, qtx *query.Queries, absenceID uuid.UUID) error {
 	err := qtx.DeleteAbsence(ctx, absenceID)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return store.ErrDataNoRecord
+		}
 		return fmt.Errorf("failed to delete absence: %w", err)
 	}
 	return nil
@@ -149,6 +154,9 @@ func (a *PgAdapter) DeleteAbsenceWithSd(ctx context.Context, sd store.Sd, absenc
 func findAbsenceByID(ctx context.Context, qtx *query.Queries, absenceID uuid.UUID) (entity.Absence, error) {
 	e, err := qtx.FindAbsenceByID(ctx, absenceID)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.Absence{}, store.ErrDataNoRecord
+		}
 		return entity.Absence{}, fmt.Errorf("failed to find absence: %w", err)
 	}
 	entity := entity.Absence{

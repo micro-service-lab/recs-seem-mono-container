@@ -50,6 +50,9 @@ type Config struct {
 	// If a truthy value is specified, fix to the default time.
 	FakeTime FakeTimeMode `env:"FAKE_TIME"`
 	LogLevel LogLevel     `env:"LOG_LEVEL,required"`
+
+	CORSMaxAge           int `env:"CORS_MAX_AGE" envDefault:"3600"`
+	ThrottleRequestLimit int `env:"THROTTLE_REQUEST_LIMIT" envDefault:"100"`
 }
 
 var parseFuncMap = map[reflect.Type]env.ParserFunc{

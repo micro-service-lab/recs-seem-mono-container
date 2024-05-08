@@ -3,13 +3,17 @@ package store
 
 import (
 	"context"
-	"fmt"
+	"errors"
 
 	"github.com/google/uuid"
 )
 
-// ErrNotFoundDescriptor ディスクリプタが見つからないエラー。
-var ErrNotFoundDescriptor = fmt.Errorf("not found descriptor")
+var (
+	// ErrNotFoundDescriptor ディスクリプタが見つからないエラー。
+	ErrNotFoundDescriptor = errors.New("not found descriptor")
+	// ErrDataNoRecord レコードが存在しないエラー。
+	ErrDataNoRecord = errors.New("no record")
+)
 
 // Sd Storeディスクリプタ。
 type Sd uuid.UUID

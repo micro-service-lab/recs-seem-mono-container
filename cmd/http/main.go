@@ -25,11 +25,6 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/faketime"
 )
 
-const (
-	// corsMaxAge プリフライトリクエストをキャッシュできる時間 (秒)。
-	corsMaxAge = 600
-)
-
 func main() {
 	log.Default()
 	ctx, cancel := context.WithCancel(context.Background())
@@ -78,7 +73,7 @@ func run(ctx context.Context) error {
 			AllowedOrigins: []string(ctr.Config.ClientOrigin),
 			AllowedMethods: []string{http.MethodPost, http.MethodGet},
 			AllowedHeaders: []string{"Authorization", "Content-Type", "X-Request-Id", "Accept", "X-CSRF-Token"},
-			MaxAge:         corsMaxAge,
+			MaxAge:         ctr.Config.CORSMaxAge,
 			ErrorHandler:   cors.AppHandler,
 			// AllowCredentials: true, // jwtをクッキーに保存する場合はtrueにする
 			Debug: ctr.Config.DebugCORS,
@@ -89,8 +84,8 @@ func run(ctx context.Context) error {
 
 	// RateLimitMiddleware を追加
 	middlewares = append(middlewares, httprate.Limit(
-		2,             // requests
-		1*time.Minute, // per duration
+		ctr.Config.ThrottleRequestLimit,
+		1*time.Minute,
 		httprate.WithLimitHandler(func(w http.ResponseWriter, r *http.Request) {
 			limit := w.Header().Get("X-RateLimit-Limit")
 			reset := w.Header().Get("X-RateLimit-Reset")

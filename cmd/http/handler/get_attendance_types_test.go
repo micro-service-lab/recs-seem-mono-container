@@ -20,9 +20,9 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/testutils/factory"
 )
 
-func TestGetAttendStatuses_ServeHTTP(t *testing.T) {
+func TestGetAttendanceTypes_ServeHTTP(t *testing.T) {
 	t.Parallel()
-	fd, err := factory.NewAttendStatuses(10)
+	fd, err := factory.NewAttendanceTypes(10)
 	require.NoError(t, err)
 	type wants struct {
 		resType response.APIResponseType
@@ -49,7 +49,7 @@ func TestGetAttendStatuses_ServeHTTP(t *testing.T) {
 			withCount:  "",
 			want: wants{
 				resType: response.Success,
-				data: store.ListResult[entity.AttendStatus]{
+				data: store.ListResult[entity.AttendanceType]{
 					Data: fd.ForEntity(),
 				},
 				errAttr: nil,
@@ -65,7 +65,7 @@ func TestGetAttendStatuses_ServeHTTP(t *testing.T) {
 			withCount:  "true",
 			want: wants{
 				resType: response.Success,
-				data: store.ListResult[entity.AttendStatus]{
+				data: store.ListResult[entity.AttendanceType]{
 					Data: fd.ForEntity(),
 					WithCount: store.WithCountAttribute{
 						Count: int64(len(fd)),
@@ -84,7 +84,7 @@ func TestGetAttendStatuses_ServeHTTP(t *testing.T) {
 			withCount:  "true",
 			want: wants{
 				resType: response.Success,
-				data: store.ListResult[entity.AttendStatus]{
+				data: store.ListResult[entity.AttendanceType]{
 					Data: fd.FilterByName(fd[0].Name).ForEntity(),
 					WithCount: store.WithCountAttribute{
 						Count: fd.CountContainsName(fd[0].Name),
@@ -103,7 +103,7 @@ func TestGetAttendStatuses_ServeHTTP(t *testing.T) {
 			withCount:  "true",
 			want: wants{
 				resType: response.Success,
-				data: store.ListResult[entity.AttendStatus]{
+				data: store.ListResult[entity.AttendanceType]{
 					Data:             fd.FilterByName("no result").ForEntity(),
 					WithCount:        store.WithCountAttribute{Count: fd.CountContainsName("no result")},
 					CursorPagination: store.CursorPaginationAttribute{},
@@ -121,7 +121,7 @@ func TestGetAttendStatuses_ServeHTTP(t *testing.T) {
 			withCount:  "true",
 			want: wants{
 				resType: response.Success,
-				data: store.ListResult[entity.AttendStatus]{
+				data: store.ListResult[entity.AttendanceType]{
 					Data:             fd.OrderByNames().ForEntity(),
 					WithCount:        store.WithCountAttribute{Count: int64(len(fd))},
 					CursorPagination: store.CursorPaginationAttribute{},
@@ -139,7 +139,7 @@ func TestGetAttendStatuses_ServeHTTP(t *testing.T) {
 			withCount:  "true",
 			want: wants{
 				resType: response.Success,
-				data: store.ListResult[entity.AttendStatus]{
+				data: store.ListResult[entity.AttendanceType]{
 					Data:             fd.OrderByReverseNames().ForEntity(),
 					WithCount:        store.WithCountAttribute{Count: int64(len(fd))},
 					CursorPagination: store.CursorPaginationAttribute{},
@@ -157,7 +157,7 @@ func TestGetAttendStatuses_ServeHTTP(t *testing.T) {
 			withCount:  "true",
 			want: wants{
 				resType: response.Success,
-				data: store.ListResult[entity.AttendStatus]{
+				data: store.ListResult[entity.AttendanceType]{
 					Data:             fd.LimitAndOffset(1, 0).ForEntity(),
 					WithCount:        store.WithCountAttribute{Count: int64(len(fd.LimitAndOffset(1, 0)))},
 					CursorPagination: store.CursorPaginationAttribute{},
@@ -175,7 +175,7 @@ func TestGetAttendStatuses_ServeHTTP(t *testing.T) {
 			withCount:  "true",
 			want: wants{
 				resType: response.Success,
-				data: store.ListResult[entity.AttendStatus]{
+				data: store.ListResult[entity.AttendanceType]{
 					Data:             fd.LimitAndOffset(1, 1).ForEntity(),
 					WithCount:        store.WithCountAttribute{Count: int64(len(fd.LimitAndOffset(1, 1)))},
 					CursorPagination: store.CursorPaginationAttribute{},
@@ -185,16 +185,16 @@ func TestGetAttendStatuses_ServeHTTP(t *testing.T) {
 		},
 	}
 	mockService := &service.ManagerInterfaceMock{
-		GetAttendStatusesFunc: func(
+		GetAttendanceTypesFunc: func(
 			_ context.Context,
 			whereSearchName string,
-			order parameter.AttendStatusOrderMethod,
+			order parameter.AttendanceTypeOrderMethod,
 			pg parameter.Pagination,
 			limit parameter.Limit,
 			_ parameter.Cursor,
 			offset parameter.Offset,
 			wc parameter.WithCount,
-		) (store.ListResult[entity.AttendStatus], error) {
+		) (store.ListResult[entity.AttendanceType], error) {
 			dd := fd.Copy()
 			var wca store.WithCountAttribute
 			var cpa store.CursorPaginationAttribute
@@ -202,11 +202,11 @@ func TestGetAttendStatuses_ServeHTTP(t *testing.T) {
 				dd = dd.FilterByName(whereSearchName)
 			}
 			switch order {
-			case parameter.AttendStatusOrderMethodName:
+			case parameter.AttendanceTypeOrderMethodName:
 				dd = dd.OrderByNames()
-			case parameter.AttendStatusOrderMethodReverseName:
+			case parameter.AttendanceTypeOrderMethodReverseName:
 				dd = dd.OrderByReverseNames()
-			case parameter.AttendStatusOrderMethodDefault:
+			case parameter.AttendanceTypeOrderMethodDefault:
 			}
 			switch pg {
 			case parameter.NumberedPagination:
@@ -219,14 +219,14 @@ func TestGetAttendStatuses_ServeHTTP(t *testing.T) {
 					Count: int64(len(dd)),
 				}
 			}
-			return store.ListResult[entity.AttendStatus]{
+			return store.ListResult[entity.AttendanceType]{
 				Data:             dd.ForEntity(),
 				WithCount:        wca,
 				CursorPagination: cpa,
 			}, nil
 		},
 	}
-	h := handler.GetAttendStatuses{
+	h := handler.GetAttendanceTypes{
 		Service: mockService,
 	}
 	for ni, tc := range cases {
@@ -234,7 +234,7 @@ func TestGetAttendStatuses_ServeHTTP(t *testing.T) {
 		t.Run(ni, func(t *testing.T) {
 			t.Parallel()
 			w := httptest.NewRecorder()
-			r := httptest.NewRequest(http.MethodGet, "/attend_statuses", nil)
+			r := httptest.NewRequest(http.MethodGet, "/attendance_types", nil)
 			q := r.URL.Query()
 			q.Set("search_name", tcc.searchName)
 			q.Set("order", tcc.order)

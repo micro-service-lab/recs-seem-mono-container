@@ -12,38 +12,38 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 )
 
-// GetAttendStatuses is a handler for getting attend statuses.
-type GetAttendStatuses struct {
+// GetAttendanceTypes is a handler for getting attendance types.
+type GetAttendanceTypes struct {
 	Service service.ManagerInterface
 }
 
-// GetAttendStatusesParam is a parameter for GetAttendStatuses.
-type GetAttendStatusesParam struct {
-	SearchName string                            `queryParam:"search_name"`
-	Order      parameter.AttendStatusOrderMethod `queryParam:"order"`
-	Limit      parameter.Limit                   `queryParam:"limit"`
-	Offset     parameter.Offset                  `queryParam:"offset"`
-	Cursor     parameter.Cursor                  `queryParam:"cursor"`
-	Pagination parameter.Pagination              `queryParam:"pagination"`
-	WithCount  parameter.WithCount               `queryParam:"with_count"`
+// GetAttendanceTypesParam is a parameter for GetAttendanceTypes.
+type GetAttendanceTypesParam struct {
+	SearchName string                              `queryParam:"search_name"`
+	Order      parameter.AttendanceTypeOrderMethod `queryParam:"order"`
+	Limit      parameter.Limit                     `queryParam:"limit"`
+	Offset     parameter.Offset                    `queryParam:"offset"`
+	Cursor     parameter.Cursor                    `queryParam:"cursor"`
+	Pagination parameter.Pagination                `queryParam:"pagination"`
+	WithCount  parameter.WithCount                 `queryParam:"with_count"`
 }
 
-var getAttendStatusesParseFuncMap = map[reflect.Type]queryparam.ParserFunc{
-	reflect.TypeOf(parameter.AttendStatusOrderMethodName): parameter.ParseAttendStatusOrderMethod,
-	reflect.TypeOf(parameter.Limit(0)):                    parameter.ParseLimitParam,
-	reflect.TypeOf(parameter.Offset(0)):                   parameter.ParseOffsetParam,
-	reflect.TypeOf(parameter.Cursor("")):                  parameter.ParseCursorParam,
-	reflect.TypeOf(parameter.NonePagination):              parameter.ParsePaginationParam,
-	reflect.TypeOf(parameter.WithCount(false)):            parameter.ParseWithCountParam,
+var getAttendanceTypesParseFuncMap = map[reflect.Type]queryparam.ParserFunc{
+	reflect.TypeOf(parameter.AttendanceTypeOrderMethodName): parameter.ParseAttendanceTypeOrderMethod,
+	reflect.TypeOf(parameter.Limit(0)):                      parameter.ParseLimitParam,
+	reflect.TypeOf(parameter.Offset(0)):                     parameter.ParseOffsetParam,
+	reflect.TypeOf(parameter.Cursor("")):                    parameter.ParseCursorParam,
+	reflect.TypeOf(parameter.NonePagination):                parameter.ParsePaginationParam,
+	reflect.TypeOf(parameter.WithCount(false)):              parameter.ParseWithCountParam,
 }
 
-func (h *GetAttendStatuses) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetAttendanceTypes) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	parse := queryparam.NewParser(r.URL.Query())
-	var param GetAttendStatusesParam
+	var param GetAttendanceTypesParam
 	err := parse.ParseWithOptions(&param, queryparam.Options{
 		TagName: "queryParam",
-		FuncMap: getAttendStatusesParseFuncMap,
+		FuncMap: getAttendanceTypesParseFuncMap,
 	})
 	if err != nil {
 		log.Printf("failed to parse query: %v", err)
@@ -58,7 +58,7 @@ func (h *GetAttendStatuses) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	attendStatuses, err := h.Service.GetAttendStatuses(
+	attendStatuses, err := h.Service.GetAttendanceTypes(
 		ctx,
 		param.SearchName,
 		param.Order,
@@ -69,7 +69,7 @@ func (h *GetAttendStatuses) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		param.WithCount,
 	)
 	if err != nil {
-		log.Printf("failed to get attend statuses: %v", err)
+		log.Printf("failed to get attendance types: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
 		if err != nil {
 			log.Printf("failed to handle error: %v", err)

@@ -28,8 +28,17 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreateAttendStatusesFunc: func(ctx context.Context, ps []parameter.CreateAttendStatusParam) (int64, error) {
 //				panic("mock out the CreateAttendStatuses method")
 //			},
+//			CreateAttendanceTypeFunc: func(ctx context.Context, name string, key string, color string) (entity.AttendanceType, error) {
+//				panic("mock out the CreateAttendanceType method")
+//			},
+//			CreateAttendanceTypesFunc: func(ctx context.Context, ps []parameter.CreateAttendanceTypeParam) (int64, error) {
+//				panic("mock out the CreateAttendanceTypes method")
+//			},
 //			DeleteAttendStatusFunc: func(ctx context.Context, id uuid.UUID) error {
 //				panic("mock out the DeleteAttendStatus method")
+//			},
+//			DeleteAttendanceTypeFunc: func(ctx context.Context, id uuid.UUID) error {
+//				panic("mock out the DeleteAttendanceType method")
 //			},
 //			FindAttendStatusByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error) {
 //				panic("mock out the FindAttendStatusByID method")
@@ -37,14 +46,29 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			FindAttendStatusByKeyFunc: func(ctx context.Context, key string) (entity.AttendStatus, error) {
 //				panic("mock out the FindAttendStatusByKey method")
 //			},
+//			FindAttendanceTypeByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.AttendanceType, error) {
+//				panic("mock out the FindAttendanceTypeByID method")
+//			},
+//			FindAttendanceTypeByKeyFunc: func(ctx context.Context, key string) (entity.AttendanceType, error) {
+//				panic("mock out the FindAttendanceTypeByKey method")
+//			},
 //			GetAttendStatusesFunc: func(ctx context.Context, whereSearchName string, order parameter.AttendStatusOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendStatus], error) {
 //				panic("mock out the GetAttendStatuses method")
 //			},
 //			GetAttendStatusesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
 //				panic("mock out the GetAttendStatusesCount method")
 //			},
+//			GetAttendanceTypesFunc: func(ctx context.Context, whereSearchName string, order parameter.AttendanceTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendanceType], error) {
+//				panic("mock out the GetAttendanceTypes method")
+//			},
+//			GetAttendanceTypesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
+//				panic("mock out the GetAttendanceTypesCount method")
+//			},
 //			UpdateAttendStatusFunc: func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error) {
 //				panic("mock out the UpdateAttendStatus method")
+//			},
+//			UpdateAttendanceTypeFunc: func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.AttendanceType, error) {
+//				panic("mock out the UpdateAttendanceType method")
 //			},
 //		}
 //
@@ -59,8 +83,17 @@ type ManagerInterfaceMock struct {
 	// CreateAttendStatusesFunc mocks the CreateAttendStatuses method.
 	CreateAttendStatusesFunc func(ctx context.Context, ps []parameter.CreateAttendStatusParam) (int64, error)
 
+	// CreateAttendanceTypeFunc mocks the CreateAttendanceType method.
+	CreateAttendanceTypeFunc func(ctx context.Context, name string, key string, color string) (entity.AttendanceType, error)
+
+	// CreateAttendanceTypesFunc mocks the CreateAttendanceTypes method.
+	CreateAttendanceTypesFunc func(ctx context.Context, ps []parameter.CreateAttendanceTypeParam) (int64, error)
+
 	// DeleteAttendStatusFunc mocks the DeleteAttendStatus method.
 	DeleteAttendStatusFunc func(ctx context.Context, id uuid.UUID) error
+
+	// DeleteAttendanceTypeFunc mocks the DeleteAttendanceType method.
+	DeleteAttendanceTypeFunc func(ctx context.Context, id uuid.UUID) error
 
 	// FindAttendStatusByIDFunc mocks the FindAttendStatusByID method.
 	FindAttendStatusByIDFunc func(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error)
@@ -68,14 +101,29 @@ type ManagerInterfaceMock struct {
 	// FindAttendStatusByKeyFunc mocks the FindAttendStatusByKey method.
 	FindAttendStatusByKeyFunc func(ctx context.Context, key string) (entity.AttendStatus, error)
 
+	// FindAttendanceTypeByIDFunc mocks the FindAttendanceTypeByID method.
+	FindAttendanceTypeByIDFunc func(ctx context.Context, id uuid.UUID) (entity.AttendanceType, error)
+
+	// FindAttendanceTypeByKeyFunc mocks the FindAttendanceTypeByKey method.
+	FindAttendanceTypeByKeyFunc func(ctx context.Context, key string) (entity.AttendanceType, error)
+
 	// GetAttendStatusesFunc mocks the GetAttendStatuses method.
 	GetAttendStatusesFunc func(ctx context.Context, whereSearchName string, order parameter.AttendStatusOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendStatus], error)
 
 	// GetAttendStatusesCountFunc mocks the GetAttendStatusesCount method.
 	GetAttendStatusesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
 
+	// GetAttendanceTypesFunc mocks the GetAttendanceTypes method.
+	GetAttendanceTypesFunc func(ctx context.Context, whereSearchName string, order parameter.AttendanceTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendanceType], error)
+
+	// GetAttendanceTypesCountFunc mocks the GetAttendanceTypesCount method.
+	GetAttendanceTypesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
+
 	// UpdateAttendStatusFunc mocks the UpdateAttendStatus method.
 	UpdateAttendStatusFunc func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error)
+
+	// UpdateAttendanceTypeFunc mocks the UpdateAttendanceType method.
+	UpdateAttendanceTypeFunc func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.AttendanceType, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -95,8 +143,33 @@ type ManagerInterfaceMock struct {
 			// Ps is the ps argument value.
 			Ps []parameter.CreateAttendStatusParam
 		}
+		// CreateAttendanceType holds details about calls to the CreateAttendanceType method.
+		CreateAttendanceType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Name is the name argument value.
+			Name string
+			// Key is the key argument value.
+			Key string
+			// Color is the color argument value.
+			Color string
+		}
+		// CreateAttendanceTypes holds details about calls to the CreateAttendanceTypes method.
+		CreateAttendanceTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ps is the ps argument value.
+			Ps []parameter.CreateAttendanceTypeParam
+		}
 		// DeleteAttendStatus holds details about calls to the DeleteAttendStatus method.
 		DeleteAttendStatus []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// DeleteAttendanceType holds details about calls to the DeleteAttendanceType method.
+		DeleteAttendanceType []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// ID is the id argument value.
@@ -111,6 +184,20 @@ type ManagerInterfaceMock struct {
 		}
 		// FindAttendStatusByKey holds details about calls to the FindAttendStatusByKey method.
 		FindAttendStatusByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// FindAttendanceTypeByID holds details about calls to the FindAttendanceTypeByID method.
+		FindAttendanceTypeByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// FindAttendanceTypeByKey holds details about calls to the FindAttendanceTypeByKey method.
+		FindAttendanceTypeByKey []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Key is the key argument value.
@@ -142,6 +229,32 @@ type ManagerInterfaceMock struct {
 			// WhereSearchName is the whereSearchName argument value.
 			WhereSearchName string
 		}
+		// GetAttendanceTypes holds details about calls to the GetAttendanceTypes method.
+		GetAttendanceTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// Order is the order argument value.
+			Order parameter.AttendanceTypeOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetAttendanceTypesCount holds details about calls to the GetAttendanceTypesCount method.
+		GetAttendanceTypesCount []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+		}
 		// UpdateAttendStatus holds details about calls to the UpdateAttendStatus method.
 		UpdateAttendStatus []struct {
 			// Ctx is the ctx argument value.
@@ -153,15 +266,36 @@ type ManagerInterfaceMock struct {
 			// Key is the key argument value.
 			Key string
 		}
+		// UpdateAttendanceType holds details about calls to the UpdateAttendanceType method.
+		UpdateAttendanceType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+			// Name is the name argument value.
+			Name string
+			// Key is the key argument value.
+			Key string
+			// Color is the color argument value.
+			Color string
+		}
 	}
-	lockCreateAttendStatus     sync.RWMutex
-	lockCreateAttendStatuses   sync.RWMutex
-	lockDeleteAttendStatus     sync.RWMutex
-	lockFindAttendStatusByID   sync.RWMutex
-	lockFindAttendStatusByKey  sync.RWMutex
-	lockGetAttendStatuses      sync.RWMutex
-	lockGetAttendStatusesCount sync.RWMutex
-	lockUpdateAttendStatus     sync.RWMutex
+	lockCreateAttendStatus      sync.RWMutex
+	lockCreateAttendStatuses    sync.RWMutex
+	lockCreateAttendanceType    sync.RWMutex
+	lockCreateAttendanceTypes   sync.RWMutex
+	lockDeleteAttendStatus      sync.RWMutex
+	lockDeleteAttendanceType    sync.RWMutex
+	lockFindAttendStatusByID    sync.RWMutex
+	lockFindAttendStatusByKey   sync.RWMutex
+	lockFindAttendanceTypeByID  sync.RWMutex
+	lockFindAttendanceTypeByKey sync.RWMutex
+	lockGetAttendStatuses       sync.RWMutex
+	lockGetAttendStatusesCount  sync.RWMutex
+	lockGetAttendanceTypes      sync.RWMutex
+	lockGetAttendanceTypesCount sync.RWMutex
+	lockUpdateAttendStatus      sync.RWMutex
+	lockUpdateAttendanceType    sync.RWMutex
 }
 
 // CreateAttendStatus calls CreateAttendStatusFunc.
@@ -240,6 +374,86 @@ func (mock *ManagerInterfaceMock) CreateAttendStatusesCalls() []struct {
 	return calls
 }
 
+// CreateAttendanceType calls CreateAttendanceTypeFunc.
+func (mock *ManagerInterfaceMock) CreateAttendanceType(ctx context.Context, name string, key string, color string) (entity.AttendanceType, error) {
+	if mock.CreateAttendanceTypeFunc == nil {
+		panic("ManagerInterfaceMock.CreateAttendanceTypeFunc: method is nil but ManagerInterface.CreateAttendanceType was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Name  string
+		Key   string
+		Color string
+	}{
+		Ctx:   ctx,
+		Name:  name,
+		Key:   key,
+		Color: color,
+	}
+	mock.lockCreateAttendanceType.Lock()
+	mock.calls.CreateAttendanceType = append(mock.calls.CreateAttendanceType, callInfo)
+	mock.lockCreateAttendanceType.Unlock()
+	return mock.CreateAttendanceTypeFunc(ctx, name, key, color)
+}
+
+// CreateAttendanceTypeCalls gets all the calls that were made to CreateAttendanceType.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateAttendanceTypeCalls())
+func (mock *ManagerInterfaceMock) CreateAttendanceTypeCalls() []struct {
+	Ctx   context.Context
+	Name  string
+	Key   string
+	Color string
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Name  string
+		Key   string
+		Color string
+	}
+	mock.lockCreateAttendanceType.RLock()
+	calls = mock.calls.CreateAttendanceType
+	mock.lockCreateAttendanceType.RUnlock()
+	return calls
+}
+
+// CreateAttendanceTypes calls CreateAttendanceTypesFunc.
+func (mock *ManagerInterfaceMock) CreateAttendanceTypes(ctx context.Context, ps []parameter.CreateAttendanceTypeParam) (int64, error) {
+	if mock.CreateAttendanceTypesFunc == nil {
+		panic("ManagerInterfaceMock.CreateAttendanceTypesFunc: method is nil but ManagerInterface.CreateAttendanceTypes was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ps  []parameter.CreateAttendanceTypeParam
+	}{
+		Ctx: ctx,
+		Ps:  ps,
+	}
+	mock.lockCreateAttendanceTypes.Lock()
+	mock.calls.CreateAttendanceTypes = append(mock.calls.CreateAttendanceTypes, callInfo)
+	mock.lockCreateAttendanceTypes.Unlock()
+	return mock.CreateAttendanceTypesFunc(ctx, ps)
+}
+
+// CreateAttendanceTypesCalls gets all the calls that were made to CreateAttendanceTypes.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateAttendanceTypesCalls())
+func (mock *ManagerInterfaceMock) CreateAttendanceTypesCalls() []struct {
+	Ctx context.Context
+	Ps  []parameter.CreateAttendanceTypeParam
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ps  []parameter.CreateAttendanceTypeParam
+	}
+	mock.lockCreateAttendanceTypes.RLock()
+	calls = mock.calls.CreateAttendanceTypes
+	mock.lockCreateAttendanceTypes.RUnlock()
+	return calls
+}
+
 // DeleteAttendStatus calls DeleteAttendStatusFunc.
 func (mock *ManagerInterfaceMock) DeleteAttendStatus(ctx context.Context, id uuid.UUID) error {
 	if mock.DeleteAttendStatusFunc == nil {
@@ -273,6 +487,42 @@ func (mock *ManagerInterfaceMock) DeleteAttendStatusCalls() []struct {
 	mock.lockDeleteAttendStatus.RLock()
 	calls = mock.calls.DeleteAttendStatus
 	mock.lockDeleteAttendStatus.RUnlock()
+	return calls
+}
+
+// DeleteAttendanceType calls DeleteAttendanceTypeFunc.
+func (mock *ManagerInterfaceMock) DeleteAttendanceType(ctx context.Context, id uuid.UUID) error {
+	if mock.DeleteAttendanceTypeFunc == nil {
+		panic("ManagerInterfaceMock.DeleteAttendanceTypeFunc: method is nil but ManagerInterface.DeleteAttendanceType was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockDeleteAttendanceType.Lock()
+	mock.calls.DeleteAttendanceType = append(mock.calls.DeleteAttendanceType, callInfo)
+	mock.lockDeleteAttendanceType.Unlock()
+	return mock.DeleteAttendanceTypeFunc(ctx, id)
+}
+
+// DeleteAttendanceTypeCalls gets all the calls that were made to DeleteAttendanceType.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeleteAttendanceTypeCalls())
+func (mock *ManagerInterfaceMock) DeleteAttendanceTypeCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockDeleteAttendanceType.RLock()
+	calls = mock.calls.DeleteAttendanceType
+	mock.lockDeleteAttendanceType.RUnlock()
 	return calls
 }
 
@@ -345,6 +595,78 @@ func (mock *ManagerInterfaceMock) FindAttendStatusByKeyCalls() []struct {
 	mock.lockFindAttendStatusByKey.RLock()
 	calls = mock.calls.FindAttendStatusByKey
 	mock.lockFindAttendStatusByKey.RUnlock()
+	return calls
+}
+
+// FindAttendanceTypeByID calls FindAttendanceTypeByIDFunc.
+func (mock *ManagerInterfaceMock) FindAttendanceTypeByID(ctx context.Context, id uuid.UUID) (entity.AttendanceType, error) {
+	if mock.FindAttendanceTypeByIDFunc == nil {
+		panic("ManagerInterfaceMock.FindAttendanceTypeByIDFunc: method is nil but ManagerInterface.FindAttendanceTypeByID was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockFindAttendanceTypeByID.Lock()
+	mock.calls.FindAttendanceTypeByID = append(mock.calls.FindAttendanceTypeByID, callInfo)
+	mock.lockFindAttendanceTypeByID.Unlock()
+	return mock.FindAttendanceTypeByIDFunc(ctx, id)
+}
+
+// FindAttendanceTypeByIDCalls gets all the calls that were made to FindAttendanceTypeByID.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindAttendanceTypeByIDCalls())
+func (mock *ManagerInterfaceMock) FindAttendanceTypeByIDCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockFindAttendanceTypeByID.RLock()
+	calls = mock.calls.FindAttendanceTypeByID
+	mock.lockFindAttendanceTypeByID.RUnlock()
+	return calls
+}
+
+// FindAttendanceTypeByKey calls FindAttendanceTypeByKeyFunc.
+func (mock *ManagerInterfaceMock) FindAttendanceTypeByKey(ctx context.Context, key string) (entity.AttendanceType, error) {
+	if mock.FindAttendanceTypeByKeyFunc == nil {
+		panic("ManagerInterfaceMock.FindAttendanceTypeByKeyFunc: method is nil but ManagerInterface.FindAttendanceTypeByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockFindAttendanceTypeByKey.Lock()
+	mock.calls.FindAttendanceTypeByKey = append(mock.calls.FindAttendanceTypeByKey, callInfo)
+	mock.lockFindAttendanceTypeByKey.Unlock()
+	return mock.FindAttendanceTypeByKeyFunc(ctx, key)
+}
+
+// FindAttendanceTypeByKeyCalls gets all the calls that were made to FindAttendanceTypeByKey.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindAttendanceTypeByKeyCalls())
+func (mock *ManagerInterfaceMock) FindAttendanceTypeByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockFindAttendanceTypeByKey.RLock()
+	calls = mock.calls.FindAttendanceTypeByKey
+	mock.lockFindAttendanceTypeByKey.RUnlock()
 	return calls
 }
 
@@ -444,6 +766,102 @@ func (mock *ManagerInterfaceMock) GetAttendStatusesCountCalls() []struct {
 	return calls
 }
 
+// GetAttendanceTypes calls GetAttendanceTypesFunc.
+func (mock *ManagerInterfaceMock) GetAttendanceTypes(ctx context.Context, whereSearchName string, order parameter.AttendanceTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendanceType], error) {
+	if mock.GetAttendanceTypesFunc == nil {
+		panic("ManagerInterfaceMock.GetAttendanceTypesFunc: method is nil but ManagerInterface.GetAttendanceTypes was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		WhereSearchName string
+		Order           parameter.AttendanceTypeOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}{
+		Ctx:             ctx,
+		WhereSearchName: whereSearchName,
+		Order:           order,
+		Pg:              pg,
+		Limit:           limit,
+		Cursor:          cursor,
+		Offset:          offset,
+		WithCount:       withCount,
+	}
+	mock.lockGetAttendanceTypes.Lock()
+	mock.calls.GetAttendanceTypes = append(mock.calls.GetAttendanceTypes, callInfo)
+	mock.lockGetAttendanceTypes.Unlock()
+	return mock.GetAttendanceTypesFunc(ctx, whereSearchName, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetAttendanceTypesCalls gets all the calls that were made to GetAttendanceTypes.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetAttendanceTypesCalls())
+func (mock *ManagerInterfaceMock) GetAttendanceTypesCalls() []struct {
+	Ctx             context.Context
+	WhereSearchName string
+	Order           parameter.AttendanceTypeOrderMethod
+	Pg              parameter.Pagination
+	Limit           parameter.Limit
+	Cursor          parameter.Cursor
+	Offset          parameter.Offset
+	WithCount       parameter.WithCount
+} {
+	var calls []struct {
+		Ctx             context.Context
+		WhereSearchName string
+		Order           parameter.AttendanceTypeOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}
+	mock.lockGetAttendanceTypes.RLock()
+	calls = mock.calls.GetAttendanceTypes
+	mock.lockGetAttendanceTypes.RUnlock()
+	return calls
+}
+
+// GetAttendanceTypesCount calls GetAttendanceTypesCountFunc.
+func (mock *ManagerInterfaceMock) GetAttendanceTypesCount(ctx context.Context, whereSearchName string) (int64, error) {
+	if mock.GetAttendanceTypesCountFunc == nil {
+		panic("ManagerInterfaceMock.GetAttendanceTypesCountFunc: method is nil but ManagerInterface.GetAttendanceTypesCount was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		WhereSearchName string
+	}{
+		Ctx:             ctx,
+		WhereSearchName: whereSearchName,
+	}
+	mock.lockGetAttendanceTypesCount.Lock()
+	mock.calls.GetAttendanceTypesCount = append(mock.calls.GetAttendanceTypesCount, callInfo)
+	mock.lockGetAttendanceTypesCount.Unlock()
+	return mock.GetAttendanceTypesCountFunc(ctx, whereSearchName)
+}
+
+// GetAttendanceTypesCountCalls gets all the calls that were made to GetAttendanceTypesCount.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetAttendanceTypesCountCalls())
+func (mock *ManagerInterfaceMock) GetAttendanceTypesCountCalls() []struct {
+	Ctx             context.Context
+	WhereSearchName string
+} {
+	var calls []struct {
+		Ctx             context.Context
+		WhereSearchName string
+	}
+	mock.lockGetAttendanceTypesCount.RLock()
+	calls = mock.calls.GetAttendanceTypesCount
+	mock.lockGetAttendanceTypesCount.RUnlock()
+	return calls
+}
+
 // UpdateAttendStatus calls UpdateAttendStatusFunc.
 func (mock *ManagerInterfaceMock) UpdateAttendStatus(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error) {
 	if mock.UpdateAttendStatusFunc == nil {
@@ -485,5 +903,53 @@ func (mock *ManagerInterfaceMock) UpdateAttendStatusCalls() []struct {
 	mock.lockUpdateAttendStatus.RLock()
 	calls = mock.calls.UpdateAttendStatus
 	mock.lockUpdateAttendStatus.RUnlock()
+	return calls
+}
+
+// UpdateAttendanceType calls UpdateAttendanceTypeFunc.
+func (mock *ManagerInterfaceMock) UpdateAttendanceType(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.AttendanceType, error) {
+	if mock.UpdateAttendanceTypeFunc == nil {
+		panic("ManagerInterfaceMock.UpdateAttendanceTypeFunc: method is nil but ManagerInterface.UpdateAttendanceType was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		ID    uuid.UUID
+		Name  string
+		Key   string
+		Color string
+	}{
+		Ctx:   ctx,
+		ID:    id,
+		Name:  name,
+		Key:   key,
+		Color: color,
+	}
+	mock.lockUpdateAttendanceType.Lock()
+	mock.calls.UpdateAttendanceType = append(mock.calls.UpdateAttendanceType, callInfo)
+	mock.lockUpdateAttendanceType.Unlock()
+	return mock.UpdateAttendanceTypeFunc(ctx, id, name, key, color)
+}
+
+// UpdateAttendanceTypeCalls gets all the calls that were made to UpdateAttendanceType.
+// Check the length with:
+//
+//	len(mockedManagerInterface.UpdateAttendanceTypeCalls())
+func (mock *ManagerInterfaceMock) UpdateAttendanceTypeCalls() []struct {
+	Ctx   context.Context
+	ID    uuid.UUID
+	Name  string
+	Key   string
+	Color string
+} {
+	var calls []struct {
+		Ctx   context.Context
+		ID    uuid.UUID
+		Name  string
+		Key   string
+		Color string
+	}
+	mock.lockUpdateAttendanceType.RLock()
+	calls = mock.calls.UpdateAttendanceType
+	mock.lockUpdateAttendanceType.RUnlock()
 	return calls
 }

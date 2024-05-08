@@ -33,4 +33,5 @@ type Store interface {
 
 	Absence
 	AttendStatus
+	AttendanceType
 }

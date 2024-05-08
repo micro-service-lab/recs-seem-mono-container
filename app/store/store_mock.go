@@ -42,6 +42,12 @@ var _ Store = &StoreMock{}
 //			CountAttendStatusesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereAttendStatusParam) (int64, error) {
 //				panic("mock out the CountAttendStatusesWithSd method")
 //			},
+//			CountAttendanceTypesFunc: func(ctx context.Context, where parameter.WhereAttendanceTypeParam) (int64, error) {
+//				panic("mock out the CountAttendanceTypes method")
+//			},
+//			CountAttendanceTypesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereAttendanceTypeParam) (int64, error) {
+//				panic("mock out the CountAttendanceTypesWithSd method")
+//			},
 //			CreateAbsenceFunc: func(ctx context.Context, param parameter.CreateAbsenceParam) (entity.Absence, error) {
 //				panic("mock out the CreateAbsence method")
 //			},
@@ -66,6 +72,18 @@ var _ Store = &StoreMock{}
 //			CreateAttendStatusesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateAttendStatusParam) (int64, error) {
 //				panic("mock out the CreateAttendStatusesWithSd method")
 //			},
+//			CreateAttendanceTypeFunc: func(ctx context.Context, param parameter.CreateAttendanceTypeParam) (entity.AttendanceType, error) {
+//				panic("mock out the CreateAttendanceType method")
+//			},
+//			CreateAttendanceTypeWithSdFunc: func(ctx context.Context, sd Sd, param parameter.CreateAttendanceTypeParam) (entity.AttendanceType, error) {
+//				panic("mock out the CreateAttendanceTypeWithSd method")
+//			},
+//			CreateAttendanceTypesFunc: func(ctx context.Context, params []parameter.CreateAttendanceTypeParam) (int64, error) {
+//				panic("mock out the CreateAttendanceTypes method")
+//			},
+//			CreateAttendanceTypesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateAttendanceTypeParam) (int64, error) {
+//				panic("mock out the CreateAttendanceTypesWithSd method")
+//			},
 //			DeleteAbsenceFunc: func(ctx context.Context, absenceID uuid.UUID) error {
 //				panic("mock out the DeleteAbsence method")
 //			},
@@ -83,6 +101,18 @@ var _ Store = &StoreMock{}
 //			},
 //			DeleteAttendStatusWithSdFunc: func(ctx context.Context, sd Sd, attendStatusID uuid.UUID) error {
 //				panic("mock out the DeleteAttendStatusWithSd method")
+//			},
+//			DeleteAttendanceTypeFunc: func(ctx context.Context, attendanceTypeID uuid.UUID) error {
+//				panic("mock out the DeleteAttendanceType method")
+//			},
+//			DeleteAttendanceTypeByKeyFunc: func(ctx context.Context, key string) error {
+//				panic("mock out the DeleteAttendanceTypeByKey method")
+//			},
+//			DeleteAttendanceTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) error {
+//				panic("mock out the DeleteAttendanceTypeByKeyWithSd method")
+//			},
+//			DeleteAttendanceTypeWithSdFunc: func(ctx context.Context, sd Sd, attendanceTypeID uuid.UUID) error {
+//				panic("mock out the DeleteAttendanceTypeWithSd method")
 //			},
 //			FindAbsenceByIDFunc: func(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error) {
 //				panic("mock out the FindAbsenceByID method")
@@ -102,6 +132,18 @@ var _ Store = &StoreMock{}
 //			FindAttendStatusByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.AttendStatus, error) {
 //				panic("mock out the FindAttendStatusByKeyWithSd method")
 //			},
+//			FindAttendanceTypeByIDFunc: func(ctx context.Context, attendanceTypeID uuid.UUID) (entity.AttendanceType, error) {
+//				panic("mock out the FindAttendanceTypeByID method")
+//			},
+//			FindAttendanceTypeByIDWithSdFunc: func(ctx context.Context, sd Sd, attendanceTypeID uuid.UUID) (entity.AttendanceType, error) {
+//				panic("mock out the FindAttendanceTypeByIDWithSd method")
+//			},
+//			FindAttendanceTypeByKeyFunc: func(ctx context.Context, key string) (entity.AttendanceType, error) {
+//				panic("mock out the FindAttendanceTypeByKey method")
+//			},
+//			FindAttendanceTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.AttendanceType, error) {
+//				panic("mock out the FindAttendanceTypeByKeyWithSd method")
+//			},
 //			GetAbsencesFunc: func(ctx context.Context, order parameter.AbsenceOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Absence], error) {
 //				panic("mock out the GetAbsences method")
 //			},
@@ -114,6 +156,12 @@ var _ Store = &StoreMock{}
 //			GetAttendStatusesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereAttendStatusParam, order parameter.AttendStatusOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttendStatus], error) {
 //				panic("mock out the GetAttendStatusesWithSd method")
 //			},
+//			GetAttendanceTypesFunc: func(ctx context.Context, where parameter.WhereAttendanceTypeParam, order parameter.AttendanceTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttendanceType], error) {
+//				panic("mock out the GetAttendanceTypes method")
+//			},
+//			GetAttendanceTypesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereAttendanceTypeParam, order parameter.AttendanceTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttendanceType], error) {
+//				panic("mock out the GetAttendanceTypesWithSd method")
+//			},
 //			GetPluralAbsencesFunc: func(ctx context.Context, ids []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Absence], error) {
 //				panic("mock out the GetPluralAbsences method")
 //			},
@@ -125,6 +173,12 @@ var _ Store = &StoreMock{}
 //			},
 //			GetPluralAttendStatusesWithSdFunc: func(ctx context.Context, sd Sd, AttendStatusIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error) {
 //				panic("mock out the GetPluralAttendStatusesWithSd method")
+//			},
+//			GetPluralAttendanceTypesFunc: func(ctx context.Context, AttendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error) {
+//				panic("mock out the GetPluralAttendanceTypes method")
+//			},
+//			GetPluralAttendanceTypesWithSdFunc: func(ctx context.Context, sd Sd, AttendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error) {
+//				panic("mock out the GetPluralAttendanceTypesWithSd method")
 //			},
 //			RollbackFunc: func(contextMoqParam context.Context, sd Sd) error {
 //				panic("mock out the Rollback method")
@@ -140,6 +194,18 @@ var _ Store = &StoreMock{}
 //			},
 //			UpdateAttendStatusWithSdFunc: func(ctx context.Context, sd Sd, attendStatusID uuid.UUID, param parameter.UpdateAttendStatusParams) (entity.AttendStatus, error) {
 //				panic("mock out the UpdateAttendStatusWithSd method")
+//			},
+//			UpdateAttendanceTypeFunc: func(ctx context.Context, attendanceTypeID uuid.UUID, param parameter.UpdateAttendanceTypeParams) (entity.AttendanceType, error) {
+//				panic("mock out the UpdateAttendanceType method")
+//			},
+//			UpdateAttendanceTypeByKeyFunc: func(ctx context.Context, key string, param parameter.UpdateAttendanceTypeByKeyParams) (entity.AttendanceType, error) {
+//				panic("mock out the UpdateAttendanceTypeByKey method")
+//			},
+//			UpdateAttendanceTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string, param parameter.UpdateAttendanceTypeByKeyParams) (entity.AttendanceType, error) {
+//				panic("mock out the UpdateAttendanceTypeByKeyWithSd method")
+//			},
+//			UpdateAttendanceTypeWithSdFunc: func(ctx context.Context, sd Sd, attendanceTypeID uuid.UUID, param parameter.UpdateAttendanceTypeParams) (entity.AttendanceType, error) {
+//				panic("mock out the UpdateAttendanceTypeWithSd method")
 //			},
 //		}
 //
@@ -169,6 +235,12 @@ type StoreMock struct {
 	// CountAttendStatusesWithSdFunc mocks the CountAttendStatusesWithSd method.
 	CountAttendStatusesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereAttendStatusParam) (int64, error)
 
+	// CountAttendanceTypesFunc mocks the CountAttendanceTypes method.
+	CountAttendanceTypesFunc func(ctx context.Context, where parameter.WhereAttendanceTypeParam) (int64, error)
+
+	// CountAttendanceTypesWithSdFunc mocks the CountAttendanceTypesWithSd method.
+	CountAttendanceTypesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereAttendanceTypeParam) (int64, error)
+
 	// CreateAbsenceFunc mocks the CreateAbsence method.
 	CreateAbsenceFunc func(ctx context.Context, param parameter.CreateAbsenceParam) (entity.Absence, error)
 
@@ -193,6 +265,18 @@ type StoreMock struct {
 	// CreateAttendStatusesWithSdFunc mocks the CreateAttendStatusesWithSd method.
 	CreateAttendStatusesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateAttendStatusParam) (int64, error)
 
+	// CreateAttendanceTypeFunc mocks the CreateAttendanceType method.
+	CreateAttendanceTypeFunc func(ctx context.Context, param parameter.CreateAttendanceTypeParam) (entity.AttendanceType, error)
+
+	// CreateAttendanceTypeWithSdFunc mocks the CreateAttendanceTypeWithSd method.
+	CreateAttendanceTypeWithSdFunc func(ctx context.Context, sd Sd, param parameter.CreateAttendanceTypeParam) (entity.AttendanceType, error)
+
+	// CreateAttendanceTypesFunc mocks the CreateAttendanceTypes method.
+	CreateAttendanceTypesFunc func(ctx context.Context, params []parameter.CreateAttendanceTypeParam) (int64, error)
+
+	// CreateAttendanceTypesWithSdFunc mocks the CreateAttendanceTypesWithSd method.
+	CreateAttendanceTypesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateAttendanceTypeParam) (int64, error)
+
 	// DeleteAbsenceFunc mocks the DeleteAbsence method.
 	DeleteAbsenceFunc func(ctx context.Context, absenceID uuid.UUID) error
 
@@ -210,6 +294,18 @@ type StoreMock struct {
 
 	// DeleteAttendStatusWithSdFunc mocks the DeleteAttendStatusWithSd method.
 	DeleteAttendStatusWithSdFunc func(ctx context.Context, sd Sd, attendStatusID uuid.UUID) error
+
+	// DeleteAttendanceTypeFunc mocks the DeleteAttendanceType method.
+	DeleteAttendanceTypeFunc func(ctx context.Context, attendanceTypeID uuid.UUID) error
+
+	// DeleteAttendanceTypeByKeyFunc mocks the DeleteAttendanceTypeByKey method.
+	DeleteAttendanceTypeByKeyFunc func(ctx context.Context, key string) error
+
+	// DeleteAttendanceTypeByKeyWithSdFunc mocks the DeleteAttendanceTypeByKeyWithSd method.
+	DeleteAttendanceTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) error
+
+	// DeleteAttendanceTypeWithSdFunc mocks the DeleteAttendanceTypeWithSd method.
+	DeleteAttendanceTypeWithSdFunc func(ctx context.Context, sd Sd, attendanceTypeID uuid.UUID) error
 
 	// FindAbsenceByIDFunc mocks the FindAbsenceByID method.
 	FindAbsenceByIDFunc func(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error)
@@ -229,6 +325,18 @@ type StoreMock struct {
 	// FindAttendStatusByKeyWithSdFunc mocks the FindAttendStatusByKeyWithSd method.
 	FindAttendStatusByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.AttendStatus, error)
 
+	// FindAttendanceTypeByIDFunc mocks the FindAttendanceTypeByID method.
+	FindAttendanceTypeByIDFunc func(ctx context.Context, attendanceTypeID uuid.UUID) (entity.AttendanceType, error)
+
+	// FindAttendanceTypeByIDWithSdFunc mocks the FindAttendanceTypeByIDWithSd method.
+	FindAttendanceTypeByIDWithSdFunc func(ctx context.Context, sd Sd, attendanceTypeID uuid.UUID) (entity.AttendanceType, error)
+
+	// FindAttendanceTypeByKeyFunc mocks the FindAttendanceTypeByKey method.
+	FindAttendanceTypeByKeyFunc func(ctx context.Context, key string) (entity.AttendanceType, error)
+
+	// FindAttendanceTypeByKeyWithSdFunc mocks the FindAttendanceTypeByKeyWithSd method.
+	FindAttendanceTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.AttendanceType, error)
+
 	// GetAbsencesFunc mocks the GetAbsences method.
 	GetAbsencesFunc func(ctx context.Context, order parameter.AbsenceOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Absence], error)
 
@@ -241,6 +349,12 @@ type StoreMock struct {
 	// GetAttendStatusesWithSdFunc mocks the GetAttendStatusesWithSd method.
 	GetAttendStatusesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereAttendStatusParam, order parameter.AttendStatusOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttendStatus], error)
 
+	// GetAttendanceTypesFunc mocks the GetAttendanceTypes method.
+	GetAttendanceTypesFunc func(ctx context.Context, where parameter.WhereAttendanceTypeParam, order parameter.AttendanceTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttendanceType], error)
+
+	// GetAttendanceTypesWithSdFunc mocks the GetAttendanceTypesWithSd method.
+	GetAttendanceTypesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereAttendanceTypeParam, order parameter.AttendanceTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttendanceType], error)
+
 	// GetPluralAbsencesFunc mocks the GetPluralAbsences method.
 	GetPluralAbsencesFunc func(ctx context.Context, ids []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Absence], error)
 
@@ -252,6 +366,12 @@ type StoreMock struct {
 
 	// GetPluralAttendStatusesWithSdFunc mocks the GetPluralAttendStatusesWithSd method.
 	GetPluralAttendStatusesWithSdFunc func(ctx context.Context, sd Sd, AttendStatusIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error)
+
+	// GetPluralAttendanceTypesFunc mocks the GetPluralAttendanceTypes method.
+	GetPluralAttendanceTypesFunc func(ctx context.Context, AttendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error)
+
+	// GetPluralAttendanceTypesWithSdFunc mocks the GetPluralAttendanceTypesWithSd method.
+	GetPluralAttendanceTypesWithSdFunc func(ctx context.Context, sd Sd, AttendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error)
 
 	// RollbackFunc mocks the Rollback method.
 	RollbackFunc func(contextMoqParam context.Context, sd Sd) error
@@ -267,6 +387,18 @@ type StoreMock struct {
 
 	// UpdateAttendStatusWithSdFunc mocks the UpdateAttendStatusWithSd method.
 	UpdateAttendStatusWithSdFunc func(ctx context.Context, sd Sd, attendStatusID uuid.UUID, param parameter.UpdateAttendStatusParams) (entity.AttendStatus, error)
+
+	// UpdateAttendanceTypeFunc mocks the UpdateAttendanceType method.
+	UpdateAttendanceTypeFunc func(ctx context.Context, attendanceTypeID uuid.UUID, param parameter.UpdateAttendanceTypeParams) (entity.AttendanceType, error)
+
+	// UpdateAttendanceTypeByKeyFunc mocks the UpdateAttendanceTypeByKey method.
+	UpdateAttendanceTypeByKeyFunc func(ctx context.Context, key string, param parameter.UpdateAttendanceTypeByKeyParams) (entity.AttendanceType, error)
+
+	// UpdateAttendanceTypeByKeyWithSdFunc mocks the UpdateAttendanceTypeByKeyWithSd method.
+	UpdateAttendanceTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string, param parameter.UpdateAttendanceTypeByKeyParams) (entity.AttendanceType, error)
+
+	// UpdateAttendanceTypeWithSdFunc mocks the UpdateAttendanceTypeWithSd method.
+	UpdateAttendanceTypeWithSdFunc func(ctx context.Context, sd Sd, attendanceTypeID uuid.UUID, param parameter.UpdateAttendanceTypeParams) (entity.AttendanceType, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -314,6 +446,22 @@ type StoreMock struct {
 			Sd Sd
 			// Where is the where argument value.
 			Where parameter.WhereAttendStatusParam
+		}
+		// CountAttendanceTypes holds details about calls to the CountAttendanceTypes method.
+		CountAttendanceTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereAttendanceTypeParam
+		}
+		// CountAttendanceTypesWithSd holds details about calls to the CountAttendanceTypesWithSd method.
+		CountAttendanceTypesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereAttendanceTypeParam
 		}
 		// CreateAbsence holds details about calls to the CreateAbsence method.
 		CreateAbsence []struct {
@@ -379,6 +527,38 @@ type StoreMock struct {
 			// Params is the params argument value.
 			Params []parameter.CreateAttendStatusParam
 		}
+		// CreateAttendanceType holds details about calls to the CreateAttendanceType method.
+		CreateAttendanceType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Param is the param argument value.
+			Param parameter.CreateAttendanceTypeParam
+		}
+		// CreateAttendanceTypeWithSd holds details about calls to the CreateAttendanceTypeWithSd method.
+		CreateAttendanceTypeWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Param is the param argument value.
+			Param parameter.CreateAttendanceTypeParam
+		}
+		// CreateAttendanceTypes holds details about calls to the CreateAttendanceTypes method.
+		CreateAttendanceTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.CreateAttendanceTypeParam
+		}
+		// CreateAttendanceTypesWithSd holds details about calls to the CreateAttendanceTypesWithSd method.
+		CreateAttendanceTypesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Params is the params argument value.
+			Params []parameter.CreateAttendanceTypeParam
+		}
 		// DeleteAbsence holds details about calls to the DeleteAbsence method.
 		DeleteAbsence []struct {
 			// Ctx is the ctx argument value.
@@ -427,6 +607,38 @@ type StoreMock struct {
 			// AttendStatusID is the attendStatusID argument value.
 			AttendStatusID uuid.UUID
 		}
+		// DeleteAttendanceType holds details about calls to the DeleteAttendanceType method.
+		DeleteAttendanceType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AttendanceTypeID is the attendanceTypeID argument value.
+			AttendanceTypeID uuid.UUID
+		}
+		// DeleteAttendanceTypeByKey holds details about calls to the DeleteAttendanceTypeByKey method.
+		DeleteAttendanceTypeByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// DeleteAttendanceTypeByKeyWithSd holds details about calls to the DeleteAttendanceTypeByKeyWithSd method.
+		DeleteAttendanceTypeByKeyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
+		}
+		// DeleteAttendanceTypeWithSd holds details about calls to the DeleteAttendanceTypeWithSd method.
+		DeleteAttendanceTypeWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// AttendanceTypeID is the attendanceTypeID argument value.
+			AttendanceTypeID uuid.UUID
+		}
 		// FindAbsenceByID holds details about calls to the FindAbsenceByID method.
 		FindAbsenceByID []struct {
 			// Ctx is the ctx argument value.
@@ -468,6 +680,38 @@ type StoreMock struct {
 		}
 		// FindAttendStatusByKeyWithSd holds details about calls to the FindAttendStatusByKeyWithSd method.
 		FindAttendStatusByKeyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
+		}
+		// FindAttendanceTypeByID holds details about calls to the FindAttendanceTypeByID method.
+		FindAttendanceTypeByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AttendanceTypeID is the attendanceTypeID argument value.
+			AttendanceTypeID uuid.UUID
+		}
+		// FindAttendanceTypeByIDWithSd holds details about calls to the FindAttendanceTypeByIDWithSd method.
+		FindAttendanceTypeByIDWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// AttendanceTypeID is the attendanceTypeID argument value.
+			AttendanceTypeID uuid.UUID
+		}
+		// FindAttendanceTypeByKey holds details about calls to the FindAttendanceTypeByKey method.
+		FindAttendanceTypeByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// FindAttendanceTypeByKeyWithSd holds details about calls to the FindAttendanceTypeByKeyWithSd method.
+		FindAttendanceTypeByKeyWithSd []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Sd is the sd argument value.
@@ -535,6 +779,38 @@ type StoreMock struct {
 			// Wc is the wc argument value.
 			Wc WithCountParam
 		}
+		// GetAttendanceTypes holds details about calls to the GetAttendanceTypes method.
+		GetAttendanceTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereAttendanceTypeParam
+			// Order is the order argument value.
+			Order parameter.AttendanceTypeOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetAttendanceTypesWithSd holds details about calls to the GetAttendanceTypesWithSd method.
+		GetAttendanceTypesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereAttendanceTypeParam
+			// Order is the order argument value.
+			Order parameter.AttendanceTypeOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
 		// GetPluralAbsences holds details about calls to the GetPluralAbsences method.
 		GetPluralAbsences []struct {
 			// Ctx is the ctx argument value.
@@ -572,6 +848,26 @@ type StoreMock struct {
 			Sd Sd
 			// AttendStatusIDs is the AttendStatusIDs argument value.
 			AttendStatusIDs []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralAttendanceTypes holds details about calls to the GetPluralAttendanceTypes method.
+		GetPluralAttendanceTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AttendanceTypeIDs is the AttendanceTypeIDs argument value.
+			AttendanceTypeIDs []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralAttendanceTypesWithSd holds details about calls to the GetPluralAttendanceTypesWithSd method.
+		GetPluralAttendanceTypesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// AttendanceTypeIDs is the AttendanceTypeIDs argument value.
+			AttendanceTypeIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 		}
@@ -622,47 +918,109 @@ type StoreMock struct {
 			// Param is the param argument value.
 			Param parameter.UpdateAttendStatusParams
 		}
+		// UpdateAttendanceType holds details about calls to the UpdateAttendanceType method.
+		UpdateAttendanceType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AttendanceTypeID is the attendanceTypeID argument value.
+			AttendanceTypeID uuid.UUID
+			// Param is the param argument value.
+			Param parameter.UpdateAttendanceTypeParams
+		}
+		// UpdateAttendanceTypeByKey holds details about calls to the UpdateAttendanceTypeByKey method.
+		UpdateAttendanceTypeByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+			// Param is the param argument value.
+			Param parameter.UpdateAttendanceTypeByKeyParams
+		}
+		// UpdateAttendanceTypeByKeyWithSd holds details about calls to the UpdateAttendanceTypeByKeyWithSd method.
+		UpdateAttendanceTypeByKeyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
+			// Param is the param argument value.
+			Param parameter.UpdateAttendanceTypeByKeyParams
+		}
+		// UpdateAttendanceTypeWithSd holds details about calls to the UpdateAttendanceTypeWithSd method.
+		UpdateAttendanceTypeWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// AttendanceTypeID is the attendanceTypeID argument value.
+			AttendanceTypeID uuid.UUID
+			// Param is the param argument value.
+			Param parameter.UpdateAttendanceTypeParams
+		}
 	}
-	lockBegin                         sync.RWMutex
-	lockCleanup                       sync.RWMutex
-	lockCommit                        sync.RWMutex
-	lockCountAbsences                 sync.RWMutex
-	lockCountAbsencesWithSd           sync.RWMutex
-	lockCountAttendStatuses           sync.RWMutex
-	lockCountAttendStatusesWithSd     sync.RWMutex
-	lockCreateAbsence                 sync.RWMutex
-	lockCreateAbsenceWithSd           sync.RWMutex
-	lockCreateAbsences                sync.RWMutex
-	lockCreateAbsencesWithSd          sync.RWMutex
-	lockCreateAttendStatus            sync.RWMutex
-	lockCreateAttendStatusWithSd      sync.RWMutex
-	lockCreateAttendStatuses          sync.RWMutex
-	lockCreateAttendStatusesWithSd    sync.RWMutex
-	lockDeleteAbsence                 sync.RWMutex
-	lockDeleteAbsenceWithSd           sync.RWMutex
-	lockDeleteAttendStatus            sync.RWMutex
-	lockDeleteAttendStatusByKey       sync.RWMutex
-	lockDeleteAttendStatusByKeyWithSd sync.RWMutex
-	lockDeleteAttendStatusWithSd      sync.RWMutex
-	lockFindAbsenceByID               sync.RWMutex
-	lockFindAbsenceByIDWithSd         sync.RWMutex
-	lockFindAttendStatusByID          sync.RWMutex
-	lockFindAttendStatusByIDWithSd    sync.RWMutex
-	lockFindAttendStatusByKey         sync.RWMutex
-	lockFindAttendStatusByKeyWithSd   sync.RWMutex
-	lockGetAbsences                   sync.RWMutex
-	lockGetAbsencesWithSd             sync.RWMutex
-	lockGetAttendStatuses             sync.RWMutex
-	lockGetAttendStatusesWithSd       sync.RWMutex
-	lockGetPluralAbsences             sync.RWMutex
-	lockGetPluralAbsencesWithSd       sync.RWMutex
-	lockGetPluralAttendStatuses       sync.RWMutex
-	lockGetPluralAttendStatusesWithSd sync.RWMutex
-	lockRollback                      sync.RWMutex
-	lockUpdateAttendStatus            sync.RWMutex
-	lockUpdateAttendStatusByKey       sync.RWMutex
-	lockUpdateAttendStatusByKeyWithSd sync.RWMutex
-	lockUpdateAttendStatusWithSd      sync.RWMutex
+	lockBegin                           sync.RWMutex
+	lockCleanup                         sync.RWMutex
+	lockCommit                          sync.RWMutex
+	lockCountAbsences                   sync.RWMutex
+	lockCountAbsencesWithSd             sync.RWMutex
+	lockCountAttendStatuses             sync.RWMutex
+	lockCountAttendStatusesWithSd       sync.RWMutex
+	lockCountAttendanceTypes            sync.RWMutex
+	lockCountAttendanceTypesWithSd      sync.RWMutex
+	lockCreateAbsence                   sync.RWMutex
+	lockCreateAbsenceWithSd             sync.RWMutex
+	lockCreateAbsences                  sync.RWMutex
+	lockCreateAbsencesWithSd            sync.RWMutex
+	lockCreateAttendStatus              sync.RWMutex
+	lockCreateAttendStatusWithSd        sync.RWMutex
+	lockCreateAttendStatuses            sync.RWMutex
+	lockCreateAttendStatusesWithSd      sync.RWMutex
+	lockCreateAttendanceType            sync.RWMutex
+	lockCreateAttendanceTypeWithSd      sync.RWMutex
+	lockCreateAttendanceTypes           sync.RWMutex
+	lockCreateAttendanceTypesWithSd     sync.RWMutex
+	lockDeleteAbsence                   sync.RWMutex
+	lockDeleteAbsenceWithSd             sync.RWMutex
+	lockDeleteAttendStatus              sync.RWMutex
+	lockDeleteAttendStatusByKey         sync.RWMutex
+	lockDeleteAttendStatusByKeyWithSd   sync.RWMutex
+	lockDeleteAttendStatusWithSd        sync.RWMutex
+	lockDeleteAttendanceType            sync.RWMutex
+	lockDeleteAttendanceTypeByKey       sync.RWMutex
+	lockDeleteAttendanceTypeByKeyWithSd sync.RWMutex
+	lockDeleteAttendanceTypeWithSd      sync.RWMutex
+	lockFindAbsenceByID                 sync.RWMutex
+	lockFindAbsenceByIDWithSd           sync.RWMutex
+	lockFindAttendStatusByID            sync.RWMutex
+	lockFindAttendStatusByIDWithSd      sync.RWMutex
+	lockFindAttendStatusByKey           sync.RWMutex
+	lockFindAttendStatusByKeyWithSd     sync.RWMutex
+	lockFindAttendanceTypeByID          sync.RWMutex
+	lockFindAttendanceTypeByIDWithSd    sync.RWMutex
+	lockFindAttendanceTypeByKey         sync.RWMutex
+	lockFindAttendanceTypeByKeyWithSd   sync.RWMutex
+	lockGetAbsences                     sync.RWMutex
+	lockGetAbsencesWithSd               sync.RWMutex
+	lockGetAttendStatuses               sync.RWMutex
+	lockGetAttendStatusesWithSd         sync.RWMutex
+	lockGetAttendanceTypes              sync.RWMutex
+	lockGetAttendanceTypesWithSd        sync.RWMutex
+	lockGetPluralAbsences               sync.RWMutex
+	lockGetPluralAbsencesWithSd         sync.RWMutex
+	lockGetPluralAttendStatuses         sync.RWMutex
+	lockGetPluralAttendStatusesWithSd   sync.RWMutex
+	lockGetPluralAttendanceTypes        sync.RWMutex
+	lockGetPluralAttendanceTypesWithSd  sync.RWMutex
+	lockRollback                        sync.RWMutex
+	lockUpdateAttendStatus              sync.RWMutex
+	lockUpdateAttendStatusByKey         sync.RWMutex
+	lockUpdateAttendStatusByKeyWithSd   sync.RWMutex
+	lockUpdateAttendStatusWithSd        sync.RWMutex
+	lockUpdateAttendanceType            sync.RWMutex
+	lockUpdateAttendanceTypeByKey       sync.RWMutex
+	lockUpdateAttendanceTypeByKeyWithSd sync.RWMutex
+	lockUpdateAttendanceTypeWithSd      sync.RWMutex
 }
 
 // Begin calls BeginFunc.
@@ -906,6 +1264,82 @@ func (mock *StoreMock) CountAttendStatusesWithSdCalls() []struct {
 	mock.lockCountAttendStatusesWithSd.RLock()
 	calls = mock.calls.CountAttendStatusesWithSd
 	mock.lockCountAttendStatusesWithSd.RUnlock()
+	return calls
+}
+
+// CountAttendanceTypes calls CountAttendanceTypesFunc.
+func (mock *StoreMock) CountAttendanceTypes(ctx context.Context, where parameter.WhereAttendanceTypeParam) (int64, error) {
+	if mock.CountAttendanceTypesFunc == nil {
+		panic("StoreMock.CountAttendanceTypesFunc: method is nil but Store.CountAttendanceTypes was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereAttendanceTypeParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+	}
+	mock.lockCountAttendanceTypes.Lock()
+	mock.calls.CountAttendanceTypes = append(mock.calls.CountAttendanceTypes, callInfo)
+	mock.lockCountAttendanceTypes.Unlock()
+	return mock.CountAttendanceTypesFunc(ctx, where)
+}
+
+// CountAttendanceTypesCalls gets all the calls that were made to CountAttendanceTypes.
+// Check the length with:
+//
+//	len(mockedStore.CountAttendanceTypesCalls())
+func (mock *StoreMock) CountAttendanceTypesCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereAttendanceTypeParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereAttendanceTypeParam
+	}
+	mock.lockCountAttendanceTypes.RLock()
+	calls = mock.calls.CountAttendanceTypes
+	mock.lockCountAttendanceTypes.RUnlock()
+	return calls
+}
+
+// CountAttendanceTypesWithSd calls CountAttendanceTypesWithSdFunc.
+func (mock *StoreMock) CountAttendanceTypesWithSd(ctx context.Context, sd Sd, where parameter.WhereAttendanceTypeParam) (int64, error) {
+	if mock.CountAttendanceTypesWithSdFunc == nil {
+		panic("StoreMock.CountAttendanceTypesWithSdFunc: method is nil but Store.CountAttendanceTypesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereAttendanceTypeParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+	}
+	mock.lockCountAttendanceTypesWithSd.Lock()
+	mock.calls.CountAttendanceTypesWithSd = append(mock.calls.CountAttendanceTypesWithSd, callInfo)
+	mock.lockCountAttendanceTypesWithSd.Unlock()
+	return mock.CountAttendanceTypesWithSdFunc(ctx, sd, where)
+}
+
+// CountAttendanceTypesWithSdCalls gets all the calls that were made to CountAttendanceTypesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountAttendanceTypesWithSdCalls())
+func (mock *StoreMock) CountAttendanceTypesWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereAttendanceTypeParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereAttendanceTypeParam
+	}
+	mock.lockCountAttendanceTypesWithSd.RLock()
+	calls = mock.calls.CountAttendanceTypesWithSd
+	mock.lockCountAttendanceTypesWithSd.RUnlock()
 	return calls
 }
 
@@ -1213,6 +1647,158 @@ func (mock *StoreMock) CreateAttendStatusesWithSdCalls() []struct {
 	return calls
 }
 
+// CreateAttendanceType calls CreateAttendanceTypeFunc.
+func (mock *StoreMock) CreateAttendanceType(ctx context.Context, param parameter.CreateAttendanceTypeParam) (entity.AttendanceType, error) {
+	if mock.CreateAttendanceTypeFunc == nil {
+		panic("StoreMock.CreateAttendanceTypeFunc: method is nil but Store.CreateAttendanceType was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Param parameter.CreateAttendanceTypeParam
+	}{
+		Ctx:   ctx,
+		Param: param,
+	}
+	mock.lockCreateAttendanceType.Lock()
+	mock.calls.CreateAttendanceType = append(mock.calls.CreateAttendanceType, callInfo)
+	mock.lockCreateAttendanceType.Unlock()
+	return mock.CreateAttendanceTypeFunc(ctx, param)
+}
+
+// CreateAttendanceTypeCalls gets all the calls that were made to CreateAttendanceType.
+// Check the length with:
+//
+//	len(mockedStore.CreateAttendanceTypeCalls())
+func (mock *StoreMock) CreateAttendanceTypeCalls() []struct {
+	Ctx   context.Context
+	Param parameter.CreateAttendanceTypeParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Param parameter.CreateAttendanceTypeParam
+	}
+	mock.lockCreateAttendanceType.RLock()
+	calls = mock.calls.CreateAttendanceType
+	mock.lockCreateAttendanceType.RUnlock()
+	return calls
+}
+
+// CreateAttendanceTypeWithSd calls CreateAttendanceTypeWithSdFunc.
+func (mock *StoreMock) CreateAttendanceTypeWithSd(ctx context.Context, sd Sd, param parameter.CreateAttendanceTypeParam) (entity.AttendanceType, error) {
+	if mock.CreateAttendanceTypeWithSdFunc == nil {
+		panic("StoreMock.CreateAttendanceTypeWithSdFunc: method is nil but Store.CreateAttendanceTypeWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateAttendanceTypeParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Param: param,
+	}
+	mock.lockCreateAttendanceTypeWithSd.Lock()
+	mock.calls.CreateAttendanceTypeWithSd = append(mock.calls.CreateAttendanceTypeWithSd, callInfo)
+	mock.lockCreateAttendanceTypeWithSd.Unlock()
+	return mock.CreateAttendanceTypeWithSdFunc(ctx, sd, param)
+}
+
+// CreateAttendanceTypeWithSdCalls gets all the calls that were made to CreateAttendanceTypeWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateAttendanceTypeWithSdCalls())
+func (mock *StoreMock) CreateAttendanceTypeWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Param parameter.CreateAttendanceTypeParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateAttendanceTypeParam
+	}
+	mock.lockCreateAttendanceTypeWithSd.RLock()
+	calls = mock.calls.CreateAttendanceTypeWithSd
+	mock.lockCreateAttendanceTypeWithSd.RUnlock()
+	return calls
+}
+
+// CreateAttendanceTypes calls CreateAttendanceTypesFunc.
+func (mock *StoreMock) CreateAttendanceTypes(ctx context.Context, params []parameter.CreateAttendanceTypeParam) (int64, error) {
+	if mock.CreateAttendanceTypesFunc == nil {
+		panic("StoreMock.CreateAttendanceTypesFunc: method is nil but Store.CreateAttendanceTypes was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.CreateAttendanceTypeParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockCreateAttendanceTypes.Lock()
+	mock.calls.CreateAttendanceTypes = append(mock.calls.CreateAttendanceTypes, callInfo)
+	mock.lockCreateAttendanceTypes.Unlock()
+	return mock.CreateAttendanceTypesFunc(ctx, params)
+}
+
+// CreateAttendanceTypesCalls gets all the calls that were made to CreateAttendanceTypes.
+// Check the length with:
+//
+//	len(mockedStore.CreateAttendanceTypesCalls())
+func (mock *StoreMock) CreateAttendanceTypesCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.CreateAttendanceTypeParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.CreateAttendanceTypeParam
+	}
+	mock.lockCreateAttendanceTypes.RLock()
+	calls = mock.calls.CreateAttendanceTypes
+	mock.lockCreateAttendanceTypes.RUnlock()
+	return calls
+}
+
+// CreateAttendanceTypesWithSd calls CreateAttendanceTypesWithSdFunc.
+func (mock *StoreMock) CreateAttendanceTypesWithSd(ctx context.Context, sd Sd, params []parameter.CreateAttendanceTypeParam) (int64, error) {
+	if mock.CreateAttendanceTypesWithSdFunc == nil {
+		panic("StoreMock.CreateAttendanceTypesWithSdFunc: method is nil but Store.CreateAttendanceTypesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateAttendanceTypeParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		Params: params,
+	}
+	mock.lockCreateAttendanceTypesWithSd.Lock()
+	mock.calls.CreateAttendanceTypesWithSd = append(mock.calls.CreateAttendanceTypesWithSd, callInfo)
+	mock.lockCreateAttendanceTypesWithSd.Unlock()
+	return mock.CreateAttendanceTypesWithSdFunc(ctx, sd, params)
+}
+
+// CreateAttendanceTypesWithSdCalls gets all the calls that were made to CreateAttendanceTypesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateAttendanceTypesWithSdCalls())
+func (mock *StoreMock) CreateAttendanceTypesWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	Params []parameter.CreateAttendanceTypeParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateAttendanceTypeParam
+	}
+	mock.lockCreateAttendanceTypesWithSd.RLock()
+	calls = mock.calls.CreateAttendanceTypesWithSd
+	mock.lockCreateAttendanceTypesWithSd.RUnlock()
+	return calls
+}
+
 // DeleteAbsence calls DeleteAbsenceFunc.
 func (mock *StoreMock) DeleteAbsence(ctx context.Context, absenceID uuid.UUID) error {
 	if mock.DeleteAbsenceFunc == nil {
@@ -1438,6 +2024,158 @@ func (mock *StoreMock) DeleteAttendStatusWithSdCalls() []struct {
 	mock.lockDeleteAttendStatusWithSd.RLock()
 	calls = mock.calls.DeleteAttendStatusWithSd
 	mock.lockDeleteAttendStatusWithSd.RUnlock()
+	return calls
+}
+
+// DeleteAttendanceType calls DeleteAttendanceTypeFunc.
+func (mock *StoreMock) DeleteAttendanceType(ctx context.Context, attendanceTypeID uuid.UUID) error {
+	if mock.DeleteAttendanceTypeFunc == nil {
+		panic("StoreMock.DeleteAttendanceTypeFunc: method is nil but Store.DeleteAttendanceType was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		AttendanceTypeID uuid.UUID
+	}{
+		Ctx:              ctx,
+		AttendanceTypeID: attendanceTypeID,
+	}
+	mock.lockDeleteAttendanceType.Lock()
+	mock.calls.DeleteAttendanceType = append(mock.calls.DeleteAttendanceType, callInfo)
+	mock.lockDeleteAttendanceType.Unlock()
+	return mock.DeleteAttendanceTypeFunc(ctx, attendanceTypeID)
+}
+
+// DeleteAttendanceTypeCalls gets all the calls that were made to DeleteAttendanceType.
+// Check the length with:
+//
+//	len(mockedStore.DeleteAttendanceTypeCalls())
+func (mock *StoreMock) DeleteAttendanceTypeCalls() []struct {
+	Ctx              context.Context
+	AttendanceTypeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx              context.Context
+		AttendanceTypeID uuid.UUID
+	}
+	mock.lockDeleteAttendanceType.RLock()
+	calls = mock.calls.DeleteAttendanceType
+	mock.lockDeleteAttendanceType.RUnlock()
+	return calls
+}
+
+// DeleteAttendanceTypeByKey calls DeleteAttendanceTypeByKeyFunc.
+func (mock *StoreMock) DeleteAttendanceTypeByKey(ctx context.Context, key string) error {
+	if mock.DeleteAttendanceTypeByKeyFunc == nil {
+		panic("StoreMock.DeleteAttendanceTypeByKeyFunc: method is nil but Store.DeleteAttendanceTypeByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockDeleteAttendanceTypeByKey.Lock()
+	mock.calls.DeleteAttendanceTypeByKey = append(mock.calls.DeleteAttendanceTypeByKey, callInfo)
+	mock.lockDeleteAttendanceTypeByKey.Unlock()
+	return mock.DeleteAttendanceTypeByKeyFunc(ctx, key)
+}
+
+// DeleteAttendanceTypeByKeyCalls gets all the calls that were made to DeleteAttendanceTypeByKey.
+// Check the length with:
+//
+//	len(mockedStore.DeleteAttendanceTypeByKeyCalls())
+func (mock *StoreMock) DeleteAttendanceTypeByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockDeleteAttendanceTypeByKey.RLock()
+	calls = mock.calls.DeleteAttendanceTypeByKey
+	mock.lockDeleteAttendanceTypeByKey.RUnlock()
+	return calls
+}
+
+// DeleteAttendanceTypeByKeyWithSd calls DeleteAttendanceTypeByKeyWithSdFunc.
+func (mock *StoreMock) DeleteAttendanceTypeByKeyWithSd(ctx context.Context, sd Sd, key string) error {
+	if mock.DeleteAttendanceTypeByKeyWithSdFunc == nil {
+		panic("StoreMock.DeleteAttendanceTypeByKeyWithSdFunc: method is nil but Store.DeleteAttendanceTypeByKeyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}{
+		Ctx: ctx,
+		Sd:  sd,
+		Key: key,
+	}
+	mock.lockDeleteAttendanceTypeByKeyWithSd.Lock()
+	mock.calls.DeleteAttendanceTypeByKeyWithSd = append(mock.calls.DeleteAttendanceTypeByKeyWithSd, callInfo)
+	mock.lockDeleteAttendanceTypeByKeyWithSd.Unlock()
+	return mock.DeleteAttendanceTypeByKeyWithSdFunc(ctx, sd, key)
+}
+
+// DeleteAttendanceTypeByKeyWithSdCalls gets all the calls that were made to DeleteAttendanceTypeByKeyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteAttendanceTypeByKeyWithSdCalls())
+func (mock *StoreMock) DeleteAttendanceTypeByKeyWithSdCalls() []struct {
+	Ctx context.Context
+	Sd  Sd
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}
+	mock.lockDeleteAttendanceTypeByKeyWithSd.RLock()
+	calls = mock.calls.DeleteAttendanceTypeByKeyWithSd
+	mock.lockDeleteAttendanceTypeByKeyWithSd.RUnlock()
+	return calls
+}
+
+// DeleteAttendanceTypeWithSd calls DeleteAttendanceTypeWithSdFunc.
+func (mock *StoreMock) DeleteAttendanceTypeWithSd(ctx context.Context, sd Sd, attendanceTypeID uuid.UUID) error {
+	if mock.DeleteAttendanceTypeWithSdFunc == nil {
+		panic("StoreMock.DeleteAttendanceTypeWithSdFunc: method is nil but Store.DeleteAttendanceTypeWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		Sd               Sd
+		AttendanceTypeID uuid.UUID
+	}{
+		Ctx:              ctx,
+		Sd:               sd,
+		AttendanceTypeID: attendanceTypeID,
+	}
+	mock.lockDeleteAttendanceTypeWithSd.Lock()
+	mock.calls.DeleteAttendanceTypeWithSd = append(mock.calls.DeleteAttendanceTypeWithSd, callInfo)
+	mock.lockDeleteAttendanceTypeWithSd.Unlock()
+	return mock.DeleteAttendanceTypeWithSdFunc(ctx, sd, attendanceTypeID)
+}
+
+// DeleteAttendanceTypeWithSdCalls gets all the calls that were made to DeleteAttendanceTypeWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteAttendanceTypeWithSdCalls())
+func (mock *StoreMock) DeleteAttendanceTypeWithSdCalls() []struct {
+	Ctx              context.Context
+	Sd               Sd
+	AttendanceTypeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx              context.Context
+		Sd               Sd
+		AttendanceTypeID uuid.UUID
+	}
+	mock.lockDeleteAttendanceTypeWithSd.RLock()
+	calls = mock.calls.DeleteAttendanceTypeWithSd
+	mock.lockDeleteAttendanceTypeWithSd.RUnlock()
 	return calls
 }
 
@@ -1669,6 +2407,158 @@ func (mock *StoreMock) FindAttendStatusByKeyWithSdCalls() []struct {
 	return calls
 }
 
+// FindAttendanceTypeByID calls FindAttendanceTypeByIDFunc.
+func (mock *StoreMock) FindAttendanceTypeByID(ctx context.Context, attendanceTypeID uuid.UUID) (entity.AttendanceType, error) {
+	if mock.FindAttendanceTypeByIDFunc == nil {
+		panic("StoreMock.FindAttendanceTypeByIDFunc: method is nil but Store.FindAttendanceTypeByID was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		AttendanceTypeID uuid.UUID
+	}{
+		Ctx:              ctx,
+		AttendanceTypeID: attendanceTypeID,
+	}
+	mock.lockFindAttendanceTypeByID.Lock()
+	mock.calls.FindAttendanceTypeByID = append(mock.calls.FindAttendanceTypeByID, callInfo)
+	mock.lockFindAttendanceTypeByID.Unlock()
+	return mock.FindAttendanceTypeByIDFunc(ctx, attendanceTypeID)
+}
+
+// FindAttendanceTypeByIDCalls gets all the calls that were made to FindAttendanceTypeByID.
+// Check the length with:
+//
+//	len(mockedStore.FindAttendanceTypeByIDCalls())
+func (mock *StoreMock) FindAttendanceTypeByIDCalls() []struct {
+	Ctx              context.Context
+	AttendanceTypeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx              context.Context
+		AttendanceTypeID uuid.UUID
+	}
+	mock.lockFindAttendanceTypeByID.RLock()
+	calls = mock.calls.FindAttendanceTypeByID
+	mock.lockFindAttendanceTypeByID.RUnlock()
+	return calls
+}
+
+// FindAttendanceTypeByIDWithSd calls FindAttendanceTypeByIDWithSdFunc.
+func (mock *StoreMock) FindAttendanceTypeByIDWithSd(ctx context.Context, sd Sd, attendanceTypeID uuid.UUID) (entity.AttendanceType, error) {
+	if mock.FindAttendanceTypeByIDWithSdFunc == nil {
+		panic("StoreMock.FindAttendanceTypeByIDWithSdFunc: method is nil but Store.FindAttendanceTypeByIDWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		Sd               Sd
+		AttendanceTypeID uuid.UUID
+	}{
+		Ctx:              ctx,
+		Sd:               sd,
+		AttendanceTypeID: attendanceTypeID,
+	}
+	mock.lockFindAttendanceTypeByIDWithSd.Lock()
+	mock.calls.FindAttendanceTypeByIDWithSd = append(mock.calls.FindAttendanceTypeByIDWithSd, callInfo)
+	mock.lockFindAttendanceTypeByIDWithSd.Unlock()
+	return mock.FindAttendanceTypeByIDWithSdFunc(ctx, sd, attendanceTypeID)
+}
+
+// FindAttendanceTypeByIDWithSdCalls gets all the calls that were made to FindAttendanceTypeByIDWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindAttendanceTypeByIDWithSdCalls())
+func (mock *StoreMock) FindAttendanceTypeByIDWithSdCalls() []struct {
+	Ctx              context.Context
+	Sd               Sd
+	AttendanceTypeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx              context.Context
+		Sd               Sd
+		AttendanceTypeID uuid.UUID
+	}
+	mock.lockFindAttendanceTypeByIDWithSd.RLock()
+	calls = mock.calls.FindAttendanceTypeByIDWithSd
+	mock.lockFindAttendanceTypeByIDWithSd.RUnlock()
+	return calls
+}
+
+// FindAttendanceTypeByKey calls FindAttendanceTypeByKeyFunc.
+func (mock *StoreMock) FindAttendanceTypeByKey(ctx context.Context, key string) (entity.AttendanceType, error) {
+	if mock.FindAttendanceTypeByKeyFunc == nil {
+		panic("StoreMock.FindAttendanceTypeByKeyFunc: method is nil but Store.FindAttendanceTypeByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockFindAttendanceTypeByKey.Lock()
+	mock.calls.FindAttendanceTypeByKey = append(mock.calls.FindAttendanceTypeByKey, callInfo)
+	mock.lockFindAttendanceTypeByKey.Unlock()
+	return mock.FindAttendanceTypeByKeyFunc(ctx, key)
+}
+
+// FindAttendanceTypeByKeyCalls gets all the calls that were made to FindAttendanceTypeByKey.
+// Check the length with:
+//
+//	len(mockedStore.FindAttendanceTypeByKeyCalls())
+func (mock *StoreMock) FindAttendanceTypeByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockFindAttendanceTypeByKey.RLock()
+	calls = mock.calls.FindAttendanceTypeByKey
+	mock.lockFindAttendanceTypeByKey.RUnlock()
+	return calls
+}
+
+// FindAttendanceTypeByKeyWithSd calls FindAttendanceTypeByKeyWithSdFunc.
+func (mock *StoreMock) FindAttendanceTypeByKeyWithSd(ctx context.Context, sd Sd, key string) (entity.AttendanceType, error) {
+	if mock.FindAttendanceTypeByKeyWithSdFunc == nil {
+		panic("StoreMock.FindAttendanceTypeByKeyWithSdFunc: method is nil but Store.FindAttendanceTypeByKeyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}{
+		Ctx: ctx,
+		Sd:  sd,
+		Key: key,
+	}
+	mock.lockFindAttendanceTypeByKeyWithSd.Lock()
+	mock.calls.FindAttendanceTypeByKeyWithSd = append(mock.calls.FindAttendanceTypeByKeyWithSd, callInfo)
+	mock.lockFindAttendanceTypeByKeyWithSd.Unlock()
+	return mock.FindAttendanceTypeByKeyWithSdFunc(ctx, sd, key)
+}
+
+// FindAttendanceTypeByKeyWithSdCalls gets all the calls that were made to FindAttendanceTypeByKeyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindAttendanceTypeByKeyWithSdCalls())
+func (mock *StoreMock) FindAttendanceTypeByKeyWithSdCalls() []struct {
+	Ctx context.Context
+	Sd  Sd
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}
+	mock.lockFindAttendanceTypeByKeyWithSd.RLock()
+	calls = mock.calls.FindAttendanceTypeByKeyWithSd
+	mock.lockFindAttendanceTypeByKeyWithSd.RUnlock()
+	return calls
+}
+
 // GetAbsences calls GetAbsencesFunc.
 func (mock *StoreMock) GetAbsences(ctx context.Context, order parameter.AbsenceOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Absence], error) {
 	if mock.GetAbsencesFunc == nil {
@@ -1877,6 +2767,114 @@ func (mock *StoreMock) GetAttendStatusesWithSdCalls() []struct {
 	return calls
 }
 
+// GetAttendanceTypes calls GetAttendanceTypesFunc.
+func (mock *StoreMock) GetAttendanceTypes(ctx context.Context, where parameter.WhereAttendanceTypeParam, order parameter.AttendanceTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttendanceType], error) {
+	if mock.GetAttendanceTypesFunc == nil {
+		panic("StoreMock.GetAttendanceTypesFunc: method is nil but Store.GetAttendanceTypes was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereAttendanceTypeParam
+		Order parameter.AttendanceTypeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetAttendanceTypes.Lock()
+	mock.calls.GetAttendanceTypes = append(mock.calls.GetAttendanceTypes, callInfo)
+	mock.lockGetAttendanceTypes.Unlock()
+	return mock.GetAttendanceTypesFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetAttendanceTypesCalls gets all the calls that were made to GetAttendanceTypes.
+// Check the length with:
+//
+//	len(mockedStore.GetAttendanceTypesCalls())
+func (mock *StoreMock) GetAttendanceTypesCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereAttendanceTypeParam
+	Order parameter.AttendanceTypeOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereAttendanceTypeParam
+		Order parameter.AttendanceTypeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetAttendanceTypes.RLock()
+	calls = mock.calls.GetAttendanceTypes
+	mock.lockGetAttendanceTypes.RUnlock()
+	return calls
+}
+
+// GetAttendanceTypesWithSd calls GetAttendanceTypesWithSdFunc.
+func (mock *StoreMock) GetAttendanceTypesWithSd(ctx context.Context, sd Sd, where parameter.WhereAttendanceTypeParam, order parameter.AttendanceTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttendanceType], error) {
+	if mock.GetAttendanceTypesWithSdFunc == nil {
+		panic("StoreMock.GetAttendanceTypesWithSdFunc: method is nil but Store.GetAttendanceTypesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereAttendanceTypeParam
+		Order parameter.AttendanceTypeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetAttendanceTypesWithSd.Lock()
+	mock.calls.GetAttendanceTypesWithSd = append(mock.calls.GetAttendanceTypesWithSd, callInfo)
+	mock.lockGetAttendanceTypesWithSd.Unlock()
+	return mock.GetAttendanceTypesWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetAttendanceTypesWithSdCalls gets all the calls that were made to GetAttendanceTypesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetAttendanceTypesWithSdCalls())
+func (mock *StoreMock) GetAttendanceTypesWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereAttendanceTypeParam
+	Order parameter.AttendanceTypeOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereAttendanceTypeParam
+		Order parameter.AttendanceTypeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetAttendanceTypesWithSd.RLock()
+	calls = mock.calls.GetAttendanceTypesWithSd
+	mock.lockGetAttendanceTypesWithSd.RUnlock()
+	return calls
+}
+
 // GetPluralAbsences calls GetPluralAbsencesFunc.
 func (mock *StoreMock) GetPluralAbsences(ctx context.Context, ids []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Absence], error) {
 	if mock.GetPluralAbsencesFunc == nil {
@@ -2042,6 +3040,90 @@ func (mock *StoreMock) GetPluralAttendStatusesWithSdCalls() []struct {
 	mock.lockGetPluralAttendStatusesWithSd.RLock()
 	calls = mock.calls.GetPluralAttendStatusesWithSd
 	mock.lockGetPluralAttendStatusesWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralAttendanceTypes calls GetPluralAttendanceTypesFunc.
+func (mock *StoreMock) GetPluralAttendanceTypes(ctx context.Context, AttendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error) {
+	if mock.GetPluralAttendanceTypesFunc == nil {
+		panic("StoreMock.GetPluralAttendanceTypesFunc: method is nil but Store.GetPluralAttendanceTypes was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		AttendanceTypeIDs []uuid.UUID
+		Np                NumberedPaginationParam
+	}{
+		Ctx:               ctx,
+		AttendanceTypeIDs: AttendanceTypeIDs,
+		Np:                np,
+	}
+	mock.lockGetPluralAttendanceTypes.Lock()
+	mock.calls.GetPluralAttendanceTypes = append(mock.calls.GetPluralAttendanceTypes, callInfo)
+	mock.lockGetPluralAttendanceTypes.Unlock()
+	return mock.GetPluralAttendanceTypesFunc(ctx, AttendanceTypeIDs, np)
+}
+
+// GetPluralAttendanceTypesCalls gets all the calls that were made to GetPluralAttendanceTypes.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralAttendanceTypesCalls())
+func (mock *StoreMock) GetPluralAttendanceTypesCalls() []struct {
+	Ctx               context.Context
+	AttendanceTypeIDs []uuid.UUID
+	Np                NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx               context.Context
+		AttendanceTypeIDs []uuid.UUID
+		Np                NumberedPaginationParam
+	}
+	mock.lockGetPluralAttendanceTypes.RLock()
+	calls = mock.calls.GetPluralAttendanceTypes
+	mock.lockGetPluralAttendanceTypes.RUnlock()
+	return calls
+}
+
+// GetPluralAttendanceTypesWithSd calls GetPluralAttendanceTypesWithSdFunc.
+func (mock *StoreMock) GetPluralAttendanceTypesWithSd(ctx context.Context, sd Sd, AttendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error) {
+	if mock.GetPluralAttendanceTypesWithSdFunc == nil {
+		panic("StoreMock.GetPluralAttendanceTypesWithSdFunc: method is nil but Store.GetPluralAttendanceTypesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		Sd                Sd
+		AttendanceTypeIDs []uuid.UUID
+		Np                NumberedPaginationParam
+	}{
+		Ctx:               ctx,
+		Sd:                sd,
+		AttendanceTypeIDs: AttendanceTypeIDs,
+		Np:                np,
+	}
+	mock.lockGetPluralAttendanceTypesWithSd.Lock()
+	mock.calls.GetPluralAttendanceTypesWithSd = append(mock.calls.GetPluralAttendanceTypesWithSd, callInfo)
+	mock.lockGetPluralAttendanceTypesWithSd.Unlock()
+	return mock.GetPluralAttendanceTypesWithSdFunc(ctx, sd, AttendanceTypeIDs, np)
+}
+
+// GetPluralAttendanceTypesWithSdCalls gets all the calls that were made to GetPluralAttendanceTypesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralAttendanceTypesWithSdCalls())
+func (mock *StoreMock) GetPluralAttendanceTypesWithSdCalls() []struct {
+	Ctx               context.Context
+	Sd                Sd
+	AttendanceTypeIDs []uuid.UUID
+	Np                NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx               context.Context
+		Sd                Sd
+		AttendanceTypeIDs []uuid.UUID
+		Np                NumberedPaginationParam
+	}
+	mock.lockGetPluralAttendanceTypesWithSd.RLock()
+	calls = mock.calls.GetPluralAttendanceTypesWithSd
+	mock.lockGetPluralAttendanceTypesWithSd.RUnlock()
 	return calls
 }
 
@@ -2246,5 +3328,173 @@ func (mock *StoreMock) UpdateAttendStatusWithSdCalls() []struct {
 	mock.lockUpdateAttendStatusWithSd.RLock()
 	calls = mock.calls.UpdateAttendStatusWithSd
 	mock.lockUpdateAttendStatusWithSd.RUnlock()
+	return calls
+}
+
+// UpdateAttendanceType calls UpdateAttendanceTypeFunc.
+func (mock *StoreMock) UpdateAttendanceType(ctx context.Context, attendanceTypeID uuid.UUID, param parameter.UpdateAttendanceTypeParams) (entity.AttendanceType, error) {
+	if mock.UpdateAttendanceTypeFunc == nil {
+		panic("StoreMock.UpdateAttendanceTypeFunc: method is nil but Store.UpdateAttendanceType was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		AttendanceTypeID uuid.UUID
+		Param            parameter.UpdateAttendanceTypeParams
+	}{
+		Ctx:              ctx,
+		AttendanceTypeID: attendanceTypeID,
+		Param:            param,
+	}
+	mock.lockUpdateAttendanceType.Lock()
+	mock.calls.UpdateAttendanceType = append(mock.calls.UpdateAttendanceType, callInfo)
+	mock.lockUpdateAttendanceType.Unlock()
+	return mock.UpdateAttendanceTypeFunc(ctx, attendanceTypeID, param)
+}
+
+// UpdateAttendanceTypeCalls gets all the calls that were made to UpdateAttendanceType.
+// Check the length with:
+//
+//	len(mockedStore.UpdateAttendanceTypeCalls())
+func (mock *StoreMock) UpdateAttendanceTypeCalls() []struct {
+	Ctx              context.Context
+	AttendanceTypeID uuid.UUID
+	Param            parameter.UpdateAttendanceTypeParams
+} {
+	var calls []struct {
+		Ctx              context.Context
+		AttendanceTypeID uuid.UUID
+		Param            parameter.UpdateAttendanceTypeParams
+	}
+	mock.lockUpdateAttendanceType.RLock()
+	calls = mock.calls.UpdateAttendanceType
+	mock.lockUpdateAttendanceType.RUnlock()
+	return calls
+}
+
+// UpdateAttendanceTypeByKey calls UpdateAttendanceTypeByKeyFunc.
+func (mock *StoreMock) UpdateAttendanceTypeByKey(ctx context.Context, key string, param parameter.UpdateAttendanceTypeByKeyParams) (entity.AttendanceType, error) {
+	if mock.UpdateAttendanceTypeByKeyFunc == nil {
+		panic("StoreMock.UpdateAttendanceTypeByKeyFunc: method is nil but Store.UpdateAttendanceTypeByKey was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Key   string
+		Param parameter.UpdateAttendanceTypeByKeyParams
+	}{
+		Ctx:   ctx,
+		Key:   key,
+		Param: param,
+	}
+	mock.lockUpdateAttendanceTypeByKey.Lock()
+	mock.calls.UpdateAttendanceTypeByKey = append(mock.calls.UpdateAttendanceTypeByKey, callInfo)
+	mock.lockUpdateAttendanceTypeByKey.Unlock()
+	return mock.UpdateAttendanceTypeByKeyFunc(ctx, key, param)
+}
+
+// UpdateAttendanceTypeByKeyCalls gets all the calls that were made to UpdateAttendanceTypeByKey.
+// Check the length with:
+//
+//	len(mockedStore.UpdateAttendanceTypeByKeyCalls())
+func (mock *StoreMock) UpdateAttendanceTypeByKeyCalls() []struct {
+	Ctx   context.Context
+	Key   string
+	Param parameter.UpdateAttendanceTypeByKeyParams
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Key   string
+		Param parameter.UpdateAttendanceTypeByKeyParams
+	}
+	mock.lockUpdateAttendanceTypeByKey.RLock()
+	calls = mock.calls.UpdateAttendanceTypeByKey
+	mock.lockUpdateAttendanceTypeByKey.RUnlock()
+	return calls
+}
+
+// UpdateAttendanceTypeByKeyWithSd calls UpdateAttendanceTypeByKeyWithSdFunc.
+func (mock *StoreMock) UpdateAttendanceTypeByKeyWithSd(ctx context.Context, sd Sd, key string, param parameter.UpdateAttendanceTypeByKeyParams) (entity.AttendanceType, error) {
+	if mock.UpdateAttendanceTypeByKeyWithSdFunc == nil {
+		panic("StoreMock.UpdateAttendanceTypeByKeyWithSdFunc: method is nil but Store.UpdateAttendanceTypeByKeyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Key   string
+		Param parameter.UpdateAttendanceTypeByKeyParams
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Key:   key,
+		Param: param,
+	}
+	mock.lockUpdateAttendanceTypeByKeyWithSd.Lock()
+	mock.calls.UpdateAttendanceTypeByKeyWithSd = append(mock.calls.UpdateAttendanceTypeByKeyWithSd, callInfo)
+	mock.lockUpdateAttendanceTypeByKeyWithSd.Unlock()
+	return mock.UpdateAttendanceTypeByKeyWithSdFunc(ctx, sd, key, param)
+}
+
+// UpdateAttendanceTypeByKeyWithSdCalls gets all the calls that were made to UpdateAttendanceTypeByKeyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.UpdateAttendanceTypeByKeyWithSdCalls())
+func (mock *StoreMock) UpdateAttendanceTypeByKeyWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Key   string
+	Param parameter.UpdateAttendanceTypeByKeyParams
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Key   string
+		Param parameter.UpdateAttendanceTypeByKeyParams
+	}
+	mock.lockUpdateAttendanceTypeByKeyWithSd.RLock()
+	calls = mock.calls.UpdateAttendanceTypeByKeyWithSd
+	mock.lockUpdateAttendanceTypeByKeyWithSd.RUnlock()
+	return calls
+}
+
+// UpdateAttendanceTypeWithSd calls UpdateAttendanceTypeWithSdFunc.
+func (mock *StoreMock) UpdateAttendanceTypeWithSd(ctx context.Context, sd Sd, attendanceTypeID uuid.UUID, param parameter.UpdateAttendanceTypeParams) (entity.AttendanceType, error) {
+	if mock.UpdateAttendanceTypeWithSdFunc == nil {
+		panic("StoreMock.UpdateAttendanceTypeWithSdFunc: method is nil but Store.UpdateAttendanceTypeWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		Sd               Sd
+		AttendanceTypeID uuid.UUID
+		Param            parameter.UpdateAttendanceTypeParams
+	}{
+		Ctx:              ctx,
+		Sd:               sd,
+		AttendanceTypeID: attendanceTypeID,
+		Param:            param,
+	}
+	mock.lockUpdateAttendanceTypeWithSd.Lock()
+	mock.calls.UpdateAttendanceTypeWithSd = append(mock.calls.UpdateAttendanceTypeWithSd, callInfo)
+	mock.lockUpdateAttendanceTypeWithSd.Unlock()
+	return mock.UpdateAttendanceTypeWithSdFunc(ctx, sd, attendanceTypeID, param)
+}
+
+// UpdateAttendanceTypeWithSdCalls gets all the calls that were made to UpdateAttendanceTypeWithSd.
+// Check the length with:
+//
+//	len(mockedStore.UpdateAttendanceTypeWithSdCalls())
+func (mock *StoreMock) UpdateAttendanceTypeWithSdCalls() []struct {
+	Ctx              context.Context
+	Sd               Sd
+	AttendanceTypeID uuid.UUID
+	Param            parameter.UpdateAttendanceTypeParams
+} {
+	var calls []struct {
+		Ctx              context.Context
+		Sd               Sd
+		AttendanceTypeID uuid.UUID
+		Param            parameter.UpdateAttendanceTypeParams
+	}
+	mock.lockUpdateAttendanceTypeWithSd.RLock()
+	calls = mock.calls.UpdateAttendanceTypeWithSd
+	mock.lockUpdateAttendanceTypeWithSd.RUnlock()
 	return calls
 }

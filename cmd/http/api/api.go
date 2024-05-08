@@ -57,6 +57,7 @@ func (s *API) Handler() http.Handler {
 	r.Post("/ping", handler.PingHandler(s.clk))
 
 	r.Mount("/attend_statuses", AttendStatusHandler(s.svc))
+	r.Mount("/attendance_types", AttendanceTypeHandler(s.svc))
 
 	r.NotFound(s.notFound)
 	r.MethodNotAllowed(s.methodNotAllowed)

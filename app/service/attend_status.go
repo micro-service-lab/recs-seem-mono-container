@@ -33,8 +33,8 @@ type AttendStatus struct {
 	Name string
 }
 
-// AttendStatues 出席状況一覧。
-var AttendStatues = []AttendStatus{
+// AttendStatuses 出席状況一覧。
+var AttendStatuses = []AttendStatus{
 	{Key: "present", Name: "出席"},
 	{Key: "absent", Name: "欠席"},
 	{Key: "temporarily_absent", Name: "一時退席"},

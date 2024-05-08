@@ -16,7 +16,7 @@ type InitAttendStatuses struct {
 // Run initializes attend statuses.
 func (c *InitAttendStatuses) Run(ctx context.Context) error {
 	var as []parameter.CreateAttendStatusParam
-	for _, a := range service.AttendStatues {
+	for _, a := range service.AttendStatuses {
 		as = append(as, parameter.CreateAttendStatusParam{
 			Name: a.Name,
 			Key:  a.Key,

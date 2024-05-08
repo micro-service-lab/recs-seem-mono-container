@@ -155,32 +155,36 @@ func (q *Queries) GetAttendanceTypes(ctx context.Context, arg GetAttendanceTypes
 const getAttendanceTypesUseKeysetPaginate = `-- name: GetAttendanceTypesUseKeysetPaginate :many
 SELECT m_attendance_types_pkey, attendance_type_id, name, key, color FROM m_attendance_types
 WHERE
-	CASE $2::text
+	CASE WHEN $2::boolean = true THEN m_attendance_types.name LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE $4::text
 		WHEN 'next' THEN
-			CASE $3::text
-				WHEN 'name' THEN name > $4 OR (name = $4 AND m_attendance_types_pkey > $5::int)
-				WHEN 'r_name' THEN name < $4 OR (name = $4 AND m_attendance_types_pkey > $5::int)
-				ELSE m_attendance_types_pkey > $5::int
+			CASE $5::text
+				WHEN 'name' THEN name > $6 OR (name = $6 AND m_attendance_types_pkey > $7::int)
+				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_attendance_types_pkey > $7::int)
+				ELSE m_attendance_types_pkey > $7::int
 			END
 		WHEN 'prev' THEN
-			CASE $3::text
-				WHEN 'name' THEN name < $4 OR (name = $4 AND m_attendance_types_pkey < $5::int)
-				WHEN 'r_name' THEN name > $4 OR (name = $4 AND m_attendance_types_pkey < $5::int)
-				ELSE m_attendance_types_pkey < $5::int
+			CASE $5::text
+				WHEN 'name' THEN name < $6 OR (name = $6 AND m_attendance_types_pkey < $7::int)
+				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_attendance_types_pkey < $7::int)
+				ELSE m_attendance_types_pkey < $7::int
 			END
 	END
 ORDER BY
-	CASE WHEN $3::text = 'name' AND $2::text = 'next' THEN name END ASC,
-	CASE WHEN $3::text = 'name' AND $2::text = 'prev' THEN name END DESC,
-	CASE WHEN $3::text = 'r_name' AND $2::text = 'next' THEN name END ASC,
-	CASE WHEN $3::text = 'r_name' AND $2::text = 'prev' THEN name END DESC,
-	CASE WHEN $2::text = 'next' THEN m_attendance_types_pkey END ASC,
-	CASE WHEN $2::text = 'prev' THEN m_attendance_types_pkey END DESC
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN name END ASC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN name END DESC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN name END ASC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN name END DESC,
+	CASE WHEN $4::text = 'next' THEN m_attendance_types_pkey END ASC,
+	CASE WHEN $4::text = 'prev' THEN m_attendance_types_pkey END DESC
 LIMIT $1
 `
 
 type GetAttendanceTypesUseKeysetPaginateParams struct {
 	Limit           int32  `json:"limit"`
+	WhereLikeName   bool   `json:"where_like_name"`
+	SearchName      string `json:"search_name"`
 	CursorDirection string `json:"cursor_direction"`
 	OrderMethod     string `json:"order_method"`
 	NameCursor      string `json:"name_cursor"`
@@ -190,6 +194,8 @@ type GetAttendanceTypesUseKeysetPaginateParams struct {
 func (q *Queries) GetAttendanceTypesUseKeysetPaginate(ctx context.Context, arg GetAttendanceTypesUseKeysetPaginateParams) ([]AttendanceType, error) {
 	rows, err := q.db.Query(ctx, getAttendanceTypesUseKeysetPaginate,
 		arg.Limit,
+		arg.WhereLikeName,
+		arg.SearchName,
 		arg.CursorDirection,
 		arg.OrderMethod,
 		arg.NameCursor,

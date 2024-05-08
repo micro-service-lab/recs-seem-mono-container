@@ -44,6 +44,8 @@ LIMIT $1 OFFSET $2;
 -- name: GetAttendanceTypesUseKeysetPaginate :many
 SELECT * FROM m_attendance_types
 WHERE
+	CASE WHEN @where_like_name::boolean = true THEN m_attendance_types.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
+AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text

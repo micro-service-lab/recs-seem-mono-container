@@ -199,7 +199,7 @@ func GetCursorData[T any](
 
 	// dataの要素数が0である場合
 	if len(data) == 0 {
-		return nil, CursorPaginationAttribute{}, ErrDataNoRecord
+		return data, CursorPaginationAttribute{}, nil
 	}
 	hasPagination := len(data) > int(limit)
 	if hasPagination {

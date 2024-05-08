@@ -67,9 +67,51 @@ The seed command is executed when the application is started for the first time.
 	},
 }
 
+// seedAttendanceTypesCmd inserts attendance types.
+var seedAttendanceTypesCmd = &cobra.Command{
+	Use:   "attendance_type",
+	Short: "Inserts attendance types",
+	Long: `Inserting attendance types will insert the data necessary for the application to operate into the database.
+
+The seed command is executed when the application is started for the first time.`,
+	Args: cobra.NoArgs,
+	Run: func(cmd *cobra.Command, _ []string) {
+		color.HiCyan("seed attendance types called...")
+		s := spinner.New(spinner.CharSets[11], spinnerFrequency*time.Millisecond)
+		s.Start()
+
+		ctx := cmd.Context()
+		if !force {
+			count, err := AppContainer.ServiceManager.GetAttendanceTypesCount(ctx, "")
+			if err != nil {
+				s.Stop()
+				color.Red(fmt.Errorf("failed to get attendances count: %w", err).Error())
+				return
+			}
+			if count > 0 {
+				s.Stop()
+				color.Yellow("Attendance types already exist. Use --force to seed again")
+				return
+			}
+		}
+		b := batch.InitAttendanceTypes{
+			Manager: &AppContainer.ServiceManager,
+		}
+		err := b.Run(ctx)
+		if err != nil {
+			s.Stop()
+			color.Red(fmt.Errorf("failed to insert attendance types: %w", err).Error())
+			return
+		}
+		s.Stop()
+		color.Green("Attendance types inserted successfully")
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(seedCmd)
 	seedCmd.AddCommand(seedAttendStatusesCmd)
+	seedCmd.AddCommand(seedAttendanceTypesCmd)
 
 	seedCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "Force seed")
 }

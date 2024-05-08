@@ -11,7 +11,7 @@ import (
 
 // AttendStatusHandler is a handler for attend statuses.
 func AttendStatusHandler(svc service.ManagerInterface) http.Handler {
-	getHandler := handler.GetAttendStatues{
+	getHandler := handler.GetAttendStatuses{
 		Service: svc,
 	}
 	findHandler := handler.FindAttendStatus{

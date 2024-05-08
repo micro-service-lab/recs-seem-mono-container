@@ -26,6 +26,12 @@ type Config struct {
 	DBPassword string `env:"DB_PASSWORD"`
 	DBUrl      string `env:"DB_URL,required"`
 
+	// Redis connection
+	RedisHost     string `env:"REDIS_HOST" envDefault:"localhost"`
+	RedisPort     uint16 `env:"REDIS_PORT" envDefault:"6379"`
+	RedisDB       int    `env:"REDIS_DB" envDefault:"0"`
+	RedisPassword string `env:"REDIS_PASSWORD"`
+
 	// AuthSecret 認証トークンの署名用シークレット
 	AuthSecret   string `env:"AUTH_SECRET,required"`
 	SecretIssuer string `env:"SECRET_ISSUER,required"`

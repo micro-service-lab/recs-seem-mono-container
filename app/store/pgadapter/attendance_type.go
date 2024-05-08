@@ -146,9 +146,6 @@ func (a *PgAdapter) CreateAttendanceTypesWithSd(
 func deleteAttendanceType(ctx context.Context, qtx *query.Queries, attendanceTypeID uuid.UUID) error {
 	err := qtx.DeleteAttendanceType(ctx, attendanceTypeID)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return store.ErrDataNoRecord
-		}
 		return fmt.Errorf("failed to delete attendance type: %w", err)
 	}
 	return nil
@@ -181,9 +178,6 @@ func (a *PgAdapter) DeleteAttendanceTypeWithSd(
 func deleteAttendanceTypeByKey(ctx context.Context, qtx *query.Queries, key string) error {
 	err := qtx.DeleteAttendanceTypeByKey(ctx, key)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return store.ErrDataNoRecord
-		}
 		return fmt.Errorf("failed to delete attendance type: %w", err)
 	}
 	return nil
@@ -209,6 +203,38 @@ func (a *PgAdapter) DeleteAttendanceTypeByKeyWithSd(
 	err := deleteAttendanceTypeByKey(ctx, qtx, key)
 	if err != nil {
 		return fmt.Errorf("failed to delete attendance type: %w", err)
+	}
+	return nil
+}
+
+func pluralDeleteAttendanceTypes(ctx context.Context, qtx *query.Queries, attendanceTypeIDs []uuid.UUID) error {
+	err := qtx.PluralDeleteAttendanceTypes(ctx, attendanceTypeIDs)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete attendance types: %w", err)
+	}
+	return nil
+}
+
+// PluralDeleteAttendanceTypes 出欠状況タイプを複数削除する。
+func (a *PgAdapter) PluralDeleteAttendanceTypes(ctx context.Context, attendanceTypeIDs []uuid.UUID) error {
+	err := pluralDeleteAttendanceTypes(ctx, a.query, attendanceTypeIDs)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete attendance types: %w", err)
+	}
+	return nil
+}
+
+// PluralDeleteAttendanceTypesWithSd SD付きで出欠状況タイプを複数削除する。
+func (a *PgAdapter) PluralDeleteAttendanceTypesWithSd(
+	ctx context.Context, sd store.Sd, attendanceTypeIDs []uuid.UUID,
+) error {
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ErrNotFoundDescriptor
+	}
+	err := pluralDeleteAttendanceTypes(ctx, qtx, attendanceTypeIDs)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete attendance types: %w", err)
 	}
 	return nil
 }

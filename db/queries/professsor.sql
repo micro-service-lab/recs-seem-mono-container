@@ -7,6 +7,9 @@ INSERT INTO m_professors (member_id) VALUES ($1) RETURNING *;
 -- name: DeleteProfessor :exec
 DELETE FROM m_professors WHERE professor_id = $1;
 
+-- name: PluralDeleteProfessors :exec
+DELETE FROM m_professors WHERE professor_id = ANY($1::uuid[]);
+
 -- name: FindProfessorByID :one
 SELECT * FROM m_professors WHERE professor_id = $1;
 

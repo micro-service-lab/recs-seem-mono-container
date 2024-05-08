@@ -727,6 +727,15 @@ func (q *Queries) GetPositionHistoriesWithMemberUseNumberedPaginate(ctx context.
 	return items, nil
 }
 
+const pluralDeletePositionHistories = `-- name: PluralDeletePositionHistories :exec
+DELETE FROM t_position_histories WHERE position_history_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeletePositionHistories(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeletePositionHistories, dollar_1)
+	return err
+}
+
 const updatePositionHistory = `-- name: UpdatePositionHistory :one
 UPDATE t_position_histories SET member_id = $2, x_pos = $3, y_pos = $4, sent_at = $5 WHERE position_history_id = $1 RETURNING t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, sent_at
 `

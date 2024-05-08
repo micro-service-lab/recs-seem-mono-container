@@ -303,6 +303,15 @@ func (q *Queries) GetWorkPositionsUseNumberedPaginate(ctx context.Context, arg G
 	return items, nil
 }
 
+const pluralDeleteWorkPositions = `-- name: PluralDeleteWorkPositions :exec
+DELETE FROM m_work_positions WHERE work_position_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteWorkPositions(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteWorkPositions, dollar_1)
+	return err
+}
+
 const updateWorkPosition = `-- name: UpdateWorkPosition :one
 UPDATE m_work_positions SET name = $2, description = $3, updated_at = $4 WHERE work_position_id = $1 RETURNING m_work_positions_pkey, work_position_id, name, description, created_at, updated_at
 `

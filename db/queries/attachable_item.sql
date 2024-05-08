@@ -7,6 +7,9 @@ INSERT INTO t_attachable_items (url, size, mime_type_id) VALUES ($1, $2, $3) RET
 -- name: DeleteAttachableItem :exec
 DELETE FROM t_attachable_items WHERE attachable_item_id = $1;
 
+-- name: PluralDeleteAttachableItems :exec
+DELETE FROM t_attachable_items WHERE attachable_item_id = ANY($1::uuid[]);
+
 -- name: FindAttachableItemByID :one
 SELECT t_attachable_items.*, t_images.image_id, t_images.height as image_height, t_images.width as image_width, t_files.file_id FROM t_attachable_items
 LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id

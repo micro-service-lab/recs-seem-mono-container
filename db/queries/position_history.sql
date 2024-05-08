@@ -10,6 +10,9 @@ UPDATE t_position_histories SET member_id = $2, x_pos = $3, y_pos = $4, sent_at 
 -- name: DeletePositionHistory :exec
 DELETE FROM t_position_histories WHERE position_history_id = $1;
 
+-- name: PluralDeletePositionHistories :exec
+DELETE FROM t_position_histories WHERE position_history_id = ANY($1::uuid[]);
+
 -- name: FindPositionHistoryByID :one
 SELECT * FROM t_position_histories WHERE position_history_id = $1;
 

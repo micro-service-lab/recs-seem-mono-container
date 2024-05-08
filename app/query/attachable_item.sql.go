@@ -664,3 +664,12 @@ func (q *Queries) GetPluralAttachableItemsWithMimeType(ctx context.Context, arg 
 	}
 	return items, nil
 }
+
+const pluralDeleteAttachableItems = `-- name: PluralDeleteAttachableItems :exec
+DELETE FROM t_attachable_items WHERE attachable_item_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteAttachableItems(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteAttachableItems, dollar_1)
+	return err
+}

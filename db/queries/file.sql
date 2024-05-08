@@ -7,6 +7,9 @@ INSERT INTO t_files (attachable_item_id) VALUES ($1) RETURNING *;
 -- name: DeleteFile :exec
 DELETE FROM t_files WHERE file_id = $1;
 
+-- name: PluralDeleteFiles :exec
+DELETE FROM t_files WHERE file_id = ANY($1::uuid[]);
+
 -- name: FindFileByID :one
 SELECT * FROM t_files WHERE file_id = $1;
 

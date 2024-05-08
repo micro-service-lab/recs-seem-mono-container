@@ -154,6 +154,15 @@ func (q *Queries) DeleteEvent(ctx context.Context, eventID uuid.UUID) error {
 	return err
 }
 
+const deleteEventOnOrganization = `-- name: DeleteEventOnOrganization :exec
+DELETE FROM t_events WHERE organization_id = $1
+`
+
+func (q *Queries) DeleteEventOnOrganization(ctx context.Context, organizationID pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteEventOnOrganization, organizationID)
+	return err
+}
+
 const findEventByID = `-- name: FindEventByID :one
 SELECT t_events_pkey, event_id, event_type_id, title, description, organization_id, start_time, end_time, mail_send_flag, send_organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_events WHERE event_id = $1
 `
@@ -3686,6 +3695,15 @@ func (q *Queries) GetPluralEventsWithType(ctx context.Context, arg GetPluralEven
 		return nil, err
 	}
 	return items, nil
+}
+
+const pluralDeleteEvents = `-- name: PluralDeleteEvents :exec
+DELETE FROM t_events WHERE event_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteEvents(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteEvents, dollar_1)
+	return err
 }
 
 const updateEvent = `-- name: UpdateEvent :one

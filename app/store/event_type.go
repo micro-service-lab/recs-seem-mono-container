@@ -32,6 +32,10 @@ type EventType interface {
 	DeleteEventTypeByKey(ctx context.Context, key string) error
 	// DeleteEventTypeByKeyWithSd SD付きでイベントタイプを削除する。
 	DeleteEventTypeByKeyWithSd(ctx context.Context, sd Sd, key string) error
+	// PluralDeleteEventTypes イベントタイプを複数削除する。
+	PluralDeleteEventTypes(ctx context.Context, eventTypeIDs []uuid.UUID) error
+	// PluralDeleteEventTypesWithSd SD付きでイベントタイプを複数削除する。
+	PluralDeleteEventTypesWithSd(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID) error
 	// FindEventTypeByID イベントタイプを取得する。
 	FindEventTypeByID(ctx context.Context, eventTypeID uuid.UUID) (entity.EventType, error)
 	// FindEventTypeByIDWithSd SD付きでイベントタイプを取得する。

@@ -558,3 +558,12 @@ func (q *Queries) GetPluralGradesWithOrganization(ctx context.Context, arg GetPl
 	}
 	return items, nil
 }
+
+const pluralDeleteGrades = `-- name: PluralDeleteGrades :exec
+DELETE FROM m_grades WHERE grade_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteGrades(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteGrades, dollar_1)
+	return err
+}

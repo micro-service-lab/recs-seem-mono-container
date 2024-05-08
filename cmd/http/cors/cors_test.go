@@ -42,8 +42,8 @@ func assertStatusCode(t *testing.T, res *httptest.ResponseRecorder, exp int) {
 }
 
 func customErrorHandler(w http.ResponseWriter, _ *http.Request, cors Cors, err error) bool {
-	_, ok := err.(Error)
-	if ok {
+	var e Error
+	if errors.As(err, &e) {
 		cors.logf("%v", err)
 		res := struct {
 			Message string `json:"message"`

@@ -3123,6 +3123,15 @@ func (q *Queries) GetPluralMembersWithRole(ctx context.Context, arg GetPluralMem
 	return items, nil
 }
 
+const pluralDeleteMembers = `-- name: PluralDeleteMembers :exec
+DELETE FROM m_members WHERE member_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteMembers(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteMembers, dollar_1)
+	return err
+}
+
 const updateMember = `-- name: UpdateMember :one
 UPDATE m_members SET email = $2, name = $3, updated_at = $4 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `

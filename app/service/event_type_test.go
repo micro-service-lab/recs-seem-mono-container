@@ -210,6 +210,52 @@ func TestManageEventType_DeleteEventType(t *testing.T) {
 	}
 }
 
+func TestManageEventType_PluralDeleteEventTypes(t *testing.T) {
+	t.Parallel()
+	type wants struct {
+		ids []uuid.UUID
+	}
+	cases := []struct {
+		ids  []uuid.UUID
+		want wants
+	}{
+		{
+			ids: []uuid.UUID{
+				testutils.FixedUUID(t, 0),
+				testutils.FixedUUID(t, 1),
+			},
+			want: wants{
+				ids: []uuid.UUID{
+					testutils.FixedUUID(t, 0),
+					testutils.FixedUUID(t, 1),
+				},
+			},
+		},
+	}
+
+	storeMock := &store.StoreMock{
+		PluralDeleteEventTypesFunc: func(_ context.Context, _ []uuid.UUID) error {
+			return nil
+		},
+	}
+	s := service.ManageEventType{
+		DB: storeMock,
+	}
+	ctx := context.Background()
+
+	for _, c := range cases {
+		err := s.PluralDeleteEventTypes(ctx, c.ids)
+		assert.NoError(t, err)
+	}
+
+	called := storeMock.PluralDeleteEventTypesCalls()
+	assert.Len(t, called, len(cases))
+	for i, call := range called {
+		c := cases[i]
+		assert.Equal(t, c.want.ids, call.EventTypeIDs)
+	}
+}
+
 func TestManageEventType_FindEventTypeByID(t *testing.T) {
 	t.Parallel()
 	type wants struct {

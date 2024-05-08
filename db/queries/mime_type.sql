@@ -10,6 +10,9 @@ DELETE FROM m_mime_types WHERE mime_type_id = $1;
 -- name: DeleteMimeTypeByKey :exec
 DELETE FROM m_mime_types WHERE key = $1;
 
+-- name: PluralDeleteMimeTypes :exec
+DELETE FROM m_mime_types WHERE mime_type_id = ANY($1::uuid[]);
+
 -- name: FindMimeTypeByID :one
 SELECT * FROM m_mime_types WHERE mime_type_id = $1;
 

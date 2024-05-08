@@ -95,6 +95,24 @@ func (q *Queries) DeleteChatRoomBelonging(ctx context.Context, arg DeleteChatRoo
 	return err
 }
 
+const deleteChatRoomBelongingsOnMember = `-- name: DeleteChatRoomBelongingsOnMember :exec
+DELETE FROM m_chat_room_belongings WHERE member_id = $1
+`
+
+func (q *Queries) DeleteChatRoomBelongingsOnMember(ctx context.Context, memberID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteChatRoomBelongingsOnMember, memberID)
+	return err
+}
+
+const deleteChatRoomBelongingsOnMembers = `-- name: DeleteChatRoomBelongingsOnMembers :exec
+DELETE FROM m_chat_room_belongings WHERE member_id = ANY($1::uuid[])
+`
+
+func (q *Queries) DeleteChatRoomBelongingsOnMembers(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteChatRoomBelongingsOnMembers, dollar_1)
+	return err
+}
+
 const getChatRoomsOnMember = `-- name: GetChatRoomsOnMember :many
 SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id

@@ -224,3 +224,12 @@ func (q *Queries) GetStudentsUseNumberedPaginate(ctx context.Context, arg GetStu
 	}
 	return items, nil
 }
+
+const pluralDeleteStudents = `-- name: PluralDeleteStudents :exec
+DELETE FROM m_students WHERE student_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteStudents(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteStudents, dollar_1)
+	return err
+}

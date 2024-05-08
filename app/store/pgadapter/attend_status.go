@@ -143,9 +143,6 @@ func (a *PgAdapter) CreateAttendStatusesWithSd(
 func deleteAttendStatus(ctx context.Context, qtx *query.Queries, attendStatusID uuid.UUID) error {
 	err := qtx.DeleteAttendStatus(ctx, attendStatusID)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return store.ErrDataNoRecord
-		}
 		return fmt.Errorf("failed to delete attend status: %w", err)
 	}
 	return nil
@@ -178,9 +175,6 @@ func (a *PgAdapter) DeleteAttendStatusWithSd(
 func deleteAttendStatusByKey(ctx context.Context, qtx *query.Queries, key string) error {
 	err := qtx.DeleteAttendStatusByKey(ctx, key)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return store.ErrDataNoRecord
-		}
 		return fmt.Errorf("failed to delete attend status: %w", err)
 	}
 	return nil
@@ -206,6 +200,38 @@ func (a *PgAdapter) DeleteAttendStatusByKeyWithSd(
 	err := deleteAttendStatusByKey(ctx, qtx, key)
 	if err != nil {
 		return fmt.Errorf("failed to delete attend status: %w", err)
+	}
+	return nil
+}
+
+func pluralDeleteAttendStatuses(ctx context.Context, qtx *query.Queries, attendStatusIDs []uuid.UUID) error {
+	err := qtx.PluralDeleteAttendStatuses(ctx, attendStatusIDs)
+	if err != nil {
+		return fmt.Errorf("failed to delete attend statuses: %w", err)
+	}
+	return nil
+}
+
+// PluralDeleteAttendStatuses 出席ステータスを複数削除する。
+func (a *PgAdapter) PluralDeleteAttendStatuses(ctx context.Context, attendStatusIDs []uuid.UUID) error {
+	err := pluralDeleteAttendStatuses(ctx, a.query, attendStatusIDs)
+	if err != nil {
+		return fmt.Errorf("failed to delete attend statuses: %w", err)
+	}
+	return nil
+}
+
+// PluralDeleteAttendStatusesWithSd SD付きで出席ステータスを複数削除する。
+func (a *PgAdapter) PluralDeleteAttendStatusesWithSd(
+	ctx context.Context, sd store.Sd, attendStatusIDs []uuid.UUID,
+) error {
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ErrNotFoundDescriptor
+	}
+	err := pluralDeleteAttendStatuses(ctx, qtx, attendStatusIDs)
+	if err != nil {
+		return fmt.Errorf("failed to delete attend statuses: %w", err)
 	}
 	return nil
 }

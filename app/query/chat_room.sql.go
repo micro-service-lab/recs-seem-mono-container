@@ -1581,6 +1581,15 @@ func (q *Queries) GetPluralChatRoomsWithOwner(ctx context.Context, arg GetPlural
 	return items, nil
 }
 
+const pluralDeleteChatRooms = `-- name: PluralDeleteChatRooms :exec
+DELETE FROM m_chat_rooms WHERE chat_room_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteChatRooms(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteChatRooms, dollar_1)
+	return err
+}
+
 const updateChatRoom = `-- name: UpdateChatRoom :one
 UPDATE m_chat_rooms SET name = $2, is_private = $3, cover_image_id = $4, owner_id = $5, updated_at = $6 WHERE chat_room_id = $1 RETURNING m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at
 `

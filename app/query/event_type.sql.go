@@ -315,6 +315,15 @@ func (q *Queries) GetPluralEventTypes(ctx context.Context, arg GetPluralEventTyp
 	return items, nil
 }
 
+const pluralDeleteEventTypes = `-- name: PluralDeleteEventTypes :exec
+DELETE FROM m_event_types WHERE event_type_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteEventTypes(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteEventTypes, dollar_1)
+	return err
+}
+
 const updateEventType = `-- name: UpdateEventType :one
 UPDATE m_event_types SET name = $2, key = $3, color = $4 WHERE event_type_id = $1 RETURNING m_event_types_pkey, event_type_id, name, key, color
 `

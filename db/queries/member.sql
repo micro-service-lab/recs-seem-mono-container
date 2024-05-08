@@ -7,6 +7,9 @@ INSERT INTO m_members (login_id, password, email, name, attend_status_id, grade_
 -- name: DeleteMember :exec
 DELETE FROM m_members WHERE member_id = $1;
 
+-- name: PluralDeleteMembers :exec
+DELETE FROM m_members WHERE member_id = ANY($1::uuid[]);
+
 -- name: UpdateMember :one
 UPDATE m_members SET email = $2, name = $3, updated_at = $4 WHERE member_id = $1 RETURNING *;
 

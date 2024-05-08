@@ -494,3 +494,12 @@ func (q *Queries) GetPluralImagesWithAttachableItem(ctx context.Context, arg Get
 	}
 	return items, nil
 }
+
+const pluralDeleteImages = `-- name: PluralDeleteImages :exec
+DELETE FROM t_images WHERE image_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteImages(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteImages, dollar_1)
+	return err
+}

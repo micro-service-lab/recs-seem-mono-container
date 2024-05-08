@@ -288,6 +288,36 @@ var _ Store = &StoreMock{}
 //			GetPluralPermissionCategoriesWithSdFunc: func(ctx context.Context, sd Sd, PermissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error) {
 //				panic("mock out the GetPluralPermissionCategoriesWithSd method")
 //			},
+//			PluralDeleteAbsencesFunc: func(ctx context.Context, absenceIDs []uuid.UUID) error {
+//				panic("mock out the PluralDeleteAbsences method")
+//			},
+//			PluralDeleteAbsencesWithSdFunc: func(ctx context.Context, sd Sd, absenceIDs []uuid.UUID) error {
+//				panic("mock out the PluralDeleteAbsencesWithSd method")
+//			},
+//			PluralDeleteAttendStatusesFunc: func(ctx context.Context, attendStatusIDs []uuid.UUID) error {
+//				panic("mock out the PluralDeleteAttendStatuses method")
+//			},
+//			PluralDeleteAttendStatusesWithSdFunc: func(ctx context.Context, sd Sd, attendStatusIDs []uuid.UUID) error {
+//				panic("mock out the PluralDeleteAttendStatusesWithSd method")
+//			},
+//			PluralDeleteAttendanceTypesFunc: func(ctx context.Context, attendanceTypeIDs []uuid.UUID) error {
+//				panic("mock out the PluralDeleteAttendanceTypes method")
+//			},
+//			PluralDeleteAttendanceTypesWithSdFunc: func(ctx context.Context, sd Sd, attendanceTypeIDs []uuid.UUID) error {
+//				panic("mock out the PluralDeleteAttendanceTypesWithSd method")
+//			},
+//			PluralDeleteEventTypesFunc: func(ctx context.Context, eventTypeIDs []uuid.UUID) error {
+//				panic("mock out the PluralDeleteEventTypes method")
+//			},
+//			PluralDeleteEventTypesWithSdFunc: func(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID) error {
+//				panic("mock out the PluralDeleteEventTypesWithSd method")
+//			},
+//			PluralDeletePermissionCategoriesFunc: func(ctx context.Context, permissionCategoryIDs []uuid.UUID) error {
+//				panic("mock out the PluralDeletePermissionCategories method")
+//			},
+//			PluralDeletePermissionCategoriesWithSdFunc: func(ctx context.Context, sd Sd, permissionCategoryIDs []uuid.UUID) error {
+//				panic("mock out the PluralDeletePermissionCategoriesWithSd method")
+//			},
 //			RollbackFunc: func(contextMoqParam context.Context, sd Sd) error {
 //				panic("mock out the Rollback method")
 //			},
@@ -612,6 +642,36 @@ type StoreMock struct {
 
 	// GetPluralPermissionCategoriesWithSdFunc mocks the GetPluralPermissionCategoriesWithSd method.
 	GetPluralPermissionCategoriesWithSdFunc func(ctx context.Context, sd Sd, PermissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error)
+
+	// PluralDeleteAbsencesFunc mocks the PluralDeleteAbsences method.
+	PluralDeleteAbsencesFunc func(ctx context.Context, absenceIDs []uuid.UUID) error
+
+	// PluralDeleteAbsencesWithSdFunc mocks the PluralDeleteAbsencesWithSd method.
+	PluralDeleteAbsencesWithSdFunc func(ctx context.Context, sd Sd, absenceIDs []uuid.UUID) error
+
+	// PluralDeleteAttendStatusesFunc mocks the PluralDeleteAttendStatuses method.
+	PluralDeleteAttendStatusesFunc func(ctx context.Context, attendStatusIDs []uuid.UUID) error
+
+	// PluralDeleteAttendStatusesWithSdFunc mocks the PluralDeleteAttendStatusesWithSd method.
+	PluralDeleteAttendStatusesWithSdFunc func(ctx context.Context, sd Sd, attendStatusIDs []uuid.UUID) error
+
+	// PluralDeleteAttendanceTypesFunc mocks the PluralDeleteAttendanceTypes method.
+	PluralDeleteAttendanceTypesFunc func(ctx context.Context, attendanceTypeIDs []uuid.UUID) error
+
+	// PluralDeleteAttendanceTypesWithSdFunc mocks the PluralDeleteAttendanceTypesWithSd method.
+	PluralDeleteAttendanceTypesWithSdFunc func(ctx context.Context, sd Sd, attendanceTypeIDs []uuid.UUID) error
+
+	// PluralDeleteEventTypesFunc mocks the PluralDeleteEventTypes method.
+	PluralDeleteEventTypesFunc func(ctx context.Context, eventTypeIDs []uuid.UUID) error
+
+	// PluralDeleteEventTypesWithSdFunc mocks the PluralDeleteEventTypesWithSd method.
+	PluralDeleteEventTypesWithSdFunc func(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID) error
+
+	// PluralDeletePermissionCategoriesFunc mocks the PluralDeletePermissionCategories method.
+	PluralDeletePermissionCategoriesFunc func(ctx context.Context, permissionCategoryIDs []uuid.UUID) error
+
+	// PluralDeletePermissionCategoriesWithSdFunc mocks the PluralDeletePermissionCategoriesWithSd method.
+	PluralDeletePermissionCategoriesWithSdFunc func(ctx context.Context, sd Sd, permissionCategoryIDs []uuid.UUID) error
 
 	// RollbackFunc mocks the Rollback method.
 	RollbackFunc func(contextMoqParam context.Context, sd Sd) error
@@ -1463,6 +1523,86 @@ type StoreMock struct {
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 		}
+		// PluralDeleteAbsences holds details about calls to the PluralDeleteAbsences method.
+		PluralDeleteAbsences []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AbsenceIDs is the absenceIDs argument value.
+			AbsenceIDs []uuid.UUID
+		}
+		// PluralDeleteAbsencesWithSd holds details about calls to the PluralDeleteAbsencesWithSd method.
+		PluralDeleteAbsencesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// AbsenceIDs is the absenceIDs argument value.
+			AbsenceIDs []uuid.UUID
+		}
+		// PluralDeleteAttendStatuses holds details about calls to the PluralDeleteAttendStatuses method.
+		PluralDeleteAttendStatuses []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AttendStatusIDs is the attendStatusIDs argument value.
+			AttendStatusIDs []uuid.UUID
+		}
+		// PluralDeleteAttendStatusesWithSd holds details about calls to the PluralDeleteAttendStatusesWithSd method.
+		PluralDeleteAttendStatusesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// AttendStatusIDs is the attendStatusIDs argument value.
+			AttendStatusIDs []uuid.UUID
+		}
+		// PluralDeleteAttendanceTypes holds details about calls to the PluralDeleteAttendanceTypes method.
+		PluralDeleteAttendanceTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AttendanceTypeIDs is the attendanceTypeIDs argument value.
+			AttendanceTypeIDs []uuid.UUID
+		}
+		// PluralDeleteAttendanceTypesWithSd holds details about calls to the PluralDeleteAttendanceTypesWithSd method.
+		PluralDeleteAttendanceTypesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// AttendanceTypeIDs is the attendanceTypeIDs argument value.
+			AttendanceTypeIDs []uuid.UUID
+		}
+		// PluralDeleteEventTypes holds details about calls to the PluralDeleteEventTypes method.
+		PluralDeleteEventTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// EventTypeIDs is the eventTypeIDs argument value.
+			EventTypeIDs []uuid.UUID
+		}
+		// PluralDeleteEventTypesWithSd holds details about calls to the PluralDeleteEventTypesWithSd method.
+		PluralDeleteEventTypesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// EventTypeIDs is the eventTypeIDs argument value.
+			EventTypeIDs []uuid.UUID
+		}
+		// PluralDeletePermissionCategories holds details about calls to the PluralDeletePermissionCategories method.
+		PluralDeletePermissionCategories []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PermissionCategoryIDs is the permissionCategoryIDs argument value.
+			PermissionCategoryIDs []uuid.UUID
+		}
+		// PluralDeletePermissionCategoriesWithSd holds details about calls to the PluralDeletePermissionCategoriesWithSd method.
+		PluralDeletePermissionCategoriesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// PermissionCategoryIDs is the permissionCategoryIDs argument value.
+			PermissionCategoryIDs []uuid.UUID
+		}
 		// Rollback holds details about calls to the Rollback method.
 		Rollback []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -1631,112 +1771,122 @@ type StoreMock struct {
 			Param parameter.UpdatePermissionCategoryParams
 		}
 	}
-	lockBegin                               sync.RWMutex
-	lockCleanup                             sync.RWMutex
-	lockCommit                              sync.RWMutex
-	lockCountAbsences                       sync.RWMutex
-	lockCountAbsencesWithSd                 sync.RWMutex
-	lockCountAttendStatuses                 sync.RWMutex
-	lockCountAttendStatusesWithSd           sync.RWMutex
-	lockCountAttendanceTypes                sync.RWMutex
-	lockCountAttendanceTypesWithSd          sync.RWMutex
-	lockCountEventTypes                     sync.RWMutex
-	lockCountEventTypesWithSd               sync.RWMutex
-	lockCountPermissionCategories           sync.RWMutex
-	lockCountPermissionCategoriesWithSd     sync.RWMutex
-	lockCreateAbsence                       sync.RWMutex
-	lockCreateAbsenceWithSd                 sync.RWMutex
-	lockCreateAbsences                      sync.RWMutex
-	lockCreateAbsencesWithSd                sync.RWMutex
-	lockCreateAttendStatus                  sync.RWMutex
-	lockCreateAttendStatusWithSd            sync.RWMutex
-	lockCreateAttendStatuses                sync.RWMutex
-	lockCreateAttendStatusesWithSd          sync.RWMutex
-	lockCreateAttendanceType                sync.RWMutex
-	lockCreateAttendanceTypeWithSd          sync.RWMutex
-	lockCreateAttendanceTypes               sync.RWMutex
-	lockCreateAttendanceTypesWithSd         sync.RWMutex
-	lockCreateEventType                     sync.RWMutex
-	lockCreateEventTypeWithSd               sync.RWMutex
-	lockCreateEventTypes                    sync.RWMutex
-	lockCreateEventTypesWithSd              sync.RWMutex
-	lockCreatePermissionCategories          sync.RWMutex
-	lockCreatePermissionCategoriesWithSd    sync.RWMutex
-	lockCreatePermissionCategory            sync.RWMutex
-	lockCreatePermissionCategoryWithSd      sync.RWMutex
-	lockDeleteAbsence                       sync.RWMutex
-	lockDeleteAbsenceWithSd                 sync.RWMutex
-	lockDeleteAttendStatus                  sync.RWMutex
-	lockDeleteAttendStatusByKey             sync.RWMutex
-	lockDeleteAttendStatusByKeyWithSd       sync.RWMutex
-	lockDeleteAttendStatusWithSd            sync.RWMutex
-	lockDeleteAttendanceType                sync.RWMutex
-	lockDeleteAttendanceTypeByKey           sync.RWMutex
-	lockDeleteAttendanceTypeByKeyWithSd     sync.RWMutex
-	lockDeleteAttendanceTypeWithSd          sync.RWMutex
-	lockDeleteEventType                     sync.RWMutex
-	lockDeleteEventTypeByKey                sync.RWMutex
-	lockDeleteEventTypeByKeyWithSd          sync.RWMutex
-	lockDeleteEventTypeWithSd               sync.RWMutex
-	lockDeletePermissionCategory            sync.RWMutex
-	lockDeletePermissionCategoryByKey       sync.RWMutex
-	lockDeletePermissionCategoryByKeyWithSd sync.RWMutex
-	lockDeletePermissionCategoryWithSd      sync.RWMutex
-	lockFindAbsenceByID                     sync.RWMutex
-	lockFindAbsenceByIDWithSd               sync.RWMutex
-	lockFindAttendStatusByID                sync.RWMutex
-	lockFindAttendStatusByIDWithSd          sync.RWMutex
-	lockFindAttendStatusByKey               sync.RWMutex
-	lockFindAttendStatusByKeyWithSd         sync.RWMutex
-	lockFindAttendanceTypeByID              sync.RWMutex
-	lockFindAttendanceTypeByIDWithSd        sync.RWMutex
-	lockFindAttendanceTypeByKey             sync.RWMutex
-	lockFindAttendanceTypeByKeyWithSd       sync.RWMutex
-	lockFindEventTypeByID                   sync.RWMutex
-	lockFindEventTypeByIDWithSd             sync.RWMutex
-	lockFindEventTypeByKey                  sync.RWMutex
-	lockFindEventTypeByKeyWithSd            sync.RWMutex
-	lockFindPermissionCategoryByID          sync.RWMutex
-	lockFindPermissionCategoryByIDWithSd    sync.RWMutex
-	lockFindPermissionCategoryByKey         sync.RWMutex
-	lockFindPermissionCategoryByKeyWithSd   sync.RWMutex
-	lockGetAbsences                         sync.RWMutex
-	lockGetAbsencesWithSd                   sync.RWMutex
-	lockGetAttendStatuses                   sync.RWMutex
-	lockGetAttendStatusesWithSd             sync.RWMutex
-	lockGetAttendanceTypes                  sync.RWMutex
-	lockGetAttendanceTypesWithSd            sync.RWMutex
-	lockGetEventTypes                       sync.RWMutex
-	lockGetEventTypesWithSd                 sync.RWMutex
-	lockGetPermissionCategories             sync.RWMutex
-	lockGetPermissionCategoriesWithSd       sync.RWMutex
-	lockGetPluralAbsences                   sync.RWMutex
-	lockGetPluralAbsencesWithSd             sync.RWMutex
-	lockGetPluralAttendStatuses             sync.RWMutex
-	lockGetPluralAttendStatusesWithSd       sync.RWMutex
-	lockGetPluralAttendanceTypes            sync.RWMutex
-	lockGetPluralAttendanceTypesWithSd      sync.RWMutex
-	lockGetPluralEventTypes                 sync.RWMutex
-	lockGetPluralEventTypesWithSd           sync.RWMutex
-	lockGetPluralPermissionCategories       sync.RWMutex
-	lockGetPluralPermissionCategoriesWithSd sync.RWMutex
-	lockRollback                            sync.RWMutex
-	lockUpdateAttendStatus                  sync.RWMutex
-	lockUpdateAttendStatusByKey             sync.RWMutex
-	lockUpdateAttendStatusByKeyWithSd       sync.RWMutex
-	lockUpdateAttendStatusWithSd            sync.RWMutex
-	lockUpdateAttendanceType                sync.RWMutex
-	lockUpdateAttendanceTypeByKey           sync.RWMutex
-	lockUpdateAttendanceTypeByKeyWithSd     sync.RWMutex
-	lockUpdateAttendanceTypeWithSd          sync.RWMutex
-	lockUpdateEventType                     sync.RWMutex
-	lockUpdateEventTypeByKey                sync.RWMutex
-	lockUpdateEventTypeByKeyWithSd          sync.RWMutex
-	lockUpdateEventTypeWithSd               sync.RWMutex
-	lockUpdatePermissionCategory            sync.RWMutex
-	lockUpdatePermissionCategoryByKey       sync.RWMutex
-	lockUpdatePermissionCategoryByKeyWithSd sync.RWMutex
-	lockUpdatePermissionCategoryWithSd      sync.RWMutex
+	lockBegin                                  sync.RWMutex
+	lockCleanup                                sync.RWMutex
+	lockCommit                                 sync.RWMutex
+	lockCountAbsences                          sync.RWMutex
+	lockCountAbsencesWithSd                    sync.RWMutex
+	lockCountAttendStatuses                    sync.RWMutex
+	lockCountAttendStatusesWithSd              sync.RWMutex
+	lockCountAttendanceTypes                   sync.RWMutex
+	lockCountAttendanceTypesWithSd             sync.RWMutex
+	lockCountEventTypes                        sync.RWMutex
+	lockCountEventTypesWithSd                  sync.RWMutex
+	lockCountPermissionCategories              sync.RWMutex
+	lockCountPermissionCategoriesWithSd        sync.RWMutex
+	lockCreateAbsence                          sync.RWMutex
+	lockCreateAbsenceWithSd                    sync.RWMutex
+	lockCreateAbsences                         sync.RWMutex
+	lockCreateAbsencesWithSd                   sync.RWMutex
+	lockCreateAttendStatus                     sync.RWMutex
+	lockCreateAttendStatusWithSd               sync.RWMutex
+	lockCreateAttendStatuses                   sync.RWMutex
+	lockCreateAttendStatusesWithSd             sync.RWMutex
+	lockCreateAttendanceType                   sync.RWMutex
+	lockCreateAttendanceTypeWithSd             sync.RWMutex
+	lockCreateAttendanceTypes                  sync.RWMutex
+	lockCreateAttendanceTypesWithSd            sync.RWMutex
+	lockCreateEventType                        sync.RWMutex
+	lockCreateEventTypeWithSd                  sync.RWMutex
+	lockCreateEventTypes                       sync.RWMutex
+	lockCreateEventTypesWithSd                 sync.RWMutex
+	lockCreatePermissionCategories             sync.RWMutex
+	lockCreatePermissionCategoriesWithSd       sync.RWMutex
+	lockCreatePermissionCategory               sync.RWMutex
+	lockCreatePermissionCategoryWithSd         sync.RWMutex
+	lockDeleteAbsence                          sync.RWMutex
+	lockDeleteAbsenceWithSd                    sync.RWMutex
+	lockDeleteAttendStatus                     sync.RWMutex
+	lockDeleteAttendStatusByKey                sync.RWMutex
+	lockDeleteAttendStatusByKeyWithSd          sync.RWMutex
+	lockDeleteAttendStatusWithSd               sync.RWMutex
+	lockDeleteAttendanceType                   sync.RWMutex
+	lockDeleteAttendanceTypeByKey              sync.RWMutex
+	lockDeleteAttendanceTypeByKeyWithSd        sync.RWMutex
+	lockDeleteAttendanceTypeWithSd             sync.RWMutex
+	lockDeleteEventType                        sync.RWMutex
+	lockDeleteEventTypeByKey                   sync.RWMutex
+	lockDeleteEventTypeByKeyWithSd             sync.RWMutex
+	lockDeleteEventTypeWithSd                  sync.RWMutex
+	lockDeletePermissionCategory               sync.RWMutex
+	lockDeletePermissionCategoryByKey          sync.RWMutex
+	lockDeletePermissionCategoryByKeyWithSd    sync.RWMutex
+	lockDeletePermissionCategoryWithSd         sync.RWMutex
+	lockFindAbsenceByID                        sync.RWMutex
+	lockFindAbsenceByIDWithSd                  sync.RWMutex
+	lockFindAttendStatusByID                   sync.RWMutex
+	lockFindAttendStatusByIDWithSd             sync.RWMutex
+	lockFindAttendStatusByKey                  sync.RWMutex
+	lockFindAttendStatusByKeyWithSd            sync.RWMutex
+	lockFindAttendanceTypeByID                 sync.RWMutex
+	lockFindAttendanceTypeByIDWithSd           sync.RWMutex
+	lockFindAttendanceTypeByKey                sync.RWMutex
+	lockFindAttendanceTypeByKeyWithSd          sync.RWMutex
+	lockFindEventTypeByID                      sync.RWMutex
+	lockFindEventTypeByIDWithSd                sync.RWMutex
+	lockFindEventTypeByKey                     sync.RWMutex
+	lockFindEventTypeByKeyWithSd               sync.RWMutex
+	lockFindPermissionCategoryByID             sync.RWMutex
+	lockFindPermissionCategoryByIDWithSd       sync.RWMutex
+	lockFindPermissionCategoryByKey            sync.RWMutex
+	lockFindPermissionCategoryByKeyWithSd      sync.RWMutex
+	lockGetAbsences                            sync.RWMutex
+	lockGetAbsencesWithSd                      sync.RWMutex
+	lockGetAttendStatuses                      sync.RWMutex
+	lockGetAttendStatusesWithSd                sync.RWMutex
+	lockGetAttendanceTypes                     sync.RWMutex
+	lockGetAttendanceTypesWithSd               sync.RWMutex
+	lockGetEventTypes                          sync.RWMutex
+	lockGetEventTypesWithSd                    sync.RWMutex
+	lockGetPermissionCategories                sync.RWMutex
+	lockGetPermissionCategoriesWithSd          sync.RWMutex
+	lockGetPluralAbsences                      sync.RWMutex
+	lockGetPluralAbsencesWithSd                sync.RWMutex
+	lockGetPluralAttendStatuses                sync.RWMutex
+	lockGetPluralAttendStatusesWithSd          sync.RWMutex
+	lockGetPluralAttendanceTypes               sync.RWMutex
+	lockGetPluralAttendanceTypesWithSd         sync.RWMutex
+	lockGetPluralEventTypes                    sync.RWMutex
+	lockGetPluralEventTypesWithSd              sync.RWMutex
+	lockGetPluralPermissionCategories          sync.RWMutex
+	lockGetPluralPermissionCategoriesWithSd    sync.RWMutex
+	lockPluralDeleteAbsences                   sync.RWMutex
+	lockPluralDeleteAbsencesWithSd             sync.RWMutex
+	lockPluralDeleteAttendStatuses             sync.RWMutex
+	lockPluralDeleteAttendStatusesWithSd       sync.RWMutex
+	lockPluralDeleteAttendanceTypes            sync.RWMutex
+	lockPluralDeleteAttendanceTypesWithSd      sync.RWMutex
+	lockPluralDeleteEventTypes                 sync.RWMutex
+	lockPluralDeleteEventTypesWithSd           sync.RWMutex
+	lockPluralDeletePermissionCategories       sync.RWMutex
+	lockPluralDeletePermissionCategoriesWithSd sync.RWMutex
+	lockRollback                               sync.RWMutex
+	lockUpdateAttendStatus                     sync.RWMutex
+	lockUpdateAttendStatusByKey                sync.RWMutex
+	lockUpdateAttendStatusByKeyWithSd          sync.RWMutex
+	lockUpdateAttendStatusWithSd               sync.RWMutex
+	lockUpdateAttendanceType                   sync.RWMutex
+	lockUpdateAttendanceTypeByKey              sync.RWMutex
+	lockUpdateAttendanceTypeByKeyWithSd        sync.RWMutex
+	lockUpdateAttendanceTypeWithSd             sync.RWMutex
+	lockUpdateEventType                        sync.RWMutex
+	lockUpdateEventTypeByKey                   sync.RWMutex
+	lockUpdateEventTypeByKeyWithSd             sync.RWMutex
+	lockUpdateEventTypeWithSd                  sync.RWMutex
+	lockUpdatePermissionCategory               sync.RWMutex
+	lockUpdatePermissionCategoryByKey          sync.RWMutex
+	lockUpdatePermissionCategoryByKeyWithSd    sync.RWMutex
+	lockUpdatePermissionCategoryWithSd         sync.RWMutex
 }
 
 // Begin calls BeginFunc.
@@ -5288,6 +5438,386 @@ func (mock *StoreMock) GetPluralPermissionCategoriesWithSdCalls() []struct {
 	mock.lockGetPluralPermissionCategoriesWithSd.RLock()
 	calls = mock.calls.GetPluralPermissionCategoriesWithSd
 	mock.lockGetPluralPermissionCategoriesWithSd.RUnlock()
+	return calls
+}
+
+// PluralDeleteAbsences calls PluralDeleteAbsencesFunc.
+func (mock *StoreMock) PluralDeleteAbsences(ctx context.Context, absenceIDs []uuid.UUID) error {
+	if mock.PluralDeleteAbsencesFunc == nil {
+		panic("StoreMock.PluralDeleteAbsencesFunc: method is nil but Store.PluralDeleteAbsences was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		AbsenceIDs []uuid.UUID
+	}{
+		Ctx:        ctx,
+		AbsenceIDs: absenceIDs,
+	}
+	mock.lockPluralDeleteAbsences.Lock()
+	mock.calls.PluralDeleteAbsences = append(mock.calls.PluralDeleteAbsences, callInfo)
+	mock.lockPluralDeleteAbsences.Unlock()
+	return mock.PluralDeleteAbsencesFunc(ctx, absenceIDs)
+}
+
+// PluralDeleteAbsencesCalls gets all the calls that were made to PluralDeleteAbsences.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteAbsencesCalls())
+func (mock *StoreMock) PluralDeleteAbsencesCalls() []struct {
+	Ctx        context.Context
+	AbsenceIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		AbsenceIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteAbsences.RLock()
+	calls = mock.calls.PluralDeleteAbsences
+	mock.lockPluralDeleteAbsences.RUnlock()
+	return calls
+}
+
+// PluralDeleteAbsencesWithSd calls PluralDeleteAbsencesWithSdFunc.
+func (mock *StoreMock) PluralDeleteAbsencesWithSd(ctx context.Context, sd Sd, absenceIDs []uuid.UUID) error {
+	if mock.PluralDeleteAbsencesWithSdFunc == nil {
+		panic("StoreMock.PluralDeleteAbsencesWithSdFunc: method is nil but Store.PluralDeleteAbsencesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		AbsenceIDs []uuid.UUID
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		AbsenceIDs: absenceIDs,
+	}
+	mock.lockPluralDeleteAbsencesWithSd.Lock()
+	mock.calls.PluralDeleteAbsencesWithSd = append(mock.calls.PluralDeleteAbsencesWithSd, callInfo)
+	mock.lockPluralDeleteAbsencesWithSd.Unlock()
+	return mock.PluralDeleteAbsencesWithSdFunc(ctx, sd, absenceIDs)
+}
+
+// PluralDeleteAbsencesWithSdCalls gets all the calls that were made to PluralDeleteAbsencesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteAbsencesWithSdCalls())
+func (mock *StoreMock) PluralDeleteAbsencesWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	AbsenceIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		AbsenceIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteAbsencesWithSd.RLock()
+	calls = mock.calls.PluralDeleteAbsencesWithSd
+	mock.lockPluralDeleteAbsencesWithSd.RUnlock()
+	return calls
+}
+
+// PluralDeleteAttendStatuses calls PluralDeleteAttendStatusesFunc.
+func (mock *StoreMock) PluralDeleteAttendStatuses(ctx context.Context, attendStatusIDs []uuid.UUID) error {
+	if mock.PluralDeleteAttendStatusesFunc == nil {
+		panic("StoreMock.PluralDeleteAttendStatusesFunc: method is nil but Store.PluralDeleteAttendStatuses was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		AttendStatusIDs []uuid.UUID
+	}{
+		Ctx:             ctx,
+		AttendStatusIDs: attendStatusIDs,
+	}
+	mock.lockPluralDeleteAttendStatuses.Lock()
+	mock.calls.PluralDeleteAttendStatuses = append(mock.calls.PluralDeleteAttendStatuses, callInfo)
+	mock.lockPluralDeleteAttendStatuses.Unlock()
+	return mock.PluralDeleteAttendStatusesFunc(ctx, attendStatusIDs)
+}
+
+// PluralDeleteAttendStatusesCalls gets all the calls that were made to PluralDeleteAttendStatuses.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteAttendStatusesCalls())
+func (mock *StoreMock) PluralDeleteAttendStatusesCalls() []struct {
+	Ctx             context.Context
+	AttendStatusIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx             context.Context
+		AttendStatusIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteAttendStatuses.RLock()
+	calls = mock.calls.PluralDeleteAttendStatuses
+	mock.lockPluralDeleteAttendStatuses.RUnlock()
+	return calls
+}
+
+// PluralDeleteAttendStatusesWithSd calls PluralDeleteAttendStatusesWithSdFunc.
+func (mock *StoreMock) PluralDeleteAttendStatusesWithSd(ctx context.Context, sd Sd, attendStatusIDs []uuid.UUID) error {
+	if mock.PluralDeleteAttendStatusesWithSdFunc == nil {
+		panic("StoreMock.PluralDeleteAttendStatusesWithSdFunc: method is nil but Store.PluralDeleteAttendStatusesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		Sd              Sd
+		AttendStatusIDs []uuid.UUID
+	}{
+		Ctx:             ctx,
+		Sd:              sd,
+		AttendStatusIDs: attendStatusIDs,
+	}
+	mock.lockPluralDeleteAttendStatusesWithSd.Lock()
+	mock.calls.PluralDeleteAttendStatusesWithSd = append(mock.calls.PluralDeleteAttendStatusesWithSd, callInfo)
+	mock.lockPluralDeleteAttendStatusesWithSd.Unlock()
+	return mock.PluralDeleteAttendStatusesWithSdFunc(ctx, sd, attendStatusIDs)
+}
+
+// PluralDeleteAttendStatusesWithSdCalls gets all the calls that were made to PluralDeleteAttendStatusesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteAttendStatusesWithSdCalls())
+func (mock *StoreMock) PluralDeleteAttendStatusesWithSdCalls() []struct {
+	Ctx             context.Context
+	Sd              Sd
+	AttendStatusIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx             context.Context
+		Sd              Sd
+		AttendStatusIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteAttendStatusesWithSd.RLock()
+	calls = mock.calls.PluralDeleteAttendStatusesWithSd
+	mock.lockPluralDeleteAttendStatusesWithSd.RUnlock()
+	return calls
+}
+
+// PluralDeleteAttendanceTypes calls PluralDeleteAttendanceTypesFunc.
+func (mock *StoreMock) PluralDeleteAttendanceTypes(ctx context.Context, attendanceTypeIDs []uuid.UUID) error {
+	if mock.PluralDeleteAttendanceTypesFunc == nil {
+		panic("StoreMock.PluralDeleteAttendanceTypesFunc: method is nil but Store.PluralDeleteAttendanceTypes was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		AttendanceTypeIDs []uuid.UUID
+	}{
+		Ctx:               ctx,
+		AttendanceTypeIDs: attendanceTypeIDs,
+	}
+	mock.lockPluralDeleteAttendanceTypes.Lock()
+	mock.calls.PluralDeleteAttendanceTypes = append(mock.calls.PluralDeleteAttendanceTypes, callInfo)
+	mock.lockPluralDeleteAttendanceTypes.Unlock()
+	return mock.PluralDeleteAttendanceTypesFunc(ctx, attendanceTypeIDs)
+}
+
+// PluralDeleteAttendanceTypesCalls gets all the calls that were made to PluralDeleteAttendanceTypes.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteAttendanceTypesCalls())
+func (mock *StoreMock) PluralDeleteAttendanceTypesCalls() []struct {
+	Ctx               context.Context
+	AttendanceTypeIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx               context.Context
+		AttendanceTypeIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteAttendanceTypes.RLock()
+	calls = mock.calls.PluralDeleteAttendanceTypes
+	mock.lockPluralDeleteAttendanceTypes.RUnlock()
+	return calls
+}
+
+// PluralDeleteAttendanceTypesWithSd calls PluralDeleteAttendanceTypesWithSdFunc.
+func (mock *StoreMock) PluralDeleteAttendanceTypesWithSd(ctx context.Context, sd Sd, attendanceTypeIDs []uuid.UUID) error {
+	if mock.PluralDeleteAttendanceTypesWithSdFunc == nil {
+		panic("StoreMock.PluralDeleteAttendanceTypesWithSdFunc: method is nil but Store.PluralDeleteAttendanceTypesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		Sd                Sd
+		AttendanceTypeIDs []uuid.UUID
+	}{
+		Ctx:               ctx,
+		Sd:                sd,
+		AttendanceTypeIDs: attendanceTypeIDs,
+	}
+	mock.lockPluralDeleteAttendanceTypesWithSd.Lock()
+	mock.calls.PluralDeleteAttendanceTypesWithSd = append(mock.calls.PluralDeleteAttendanceTypesWithSd, callInfo)
+	mock.lockPluralDeleteAttendanceTypesWithSd.Unlock()
+	return mock.PluralDeleteAttendanceTypesWithSdFunc(ctx, sd, attendanceTypeIDs)
+}
+
+// PluralDeleteAttendanceTypesWithSdCalls gets all the calls that were made to PluralDeleteAttendanceTypesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteAttendanceTypesWithSdCalls())
+func (mock *StoreMock) PluralDeleteAttendanceTypesWithSdCalls() []struct {
+	Ctx               context.Context
+	Sd                Sd
+	AttendanceTypeIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx               context.Context
+		Sd                Sd
+		AttendanceTypeIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteAttendanceTypesWithSd.RLock()
+	calls = mock.calls.PluralDeleteAttendanceTypesWithSd
+	mock.lockPluralDeleteAttendanceTypesWithSd.RUnlock()
+	return calls
+}
+
+// PluralDeleteEventTypes calls PluralDeleteEventTypesFunc.
+func (mock *StoreMock) PluralDeleteEventTypes(ctx context.Context, eventTypeIDs []uuid.UUID) error {
+	if mock.PluralDeleteEventTypesFunc == nil {
+		panic("StoreMock.PluralDeleteEventTypesFunc: method is nil but Store.PluralDeleteEventTypes was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		EventTypeIDs []uuid.UUID
+	}{
+		Ctx:          ctx,
+		EventTypeIDs: eventTypeIDs,
+	}
+	mock.lockPluralDeleteEventTypes.Lock()
+	mock.calls.PluralDeleteEventTypes = append(mock.calls.PluralDeleteEventTypes, callInfo)
+	mock.lockPluralDeleteEventTypes.Unlock()
+	return mock.PluralDeleteEventTypesFunc(ctx, eventTypeIDs)
+}
+
+// PluralDeleteEventTypesCalls gets all the calls that were made to PluralDeleteEventTypes.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteEventTypesCalls())
+func (mock *StoreMock) PluralDeleteEventTypesCalls() []struct {
+	Ctx          context.Context
+	EventTypeIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx          context.Context
+		EventTypeIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteEventTypes.RLock()
+	calls = mock.calls.PluralDeleteEventTypes
+	mock.lockPluralDeleteEventTypes.RUnlock()
+	return calls
+}
+
+// PluralDeleteEventTypesWithSd calls PluralDeleteEventTypesWithSdFunc.
+func (mock *StoreMock) PluralDeleteEventTypesWithSd(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID) error {
+	if mock.PluralDeleteEventTypesWithSdFunc == nil {
+		panic("StoreMock.PluralDeleteEventTypesWithSdFunc: method is nil but Store.PluralDeleteEventTypesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		Sd           Sd
+		EventTypeIDs []uuid.UUID
+	}{
+		Ctx:          ctx,
+		Sd:           sd,
+		EventTypeIDs: eventTypeIDs,
+	}
+	mock.lockPluralDeleteEventTypesWithSd.Lock()
+	mock.calls.PluralDeleteEventTypesWithSd = append(mock.calls.PluralDeleteEventTypesWithSd, callInfo)
+	mock.lockPluralDeleteEventTypesWithSd.Unlock()
+	return mock.PluralDeleteEventTypesWithSdFunc(ctx, sd, eventTypeIDs)
+}
+
+// PluralDeleteEventTypesWithSdCalls gets all the calls that were made to PluralDeleteEventTypesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteEventTypesWithSdCalls())
+func (mock *StoreMock) PluralDeleteEventTypesWithSdCalls() []struct {
+	Ctx          context.Context
+	Sd           Sd
+	EventTypeIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx          context.Context
+		Sd           Sd
+		EventTypeIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteEventTypesWithSd.RLock()
+	calls = mock.calls.PluralDeleteEventTypesWithSd
+	mock.lockPluralDeleteEventTypesWithSd.RUnlock()
+	return calls
+}
+
+// PluralDeletePermissionCategories calls PluralDeletePermissionCategoriesFunc.
+func (mock *StoreMock) PluralDeletePermissionCategories(ctx context.Context, permissionCategoryIDs []uuid.UUID) error {
+	if mock.PluralDeletePermissionCategoriesFunc == nil {
+		panic("StoreMock.PluralDeletePermissionCategoriesFunc: method is nil but Store.PluralDeletePermissionCategories was just called")
+	}
+	callInfo := struct {
+		Ctx                   context.Context
+		PermissionCategoryIDs []uuid.UUID
+	}{
+		Ctx:                   ctx,
+		PermissionCategoryIDs: permissionCategoryIDs,
+	}
+	mock.lockPluralDeletePermissionCategories.Lock()
+	mock.calls.PluralDeletePermissionCategories = append(mock.calls.PluralDeletePermissionCategories, callInfo)
+	mock.lockPluralDeletePermissionCategories.Unlock()
+	return mock.PluralDeletePermissionCategoriesFunc(ctx, permissionCategoryIDs)
+}
+
+// PluralDeletePermissionCategoriesCalls gets all the calls that were made to PluralDeletePermissionCategories.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeletePermissionCategoriesCalls())
+func (mock *StoreMock) PluralDeletePermissionCategoriesCalls() []struct {
+	Ctx                   context.Context
+	PermissionCategoryIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx                   context.Context
+		PermissionCategoryIDs []uuid.UUID
+	}
+	mock.lockPluralDeletePermissionCategories.RLock()
+	calls = mock.calls.PluralDeletePermissionCategories
+	mock.lockPluralDeletePermissionCategories.RUnlock()
+	return calls
+}
+
+// PluralDeletePermissionCategoriesWithSd calls PluralDeletePermissionCategoriesWithSdFunc.
+func (mock *StoreMock) PluralDeletePermissionCategoriesWithSd(ctx context.Context, sd Sd, permissionCategoryIDs []uuid.UUID) error {
+	if mock.PluralDeletePermissionCategoriesWithSdFunc == nil {
+		panic("StoreMock.PluralDeletePermissionCategoriesWithSdFunc: method is nil but Store.PluralDeletePermissionCategoriesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                   context.Context
+		Sd                    Sd
+		PermissionCategoryIDs []uuid.UUID
+	}{
+		Ctx:                   ctx,
+		Sd:                    sd,
+		PermissionCategoryIDs: permissionCategoryIDs,
+	}
+	mock.lockPluralDeletePermissionCategoriesWithSd.Lock()
+	mock.calls.PluralDeletePermissionCategoriesWithSd = append(mock.calls.PluralDeletePermissionCategoriesWithSd, callInfo)
+	mock.lockPluralDeletePermissionCategoriesWithSd.Unlock()
+	return mock.PluralDeletePermissionCategoriesWithSdFunc(ctx, sd, permissionCategoryIDs)
+}
+
+// PluralDeletePermissionCategoriesWithSdCalls gets all the calls that were made to PluralDeletePermissionCategoriesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeletePermissionCategoriesWithSdCalls())
+func (mock *StoreMock) PluralDeletePermissionCategoriesWithSdCalls() []struct {
+	Ctx                   context.Context
+	Sd                    Sd
+	PermissionCategoryIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx                   context.Context
+		Sd                    Sd
+		PermissionCategoryIDs []uuid.UUID
+	}
+	mock.lockPluralDeletePermissionCategoriesWithSd.RLock()
+	calls = mock.calls.PluralDeletePermissionCategoriesWithSd
+	mock.lockPluralDeletePermissionCategoriesWithSd.RUnlock()
 	return calls
 }
 

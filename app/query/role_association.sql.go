@@ -88,6 +88,42 @@ func (q *Queries) DeleteRoleAssociation(ctx context.Context, arg DeleteRoleAssoc
 	return err
 }
 
+const deleteRoleAssociationsOnPolicies = `-- name: DeleteRoleAssociationsOnPolicies :exec
+DELETE FROM m_role_associations WHERE policy_id = ANY($1::uuid[])
+`
+
+func (q *Queries) DeleteRoleAssociationsOnPolicies(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteRoleAssociationsOnPolicies, dollar_1)
+	return err
+}
+
+const deleteRoleAssociationsOnPolicy = `-- name: DeleteRoleAssociationsOnPolicy :exec
+DELETE FROM m_role_associations WHERE policy_id = $1
+`
+
+func (q *Queries) DeleteRoleAssociationsOnPolicy(ctx context.Context, policyID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteRoleAssociationsOnPolicy, policyID)
+	return err
+}
+
+const deleteRoleAssociationsOnRole = `-- name: DeleteRoleAssociationsOnRole :exec
+DELETE FROM m_role_associations WHERE role_id = $1
+`
+
+func (q *Queries) DeleteRoleAssociationsOnRole(ctx context.Context, roleID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteRoleAssociationsOnRole, roleID)
+	return err
+}
+
+const deleteRoleAssociationsOnRoles = `-- name: DeleteRoleAssociationsOnRoles :exec
+DELETE FROM m_role_associations WHERE role_id = ANY($1::uuid[])
+`
+
+func (q *Queries) DeleteRoleAssociationsOnRoles(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteRoleAssociationsOnRoles, dollar_1)
+	return err
+}
+
 const getPluralPoliciesOnRole = `-- name: GetPluralPoliciesOnRole :many
 SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id FROM m_role_associations
 LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
@@ -606,4 +642,32 @@ func (q *Queries) GetRolesOnPolicyUseNumberedPaginate(ctx context.Context, arg G
 		return nil, err
 	}
 	return items, nil
+}
+
+const pluralDeleteRoleAssociationsOnPolicy = `-- name: PluralDeleteRoleAssociationsOnPolicy :exec
+DELETE FROM m_role_associations WHERE policy_id = $1 AND role_id = ANY($2::uuid[])
+`
+
+type PluralDeleteRoleAssociationsOnPolicyParams struct {
+	PolicyID uuid.UUID   `json:"policy_id"`
+	Column2  []uuid.UUID `json:"column_2"`
+}
+
+func (q *Queries) PluralDeleteRoleAssociationsOnPolicy(ctx context.Context, arg PluralDeleteRoleAssociationsOnPolicyParams) error {
+	_, err := q.db.Exec(ctx, pluralDeleteRoleAssociationsOnPolicy, arg.PolicyID, arg.Column2)
+	return err
+}
+
+const pluralDeleteRoleAssociationsOnRole = `-- name: PluralDeleteRoleAssociationsOnRole :exec
+DELETE FROM m_role_associations WHERE role_id = $1 AND policy_id = ANY($2::uuid[])
+`
+
+type PluralDeleteRoleAssociationsOnRoleParams struct {
+	RoleID  uuid.UUID   `json:"role_id"`
+	Column2 []uuid.UUID `json:"column_2"`
+}
+
+func (q *Queries) PluralDeleteRoleAssociationsOnRole(ctx context.Context, arg PluralDeleteRoleAssociationsOnRoleParams) error {
+	_, err := q.db.Exec(ctx, pluralDeleteRoleAssociationsOnRole, arg.RoleID, arg.Column2)
+	return err
 }

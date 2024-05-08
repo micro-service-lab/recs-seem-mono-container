@@ -7,6 +7,24 @@ INSERT INTO t_attached_messages (message_id, attachable_item_id) VALUES ($1, $2)
 -- name: DeleteAttachedMessage :exec
 DELETE FROM t_attached_messages WHERE message_id = $1 AND attachable_item_id = $2;
 
+-- name: DeleteAttachedMessagesOnMessage :exec
+DELETE FROM t_attached_messages WHERE message_id = $1;
+
+-- name: DeleteAttachedMessagesOnMessages :exec
+DELETE FROM t_attached_messages WHERE message_id = ANY($1::uuid[]);
+
+-- name: DeleteAttachedMessagesOnAttachableItem :exec
+DELETE FROM t_attached_messages WHERE attachable_item_id = $1;
+
+-- name: DeleteAttachedMessagesOnAttachableItems :exec
+DELETE FROM t_attached_messages WHERE attachable_item_id = ANY($1::uuid[]);
+
+-- name: PluralDeleteAttachedMessagesOnMessage :exec
+DELETE FROM t_attached_messages WHERE message_id = $1 AND attachable_item_id = ANY($2::uuid[]);
+
+-- name: PluralDeleteAttachedMessagesOnAttachableItem :exec
+DELETE FROM t_attached_messages WHERE attachable_item_id = $1 AND message_id = ANY($2::uuid[]);
+
 -- name: GetAttachableItemsOnMessage :many
 SELECT t_attachable_items.*, t_images.image_id, t_images.height as image_height, t_images.width as image_width, t_files.file_id FROM t_attached_messages
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id

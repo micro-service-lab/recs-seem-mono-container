@@ -7,6 +7,9 @@ INSERT INTO m_students (member_id) VALUES ($1) RETURNING *;
 -- name: DeleteStudent :exec
 DELETE FROM m_students WHERE student_id = $1;
 
+-- name: PluralDeleteStudents :exec
+DELETE FROM m_students WHERE student_id = ANY($1::uuid[]);
+
 -- name: FindStudentByID :one
 SELECT * FROM m_students WHERE student_id = $1;
 

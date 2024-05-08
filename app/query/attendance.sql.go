@@ -126,6 +126,24 @@ func (q *Queries) DeleteAttendance(ctx context.Context, attendanceID uuid.UUID) 
 	return err
 }
 
+const deleteAttendancesOnMember = `-- name: DeleteAttendancesOnMember :exec
+DELETE FROM t_attendances WHERE member_id = $1
+`
+
+func (q *Queries) DeleteAttendancesOnMember(ctx context.Context, memberID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteAttendancesOnMember, memberID)
+	return err
+}
+
+const deleteAttendancesOnMembers = `-- name: DeleteAttendancesOnMembers :exec
+DELETE FROM t_attendances WHERE member_id = ANY($1::uuid[])
+`
+
+func (q *Queries) DeleteAttendancesOnMembers(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteAttendancesOnMembers, dollar_1)
+	return err
+}
+
 const findAttendanceByID = `-- name: FindAttendanceByID :one
 SELECT t_attendances_pkey, attendance_id, attendance_type_id, member_id, description, date, mail_send_flag, send_organization_id, posted_at, last_edited_at FROM t_attendances WHERE attendance_id = $1
 `
@@ -3076,6 +3094,15 @@ func (q *Queries) GetPluralAttendances(ctx context.Context, arg GetPluralAttenda
 		return nil, err
 	}
 	return items, nil
+}
+
+const pluralDeleteAttendances = `-- name: PluralDeleteAttendances :exec
+DELETE FROM t_attendances WHERE attendance_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteAttendances(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteAttendances, dollar_1)
+	return err
 }
 
 const updateAttendance = `-- name: UpdateAttendance :one

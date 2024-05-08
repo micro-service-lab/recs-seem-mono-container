@@ -16,6 +16,9 @@ DELETE FROM m_event_types WHERE event_type_id = $1;
 -- name: DeleteEventTypeByKey :exec
 DELETE FROM m_event_types WHERE key = $1;
 
+-- name: PluralDeleteEventTypes :exec
+DELETE FROM m_event_types WHERE event_type_id = ANY($1::uuid[]);
+
 -- name: FindEventTypeByID :one
 SELECT * FROM m_event_types WHERE event_type_id = $1;
 

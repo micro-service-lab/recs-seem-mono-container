@@ -95,6 +95,15 @@ func (m *ManageAttendStatus) DeleteAttendStatus(ctx context.Context, id uuid.UUI
 	return nil
 }
 
+// PluralDeleteAttendStatuses 出席状況を複数削除する。
+func (m *ManageAttendStatus) PluralDeleteAttendStatuses(ctx context.Context, ids []uuid.UUID) error {
+	err := m.DB.PluralDeleteAttendStatuses(ctx, ids)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete attend statuses: %w", err)
+	}
+	return nil
+}
+
 // FindAttendStatusByID 出席状況をIDで取得する。
 func (m *ManageAttendStatus) FindAttendStatusByID(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error) {
 	e, err := m.DB.FindAttendStatusByID(ctx, id)

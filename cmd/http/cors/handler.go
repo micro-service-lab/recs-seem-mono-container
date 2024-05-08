@@ -8,8 +8,8 @@ import (
 
 // AppHandler CORS エラーを処理するハンドラ。
 func AppHandler(w http.ResponseWriter, _ *http.Request, c Cors, err error) bool {
-	_, ok := err.(Error)
-	if ok {
+	var e Error
+	if errors.As(err, &e) {
 		c.Log.Printf("CORS error: %v", err)
 		res := struct {
 			Message string `json:"message"`

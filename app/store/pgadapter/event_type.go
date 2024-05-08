@@ -146,9 +146,6 @@ func (a *PgAdapter) CreateEventTypesWithSd(
 func deleteEventType(ctx context.Context, qtx *query.Queries, eventTypeID uuid.UUID) error {
 	err := qtx.DeleteEventType(ctx, eventTypeID)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return store.ErrDataNoRecord
-		}
 		return fmt.Errorf("failed to delete event type: %w", err)
 	}
 	return nil
@@ -181,9 +178,6 @@ func (a *PgAdapter) DeleteEventTypeWithSd(
 func deleteEventTypeByKey(ctx context.Context, qtx *query.Queries, key string) error {
 	err := qtx.DeleteEventTypeByKey(ctx, key)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return store.ErrDataNoRecord
-		}
 		return fmt.Errorf("failed to delete event type: %w", err)
 	}
 	return nil
@@ -209,6 +203,38 @@ func (a *PgAdapter) DeleteEventTypeByKeyWithSd(
 	err := deleteEventTypeByKey(ctx, qtx, key)
 	if err != nil {
 		return fmt.Errorf("failed to delete event type: %w", err)
+	}
+	return nil
+}
+
+func pluralDeleteEventTypes(ctx context.Context, qtx *query.Queries, eventTypeIDs []uuid.UUID) error {
+	err := qtx.PluralDeleteEventTypes(ctx, eventTypeIDs)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete event types: %w", err)
+	}
+	return nil
+}
+
+// PluralDeleteEventTypes イベントタイプを複数削除する。
+func (a *PgAdapter) PluralDeleteEventTypes(ctx context.Context, eventTypeIDs []uuid.UUID) error {
+	err := pluralDeleteEventTypes(ctx, a.query, eventTypeIDs)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete event types: %w", err)
+	}
+	return nil
+}
+
+// PluralDeleteEventTypesWithSd SD付きでイベントタイプを複数削除する。
+func (a *PgAdapter) PluralDeleteEventTypesWithSd(
+	ctx context.Context, sd store.Sd, eventTypeIDs []uuid.UUID,
+) error {
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ErrNotFoundDescriptor
+	}
+	err := pluralDeleteEventTypes(ctx, qtx, eventTypeIDs)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete event types: %w", err)
 	}
 	return nil
 }

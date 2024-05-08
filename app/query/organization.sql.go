@@ -1861,6 +1861,15 @@ func (q *Queries) GetPluralOrganizationsWithDetail(ctx context.Context, arg GetP
 	return items, nil
 }
 
+const pluralDeleteOrganizations = `-- name: PluralDeleteOrganizations :exec
+DELETE FROM m_organizations WHERE organization_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteOrganizations(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteOrganizations, dollar_1)
+	return err
+}
+
 const updateOrganization = `-- name: UpdateOrganization :one
 UPDATE m_organizations SET name = $2, color = $3, description = $4, updated_at = $5 WHERE organization_id = $1 RETURNING m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id
 `

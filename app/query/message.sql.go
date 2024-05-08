@@ -120,6 +120,15 @@ func (q *Queries) DeleteMessage(ctx context.Context, messageID uuid.UUID) error 
 	return err
 }
 
+const deleteMessagesOnChatRoom = `-- name: DeleteMessagesOnChatRoom :exec
+DELETE FROM t_messages WHERE chat_room_id = $1
+`
+
+func (q *Queries) DeleteMessagesOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteMessagesOnChatRoom, chatRoomID)
+	return err
+}
+
 const findMessageByID = `-- name: FindMessageByID :one
 SELECT t_messages_pkey, message_id, chat_room_id, sender_id, body, posted_at, last_edited_at FROM t_messages WHERE message_id = $1
 `
@@ -1886,6 +1895,15 @@ func (q *Queries) GetPluralMessagesWithSender(ctx context.Context, arg GetPlural
 		return nil, err
 	}
 	return items, nil
+}
+
+const pluralDeleteMessages = `-- name: PluralDeleteMessages :exec
+DELETE FROM t_messages WHERE message_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteMessages(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteMessages, dollar_1)
+	return err
 }
 
 const updateMessage = `-- name: UpdateMessage :one

@@ -12,7 +12,12 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/batch"
 )
 
-var force bool
+var (
+	force     bool
+	diff      bool
+	noDelete  bool
+	deepEqual bool
+)
 
 // ValidTarget is a list of valid seed targets.
 var ValidTarget = []string{"attend_status"}
@@ -41,7 +46,7 @@ The seed command is executed when the application is started for the first time.
 		s.Start()
 
 		ctx := cmd.Context()
-		if !force {
+		if !force && !diff {
 			count, err := AppContainer.ServiceManager.GetAttendStatusesCount(ctx, "")
 			if err != nil {
 				s.Stop()
@@ -56,6 +61,17 @@ The seed command is executed when the application is started for the first time.
 		}
 		b := batch.InitAttendStatuses{
 			Manager: &AppContainer.ServiceManager,
+		}
+		if diff {
+			err := b.RunDiff(ctx, noDelete, deepEqual)
+			if err != nil {
+				s.Stop()
+				color.Red(fmt.Errorf("failed to insert attend statuses: %w", err).Error())
+				return
+			}
+			s.Stop()
+			color.Green("Completed filling in the difference on attend statuses")
+			return
 		}
 		err := b.Run(ctx)
 		if err != nil {
@@ -82,7 +98,7 @@ The seed command is executed when the application is started for the first time.
 		s.Start()
 
 		ctx := cmd.Context()
-		if !force {
+		if !force && !diff {
 			count, err := AppContainer.ServiceManager.GetAttendanceTypesCount(ctx, "")
 			if err != nil {
 				s.Stop()
@@ -97,6 +113,17 @@ The seed command is executed when the application is started for the first time.
 		}
 		b := batch.InitAttendanceTypes{
 			Manager: &AppContainer.ServiceManager,
+		}
+		if diff {
+			err := b.RunDiff(ctx, noDelete, deepEqual)
+			if err != nil {
+				s.Stop()
+				color.Red(fmt.Errorf("failed to insert attendance types: %w", err).Error())
+				return
+			}
+			s.Stop()
+			color.Green("Completed filling in the difference on attendance types")
+			return
 		}
 		err := b.Run(ctx)
 		if err != nil {
@@ -123,7 +150,7 @@ The seed command is executed when the application is started for the first time.
 		s.Start()
 
 		ctx := cmd.Context()
-		if !force {
+		if !force && !diff {
 			count, err := AppContainer.ServiceManager.GetEventTypesCount(ctx, "")
 			if err != nil {
 				s.Stop()
@@ -138,6 +165,17 @@ The seed command is executed when the application is started for the first time.
 		}
 		b := batch.InitEventTypes{
 			Manager: &AppContainer.ServiceManager,
+		}
+		if diff {
+			err := b.RunDiff(ctx, noDelete, deepEqual)
+			if err != nil {
+				s.Stop()
+				color.Red(fmt.Errorf("failed to insert event types: %w", err).Error())
+				return
+			}
+			s.Stop()
+			color.Green("Completed filling in the difference on event types")
+			return
 		}
 		err := b.Run(ctx)
 		if err != nil {
@@ -164,7 +202,7 @@ The seed command is executed when the application is started for the first time.
 		s.Start()
 
 		ctx := cmd.Context()
-		if !force {
+		if !force && !diff {
 			count, err := AppContainer.ServiceManager.GetPermissionCategoriesCount(ctx, "")
 			if err != nil {
 				s.Stop()
@@ -173,12 +211,23 @@ The seed command is executed when the application is started for the first time.
 			}
 			if count > 0 {
 				s.Stop()
-				color.Yellow("Event types already exist. Use --force to seed again")
+				color.Yellow("Permission Categories already exist. Use --force to seed again")
 				return
 			}
 		}
 		b := batch.InitPermissionCategories{
 			Manager: &AppContainer.ServiceManager,
+		}
+		if diff {
+			err := b.RunDiff(ctx, noDelete, deepEqual)
+			if err != nil {
+				s.Stop()
+				color.Red(fmt.Errorf("failed to insert permission categories: %w", err).Error())
+				return
+			}
+			s.Stop()
+			color.Green("Completed filling in the difference on permission categories")
+			return
 		}
 		err := b.Run(ctx)
 		if err != nil {
@@ -187,7 +236,7 @@ The seed command is executed when the application is started for the first time.
 			return
 		}
 		s.Stop()
-		color.Green("Event types inserted successfully")
+		color.Green("Permission Categories inserted successfully")
 	},
 }
 
@@ -229,4 +278,7 @@ func init() {
 	seedCmd.AddCommand(seedPermissionCategoriesCmd)
 
 	seedCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "Force seed")
+	seedCmd.PersistentFlags().BoolVarP(&diff, "diff", "d", false, "Seed only if there is a difference")
+	seedCmd.PersistentFlags().BoolVarP(&noDelete, "no-delete", "n", false, "Do not delete, only insert.This option is valid only when --diff is specified")  //nolint: lll
+	seedCmd.PersistentFlags().BoolVarP(&deepEqual, "deep-equal", "e", false, "Use deep equal comparison.This option is valid only when --diff is specified") //nolint: lll
 }

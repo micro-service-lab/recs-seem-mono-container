@@ -16,6 +16,9 @@ DELETE FROM m_permissions WHERE permission_id = $1;
 -- name: DeletePermissionByKey :exec
 DELETE FROM m_permissions WHERE key = $1;
 
+-- name: PluralDeletePermissions :exec
+DELETE FROM m_permissions WHERE permission_id = ANY($1::uuid[]);
+
 -- name: FindPermissionByID :one
 SELECT * FROM m_permissions WHERE permission_id = $1;
 

@@ -308,6 +308,15 @@ func (q *Queries) GetRecordTypesUseNumberedPaginate(ctx context.Context, arg Get
 	return items, nil
 }
 
+const pluralDeleteRecordTypes = `-- name: PluralDeleteRecordTypes :exec
+DELETE FROM m_record_types WHERE record_type_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteRecordTypes(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteRecordTypes, dollar_1)
+	return err
+}
+
 const updateRecordType = `-- name: UpdateRecordType :one
 UPDATE m_record_types SET name = $2, key = $3 WHERE record_type_id = $1 RETURNING m_record_types_pkey, record_type_id, name, key
 `

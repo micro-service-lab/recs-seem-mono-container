@@ -47,6 +47,7 @@ type AttendStatusManager interface {
 	CreateAttendStatuses(ctx context.Context, ps []parameter.CreateAttendStatusParam) (int64, error)
 	UpdateAttendStatus(ctx context.Context, id uuid.UUID, name, key string) (entity.AttendStatus, error)
 	DeleteAttendStatus(ctx context.Context, id uuid.UUID) error
+	PluralDeleteAttendStatuses(ctx context.Context, ids []uuid.UUID) error
 	FindAttendStatusByID(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error)
 	FindAttendStatusByKey(ctx context.Context, key string) (entity.AttendStatus, error)
 	GetAttendStatuses(
@@ -68,6 +69,7 @@ type AttendanceTypeManager interface {
 	CreateAttendanceTypes(ctx context.Context, ps []parameter.CreateAttendanceTypeParam) (int64, error)
 	UpdateAttendanceType(ctx context.Context, id uuid.UUID, name, key, color string) (entity.AttendanceType, error)
 	DeleteAttendanceType(ctx context.Context, id uuid.UUID) error
+	PluralDeleteAttendanceTypes(ctx context.Context, ids []uuid.UUID) error
 	FindAttendanceTypeByID(ctx context.Context, id uuid.UUID) (entity.AttendanceType, error)
 	FindAttendanceTypeByKey(ctx context.Context, key string) (entity.AttendanceType, error)
 	GetAttendanceTypes(
@@ -89,6 +91,7 @@ type EventTypeManager interface {
 	CreateEventTypes(ctx context.Context, ps []parameter.CreateEventTypeParam) (int64, error)
 	UpdateEventType(ctx context.Context, id uuid.UUID, name, key, color string) (entity.EventType, error)
 	DeleteEventType(ctx context.Context, id uuid.UUID) error
+	PluralDeleteEventTypes(ctx context.Context, ids []uuid.UUID) error
 	FindEventTypeByID(ctx context.Context, id uuid.UUID) (entity.EventType, error)
 	FindEventTypeByKey(ctx context.Context, key string) (entity.EventType, error)
 	GetEventTypes(
@@ -111,6 +114,7 @@ type PermissionCategoryManager interface {
 	UpdatePermissionCategory(
 		ctx context.Context, id uuid.UUID, name, key, description string) (entity.PermissionCategory, error)
 	DeletePermissionCategory(ctx context.Context, id uuid.UUID) error
+	PluralDeletePermissionCategories(ctx context.Context, ids []uuid.UUID) error
 	FindPermissionCategoryByID(ctx context.Context, id uuid.UUID) (entity.PermissionCategory, error)
 	FindPermissionCategoryByKey(ctx context.Context, key string) (entity.PermissionCategory, error)
 	GetPermissionCategories(

@@ -210,6 +210,52 @@ func TestManageAttendanceType_DeleteAttendanceType(t *testing.T) {
 	}
 }
 
+func TestManageAttendanceType_PluralDeleteAttendanceTypes(t *testing.T) {
+	t.Parallel()
+	type wants struct {
+		ids []uuid.UUID
+	}
+	cases := []struct {
+		ids  []uuid.UUID
+		want wants
+	}{
+		{
+			ids: []uuid.UUID{
+				testutils.FixedUUID(t, 0),
+				testutils.FixedUUID(t, 1),
+			},
+			want: wants{
+				ids: []uuid.UUID{
+					testutils.FixedUUID(t, 0),
+					testutils.FixedUUID(t, 1),
+				},
+			},
+		},
+	}
+
+	storeMock := &store.StoreMock{
+		PluralDeleteAttendanceTypesFunc: func(_ context.Context, _ []uuid.UUID) error {
+			return nil
+		},
+	}
+	s := service.ManageAttendanceType{
+		DB: storeMock,
+	}
+	ctx := context.Background()
+
+	for _, c := range cases {
+		err := s.PluralDeleteAttendanceTypes(ctx, c.ids)
+		assert.NoError(t, err)
+	}
+
+	called := storeMock.PluralDeleteAttendanceTypesCalls()
+	assert.Len(t, called, len(cases))
+	for i, call := range called {
+		c := cases[i]
+		assert.Equal(t, c.want.ids, call.AttendanceTypeIDs)
+	}
+}
+
 func TestManageAttendanceType_FindAttendanceTypeByID(t *testing.T) {
 	t.Parallel()
 	type wants struct {

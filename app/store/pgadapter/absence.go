@@ -121,9 +121,6 @@ func (a *PgAdapter) CreateAbsencesWithSd(
 func deleteAbsence(ctx context.Context, qtx *query.Queries, absenceID uuid.UUID) error {
 	err := qtx.DeleteAbsence(ctx, absenceID)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return store.ErrDataNoRecord
-		}
 		return fmt.Errorf("failed to delete absence: %w", err)
 	}
 	return nil
@@ -147,6 +144,36 @@ func (a *PgAdapter) DeleteAbsenceWithSd(ctx context.Context, sd store.Sd, absenc
 	err := deleteAbsence(ctx, qtx, absenceID)
 	if err != nil {
 		return fmt.Errorf("failed to delete absence: %w", err)
+	}
+	return nil
+}
+
+func pluralDeleteAbsences(ctx context.Context, qtx *query.Queries, absenceIDs []uuid.UUID) error {
+	err := qtx.PluralDeleteAbsences(ctx, absenceIDs)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete absences: %w", err)
+	}
+	return nil
+}
+
+// PluralDeleteAbsences 欠席を複数削除する。
+func (a *PgAdapter) PluralDeleteAbsences(ctx context.Context, absenceIDs []uuid.UUID) error {
+	err := pluralDeleteAbsences(ctx, a.query, absenceIDs)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete absences: %w", err)
+	}
+	return nil
+}
+
+// PluralDeleteAbsencesWithSd SD付きで欠席を複数削除する。
+func (a *PgAdapter) PluralDeleteAbsencesWithSd(ctx context.Context, sd store.Sd, absenceIDs []uuid.UUID) error {
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ErrNotFoundDescriptor
+	}
+	err := pluralDeleteAbsences(ctx, qtx, absenceIDs)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete absences: %w", err)
 	}
 	return nil
 }

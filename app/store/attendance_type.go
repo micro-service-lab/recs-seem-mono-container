@@ -32,6 +32,10 @@ type AttendanceType interface {
 	DeleteAttendanceTypeByKey(ctx context.Context, key string) error
 	// DeleteAttendanceTypeByKeyWithSd SD付きで出欠状況タイプを削除する。
 	DeleteAttendanceTypeByKeyWithSd(ctx context.Context, sd Sd, key string) error
+	// PluralDeleteAttendanceTypes 出欠状況タイプを複数削除する。
+	PluralDeleteAttendanceTypes(ctx context.Context, attendanceTypeIDs []uuid.UUID) error
+	// PluralDeleteAttendanceTypesWithSd SD付きで出欠状況タイプを複数削除する。
+	PluralDeleteAttendanceTypesWithSd(ctx context.Context, sd Sd, attendanceTypeIDs []uuid.UUID) error
 	// FindAttendanceTypeByID 出欠状況タイプを取得する。
 	FindAttendanceTypeByID(ctx context.Context, attendanceTypeID uuid.UUID) (entity.AttendanceType, error)
 	// FindAttendanceTypeByIDWithSd SD付きで出欠状況タイプを取得する。

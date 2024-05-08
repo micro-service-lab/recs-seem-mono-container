@@ -435,3 +435,12 @@ func (q *Queries) GetPluralFilesWithAttachableItem(ctx context.Context, arg GetP
 	}
 	return items, nil
 }
+
+const pluralDeleteFiles = `-- name: PluralDeleteFiles :exec
+DELETE FROM t_files WHERE file_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteFiles(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteFiles, dollar_1)
+	return err
+}

@@ -10,6 +10,12 @@ UPDATE t_messages SET chat_room_id = $2, sender_id = $3, body = $4, last_edited_
 -- name: DeleteMessage :exec
 DELETE FROM t_messages WHERE message_id = $1;
 
+-- name: DeleteMessagesOnChatRoom :exec
+DELETE FROM t_messages WHERE chat_room_id = $1;
+
+-- name: PluralDeleteMessages :exec
+DELETE FROM t_messages WHERE message_id = ANY($1::uuid[]);
+
 -- name: FindMessageByID :one
 SELECT * FROM t_messages WHERE message_id = $1;
 

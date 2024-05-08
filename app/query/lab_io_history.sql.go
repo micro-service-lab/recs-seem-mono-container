@@ -96,6 +96,15 @@ func (q *Queries) DeleteLabIOHistory(ctx context.Context, labIoHistoryID uuid.UU
 	return err
 }
 
+const deleteLabIOHistoryOnMember = `-- name: DeleteLabIOHistoryOnMember :exec
+DELETE FROM t_lab_io_histories WHERE member_id = $1
+`
+
+func (q *Queries) DeleteLabIOHistoryOnMember(ctx context.Context, memberID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteLabIOHistoryOnMember, memberID)
+	return err
+}
+
 const exitLabIOHistory = `-- name: ExitLabIOHistory :one
 UPDATE t_lab_io_histories SET exited_at = $2 WHERE lab_io_history_id = $1 RETURNING t_lab_io_histories_pkey, lab_io_history_id, member_id, entered_at, exited_at
 `
@@ -842,6 +851,15 @@ func (q *Queries) GetPluralLabIOHistoriesWithMember(ctx context.Context, arg Get
 		return nil, err
 	}
 	return items, nil
+}
+
+const pluralDeleteLabIOHistories = `-- name: PluralDeleteLabIOHistories :exec
+DELETE FROM t_lab_io_histories WHERE lab_io_history_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteLabIOHistories(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteLabIOHistories, dollar_1)
+	return err
 }
 
 const updateLabIOHistory = `-- name: UpdateLabIOHistory :one

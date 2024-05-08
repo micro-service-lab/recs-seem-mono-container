@@ -10,6 +10,9 @@ UPDATE m_chat_rooms SET name = $2, is_private = $3, cover_image_id = $4, owner_i
 -- name: DeleteChatRoom :exec
 DELETE FROM m_chat_rooms WHERE chat_room_id = $1;
 
+-- name: PluralDeleteChatRooms :exec
+DELETE FROM m_chat_rooms WHERE chat_room_id = ANY($1::uuid[]);
+
 -- name: FindChatRoomByID :one
 SELECT * FROM m_chat_rooms WHERE chat_room_id = $1;
 

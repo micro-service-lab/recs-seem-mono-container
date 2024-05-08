@@ -203,6 +203,52 @@ func TestManageAttendStatus_DeleteAttendStatus(t *testing.T) {
 	}
 }
 
+func TestManageAttendStatus_PluralDeleteAttendStatuses(t *testing.T) {
+	t.Parallel()
+	type wants struct {
+		ids []uuid.UUID
+	}
+	cases := []struct {
+		ids  []uuid.UUID
+		want wants
+	}{
+		{
+			ids: []uuid.UUID{
+				testutils.FixedUUID(t, 0),
+				testutils.FixedUUID(t, 1),
+			},
+			want: wants{
+				ids: []uuid.UUID{
+					testutils.FixedUUID(t, 0),
+					testutils.FixedUUID(t, 1),
+				},
+			},
+		},
+	}
+
+	storeMock := &store.StoreMock{
+		PluralDeleteAttendStatusesFunc: func(_ context.Context, _ []uuid.UUID) error {
+			return nil
+		},
+	}
+	s := service.ManageAttendStatus{
+		DB: storeMock,
+	}
+	ctx := context.Background()
+
+	for _, c := range cases {
+		err := s.PluralDeleteAttendStatuses(ctx, c.ids)
+		assert.NoError(t, err)
+	}
+
+	called := storeMock.PluralDeleteAttendStatusesCalls()
+	assert.Len(t, called, len(cases))
+	for i, call := range called {
+		c := cases[i]
+		assert.Equal(t, c.want.ids, call.AttendStatusIDs)
+	}
+}
+
 func TestManageAttendStatus_FindAttendStatusByID(t *testing.T) {
 	t.Parallel()
 	type wants struct {

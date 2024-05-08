@@ -35,6 +35,10 @@ type PermissionCategory interface {
 	DeletePermissionCategoryByKey(ctx context.Context, key string) error
 	// DeletePermissionCategoryByKeyWithSd SD付きで権限カテゴリーを削除する。
 	DeletePermissionCategoryByKeyWithSd(ctx context.Context, sd Sd, key string) error
+	// PluralDeletePermissionCategories 権限カテゴリーを複数削除する。
+	PluralDeletePermissionCategories(ctx context.Context, permissionCategoryIDs []uuid.UUID) error
+	// PluralDeletePermissionCategoriesWithSd SD付きで権限カテゴリーを複数削除する。
+	PluralDeletePermissionCategoriesWithSd(ctx context.Context, sd Sd, permissionCategoryIDs []uuid.UUID) error
 	// FindPermissionCategoryByID 権限カテゴリーを取得する。
 	FindPermissionCategoryByID(ctx context.Context, permissionCategoryID uuid.UUID) (entity.PermissionCategory, error)
 	// FindPermissionCategoryByIDWithSd SD付きで権限カテゴリーを取得する。

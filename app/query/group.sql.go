@@ -558,3 +558,12 @@ func (q *Queries) GetPluralGroupsWithOrganization(ctx context.Context, arg GetPl
 	}
 	return items, nil
 }
+
+const pluralDeleteGroups = `-- name: PluralDeleteGroups :exec
+DELETE FROM m_groups WHERE group_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteGroups(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteGroups, dollar_1)
+	return err
+}

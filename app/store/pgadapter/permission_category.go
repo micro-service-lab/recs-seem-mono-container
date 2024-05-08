@@ -148,9 +148,6 @@ func (a *PgAdapter) CreatePermissionCategoriesWithSd(
 func deletePermissionCategory(ctx context.Context, qtx *query.Queries, permissionCategoryID uuid.UUID) error {
 	err := qtx.DeletePermissionCategory(ctx, permissionCategoryID)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return store.ErrDataNoRecord
-		}
 		return fmt.Errorf("failed to delete permission category: %w", err)
 	}
 	return nil
@@ -183,9 +180,6 @@ func (a *PgAdapter) DeletePermissionCategoryWithSd(
 func deletePermissionCategoryByKey(ctx context.Context, qtx *query.Queries, key string) error {
 	err := qtx.DeletePermissionCategoryByKey(ctx, key)
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return store.ErrDataNoRecord
-		}
 		return fmt.Errorf("failed to delete permission category: %w", err)
 	}
 	return nil
@@ -211,6 +205,42 @@ func (a *PgAdapter) DeletePermissionCategoryByKeyWithSd(
 	err := deletePermissionCategoryByKey(ctx, qtx, key)
 	if err != nil {
 		return fmt.Errorf("failed to delete permission category: %w", err)
+	}
+	return nil
+}
+
+func pluralDeletePermissionCategories(
+	ctx context.Context, qtx *query.Queries, permissionCategoryIDs []uuid.UUID,
+) error {
+	err := qtx.PluralDeletePermissionCategories(ctx, permissionCategoryIDs)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete permission categories: %w", err)
+	}
+	return nil
+}
+
+// PluralDeletePermissionCategories イベントタイプを複数削除する。
+func (a *PgAdapter) PluralDeletePermissionCategories(
+	ctx context.Context, permissionCategoryIDs []uuid.UUID,
+) error {
+	err := pluralDeletePermissionCategories(ctx, a.query, permissionCategoryIDs)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete permission categories: %w", err)
+	}
+	return nil
+}
+
+// PluralDeletePermissionCategoriesWithSd SD付きでイベントタイプを複数削除する。
+func (a *PgAdapter) PluralDeletePermissionCategoriesWithSd(
+	ctx context.Context, sd store.Sd, permissionCategoryIDs []uuid.UUID,
+) error {
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ErrNotFoundDescriptor
+	}
+	err := pluralDeletePermissionCategories(ctx, qtx, permissionCategoryIDs)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete permission categories: %w", err)
 	}
 	return nil
 }

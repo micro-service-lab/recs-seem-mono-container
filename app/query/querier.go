@@ -121,15 +121,24 @@ type Querier interface {
 	DeleteAbsence(ctx context.Context, absenceID uuid.UUID) error
 	DeleteAttachableItem(ctx context.Context, attachableItemID uuid.UUID) error
 	DeleteAttachedMessage(ctx context.Context, arg DeleteAttachedMessageParams) error
+	DeleteAttachedMessagesOnAttachableItem(ctx context.Context, attachableItemID uuid.UUID) error
+	DeleteAttachedMessagesOnAttachableItems(ctx context.Context, dollar_1 []uuid.UUID) error
+	DeleteAttachedMessagesOnMessage(ctx context.Context, messageID pgtype.UUID) error
+	DeleteAttachedMessagesOnMessages(ctx context.Context, dollar_1 []uuid.UUID) error
 	DeleteAttendStatus(ctx context.Context, attendStatusID uuid.UUID) error
 	DeleteAttendStatusByKey(ctx context.Context, key string) error
 	DeleteAttendance(ctx context.Context, attendanceID uuid.UUID) error
 	DeleteAttendanceType(ctx context.Context, attendanceTypeID uuid.UUID) error
 	DeleteAttendanceTypeByKey(ctx context.Context, key string) error
+	DeleteAttendancesOnMember(ctx context.Context, memberID uuid.UUID) error
+	DeleteAttendancesOnMembers(ctx context.Context, dollar_1 []uuid.UUID) error
 	DeleteChatRoom(ctx context.Context, chatRoomID uuid.UUID) error
 	DeleteChatRoomBelonging(ctx context.Context, arg DeleteChatRoomBelongingParams) error
+	DeleteChatRoomBelongingsOnMember(ctx context.Context, memberID uuid.UUID) error
+	DeleteChatRoomBelongingsOnMembers(ctx context.Context, dollar_1 []uuid.UUID) error
 	DeleteEarlyLeaving(ctx context.Context, earlyLeavingID uuid.UUID) error
 	DeleteEvent(ctx context.Context, eventID uuid.UUID) error
+	DeleteEventOnOrganization(ctx context.Context, organizationID pgtype.UUID) error
 	DeleteEventType(ctx context.Context, eventTypeID uuid.UUID) error
 	DeleteEventTypeByKey(ctx context.Context, key string) error
 	DeleteFile(ctx context.Context, fileID uuid.UUID) error
@@ -139,9 +148,11 @@ type Querier interface {
 	DeleteGroupByKey(ctx context.Context, key string) error
 	DeleteImage(ctx context.Context, imageID uuid.UUID) error
 	DeleteLabIOHistory(ctx context.Context, labIoHistoryID uuid.UUID) error
+	DeleteLabIOHistoryOnMember(ctx context.Context, memberID uuid.UUID) error
 	DeleteLateArrival(ctx context.Context, lateArrivalID uuid.UUID) error
 	DeleteMember(ctx context.Context, memberID uuid.UUID) error
 	DeleteMessage(ctx context.Context, messageID uuid.UUID) error
+	DeleteMessagesOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) error
 	DeleteMimeType(ctx context.Context, mimeTypeID uuid.UUID) error
 	DeleteMimeTypeByKey(ctx context.Context, key string) error
 	DeleteOrganization(ctx context.Context, organizationID uuid.UUID) error
@@ -150,6 +161,10 @@ type Querier interface {
 	DeletePermissionByKey(ctx context.Context, key string) error
 	DeletePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID) error
 	DeletePermissionCategoryByKey(ctx context.Context, key string) error
+	DeletePermissionOnPermission(ctx context.Context, permissionID uuid.UUID) error
+	DeletePermissionOnPermissions(ctx context.Context, dollar_1 []uuid.UUID) error
+	DeletePermissionOnWorkPosition(ctx context.Context, workPositionID uuid.UUID) error
+	DeletePermissionOnWorkPositions(ctx context.Context, dollar_1 []uuid.UUID) error
 	DeletePolicy(ctx context.Context, policyID uuid.UUID) error
 	DeletePolicyByKey(ctx context.Context, key string) error
 	DeletePolicyCategory(ctx context.Context, policyCategoryID uuid.UUID) error
@@ -157,10 +172,15 @@ type Querier interface {
 	DeletePositionHistory(ctx context.Context, positionHistoryID uuid.UUID) error
 	DeleteProfessor(ctx context.Context, professorID uuid.UUID) error
 	DeleteRecord(ctx context.Context, recordID uuid.UUID) error
+	DeleteRecordOnOrganization(ctx context.Context, organizationID pgtype.UUID) error
 	DeleteRecordType(ctx context.Context, recordTypeID uuid.UUID) error
 	DeleteRecordTypeByKey(ctx context.Context, key string) error
 	DeleteRole(ctx context.Context, roleID uuid.UUID) error
 	DeleteRoleAssociation(ctx context.Context, arg DeleteRoleAssociationParams) error
+	DeleteRoleAssociationsOnPolicies(ctx context.Context, dollar_1 []uuid.UUID) error
+	DeleteRoleAssociationsOnPolicy(ctx context.Context, policyID uuid.UUID) error
+	DeleteRoleAssociationsOnRole(ctx context.Context, roleID uuid.UUID) error
+	DeleteRoleAssociationsOnRoles(ctx context.Context, dollar_1 []uuid.UUID) error
 	DeleteStudent(ctx context.Context, studentID uuid.UUID) error
 	DeleteWorkPosition(ctx context.Context, workPositionID uuid.UUID) error
 	ExitLabIOHistory(ctx context.Context, arg ExitLabIOHistoryParams) (LabIOHistory, error)
@@ -567,6 +587,42 @@ type Querier interface {
 	GetWorkPositionsOnPermissionUseNumberedPaginate(ctx context.Context, arg GetWorkPositionsOnPermissionUseNumberedPaginateParams) ([]GetWorkPositionsOnPermissionUseNumberedPaginateRow, error)
 	GetWorkPositionsUseKeysetPaginate(ctx context.Context, arg GetWorkPositionsUseKeysetPaginateParams) ([]WorkPosition, error)
 	GetWorkPositionsUseNumberedPaginate(ctx context.Context, arg GetWorkPositionsUseNumberedPaginateParams) ([]WorkPosition, error)
+	PluralDeleteAbsences(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteAttachableItems(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteAttachedMessagesOnAttachableItem(ctx context.Context, arg PluralDeleteAttachedMessagesOnAttachableItemParams) error
+	PluralDeleteAttachedMessagesOnMessage(ctx context.Context, arg PluralDeleteAttachedMessagesOnMessageParams) error
+	PluralDeleteAttendStatuses(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteAttendanceTypes(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteAttendances(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteChatRooms(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteEarlyLeavings(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteEventTypes(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteEvents(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteFiles(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteGrades(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteGroups(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteImages(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteLabIOHistories(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteLateArrivals(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteMembers(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteMessages(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteMimeTypes(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteOrganizations(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeletePermissionAssociationsOnPermission(ctx context.Context, arg PluralDeletePermissionAssociationsOnPermissionParams) error
+	PluralDeletePermissionAssociationsOnWorkPosition(ctx context.Context, arg PluralDeletePermissionAssociationsOnWorkPositionParams) error
+	PluralDeletePermissionCategories(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeletePermissions(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeletePolicies(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeletePolicyCategories(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeletePositionHistories(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteProfessors(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteRecordTypes(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteRecords(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteRoleAssociationsOnPolicy(ctx context.Context, arg PluralDeleteRoleAssociationsOnPolicyParams) error
+	PluralDeleteRoleAssociationsOnRole(ctx context.Context, arg PluralDeleteRoleAssociationsOnRoleParams) error
+	PluralDeleteRoles(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteStudents(ctx context.Context, dollar_1 []uuid.UUID) error
+	PluralDeleteWorkPositions(ctx context.Context, dollar_1 []uuid.UUID) error
 	UpdateAttendStatus(ctx context.Context, arg UpdateAttendStatusParams) (AttendStatus, error)
 	UpdateAttendStatusByKey(ctx context.Context, arg UpdateAttendStatusByKeyParams) (AttendStatus, error)
 	UpdateAttendance(ctx context.Context, arg UpdateAttendanceParams) (Attendance, error)

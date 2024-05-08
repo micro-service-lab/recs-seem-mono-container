@@ -120,6 +120,15 @@ func (q *Queries) DeleteRecord(ctx context.Context, recordID uuid.UUID) error {
 	return err
 }
 
+const deleteRecordOnOrganization = `-- name: DeleteRecordOnOrganization :exec
+DELETE FROM t_records WHERE organization_id = $1
+`
+
+func (q *Queries) DeleteRecordOnOrganization(ctx context.Context, organizationID pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteRecordOnOrganization, organizationID)
+	return err
+}
+
 const findRecordByID = `-- name: FindRecordByID :one
 SELECT t_records_pkey, record_id, record_type_id, title, body, organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_records WHERE record_id = $1
 `
@@ -2819,6 +2828,15 @@ func (q *Queries) GetRecordsWithRecordTypeUseNumberedPaginate(ctx context.Contex
 		return nil, err
 	}
 	return items, nil
+}
+
+const pluralDeleteRecords = `-- name: PluralDeleteRecords :exec
+DELETE FROM t_records WHERE record_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteRecords(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteRecords, dollar_1)
+	return err
 }
 
 const updateRecord = `-- name: UpdateRecord :one

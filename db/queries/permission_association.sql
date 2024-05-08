@@ -7,6 +7,24 @@ INSERT INTO m_permission_associations (permission_id, work_position_id) VALUES (
 -- name: DeletePermissionAssociation :exec
 DELETE FROM m_permission_associations WHERE permission_id = $1 AND work_position_id = $2;
 
+-- name: DeletePermissionOnPermission :exec
+DELETE FROM m_permission_associations WHERE permission_id = $1;
+
+-- name: DeletePermissionOnPermissions :exec
+DELETE FROM m_permission_associations WHERE permission_id = ANY($1::uuid[]);
+
+-- name: PluralDeletePermissionAssociationsOnPermission :exec
+DELETE FROM m_permission_associations WHERE permission_id = $1 AND work_position_id = ANY($2::uuid[]);
+
+-- name: DeletePermissionOnWorkPosition :exec
+DELETE FROM m_permission_associations WHERE work_position_id = $1;
+
+-- name: DeletePermissionOnWorkPositions :exec
+DELETE FROM m_permission_associations WHERE work_position_id = ANY($1::uuid[]);
+
+-- name: PluralDeletePermissionAssociationsOnWorkPosition :exec
+DELETE FROM m_permission_associations WHERE work_position_id = $1 AND permission_id = ANY($2::uuid[]);
+
 -- name: GetWorkPositionsOnPermission :many
 SELECT sqlc.embed(m_permission_associations), sqlc.embed(m_work_positions) FROM m_permission_associations
 LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id

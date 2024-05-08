@@ -72,6 +72,42 @@ func (q *Queries) DeleteAttachedMessage(ctx context.Context, arg DeleteAttachedM
 	return err
 }
 
+const deleteAttachedMessagesOnAttachableItem = `-- name: DeleteAttachedMessagesOnAttachableItem :exec
+DELETE FROM t_attached_messages WHERE attachable_item_id = $1
+`
+
+func (q *Queries) DeleteAttachedMessagesOnAttachableItem(ctx context.Context, attachableItemID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteAttachedMessagesOnAttachableItem, attachableItemID)
+	return err
+}
+
+const deleteAttachedMessagesOnAttachableItems = `-- name: DeleteAttachedMessagesOnAttachableItems :exec
+DELETE FROM t_attached_messages WHERE attachable_item_id = ANY($1::uuid[])
+`
+
+func (q *Queries) DeleteAttachedMessagesOnAttachableItems(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteAttachedMessagesOnAttachableItems, dollar_1)
+	return err
+}
+
+const deleteAttachedMessagesOnMessage = `-- name: DeleteAttachedMessagesOnMessage :exec
+DELETE FROM t_attached_messages WHERE message_id = $1
+`
+
+func (q *Queries) DeleteAttachedMessagesOnMessage(ctx context.Context, messageID pgtype.UUID) error {
+	_, err := q.db.Exec(ctx, deleteAttachedMessagesOnMessage, messageID)
+	return err
+}
+
+const deleteAttachedMessagesOnMessages = `-- name: DeleteAttachedMessagesOnMessages :exec
+DELETE FROM t_attached_messages WHERE message_id = ANY($1::uuid[])
+`
+
+func (q *Queries) DeleteAttachedMessagesOnMessages(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteAttachedMessagesOnMessages, dollar_1)
+	return err
+}
+
 const getAttachableItemsOnMessage = `-- name: GetAttachableItemsOnMessage :many
 SELECT t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_images.image_id, t_images.height as image_height, t_images.width as image_width, t_files.file_id FROM t_attached_messages
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
@@ -572,4 +608,32 @@ func (q *Queries) GetPluralAttachedMessagesOnChatRoom(ctx context.Context, arg G
 		return nil, err
 	}
 	return items, nil
+}
+
+const pluralDeleteAttachedMessagesOnAttachableItem = `-- name: PluralDeleteAttachedMessagesOnAttachableItem :exec
+DELETE FROM t_attached_messages WHERE attachable_item_id = $1 AND message_id = ANY($2::uuid[])
+`
+
+type PluralDeleteAttachedMessagesOnAttachableItemParams struct {
+	AttachableItemID uuid.UUID   `json:"attachable_item_id"`
+	Column2          []uuid.UUID `json:"column_2"`
+}
+
+func (q *Queries) PluralDeleteAttachedMessagesOnAttachableItem(ctx context.Context, arg PluralDeleteAttachedMessagesOnAttachableItemParams) error {
+	_, err := q.db.Exec(ctx, pluralDeleteAttachedMessagesOnAttachableItem, arg.AttachableItemID, arg.Column2)
+	return err
+}
+
+const pluralDeleteAttachedMessagesOnMessage = `-- name: PluralDeleteAttachedMessagesOnMessage :exec
+DELETE FROM t_attached_messages WHERE message_id = $1 AND attachable_item_id = ANY($2::uuid[])
+`
+
+type PluralDeleteAttachedMessagesOnMessageParams struct {
+	MessageID pgtype.UUID `json:"message_id"`
+	Column2   []uuid.UUID `json:"column_2"`
+}
+
+func (q *Queries) PluralDeleteAttachedMessagesOnMessage(ctx context.Context, arg PluralDeleteAttachedMessagesOnMessageParams) error {
+	_, err := q.db.Exec(ctx, pluralDeleteAttachedMessagesOnMessage, arg.MessageID, arg.Column2)
+	return err
 }

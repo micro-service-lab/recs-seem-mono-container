@@ -210,6 +210,52 @@ func TestManagePermissionCategory_DeletePermissionCategory(t *testing.T) {
 	}
 }
 
+func TestManagePermissionCategory_PluralDeletePermissionCategories(t *testing.T) {
+	t.Parallel()
+	type wants struct {
+		ids []uuid.UUID
+	}
+	cases := []struct {
+		ids  []uuid.UUID
+		want wants
+	}{
+		{
+			ids: []uuid.UUID{
+				testutils.FixedUUID(t, 0),
+				testutils.FixedUUID(t, 1),
+			},
+			want: wants{
+				ids: []uuid.UUID{
+					testutils.FixedUUID(t, 0),
+					testutils.FixedUUID(t, 1),
+				},
+			},
+		},
+	}
+
+	storeMock := &store.StoreMock{
+		PluralDeletePermissionCategoriesFunc: func(_ context.Context, _ []uuid.UUID) error {
+			return nil
+		},
+	}
+	s := service.ManagePermissionCategory{
+		DB: storeMock,
+	}
+	ctx := context.Background()
+
+	for _, c := range cases {
+		err := s.PluralDeletePermissionCategories(ctx, c.ids)
+		assert.NoError(t, err)
+	}
+
+	called := storeMock.PluralDeletePermissionCategoriesCalls()
+	assert.Len(t, called, len(cases))
+	for i, call := range called {
+		c := cases[i]
+		assert.Equal(t, c.want.ids, call.PermissionCategoryIDs)
+	}
+}
+
 func TestManagePermissionCategory_FindPermissionCategoryByID(t *testing.T) {
 	t.Parallel()
 	type wants struct {

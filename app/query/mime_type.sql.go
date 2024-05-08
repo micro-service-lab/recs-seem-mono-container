@@ -282,3 +282,12 @@ func (q *Queries) GetPluralMimeTypes(ctx context.Context, arg GetPluralMimeTypes
 	}
 	return items, nil
 }
+
+const pluralDeleteMimeTypes = `-- name: PluralDeleteMimeTypes :exec
+DELETE FROM m_mime_types WHERE mime_type_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteMimeTypes(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteMimeTypes, dollar_1)
+	return err
+}

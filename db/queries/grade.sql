@@ -10,6 +10,9 @@ DELETE FROM m_grades WHERE grade_id = $1;
 -- name: DeleteGradeByKey :exec
 DELETE FROM m_grades WHERE key = $1;
 
+-- name: PluralDeleteGrades :exec
+DELETE FROM m_grades WHERE grade_id = ANY($1::uuid[]);
+
 -- name: FindGradeByID :one
 SELECT * FROM m_grades WHERE grade_id = $1;
 

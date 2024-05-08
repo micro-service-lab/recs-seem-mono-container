@@ -106,6 +106,18 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			GetPermissionCategoriesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
 //				panic("mock out the GetPermissionCategoriesCount method")
 //			},
+//			PluralDeleteAttendStatusesFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//				panic("mock out the PluralDeleteAttendStatuses method")
+//			},
+//			PluralDeleteAttendanceTypesFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//				panic("mock out the PluralDeleteAttendanceTypes method")
+//			},
+//			PluralDeleteEventTypesFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//				panic("mock out the PluralDeleteEventTypes method")
+//			},
+//			PluralDeletePermissionCategoriesFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//				panic("mock out the PluralDeletePermissionCategories method")
+//			},
 //			UpdateAttendStatusFunc: func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error) {
 //				panic("mock out the UpdateAttendStatus method")
 //			},
@@ -208,6 +220,18 @@ type ManagerInterfaceMock struct {
 
 	// GetPermissionCategoriesCountFunc mocks the GetPermissionCategoriesCount method.
 	GetPermissionCategoriesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
+
+	// PluralDeleteAttendStatusesFunc mocks the PluralDeleteAttendStatuses method.
+	PluralDeleteAttendStatusesFunc func(ctx context.Context, ids []uuid.UUID) error
+
+	// PluralDeleteAttendanceTypesFunc mocks the PluralDeleteAttendanceTypes method.
+	PluralDeleteAttendanceTypesFunc func(ctx context.Context, ids []uuid.UUID) error
+
+	// PluralDeleteEventTypesFunc mocks the PluralDeleteEventTypes method.
+	PluralDeleteEventTypesFunc func(ctx context.Context, ids []uuid.UUID) error
+
+	// PluralDeletePermissionCategoriesFunc mocks the PluralDeletePermissionCategories method.
+	PluralDeletePermissionCategoriesFunc func(ctx context.Context, ids []uuid.UUID) error
 
 	// UpdateAttendStatusFunc mocks the UpdateAttendStatus method.
 	UpdateAttendStatusFunc func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error)
@@ -481,6 +505,34 @@ type ManagerInterfaceMock struct {
 			// WhereSearchName is the whereSearchName argument value.
 			WhereSearchName string
 		}
+		// PluralDeleteAttendStatuses holds details about calls to the PluralDeleteAttendStatuses method.
+		PluralDeleteAttendStatuses []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ids is the ids argument value.
+			Ids []uuid.UUID
+		}
+		// PluralDeleteAttendanceTypes holds details about calls to the PluralDeleteAttendanceTypes method.
+		PluralDeleteAttendanceTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ids is the ids argument value.
+			Ids []uuid.UUID
+		}
+		// PluralDeleteEventTypes holds details about calls to the PluralDeleteEventTypes method.
+		PluralDeleteEventTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ids is the ids argument value.
+			Ids []uuid.UUID
+		}
+		// PluralDeletePermissionCategories holds details about calls to the PluralDeletePermissionCategories method.
+		PluralDeletePermissionCategories []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ids is the ids argument value.
+			Ids []uuid.UUID
+		}
 		// UpdateAttendStatus holds details about calls to the UpdateAttendStatus method.
 		UpdateAttendStatus []struct {
 			// Ctx is the ctx argument value.
@@ -532,38 +584,42 @@ type ManagerInterfaceMock struct {
 			Description string
 		}
 	}
-	lockCreateAttendStatus           sync.RWMutex
-	lockCreateAttendStatuses         sync.RWMutex
-	lockCreateAttendanceType         sync.RWMutex
-	lockCreateAttendanceTypes        sync.RWMutex
-	lockCreateEventType              sync.RWMutex
-	lockCreateEventTypes             sync.RWMutex
-	lockCreatePermissionCategories   sync.RWMutex
-	lockCreatePermissionCategory     sync.RWMutex
-	lockDeleteAttendStatus           sync.RWMutex
-	lockDeleteAttendanceType         sync.RWMutex
-	lockDeleteEventType              sync.RWMutex
-	lockDeletePermissionCategory     sync.RWMutex
-	lockFindAttendStatusByID         sync.RWMutex
-	lockFindAttendStatusByKey        sync.RWMutex
-	lockFindAttendanceTypeByID       sync.RWMutex
-	lockFindAttendanceTypeByKey      sync.RWMutex
-	lockFindEventTypeByID            sync.RWMutex
-	lockFindEventTypeByKey           sync.RWMutex
-	lockFindPermissionCategoryByID   sync.RWMutex
-	lockFindPermissionCategoryByKey  sync.RWMutex
-	lockGetAttendStatuses            sync.RWMutex
-	lockGetAttendStatusesCount       sync.RWMutex
-	lockGetAttendanceTypes           sync.RWMutex
-	lockGetAttendanceTypesCount      sync.RWMutex
-	lockGetEventTypes                sync.RWMutex
-	lockGetEventTypesCount           sync.RWMutex
-	lockGetPermissionCategories      sync.RWMutex
-	lockGetPermissionCategoriesCount sync.RWMutex
-	lockUpdateAttendStatus           sync.RWMutex
-	lockUpdateAttendanceType         sync.RWMutex
-	lockUpdateEventType              sync.RWMutex
-	lockUpdatePermissionCategory     sync.RWMutex
+	lockCreateAttendStatus               sync.RWMutex
+	lockCreateAttendStatuses             sync.RWMutex
+	lockCreateAttendanceType             sync.RWMutex
+	lockCreateAttendanceTypes            sync.RWMutex
+	lockCreateEventType                  sync.RWMutex
+	lockCreateEventTypes                 sync.RWMutex
+	lockCreatePermissionCategories       sync.RWMutex
+	lockCreatePermissionCategory         sync.RWMutex
+	lockDeleteAttendStatus               sync.RWMutex
+	lockDeleteAttendanceType             sync.RWMutex
+	lockDeleteEventType                  sync.RWMutex
+	lockDeletePermissionCategory         sync.RWMutex
+	lockFindAttendStatusByID             sync.RWMutex
+	lockFindAttendStatusByKey            sync.RWMutex
+	lockFindAttendanceTypeByID           sync.RWMutex
+	lockFindAttendanceTypeByKey          sync.RWMutex
+	lockFindEventTypeByID                sync.RWMutex
+	lockFindEventTypeByKey               sync.RWMutex
+	lockFindPermissionCategoryByID       sync.RWMutex
+	lockFindPermissionCategoryByKey      sync.RWMutex
+	lockGetAttendStatuses                sync.RWMutex
+	lockGetAttendStatusesCount           sync.RWMutex
+	lockGetAttendanceTypes               sync.RWMutex
+	lockGetAttendanceTypesCount          sync.RWMutex
+	lockGetEventTypes                    sync.RWMutex
+	lockGetEventTypesCount               sync.RWMutex
+	lockGetPermissionCategories          sync.RWMutex
+	lockGetPermissionCategoriesCount     sync.RWMutex
+	lockPluralDeleteAttendStatuses       sync.RWMutex
+	lockPluralDeleteAttendanceTypes      sync.RWMutex
+	lockPluralDeleteEventTypes           sync.RWMutex
+	lockPluralDeletePermissionCategories sync.RWMutex
+	lockUpdateAttendStatus               sync.RWMutex
+	lockUpdateAttendanceType             sync.RWMutex
+	lockUpdateEventType                  sync.RWMutex
+	lockUpdatePermissionCategory         sync.RWMutex
 }
 
 // CreateAttendStatus calls CreateAttendStatusFunc.
@@ -1695,6 +1751,150 @@ func (mock *ManagerInterfaceMock) GetPermissionCategoriesCountCalls() []struct {
 	mock.lockGetPermissionCategoriesCount.RLock()
 	calls = mock.calls.GetPermissionCategoriesCount
 	mock.lockGetPermissionCategoriesCount.RUnlock()
+	return calls
+}
+
+// PluralDeleteAttendStatuses calls PluralDeleteAttendStatusesFunc.
+func (mock *ManagerInterfaceMock) PluralDeleteAttendStatuses(ctx context.Context, ids []uuid.UUID) error {
+	if mock.PluralDeleteAttendStatusesFunc == nil {
+		panic("ManagerInterfaceMock.PluralDeleteAttendStatusesFunc: method is nil but ManagerInterface.PluralDeleteAttendStatuses was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}{
+		Ctx: ctx,
+		Ids: ids,
+	}
+	mock.lockPluralDeleteAttendStatuses.Lock()
+	mock.calls.PluralDeleteAttendStatuses = append(mock.calls.PluralDeleteAttendStatuses, callInfo)
+	mock.lockPluralDeleteAttendStatuses.Unlock()
+	return mock.PluralDeleteAttendStatusesFunc(ctx, ids)
+}
+
+// PluralDeleteAttendStatusesCalls gets all the calls that were made to PluralDeleteAttendStatuses.
+// Check the length with:
+//
+//	len(mockedManagerInterface.PluralDeleteAttendStatusesCalls())
+func (mock *ManagerInterfaceMock) PluralDeleteAttendStatusesCalls() []struct {
+	Ctx context.Context
+	Ids []uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}
+	mock.lockPluralDeleteAttendStatuses.RLock()
+	calls = mock.calls.PluralDeleteAttendStatuses
+	mock.lockPluralDeleteAttendStatuses.RUnlock()
+	return calls
+}
+
+// PluralDeleteAttendanceTypes calls PluralDeleteAttendanceTypesFunc.
+func (mock *ManagerInterfaceMock) PluralDeleteAttendanceTypes(ctx context.Context, ids []uuid.UUID) error {
+	if mock.PluralDeleteAttendanceTypesFunc == nil {
+		panic("ManagerInterfaceMock.PluralDeleteAttendanceTypesFunc: method is nil but ManagerInterface.PluralDeleteAttendanceTypes was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}{
+		Ctx: ctx,
+		Ids: ids,
+	}
+	mock.lockPluralDeleteAttendanceTypes.Lock()
+	mock.calls.PluralDeleteAttendanceTypes = append(mock.calls.PluralDeleteAttendanceTypes, callInfo)
+	mock.lockPluralDeleteAttendanceTypes.Unlock()
+	return mock.PluralDeleteAttendanceTypesFunc(ctx, ids)
+}
+
+// PluralDeleteAttendanceTypesCalls gets all the calls that were made to PluralDeleteAttendanceTypes.
+// Check the length with:
+//
+//	len(mockedManagerInterface.PluralDeleteAttendanceTypesCalls())
+func (mock *ManagerInterfaceMock) PluralDeleteAttendanceTypesCalls() []struct {
+	Ctx context.Context
+	Ids []uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}
+	mock.lockPluralDeleteAttendanceTypes.RLock()
+	calls = mock.calls.PluralDeleteAttendanceTypes
+	mock.lockPluralDeleteAttendanceTypes.RUnlock()
+	return calls
+}
+
+// PluralDeleteEventTypes calls PluralDeleteEventTypesFunc.
+func (mock *ManagerInterfaceMock) PluralDeleteEventTypes(ctx context.Context, ids []uuid.UUID) error {
+	if mock.PluralDeleteEventTypesFunc == nil {
+		panic("ManagerInterfaceMock.PluralDeleteEventTypesFunc: method is nil but ManagerInterface.PluralDeleteEventTypes was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}{
+		Ctx: ctx,
+		Ids: ids,
+	}
+	mock.lockPluralDeleteEventTypes.Lock()
+	mock.calls.PluralDeleteEventTypes = append(mock.calls.PluralDeleteEventTypes, callInfo)
+	mock.lockPluralDeleteEventTypes.Unlock()
+	return mock.PluralDeleteEventTypesFunc(ctx, ids)
+}
+
+// PluralDeleteEventTypesCalls gets all the calls that were made to PluralDeleteEventTypes.
+// Check the length with:
+//
+//	len(mockedManagerInterface.PluralDeleteEventTypesCalls())
+func (mock *ManagerInterfaceMock) PluralDeleteEventTypesCalls() []struct {
+	Ctx context.Context
+	Ids []uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}
+	mock.lockPluralDeleteEventTypes.RLock()
+	calls = mock.calls.PluralDeleteEventTypes
+	mock.lockPluralDeleteEventTypes.RUnlock()
+	return calls
+}
+
+// PluralDeletePermissionCategories calls PluralDeletePermissionCategoriesFunc.
+func (mock *ManagerInterfaceMock) PluralDeletePermissionCategories(ctx context.Context, ids []uuid.UUID) error {
+	if mock.PluralDeletePermissionCategoriesFunc == nil {
+		panic("ManagerInterfaceMock.PluralDeletePermissionCategoriesFunc: method is nil but ManagerInterface.PluralDeletePermissionCategories was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}{
+		Ctx: ctx,
+		Ids: ids,
+	}
+	mock.lockPluralDeletePermissionCategories.Lock()
+	mock.calls.PluralDeletePermissionCategories = append(mock.calls.PluralDeletePermissionCategories, callInfo)
+	mock.lockPluralDeletePermissionCategories.Unlock()
+	return mock.PluralDeletePermissionCategoriesFunc(ctx, ids)
+}
+
+// PluralDeletePermissionCategoriesCalls gets all the calls that were made to PluralDeletePermissionCategories.
+// Check the length with:
+//
+//	len(mockedManagerInterface.PluralDeletePermissionCategoriesCalls())
+func (mock *ManagerInterfaceMock) PluralDeletePermissionCategoriesCalls() []struct {
+	Ctx context.Context
+	Ids []uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}
+	mock.lockPluralDeletePermissionCategories.RLock()
+	calls = mock.calls.PluralDeletePermissionCategories
+	mock.lockPluralDeletePermissionCategories.RUnlock()
 	return calls
 }
 

@@ -10,6 +10,15 @@ UPDATE t_attendances SET attendance_type_id = $2, member_id = $3, description = 
 -- name: DeleteAttendance :exec
 DELETE FROM t_attendances WHERE attendance_id = $1;
 
+-- name: DeleteAttendancesOnMember :exec
+DELETE FROM t_attendances WHERE member_id = $1;
+
+-- name: DeleteAttendancesOnMembers :exec
+DELETE FROM t_attendances WHERE member_id = ANY($1::uuid[]);
+
+-- name: PluralDeleteAttendances :exec
+DELETE FROM t_attendances WHERE attendance_id = ANY($1::uuid[]);
+
 -- name: FindAttendanceByID :one
 SELECT * FROM t_attendances WHERE attendance_id = $1;
 

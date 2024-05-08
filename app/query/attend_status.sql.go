@@ -307,6 +307,15 @@ func (q *Queries) GetPluralAttendStatuses(ctx context.Context, arg GetPluralAtte
 	return items, nil
 }
 
+const pluralDeleteAttendStatuses = `-- name: PluralDeleteAttendStatuses :exec
+DELETE FROM m_attend_statuses WHERE attend_status_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteAttendStatuses(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteAttendStatuses, dollar_1)
+	return err
+}
+
 const updateAttendStatus = `-- name: UpdateAttendStatus :one
 UPDATE m_attend_statuses SET name = $2, key = $3 WHERE attend_status_id = $1 RETURNING m_attend_statuses_pkey, attend_status_id, name, key
 `

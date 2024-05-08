@@ -16,6 +16,9 @@ DELETE FROM m_record_types WHERE record_type_id = $1;
 -- name: DeleteRecordTypeByKey :exec
 DELETE FROM m_record_types WHERE key = $1;
 
+-- name: PluralDeleteRecordTypes :exec
+DELETE FROM m_record_types WHERE record_type_id = ANY($1::uuid[]);
+
 -- name: FindRecordTypeByID :one
 SELECT * FROM m_record_types WHERE record_type_id = $1;
 

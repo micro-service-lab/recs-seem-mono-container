@@ -98,6 +98,15 @@ func (m *ManageEventType) DeleteEventType(ctx context.Context, id uuid.UUID) err
 	return nil
 }
 
+// PluralDeleteEventTypes イベントタイプを複数削除する。
+func (m *ManageEventType) PluralDeleteEventTypes(ctx context.Context, ids []uuid.UUID) error {
+	err := m.DB.PluralDeleteEventTypes(ctx, ids)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete event types: %w", err)
+	}
+	return nil
+}
+
 // FindEventTypeByID イベントタイプをIDで取得する。
 func (m *ManageEventType) FindEventTypeByID(
 	ctx context.Context,

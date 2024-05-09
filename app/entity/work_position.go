@@ -8,5 +8,6 @@ import (
 type WorkPosition struct {
 	WorkPositionID uuid.UUID `json:"work_position_id"`
 	Name           string    `json:"name"`
+	OrganizationID uuid.UUID `json:"organization_id"`
 	Description    string    `json:"description"`
 }

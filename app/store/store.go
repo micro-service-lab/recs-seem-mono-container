@@ -36,4 +36,5 @@ type Store interface {
 	AttendanceType
 	EventType
 	PermissionCategory
+	PolicyCategory
 }

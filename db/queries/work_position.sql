@@ -1,8 +1,8 @@
 -- name: CreateWorkPositions :copyfrom
-INSERT INTO m_work_positions (name, description, created_at, updated_at) VALUES ($1, $2, $3, $4);
+INSERT INTO m_work_positions (name, organization_id, description, created_at, updated_at) VALUES ($1, $2, $3, $4, $5);
 
 -- name: CreateWorkPosition :one
-INSERT INTO m_work_positions (name, description, created_at, updated_at) VALUES ($1, $2, $3, $4) RETURNING *;
+INSERT INTO m_work_positions (name, organization_id, description, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING *;
 
 -- name: UpdateWorkPosition :one
 UPDATE m_work_positions SET name = $2, description = $3, updated_at = $4 WHERE work_position_id = $1 RETURNING *;
@@ -20,6 +20,8 @@ SELECT * FROM m_work_positions WHERE work_position_id = $1;
 SELECT * FROM m_work_positions
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_work_positions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_in_organization_id::boolean = true THEN m_work_positions.organization_id = ANY(@organization_ids::uuid[]) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
@@ -29,6 +31,8 @@ ORDER BY
 SELECT * FROM m_work_positions
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_work_positions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_in_organization_id::boolean = true THEN m_work_positions.organization_id = ANY(@organization_ids::uuid[]) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
@@ -39,6 +43,8 @@ LIMIT $1 OFFSET $2;
 SELECT * FROM m_work_positions
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_work_positions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_in_organization_id::boolean = true THEN m_work_positions.organization_id = ANY(@organization_ids::uuid[]) ELSE TRUE END
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
@@ -74,4 +80,6 @@ LIMIT $1 OFFSET $2;
 -- name: CountWorkPositions :one
 SELECT COUNT(*) FROM m_work_positions
 WHERE
-	CASE WHEN @where_like_name::boolean = true THEN name LIKE '%' || @search_name::text || '%' ELSE TRUE END;
+	CASE WHEN @where_like_name::boolean = true THEN name LIKE '%' || @search_name::text || '%' ELSE TRUE END
+AND
+	CASE WHEN @where_in_organization_id::boolean = true THEN m_work_positions.organization_id = ANY(@organization_ids::uuid[]) ELSE TRUE END;

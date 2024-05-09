@@ -299,6 +299,7 @@ type Student struct {
 type WorkPosition struct {
 	MWorkPositionsPkey pgtype.Int8 `json:"m_work_positions_pkey"`
 	WorkPositionID     uuid.UUID   `json:"work_position_id"`
+	OrganizationID     uuid.UUID   `json:"organization_id"`
 	Name               string      `json:"name"`
 	Description        string      `json:"description"`
 	CreatedAt          time.Time   `json:"created_at"`

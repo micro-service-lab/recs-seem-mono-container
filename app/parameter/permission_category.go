@@ -1,35 +1,35 @@
 package parameter
 
-// CreatePermissionCategoryParam イベントタイプ作成のパラメータ。
+// CreatePermissionCategoryParam 権限カテゴリー作成のパラメータ。
 type CreatePermissionCategoryParam struct {
 	Name        string
 	Key         string
 	Description string
 }
 
-// UpdatePermissionCategoryParams イベントタイプ更新のパラメータ。
+// UpdatePermissionCategoryParams 権限カテゴリー更新のパラメータ。
 type UpdatePermissionCategoryParams struct {
 	Name        string
 	Key         string
 	Description string
 }
 
-// UpdatePermissionCategoryByKeyParams イベントタイプ更新のパラメータ。
+// UpdatePermissionCategoryByKeyParams 権限カテゴリー更新のパラメータ。
 type UpdatePermissionCategoryByKeyParams struct {
 	Name        string
 	Description string
 }
 
-// WherePermissionCategoryParam イベントタイプ検索のパラメータ。
+// WherePermissionCategoryParam 権限カテゴリー検索のパラメータ。
 type WherePermissionCategoryParam struct {
 	WhereLikeName bool
 	SearchName    string
 }
 
-// PermissionCategoryOrderMethod イベントタイプの並び替え方法。
+// PermissionCategoryOrderMethod 権限カテゴリーの並び替え方法。
 type PermissionCategoryOrderMethod string
 
-// ParsePermissionCategoryOrderMethod はイベントタイプの並び替え方法をパースする。
+// ParsePermissionCategoryOrderMethod は権限カテゴリーの並び替え方法をパースする。
 func ParsePermissionCategoryOrderMethod(v string) (any, error) {
 	if v == "" {
 		return PermissionCategoryOrderMethodDefault, nil

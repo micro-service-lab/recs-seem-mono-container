@@ -28,7 +28,7 @@ func countPermissionCategories(
 	return c, nil
 }
 
-// CountPermissionCategories イベントタイプ数を取得する。
+// CountPermissionCategories 権限カテゴリー数を取得する。
 func (a *PgAdapter) CountPermissionCategories(
 	ctx context.Context, where parameter.WherePermissionCategoryParam,
 ) (int64, error) {
@@ -39,7 +39,7 @@ func (a *PgAdapter) CountPermissionCategories(
 	return c, nil
 }
 
-// CountPermissionCategoriesWithSd SD付きでイベントタイプ数を取得する。
+// CountPermissionCategoriesWithSd SD付きで権限カテゴリー数を取得する。
 func (a *PgAdapter) CountPermissionCategoriesWithSd(
 	ctx context.Context, sd store.Sd, where parameter.WherePermissionCategoryParam,
 ) (int64, error) {
@@ -75,7 +75,7 @@ func createPermissionCategory(
 	return entity, nil
 }
 
-// CreatePermissionCategory イベントタイプを作成する。
+// CreatePermissionCategory 権限カテゴリーを作成する。
 func (a *PgAdapter) CreatePermissionCategory(
 	ctx context.Context, param parameter.CreatePermissionCategoryParam,
 ) (entity.PermissionCategory, error) {
@@ -86,7 +86,7 @@ func (a *PgAdapter) CreatePermissionCategory(
 	return e, nil
 }
 
-// CreatePermissionCategoryWithSd SD付きでイベントタイプを作成する。
+// CreatePermissionCategoryWithSd SD付きで権限カテゴリーを作成する。
 func (a *PgAdapter) CreatePermissionCategoryWithSd(
 	ctx context.Context, sd store.Sd, param parameter.CreatePermissionCategoryParam,
 ) (entity.PermissionCategory, error) {
@@ -119,7 +119,7 @@ func createPermissionCategories(
 	return c, nil
 }
 
-// CreatePermissionCategories イベントタイプを作成する。
+// CreatePermissionCategories 権限カテゴリーを作成する。
 func (a *PgAdapter) CreatePermissionCategories(
 	ctx context.Context, params []parameter.CreatePermissionCategoryParam,
 ) (int64, error) {
@@ -130,7 +130,7 @@ func (a *PgAdapter) CreatePermissionCategories(
 	return c, nil
 }
 
-// CreatePermissionCategoriesWithSd SD付きでイベントタイプを作成する。
+// CreatePermissionCategoriesWithSd SD付きで権限カテゴリーを作成する。
 func (a *PgAdapter) CreatePermissionCategoriesWithSd(
 	ctx context.Context, sd store.Sd, params []parameter.CreatePermissionCategoryParam,
 ) (int64, error) {
@@ -153,7 +153,7 @@ func deletePermissionCategory(ctx context.Context, qtx *query.Queries, permissio
 	return nil
 }
 
-// DeletePermissionCategory イベントタイプを削除する。
+// DeletePermissionCategory 権限カテゴリーを削除する。
 func (a *PgAdapter) DeletePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID) error {
 	err := deletePermissionCategory(ctx, a.query, permissionCategoryID)
 	if err != nil {
@@ -162,7 +162,7 @@ func (a *PgAdapter) DeletePermissionCategory(ctx context.Context, permissionCate
 	return nil
 }
 
-// DeletePermissionCategoryWithSd SD付きでイベントタイプを削除する。
+// DeletePermissionCategoryWithSd SD付きで権限カテゴリーを削除する。
 func (a *PgAdapter) DeletePermissionCategoryWithSd(
 	ctx context.Context, sd store.Sd, permissionCategoryID uuid.UUID,
 ) error {
@@ -185,7 +185,7 @@ func deletePermissionCategoryByKey(ctx context.Context, qtx *query.Queries, key 
 	return nil
 }
 
-// DeletePermissionCategoryByKey イベントタイプを削除する。
+// DeletePermissionCategoryByKey 権限カテゴリーを削除する。
 func (a *PgAdapter) DeletePermissionCategoryByKey(ctx context.Context, key string) error {
 	err := deletePermissionCategoryByKey(ctx, a.query, key)
 	if err != nil {
@@ -194,7 +194,7 @@ func (a *PgAdapter) DeletePermissionCategoryByKey(ctx context.Context, key strin
 	return nil
 }
 
-// DeletePermissionCategoryByKeyWithSd SD付きでイベントタイプを削除する。
+// DeletePermissionCategoryByKeyWithSd SD付きで権限カテゴリーを削除する。
 func (a *PgAdapter) DeletePermissionCategoryByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) error {
@@ -219,7 +219,7 @@ func pluralDeletePermissionCategories(
 	return nil
 }
 
-// PluralDeletePermissionCategories イベントタイプを複数削除する。
+// PluralDeletePermissionCategories 権限カテゴリーを複数削除する。
 func (a *PgAdapter) PluralDeletePermissionCategories(
 	ctx context.Context, permissionCategoryIDs []uuid.UUID,
 ) error {
@@ -230,7 +230,7 @@ func (a *PgAdapter) PluralDeletePermissionCategories(
 	return nil
 }
 
-// PluralDeletePermissionCategoriesWithSd SD付きでイベントタイプを複数削除する。
+// PluralDeletePermissionCategoriesWithSd SD付きで権限カテゴリーを複数削除する。
 func (a *PgAdapter) PluralDeletePermissionCategoriesWithSd(
 	ctx context.Context, sd store.Sd, permissionCategoryIDs []uuid.UUID,
 ) error {
@@ -264,7 +264,7 @@ func findPermissionCategoryByID(
 	return entity, nil
 }
 
-// FindPermissionCategoryByID イベントタイプを取得する。
+// FindPermissionCategoryByID 権限カテゴリーを取得する。
 func (a *PgAdapter) FindPermissionCategoryByID(
 	ctx context.Context, permissionCategoryID uuid.UUID,
 ) (entity.PermissionCategory, error) {
@@ -275,7 +275,7 @@ func (a *PgAdapter) FindPermissionCategoryByID(
 	return e, nil
 }
 
-// FindPermissionCategoryByIDWithSd SD付きでイベントタイプを取得する。
+// FindPermissionCategoryByIDWithSd SD付きで権限カテゴリーを取得する。
 func (a *PgAdapter) FindPermissionCategoryByIDWithSd(
 	ctx context.Context, sd store.Sd, permissionCategoryID uuid.UUID,
 ) (entity.PermissionCategory, error) {
@@ -309,7 +309,7 @@ func findPermissionCategoryByKey(
 	return entity, nil
 }
 
-// FindPermissionCategoryByKey イベントタイプを取得する。
+// FindPermissionCategoryByKey 権限カテゴリーを取得する。
 func (a *PgAdapter) FindPermissionCategoryByKey(ctx context.Context, key string) (entity.PermissionCategory, error) {
 	e, err := findPermissionCategoryByKey(ctx, a.query, key)
 	if err != nil {
@@ -318,7 +318,7 @@ func (a *PgAdapter) FindPermissionCategoryByKey(ctx context.Context, key string)
 	return e, nil
 }
 
-// FindPermissionCategoryByKeyWithSd SD付きでイベントタイプを取得する。
+// FindPermissionCategoryByKeyWithSd SD付きで権限カテゴリーを取得する。
 func (a *PgAdapter) FindPermissionCategoryByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) (entity.PermissionCategory, error) {
@@ -451,7 +451,7 @@ func getPermissionCategories(
 	return res, nil
 }
 
-// GetPermissionCategories イベントタイプを取得する。
+// GetPermissionCategories 権限カテゴリーを取得する。
 func (a *PgAdapter) GetPermissionCategories(
 	ctx context.Context,
 	where parameter.WherePermissionCategoryParam,
@@ -467,7 +467,7 @@ func (a *PgAdapter) GetPermissionCategories(
 	return r, nil
 }
 
-// GetPermissionCategoriesWithSd SD付きでイベントタイプを取得する。
+// GetPermissionCategoriesWithSd SD付きで権限カテゴリーを取得する。
 func (a *PgAdapter) GetPermissionCategoriesWithSd(
 	ctx context.Context,
 	sd store.Sd,
@@ -513,7 +513,7 @@ func getPluralPermissionCategories(
 	return store.ListResult[entity.PermissionCategory]{Data: entities}, nil
 }
 
-// GetPluralPermissionCategories イベントタイプを取得する。
+// GetPluralPermissionCategories 権限カテゴリーを取得する。
 func (a *PgAdapter) GetPluralPermissionCategories(
 	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.PermissionCategory], error) {
@@ -525,7 +525,7 @@ func (a *PgAdapter) GetPluralPermissionCategories(
 	return r, nil
 }
 
-// GetPluralPermissionCategoriesWithSd SD付きでイベントタイプを取得する。
+// GetPluralPermissionCategoriesWithSd SD付きで権限カテゴリーを取得する。
 func (a *PgAdapter) GetPluralPermissionCategoriesWithSd(
 	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.PermissionCategory], error) {
@@ -567,7 +567,7 @@ func updatePermissionCategory(
 	return entity, nil
 }
 
-// UpdatePermissionCategory イベントタイプを更新する。
+// UpdatePermissionCategory 権限カテゴリーを更新する。
 func (a *PgAdapter) UpdatePermissionCategory(
 	ctx context.Context, permissionCategoryID uuid.UUID, param parameter.UpdatePermissionCategoryParams,
 ) (entity.PermissionCategory, error) {
@@ -578,7 +578,7 @@ func (a *PgAdapter) UpdatePermissionCategory(
 	return e, nil
 }
 
-// UpdatePermissionCategoryWithSd SD付きでイベントタイプを更新する。
+// UpdatePermissionCategoryWithSd SD付きで権限カテゴリーを更新する。
 func (a *PgAdapter) UpdatePermissionCategoryWithSd(
 	ctx context.Context, sd store.Sd, permissionCategoryID uuid.UUID, param parameter.UpdatePermissionCategoryParams,
 ) (entity.PermissionCategory, error) {
@@ -617,7 +617,7 @@ func updatePermissionCategoryByKey(
 	return entity, nil
 }
 
-// UpdatePermissionCategoryByKey イベントタイプを更新する。
+// UpdatePermissionCategoryByKey 権限カテゴリーを更新する。
 func (a *PgAdapter) UpdatePermissionCategoryByKey(
 	ctx context.Context, key string, param parameter.UpdatePermissionCategoryByKeyParams,
 ) (entity.PermissionCategory, error) {
@@ -628,7 +628,7 @@ func (a *PgAdapter) UpdatePermissionCategoryByKey(
 	return e, nil
 }
 
-// UpdatePermissionCategoryByKeyWithSd SD付きでイベントタイプを更新する。
+// UpdatePermissionCategoryByKeyWithSd SD付きで権限カテゴリーを更新する。
 func (a *PgAdapter) UpdatePermissionCategoryByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string, param parameter.UpdatePermissionCategoryByKeyParams,
 ) (entity.PermissionCategory, error) {

@@ -15,9 +15,9 @@ import (
 type PermissionCategoryKey string
 
 const (
-	// PermissionCategoryKeyGroup グループの設定に関する権限。
-	PermissionCategoryKeyGroup PermissionCategoryKey = "group"
-	// PermissionCategoryKeyUser グループ所属ユーザー(権限含む)に関する権限。
+	// PermissionCategoryKeyOrganization オーガナイゼーションの設定に関する権限。
+	PermissionCategoryKeyOrganization PermissionCategoryKey = "organization"
+	// PermissionCategoryKeyUser オーガナイゼーション所属ユーザー(権限含む)に関する権限。
 	PermissionCategoryKeyUser PermissionCategoryKey = "user"
 	// PermissionCategoryKeyEvent イベントに関する権限。
 	PermissionCategoryKeyEvent PermissionCategoryKey = "event"
@@ -37,14 +37,14 @@ type PermissionCategory struct {
 // PermissionCategories 権限カテゴリー一覧。
 var PermissionCategories = []PermissionCategory{
 	{
-		Key:         string(PermissionCategoryKeyGroup),
-		Name:        "グループ",
-		Description: "グループの設定に関する権限",
+		Key:         string(PermissionCategoryKeyOrganization),
+		Name:        "オーガナイゼーション",
+		Description: "オーガナイゼーションの設定に関する権限",
 	},
 	{
 		Key:         string(PermissionCategoryKeyUser),
 		Name:        "ユーザー",
-		Description: "グループ所属ユーザー(権限含む)に関する権限",
+		Description: "オーガナイゼーション所属ユーザー(権限含む)に関する権限",
 	},
 	{
 		Key:         string(PermissionCategoryKeyEvent),

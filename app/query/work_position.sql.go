@@ -16,34 +16,45 @@ const countWorkPositions = `-- name: CountWorkPositions :one
 SELECT COUNT(*) FROM m_work_positions
 WHERE
 	CASE WHEN $1::boolean = true THEN name LIKE '%' || $2::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN m_work_positions.organization_id = ANY($4::uuid[]) ELSE TRUE END
 `
 
 type CountWorkPositionsParams struct {
-	WhereLikeName bool   `json:"where_like_name"`
-	SearchName    string `json:"search_name"`
+	WhereLikeName         bool        `json:"where_like_name"`
+	SearchName            string      `json:"search_name"`
+	WhereInOrganizationID bool        `json:"where_in_organization_id"`
+	OrganizationIds       []uuid.UUID `json:"organization_ids"`
 }
 
 func (q *Queries) CountWorkPositions(ctx context.Context, arg CountWorkPositionsParams) (int64, error) {
-	row := q.db.QueryRow(ctx, countWorkPositions, arg.WhereLikeName, arg.SearchName)
+	row := q.db.QueryRow(ctx, countWorkPositions,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereInOrganizationID,
+		arg.OrganizationIds,
+	)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
 }
 
 const createWorkPosition = `-- name: CreateWorkPosition :one
-INSERT INTO m_work_positions (name, description, created_at, updated_at) VALUES ($1, $2, $3, $4) RETURNING m_work_positions_pkey, work_position_id, name, description, created_at, updated_at
+INSERT INTO m_work_positions (name, organization_id, description, created_at, updated_at) VALUES ($1, $2, $3, $4, $5) RETURNING m_work_positions_pkey, work_position_id, organization_id, name, description, created_at, updated_at
 `
 
 type CreateWorkPositionParams struct {
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	Name           string    `json:"name"`
+	OrganizationID uuid.UUID `json:"organization_id"`
+	Description    string    `json:"description"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
 }
 
 func (q *Queries) CreateWorkPosition(ctx context.Context, arg CreateWorkPositionParams) (WorkPosition, error) {
 	row := q.db.QueryRow(ctx, createWorkPosition,
 		arg.Name,
+		arg.OrganizationID,
 		arg.Description,
 		arg.CreatedAt,
 		arg.UpdatedAt,
@@ -52,6 +63,7 @@ func (q *Queries) CreateWorkPosition(ctx context.Context, arg CreateWorkPosition
 	err := row.Scan(
 		&i.MWorkPositionsPkey,
 		&i.WorkPositionID,
+		&i.OrganizationID,
 		&i.Name,
 		&i.Description,
 		&i.CreatedAt,
@@ -61,10 +73,11 @@ func (q *Queries) CreateWorkPosition(ctx context.Context, arg CreateWorkPosition
 }
 
 type CreateWorkPositionsParams struct {
-	Name        string    `json:"name"`
-	Description string    `json:"description"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	Name           string    `json:"name"`
+	OrganizationID uuid.UUID `json:"organization_id"`
+	Description    string    `json:"description"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
 }
 
 const deleteWorkPosition = `-- name: DeleteWorkPosition :exec
@@ -77,7 +90,7 @@ func (q *Queries) DeleteWorkPosition(ctx context.Context, workPositionID uuid.UU
 }
 
 const findWorkPositionByID = `-- name: FindWorkPositionByID :one
-SELECT m_work_positions_pkey, work_position_id, name, description, created_at, updated_at FROM m_work_positions WHERE work_position_id = $1
+SELECT m_work_positions_pkey, work_position_id, organization_id, name, description, created_at, updated_at FROM m_work_positions WHERE work_position_id = $1
 `
 
 func (q *Queries) FindWorkPositionByID(ctx context.Context, workPositionID uuid.UUID) (WorkPosition, error) {
@@ -86,6 +99,7 @@ func (q *Queries) FindWorkPositionByID(ctx context.Context, workPositionID uuid.
 	err := row.Scan(
 		&i.MWorkPositionsPkey,
 		&i.WorkPositionID,
+		&i.OrganizationID,
 		&i.Name,
 		&i.Description,
 		&i.CreatedAt,
@@ -135,23 +149,33 @@ func (q *Queries) GetPluckWorkPositions(ctx context.Context, arg GetPluckWorkPos
 }
 
 const getWorkPositions = `-- name: GetWorkPositions :many
-SELECT m_work_positions_pkey, work_position_id, name, description, created_at, updated_at FROM m_work_positions
+SELECT m_work_positions_pkey, work_position_id, organization_id, name, description, created_at, updated_at FROM m_work_positions
 WHERE
 	CASE WHEN $1::boolean = true THEN m_work_positions.name LIKE '%' || $2::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN m_work_positions.organization_id = ANY($4::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN $3::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN $5::text = 'name' THEN m_work_positions.name END ASC,
+	CASE WHEN $5::text = 'r_name' THEN m_work_positions.name END DESC,
 	m_work_positions_pkey ASC
 `
 
 type GetWorkPositionsParams struct {
-	WhereLikeName bool   `json:"where_like_name"`
-	SearchName    string `json:"search_name"`
-	OrderMethod   string `json:"order_method"`
+	WhereLikeName         bool        `json:"where_like_name"`
+	SearchName            string      `json:"search_name"`
+	WhereInOrganizationID bool        `json:"where_in_organization_id"`
+	OrganizationIds       []uuid.UUID `json:"organization_ids"`
+	OrderMethod           string      `json:"order_method"`
 }
 
 func (q *Queries) GetWorkPositions(ctx context.Context, arg GetWorkPositionsParams) ([]WorkPosition, error) {
-	rows, err := q.db.Query(ctx, getWorkPositions, arg.WhereLikeName, arg.SearchName, arg.OrderMethod)
+	rows, err := q.db.Query(ctx, getWorkPositions,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereInOrganizationID,
+		arg.OrganizationIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -162,6 +186,7 @@ func (q *Queries) GetWorkPositions(ctx context.Context, arg GetWorkPositionsPara
 		if err := rows.Scan(
 			&i.MWorkPositionsPkey,
 			&i.WorkPositionID,
+			&i.OrganizationID,
 			&i.Name,
 			&i.Description,
 			&i.CreatedAt,
@@ -178,42 +203,46 @@ func (q *Queries) GetWorkPositions(ctx context.Context, arg GetWorkPositionsPara
 }
 
 const getWorkPositionsUseKeysetPaginate = `-- name: GetWorkPositionsUseKeysetPaginate :many
-SELECT m_work_positions_pkey, work_position_id, name, description, created_at, updated_at FROM m_work_positions
+SELECT m_work_positions_pkey, work_position_id, organization_id, name, description, created_at, updated_at FROM m_work_positions
 WHERE
 	CASE WHEN $2::boolean = true THEN m_work_positions.name LIKE '%' || $3::text || '%' ELSE TRUE END
 AND
-	CASE $4::text
+	CASE WHEN $4::boolean = true THEN m_work_positions.organization_id = ANY($5::uuid[]) ELSE TRUE END
+AND
+	CASE $6::text
 		WHEN 'next' THEN
-			CASE $5::text
-				WHEN 'name' THEN name > $6 OR (name = $6 AND m_work_positions_pkey > $7::int)
-				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_work_positions_pkey > $7::int)
-				ELSE m_work_positions_pkey > $7::int
+			CASE $7::text
+				WHEN 'name' THEN name > $8 OR (name = $8 AND m_work_positions_pkey > $9::int)
+				WHEN 'r_name' THEN name < $8 OR (name = $8 AND m_work_positions_pkey > $9::int)
+				ELSE m_work_positions_pkey > $9::int
 			END
 		WHEN 'prev' THEN
-			CASE $5::text
-				WHEN 'name' THEN name < $6 OR (name = $6 AND m_work_positions_pkey < $7::int)
-				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_work_positions_pkey < $7::int)
-				ELSE m_work_positions_pkey < $7::int
+			CASE $7::text
+				WHEN 'name' THEN name < $8 OR (name = $8 AND m_work_positions_pkey < $9::int)
+				WHEN 'r_name' THEN name > $8 OR (name = $8 AND m_work_positions_pkey < $9::int)
+				ELSE m_work_positions_pkey < $9::int
 			END
 	END
 ORDER BY
-	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_work_positions.name END ASC,
-	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_work_positions.name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_work_positions.name END ASC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_work_positions.name END DESC,
-	CASE WHEN $4::text = 'next' THEN m_work_positions_pkey END ASC,
-	CASE WHEN $4::text = 'prev' THEN m_work_positions_pkey END DESC
+	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_work_positions.name END ASC,
+	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_work_positions.name END DESC,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_work_positions.name END ASC,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_work_positions.name END DESC,
+	CASE WHEN $6::text = 'next' THEN m_work_positions_pkey END ASC,
+	CASE WHEN $6::text = 'prev' THEN m_work_positions_pkey END DESC
 LIMIT $1
 `
 
 type GetWorkPositionsUseKeysetPaginateParams struct {
-	Limit           int32  `json:"limit"`
-	WhereLikeName   bool   `json:"where_like_name"`
-	SearchName      string `json:"search_name"`
-	CursorDirection string `json:"cursor_direction"`
-	OrderMethod     string `json:"order_method"`
-	NameCursor      string `json:"name_cursor"`
-	Cursor          int32  `json:"cursor"`
+	Limit                 int32       `json:"limit"`
+	WhereLikeName         bool        `json:"where_like_name"`
+	SearchName            string      `json:"search_name"`
+	WhereInOrganizationID bool        `json:"where_in_organization_id"`
+	OrganizationIds       []uuid.UUID `json:"organization_ids"`
+	CursorDirection       string      `json:"cursor_direction"`
+	OrderMethod           string      `json:"order_method"`
+	NameCursor            string      `json:"name_cursor"`
+	Cursor                int32       `json:"cursor"`
 }
 
 func (q *Queries) GetWorkPositionsUseKeysetPaginate(ctx context.Context, arg GetWorkPositionsUseKeysetPaginateParams) ([]WorkPosition, error) {
@@ -221,6 +250,8 @@ func (q *Queries) GetWorkPositionsUseKeysetPaginate(ctx context.Context, arg Get
 		arg.Limit,
 		arg.WhereLikeName,
 		arg.SearchName,
+		arg.WhereInOrganizationID,
+		arg.OrganizationIds,
 		arg.CursorDirection,
 		arg.OrderMethod,
 		arg.NameCursor,
@@ -236,6 +267,7 @@ func (q *Queries) GetWorkPositionsUseKeysetPaginate(ctx context.Context, arg Get
 		if err := rows.Scan(
 			&i.MWorkPositionsPkey,
 			&i.WorkPositionID,
+			&i.OrganizationID,
 			&i.Name,
 			&i.Description,
 			&i.CreatedAt,
@@ -252,22 +284,26 @@ func (q *Queries) GetWorkPositionsUseKeysetPaginate(ctx context.Context, arg Get
 }
 
 const getWorkPositionsUseNumberedPaginate = `-- name: GetWorkPositionsUseNumberedPaginate :many
-SELECT m_work_positions_pkey, work_position_id, name, description, created_at, updated_at FROM m_work_positions
+SELECT m_work_positions_pkey, work_position_id, organization_id, name, description, created_at, updated_at FROM m_work_positions
 WHERE
 	CASE WHEN $3::boolean = true THEN m_work_positions.name LIKE '%' || $4::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN m_work_positions.organization_id = ANY($6::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN $7::text = 'name' THEN m_work_positions.name END ASC,
+	CASE WHEN $7::text = 'r_name' THEN m_work_positions.name END DESC,
 	m_work_positions_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetWorkPositionsUseNumberedPaginateParams struct {
-	Limit         int32  `json:"limit"`
-	Offset        int32  `json:"offset"`
-	WhereLikeName bool   `json:"where_like_name"`
-	SearchName    string `json:"search_name"`
-	OrderMethod   string `json:"order_method"`
+	Limit                 int32       `json:"limit"`
+	Offset                int32       `json:"offset"`
+	WhereLikeName         bool        `json:"where_like_name"`
+	SearchName            string      `json:"search_name"`
+	WhereInOrganizationID bool        `json:"where_in_organization_id"`
+	OrganizationIds       []uuid.UUID `json:"organization_ids"`
+	OrderMethod           string      `json:"order_method"`
 }
 
 func (q *Queries) GetWorkPositionsUseNumberedPaginate(ctx context.Context, arg GetWorkPositionsUseNumberedPaginateParams) ([]WorkPosition, error) {
@@ -276,6 +312,8 @@ func (q *Queries) GetWorkPositionsUseNumberedPaginate(ctx context.Context, arg G
 		arg.Offset,
 		arg.WhereLikeName,
 		arg.SearchName,
+		arg.WhereInOrganizationID,
+		arg.OrganizationIds,
 		arg.OrderMethod,
 	)
 	if err != nil {
@@ -288,6 +326,7 @@ func (q *Queries) GetWorkPositionsUseNumberedPaginate(ctx context.Context, arg G
 		if err := rows.Scan(
 			&i.MWorkPositionsPkey,
 			&i.WorkPositionID,
+			&i.OrganizationID,
 			&i.Name,
 			&i.Description,
 			&i.CreatedAt,
@@ -313,7 +352,7 @@ func (q *Queries) PluralDeleteWorkPositions(ctx context.Context, dollar_1 []uuid
 }
 
 const updateWorkPosition = `-- name: UpdateWorkPosition :one
-UPDATE m_work_positions SET name = $2, description = $3, updated_at = $4 WHERE work_position_id = $1 RETURNING m_work_positions_pkey, work_position_id, name, description, created_at, updated_at
+UPDATE m_work_positions SET name = $2, description = $3, updated_at = $4 WHERE work_position_id = $1 RETURNING m_work_positions_pkey, work_position_id, organization_id, name, description, created_at, updated_at
 `
 
 type UpdateWorkPositionParams struct {
@@ -334,6 +373,7 @@ func (q *Queries) UpdateWorkPosition(ctx context.Context, arg UpdateWorkPosition
 	err := row.Scan(
 		&i.MWorkPositionsPkey,
 		&i.WorkPositionID,
+		&i.OrganizationID,
 		&i.Name,
 		&i.Description,
 		&i.CreatedAt,

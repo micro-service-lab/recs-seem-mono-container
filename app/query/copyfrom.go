@@ -1180,6 +1180,7 @@ func (r *iteratorForCreateWorkPositions) Next() bool {
 func (r iteratorForCreateWorkPositions) Values() ([]interface{}, error) {
 	return []interface{}{
 		r.rows[0].Name,
+		r.rows[0].OrganizationID,
 		r.rows[0].Description,
 		r.rows[0].CreatedAt,
 		r.rows[0].UpdatedAt,
@@ -1191,5 +1192,5 @@ func (r iteratorForCreateWorkPositions) Err() error {
 }
 
 func (q *Queries) CreateWorkPositions(ctx context.Context, arg []CreateWorkPositionsParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"m_work_positions"}, []string{"name", "description", "created_at", "updated_at"}, &iteratorForCreateWorkPositions{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"m_work_positions"}, []string{"name", "organization_id", "description", "created_at", "updated_at"}, &iteratorForCreateWorkPositions{rows: arg})
 }

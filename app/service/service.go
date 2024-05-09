@@ -18,6 +18,7 @@ type Manager struct {
 	ManageAttendanceType
 	ManageEventType
 	ManagePermissionCategory
+	ManagePolicyCategory
 }
 
 // NewManager creates a new Manager.
@@ -28,6 +29,7 @@ func NewManager(db store.Store) *Manager {
 		ManageAttendanceType:     ManageAttendanceType{DB: db},
 		ManageEventType:          ManageEventType{DB: db},
 		ManagePermissionCategory: ManagePermissionCategory{DB: db},
+		ManagePolicyCategory:     ManagePolicyCategory{DB: db},
 	}
 }
 
@@ -39,6 +41,7 @@ type ManagerInterface interface {
 	AttendanceTypeManager
 	EventTypeManager
 	PermissionCategoryManager
+	PolicyCategoryManager
 }
 
 // AttendStatusManager is a interface for attend status service.
@@ -128,6 +131,29 @@ type PermissionCategoryManager interface {
 		withCount parameter.WithCount,
 	) (store.ListResult[entity.PermissionCategory], error)
 	GetPermissionCategoriesCount(ctx context.Context, whereSearchName string) (int64, error)
+}
+
+// PolicyCategoryManager is a interface for event type service.
+type PolicyCategoryManager interface {
+	CreatePolicyCategory(ctx context.Context, name, key, description string) (entity.PolicyCategory, error)
+	CreatePolicyCategories(ctx context.Context, ps []parameter.CreatePolicyCategoryParam) (int64, error)
+	UpdatePolicyCategory(
+		ctx context.Context, id uuid.UUID, name, key, description string) (entity.PolicyCategory, error)
+	DeletePolicyCategory(ctx context.Context, id uuid.UUID) error
+	PluralDeletePolicyCategories(ctx context.Context, ids []uuid.UUID) error
+	FindPolicyCategoryByID(ctx context.Context, id uuid.UUID) (entity.PolicyCategory, error)
+	FindPolicyCategoryByKey(ctx context.Context, key string) (entity.PolicyCategory, error)
+	GetPolicyCategories(
+		ctx context.Context,
+		whereSearchName string,
+		order parameter.PolicyCategoryOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.PolicyCategory], error)
+	GetPolicyCategoriesCount(ctx context.Context, whereSearchName string) (int64, error)
 }
 
 var _ ManagerInterface = (*Manager)(nil)

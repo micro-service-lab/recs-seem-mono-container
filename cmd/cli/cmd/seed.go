@@ -240,6 +240,58 @@ The seed command is executed when the application is started for the first time.
 	},
 }
 
+// seedPolicyCategoriesCmd inserts policy categories.
+var seedPolicyCategoriesCmd = &cobra.Command{
+	Use:   "policy_category",
+	Short: "Inserts policy categories",
+	Long: `Inserting policy categories will insert the data necessary for the application to operate into the database.
+
+The seed command is executed when the application is started for the first time.`,
+	Args: cobra.NoArgs,
+	Run: func(cmd *cobra.Command, _ []string) {
+		color.HiCyan("seed policy categories called...")
+		s := spinner.New(spinner.CharSets[11], spinnerFrequency*time.Millisecond)
+		s.Start()
+
+		ctx := cmd.Context()
+		if !force && !diff {
+			count, err := AppContainer.ServiceManager.GetPolicyCategoriesCount(ctx, "")
+			if err != nil {
+				s.Stop()
+				color.Red(fmt.Errorf("failed to get policy categories count: %w", err).Error())
+				return
+			}
+			if count > 0 {
+				s.Stop()
+				color.Yellow("Policy Categories already exist. Use --force to seed again")
+				return
+			}
+		}
+		b := batch.InitPolicyCategories{
+			Manager: &AppContainer.ServiceManager,
+		}
+		if diff {
+			err := b.RunDiff(ctx, noDelete, deepEqual)
+			if err != nil {
+				s.Stop()
+				color.Red(fmt.Errorf("failed to insert policy categories: %w", err).Error())
+				return
+			}
+			s.Stop()
+			color.Green("Completed filling in the difference on policy categories")
+			return
+		}
+		err := b.Run(ctx)
+		if err != nil {
+			s.Stop()
+			color.Red(fmt.Errorf("failed to insert policy categories: %w", err).Error())
+			return
+		}
+		s.Stop()
+		color.Green("Policy Categories inserted successfully")
+	},
+}
+
 // seedAllCmd inserts all seed data.
 var seedAllCmd = &cobra.Command{
 	Use:   "all",
@@ -255,6 +307,7 @@ The seed command is executed when the application is started for the first time.
 			seedAttendanceTypesCmd.Run,
 			seedEventTypesCmd.Run,
 			seedPermissionCategoriesCmd.Run,
+			seedPolicyCategoriesCmd.Run,
 		}
 		var wg sync.WaitGroup
 		wg.Add(len(cmds))
@@ -276,6 +329,7 @@ func init() {
 	seedCmd.AddCommand(seedAttendanceTypesCmd)
 	seedCmd.AddCommand(seedEventTypesCmd)
 	seedCmd.AddCommand(seedPermissionCategoriesCmd)
+	seedCmd.AddCommand(seedPolicyCategoriesCmd)
 
 	seedCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "Force seed")
 	seedCmd.PersistentFlags().BoolVarP(&diff, "diff", "d", false, "Seed only if there is a difference")

@@ -40,6 +40,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreateEventTypesFunc: func(ctx context.Context, ps []parameter.CreateEventTypeParam) (int64, error) {
 //				panic("mock out the CreateEventTypes method")
 //			},
+//			CreateMimeTypeFunc: func(ctx context.Context, name string, key string, kind string) (entity.MimeType, error) {
+//				panic("mock out the CreateMimeType method")
+//			},
+//			CreateMimeTypesFunc: func(ctx context.Context, ps []parameter.CreateMimeTypeParam) (int64, error) {
+//				panic("mock out the CreateMimeTypes method")
+//			},
 //			CreatePermissionCategoriesFunc: func(ctx context.Context, ps []parameter.CreatePermissionCategoryParam) (int64, error) {
 //				panic("mock out the CreatePermissionCategories method")
 //			},
@@ -52,6 +58,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreatePolicyCategoryFunc: func(ctx context.Context, name string, key string, description string) (entity.PolicyCategory, error) {
 //				panic("mock out the CreatePolicyCategory method")
 //			},
+//			CreateRecordTypeFunc: func(ctx context.Context, name string, key string) (entity.RecordType, error) {
+//				panic("mock out the CreateRecordType method")
+//			},
+//			CreateRecordTypesFunc: func(ctx context.Context, ps []parameter.CreateRecordTypeParam) (int64, error) {
+//				panic("mock out the CreateRecordTypes method")
+//			},
 //			DeleteAttendStatusFunc: func(ctx context.Context, id uuid.UUID) error {
 //				panic("mock out the DeleteAttendStatus method")
 //			},
@@ -61,11 +73,17 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			DeleteEventTypeFunc: func(ctx context.Context, id uuid.UUID) error {
 //				panic("mock out the DeleteEventType method")
 //			},
+//			DeleteMimeTypeFunc: func(ctx context.Context, id uuid.UUID) error {
+//				panic("mock out the DeleteMimeType method")
+//			},
 //			DeletePermissionCategoryFunc: func(ctx context.Context, id uuid.UUID) error {
 //				panic("mock out the DeletePermissionCategory method")
 //			},
 //			DeletePolicyCategoryFunc: func(ctx context.Context, id uuid.UUID) error {
 //				panic("mock out the DeletePolicyCategory method")
+//			},
+//			DeleteRecordTypeFunc: func(ctx context.Context, id uuid.UUID) error {
+//				panic("mock out the DeleteRecordType method")
 //			},
 //			FindAttendStatusByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error) {
 //				panic("mock out the FindAttendStatusByID method")
@@ -85,6 +103,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			FindEventTypeByKeyFunc: func(ctx context.Context, key string) (entity.EventType, error) {
 //				panic("mock out the FindEventTypeByKey method")
 //			},
+//			FindMimeTypeByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.MimeType, error) {
+//				panic("mock out the FindMimeTypeByID method")
+//			},
+//			FindMimeTypeByKeyFunc: func(ctx context.Context, key string) (entity.MimeType, error) {
+//				panic("mock out the FindMimeTypeByKey method")
+//			},
 //			FindPermissionCategoryByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.PermissionCategory, error) {
 //				panic("mock out the FindPermissionCategoryByID method")
 //			},
@@ -96,6 +120,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			FindPolicyCategoryByKeyFunc: func(ctx context.Context, key string) (entity.PolicyCategory, error) {
 //				panic("mock out the FindPolicyCategoryByKey method")
+//			},
+//			FindRecordTypeByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.RecordType, error) {
+//				panic("mock out the FindRecordTypeByID method")
+//			},
+//			FindRecordTypeByKeyFunc: func(ctx context.Context, key string) (entity.RecordType, error) {
+//				panic("mock out the FindRecordTypeByKey method")
 //			},
 //			GetAttendStatusesFunc: func(ctx context.Context, whereSearchName string, order parameter.AttendStatusOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendStatus], error) {
 //				panic("mock out the GetAttendStatuses method")
@@ -115,6 +145,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			GetEventTypesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
 //				panic("mock out the GetEventTypesCount method")
 //			},
+//			GetMimeTypesFunc: func(ctx context.Context, whereSearchName string, order parameter.MimeTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MimeType], error) {
+//				panic("mock out the GetMimeTypes method")
+//			},
+//			GetMimeTypesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
+//				panic("mock out the GetMimeTypesCount method")
+//			},
 //			GetPermissionCategoriesFunc: func(ctx context.Context, whereSearchName string, order parameter.PermissionCategoryOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PermissionCategory], error) {
 //				panic("mock out the GetPermissionCategories method")
 //			},
@@ -127,6 +163,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			GetPolicyCategoriesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
 //				panic("mock out the GetPolicyCategoriesCount method")
 //			},
+//			GetRecordTypesFunc: func(ctx context.Context, whereSearchName string, order parameter.RecordTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.RecordType], error) {
+//				panic("mock out the GetRecordTypes method")
+//			},
+//			GetRecordTypesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
+//				panic("mock out the GetRecordTypesCount method")
+//			},
 //			PluralDeleteAttendStatusesFunc: func(ctx context.Context, ids []uuid.UUID) error {
 //				panic("mock out the PluralDeleteAttendStatuses method")
 //			},
@@ -136,11 +178,17 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			PluralDeleteEventTypesFunc: func(ctx context.Context, ids []uuid.UUID) error {
 //				panic("mock out the PluralDeleteEventTypes method")
 //			},
+//			PluralDeleteMimeTypesFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//				panic("mock out the PluralDeleteMimeTypes method")
+//			},
 //			PluralDeletePermissionCategoriesFunc: func(ctx context.Context, ids []uuid.UUID) error {
 //				panic("mock out the PluralDeletePermissionCategories method")
 //			},
 //			PluralDeletePolicyCategoriesFunc: func(ctx context.Context, ids []uuid.UUID) error {
 //				panic("mock out the PluralDeletePolicyCategories method")
+//			},
+//			PluralDeleteRecordTypesFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//				panic("mock out the PluralDeleteRecordTypes method")
 //			},
 //			UpdateAttendStatusFunc: func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error) {
 //				panic("mock out the UpdateAttendStatus method")
@@ -151,11 +199,17 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			UpdateEventTypeFunc: func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.EventType, error) {
 //				panic("mock out the UpdateEventType method")
 //			},
+//			UpdateMimeTypeFunc: func(ctx context.Context, id uuid.UUID, name string, key string, kind string) (entity.MimeType, error) {
+//				panic("mock out the UpdateMimeType method")
+//			},
 //			UpdatePermissionCategoryFunc: func(ctx context.Context, id uuid.UUID, name string, key string, description string) (entity.PermissionCategory, error) {
 //				panic("mock out the UpdatePermissionCategory method")
 //			},
 //			UpdatePolicyCategoryFunc: func(ctx context.Context, id uuid.UUID, name string, key string, description string) (entity.PolicyCategory, error) {
 //				panic("mock out the UpdatePolicyCategory method")
+//			},
+//			UpdateRecordTypeFunc: func(ctx context.Context, id uuid.UUID, name string, key string) (entity.RecordType, error) {
+//				panic("mock out the UpdateRecordType method")
 //			},
 //		}
 //
@@ -182,6 +236,12 @@ type ManagerInterfaceMock struct {
 	// CreateEventTypesFunc mocks the CreateEventTypes method.
 	CreateEventTypesFunc func(ctx context.Context, ps []parameter.CreateEventTypeParam) (int64, error)
 
+	// CreateMimeTypeFunc mocks the CreateMimeType method.
+	CreateMimeTypeFunc func(ctx context.Context, name string, key string, kind string) (entity.MimeType, error)
+
+	// CreateMimeTypesFunc mocks the CreateMimeTypes method.
+	CreateMimeTypesFunc func(ctx context.Context, ps []parameter.CreateMimeTypeParam) (int64, error)
+
 	// CreatePermissionCategoriesFunc mocks the CreatePermissionCategories method.
 	CreatePermissionCategoriesFunc func(ctx context.Context, ps []parameter.CreatePermissionCategoryParam) (int64, error)
 
@@ -194,6 +254,12 @@ type ManagerInterfaceMock struct {
 	// CreatePolicyCategoryFunc mocks the CreatePolicyCategory method.
 	CreatePolicyCategoryFunc func(ctx context.Context, name string, key string, description string) (entity.PolicyCategory, error)
 
+	// CreateRecordTypeFunc mocks the CreateRecordType method.
+	CreateRecordTypeFunc func(ctx context.Context, name string, key string) (entity.RecordType, error)
+
+	// CreateRecordTypesFunc mocks the CreateRecordTypes method.
+	CreateRecordTypesFunc func(ctx context.Context, ps []parameter.CreateRecordTypeParam) (int64, error)
+
 	// DeleteAttendStatusFunc mocks the DeleteAttendStatus method.
 	DeleteAttendStatusFunc func(ctx context.Context, id uuid.UUID) error
 
@@ -203,11 +269,17 @@ type ManagerInterfaceMock struct {
 	// DeleteEventTypeFunc mocks the DeleteEventType method.
 	DeleteEventTypeFunc func(ctx context.Context, id uuid.UUID) error
 
+	// DeleteMimeTypeFunc mocks the DeleteMimeType method.
+	DeleteMimeTypeFunc func(ctx context.Context, id uuid.UUID) error
+
 	// DeletePermissionCategoryFunc mocks the DeletePermissionCategory method.
 	DeletePermissionCategoryFunc func(ctx context.Context, id uuid.UUID) error
 
 	// DeletePolicyCategoryFunc mocks the DeletePolicyCategory method.
 	DeletePolicyCategoryFunc func(ctx context.Context, id uuid.UUID) error
+
+	// DeleteRecordTypeFunc mocks the DeleteRecordType method.
+	DeleteRecordTypeFunc func(ctx context.Context, id uuid.UUID) error
 
 	// FindAttendStatusByIDFunc mocks the FindAttendStatusByID method.
 	FindAttendStatusByIDFunc func(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error)
@@ -227,6 +299,12 @@ type ManagerInterfaceMock struct {
 	// FindEventTypeByKeyFunc mocks the FindEventTypeByKey method.
 	FindEventTypeByKeyFunc func(ctx context.Context, key string) (entity.EventType, error)
 
+	// FindMimeTypeByIDFunc mocks the FindMimeTypeByID method.
+	FindMimeTypeByIDFunc func(ctx context.Context, id uuid.UUID) (entity.MimeType, error)
+
+	// FindMimeTypeByKeyFunc mocks the FindMimeTypeByKey method.
+	FindMimeTypeByKeyFunc func(ctx context.Context, key string) (entity.MimeType, error)
+
 	// FindPermissionCategoryByIDFunc mocks the FindPermissionCategoryByID method.
 	FindPermissionCategoryByIDFunc func(ctx context.Context, id uuid.UUID) (entity.PermissionCategory, error)
 
@@ -238,6 +316,12 @@ type ManagerInterfaceMock struct {
 
 	// FindPolicyCategoryByKeyFunc mocks the FindPolicyCategoryByKey method.
 	FindPolicyCategoryByKeyFunc func(ctx context.Context, key string) (entity.PolicyCategory, error)
+
+	// FindRecordTypeByIDFunc mocks the FindRecordTypeByID method.
+	FindRecordTypeByIDFunc func(ctx context.Context, id uuid.UUID) (entity.RecordType, error)
+
+	// FindRecordTypeByKeyFunc mocks the FindRecordTypeByKey method.
+	FindRecordTypeByKeyFunc func(ctx context.Context, key string) (entity.RecordType, error)
 
 	// GetAttendStatusesFunc mocks the GetAttendStatuses method.
 	GetAttendStatusesFunc func(ctx context.Context, whereSearchName string, order parameter.AttendStatusOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendStatus], error)
@@ -257,6 +341,12 @@ type ManagerInterfaceMock struct {
 	// GetEventTypesCountFunc mocks the GetEventTypesCount method.
 	GetEventTypesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
 
+	// GetMimeTypesFunc mocks the GetMimeTypes method.
+	GetMimeTypesFunc func(ctx context.Context, whereSearchName string, order parameter.MimeTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MimeType], error)
+
+	// GetMimeTypesCountFunc mocks the GetMimeTypesCount method.
+	GetMimeTypesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
+
 	// GetPermissionCategoriesFunc mocks the GetPermissionCategories method.
 	GetPermissionCategoriesFunc func(ctx context.Context, whereSearchName string, order parameter.PermissionCategoryOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PermissionCategory], error)
 
@@ -269,6 +359,12 @@ type ManagerInterfaceMock struct {
 	// GetPolicyCategoriesCountFunc mocks the GetPolicyCategoriesCount method.
 	GetPolicyCategoriesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
 
+	// GetRecordTypesFunc mocks the GetRecordTypes method.
+	GetRecordTypesFunc func(ctx context.Context, whereSearchName string, order parameter.RecordTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.RecordType], error)
+
+	// GetRecordTypesCountFunc mocks the GetRecordTypesCount method.
+	GetRecordTypesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
+
 	// PluralDeleteAttendStatusesFunc mocks the PluralDeleteAttendStatuses method.
 	PluralDeleteAttendStatusesFunc func(ctx context.Context, ids []uuid.UUID) error
 
@@ -278,11 +374,17 @@ type ManagerInterfaceMock struct {
 	// PluralDeleteEventTypesFunc mocks the PluralDeleteEventTypes method.
 	PluralDeleteEventTypesFunc func(ctx context.Context, ids []uuid.UUID) error
 
+	// PluralDeleteMimeTypesFunc mocks the PluralDeleteMimeTypes method.
+	PluralDeleteMimeTypesFunc func(ctx context.Context, ids []uuid.UUID) error
+
 	// PluralDeletePermissionCategoriesFunc mocks the PluralDeletePermissionCategories method.
 	PluralDeletePermissionCategoriesFunc func(ctx context.Context, ids []uuid.UUID) error
 
 	// PluralDeletePolicyCategoriesFunc mocks the PluralDeletePolicyCategories method.
 	PluralDeletePolicyCategoriesFunc func(ctx context.Context, ids []uuid.UUID) error
+
+	// PluralDeleteRecordTypesFunc mocks the PluralDeleteRecordTypes method.
+	PluralDeleteRecordTypesFunc func(ctx context.Context, ids []uuid.UUID) error
 
 	// UpdateAttendStatusFunc mocks the UpdateAttendStatus method.
 	UpdateAttendStatusFunc func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error)
@@ -293,11 +395,17 @@ type ManagerInterfaceMock struct {
 	// UpdateEventTypeFunc mocks the UpdateEventType method.
 	UpdateEventTypeFunc func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.EventType, error)
 
+	// UpdateMimeTypeFunc mocks the UpdateMimeType method.
+	UpdateMimeTypeFunc func(ctx context.Context, id uuid.UUID, name string, key string, kind string) (entity.MimeType, error)
+
 	// UpdatePermissionCategoryFunc mocks the UpdatePermissionCategory method.
 	UpdatePermissionCategoryFunc func(ctx context.Context, id uuid.UUID, name string, key string, description string) (entity.PermissionCategory, error)
 
 	// UpdatePolicyCategoryFunc mocks the UpdatePolicyCategory method.
 	UpdatePolicyCategoryFunc func(ctx context.Context, id uuid.UUID, name string, key string, description string) (entity.PolicyCategory, error)
+
+	// UpdateRecordTypeFunc mocks the UpdateRecordType method.
+	UpdateRecordTypeFunc func(ctx context.Context, id uuid.UUID, name string, key string) (entity.RecordType, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -353,6 +461,24 @@ type ManagerInterfaceMock struct {
 			// Ps is the ps argument value.
 			Ps []parameter.CreateEventTypeParam
 		}
+		// CreateMimeType holds details about calls to the CreateMimeType method.
+		CreateMimeType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Name is the name argument value.
+			Name string
+			// Key is the key argument value.
+			Key string
+			// Kind is the kind argument value.
+			Kind string
+		}
+		// CreateMimeTypes holds details about calls to the CreateMimeTypes method.
+		CreateMimeTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ps is the ps argument value.
+			Ps []parameter.CreateMimeTypeParam
+		}
 		// CreatePermissionCategories holds details about calls to the CreatePermissionCategories method.
 		CreatePermissionCategories []struct {
 			// Ctx is the ctx argument value.
@@ -389,6 +515,22 @@ type ManagerInterfaceMock struct {
 			// Description is the description argument value.
 			Description string
 		}
+		// CreateRecordType holds details about calls to the CreateRecordType method.
+		CreateRecordType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Name is the name argument value.
+			Name string
+			// Key is the key argument value.
+			Key string
+		}
+		// CreateRecordTypes holds details about calls to the CreateRecordTypes method.
+		CreateRecordTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ps is the ps argument value.
+			Ps []parameter.CreateRecordTypeParam
+		}
 		// DeleteAttendStatus holds details about calls to the DeleteAttendStatus method.
 		DeleteAttendStatus []struct {
 			// Ctx is the ctx argument value.
@@ -410,6 +552,13 @@ type ManagerInterfaceMock struct {
 			// ID is the id argument value.
 			ID uuid.UUID
 		}
+		// DeleteMimeType holds details about calls to the DeleteMimeType method.
+		DeleteMimeType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
 		// DeletePermissionCategory holds details about calls to the DeletePermissionCategory method.
 		DeletePermissionCategory []struct {
 			// Ctx is the ctx argument value.
@@ -419,6 +568,13 @@ type ManagerInterfaceMock struct {
 		}
 		// DeletePolicyCategory holds details about calls to the DeletePolicyCategory method.
 		DeletePolicyCategory []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// DeleteRecordType holds details about calls to the DeleteRecordType method.
+		DeleteRecordType []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// ID is the id argument value.
@@ -466,6 +622,20 @@ type ManagerInterfaceMock struct {
 			// Key is the key argument value.
 			Key string
 		}
+		// FindMimeTypeByID holds details about calls to the FindMimeTypeByID method.
+		FindMimeTypeByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// FindMimeTypeByKey holds details about calls to the FindMimeTypeByKey method.
+		FindMimeTypeByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
 		// FindPermissionCategoryByID holds details about calls to the FindPermissionCategoryByID method.
 		FindPermissionCategoryByID []struct {
 			// Ctx is the ctx argument value.
@@ -489,6 +659,20 @@ type ManagerInterfaceMock struct {
 		}
 		// FindPolicyCategoryByKey holds details about calls to the FindPolicyCategoryByKey method.
 		FindPolicyCategoryByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// FindRecordTypeByID holds details about calls to the FindRecordTypeByID method.
+		FindRecordTypeByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// FindRecordTypeByKey holds details about calls to the FindRecordTypeByKey method.
+		FindRecordTypeByKey []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Key is the key argument value.
@@ -572,6 +756,32 @@ type ManagerInterfaceMock struct {
 			// WhereSearchName is the whereSearchName argument value.
 			WhereSearchName string
 		}
+		// GetMimeTypes holds details about calls to the GetMimeTypes method.
+		GetMimeTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// Order is the order argument value.
+			Order parameter.MimeTypeOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetMimeTypesCount holds details about calls to the GetMimeTypesCount method.
+		GetMimeTypesCount []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+		}
 		// GetPermissionCategories holds details about calls to the GetPermissionCategories method.
 		GetPermissionCategories []struct {
 			// Ctx is the ctx argument value.
@@ -624,6 +834,32 @@ type ManagerInterfaceMock struct {
 			// WhereSearchName is the whereSearchName argument value.
 			WhereSearchName string
 		}
+		// GetRecordTypes holds details about calls to the GetRecordTypes method.
+		GetRecordTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// Order is the order argument value.
+			Order parameter.RecordTypeOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetRecordTypesCount holds details about calls to the GetRecordTypesCount method.
+		GetRecordTypesCount []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+		}
 		// PluralDeleteAttendStatuses holds details about calls to the PluralDeleteAttendStatuses method.
 		PluralDeleteAttendStatuses []struct {
 			// Ctx is the ctx argument value.
@@ -645,6 +881,13 @@ type ManagerInterfaceMock struct {
 			// Ids is the ids argument value.
 			Ids []uuid.UUID
 		}
+		// PluralDeleteMimeTypes holds details about calls to the PluralDeleteMimeTypes method.
+		PluralDeleteMimeTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ids is the ids argument value.
+			Ids []uuid.UUID
+		}
 		// PluralDeletePermissionCategories holds details about calls to the PluralDeletePermissionCategories method.
 		PluralDeletePermissionCategories []struct {
 			// Ctx is the ctx argument value.
@@ -654,6 +897,13 @@ type ManagerInterfaceMock struct {
 		}
 		// PluralDeletePolicyCategories holds details about calls to the PluralDeletePolicyCategories method.
 		PluralDeletePolicyCategories []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ids is the ids argument value.
+			Ids []uuid.UUID
+		}
+		// PluralDeleteRecordTypes holds details about calls to the PluralDeleteRecordTypes method.
+		PluralDeleteRecordTypes []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Ids is the ids argument value.
@@ -696,6 +946,19 @@ type ManagerInterfaceMock struct {
 			// Color is the color argument value.
 			Color string
 		}
+		// UpdateMimeType holds details about calls to the UpdateMimeType method.
+		UpdateMimeType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+			// Name is the name argument value.
+			Name string
+			// Key is the key argument value.
+			Key string
+			// Kind is the kind argument value.
+			Kind string
+		}
 		// UpdatePermissionCategory holds details about calls to the UpdatePermissionCategory method.
 		UpdatePermissionCategory []struct {
 			// Ctx is the ctx argument value.
@@ -722,6 +985,17 @@ type ManagerInterfaceMock struct {
 			// Description is the description argument value.
 			Description string
 		}
+		// UpdateRecordType holds details about calls to the UpdateRecordType method.
+		UpdateRecordType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+			// Name is the name argument value.
+			Name string
+			// Key is the key argument value.
+			Key string
+		}
 	}
 	lockCreateAttendStatus               sync.RWMutex
 	lockCreateAttendStatuses             sync.RWMutex
@@ -729,45 +1003,63 @@ type ManagerInterfaceMock struct {
 	lockCreateAttendanceTypes            sync.RWMutex
 	lockCreateEventType                  sync.RWMutex
 	lockCreateEventTypes                 sync.RWMutex
+	lockCreateMimeType                   sync.RWMutex
+	lockCreateMimeTypes                  sync.RWMutex
 	lockCreatePermissionCategories       sync.RWMutex
 	lockCreatePermissionCategory         sync.RWMutex
 	lockCreatePolicyCategories           sync.RWMutex
 	lockCreatePolicyCategory             sync.RWMutex
+	lockCreateRecordType                 sync.RWMutex
+	lockCreateRecordTypes                sync.RWMutex
 	lockDeleteAttendStatus               sync.RWMutex
 	lockDeleteAttendanceType             sync.RWMutex
 	lockDeleteEventType                  sync.RWMutex
+	lockDeleteMimeType                   sync.RWMutex
 	lockDeletePermissionCategory         sync.RWMutex
 	lockDeletePolicyCategory             sync.RWMutex
+	lockDeleteRecordType                 sync.RWMutex
 	lockFindAttendStatusByID             sync.RWMutex
 	lockFindAttendStatusByKey            sync.RWMutex
 	lockFindAttendanceTypeByID           sync.RWMutex
 	lockFindAttendanceTypeByKey          sync.RWMutex
 	lockFindEventTypeByID                sync.RWMutex
 	lockFindEventTypeByKey               sync.RWMutex
+	lockFindMimeTypeByID                 sync.RWMutex
+	lockFindMimeTypeByKey                sync.RWMutex
 	lockFindPermissionCategoryByID       sync.RWMutex
 	lockFindPermissionCategoryByKey      sync.RWMutex
 	lockFindPolicyCategoryByID           sync.RWMutex
 	lockFindPolicyCategoryByKey          sync.RWMutex
+	lockFindRecordTypeByID               sync.RWMutex
+	lockFindRecordTypeByKey              sync.RWMutex
 	lockGetAttendStatuses                sync.RWMutex
 	lockGetAttendStatusesCount           sync.RWMutex
 	lockGetAttendanceTypes               sync.RWMutex
 	lockGetAttendanceTypesCount          sync.RWMutex
 	lockGetEventTypes                    sync.RWMutex
 	lockGetEventTypesCount               sync.RWMutex
+	lockGetMimeTypes                     sync.RWMutex
+	lockGetMimeTypesCount                sync.RWMutex
 	lockGetPermissionCategories          sync.RWMutex
 	lockGetPermissionCategoriesCount     sync.RWMutex
 	lockGetPolicyCategories              sync.RWMutex
 	lockGetPolicyCategoriesCount         sync.RWMutex
+	lockGetRecordTypes                   sync.RWMutex
+	lockGetRecordTypesCount              sync.RWMutex
 	lockPluralDeleteAttendStatuses       sync.RWMutex
 	lockPluralDeleteAttendanceTypes      sync.RWMutex
 	lockPluralDeleteEventTypes           sync.RWMutex
+	lockPluralDeleteMimeTypes            sync.RWMutex
 	lockPluralDeletePermissionCategories sync.RWMutex
 	lockPluralDeletePolicyCategories     sync.RWMutex
+	lockPluralDeleteRecordTypes          sync.RWMutex
 	lockUpdateAttendStatus               sync.RWMutex
 	lockUpdateAttendanceType             sync.RWMutex
 	lockUpdateEventType                  sync.RWMutex
+	lockUpdateMimeType                   sync.RWMutex
 	lockUpdatePermissionCategory         sync.RWMutex
 	lockUpdatePolicyCategory             sync.RWMutex
+	lockUpdateRecordType                 sync.RWMutex
 }
 
 // CreateAttendStatus calls CreateAttendStatusFunc.
@@ -1006,6 +1298,86 @@ func (mock *ManagerInterfaceMock) CreateEventTypesCalls() []struct {
 	return calls
 }
 
+// CreateMimeType calls CreateMimeTypeFunc.
+func (mock *ManagerInterfaceMock) CreateMimeType(ctx context.Context, name string, key string, kind string) (entity.MimeType, error) {
+	if mock.CreateMimeTypeFunc == nil {
+		panic("ManagerInterfaceMock.CreateMimeTypeFunc: method is nil but ManagerInterface.CreateMimeType was just called")
+	}
+	callInfo := struct {
+		Ctx  context.Context
+		Name string
+		Key  string
+		Kind string
+	}{
+		Ctx:  ctx,
+		Name: name,
+		Key:  key,
+		Kind: kind,
+	}
+	mock.lockCreateMimeType.Lock()
+	mock.calls.CreateMimeType = append(mock.calls.CreateMimeType, callInfo)
+	mock.lockCreateMimeType.Unlock()
+	return mock.CreateMimeTypeFunc(ctx, name, key, kind)
+}
+
+// CreateMimeTypeCalls gets all the calls that were made to CreateMimeType.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateMimeTypeCalls())
+func (mock *ManagerInterfaceMock) CreateMimeTypeCalls() []struct {
+	Ctx  context.Context
+	Name string
+	Key  string
+	Kind string
+} {
+	var calls []struct {
+		Ctx  context.Context
+		Name string
+		Key  string
+		Kind string
+	}
+	mock.lockCreateMimeType.RLock()
+	calls = mock.calls.CreateMimeType
+	mock.lockCreateMimeType.RUnlock()
+	return calls
+}
+
+// CreateMimeTypes calls CreateMimeTypesFunc.
+func (mock *ManagerInterfaceMock) CreateMimeTypes(ctx context.Context, ps []parameter.CreateMimeTypeParam) (int64, error) {
+	if mock.CreateMimeTypesFunc == nil {
+		panic("ManagerInterfaceMock.CreateMimeTypesFunc: method is nil but ManagerInterface.CreateMimeTypes was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ps  []parameter.CreateMimeTypeParam
+	}{
+		Ctx: ctx,
+		Ps:  ps,
+	}
+	mock.lockCreateMimeTypes.Lock()
+	mock.calls.CreateMimeTypes = append(mock.calls.CreateMimeTypes, callInfo)
+	mock.lockCreateMimeTypes.Unlock()
+	return mock.CreateMimeTypesFunc(ctx, ps)
+}
+
+// CreateMimeTypesCalls gets all the calls that were made to CreateMimeTypes.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateMimeTypesCalls())
+func (mock *ManagerInterfaceMock) CreateMimeTypesCalls() []struct {
+	Ctx context.Context
+	Ps  []parameter.CreateMimeTypeParam
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ps  []parameter.CreateMimeTypeParam
+	}
+	mock.lockCreateMimeTypes.RLock()
+	calls = mock.calls.CreateMimeTypes
+	mock.lockCreateMimeTypes.RUnlock()
+	return calls
+}
+
 // CreatePermissionCategories calls CreatePermissionCategoriesFunc.
 func (mock *ManagerInterfaceMock) CreatePermissionCategories(ctx context.Context, ps []parameter.CreatePermissionCategoryParam) (int64, error) {
 	if mock.CreatePermissionCategoriesFunc == nil {
@@ -1166,6 +1538,82 @@ func (mock *ManagerInterfaceMock) CreatePolicyCategoryCalls() []struct {
 	return calls
 }
 
+// CreateRecordType calls CreateRecordTypeFunc.
+func (mock *ManagerInterfaceMock) CreateRecordType(ctx context.Context, name string, key string) (entity.RecordType, error) {
+	if mock.CreateRecordTypeFunc == nil {
+		panic("ManagerInterfaceMock.CreateRecordTypeFunc: method is nil but ManagerInterface.CreateRecordType was just called")
+	}
+	callInfo := struct {
+		Ctx  context.Context
+		Name string
+		Key  string
+	}{
+		Ctx:  ctx,
+		Name: name,
+		Key:  key,
+	}
+	mock.lockCreateRecordType.Lock()
+	mock.calls.CreateRecordType = append(mock.calls.CreateRecordType, callInfo)
+	mock.lockCreateRecordType.Unlock()
+	return mock.CreateRecordTypeFunc(ctx, name, key)
+}
+
+// CreateRecordTypeCalls gets all the calls that were made to CreateRecordType.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateRecordTypeCalls())
+func (mock *ManagerInterfaceMock) CreateRecordTypeCalls() []struct {
+	Ctx  context.Context
+	Name string
+	Key  string
+} {
+	var calls []struct {
+		Ctx  context.Context
+		Name string
+		Key  string
+	}
+	mock.lockCreateRecordType.RLock()
+	calls = mock.calls.CreateRecordType
+	mock.lockCreateRecordType.RUnlock()
+	return calls
+}
+
+// CreateRecordTypes calls CreateRecordTypesFunc.
+func (mock *ManagerInterfaceMock) CreateRecordTypes(ctx context.Context, ps []parameter.CreateRecordTypeParam) (int64, error) {
+	if mock.CreateRecordTypesFunc == nil {
+		panic("ManagerInterfaceMock.CreateRecordTypesFunc: method is nil but ManagerInterface.CreateRecordTypes was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ps  []parameter.CreateRecordTypeParam
+	}{
+		Ctx: ctx,
+		Ps:  ps,
+	}
+	mock.lockCreateRecordTypes.Lock()
+	mock.calls.CreateRecordTypes = append(mock.calls.CreateRecordTypes, callInfo)
+	mock.lockCreateRecordTypes.Unlock()
+	return mock.CreateRecordTypesFunc(ctx, ps)
+}
+
+// CreateRecordTypesCalls gets all the calls that were made to CreateRecordTypes.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateRecordTypesCalls())
+func (mock *ManagerInterfaceMock) CreateRecordTypesCalls() []struct {
+	Ctx context.Context
+	Ps  []parameter.CreateRecordTypeParam
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ps  []parameter.CreateRecordTypeParam
+	}
+	mock.lockCreateRecordTypes.RLock()
+	calls = mock.calls.CreateRecordTypes
+	mock.lockCreateRecordTypes.RUnlock()
+	return calls
+}
+
 // DeleteAttendStatus calls DeleteAttendStatusFunc.
 func (mock *ManagerInterfaceMock) DeleteAttendStatus(ctx context.Context, id uuid.UUID) error {
 	if mock.DeleteAttendStatusFunc == nil {
@@ -1274,6 +1722,42 @@ func (mock *ManagerInterfaceMock) DeleteEventTypeCalls() []struct {
 	return calls
 }
 
+// DeleteMimeType calls DeleteMimeTypeFunc.
+func (mock *ManagerInterfaceMock) DeleteMimeType(ctx context.Context, id uuid.UUID) error {
+	if mock.DeleteMimeTypeFunc == nil {
+		panic("ManagerInterfaceMock.DeleteMimeTypeFunc: method is nil but ManagerInterface.DeleteMimeType was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockDeleteMimeType.Lock()
+	mock.calls.DeleteMimeType = append(mock.calls.DeleteMimeType, callInfo)
+	mock.lockDeleteMimeType.Unlock()
+	return mock.DeleteMimeTypeFunc(ctx, id)
+}
+
+// DeleteMimeTypeCalls gets all the calls that were made to DeleteMimeType.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeleteMimeTypeCalls())
+func (mock *ManagerInterfaceMock) DeleteMimeTypeCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockDeleteMimeType.RLock()
+	calls = mock.calls.DeleteMimeType
+	mock.lockDeleteMimeType.RUnlock()
+	return calls
+}
+
 // DeletePermissionCategory calls DeletePermissionCategoryFunc.
 func (mock *ManagerInterfaceMock) DeletePermissionCategory(ctx context.Context, id uuid.UUID) error {
 	if mock.DeletePermissionCategoryFunc == nil {
@@ -1343,6 +1827,42 @@ func (mock *ManagerInterfaceMock) DeletePolicyCategoryCalls() []struct {
 	mock.lockDeletePolicyCategory.RLock()
 	calls = mock.calls.DeletePolicyCategory
 	mock.lockDeletePolicyCategory.RUnlock()
+	return calls
+}
+
+// DeleteRecordType calls DeleteRecordTypeFunc.
+func (mock *ManagerInterfaceMock) DeleteRecordType(ctx context.Context, id uuid.UUID) error {
+	if mock.DeleteRecordTypeFunc == nil {
+		panic("ManagerInterfaceMock.DeleteRecordTypeFunc: method is nil but ManagerInterface.DeleteRecordType was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockDeleteRecordType.Lock()
+	mock.calls.DeleteRecordType = append(mock.calls.DeleteRecordType, callInfo)
+	mock.lockDeleteRecordType.Unlock()
+	return mock.DeleteRecordTypeFunc(ctx, id)
+}
+
+// DeleteRecordTypeCalls gets all the calls that were made to DeleteRecordType.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeleteRecordTypeCalls())
+func (mock *ManagerInterfaceMock) DeleteRecordTypeCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockDeleteRecordType.RLock()
+	calls = mock.calls.DeleteRecordType
+	mock.lockDeleteRecordType.RUnlock()
 	return calls
 }
 
@@ -1562,6 +2082,78 @@ func (mock *ManagerInterfaceMock) FindEventTypeByKeyCalls() []struct {
 	return calls
 }
 
+// FindMimeTypeByID calls FindMimeTypeByIDFunc.
+func (mock *ManagerInterfaceMock) FindMimeTypeByID(ctx context.Context, id uuid.UUID) (entity.MimeType, error) {
+	if mock.FindMimeTypeByIDFunc == nil {
+		panic("ManagerInterfaceMock.FindMimeTypeByIDFunc: method is nil but ManagerInterface.FindMimeTypeByID was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockFindMimeTypeByID.Lock()
+	mock.calls.FindMimeTypeByID = append(mock.calls.FindMimeTypeByID, callInfo)
+	mock.lockFindMimeTypeByID.Unlock()
+	return mock.FindMimeTypeByIDFunc(ctx, id)
+}
+
+// FindMimeTypeByIDCalls gets all the calls that were made to FindMimeTypeByID.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindMimeTypeByIDCalls())
+func (mock *ManagerInterfaceMock) FindMimeTypeByIDCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockFindMimeTypeByID.RLock()
+	calls = mock.calls.FindMimeTypeByID
+	mock.lockFindMimeTypeByID.RUnlock()
+	return calls
+}
+
+// FindMimeTypeByKey calls FindMimeTypeByKeyFunc.
+func (mock *ManagerInterfaceMock) FindMimeTypeByKey(ctx context.Context, key string) (entity.MimeType, error) {
+	if mock.FindMimeTypeByKeyFunc == nil {
+		panic("ManagerInterfaceMock.FindMimeTypeByKeyFunc: method is nil but ManagerInterface.FindMimeTypeByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockFindMimeTypeByKey.Lock()
+	mock.calls.FindMimeTypeByKey = append(mock.calls.FindMimeTypeByKey, callInfo)
+	mock.lockFindMimeTypeByKey.Unlock()
+	return mock.FindMimeTypeByKeyFunc(ctx, key)
+}
+
+// FindMimeTypeByKeyCalls gets all the calls that were made to FindMimeTypeByKey.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindMimeTypeByKeyCalls())
+func (mock *ManagerInterfaceMock) FindMimeTypeByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockFindMimeTypeByKey.RLock()
+	calls = mock.calls.FindMimeTypeByKey
+	mock.lockFindMimeTypeByKey.RUnlock()
+	return calls
+}
+
 // FindPermissionCategoryByID calls FindPermissionCategoryByIDFunc.
 func (mock *ManagerInterfaceMock) FindPermissionCategoryByID(ctx context.Context, id uuid.UUID) (entity.PermissionCategory, error) {
 	if mock.FindPermissionCategoryByIDFunc == nil {
@@ -1703,6 +2295,78 @@ func (mock *ManagerInterfaceMock) FindPolicyCategoryByKeyCalls() []struct {
 	mock.lockFindPolicyCategoryByKey.RLock()
 	calls = mock.calls.FindPolicyCategoryByKey
 	mock.lockFindPolicyCategoryByKey.RUnlock()
+	return calls
+}
+
+// FindRecordTypeByID calls FindRecordTypeByIDFunc.
+func (mock *ManagerInterfaceMock) FindRecordTypeByID(ctx context.Context, id uuid.UUID) (entity.RecordType, error) {
+	if mock.FindRecordTypeByIDFunc == nil {
+		panic("ManagerInterfaceMock.FindRecordTypeByIDFunc: method is nil but ManagerInterface.FindRecordTypeByID was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockFindRecordTypeByID.Lock()
+	mock.calls.FindRecordTypeByID = append(mock.calls.FindRecordTypeByID, callInfo)
+	mock.lockFindRecordTypeByID.Unlock()
+	return mock.FindRecordTypeByIDFunc(ctx, id)
+}
+
+// FindRecordTypeByIDCalls gets all the calls that were made to FindRecordTypeByID.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindRecordTypeByIDCalls())
+func (mock *ManagerInterfaceMock) FindRecordTypeByIDCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockFindRecordTypeByID.RLock()
+	calls = mock.calls.FindRecordTypeByID
+	mock.lockFindRecordTypeByID.RUnlock()
+	return calls
+}
+
+// FindRecordTypeByKey calls FindRecordTypeByKeyFunc.
+func (mock *ManagerInterfaceMock) FindRecordTypeByKey(ctx context.Context, key string) (entity.RecordType, error) {
+	if mock.FindRecordTypeByKeyFunc == nil {
+		panic("ManagerInterfaceMock.FindRecordTypeByKeyFunc: method is nil but ManagerInterface.FindRecordTypeByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockFindRecordTypeByKey.Lock()
+	mock.calls.FindRecordTypeByKey = append(mock.calls.FindRecordTypeByKey, callInfo)
+	mock.lockFindRecordTypeByKey.Unlock()
+	return mock.FindRecordTypeByKeyFunc(ctx, key)
+}
+
+// FindRecordTypeByKeyCalls gets all the calls that were made to FindRecordTypeByKey.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindRecordTypeByKeyCalls())
+func (mock *ManagerInterfaceMock) FindRecordTypeByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockFindRecordTypeByKey.RLock()
+	calls = mock.calls.FindRecordTypeByKey
+	mock.lockFindRecordTypeByKey.RUnlock()
 	return calls
 }
 
@@ -1994,6 +2658,102 @@ func (mock *ManagerInterfaceMock) GetEventTypesCountCalls() []struct {
 	return calls
 }
 
+// GetMimeTypes calls GetMimeTypesFunc.
+func (mock *ManagerInterfaceMock) GetMimeTypes(ctx context.Context, whereSearchName string, order parameter.MimeTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MimeType], error) {
+	if mock.GetMimeTypesFunc == nil {
+		panic("ManagerInterfaceMock.GetMimeTypesFunc: method is nil but ManagerInterface.GetMimeTypes was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		WhereSearchName string
+		Order           parameter.MimeTypeOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}{
+		Ctx:             ctx,
+		WhereSearchName: whereSearchName,
+		Order:           order,
+		Pg:              pg,
+		Limit:           limit,
+		Cursor:          cursor,
+		Offset:          offset,
+		WithCount:       withCount,
+	}
+	mock.lockGetMimeTypes.Lock()
+	mock.calls.GetMimeTypes = append(mock.calls.GetMimeTypes, callInfo)
+	mock.lockGetMimeTypes.Unlock()
+	return mock.GetMimeTypesFunc(ctx, whereSearchName, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetMimeTypesCalls gets all the calls that were made to GetMimeTypes.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetMimeTypesCalls())
+func (mock *ManagerInterfaceMock) GetMimeTypesCalls() []struct {
+	Ctx             context.Context
+	WhereSearchName string
+	Order           parameter.MimeTypeOrderMethod
+	Pg              parameter.Pagination
+	Limit           parameter.Limit
+	Cursor          parameter.Cursor
+	Offset          parameter.Offset
+	WithCount       parameter.WithCount
+} {
+	var calls []struct {
+		Ctx             context.Context
+		WhereSearchName string
+		Order           parameter.MimeTypeOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}
+	mock.lockGetMimeTypes.RLock()
+	calls = mock.calls.GetMimeTypes
+	mock.lockGetMimeTypes.RUnlock()
+	return calls
+}
+
+// GetMimeTypesCount calls GetMimeTypesCountFunc.
+func (mock *ManagerInterfaceMock) GetMimeTypesCount(ctx context.Context, whereSearchName string) (int64, error) {
+	if mock.GetMimeTypesCountFunc == nil {
+		panic("ManagerInterfaceMock.GetMimeTypesCountFunc: method is nil but ManagerInterface.GetMimeTypesCount was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		WhereSearchName string
+	}{
+		Ctx:             ctx,
+		WhereSearchName: whereSearchName,
+	}
+	mock.lockGetMimeTypesCount.Lock()
+	mock.calls.GetMimeTypesCount = append(mock.calls.GetMimeTypesCount, callInfo)
+	mock.lockGetMimeTypesCount.Unlock()
+	return mock.GetMimeTypesCountFunc(ctx, whereSearchName)
+}
+
+// GetMimeTypesCountCalls gets all the calls that were made to GetMimeTypesCount.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetMimeTypesCountCalls())
+func (mock *ManagerInterfaceMock) GetMimeTypesCountCalls() []struct {
+	Ctx             context.Context
+	WhereSearchName string
+} {
+	var calls []struct {
+		Ctx             context.Context
+		WhereSearchName string
+	}
+	mock.lockGetMimeTypesCount.RLock()
+	calls = mock.calls.GetMimeTypesCount
+	mock.lockGetMimeTypesCount.RUnlock()
+	return calls
+}
+
 // GetPermissionCategories calls GetPermissionCategoriesFunc.
 func (mock *ManagerInterfaceMock) GetPermissionCategories(ctx context.Context, whereSearchName string, order parameter.PermissionCategoryOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PermissionCategory], error) {
 	if mock.GetPermissionCategoriesFunc == nil {
@@ -2186,6 +2946,102 @@ func (mock *ManagerInterfaceMock) GetPolicyCategoriesCountCalls() []struct {
 	return calls
 }
 
+// GetRecordTypes calls GetRecordTypesFunc.
+func (mock *ManagerInterfaceMock) GetRecordTypes(ctx context.Context, whereSearchName string, order parameter.RecordTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.RecordType], error) {
+	if mock.GetRecordTypesFunc == nil {
+		panic("ManagerInterfaceMock.GetRecordTypesFunc: method is nil but ManagerInterface.GetRecordTypes was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		WhereSearchName string
+		Order           parameter.RecordTypeOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}{
+		Ctx:             ctx,
+		WhereSearchName: whereSearchName,
+		Order:           order,
+		Pg:              pg,
+		Limit:           limit,
+		Cursor:          cursor,
+		Offset:          offset,
+		WithCount:       withCount,
+	}
+	mock.lockGetRecordTypes.Lock()
+	mock.calls.GetRecordTypes = append(mock.calls.GetRecordTypes, callInfo)
+	mock.lockGetRecordTypes.Unlock()
+	return mock.GetRecordTypesFunc(ctx, whereSearchName, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetRecordTypesCalls gets all the calls that were made to GetRecordTypes.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetRecordTypesCalls())
+func (mock *ManagerInterfaceMock) GetRecordTypesCalls() []struct {
+	Ctx             context.Context
+	WhereSearchName string
+	Order           parameter.RecordTypeOrderMethod
+	Pg              parameter.Pagination
+	Limit           parameter.Limit
+	Cursor          parameter.Cursor
+	Offset          parameter.Offset
+	WithCount       parameter.WithCount
+} {
+	var calls []struct {
+		Ctx             context.Context
+		WhereSearchName string
+		Order           parameter.RecordTypeOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}
+	mock.lockGetRecordTypes.RLock()
+	calls = mock.calls.GetRecordTypes
+	mock.lockGetRecordTypes.RUnlock()
+	return calls
+}
+
+// GetRecordTypesCount calls GetRecordTypesCountFunc.
+func (mock *ManagerInterfaceMock) GetRecordTypesCount(ctx context.Context, whereSearchName string) (int64, error) {
+	if mock.GetRecordTypesCountFunc == nil {
+		panic("ManagerInterfaceMock.GetRecordTypesCountFunc: method is nil but ManagerInterface.GetRecordTypesCount was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		WhereSearchName string
+	}{
+		Ctx:             ctx,
+		WhereSearchName: whereSearchName,
+	}
+	mock.lockGetRecordTypesCount.Lock()
+	mock.calls.GetRecordTypesCount = append(mock.calls.GetRecordTypesCount, callInfo)
+	mock.lockGetRecordTypesCount.Unlock()
+	return mock.GetRecordTypesCountFunc(ctx, whereSearchName)
+}
+
+// GetRecordTypesCountCalls gets all the calls that were made to GetRecordTypesCount.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetRecordTypesCountCalls())
+func (mock *ManagerInterfaceMock) GetRecordTypesCountCalls() []struct {
+	Ctx             context.Context
+	WhereSearchName string
+} {
+	var calls []struct {
+		Ctx             context.Context
+		WhereSearchName string
+	}
+	mock.lockGetRecordTypesCount.RLock()
+	calls = mock.calls.GetRecordTypesCount
+	mock.lockGetRecordTypesCount.RUnlock()
+	return calls
+}
+
 // PluralDeleteAttendStatuses calls PluralDeleteAttendStatusesFunc.
 func (mock *ManagerInterfaceMock) PluralDeleteAttendStatuses(ctx context.Context, ids []uuid.UUID) error {
 	if mock.PluralDeleteAttendStatusesFunc == nil {
@@ -2294,6 +3150,42 @@ func (mock *ManagerInterfaceMock) PluralDeleteEventTypesCalls() []struct {
 	return calls
 }
 
+// PluralDeleteMimeTypes calls PluralDeleteMimeTypesFunc.
+func (mock *ManagerInterfaceMock) PluralDeleteMimeTypes(ctx context.Context, ids []uuid.UUID) error {
+	if mock.PluralDeleteMimeTypesFunc == nil {
+		panic("ManagerInterfaceMock.PluralDeleteMimeTypesFunc: method is nil but ManagerInterface.PluralDeleteMimeTypes was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}{
+		Ctx: ctx,
+		Ids: ids,
+	}
+	mock.lockPluralDeleteMimeTypes.Lock()
+	mock.calls.PluralDeleteMimeTypes = append(mock.calls.PluralDeleteMimeTypes, callInfo)
+	mock.lockPluralDeleteMimeTypes.Unlock()
+	return mock.PluralDeleteMimeTypesFunc(ctx, ids)
+}
+
+// PluralDeleteMimeTypesCalls gets all the calls that were made to PluralDeleteMimeTypes.
+// Check the length with:
+//
+//	len(mockedManagerInterface.PluralDeleteMimeTypesCalls())
+func (mock *ManagerInterfaceMock) PluralDeleteMimeTypesCalls() []struct {
+	Ctx context.Context
+	Ids []uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}
+	mock.lockPluralDeleteMimeTypes.RLock()
+	calls = mock.calls.PluralDeleteMimeTypes
+	mock.lockPluralDeleteMimeTypes.RUnlock()
+	return calls
+}
+
 // PluralDeletePermissionCategories calls PluralDeletePermissionCategoriesFunc.
 func (mock *ManagerInterfaceMock) PluralDeletePermissionCategories(ctx context.Context, ids []uuid.UUID) error {
 	if mock.PluralDeletePermissionCategoriesFunc == nil {
@@ -2363,6 +3255,42 @@ func (mock *ManagerInterfaceMock) PluralDeletePolicyCategoriesCalls() []struct {
 	mock.lockPluralDeletePolicyCategories.RLock()
 	calls = mock.calls.PluralDeletePolicyCategories
 	mock.lockPluralDeletePolicyCategories.RUnlock()
+	return calls
+}
+
+// PluralDeleteRecordTypes calls PluralDeleteRecordTypesFunc.
+func (mock *ManagerInterfaceMock) PluralDeleteRecordTypes(ctx context.Context, ids []uuid.UUID) error {
+	if mock.PluralDeleteRecordTypesFunc == nil {
+		panic("ManagerInterfaceMock.PluralDeleteRecordTypesFunc: method is nil but ManagerInterface.PluralDeleteRecordTypes was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}{
+		Ctx: ctx,
+		Ids: ids,
+	}
+	mock.lockPluralDeleteRecordTypes.Lock()
+	mock.calls.PluralDeleteRecordTypes = append(mock.calls.PluralDeleteRecordTypes, callInfo)
+	mock.lockPluralDeleteRecordTypes.Unlock()
+	return mock.PluralDeleteRecordTypesFunc(ctx, ids)
+}
+
+// PluralDeleteRecordTypesCalls gets all the calls that were made to PluralDeleteRecordTypes.
+// Check the length with:
+//
+//	len(mockedManagerInterface.PluralDeleteRecordTypesCalls())
+func (mock *ManagerInterfaceMock) PluralDeleteRecordTypesCalls() []struct {
+	Ctx context.Context
+	Ids []uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}
+	mock.lockPluralDeleteRecordTypes.RLock()
+	calls = mock.calls.PluralDeleteRecordTypes
+	mock.lockPluralDeleteRecordTypes.RUnlock()
 	return calls
 }
 
@@ -2506,6 +3434,54 @@ func (mock *ManagerInterfaceMock) UpdateEventTypeCalls() []struct {
 	return calls
 }
 
+// UpdateMimeType calls UpdateMimeTypeFunc.
+func (mock *ManagerInterfaceMock) UpdateMimeType(ctx context.Context, id uuid.UUID, name string, key string, kind string) (entity.MimeType, error) {
+	if mock.UpdateMimeTypeFunc == nil {
+		panic("ManagerInterfaceMock.UpdateMimeTypeFunc: method is nil but ManagerInterface.UpdateMimeType was just called")
+	}
+	callInfo := struct {
+		Ctx  context.Context
+		ID   uuid.UUID
+		Name string
+		Key  string
+		Kind string
+	}{
+		Ctx:  ctx,
+		ID:   id,
+		Name: name,
+		Key:  key,
+		Kind: kind,
+	}
+	mock.lockUpdateMimeType.Lock()
+	mock.calls.UpdateMimeType = append(mock.calls.UpdateMimeType, callInfo)
+	mock.lockUpdateMimeType.Unlock()
+	return mock.UpdateMimeTypeFunc(ctx, id, name, key, kind)
+}
+
+// UpdateMimeTypeCalls gets all the calls that were made to UpdateMimeType.
+// Check the length with:
+//
+//	len(mockedManagerInterface.UpdateMimeTypeCalls())
+func (mock *ManagerInterfaceMock) UpdateMimeTypeCalls() []struct {
+	Ctx  context.Context
+	ID   uuid.UUID
+	Name string
+	Key  string
+	Kind string
+} {
+	var calls []struct {
+		Ctx  context.Context
+		ID   uuid.UUID
+		Name string
+		Key  string
+		Kind string
+	}
+	mock.lockUpdateMimeType.RLock()
+	calls = mock.calls.UpdateMimeType
+	mock.lockUpdateMimeType.RUnlock()
+	return calls
+}
+
 // UpdatePermissionCategory calls UpdatePermissionCategoryFunc.
 func (mock *ManagerInterfaceMock) UpdatePermissionCategory(ctx context.Context, id uuid.UUID, name string, key string, description string) (entity.PermissionCategory, error) {
 	if mock.UpdatePermissionCategoryFunc == nil {
@@ -2599,5 +3575,49 @@ func (mock *ManagerInterfaceMock) UpdatePolicyCategoryCalls() []struct {
 	mock.lockUpdatePolicyCategory.RLock()
 	calls = mock.calls.UpdatePolicyCategory
 	mock.lockUpdatePolicyCategory.RUnlock()
+	return calls
+}
+
+// UpdateRecordType calls UpdateRecordTypeFunc.
+func (mock *ManagerInterfaceMock) UpdateRecordType(ctx context.Context, id uuid.UUID, name string, key string) (entity.RecordType, error) {
+	if mock.UpdateRecordTypeFunc == nil {
+		panic("ManagerInterfaceMock.UpdateRecordTypeFunc: method is nil but ManagerInterface.UpdateRecordType was just called")
+	}
+	callInfo := struct {
+		Ctx  context.Context
+		ID   uuid.UUID
+		Name string
+		Key  string
+	}{
+		Ctx:  ctx,
+		ID:   id,
+		Name: name,
+		Key:  key,
+	}
+	mock.lockUpdateRecordType.Lock()
+	mock.calls.UpdateRecordType = append(mock.calls.UpdateRecordType, callInfo)
+	mock.lockUpdateRecordType.Unlock()
+	return mock.UpdateRecordTypeFunc(ctx, id, name, key)
+}
+
+// UpdateRecordTypeCalls gets all the calls that were made to UpdateRecordType.
+// Check the length with:
+//
+//	len(mockedManagerInterface.UpdateRecordTypeCalls())
+func (mock *ManagerInterfaceMock) UpdateRecordTypeCalls() []struct {
+	Ctx  context.Context
+	ID   uuid.UUID
+	Name string
+	Key  string
+} {
+	var calls []struct {
+		Ctx  context.Context
+		ID   uuid.UUID
+		Name string
+		Key  string
+	}
+	mock.lockUpdateRecordType.RLock()
+	calls = mock.calls.UpdateRecordType
+	mock.lockUpdateRecordType.RUnlock()
 	return calls
 }

@@ -37,4 +37,6 @@ type Store interface {
 	EventType
 	PermissionCategory
 	PolicyCategory
+	RecordType
+	MimeType
 }

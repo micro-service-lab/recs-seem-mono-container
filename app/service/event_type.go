@@ -34,10 +34,10 @@ type EventType struct {
 
 // EventTypes イベントタイプ一覧。
 var EventTypes = []EventType{
-	{Key: "meeting", Name: "会議", Color: "#FFB866"},
-	{Key: "journal_club", Name: "輪講", Color: "#ADFF66"},
-	{Key: "holiday", Name: "休日", Color: "#FF4D4D"},
-	{Key: "other", Name: "その他", Color: "#66B3FF"},
+	{Key: string(EventTypeKeyMeeting), Name: "会議", Color: "#FFB866"},
+	{Key: string(EventTypeKeyJournalClub), Name: "輪講", Color: "#ADFF66"},
+	{Key: string(EventTypeKeyHoliday), Name: "休日", Color: "#FF4D4D"},
+	{Key: string(EventTypeKeyOther), Name: "その他", Color: "#66B3FF"},
 }
 
 // ManageEventType イベントタイプ管理サービス。

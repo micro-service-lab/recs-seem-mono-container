@@ -186,6 +186,7 @@ type MimeType struct {
 	MMimeTypesPkey pgtype.Int8 `json:"m_mime_types_pkey"`
 	MimeTypeID     uuid.UUID   `json:"mime_type_id"`
 	Name           string      `json:"name"`
+	Kind           string      `json:"kind"`
 	Key            string      `json:"key"`
 }
 

@@ -54,6 +54,12 @@ var _ Store = &StoreMock{}
 //			CountEventTypesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereEventTypeParam) (int64, error) {
 //				panic("mock out the CountEventTypesWithSd method")
 //			},
+//			CountMimeTypesFunc: func(ctx context.Context, where parameter.WhereMimeTypeParam) (int64, error) {
+//				panic("mock out the CountMimeTypes method")
+//			},
+//			CountMimeTypesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereMimeTypeParam) (int64, error) {
+//				panic("mock out the CountMimeTypesWithSd method")
+//			},
 //			CountPermissionCategoriesFunc: func(ctx context.Context, where parameter.WherePermissionCategoryParam) (int64, error) {
 //				panic("mock out the CountPermissionCategories method")
 //			},
@@ -65,6 +71,12 @@ var _ Store = &StoreMock{}
 //			},
 //			CountPolicyCategoriesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WherePolicyCategoryParam) (int64, error) {
 //				panic("mock out the CountPolicyCategoriesWithSd method")
+//			},
+//			CountRecordTypesFunc: func(ctx context.Context, where parameter.WhereRecordTypeParam) (int64, error) {
+//				panic("mock out the CountRecordTypes method")
+//			},
+//			CountRecordTypesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereRecordTypeParam) (int64, error) {
+//				panic("mock out the CountRecordTypesWithSd method")
 //			},
 //			CreateAbsenceFunc: func(ctx context.Context, param parameter.CreateAbsenceParam) (entity.Absence, error) {
 //				panic("mock out the CreateAbsence method")
@@ -114,6 +126,18 @@ var _ Store = &StoreMock{}
 //			CreateEventTypesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateEventTypeParam) (int64, error) {
 //				panic("mock out the CreateEventTypesWithSd method")
 //			},
+//			CreateMimeTypeFunc: func(ctx context.Context, param parameter.CreateMimeTypeParam) (entity.MimeType, error) {
+//				panic("mock out the CreateMimeType method")
+//			},
+//			CreateMimeTypeWithSdFunc: func(ctx context.Context, sd Sd, param parameter.CreateMimeTypeParam) (entity.MimeType, error) {
+//				panic("mock out the CreateMimeTypeWithSd method")
+//			},
+//			CreateMimeTypesFunc: func(ctx context.Context, params []parameter.CreateMimeTypeParam) (int64, error) {
+//				panic("mock out the CreateMimeTypes method")
+//			},
+//			CreateMimeTypesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateMimeTypeParam) (int64, error) {
+//				panic("mock out the CreateMimeTypesWithSd method")
+//			},
 //			CreatePermissionCategoriesFunc: func(ctx context.Context, params []parameter.CreatePermissionCategoryParam) (int64, error) {
 //				panic("mock out the CreatePermissionCategories method")
 //			},
@@ -137,6 +161,18 @@ var _ Store = &StoreMock{}
 //			},
 //			CreatePolicyCategoryWithSdFunc: func(ctx context.Context, sd Sd, param parameter.CreatePolicyCategoryParam) (entity.PolicyCategory, error) {
 //				panic("mock out the CreatePolicyCategoryWithSd method")
+//			},
+//			CreateRecordTypeFunc: func(ctx context.Context, param parameter.CreateRecordTypeParam) (entity.RecordType, error) {
+//				panic("mock out the CreateRecordType method")
+//			},
+//			CreateRecordTypeWithSdFunc: func(ctx context.Context, sd Sd, param parameter.CreateRecordTypeParam) (entity.RecordType, error) {
+//				panic("mock out the CreateRecordTypeWithSd method")
+//			},
+//			CreateRecordTypesFunc: func(ctx context.Context, params []parameter.CreateRecordTypeParam) (int64, error) {
+//				panic("mock out the CreateRecordTypes method")
+//			},
+//			CreateRecordTypesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateRecordTypeParam) (int64, error) {
+//				panic("mock out the CreateRecordTypesWithSd method")
 //			},
 //			DeleteAbsenceFunc: func(ctx context.Context, absenceID uuid.UUID) error {
 //				panic("mock out the DeleteAbsence method")
@@ -180,6 +216,18 @@ var _ Store = &StoreMock{}
 //			DeleteEventTypeWithSdFunc: func(ctx context.Context, sd Sd, eventTypeID uuid.UUID) error {
 //				panic("mock out the DeleteEventTypeWithSd method")
 //			},
+//			DeleteMimeTypeFunc: func(ctx context.Context, mimeTypeID uuid.UUID) error {
+//				panic("mock out the DeleteMimeType method")
+//			},
+//			DeleteMimeTypeByKeyFunc: func(ctx context.Context, key string) error {
+//				panic("mock out the DeleteMimeTypeByKey method")
+//			},
+//			DeleteMimeTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) error {
+//				panic("mock out the DeleteMimeTypeByKeyWithSd method")
+//			},
+//			DeleteMimeTypeWithSdFunc: func(ctx context.Context, sd Sd, mimeTypeID uuid.UUID) error {
+//				panic("mock out the DeleteMimeTypeWithSd method")
+//			},
 //			DeletePermissionCategoryFunc: func(ctx context.Context, permissionCategoryID uuid.UUID) error {
 //				panic("mock out the DeletePermissionCategory method")
 //			},
@@ -203,6 +251,18 @@ var _ Store = &StoreMock{}
 //			},
 //			DeletePolicyCategoryWithSdFunc: func(ctx context.Context, sd Sd, policyCategoryID uuid.UUID) error {
 //				panic("mock out the DeletePolicyCategoryWithSd method")
+//			},
+//			DeleteRecordTypeFunc: func(ctx context.Context, recordTypeID uuid.UUID) error {
+//				panic("mock out the DeleteRecordType method")
+//			},
+//			DeleteRecordTypeByKeyFunc: func(ctx context.Context, key string) error {
+//				panic("mock out the DeleteRecordTypeByKey method")
+//			},
+//			DeleteRecordTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) error {
+//				panic("mock out the DeleteRecordTypeByKeyWithSd method")
+//			},
+//			DeleteRecordTypeWithSdFunc: func(ctx context.Context, sd Sd, recordTypeID uuid.UUID) error {
+//				panic("mock out the DeleteRecordTypeWithSd method")
 //			},
 //			FindAbsenceByIDFunc: func(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error) {
 //				panic("mock out the FindAbsenceByID method")
@@ -246,6 +306,18 @@ var _ Store = &StoreMock{}
 //			FindEventTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.EventType, error) {
 //				panic("mock out the FindEventTypeByKeyWithSd method")
 //			},
+//			FindMimeTypeByIDFunc: func(ctx context.Context, mimeTypeID uuid.UUID) (entity.MimeType, error) {
+//				panic("mock out the FindMimeTypeByID method")
+//			},
+//			FindMimeTypeByIDWithSdFunc: func(ctx context.Context, sd Sd, mimeTypeID uuid.UUID) (entity.MimeType, error) {
+//				panic("mock out the FindMimeTypeByIDWithSd method")
+//			},
+//			FindMimeTypeByKeyFunc: func(ctx context.Context, key string) (entity.MimeType, error) {
+//				panic("mock out the FindMimeTypeByKey method")
+//			},
+//			FindMimeTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.MimeType, error) {
+//				panic("mock out the FindMimeTypeByKeyWithSd method")
+//			},
 //			FindPermissionCategoryByIDFunc: func(ctx context.Context, permissionCategoryID uuid.UUID) (entity.PermissionCategory, error) {
 //				panic("mock out the FindPermissionCategoryByID method")
 //			},
@@ -270,6 +342,18 @@ var _ Store = &StoreMock{}
 //			FindPolicyCategoryByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.PolicyCategory, error) {
 //				panic("mock out the FindPolicyCategoryByKeyWithSd method")
 //			},
+//			FindRecordTypeByIDFunc: func(ctx context.Context, recordTypeID uuid.UUID) (entity.RecordType, error) {
+//				panic("mock out the FindRecordTypeByID method")
+//			},
+//			FindRecordTypeByIDWithSdFunc: func(ctx context.Context, sd Sd, recordTypeID uuid.UUID) (entity.RecordType, error) {
+//				panic("mock out the FindRecordTypeByIDWithSd method")
+//			},
+//			FindRecordTypeByKeyFunc: func(ctx context.Context, key string) (entity.RecordType, error) {
+//				panic("mock out the FindRecordTypeByKey method")
+//			},
+//			FindRecordTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.RecordType, error) {
+//				panic("mock out the FindRecordTypeByKeyWithSd method")
+//			},
 //			GetAbsencesFunc: func(ctx context.Context, order parameter.AbsenceOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Absence], error) {
 //				panic("mock out the GetAbsences method")
 //			},
@@ -293,6 +377,12 @@ var _ Store = &StoreMock{}
 //			},
 //			GetEventTypesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereEventTypeParam, order parameter.EventTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.EventType], error) {
 //				panic("mock out the GetEventTypesWithSd method")
+//			},
+//			GetMimeTypesFunc: func(ctx context.Context, where parameter.WhereMimeTypeParam, order parameter.MimeTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MimeType], error) {
+//				panic("mock out the GetMimeTypes method")
+//			},
+//			GetMimeTypesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereMimeTypeParam, order parameter.MimeTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MimeType], error) {
+//				panic("mock out the GetMimeTypesWithSd method")
 //			},
 //			GetPermissionCategoriesFunc: func(ctx context.Context, where parameter.WherePermissionCategoryParam, order parameter.PermissionCategoryOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PermissionCategory], error) {
 //				panic("mock out the GetPermissionCategories method")
@@ -324,6 +414,12 @@ var _ Store = &StoreMock{}
 //			GetPluralEventTypesWithSdFunc: func(ctx context.Context, sd Sd, EventTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.EventType], error) {
 //				panic("mock out the GetPluralEventTypesWithSd method")
 //			},
+//			GetPluralMimeTypesFunc: func(ctx context.Context, MimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error) {
+//				panic("mock out the GetPluralMimeTypes method")
+//			},
+//			GetPluralMimeTypesWithSdFunc: func(ctx context.Context, sd Sd, MimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error) {
+//				panic("mock out the GetPluralMimeTypesWithSd method")
+//			},
 //			GetPluralPermissionCategoriesFunc: func(ctx context.Context, PermissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error) {
 //				panic("mock out the GetPluralPermissionCategories method")
 //			},
@@ -336,11 +432,23 @@ var _ Store = &StoreMock{}
 //			GetPluralPolicyCategoriesWithSdFunc: func(ctx context.Context, sd Sd, policyCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PolicyCategory], error) {
 //				panic("mock out the GetPluralPolicyCategoriesWithSd method")
 //			},
+//			GetPluralRecordTypesFunc: func(ctx context.Context, RecordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error) {
+//				panic("mock out the GetPluralRecordTypes method")
+//			},
+//			GetPluralRecordTypesWithSdFunc: func(ctx context.Context, sd Sd, RecordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error) {
+//				panic("mock out the GetPluralRecordTypesWithSd method")
+//			},
 //			GetPolicyCategoriesFunc: func(ctx context.Context, where parameter.WherePolicyCategoryParam, order parameter.PolicyCategoryOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyCategory], error) {
 //				panic("mock out the GetPolicyCategories method")
 //			},
 //			GetPolicyCategoriesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WherePolicyCategoryParam, order parameter.PolicyCategoryOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyCategory], error) {
 //				panic("mock out the GetPolicyCategoriesWithSd method")
+//			},
+//			GetRecordTypesFunc: func(ctx context.Context, where parameter.WhereRecordTypeParam, order parameter.RecordTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.RecordType], error) {
+//				panic("mock out the GetRecordTypes method")
+//			},
+//			GetRecordTypesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereRecordTypeParam, order parameter.RecordTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.RecordType], error) {
+//				panic("mock out the GetRecordTypesWithSd method")
 //			},
 //			PluralDeleteAbsencesFunc: func(ctx context.Context, absenceIDs []uuid.UUID) error {
 //				panic("mock out the PluralDeleteAbsences method")
@@ -366,6 +474,12 @@ var _ Store = &StoreMock{}
 //			PluralDeleteEventTypesWithSdFunc: func(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID) error {
 //				panic("mock out the PluralDeleteEventTypesWithSd method")
 //			},
+//			PluralDeleteMimeTypesFunc: func(ctx context.Context, mimeTypeIDs []uuid.UUID) error {
+//				panic("mock out the PluralDeleteMimeTypes method")
+//			},
+//			PluralDeleteMimeTypesWithSdFunc: func(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID) error {
+//				panic("mock out the PluralDeleteMimeTypesWithSd method")
+//			},
 //			PluralDeletePermissionCategoriesFunc: func(ctx context.Context, permissionCategoryIDs []uuid.UUID) error {
 //				panic("mock out the PluralDeletePermissionCategories method")
 //			},
@@ -377,6 +491,12 @@ var _ Store = &StoreMock{}
 //			},
 //			PluralDeletePolicyCategoriesWithSdFunc: func(ctx context.Context, sd Sd, policyCategoryIDs []uuid.UUID) error {
 //				panic("mock out the PluralDeletePolicyCategoriesWithSd method")
+//			},
+//			PluralDeleteRecordTypesFunc: func(ctx context.Context, recordTypeIDs []uuid.UUID) error {
+//				panic("mock out the PluralDeleteRecordTypes method")
+//			},
+//			PluralDeleteRecordTypesWithSdFunc: func(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID) error {
+//				panic("mock out the PluralDeleteRecordTypesWithSd method")
 //			},
 //			RollbackFunc: func(contextMoqParam context.Context, sd Sd) error {
 //				panic("mock out the Rollback method")
@@ -417,6 +537,18 @@ var _ Store = &StoreMock{}
 //			UpdateEventTypeWithSdFunc: func(ctx context.Context, sd Sd, eventTypeID uuid.UUID, param parameter.UpdateEventTypeParams) (entity.EventType, error) {
 //				panic("mock out the UpdateEventTypeWithSd method")
 //			},
+//			UpdateMimeTypeFunc: func(ctx context.Context, mimeTypeID uuid.UUID, param parameter.UpdateMimeTypeParams) (entity.MimeType, error) {
+//				panic("mock out the UpdateMimeType method")
+//			},
+//			UpdateMimeTypeByKeyFunc: func(ctx context.Context, key string, param parameter.UpdateMimeTypeByKeyParams) (entity.MimeType, error) {
+//				panic("mock out the UpdateMimeTypeByKey method")
+//			},
+//			UpdateMimeTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string, param parameter.UpdateMimeTypeByKeyParams) (entity.MimeType, error) {
+//				panic("mock out the UpdateMimeTypeByKeyWithSd method")
+//			},
+//			UpdateMimeTypeWithSdFunc: func(ctx context.Context, sd Sd, mimeTypeID uuid.UUID, param parameter.UpdateMimeTypeParams) (entity.MimeType, error) {
+//				panic("mock out the UpdateMimeTypeWithSd method")
+//			},
 //			UpdatePermissionCategoryFunc: func(ctx context.Context, permissionCategoryID uuid.UUID, param parameter.UpdatePermissionCategoryParams) (entity.PermissionCategory, error) {
 //				panic("mock out the UpdatePermissionCategory method")
 //			},
@@ -440,6 +572,18 @@ var _ Store = &StoreMock{}
 //			},
 //			UpdatePolicyCategoryWithSdFunc: func(ctx context.Context, sd Sd, policyCategoryID uuid.UUID, param parameter.UpdatePolicyCategoryParams) (entity.PolicyCategory, error) {
 //				panic("mock out the UpdatePolicyCategoryWithSd method")
+//			},
+//			UpdateRecordTypeFunc: func(ctx context.Context, recordTypeID uuid.UUID, param parameter.UpdateRecordTypeParams) (entity.RecordType, error) {
+//				panic("mock out the UpdateRecordType method")
+//			},
+//			UpdateRecordTypeByKeyFunc: func(ctx context.Context, key string, param parameter.UpdateRecordTypeByKeyParams) (entity.RecordType, error) {
+//				panic("mock out the UpdateRecordTypeByKey method")
+//			},
+//			UpdateRecordTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string, param parameter.UpdateRecordTypeByKeyParams) (entity.RecordType, error) {
+//				panic("mock out the UpdateRecordTypeByKeyWithSd method")
+//			},
+//			UpdateRecordTypeWithSdFunc: func(ctx context.Context, sd Sd, recordTypeID uuid.UUID, param parameter.UpdateRecordTypeParams) (entity.RecordType, error) {
+//				panic("mock out the UpdateRecordTypeWithSd method")
 //			},
 //		}
 //
@@ -481,6 +625,12 @@ type StoreMock struct {
 	// CountEventTypesWithSdFunc mocks the CountEventTypesWithSd method.
 	CountEventTypesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereEventTypeParam) (int64, error)
 
+	// CountMimeTypesFunc mocks the CountMimeTypes method.
+	CountMimeTypesFunc func(ctx context.Context, where parameter.WhereMimeTypeParam) (int64, error)
+
+	// CountMimeTypesWithSdFunc mocks the CountMimeTypesWithSd method.
+	CountMimeTypesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereMimeTypeParam) (int64, error)
+
 	// CountPermissionCategoriesFunc mocks the CountPermissionCategories method.
 	CountPermissionCategoriesFunc func(ctx context.Context, where parameter.WherePermissionCategoryParam) (int64, error)
 
@@ -492,6 +642,12 @@ type StoreMock struct {
 
 	// CountPolicyCategoriesWithSdFunc mocks the CountPolicyCategoriesWithSd method.
 	CountPolicyCategoriesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WherePolicyCategoryParam) (int64, error)
+
+	// CountRecordTypesFunc mocks the CountRecordTypes method.
+	CountRecordTypesFunc func(ctx context.Context, where parameter.WhereRecordTypeParam) (int64, error)
+
+	// CountRecordTypesWithSdFunc mocks the CountRecordTypesWithSd method.
+	CountRecordTypesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereRecordTypeParam) (int64, error)
 
 	// CreateAbsenceFunc mocks the CreateAbsence method.
 	CreateAbsenceFunc func(ctx context.Context, param parameter.CreateAbsenceParam) (entity.Absence, error)
@@ -541,6 +697,18 @@ type StoreMock struct {
 	// CreateEventTypesWithSdFunc mocks the CreateEventTypesWithSd method.
 	CreateEventTypesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateEventTypeParam) (int64, error)
 
+	// CreateMimeTypeFunc mocks the CreateMimeType method.
+	CreateMimeTypeFunc func(ctx context.Context, param parameter.CreateMimeTypeParam) (entity.MimeType, error)
+
+	// CreateMimeTypeWithSdFunc mocks the CreateMimeTypeWithSd method.
+	CreateMimeTypeWithSdFunc func(ctx context.Context, sd Sd, param parameter.CreateMimeTypeParam) (entity.MimeType, error)
+
+	// CreateMimeTypesFunc mocks the CreateMimeTypes method.
+	CreateMimeTypesFunc func(ctx context.Context, params []parameter.CreateMimeTypeParam) (int64, error)
+
+	// CreateMimeTypesWithSdFunc mocks the CreateMimeTypesWithSd method.
+	CreateMimeTypesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateMimeTypeParam) (int64, error)
+
 	// CreatePermissionCategoriesFunc mocks the CreatePermissionCategories method.
 	CreatePermissionCategoriesFunc func(ctx context.Context, params []parameter.CreatePermissionCategoryParam) (int64, error)
 
@@ -564,6 +732,18 @@ type StoreMock struct {
 
 	// CreatePolicyCategoryWithSdFunc mocks the CreatePolicyCategoryWithSd method.
 	CreatePolicyCategoryWithSdFunc func(ctx context.Context, sd Sd, param parameter.CreatePolicyCategoryParam) (entity.PolicyCategory, error)
+
+	// CreateRecordTypeFunc mocks the CreateRecordType method.
+	CreateRecordTypeFunc func(ctx context.Context, param parameter.CreateRecordTypeParam) (entity.RecordType, error)
+
+	// CreateRecordTypeWithSdFunc mocks the CreateRecordTypeWithSd method.
+	CreateRecordTypeWithSdFunc func(ctx context.Context, sd Sd, param parameter.CreateRecordTypeParam) (entity.RecordType, error)
+
+	// CreateRecordTypesFunc mocks the CreateRecordTypes method.
+	CreateRecordTypesFunc func(ctx context.Context, params []parameter.CreateRecordTypeParam) (int64, error)
+
+	// CreateRecordTypesWithSdFunc mocks the CreateRecordTypesWithSd method.
+	CreateRecordTypesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateRecordTypeParam) (int64, error)
 
 	// DeleteAbsenceFunc mocks the DeleteAbsence method.
 	DeleteAbsenceFunc func(ctx context.Context, absenceID uuid.UUID) error
@@ -607,6 +787,18 @@ type StoreMock struct {
 	// DeleteEventTypeWithSdFunc mocks the DeleteEventTypeWithSd method.
 	DeleteEventTypeWithSdFunc func(ctx context.Context, sd Sd, eventTypeID uuid.UUID) error
 
+	// DeleteMimeTypeFunc mocks the DeleteMimeType method.
+	DeleteMimeTypeFunc func(ctx context.Context, mimeTypeID uuid.UUID) error
+
+	// DeleteMimeTypeByKeyFunc mocks the DeleteMimeTypeByKey method.
+	DeleteMimeTypeByKeyFunc func(ctx context.Context, key string) error
+
+	// DeleteMimeTypeByKeyWithSdFunc mocks the DeleteMimeTypeByKeyWithSd method.
+	DeleteMimeTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) error
+
+	// DeleteMimeTypeWithSdFunc mocks the DeleteMimeTypeWithSd method.
+	DeleteMimeTypeWithSdFunc func(ctx context.Context, sd Sd, mimeTypeID uuid.UUID) error
+
 	// DeletePermissionCategoryFunc mocks the DeletePermissionCategory method.
 	DeletePermissionCategoryFunc func(ctx context.Context, permissionCategoryID uuid.UUID) error
 
@@ -630,6 +822,18 @@ type StoreMock struct {
 
 	// DeletePolicyCategoryWithSdFunc mocks the DeletePolicyCategoryWithSd method.
 	DeletePolicyCategoryWithSdFunc func(ctx context.Context, sd Sd, policyCategoryID uuid.UUID) error
+
+	// DeleteRecordTypeFunc mocks the DeleteRecordType method.
+	DeleteRecordTypeFunc func(ctx context.Context, recordTypeID uuid.UUID) error
+
+	// DeleteRecordTypeByKeyFunc mocks the DeleteRecordTypeByKey method.
+	DeleteRecordTypeByKeyFunc func(ctx context.Context, key string) error
+
+	// DeleteRecordTypeByKeyWithSdFunc mocks the DeleteRecordTypeByKeyWithSd method.
+	DeleteRecordTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) error
+
+	// DeleteRecordTypeWithSdFunc mocks the DeleteRecordTypeWithSd method.
+	DeleteRecordTypeWithSdFunc func(ctx context.Context, sd Sd, recordTypeID uuid.UUID) error
 
 	// FindAbsenceByIDFunc mocks the FindAbsenceByID method.
 	FindAbsenceByIDFunc func(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error)
@@ -673,6 +877,18 @@ type StoreMock struct {
 	// FindEventTypeByKeyWithSdFunc mocks the FindEventTypeByKeyWithSd method.
 	FindEventTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.EventType, error)
 
+	// FindMimeTypeByIDFunc mocks the FindMimeTypeByID method.
+	FindMimeTypeByIDFunc func(ctx context.Context, mimeTypeID uuid.UUID) (entity.MimeType, error)
+
+	// FindMimeTypeByIDWithSdFunc mocks the FindMimeTypeByIDWithSd method.
+	FindMimeTypeByIDWithSdFunc func(ctx context.Context, sd Sd, mimeTypeID uuid.UUID) (entity.MimeType, error)
+
+	// FindMimeTypeByKeyFunc mocks the FindMimeTypeByKey method.
+	FindMimeTypeByKeyFunc func(ctx context.Context, key string) (entity.MimeType, error)
+
+	// FindMimeTypeByKeyWithSdFunc mocks the FindMimeTypeByKeyWithSd method.
+	FindMimeTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.MimeType, error)
+
 	// FindPermissionCategoryByIDFunc mocks the FindPermissionCategoryByID method.
 	FindPermissionCategoryByIDFunc func(ctx context.Context, permissionCategoryID uuid.UUID) (entity.PermissionCategory, error)
 
@@ -697,6 +913,18 @@ type StoreMock struct {
 	// FindPolicyCategoryByKeyWithSdFunc mocks the FindPolicyCategoryByKeyWithSd method.
 	FindPolicyCategoryByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.PolicyCategory, error)
 
+	// FindRecordTypeByIDFunc mocks the FindRecordTypeByID method.
+	FindRecordTypeByIDFunc func(ctx context.Context, recordTypeID uuid.UUID) (entity.RecordType, error)
+
+	// FindRecordTypeByIDWithSdFunc mocks the FindRecordTypeByIDWithSd method.
+	FindRecordTypeByIDWithSdFunc func(ctx context.Context, sd Sd, recordTypeID uuid.UUID) (entity.RecordType, error)
+
+	// FindRecordTypeByKeyFunc mocks the FindRecordTypeByKey method.
+	FindRecordTypeByKeyFunc func(ctx context.Context, key string) (entity.RecordType, error)
+
+	// FindRecordTypeByKeyWithSdFunc mocks the FindRecordTypeByKeyWithSd method.
+	FindRecordTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.RecordType, error)
+
 	// GetAbsencesFunc mocks the GetAbsences method.
 	GetAbsencesFunc func(ctx context.Context, order parameter.AbsenceOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Absence], error)
 
@@ -720,6 +948,12 @@ type StoreMock struct {
 
 	// GetEventTypesWithSdFunc mocks the GetEventTypesWithSd method.
 	GetEventTypesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereEventTypeParam, order parameter.EventTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.EventType], error)
+
+	// GetMimeTypesFunc mocks the GetMimeTypes method.
+	GetMimeTypesFunc func(ctx context.Context, where parameter.WhereMimeTypeParam, order parameter.MimeTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MimeType], error)
+
+	// GetMimeTypesWithSdFunc mocks the GetMimeTypesWithSd method.
+	GetMimeTypesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereMimeTypeParam, order parameter.MimeTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MimeType], error)
 
 	// GetPermissionCategoriesFunc mocks the GetPermissionCategories method.
 	GetPermissionCategoriesFunc func(ctx context.Context, where parameter.WherePermissionCategoryParam, order parameter.PermissionCategoryOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PermissionCategory], error)
@@ -751,6 +985,12 @@ type StoreMock struct {
 	// GetPluralEventTypesWithSdFunc mocks the GetPluralEventTypesWithSd method.
 	GetPluralEventTypesWithSdFunc func(ctx context.Context, sd Sd, EventTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.EventType], error)
 
+	// GetPluralMimeTypesFunc mocks the GetPluralMimeTypes method.
+	GetPluralMimeTypesFunc func(ctx context.Context, MimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error)
+
+	// GetPluralMimeTypesWithSdFunc mocks the GetPluralMimeTypesWithSd method.
+	GetPluralMimeTypesWithSdFunc func(ctx context.Context, sd Sd, MimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error)
+
 	// GetPluralPermissionCategoriesFunc mocks the GetPluralPermissionCategories method.
 	GetPluralPermissionCategoriesFunc func(ctx context.Context, PermissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error)
 
@@ -763,11 +1003,23 @@ type StoreMock struct {
 	// GetPluralPolicyCategoriesWithSdFunc mocks the GetPluralPolicyCategoriesWithSd method.
 	GetPluralPolicyCategoriesWithSdFunc func(ctx context.Context, sd Sd, policyCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PolicyCategory], error)
 
+	// GetPluralRecordTypesFunc mocks the GetPluralRecordTypes method.
+	GetPluralRecordTypesFunc func(ctx context.Context, RecordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error)
+
+	// GetPluralRecordTypesWithSdFunc mocks the GetPluralRecordTypesWithSd method.
+	GetPluralRecordTypesWithSdFunc func(ctx context.Context, sd Sd, RecordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error)
+
 	// GetPolicyCategoriesFunc mocks the GetPolicyCategories method.
 	GetPolicyCategoriesFunc func(ctx context.Context, where parameter.WherePolicyCategoryParam, order parameter.PolicyCategoryOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyCategory], error)
 
 	// GetPolicyCategoriesWithSdFunc mocks the GetPolicyCategoriesWithSd method.
 	GetPolicyCategoriesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WherePolicyCategoryParam, order parameter.PolicyCategoryOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyCategory], error)
+
+	// GetRecordTypesFunc mocks the GetRecordTypes method.
+	GetRecordTypesFunc func(ctx context.Context, where parameter.WhereRecordTypeParam, order parameter.RecordTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.RecordType], error)
+
+	// GetRecordTypesWithSdFunc mocks the GetRecordTypesWithSd method.
+	GetRecordTypesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereRecordTypeParam, order parameter.RecordTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.RecordType], error)
 
 	// PluralDeleteAbsencesFunc mocks the PluralDeleteAbsences method.
 	PluralDeleteAbsencesFunc func(ctx context.Context, absenceIDs []uuid.UUID) error
@@ -793,6 +1045,12 @@ type StoreMock struct {
 	// PluralDeleteEventTypesWithSdFunc mocks the PluralDeleteEventTypesWithSd method.
 	PluralDeleteEventTypesWithSdFunc func(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID) error
 
+	// PluralDeleteMimeTypesFunc mocks the PluralDeleteMimeTypes method.
+	PluralDeleteMimeTypesFunc func(ctx context.Context, mimeTypeIDs []uuid.UUID) error
+
+	// PluralDeleteMimeTypesWithSdFunc mocks the PluralDeleteMimeTypesWithSd method.
+	PluralDeleteMimeTypesWithSdFunc func(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID) error
+
 	// PluralDeletePermissionCategoriesFunc mocks the PluralDeletePermissionCategories method.
 	PluralDeletePermissionCategoriesFunc func(ctx context.Context, permissionCategoryIDs []uuid.UUID) error
 
@@ -804,6 +1062,12 @@ type StoreMock struct {
 
 	// PluralDeletePolicyCategoriesWithSdFunc mocks the PluralDeletePolicyCategoriesWithSd method.
 	PluralDeletePolicyCategoriesWithSdFunc func(ctx context.Context, sd Sd, policyCategoryIDs []uuid.UUID) error
+
+	// PluralDeleteRecordTypesFunc mocks the PluralDeleteRecordTypes method.
+	PluralDeleteRecordTypesFunc func(ctx context.Context, recordTypeIDs []uuid.UUID) error
+
+	// PluralDeleteRecordTypesWithSdFunc mocks the PluralDeleteRecordTypesWithSd method.
+	PluralDeleteRecordTypesWithSdFunc func(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID) error
 
 	// RollbackFunc mocks the Rollback method.
 	RollbackFunc func(contextMoqParam context.Context, sd Sd) error
@@ -844,6 +1108,18 @@ type StoreMock struct {
 	// UpdateEventTypeWithSdFunc mocks the UpdateEventTypeWithSd method.
 	UpdateEventTypeWithSdFunc func(ctx context.Context, sd Sd, eventTypeID uuid.UUID, param parameter.UpdateEventTypeParams) (entity.EventType, error)
 
+	// UpdateMimeTypeFunc mocks the UpdateMimeType method.
+	UpdateMimeTypeFunc func(ctx context.Context, mimeTypeID uuid.UUID, param parameter.UpdateMimeTypeParams) (entity.MimeType, error)
+
+	// UpdateMimeTypeByKeyFunc mocks the UpdateMimeTypeByKey method.
+	UpdateMimeTypeByKeyFunc func(ctx context.Context, key string, param parameter.UpdateMimeTypeByKeyParams) (entity.MimeType, error)
+
+	// UpdateMimeTypeByKeyWithSdFunc mocks the UpdateMimeTypeByKeyWithSd method.
+	UpdateMimeTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string, param parameter.UpdateMimeTypeByKeyParams) (entity.MimeType, error)
+
+	// UpdateMimeTypeWithSdFunc mocks the UpdateMimeTypeWithSd method.
+	UpdateMimeTypeWithSdFunc func(ctx context.Context, sd Sd, mimeTypeID uuid.UUID, param parameter.UpdateMimeTypeParams) (entity.MimeType, error)
+
 	// UpdatePermissionCategoryFunc mocks the UpdatePermissionCategory method.
 	UpdatePermissionCategoryFunc func(ctx context.Context, permissionCategoryID uuid.UUID, param parameter.UpdatePermissionCategoryParams) (entity.PermissionCategory, error)
 
@@ -867,6 +1143,18 @@ type StoreMock struct {
 
 	// UpdatePolicyCategoryWithSdFunc mocks the UpdatePolicyCategoryWithSd method.
 	UpdatePolicyCategoryWithSdFunc func(ctx context.Context, sd Sd, policyCategoryID uuid.UUID, param parameter.UpdatePolicyCategoryParams) (entity.PolicyCategory, error)
+
+	// UpdateRecordTypeFunc mocks the UpdateRecordType method.
+	UpdateRecordTypeFunc func(ctx context.Context, recordTypeID uuid.UUID, param parameter.UpdateRecordTypeParams) (entity.RecordType, error)
+
+	// UpdateRecordTypeByKeyFunc mocks the UpdateRecordTypeByKey method.
+	UpdateRecordTypeByKeyFunc func(ctx context.Context, key string, param parameter.UpdateRecordTypeByKeyParams) (entity.RecordType, error)
+
+	// UpdateRecordTypeByKeyWithSdFunc mocks the UpdateRecordTypeByKeyWithSd method.
+	UpdateRecordTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string, param parameter.UpdateRecordTypeByKeyParams) (entity.RecordType, error)
+
+	// UpdateRecordTypeWithSdFunc mocks the UpdateRecordTypeWithSd method.
+	UpdateRecordTypeWithSdFunc func(ctx context.Context, sd Sd, recordTypeID uuid.UUID, param parameter.UpdateRecordTypeParams) (entity.RecordType, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -947,6 +1235,22 @@ type StoreMock struct {
 			// Where is the where argument value.
 			Where parameter.WhereEventTypeParam
 		}
+		// CountMimeTypes holds details about calls to the CountMimeTypes method.
+		CountMimeTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereMimeTypeParam
+		}
+		// CountMimeTypesWithSd holds details about calls to the CountMimeTypesWithSd method.
+		CountMimeTypesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereMimeTypeParam
+		}
 		// CountPermissionCategories holds details about calls to the CountPermissionCategories method.
 		CountPermissionCategories []struct {
 			// Ctx is the ctx argument value.
@@ -978,6 +1282,22 @@ type StoreMock struct {
 			Sd Sd
 			// Where is the where argument value.
 			Where parameter.WherePolicyCategoryParam
+		}
+		// CountRecordTypes holds details about calls to the CountRecordTypes method.
+		CountRecordTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereRecordTypeParam
+		}
+		// CountRecordTypesWithSd holds details about calls to the CountRecordTypesWithSd method.
+		CountRecordTypesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereRecordTypeParam
 		}
 		// CreateAbsence holds details about calls to the CreateAbsence method.
 		CreateAbsence []struct {
@@ -1107,6 +1427,38 @@ type StoreMock struct {
 			// Params is the params argument value.
 			Params []parameter.CreateEventTypeParam
 		}
+		// CreateMimeType holds details about calls to the CreateMimeType method.
+		CreateMimeType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Param is the param argument value.
+			Param parameter.CreateMimeTypeParam
+		}
+		// CreateMimeTypeWithSd holds details about calls to the CreateMimeTypeWithSd method.
+		CreateMimeTypeWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Param is the param argument value.
+			Param parameter.CreateMimeTypeParam
+		}
+		// CreateMimeTypes holds details about calls to the CreateMimeTypes method.
+		CreateMimeTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.CreateMimeTypeParam
+		}
+		// CreateMimeTypesWithSd holds details about calls to the CreateMimeTypesWithSd method.
+		CreateMimeTypesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Params is the params argument value.
+			Params []parameter.CreateMimeTypeParam
+		}
 		// CreatePermissionCategories holds details about calls to the CreatePermissionCategories method.
 		CreatePermissionCategories []struct {
 			// Ctx is the ctx argument value.
@@ -1170,6 +1522,38 @@ type StoreMock struct {
 			Sd Sd
 			// Param is the param argument value.
 			Param parameter.CreatePolicyCategoryParam
+		}
+		// CreateRecordType holds details about calls to the CreateRecordType method.
+		CreateRecordType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Param is the param argument value.
+			Param parameter.CreateRecordTypeParam
+		}
+		// CreateRecordTypeWithSd holds details about calls to the CreateRecordTypeWithSd method.
+		CreateRecordTypeWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Param is the param argument value.
+			Param parameter.CreateRecordTypeParam
+		}
+		// CreateRecordTypes holds details about calls to the CreateRecordTypes method.
+		CreateRecordTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.CreateRecordTypeParam
+		}
+		// CreateRecordTypesWithSd holds details about calls to the CreateRecordTypesWithSd method.
+		CreateRecordTypesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Params is the params argument value.
+			Params []parameter.CreateRecordTypeParam
 		}
 		// DeleteAbsence holds details about calls to the DeleteAbsence method.
 		DeleteAbsence []struct {
@@ -1283,6 +1667,38 @@ type StoreMock struct {
 			// EventTypeID is the eventTypeID argument value.
 			EventTypeID uuid.UUID
 		}
+		// DeleteMimeType holds details about calls to the DeleteMimeType method.
+		DeleteMimeType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MimeTypeID is the mimeTypeID argument value.
+			MimeTypeID uuid.UUID
+		}
+		// DeleteMimeTypeByKey holds details about calls to the DeleteMimeTypeByKey method.
+		DeleteMimeTypeByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// DeleteMimeTypeByKeyWithSd holds details about calls to the DeleteMimeTypeByKeyWithSd method.
+		DeleteMimeTypeByKeyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
+		}
+		// DeleteMimeTypeWithSd holds details about calls to the DeleteMimeTypeWithSd method.
+		DeleteMimeTypeWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MimeTypeID is the mimeTypeID argument value.
+			MimeTypeID uuid.UUID
+		}
 		// DeletePermissionCategory holds details about calls to the DeletePermissionCategory method.
 		DeletePermissionCategory []struct {
 			// Ctx is the ctx argument value.
@@ -1346,6 +1762,38 @@ type StoreMock struct {
 			Sd Sd
 			// PolicyCategoryID is the policyCategoryID argument value.
 			PolicyCategoryID uuid.UUID
+		}
+		// DeleteRecordType holds details about calls to the DeleteRecordType method.
+		DeleteRecordType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RecordTypeID is the recordTypeID argument value.
+			RecordTypeID uuid.UUID
+		}
+		// DeleteRecordTypeByKey holds details about calls to the DeleteRecordTypeByKey method.
+		DeleteRecordTypeByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// DeleteRecordTypeByKeyWithSd holds details about calls to the DeleteRecordTypeByKeyWithSd method.
+		DeleteRecordTypeByKeyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
+		}
+		// DeleteRecordTypeWithSd holds details about calls to the DeleteRecordTypeWithSd method.
+		DeleteRecordTypeWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// RecordTypeID is the recordTypeID argument value.
+			RecordTypeID uuid.UUID
 		}
 		// FindAbsenceByID holds details about calls to the FindAbsenceByID method.
 		FindAbsenceByID []struct {
@@ -1459,6 +1907,38 @@ type StoreMock struct {
 			// Key is the key argument value.
 			Key string
 		}
+		// FindMimeTypeByID holds details about calls to the FindMimeTypeByID method.
+		FindMimeTypeByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MimeTypeID is the mimeTypeID argument value.
+			MimeTypeID uuid.UUID
+		}
+		// FindMimeTypeByIDWithSd holds details about calls to the FindMimeTypeByIDWithSd method.
+		FindMimeTypeByIDWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MimeTypeID is the mimeTypeID argument value.
+			MimeTypeID uuid.UUID
+		}
+		// FindMimeTypeByKey holds details about calls to the FindMimeTypeByKey method.
+		FindMimeTypeByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// FindMimeTypeByKeyWithSd holds details about calls to the FindMimeTypeByKeyWithSd method.
+		FindMimeTypeByKeyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
+		}
 		// FindPermissionCategoryByID holds details about calls to the FindPermissionCategoryByID method.
 		FindPermissionCategoryByID []struct {
 			// Ctx is the ctx argument value.
@@ -1516,6 +1996,38 @@ type StoreMock struct {
 		}
 		// FindPolicyCategoryByKeyWithSd holds details about calls to the FindPolicyCategoryByKeyWithSd method.
 		FindPolicyCategoryByKeyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
+		}
+		// FindRecordTypeByID holds details about calls to the FindRecordTypeByID method.
+		FindRecordTypeByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RecordTypeID is the recordTypeID argument value.
+			RecordTypeID uuid.UUID
+		}
+		// FindRecordTypeByIDWithSd holds details about calls to the FindRecordTypeByIDWithSd method.
+		FindRecordTypeByIDWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// RecordTypeID is the recordTypeID argument value.
+			RecordTypeID uuid.UUID
+		}
+		// FindRecordTypeByKey holds details about calls to the FindRecordTypeByKey method.
+		FindRecordTypeByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// FindRecordTypeByKeyWithSd holds details about calls to the FindRecordTypeByKeyWithSd method.
+		FindRecordTypeByKeyWithSd []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Sd is the sd argument value.
@@ -1647,6 +2159,38 @@ type StoreMock struct {
 			// Wc is the wc argument value.
 			Wc WithCountParam
 		}
+		// GetMimeTypes holds details about calls to the GetMimeTypes method.
+		GetMimeTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereMimeTypeParam
+			// Order is the order argument value.
+			Order parameter.MimeTypeOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetMimeTypesWithSd holds details about calls to the GetMimeTypesWithSd method.
+		GetMimeTypesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereMimeTypeParam
+			// Order is the order argument value.
+			Order parameter.MimeTypeOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
 		// GetPermissionCategories holds details about calls to the GetPermissionCategories method.
 		GetPermissionCategories []struct {
 			// Ctx is the ctx argument value.
@@ -1759,6 +2303,26 @@ type StoreMock struct {
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 		}
+		// GetPluralMimeTypes holds details about calls to the GetPluralMimeTypes method.
+		GetPluralMimeTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MimeTypeIDs is the MimeTypeIDs argument value.
+			MimeTypeIDs []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralMimeTypesWithSd holds details about calls to the GetPluralMimeTypesWithSd method.
+		GetPluralMimeTypesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MimeTypeIDs is the MimeTypeIDs argument value.
+			MimeTypeIDs []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
 		// GetPluralPermissionCategories holds details about calls to the GetPluralPermissionCategories method.
 		GetPluralPermissionCategories []struct {
 			// Ctx is the ctx argument value.
@@ -1799,6 +2363,26 @@ type StoreMock struct {
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 		}
+		// GetPluralRecordTypes holds details about calls to the GetPluralRecordTypes method.
+		GetPluralRecordTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RecordTypeIDs is the RecordTypeIDs argument value.
+			RecordTypeIDs []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralRecordTypesWithSd holds details about calls to the GetPluralRecordTypesWithSd method.
+		GetPluralRecordTypesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// RecordTypeIDs is the RecordTypeIDs argument value.
+			RecordTypeIDs []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
 		// GetPolicyCategories holds details about calls to the GetPolicyCategories method.
 		GetPolicyCategories []struct {
 			// Ctx is the ctx argument value.
@@ -1824,6 +2408,38 @@ type StoreMock struct {
 			Where parameter.WherePolicyCategoryParam
 			// Order is the order argument value.
 			Order parameter.PolicyCategoryOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetRecordTypes holds details about calls to the GetRecordTypes method.
+		GetRecordTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereRecordTypeParam
+			// Order is the order argument value.
+			Order parameter.RecordTypeOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetRecordTypesWithSd holds details about calls to the GetRecordTypesWithSd method.
+		GetRecordTypesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereRecordTypeParam
+			// Order is the order argument value.
+			Order parameter.RecordTypeOrderMethod
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 			// Cp is the cp argument value.
@@ -1895,6 +2511,22 @@ type StoreMock struct {
 			// EventTypeIDs is the eventTypeIDs argument value.
 			EventTypeIDs []uuid.UUID
 		}
+		// PluralDeleteMimeTypes holds details about calls to the PluralDeleteMimeTypes method.
+		PluralDeleteMimeTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MimeTypeIDs is the mimeTypeIDs argument value.
+			MimeTypeIDs []uuid.UUID
+		}
+		// PluralDeleteMimeTypesWithSd holds details about calls to the PluralDeleteMimeTypesWithSd method.
+		PluralDeleteMimeTypesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MimeTypeIDs is the mimeTypeIDs argument value.
+			MimeTypeIDs []uuid.UUID
+		}
 		// PluralDeletePermissionCategories holds details about calls to the PluralDeletePermissionCategories method.
 		PluralDeletePermissionCategories []struct {
 			// Ctx is the ctx argument value.
@@ -1926,6 +2558,22 @@ type StoreMock struct {
 			Sd Sd
 			// PolicyCategoryIDs is the policyCategoryIDs argument value.
 			PolicyCategoryIDs []uuid.UUID
+		}
+		// PluralDeleteRecordTypes holds details about calls to the PluralDeleteRecordTypes method.
+		PluralDeleteRecordTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RecordTypeIDs is the recordTypeIDs argument value.
+			RecordTypeIDs []uuid.UUID
+		}
+		// PluralDeleteRecordTypesWithSd holds details about calls to the PluralDeleteRecordTypesWithSd method.
+		PluralDeleteRecordTypesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// RecordTypeIDs is the recordTypeIDs argument value.
+			RecordTypeIDs []uuid.UUID
 		}
 		// Rollback holds details about calls to the Rollback method.
 		Rollback []struct {
@@ -2054,6 +2702,46 @@ type StoreMock struct {
 			// Param is the param argument value.
 			Param parameter.UpdateEventTypeParams
 		}
+		// UpdateMimeType holds details about calls to the UpdateMimeType method.
+		UpdateMimeType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MimeTypeID is the mimeTypeID argument value.
+			MimeTypeID uuid.UUID
+			// Param is the param argument value.
+			Param parameter.UpdateMimeTypeParams
+		}
+		// UpdateMimeTypeByKey holds details about calls to the UpdateMimeTypeByKey method.
+		UpdateMimeTypeByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+			// Param is the param argument value.
+			Param parameter.UpdateMimeTypeByKeyParams
+		}
+		// UpdateMimeTypeByKeyWithSd holds details about calls to the UpdateMimeTypeByKeyWithSd method.
+		UpdateMimeTypeByKeyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
+			// Param is the param argument value.
+			Param parameter.UpdateMimeTypeByKeyParams
+		}
+		// UpdateMimeTypeWithSd holds details about calls to the UpdateMimeTypeWithSd method.
+		UpdateMimeTypeWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MimeTypeID is the mimeTypeID argument value.
+			MimeTypeID uuid.UUID
+			// Param is the param argument value.
+			Param parameter.UpdateMimeTypeParams
+		}
 		// UpdatePermissionCategory holds details about calls to the UpdatePermissionCategory method.
 		UpdatePermissionCategory []struct {
 			// Ctx is the ctx argument value.
@@ -2134,6 +2822,46 @@ type StoreMock struct {
 			// Param is the param argument value.
 			Param parameter.UpdatePolicyCategoryParams
 		}
+		// UpdateRecordType holds details about calls to the UpdateRecordType method.
+		UpdateRecordType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RecordTypeID is the recordTypeID argument value.
+			RecordTypeID uuid.UUID
+			// Param is the param argument value.
+			Param parameter.UpdateRecordTypeParams
+		}
+		// UpdateRecordTypeByKey holds details about calls to the UpdateRecordTypeByKey method.
+		UpdateRecordTypeByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+			// Param is the param argument value.
+			Param parameter.UpdateRecordTypeByKeyParams
+		}
+		// UpdateRecordTypeByKeyWithSd holds details about calls to the UpdateRecordTypeByKeyWithSd method.
+		UpdateRecordTypeByKeyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
+			// Param is the param argument value.
+			Param parameter.UpdateRecordTypeByKeyParams
+		}
+		// UpdateRecordTypeWithSd holds details about calls to the UpdateRecordTypeWithSd method.
+		UpdateRecordTypeWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// RecordTypeID is the recordTypeID argument value.
+			RecordTypeID uuid.UUID
+			// Param is the param argument value.
+			Param parameter.UpdateRecordTypeParams
+		}
 	}
 	lockBegin                                  sync.RWMutex
 	lockCleanup                                sync.RWMutex
@@ -2146,10 +2874,14 @@ type StoreMock struct {
 	lockCountAttendanceTypesWithSd             sync.RWMutex
 	lockCountEventTypes                        sync.RWMutex
 	lockCountEventTypesWithSd                  sync.RWMutex
+	lockCountMimeTypes                         sync.RWMutex
+	lockCountMimeTypesWithSd                   sync.RWMutex
 	lockCountPermissionCategories              sync.RWMutex
 	lockCountPermissionCategoriesWithSd        sync.RWMutex
 	lockCountPolicyCategories                  sync.RWMutex
 	lockCountPolicyCategoriesWithSd            sync.RWMutex
+	lockCountRecordTypes                       sync.RWMutex
+	lockCountRecordTypesWithSd                 sync.RWMutex
 	lockCreateAbsence                          sync.RWMutex
 	lockCreateAbsenceWithSd                    sync.RWMutex
 	lockCreateAbsences                         sync.RWMutex
@@ -2166,6 +2898,10 @@ type StoreMock struct {
 	lockCreateEventTypeWithSd                  sync.RWMutex
 	lockCreateEventTypes                       sync.RWMutex
 	lockCreateEventTypesWithSd                 sync.RWMutex
+	lockCreateMimeType                         sync.RWMutex
+	lockCreateMimeTypeWithSd                   sync.RWMutex
+	lockCreateMimeTypes                        sync.RWMutex
+	lockCreateMimeTypesWithSd                  sync.RWMutex
 	lockCreatePermissionCategories             sync.RWMutex
 	lockCreatePermissionCategoriesWithSd       sync.RWMutex
 	lockCreatePermissionCategory               sync.RWMutex
@@ -2174,6 +2910,10 @@ type StoreMock struct {
 	lockCreatePolicyCategoriesWithSd           sync.RWMutex
 	lockCreatePolicyCategory                   sync.RWMutex
 	lockCreatePolicyCategoryWithSd             sync.RWMutex
+	lockCreateRecordType                       sync.RWMutex
+	lockCreateRecordTypeWithSd                 sync.RWMutex
+	lockCreateRecordTypes                      sync.RWMutex
+	lockCreateRecordTypesWithSd                sync.RWMutex
 	lockDeleteAbsence                          sync.RWMutex
 	lockDeleteAbsenceWithSd                    sync.RWMutex
 	lockDeleteAttendStatus                     sync.RWMutex
@@ -2188,6 +2928,10 @@ type StoreMock struct {
 	lockDeleteEventTypeByKey                   sync.RWMutex
 	lockDeleteEventTypeByKeyWithSd             sync.RWMutex
 	lockDeleteEventTypeWithSd                  sync.RWMutex
+	lockDeleteMimeType                         sync.RWMutex
+	lockDeleteMimeTypeByKey                    sync.RWMutex
+	lockDeleteMimeTypeByKeyWithSd              sync.RWMutex
+	lockDeleteMimeTypeWithSd                   sync.RWMutex
 	lockDeletePermissionCategory               sync.RWMutex
 	lockDeletePermissionCategoryByKey          sync.RWMutex
 	lockDeletePermissionCategoryByKeyWithSd    sync.RWMutex
@@ -2196,6 +2940,10 @@ type StoreMock struct {
 	lockDeletePolicyCategoryByKey              sync.RWMutex
 	lockDeletePolicyCategoryByKeyWithSd        sync.RWMutex
 	lockDeletePolicyCategoryWithSd             sync.RWMutex
+	lockDeleteRecordType                       sync.RWMutex
+	lockDeleteRecordTypeByKey                  sync.RWMutex
+	lockDeleteRecordTypeByKeyWithSd            sync.RWMutex
+	lockDeleteRecordTypeWithSd                 sync.RWMutex
 	lockFindAbsenceByID                        sync.RWMutex
 	lockFindAbsenceByIDWithSd                  sync.RWMutex
 	lockFindAttendStatusByID                   sync.RWMutex
@@ -2210,6 +2958,10 @@ type StoreMock struct {
 	lockFindEventTypeByIDWithSd                sync.RWMutex
 	lockFindEventTypeByKey                     sync.RWMutex
 	lockFindEventTypeByKeyWithSd               sync.RWMutex
+	lockFindMimeTypeByID                       sync.RWMutex
+	lockFindMimeTypeByIDWithSd                 sync.RWMutex
+	lockFindMimeTypeByKey                      sync.RWMutex
+	lockFindMimeTypeByKeyWithSd                sync.RWMutex
 	lockFindPermissionCategoryByID             sync.RWMutex
 	lockFindPermissionCategoryByIDWithSd       sync.RWMutex
 	lockFindPermissionCategoryByKey            sync.RWMutex
@@ -2218,6 +2970,10 @@ type StoreMock struct {
 	lockFindPolicyCategoryByIDWithSd           sync.RWMutex
 	lockFindPolicyCategoryByKey                sync.RWMutex
 	lockFindPolicyCategoryByKeyWithSd          sync.RWMutex
+	lockFindRecordTypeByID                     sync.RWMutex
+	lockFindRecordTypeByIDWithSd               sync.RWMutex
+	lockFindRecordTypeByKey                    sync.RWMutex
+	lockFindRecordTypeByKeyWithSd              sync.RWMutex
 	lockGetAbsences                            sync.RWMutex
 	lockGetAbsencesWithSd                      sync.RWMutex
 	lockGetAttendStatuses                      sync.RWMutex
@@ -2226,6 +2982,8 @@ type StoreMock struct {
 	lockGetAttendanceTypesWithSd               sync.RWMutex
 	lockGetEventTypes                          sync.RWMutex
 	lockGetEventTypesWithSd                    sync.RWMutex
+	lockGetMimeTypes                           sync.RWMutex
+	lockGetMimeTypesWithSd                     sync.RWMutex
 	lockGetPermissionCategories                sync.RWMutex
 	lockGetPermissionCategoriesWithSd          sync.RWMutex
 	lockGetPluralAbsences                      sync.RWMutex
@@ -2236,12 +2994,18 @@ type StoreMock struct {
 	lockGetPluralAttendanceTypesWithSd         sync.RWMutex
 	lockGetPluralEventTypes                    sync.RWMutex
 	lockGetPluralEventTypesWithSd              sync.RWMutex
+	lockGetPluralMimeTypes                     sync.RWMutex
+	lockGetPluralMimeTypesWithSd               sync.RWMutex
 	lockGetPluralPermissionCategories          sync.RWMutex
 	lockGetPluralPermissionCategoriesWithSd    sync.RWMutex
 	lockGetPluralPolicyCategories              sync.RWMutex
 	lockGetPluralPolicyCategoriesWithSd        sync.RWMutex
+	lockGetPluralRecordTypes                   sync.RWMutex
+	lockGetPluralRecordTypesWithSd             sync.RWMutex
 	lockGetPolicyCategories                    sync.RWMutex
 	lockGetPolicyCategoriesWithSd              sync.RWMutex
+	lockGetRecordTypes                         sync.RWMutex
+	lockGetRecordTypesWithSd                   sync.RWMutex
 	lockPluralDeleteAbsences                   sync.RWMutex
 	lockPluralDeleteAbsencesWithSd             sync.RWMutex
 	lockPluralDeleteAttendStatuses             sync.RWMutex
@@ -2250,10 +3014,14 @@ type StoreMock struct {
 	lockPluralDeleteAttendanceTypesWithSd      sync.RWMutex
 	lockPluralDeleteEventTypes                 sync.RWMutex
 	lockPluralDeleteEventTypesWithSd           sync.RWMutex
+	lockPluralDeleteMimeTypes                  sync.RWMutex
+	lockPluralDeleteMimeTypesWithSd            sync.RWMutex
 	lockPluralDeletePermissionCategories       sync.RWMutex
 	lockPluralDeletePermissionCategoriesWithSd sync.RWMutex
 	lockPluralDeletePolicyCategories           sync.RWMutex
 	lockPluralDeletePolicyCategoriesWithSd     sync.RWMutex
+	lockPluralDeleteRecordTypes                sync.RWMutex
+	lockPluralDeleteRecordTypesWithSd          sync.RWMutex
 	lockRollback                               sync.RWMutex
 	lockUpdateAttendStatus                     sync.RWMutex
 	lockUpdateAttendStatusByKey                sync.RWMutex
@@ -2267,6 +3035,10 @@ type StoreMock struct {
 	lockUpdateEventTypeByKey                   sync.RWMutex
 	lockUpdateEventTypeByKeyWithSd             sync.RWMutex
 	lockUpdateEventTypeWithSd                  sync.RWMutex
+	lockUpdateMimeType                         sync.RWMutex
+	lockUpdateMimeTypeByKey                    sync.RWMutex
+	lockUpdateMimeTypeByKeyWithSd              sync.RWMutex
+	lockUpdateMimeTypeWithSd                   sync.RWMutex
 	lockUpdatePermissionCategory               sync.RWMutex
 	lockUpdatePermissionCategoryByKey          sync.RWMutex
 	lockUpdatePermissionCategoryByKeyWithSd    sync.RWMutex
@@ -2275,6 +3047,10 @@ type StoreMock struct {
 	lockUpdatePolicyCategoryByKey              sync.RWMutex
 	lockUpdatePolicyCategoryByKeyWithSd        sync.RWMutex
 	lockUpdatePolicyCategoryWithSd             sync.RWMutex
+	lockUpdateRecordType                       sync.RWMutex
+	lockUpdateRecordTypeByKey                  sync.RWMutex
+	lockUpdateRecordTypeByKeyWithSd            sync.RWMutex
+	lockUpdateRecordTypeWithSd                 sync.RWMutex
 }
 
 // Begin calls BeginFunc.
@@ -2673,6 +3449,82 @@ func (mock *StoreMock) CountEventTypesWithSdCalls() []struct {
 	return calls
 }
 
+// CountMimeTypes calls CountMimeTypesFunc.
+func (mock *StoreMock) CountMimeTypes(ctx context.Context, where parameter.WhereMimeTypeParam) (int64, error) {
+	if mock.CountMimeTypesFunc == nil {
+		panic("StoreMock.CountMimeTypesFunc: method is nil but Store.CountMimeTypes was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereMimeTypeParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+	}
+	mock.lockCountMimeTypes.Lock()
+	mock.calls.CountMimeTypes = append(mock.calls.CountMimeTypes, callInfo)
+	mock.lockCountMimeTypes.Unlock()
+	return mock.CountMimeTypesFunc(ctx, where)
+}
+
+// CountMimeTypesCalls gets all the calls that were made to CountMimeTypes.
+// Check the length with:
+//
+//	len(mockedStore.CountMimeTypesCalls())
+func (mock *StoreMock) CountMimeTypesCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereMimeTypeParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereMimeTypeParam
+	}
+	mock.lockCountMimeTypes.RLock()
+	calls = mock.calls.CountMimeTypes
+	mock.lockCountMimeTypes.RUnlock()
+	return calls
+}
+
+// CountMimeTypesWithSd calls CountMimeTypesWithSdFunc.
+func (mock *StoreMock) CountMimeTypesWithSd(ctx context.Context, sd Sd, where parameter.WhereMimeTypeParam) (int64, error) {
+	if mock.CountMimeTypesWithSdFunc == nil {
+		panic("StoreMock.CountMimeTypesWithSdFunc: method is nil but Store.CountMimeTypesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereMimeTypeParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+	}
+	mock.lockCountMimeTypesWithSd.Lock()
+	mock.calls.CountMimeTypesWithSd = append(mock.calls.CountMimeTypesWithSd, callInfo)
+	mock.lockCountMimeTypesWithSd.Unlock()
+	return mock.CountMimeTypesWithSdFunc(ctx, sd, where)
+}
+
+// CountMimeTypesWithSdCalls gets all the calls that were made to CountMimeTypesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountMimeTypesWithSdCalls())
+func (mock *StoreMock) CountMimeTypesWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereMimeTypeParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereMimeTypeParam
+	}
+	mock.lockCountMimeTypesWithSd.RLock()
+	calls = mock.calls.CountMimeTypesWithSd
+	mock.lockCountMimeTypesWithSd.RUnlock()
+	return calls
+}
+
 // CountPermissionCategories calls CountPermissionCategoriesFunc.
 func (mock *StoreMock) CountPermissionCategories(ctx context.Context, where parameter.WherePermissionCategoryParam) (int64, error) {
 	if mock.CountPermissionCategoriesFunc == nil {
@@ -2822,6 +3674,82 @@ func (mock *StoreMock) CountPolicyCategoriesWithSdCalls() []struct {
 	mock.lockCountPolicyCategoriesWithSd.RLock()
 	calls = mock.calls.CountPolicyCategoriesWithSd
 	mock.lockCountPolicyCategoriesWithSd.RUnlock()
+	return calls
+}
+
+// CountRecordTypes calls CountRecordTypesFunc.
+func (mock *StoreMock) CountRecordTypes(ctx context.Context, where parameter.WhereRecordTypeParam) (int64, error) {
+	if mock.CountRecordTypesFunc == nil {
+		panic("StoreMock.CountRecordTypesFunc: method is nil but Store.CountRecordTypes was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereRecordTypeParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+	}
+	mock.lockCountRecordTypes.Lock()
+	mock.calls.CountRecordTypes = append(mock.calls.CountRecordTypes, callInfo)
+	mock.lockCountRecordTypes.Unlock()
+	return mock.CountRecordTypesFunc(ctx, where)
+}
+
+// CountRecordTypesCalls gets all the calls that were made to CountRecordTypes.
+// Check the length with:
+//
+//	len(mockedStore.CountRecordTypesCalls())
+func (mock *StoreMock) CountRecordTypesCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereRecordTypeParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereRecordTypeParam
+	}
+	mock.lockCountRecordTypes.RLock()
+	calls = mock.calls.CountRecordTypes
+	mock.lockCountRecordTypes.RUnlock()
+	return calls
+}
+
+// CountRecordTypesWithSd calls CountRecordTypesWithSdFunc.
+func (mock *StoreMock) CountRecordTypesWithSd(ctx context.Context, sd Sd, where parameter.WhereRecordTypeParam) (int64, error) {
+	if mock.CountRecordTypesWithSdFunc == nil {
+		panic("StoreMock.CountRecordTypesWithSdFunc: method is nil but Store.CountRecordTypesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereRecordTypeParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+	}
+	mock.lockCountRecordTypesWithSd.Lock()
+	mock.calls.CountRecordTypesWithSd = append(mock.calls.CountRecordTypesWithSd, callInfo)
+	mock.lockCountRecordTypesWithSd.Unlock()
+	return mock.CountRecordTypesWithSdFunc(ctx, sd, where)
+}
+
+// CountRecordTypesWithSdCalls gets all the calls that were made to CountRecordTypesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountRecordTypesWithSdCalls())
+func (mock *StoreMock) CountRecordTypesWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereRecordTypeParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereRecordTypeParam
+	}
+	mock.lockCountRecordTypesWithSd.RLock()
+	calls = mock.calls.CountRecordTypesWithSd
+	mock.lockCountRecordTypesWithSd.RUnlock()
 	return calls
 }
 
@@ -3433,6 +4361,158 @@ func (mock *StoreMock) CreateEventTypesWithSdCalls() []struct {
 	return calls
 }
 
+// CreateMimeType calls CreateMimeTypeFunc.
+func (mock *StoreMock) CreateMimeType(ctx context.Context, param parameter.CreateMimeTypeParam) (entity.MimeType, error) {
+	if mock.CreateMimeTypeFunc == nil {
+		panic("StoreMock.CreateMimeTypeFunc: method is nil but Store.CreateMimeType was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Param parameter.CreateMimeTypeParam
+	}{
+		Ctx:   ctx,
+		Param: param,
+	}
+	mock.lockCreateMimeType.Lock()
+	mock.calls.CreateMimeType = append(mock.calls.CreateMimeType, callInfo)
+	mock.lockCreateMimeType.Unlock()
+	return mock.CreateMimeTypeFunc(ctx, param)
+}
+
+// CreateMimeTypeCalls gets all the calls that were made to CreateMimeType.
+// Check the length with:
+//
+//	len(mockedStore.CreateMimeTypeCalls())
+func (mock *StoreMock) CreateMimeTypeCalls() []struct {
+	Ctx   context.Context
+	Param parameter.CreateMimeTypeParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Param parameter.CreateMimeTypeParam
+	}
+	mock.lockCreateMimeType.RLock()
+	calls = mock.calls.CreateMimeType
+	mock.lockCreateMimeType.RUnlock()
+	return calls
+}
+
+// CreateMimeTypeWithSd calls CreateMimeTypeWithSdFunc.
+func (mock *StoreMock) CreateMimeTypeWithSd(ctx context.Context, sd Sd, param parameter.CreateMimeTypeParam) (entity.MimeType, error) {
+	if mock.CreateMimeTypeWithSdFunc == nil {
+		panic("StoreMock.CreateMimeTypeWithSdFunc: method is nil but Store.CreateMimeTypeWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateMimeTypeParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Param: param,
+	}
+	mock.lockCreateMimeTypeWithSd.Lock()
+	mock.calls.CreateMimeTypeWithSd = append(mock.calls.CreateMimeTypeWithSd, callInfo)
+	mock.lockCreateMimeTypeWithSd.Unlock()
+	return mock.CreateMimeTypeWithSdFunc(ctx, sd, param)
+}
+
+// CreateMimeTypeWithSdCalls gets all the calls that were made to CreateMimeTypeWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateMimeTypeWithSdCalls())
+func (mock *StoreMock) CreateMimeTypeWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Param parameter.CreateMimeTypeParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateMimeTypeParam
+	}
+	mock.lockCreateMimeTypeWithSd.RLock()
+	calls = mock.calls.CreateMimeTypeWithSd
+	mock.lockCreateMimeTypeWithSd.RUnlock()
+	return calls
+}
+
+// CreateMimeTypes calls CreateMimeTypesFunc.
+func (mock *StoreMock) CreateMimeTypes(ctx context.Context, params []parameter.CreateMimeTypeParam) (int64, error) {
+	if mock.CreateMimeTypesFunc == nil {
+		panic("StoreMock.CreateMimeTypesFunc: method is nil but Store.CreateMimeTypes was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.CreateMimeTypeParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockCreateMimeTypes.Lock()
+	mock.calls.CreateMimeTypes = append(mock.calls.CreateMimeTypes, callInfo)
+	mock.lockCreateMimeTypes.Unlock()
+	return mock.CreateMimeTypesFunc(ctx, params)
+}
+
+// CreateMimeTypesCalls gets all the calls that were made to CreateMimeTypes.
+// Check the length with:
+//
+//	len(mockedStore.CreateMimeTypesCalls())
+func (mock *StoreMock) CreateMimeTypesCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.CreateMimeTypeParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.CreateMimeTypeParam
+	}
+	mock.lockCreateMimeTypes.RLock()
+	calls = mock.calls.CreateMimeTypes
+	mock.lockCreateMimeTypes.RUnlock()
+	return calls
+}
+
+// CreateMimeTypesWithSd calls CreateMimeTypesWithSdFunc.
+func (mock *StoreMock) CreateMimeTypesWithSd(ctx context.Context, sd Sd, params []parameter.CreateMimeTypeParam) (int64, error) {
+	if mock.CreateMimeTypesWithSdFunc == nil {
+		panic("StoreMock.CreateMimeTypesWithSdFunc: method is nil but Store.CreateMimeTypesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateMimeTypeParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		Params: params,
+	}
+	mock.lockCreateMimeTypesWithSd.Lock()
+	mock.calls.CreateMimeTypesWithSd = append(mock.calls.CreateMimeTypesWithSd, callInfo)
+	mock.lockCreateMimeTypesWithSd.Unlock()
+	return mock.CreateMimeTypesWithSdFunc(ctx, sd, params)
+}
+
+// CreateMimeTypesWithSdCalls gets all the calls that were made to CreateMimeTypesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateMimeTypesWithSdCalls())
+func (mock *StoreMock) CreateMimeTypesWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	Params []parameter.CreateMimeTypeParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateMimeTypeParam
+	}
+	mock.lockCreateMimeTypesWithSd.RLock()
+	calls = mock.calls.CreateMimeTypesWithSd
+	mock.lockCreateMimeTypesWithSd.RUnlock()
+	return calls
+}
+
 // CreatePermissionCategories calls CreatePermissionCategoriesFunc.
 func (mock *StoreMock) CreatePermissionCategories(ctx context.Context, params []parameter.CreatePermissionCategoryParam) (int64, error) {
 	if mock.CreatePermissionCategoriesFunc == nil {
@@ -3734,6 +4814,158 @@ func (mock *StoreMock) CreatePolicyCategoryWithSdCalls() []struct {
 	mock.lockCreatePolicyCategoryWithSd.RLock()
 	calls = mock.calls.CreatePolicyCategoryWithSd
 	mock.lockCreatePolicyCategoryWithSd.RUnlock()
+	return calls
+}
+
+// CreateRecordType calls CreateRecordTypeFunc.
+func (mock *StoreMock) CreateRecordType(ctx context.Context, param parameter.CreateRecordTypeParam) (entity.RecordType, error) {
+	if mock.CreateRecordTypeFunc == nil {
+		panic("StoreMock.CreateRecordTypeFunc: method is nil but Store.CreateRecordType was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Param parameter.CreateRecordTypeParam
+	}{
+		Ctx:   ctx,
+		Param: param,
+	}
+	mock.lockCreateRecordType.Lock()
+	mock.calls.CreateRecordType = append(mock.calls.CreateRecordType, callInfo)
+	mock.lockCreateRecordType.Unlock()
+	return mock.CreateRecordTypeFunc(ctx, param)
+}
+
+// CreateRecordTypeCalls gets all the calls that were made to CreateRecordType.
+// Check the length with:
+//
+//	len(mockedStore.CreateRecordTypeCalls())
+func (mock *StoreMock) CreateRecordTypeCalls() []struct {
+	Ctx   context.Context
+	Param parameter.CreateRecordTypeParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Param parameter.CreateRecordTypeParam
+	}
+	mock.lockCreateRecordType.RLock()
+	calls = mock.calls.CreateRecordType
+	mock.lockCreateRecordType.RUnlock()
+	return calls
+}
+
+// CreateRecordTypeWithSd calls CreateRecordTypeWithSdFunc.
+func (mock *StoreMock) CreateRecordTypeWithSd(ctx context.Context, sd Sd, param parameter.CreateRecordTypeParam) (entity.RecordType, error) {
+	if mock.CreateRecordTypeWithSdFunc == nil {
+		panic("StoreMock.CreateRecordTypeWithSdFunc: method is nil but Store.CreateRecordTypeWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateRecordTypeParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Param: param,
+	}
+	mock.lockCreateRecordTypeWithSd.Lock()
+	mock.calls.CreateRecordTypeWithSd = append(mock.calls.CreateRecordTypeWithSd, callInfo)
+	mock.lockCreateRecordTypeWithSd.Unlock()
+	return mock.CreateRecordTypeWithSdFunc(ctx, sd, param)
+}
+
+// CreateRecordTypeWithSdCalls gets all the calls that were made to CreateRecordTypeWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateRecordTypeWithSdCalls())
+func (mock *StoreMock) CreateRecordTypeWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Param parameter.CreateRecordTypeParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateRecordTypeParam
+	}
+	mock.lockCreateRecordTypeWithSd.RLock()
+	calls = mock.calls.CreateRecordTypeWithSd
+	mock.lockCreateRecordTypeWithSd.RUnlock()
+	return calls
+}
+
+// CreateRecordTypes calls CreateRecordTypesFunc.
+func (mock *StoreMock) CreateRecordTypes(ctx context.Context, params []parameter.CreateRecordTypeParam) (int64, error) {
+	if mock.CreateRecordTypesFunc == nil {
+		panic("StoreMock.CreateRecordTypesFunc: method is nil but Store.CreateRecordTypes was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.CreateRecordTypeParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockCreateRecordTypes.Lock()
+	mock.calls.CreateRecordTypes = append(mock.calls.CreateRecordTypes, callInfo)
+	mock.lockCreateRecordTypes.Unlock()
+	return mock.CreateRecordTypesFunc(ctx, params)
+}
+
+// CreateRecordTypesCalls gets all the calls that were made to CreateRecordTypes.
+// Check the length with:
+//
+//	len(mockedStore.CreateRecordTypesCalls())
+func (mock *StoreMock) CreateRecordTypesCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.CreateRecordTypeParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.CreateRecordTypeParam
+	}
+	mock.lockCreateRecordTypes.RLock()
+	calls = mock.calls.CreateRecordTypes
+	mock.lockCreateRecordTypes.RUnlock()
+	return calls
+}
+
+// CreateRecordTypesWithSd calls CreateRecordTypesWithSdFunc.
+func (mock *StoreMock) CreateRecordTypesWithSd(ctx context.Context, sd Sd, params []parameter.CreateRecordTypeParam) (int64, error) {
+	if mock.CreateRecordTypesWithSdFunc == nil {
+		panic("StoreMock.CreateRecordTypesWithSdFunc: method is nil but Store.CreateRecordTypesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateRecordTypeParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		Params: params,
+	}
+	mock.lockCreateRecordTypesWithSd.Lock()
+	mock.calls.CreateRecordTypesWithSd = append(mock.calls.CreateRecordTypesWithSd, callInfo)
+	mock.lockCreateRecordTypesWithSd.Unlock()
+	return mock.CreateRecordTypesWithSdFunc(ctx, sd, params)
+}
+
+// CreateRecordTypesWithSdCalls gets all the calls that were made to CreateRecordTypesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateRecordTypesWithSdCalls())
+func (mock *StoreMock) CreateRecordTypesWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	Params []parameter.CreateRecordTypeParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateRecordTypeParam
+	}
+	mock.lockCreateRecordTypesWithSd.RLock()
+	calls = mock.calls.CreateRecordTypesWithSd
+	mock.lockCreateRecordTypesWithSd.RUnlock()
 	return calls
 }
 
@@ -4269,6 +5501,158 @@ func (mock *StoreMock) DeleteEventTypeWithSdCalls() []struct {
 	return calls
 }
 
+// DeleteMimeType calls DeleteMimeTypeFunc.
+func (mock *StoreMock) DeleteMimeType(ctx context.Context, mimeTypeID uuid.UUID) error {
+	if mock.DeleteMimeTypeFunc == nil {
+		panic("StoreMock.DeleteMimeTypeFunc: method is nil but Store.DeleteMimeType was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		MimeTypeID uuid.UUID
+	}{
+		Ctx:        ctx,
+		MimeTypeID: mimeTypeID,
+	}
+	mock.lockDeleteMimeType.Lock()
+	mock.calls.DeleteMimeType = append(mock.calls.DeleteMimeType, callInfo)
+	mock.lockDeleteMimeType.Unlock()
+	return mock.DeleteMimeTypeFunc(ctx, mimeTypeID)
+}
+
+// DeleteMimeTypeCalls gets all the calls that were made to DeleteMimeType.
+// Check the length with:
+//
+//	len(mockedStore.DeleteMimeTypeCalls())
+func (mock *StoreMock) DeleteMimeTypeCalls() []struct {
+	Ctx        context.Context
+	MimeTypeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		MimeTypeID uuid.UUID
+	}
+	mock.lockDeleteMimeType.RLock()
+	calls = mock.calls.DeleteMimeType
+	mock.lockDeleteMimeType.RUnlock()
+	return calls
+}
+
+// DeleteMimeTypeByKey calls DeleteMimeTypeByKeyFunc.
+func (mock *StoreMock) DeleteMimeTypeByKey(ctx context.Context, key string) error {
+	if mock.DeleteMimeTypeByKeyFunc == nil {
+		panic("StoreMock.DeleteMimeTypeByKeyFunc: method is nil but Store.DeleteMimeTypeByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockDeleteMimeTypeByKey.Lock()
+	mock.calls.DeleteMimeTypeByKey = append(mock.calls.DeleteMimeTypeByKey, callInfo)
+	mock.lockDeleteMimeTypeByKey.Unlock()
+	return mock.DeleteMimeTypeByKeyFunc(ctx, key)
+}
+
+// DeleteMimeTypeByKeyCalls gets all the calls that were made to DeleteMimeTypeByKey.
+// Check the length with:
+//
+//	len(mockedStore.DeleteMimeTypeByKeyCalls())
+func (mock *StoreMock) DeleteMimeTypeByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockDeleteMimeTypeByKey.RLock()
+	calls = mock.calls.DeleteMimeTypeByKey
+	mock.lockDeleteMimeTypeByKey.RUnlock()
+	return calls
+}
+
+// DeleteMimeTypeByKeyWithSd calls DeleteMimeTypeByKeyWithSdFunc.
+func (mock *StoreMock) DeleteMimeTypeByKeyWithSd(ctx context.Context, sd Sd, key string) error {
+	if mock.DeleteMimeTypeByKeyWithSdFunc == nil {
+		panic("StoreMock.DeleteMimeTypeByKeyWithSdFunc: method is nil but Store.DeleteMimeTypeByKeyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}{
+		Ctx: ctx,
+		Sd:  sd,
+		Key: key,
+	}
+	mock.lockDeleteMimeTypeByKeyWithSd.Lock()
+	mock.calls.DeleteMimeTypeByKeyWithSd = append(mock.calls.DeleteMimeTypeByKeyWithSd, callInfo)
+	mock.lockDeleteMimeTypeByKeyWithSd.Unlock()
+	return mock.DeleteMimeTypeByKeyWithSdFunc(ctx, sd, key)
+}
+
+// DeleteMimeTypeByKeyWithSdCalls gets all the calls that were made to DeleteMimeTypeByKeyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteMimeTypeByKeyWithSdCalls())
+func (mock *StoreMock) DeleteMimeTypeByKeyWithSdCalls() []struct {
+	Ctx context.Context
+	Sd  Sd
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}
+	mock.lockDeleteMimeTypeByKeyWithSd.RLock()
+	calls = mock.calls.DeleteMimeTypeByKeyWithSd
+	mock.lockDeleteMimeTypeByKeyWithSd.RUnlock()
+	return calls
+}
+
+// DeleteMimeTypeWithSd calls DeleteMimeTypeWithSdFunc.
+func (mock *StoreMock) DeleteMimeTypeWithSd(ctx context.Context, sd Sd, mimeTypeID uuid.UUID) error {
+	if mock.DeleteMimeTypeWithSdFunc == nil {
+		panic("StoreMock.DeleteMimeTypeWithSdFunc: method is nil but Store.DeleteMimeTypeWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		MimeTypeID uuid.UUID
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		MimeTypeID: mimeTypeID,
+	}
+	mock.lockDeleteMimeTypeWithSd.Lock()
+	mock.calls.DeleteMimeTypeWithSd = append(mock.calls.DeleteMimeTypeWithSd, callInfo)
+	mock.lockDeleteMimeTypeWithSd.Unlock()
+	return mock.DeleteMimeTypeWithSdFunc(ctx, sd, mimeTypeID)
+}
+
+// DeleteMimeTypeWithSdCalls gets all the calls that were made to DeleteMimeTypeWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteMimeTypeWithSdCalls())
+func (mock *StoreMock) DeleteMimeTypeWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	MimeTypeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		MimeTypeID uuid.UUID
+	}
+	mock.lockDeleteMimeTypeWithSd.RLock()
+	calls = mock.calls.DeleteMimeTypeWithSd
+	mock.lockDeleteMimeTypeWithSd.RUnlock()
+	return calls
+}
+
 // DeletePermissionCategory calls DeletePermissionCategoryFunc.
 func (mock *StoreMock) DeletePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID) error {
 	if mock.DeletePermissionCategoryFunc == nil {
@@ -4570,6 +5954,158 @@ func (mock *StoreMock) DeletePolicyCategoryWithSdCalls() []struct {
 	mock.lockDeletePolicyCategoryWithSd.RLock()
 	calls = mock.calls.DeletePolicyCategoryWithSd
 	mock.lockDeletePolicyCategoryWithSd.RUnlock()
+	return calls
+}
+
+// DeleteRecordType calls DeleteRecordTypeFunc.
+func (mock *StoreMock) DeleteRecordType(ctx context.Context, recordTypeID uuid.UUID) error {
+	if mock.DeleteRecordTypeFunc == nil {
+		panic("StoreMock.DeleteRecordTypeFunc: method is nil but Store.DeleteRecordType was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		RecordTypeID uuid.UUID
+	}{
+		Ctx:          ctx,
+		RecordTypeID: recordTypeID,
+	}
+	mock.lockDeleteRecordType.Lock()
+	mock.calls.DeleteRecordType = append(mock.calls.DeleteRecordType, callInfo)
+	mock.lockDeleteRecordType.Unlock()
+	return mock.DeleteRecordTypeFunc(ctx, recordTypeID)
+}
+
+// DeleteRecordTypeCalls gets all the calls that were made to DeleteRecordType.
+// Check the length with:
+//
+//	len(mockedStore.DeleteRecordTypeCalls())
+func (mock *StoreMock) DeleteRecordTypeCalls() []struct {
+	Ctx          context.Context
+	RecordTypeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx          context.Context
+		RecordTypeID uuid.UUID
+	}
+	mock.lockDeleteRecordType.RLock()
+	calls = mock.calls.DeleteRecordType
+	mock.lockDeleteRecordType.RUnlock()
+	return calls
+}
+
+// DeleteRecordTypeByKey calls DeleteRecordTypeByKeyFunc.
+func (mock *StoreMock) DeleteRecordTypeByKey(ctx context.Context, key string) error {
+	if mock.DeleteRecordTypeByKeyFunc == nil {
+		panic("StoreMock.DeleteRecordTypeByKeyFunc: method is nil but Store.DeleteRecordTypeByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockDeleteRecordTypeByKey.Lock()
+	mock.calls.DeleteRecordTypeByKey = append(mock.calls.DeleteRecordTypeByKey, callInfo)
+	mock.lockDeleteRecordTypeByKey.Unlock()
+	return mock.DeleteRecordTypeByKeyFunc(ctx, key)
+}
+
+// DeleteRecordTypeByKeyCalls gets all the calls that were made to DeleteRecordTypeByKey.
+// Check the length with:
+//
+//	len(mockedStore.DeleteRecordTypeByKeyCalls())
+func (mock *StoreMock) DeleteRecordTypeByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockDeleteRecordTypeByKey.RLock()
+	calls = mock.calls.DeleteRecordTypeByKey
+	mock.lockDeleteRecordTypeByKey.RUnlock()
+	return calls
+}
+
+// DeleteRecordTypeByKeyWithSd calls DeleteRecordTypeByKeyWithSdFunc.
+func (mock *StoreMock) DeleteRecordTypeByKeyWithSd(ctx context.Context, sd Sd, key string) error {
+	if mock.DeleteRecordTypeByKeyWithSdFunc == nil {
+		panic("StoreMock.DeleteRecordTypeByKeyWithSdFunc: method is nil but Store.DeleteRecordTypeByKeyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}{
+		Ctx: ctx,
+		Sd:  sd,
+		Key: key,
+	}
+	mock.lockDeleteRecordTypeByKeyWithSd.Lock()
+	mock.calls.DeleteRecordTypeByKeyWithSd = append(mock.calls.DeleteRecordTypeByKeyWithSd, callInfo)
+	mock.lockDeleteRecordTypeByKeyWithSd.Unlock()
+	return mock.DeleteRecordTypeByKeyWithSdFunc(ctx, sd, key)
+}
+
+// DeleteRecordTypeByKeyWithSdCalls gets all the calls that were made to DeleteRecordTypeByKeyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteRecordTypeByKeyWithSdCalls())
+func (mock *StoreMock) DeleteRecordTypeByKeyWithSdCalls() []struct {
+	Ctx context.Context
+	Sd  Sd
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}
+	mock.lockDeleteRecordTypeByKeyWithSd.RLock()
+	calls = mock.calls.DeleteRecordTypeByKeyWithSd
+	mock.lockDeleteRecordTypeByKeyWithSd.RUnlock()
+	return calls
+}
+
+// DeleteRecordTypeWithSd calls DeleteRecordTypeWithSdFunc.
+func (mock *StoreMock) DeleteRecordTypeWithSd(ctx context.Context, sd Sd, recordTypeID uuid.UUID) error {
+	if mock.DeleteRecordTypeWithSdFunc == nil {
+		panic("StoreMock.DeleteRecordTypeWithSdFunc: method is nil but Store.DeleteRecordTypeWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		Sd           Sd
+		RecordTypeID uuid.UUID
+	}{
+		Ctx:          ctx,
+		Sd:           sd,
+		RecordTypeID: recordTypeID,
+	}
+	mock.lockDeleteRecordTypeWithSd.Lock()
+	mock.calls.DeleteRecordTypeWithSd = append(mock.calls.DeleteRecordTypeWithSd, callInfo)
+	mock.lockDeleteRecordTypeWithSd.Unlock()
+	return mock.DeleteRecordTypeWithSdFunc(ctx, sd, recordTypeID)
+}
+
+// DeleteRecordTypeWithSdCalls gets all the calls that were made to DeleteRecordTypeWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteRecordTypeWithSdCalls())
+func (mock *StoreMock) DeleteRecordTypeWithSdCalls() []struct {
+	Ctx          context.Context
+	Sd           Sd
+	RecordTypeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx          context.Context
+		Sd           Sd
+		RecordTypeID uuid.UUID
+	}
+	mock.lockDeleteRecordTypeWithSd.RLock()
+	calls = mock.calls.DeleteRecordTypeWithSd
+	mock.lockDeleteRecordTypeWithSd.RUnlock()
 	return calls
 }
 
@@ -5105,6 +6641,158 @@ func (mock *StoreMock) FindEventTypeByKeyWithSdCalls() []struct {
 	return calls
 }
 
+// FindMimeTypeByID calls FindMimeTypeByIDFunc.
+func (mock *StoreMock) FindMimeTypeByID(ctx context.Context, mimeTypeID uuid.UUID) (entity.MimeType, error) {
+	if mock.FindMimeTypeByIDFunc == nil {
+		panic("StoreMock.FindMimeTypeByIDFunc: method is nil but Store.FindMimeTypeByID was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		MimeTypeID uuid.UUID
+	}{
+		Ctx:        ctx,
+		MimeTypeID: mimeTypeID,
+	}
+	mock.lockFindMimeTypeByID.Lock()
+	mock.calls.FindMimeTypeByID = append(mock.calls.FindMimeTypeByID, callInfo)
+	mock.lockFindMimeTypeByID.Unlock()
+	return mock.FindMimeTypeByIDFunc(ctx, mimeTypeID)
+}
+
+// FindMimeTypeByIDCalls gets all the calls that were made to FindMimeTypeByID.
+// Check the length with:
+//
+//	len(mockedStore.FindMimeTypeByIDCalls())
+func (mock *StoreMock) FindMimeTypeByIDCalls() []struct {
+	Ctx        context.Context
+	MimeTypeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		MimeTypeID uuid.UUID
+	}
+	mock.lockFindMimeTypeByID.RLock()
+	calls = mock.calls.FindMimeTypeByID
+	mock.lockFindMimeTypeByID.RUnlock()
+	return calls
+}
+
+// FindMimeTypeByIDWithSd calls FindMimeTypeByIDWithSdFunc.
+func (mock *StoreMock) FindMimeTypeByIDWithSd(ctx context.Context, sd Sd, mimeTypeID uuid.UUID) (entity.MimeType, error) {
+	if mock.FindMimeTypeByIDWithSdFunc == nil {
+		panic("StoreMock.FindMimeTypeByIDWithSdFunc: method is nil but Store.FindMimeTypeByIDWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		MimeTypeID uuid.UUID
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		MimeTypeID: mimeTypeID,
+	}
+	mock.lockFindMimeTypeByIDWithSd.Lock()
+	mock.calls.FindMimeTypeByIDWithSd = append(mock.calls.FindMimeTypeByIDWithSd, callInfo)
+	mock.lockFindMimeTypeByIDWithSd.Unlock()
+	return mock.FindMimeTypeByIDWithSdFunc(ctx, sd, mimeTypeID)
+}
+
+// FindMimeTypeByIDWithSdCalls gets all the calls that were made to FindMimeTypeByIDWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindMimeTypeByIDWithSdCalls())
+func (mock *StoreMock) FindMimeTypeByIDWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	MimeTypeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		MimeTypeID uuid.UUID
+	}
+	mock.lockFindMimeTypeByIDWithSd.RLock()
+	calls = mock.calls.FindMimeTypeByIDWithSd
+	mock.lockFindMimeTypeByIDWithSd.RUnlock()
+	return calls
+}
+
+// FindMimeTypeByKey calls FindMimeTypeByKeyFunc.
+func (mock *StoreMock) FindMimeTypeByKey(ctx context.Context, key string) (entity.MimeType, error) {
+	if mock.FindMimeTypeByKeyFunc == nil {
+		panic("StoreMock.FindMimeTypeByKeyFunc: method is nil but Store.FindMimeTypeByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockFindMimeTypeByKey.Lock()
+	mock.calls.FindMimeTypeByKey = append(mock.calls.FindMimeTypeByKey, callInfo)
+	mock.lockFindMimeTypeByKey.Unlock()
+	return mock.FindMimeTypeByKeyFunc(ctx, key)
+}
+
+// FindMimeTypeByKeyCalls gets all the calls that were made to FindMimeTypeByKey.
+// Check the length with:
+//
+//	len(mockedStore.FindMimeTypeByKeyCalls())
+func (mock *StoreMock) FindMimeTypeByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockFindMimeTypeByKey.RLock()
+	calls = mock.calls.FindMimeTypeByKey
+	mock.lockFindMimeTypeByKey.RUnlock()
+	return calls
+}
+
+// FindMimeTypeByKeyWithSd calls FindMimeTypeByKeyWithSdFunc.
+func (mock *StoreMock) FindMimeTypeByKeyWithSd(ctx context.Context, sd Sd, key string) (entity.MimeType, error) {
+	if mock.FindMimeTypeByKeyWithSdFunc == nil {
+		panic("StoreMock.FindMimeTypeByKeyWithSdFunc: method is nil but Store.FindMimeTypeByKeyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}{
+		Ctx: ctx,
+		Sd:  sd,
+		Key: key,
+	}
+	mock.lockFindMimeTypeByKeyWithSd.Lock()
+	mock.calls.FindMimeTypeByKeyWithSd = append(mock.calls.FindMimeTypeByKeyWithSd, callInfo)
+	mock.lockFindMimeTypeByKeyWithSd.Unlock()
+	return mock.FindMimeTypeByKeyWithSdFunc(ctx, sd, key)
+}
+
+// FindMimeTypeByKeyWithSdCalls gets all the calls that were made to FindMimeTypeByKeyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindMimeTypeByKeyWithSdCalls())
+func (mock *StoreMock) FindMimeTypeByKeyWithSdCalls() []struct {
+	Ctx context.Context
+	Sd  Sd
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}
+	mock.lockFindMimeTypeByKeyWithSd.RLock()
+	calls = mock.calls.FindMimeTypeByKeyWithSd
+	mock.lockFindMimeTypeByKeyWithSd.RUnlock()
+	return calls
+}
+
 // FindPermissionCategoryByID calls FindPermissionCategoryByIDFunc.
 func (mock *StoreMock) FindPermissionCategoryByID(ctx context.Context, permissionCategoryID uuid.UUID) (entity.PermissionCategory, error) {
 	if mock.FindPermissionCategoryByIDFunc == nil {
@@ -5406,6 +7094,158 @@ func (mock *StoreMock) FindPolicyCategoryByKeyWithSdCalls() []struct {
 	mock.lockFindPolicyCategoryByKeyWithSd.RLock()
 	calls = mock.calls.FindPolicyCategoryByKeyWithSd
 	mock.lockFindPolicyCategoryByKeyWithSd.RUnlock()
+	return calls
+}
+
+// FindRecordTypeByID calls FindRecordTypeByIDFunc.
+func (mock *StoreMock) FindRecordTypeByID(ctx context.Context, recordTypeID uuid.UUID) (entity.RecordType, error) {
+	if mock.FindRecordTypeByIDFunc == nil {
+		panic("StoreMock.FindRecordTypeByIDFunc: method is nil but Store.FindRecordTypeByID was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		RecordTypeID uuid.UUID
+	}{
+		Ctx:          ctx,
+		RecordTypeID: recordTypeID,
+	}
+	mock.lockFindRecordTypeByID.Lock()
+	mock.calls.FindRecordTypeByID = append(mock.calls.FindRecordTypeByID, callInfo)
+	mock.lockFindRecordTypeByID.Unlock()
+	return mock.FindRecordTypeByIDFunc(ctx, recordTypeID)
+}
+
+// FindRecordTypeByIDCalls gets all the calls that were made to FindRecordTypeByID.
+// Check the length with:
+//
+//	len(mockedStore.FindRecordTypeByIDCalls())
+func (mock *StoreMock) FindRecordTypeByIDCalls() []struct {
+	Ctx          context.Context
+	RecordTypeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx          context.Context
+		RecordTypeID uuid.UUID
+	}
+	mock.lockFindRecordTypeByID.RLock()
+	calls = mock.calls.FindRecordTypeByID
+	mock.lockFindRecordTypeByID.RUnlock()
+	return calls
+}
+
+// FindRecordTypeByIDWithSd calls FindRecordTypeByIDWithSdFunc.
+func (mock *StoreMock) FindRecordTypeByIDWithSd(ctx context.Context, sd Sd, recordTypeID uuid.UUID) (entity.RecordType, error) {
+	if mock.FindRecordTypeByIDWithSdFunc == nil {
+		panic("StoreMock.FindRecordTypeByIDWithSdFunc: method is nil but Store.FindRecordTypeByIDWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		Sd           Sd
+		RecordTypeID uuid.UUID
+	}{
+		Ctx:          ctx,
+		Sd:           sd,
+		RecordTypeID: recordTypeID,
+	}
+	mock.lockFindRecordTypeByIDWithSd.Lock()
+	mock.calls.FindRecordTypeByIDWithSd = append(mock.calls.FindRecordTypeByIDWithSd, callInfo)
+	mock.lockFindRecordTypeByIDWithSd.Unlock()
+	return mock.FindRecordTypeByIDWithSdFunc(ctx, sd, recordTypeID)
+}
+
+// FindRecordTypeByIDWithSdCalls gets all the calls that were made to FindRecordTypeByIDWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindRecordTypeByIDWithSdCalls())
+func (mock *StoreMock) FindRecordTypeByIDWithSdCalls() []struct {
+	Ctx          context.Context
+	Sd           Sd
+	RecordTypeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx          context.Context
+		Sd           Sd
+		RecordTypeID uuid.UUID
+	}
+	mock.lockFindRecordTypeByIDWithSd.RLock()
+	calls = mock.calls.FindRecordTypeByIDWithSd
+	mock.lockFindRecordTypeByIDWithSd.RUnlock()
+	return calls
+}
+
+// FindRecordTypeByKey calls FindRecordTypeByKeyFunc.
+func (mock *StoreMock) FindRecordTypeByKey(ctx context.Context, key string) (entity.RecordType, error) {
+	if mock.FindRecordTypeByKeyFunc == nil {
+		panic("StoreMock.FindRecordTypeByKeyFunc: method is nil but Store.FindRecordTypeByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockFindRecordTypeByKey.Lock()
+	mock.calls.FindRecordTypeByKey = append(mock.calls.FindRecordTypeByKey, callInfo)
+	mock.lockFindRecordTypeByKey.Unlock()
+	return mock.FindRecordTypeByKeyFunc(ctx, key)
+}
+
+// FindRecordTypeByKeyCalls gets all the calls that were made to FindRecordTypeByKey.
+// Check the length with:
+//
+//	len(mockedStore.FindRecordTypeByKeyCalls())
+func (mock *StoreMock) FindRecordTypeByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockFindRecordTypeByKey.RLock()
+	calls = mock.calls.FindRecordTypeByKey
+	mock.lockFindRecordTypeByKey.RUnlock()
+	return calls
+}
+
+// FindRecordTypeByKeyWithSd calls FindRecordTypeByKeyWithSdFunc.
+func (mock *StoreMock) FindRecordTypeByKeyWithSd(ctx context.Context, sd Sd, key string) (entity.RecordType, error) {
+	if mock.FindRecordTypeByKeyWithSdFunc == nil {
+		panic("StoreMock.FindRecordTypeByKeyWithSdFunc: method is nil but Store.FindRecordTypeByKeyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}{
+		Ctx: ctx,
+		Sd:  sd,
+		Key: key,
+	}
+	mock.lockFindRecordTypeByKeyWithSd.Lock()
+	mock.calls.FindRecordTypeByKeyWithSd = append(mock.calls.FindRecordTypeByKeyWithSd, callInfo)
+	mock.lockFindRecordTypeByKeyWithSd.Unlock()
+	return mock.FindRecordTypeByKeyWithSdFunc(ctx, sd, key)
+}
+
+// FindRecordTypeByKeyWithSdCalls gets all the calls that were made to FindRecordTypeByKeyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindRecordTypeByKeyWithSdCalls())
+func (mock *StoreMock) FindRecordTypeByKeyWithSdCalls() []struct {
+	Ctx context.Context
+	Sd  Sd
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}
+	mock.lockFindRecordTypeByKeyWithSd.RLock()
+	calls = mock.calls.FindRecordTypeByKeyWithSd
+	mock.lockFindRecordTypeByKeyWithSd.RUnlock()
 	return calls
 }
 
@@ -5830,6 +7670,114 @@ func (mock *StoreMock) GetEventTypesWithSdCalls() []struct {
 	mock.lockGetEventTypesWithSd.RLock()
 	calls = mock.calls.GetEventTypesWithSd
 	mock.lockGetEventTypesWithSd.RUnlock()
+	return calls
+}
+
+// GetMimeTypes calls GetMimeTypesFunc.
+func (mock *StoreMock) GetMimeTypes(ctx context.Context, where parameter.WhereMimeTypeParam, order parameter.MimeTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MimeType], error) {
+	if mock.GetMimeTypesFunc == nil {
+		panic("StoreMock.GetMimeTypesFunc: method is nil but Store.GetMimeTypes was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereMimeTypeParam
+		Order parameter.MimeTypeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetMimeTypes.Lock()
+	mock.calls.GetMimeTypes = append(mock.calls.GetMimeTypes, callInfo)
+	mock.lockGetMimeTypes.Unlock()
+	return mock.GetMimeTypesFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetMimeTypesCalls gets all the calls that were made to GetMimeTypes.
+// Check the length with:
+//
+//	len(mockedStore.GetMimeTypesCalls())
+func (mock *StoreMock) GetMimeTypesCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereMimeTypeParam
+	Order parameter.MimeTypeOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereMimeTypeParam
+		Order parameter.MimeTypeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetMimeTypes.RLock()
+	calls = mock.calls.GetMimeTypes
+	mock.lockGetMimeTypes.RUnlock()
+	return calls
+}
+
+// GetMimeTypesWithSd calls GetMimeTypesWithSdFunc.
+func (mock *StoreMock) GetMimeTypesWithSd(ctx context.Context, sd Sd, where parameter.WhereMimeTypeParam, order parameter.MimeTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MimeType], error) {
+	if mock.GetMimeTypesWithSdFunc == nil {
+		panic("StoreMock.GetMimeTypesWithSdFunc: method is nil but Store.GetMimeTypesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereMimeTypeParam
+		Order parameter.MimeTypeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetMimeTypesWithSd.Lock()
+	mock.calls.GetMimeTypesWithSd = append(mock.calls.GetMimeTypesWithSd, callInfo)
+	mock.lockGetMimeTypesWithSd.Unlock()
+	return mock.GetMimeTypesWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetMimeTypesWithSdCalls gets all the calls that were made to GetMimeTypesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetMimeTypesWithSdCalls())
+func (mock *StoreMock) GetMimeTypesWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereMimeTypeParam
+	Order parameter.MimeTypeOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereMimeTypeParam
+		Order parameter.MimeTypeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetMimeTypesWithSd.RLock()
+	calls = mock.calls.GetMimeTypesWithSd
+	mock.lockGetMimeTypesWithSd.RUnlock()
 	return calls
 }
 
@@ -6277,6 +8225,90 @@ func (mock *StoreMock) GetPluralEventTypesWithSdCalls() []struct {
 	return calls
 }
 
+// GetPluralMimeTypes calls GetPluralMimeTypesFunc.
+func (mock *StoreMock) GetPluralMimeTypes(ctx context.Context, MimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error) {
+	if mock.GetPluralMimeTypesFunc == nil {
+		panic("StoreMock.GetPluralMimeTypesFunc: method is nil but Store.GetPluralMimeTypes was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		MimeTypeIDs []uuid.UUID
+		Np          NumberedPaginationParam
+	}{
+		Ctx:         ctx,
+		MimeTypeIDs: MimeTypeIDs,
+		Np:          np,
+	}
+	mock.lockGetPluralMimeTypes.Lock()
+	mock.calls.GetPluralMimeTypes = append(mock.calls.GetPluralMimeTypes, callInfo)
+	mock.lockGetPluralMimeTypes.Unlock()
+	return mock.GetPluralMimeTypesFunc(ctx, MimeTypeIDs, np)
+}
+
+// GetPluralMimeTypesCalls gets all the calls that were made to GetPluralMimeTypes.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralMimeTypesCalls())
+func (mock *StoreMock) GetPluralMimeTypesCalls() []struct {
+	Ctx         context.Context
+	MimeTypeIDs []uuid.UUID
+	Np          NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx         context.Context
+		MimeTypeIDs []uuid.UUID
+		Np          NumberedPaginationParam
+	}
+	mock.lockGetPluralMimeTypes.RLock()
+	calls = mock.calls.GetPluralMimeTypes
+	mock.lockGetPluralMimeTypes.RUnlock()
+	return calls
+}
+
+// GetPluralMimeTypesWithSd calls GetPluralMimeTypesWithSdFunc.
+func (mock *StoreMock) GetPluralMimeTypesWithSd(ctx context.Context, sd Sd, MimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error) {
+	if mock.GetPluralMimeTypesWithSdFunc == nil {
+		panic("StoreMock.GetPluralMimeTypesWithSdFunc: method is nil but Store.GetPluralMimeTypesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		Sd          Sd
+		MimeTypeIDs []uuid.UUID
+		Np          NumberedPaginationParam
+	}{
+		Ctx:         ctx,
+		Sd:          sd,
+		MimeTypeIDs: MimeTypeIDs,
+		Np:          np,
+	}
+	mock.lockGetPluralMimeTypesWithSd.Lock()
+	mock.calls.GetPluralMimeTypesWithSd = append(mock.calls.GetPluralMimeTypesWithSd, callInfo)
+	mock.lockGetPluralMimeTypesWithSd.Unlock()
+	return mock.GetPluralMimeTypesWithSdFunc(ctx, sd, MimeTypeIDs, np)
+}
+
+// GetPluralMimeTypesWithSdCalls gets all the calls that were made to GetPluralMimeTypesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralMimeTypesWithSdCalls())
+func (mock *StoreMock) GetPluralMimeTypesWithSdCalls() []struct {
+	Ctx         context.Context
+	Sd          Sd
+	MimeTypeIDs []uuid.UUID
+	Np          NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx         context.Context
+		Sd          Sd
+		MimeTypeIDs []uuid.UUID
+		Np          NumberedPaginationParam
+	}
+	mock.lockGetPluralMimeTypesWithSd.RLock()
+	calls = mock.calls.GetPluralMimeTypesWithSd
+	mock.lockGetPluralMimeTypesWithSd.RUnlock()
+	return calls
+}
+
 // GetPluralPermissionCategories calls GetPluralPermissionCategoriesFunc.
 func (mock *StoreMock) GetPluralPermissionCategories(ctx context.Context, PermissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error) {
 	if mock.GetPluralPermissionCategoriesFunc == nil {
@@ -6445,6 +8477,90 @@ func (mock *StoreMock) GetPluralPolicyCategoriesWithSdCalls() []struct {
 	return calls
 }
 
+// GetPluralRecordTypes calls GetPluralRecordTypesFunc.
+func (mock *StoreMock) GetPluralRecordTypes(ctx context.Context, RecordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error) {
+	if mock.GetPluralRecordTypesFunc == nil {
+		panic("StoreMock.GetPluralRecordTypesFunc: method is nil but Store.GetPluralRecordTypes was just called")
+	}
+	callInfo := struct {
+		Ctx           context.Context
+		RecordTypeIDs []uuid.UUID
+		Np            NumberedPaginationParam
+	}{
+		Ctx:           ctx,
+		RecordTypeIDs: RecordTypeIDs,
+		Np:            np,
+	}
+	mock.lockGetPluralRecordTypes.Lock()
+	mock.calls.GetPluralRecordTypes = append(mock.calls.GetPluralRecordTypes, callInfo)
+	mock.lockGetPluralRecordTypes.Unlock()
+	return mock.GetPluralRecordTypesFunc(ctx, RecordTypeIDs, np)
+}
+
+// GetPluralRecordTypesCalls gets all the calls that were made to GetPluralRecordTypes.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralRecordTypesCalls())
+func (mock *StoreMock) GetPluralRecordTypesCalls() []struct {
+	Ctx           context.Context
+	RecordTypeIDs []uuid.UUID
+	Np            NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx           context.Context
+		RecordTypeIDs []uuid.UUID
+		Np            NumberedPaginationParam
+	}
+	mock.lockGetPluralRecordTypes.RLock()
+	calls = mock.calls.GetPluralRecordTypes
+	mock.lockGetPluralRecordTypes.RUnlock()
+	return calls
+}
+
+// GetPluralRecordTypesWithSd calls GetPluralRecordTypesWithSdFunc.
+func (mock *StoreMock) GetPluralRecordTypesWithSd(ctx context.Context, sd Sd, RecordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error) {
+	if mock.GetPluralRecordTypesWithSdFunc == nil {
+		panic("StoreMock.GetPluralRecordTypesWithSdFunc: method is nil but Store.GetPluralRecordTypesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx           context.Context
+		Sd            Sd
+		RecordTypeIDs []uuid.UUID
+		Np            NumberedPaginationParam
+	}{
+		Ctx:           ctx,
+		Sd:            sd,
+		RecordTypeIDs: RecordTypeIDs,
+		Np:            np,
+	}
+	mock.lockGetPluralRecordTypesWithSd.Lock()
+	mock.calls.GetPluralRecordTypesWithSd = append(mock.calls.GetPluralRecordTypesWithSd, callInfo)
+	mock.lockGetPluralRecordTypesWithSd.Unlock()
+	return mock.GetPluralRecordTypesWithSdFunc(ctx, sd, RecordTypeIDs, np)
+}
+
+// GetPluralRecordTypesWithSdCalls gets all the calls that were made to GetPluralRecordTypesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralRecordTypesWithSdCalls())
+func (mock *StoreMock) GetPluralRecordTypesWithSdCalls() []struct {
+	Ctx           context.Context
+	Sd            Sd
+	RecordTypeIDs []uuid.UUID
+	Np            NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx           context.Context
+		Sd            Sd
+		RecordTypeIDs []uuid.UUID
+		Np            NumberedPaginationParam
+	}
+	mock.lockGetPluralRecordTypesWithSd.RLock()
+	calls = mock.calls.GetPluralRecordTypesWithSd
+	mock.lockGetPluralRecordTypesWithSd.RUnlock()
+	return calls
+}
+
 // GetPolicyCategories calls GetPolicyCategoriesFunc.
 func (mock *StoreMock) GetPolicyCategories(ctx context.Context, where parameter.WherePolicyCategoryParam, order parameter.PolicyCategoryOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyCategory], error) {
 	if mock.GetPolicyCategoriesFunc == nil {
@@ -6550,6 +8666,114 @@ func (mock *StoreMock) GetPolicyCategoriesWithSdCalls() []struct {
 	mock.lockGetPolicyCategoriesWithSd.RLock()
 	calls = mock.calls.GetPolicyCategoriesWithSd
 	mock.lockGetPolicyCategoriesWithSd.RUnlock()
+	return calls
+}
+
+// GetRecordTypes calls GetRecordTypesFunc.
+func (mock *StoreMock) GetRecordTypes(ctx context.Context, where parameter.WhereRecordTypeParam, order parameter.RecordTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.RecordType], error) {
+	if mock.GetRecordTypesFunc == nil {
+		panic("StoreMock.GetRecordTypesFunc: method is nil but Store.GetRecordTypes was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereRecordTypeParam
+		Order parameter.RecordTypeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetRecordTypes.Lock()
+	mock.calls.GetRecordTypes = append(mock.calls.GetRecordTypes, callInfo)
+	mock.lockGetRecordTypes.Unlock()
+	return mock.GetRecordTypesFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetRecordTypesCalls gets all the calls that were made to GetRecordTypes.
+// Check the length with:
+//
+//	len(mockedStore.GetRecordTypesCalls())
+func (mock *StoreMock) GetRecordTypesCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereRecordTypeParam
+	Order parameter.RecordTypeOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereRecordTypeParam
+		Order parameter.RecordTypeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetRecordTypes.RLock()
+	calls = mock.calls.GetRecordTypes
+	mock.lockGetRecordTypes.RUnlock()
+	return calls
+}
+
+// GetRecordTypesWithSd calls GetRecordTypesWithSdFunc.
+func (mock *StoreMock) GetRecordTypesWithSd(ctx context.Context, sd Sd, where parameter.WhereRecordTypeParam, order parameter.RecordTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.RecordType], error) {
+	if mock.GetRecordTypesWithSdFunc == nil {
+		panic("StoreMock.GetRecordTypesWithSdFunc: method is nil but Store.GetRecordTypesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereRecordTypeParam
+		Order parameter.RecordTypeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetRecordTypesWithSd.Lock()
+	mock.calls.GetRecordTypesWithSd = append(mock.calls.GetRecordTypesWithSd, callInfo)
+	mock.lockGetRecordTypesWithSd.Unlock()
+	return mock.GetRecordTypesWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetRecordTypesWithSdCalls gets all the calls that were made to GetRecordTypesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetRecordTypesWithSdCalls())
+func (mock *StoreMock) GetRecordTypesWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereRecordTypeParam
+	Order parameter.RecordTypeOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereRecordTypeParam
+		Order parameter.RecordTypeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetRecordTypesWithSd.RLock()
+	calls = mock.calls.GetRecordTypesWithSd
+	mock.lockGetRecordTypesWithSd.RUnlock()
 	return calls
 }
 
@@ -6857,6 +9081,82 @@ func (mock *StoreMock) PluralDeleteEventTypesWithSdCalls() []struct {
 	return calls
 }
 
+// PluralDeleteMimeTypes calls PluralDeleteMimeTypesFunc.
+func (mock *StoreMock) PluralDeleteMimeTypes(ctx context.Context, mimeTypeIDs []uuid.UUID) error {
+	if mock.PluralDeleteMimeTypesFunc == nil {
+		panic("StoreMock.PluralDeleteMimeTypesFunc: method is nil but Store.PluralDeleteMimeTypes was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		MimeTypeIDs []uuid.UUID
+	}{
+		Ctx:         ctx,
+		MimeTypeIDs: mimeTypeIDs,
+	}
+	mock.lockPluralDeleteMimeTypes.Lock()
+	mock.calls.PluralDeleteMimeTypes = append(mock.calls.PluralDeleteMimeTypes, callInfo)
+	mock.lockPluralDeleteMimeTypes.Unlock()
+	return mock.PluralDeleteMimeTypesFunc(ctx, mimeTypeIDs)
+}
+
+// PluralDeleteMimeTypesCalls gets all the calls that were made to PluralDeleteMimeTypes.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteMimeTypesCalls())
+func (mock *StoreMock) PluralDeleteMimeTypesCalls() []struct {
+	Ctx         context.Context
+	MimeTypeIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx         context.Context
+		MimeTypeIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteMimeTypes.RLock()
+	calls = mock.calls.PluralDeleteMimeTypes
+	mock.lockPluralDeleteMimeTypes.RUnlock()
+	return calls
+}
+
+// PluralDeleteMimeTypesWithSd calls PluralDeleteMimeTypesWithSdFunc.
+func (mock *StoreMock) PluralDeleteMimeTypesWithSd(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID) error {
+	if mock.PluralDeleteMimeTypesWithSdFunc == nil {
+		panic("StoreMock.PluralDeleteMimeTypesWithSdFunc: method is nil but Store.PluralDeleteMimeTypesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		Sd          Sd
+		MimeTypeIDs []uuid.UUID
+	}{
+		Ctx:         ctx,
+		Sd:          sd,
+		MimeTypeIDs: mimeTypeIDs,
+	}
+	mock.lockPluralDeleteMimeTypesWithSd.Lock()
+	mock.calls.PluralDeleteMimeTypesWithSd = append(mock.calls.PluralDeleteMimeTypesWithSd, callInfo)
+	mock.lockPluralDeleteMimeTypesWithSd.Unlock()
+	return mock.PluralDeleteMimeTypesWithSdFunc(ctx, sd, mimeTypeIDs)
+}
+
+// PluralDeleteMimeTypesWithSdCalls gets all the calls that were made to PluralDeleteMimeTypesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteMimeTypesWithSdCalls())
+func (mock *StoreMock) PluralDeleteMimeTypesWithSdCalls() []struct {
+	Ctx         context.Context
+	Sd          Sd
+	MimeTypeIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx         context.Context
+		Sd          Sd
+		MimeTypeIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteMimeTypesWithSd.RLock()
+	calls = mock.calls.PluralDeleteMimeTypesWithSd
+	mock.lockPluralDeleteMimeTypesWithSd.RUnlock()
+	return calls
+}
+
 // PluralDeletePermissionCategories calls PluralDeletePermissionCategoriesFunc.
 func (mock *StoreMock) PluralDeletePermissionCategories(ctx context.Context, permissionCategoryIDs []uuid.UUID) error {
 	if mock.PluralDeletePermissionCategoriesFunc == nil {
@@ -7006,6 +9306,82 @@ func (mock *StoreMock) PluralDeletePolicyCategoriesWithSdCalls() []struct {
 	mock.lockPluralDeletePolicyCategoriesWithSd.RLock()
 	calls = mock.calls.PluralDeletePolicyCategoriesWithSd
 	mock.lockPluralDeletePolicyCategoriesWithSd.RUnlock()
+	return calls
+}
+
+// PluralDeleteRecordTypes calls PluralDeleteRecordTypesFunc.
+func (mock *StoreMock) PluralDeleteRecordTypes(ctx context.Context, recordTypeIDs []uuid.UUID) error {
+	if mock.PluralDeleteRecordTypesFunc == nil {
+		panic("StoreMock.PluralDeleteRecordTypesFunc: method is nil but Store.PluralDeleteRecordTypes was just called")
+	}
+	callInfo := struct {
+		Ctx           context.Context
+		RecordTypeIDs []uuid.UUID
+	}{
+		Ctx:           ctx,
+		RecordTypeIDs: recordTypeIDs,
+	}
+	mock.lockPluralDeleteRecordTypes.Lock()
+	mock.calls.PluralDeleteRecordTypes = append(mock.calls.PluralDeleteRecordTypes, callInfo)
+	mock.lockPluralDeleteRecordTypes.Unlock()
+	return mock.PluralDeleteRecordTypesFunc(ctx, recordTypeIDs)
+}
+
+// PluralDeleteRecordTypesCalls gets all the calls that were made to PluralDeleteRecordTypes.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteRecordTypesCalls())
+func (mock *StoreMock) PluralDeleteRecordTypesCalls() []struct {
+	Ctx           context.Context
+	RecordTypeIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx           context.Context
+		RecordTypeIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteRecordTypes.RLock()
+	calls = mock.calls.PluralDeleteRecordTypes
+	mock.lockPluralDeleteRecordTypes.RUnlock()
+	return calls
+}
+
+// PluralDeleteRecordTypesWithSd calls PluralDeleteRecordTypesWithSdFunc.
+func (mock *StoreMock) PluralDeleteRecordTypesWithSd(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID) error {
+	if mock.PluralDeleteRecordTypesWithSdFunc == nil {
+		panic("StoreMock.PluralDeleteRecordTypesWithSdFunc: method is nil but Store.PluralDeleteRecordTypesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx           context.Context
+		Sd            Sd
+		RecordTypeIDs []uuid.UUID
+	}{
+		Ctx:           ctx,
+		Sd:            sd,
+		RecordTypeIDs: recordTypeIDs,
+	}
+	mock.lockPluralDeleteRecordTypesWithSd.Lock()
+	mock.calls.PluralDeleteRecordTypesWithSd = append(mock.calls.PluralDeleteRecordTypesWithSd, callInfo)
+	mock.lockPluralDeleteRecordTypesWithSd.Unlock()
+	return mock.PluralDeleteRecordTypesWithSdFunc(ctx, sd, recordTypeIDs)
+}
+
+// PluralDeleteRecordTypesWithSdCalls gets all the calls that were made to PluralDeleteRecordTypesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteRecordTypesWithSdCalls())
+func (mock *StoreMock) PluralDeleteRecordTypesWithSdCalls() []struct {
+	Ctx           context.Context
+	Sd            Sd
+	RecordTypeIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx           context.Context
+		Sd            Sd
+		RecordTypeIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteRecordTypesWithSd.RLock()
+	calls = mock.calls.PluralDeleteRecordTypesWithSd
+	mock.lockPluralDeleteRecordTypesWithSd.RUnlock()
 	return calls
 }
 
@@ -7549,6 +9925,174 @@ func (mock *StoreMock) UpdateEventTypeWithSdCalls() []struct {
 	return calls
 }
 
+// UpdateMimeType calls UpdateMimeTypeFunc.
+func (mock *StoreMock) UpdateMimeType(ctx context.Context, mimeTypeID uuid.UUID, param parameter.UpdateMimeTypeParams) (entity.MimeType, error) {
+	if mock.UpdateMimeTypeFunc == nil {
+		panic("StoreMock.UpdateMimeTypeFunc: method is nil but Store.UpdateMimeType was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		MimeTypeID uuid.UUID
+		Param      parameter.UpdateMimeTypeParams
+	}{
+		Ctx:        ctx,
+		MimeTypeID: mimeTypeID,
+		Param:      param,
+	}
+	mock.lockUpdateMimeType.Lock()
+	mock.calls.UpdateMimeType = append(mock.calls.UpdateMimeType, callInfo)
+	mock.lockUpdateMimeType.Unlock()
+	return mock.UpdateMimeTypeFunc(ctx, mimeTypeID, param)
+}
+
+// UpdateMimeTypeCalls gets all the calls that were made to UpdateMimeType.
+// Check the length with:
+//
+//	len(mockedStore.UpdateMimeTypeCalls())
+func (mock *StoreMock) UpdateMimeTypeCalls() []struct {
+	Ctx        context.Context
+	MimeTypeID uuid.UUID
+	Param      parameter.UpdateMimeTypeParams
+} {
+	var calls []struct {
+		Ctx        context.Context
+		MimeTypeID uuid.UUID
+		Param      parameter.UpdateMimeTypeParams
+	}
+	mock.lockUpdateMimeType.RLock()
+	calls = mock.calls.UpdateMimeType
+	mock.lockUpdateMimeType.RUnlock()
+	return calls
+}
+
+// UpdateMimeTypeByKey calls UpdateMimeTypeByKeyFunc.
+func (mock *StoreMock) UpdateMimeTypeByKey(ctx context.Context, key string, param parameter.UpdateMimeTypeByKeyParams) (entity.MimeType, error) {
+	if mock.UpdateMimeTypeByKeyFunc == nil {
+		panic("StoreMock.UpdateMimeTypeByKeyFunc: method is nil but Store.UpdateMimeTypeByKey was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Key   string
+		Param parameter.UpdateMimeTypeByKeyParams
+	}{
+		Ctx:   ctx,
+		Key:   key,
+		Param: param,
+	}
+	mock.lockUpdateMimeTypeByKey.Lock()
+	mock.calls.UpdateMimeTypeByKey = append(mock.calls.UpdateMimeTypeByKey, callInfo)
+	mock.lockUpdateMimeTypeByKey.Unlock()
+	return mock.UpdateMimeTypeByKeyFunc(ctx, key, param)
+}
+
+// UpdateMimeTypeByKeyCalls gets all the calls that were made to UpdateMimeTypeByKey.
+// Check the length with:
+//
+//	len(mockedStore.UpdateMimeTypeByKeyCalls())
+func (mock *StoreMock) UpdateMimeTypeByKeyCalls() []struct {
+	Ctx   context.Context
+	Key   string
+	Param parameter.UpdateMimeTypeByKeyParams
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Key   string
+		Param parameter.UpdateMimeTypeByKeyParams
+	}
+	mock.lockUpdateMimeTypeByKey.RLock()
+	calls = mock.calls.UpdateMimeTypeByKey
+	mock.lockUpdateMimeTypeByKey.RUnlock()
+	return calls
+}
+
+// UpdateMimeTypeByKeyWithSd calls UpdateMimeTypeByKeyWithSdFunc.
+func (mock *StoreMock) UpdateMimeTypeByKeyWithSd(ctx context.Context, sd Sd, key string, param parameter.UpdateMimeTypeByKeyParams) (entity.MimeType, error) {
+	if mock.UpdateMimeTypeByKeyWithSdFunc == nil {
+		panic("StoreMock.UpdateMimeTypeByKeyWithSdFunc: method is nil but Store.UpdateMimeTypeByKeyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Key   string
+		Param parameter.UpdateMimeTypeByKeyParams
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Key:   key,
+		Param: param,
+	}
+	mock.lockUpdateMimeTypeByKeyWithSd.Lock()
+	mock.calls.UpdateMimeTypeByKeyWithSd = append(mock.calls.UpdateMimeTypeByKeyWithSd, callInfo)
+	mock.lockUpdateMimeTypeByKeyWithSd.Unlock()
+	return mock.UpdateMimeTypeByKeyWithSdFunc(ctx, sd, key, param)
+}
+
+// UpdateMimeTypeByKeyWithSdCalls gets all the calls that were made to UpdateMimeTypeByKeyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.UpdateMimeTypeByKeyWithSdCalls())
+func (mock *StoreMock) UpdateMimeTypeByKeyWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Key   string
+	Param parameter.UpdateMimeTypeByKeyParams
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Key   string
+		Param parameter.UpdateMimeTypeByKeyParams
+	}
+	mock.lockUpdateMimeTypeByKeyWithSd.RLock()
+	calls = mock.calls.UpdateMimeTypeByKeyWithSd
+	mock.lockUpdateMimeTypeByKeyWithSd.RUnlock()
+	return calls
+}
+
+// UpdateMimeTypeWithSd calls UpdateMimeTypeWithSdFunc.
+func (mock *StoreMock) UpdateMimeTypeWithSd(ctx context.Context, sd Sd, mimeTypeID uuid.UUID, param parameter.UpdateMimeTypeParams) (entity.MimeType, error) {
+	if mock.UpdateMimeTypeWithSdFunc == nil {
+		panic("StoreMock.UpdateMimeTypeWithSdFunc: method is nil but Store.UpdateMimeTypeWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		MimeTypeID uuid.UUID
+		Param      parameter.UpdateMimeTypeParams
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		MimeTypeID: mimeTypeID,
+		Param:      param,
+	}
+	mock.lockUpdateMimeTypeWithSd.Lock()
+	mock.calls.UpdateMimeTypeWithSd = append(mock.calls.UpdateMimeTypeWithSd, callInfo)
+	mock.lockUpdateMimeTypeWithSd.Unlock()
+	return mock.UpdateMimeTypeWithSdFunc(ctx, sd, mimeTypeID, param)
+}
+
+// UpdateMimeTypeWithSdCalls gets all the calls that were made to UpdateMimeTypeWithSd.
+// Check the length with:
+//
+//	len(mockedStore.UpdateMimeTypeWithSdCalls())
+func (mock *StoreMock) UpdateMimeTypeWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	MimeTypeID uuid.UUID
+	Param      parameter.UpdateMimeTypeParams
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		MimeTypeID uuid.UUID
+		Param      parameter.UpdateMimeTypeParams
+	}
+	mock.lockUpdateMimeTypeWithSd.RLock()
+	calls = mock.calls.UpdateMimeTypeWithSd
+	mock.lockUpdateMimeTypeWithSd.RUnlock()
+	return calls
+}
+
 // UpdatePermissionCategory calls UpdatePermissionCategoryFunc.
 func (mock *StoreMock) UpdatePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID, param parameter.UpdatePermissionCategoryParams) (entity.PermissionCategory, error) {
 	if mock.UpdatePermissionCategoryFunc == nil {
@@ -7882,5 +10426,173 @@ func (mock *StoreMock) UpdatePolicyCategoryWithSdCalls() []struct {
 	mock.lockUpdatePolicyCategoryWithSd.RLock()
 	calls = mock.calls.UpdatePolicyCategoryWithSd
 	mock.lockUpdatePolicyCategoryWithSd.RUnlock()
+	return calls
+}
+
+// UpdateRecordType calls UpdateRecordTypeFunc.
+func (mock *StoreMock) UpdateRecordType(ctx context.Context, recordTypeID uuid.UUID, param parameter.UpdateRecordTypeParams) (entity.RecordType, error) {
+	if mock.UpdateRecordTypeFunc == nil {
+		panic("StoreMock.UpdateRecordTypeFunc: method is nil but Store.UpdateRecordType was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		RecordTypeID uuid.UUID
+		Param        parameter.UpdateRecordTypeParams
+	}{
+		Ctx:          ctx,
+		RecordTypeID: recordTypeID,
+		Param:        param,
+	}
+	mock.lockUpdateRecordType.Lock()
+	mock.calls.UpdateRecordType = append(mock.calls.UpdateRecordType, callInfo)
+	mock.lockUpdateRecordType.Unlock()
+	return mock.UpdateRecordTypeFunc(ctx, recordTypeID, param)
+}
+
+// UpdateRecordTypeCalls gets all the calls that were made to UpdateRecordType.
+// Check the length with:
+//
+//	len(mockedStore.UpdateRecordTypeCalls())
+func (mock *StoreMock) UpdateRecordTypeCalls() []struct {
+	Ctx          context.Context
+	RecordTypeID uuid.UUID
+	Param        parameter.UpdateRecordTypeParams
+} {
+	var calls []struct {
+		Ctx          context.Context
+		RecordTypeID uuid.UUID
+		Param        parameter.UpdateRecordTypeParams
+	}
+	mock.lockUpdateRecordType.RLock()
+	calls = mock.calls.UpdateRecordType
+	mock.lockUpdateRecordType.RUnlock()
+	return calls
+}
+
+// UpdateRecordTypeByKey calls UpdateRecordTypeByKeyFunc.
+func (mock *StoreMock) UpdateRecordTypeByKey(ctx context.Context, key string, param parameter.UpdateRecordTypeByKeyParams) (entity.RecordType, error) {
+	if mock.UpdateRecordTypeByKeyFunc == nil {
+		panic("StoreMock.UpdateRecordTypeByKeyFunc: method is nil but Store.UpdateRecordTypeByKey was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Key   string
+		Param parameter.UpdateRecordTypeByKeyParams
+	}{
+		Ctx:   ctx,
+		Key:   key,
+		Param: param,
+	}
+	mock.lockUpdateRecordTypeByKey.Lock()
+	mock.calls.UpdateRecordTypeByKey = append(mock.calls.UpdateRecordTypeByKey, callInfo)
+	mock.lockUpdateRecordTypeByKey.Unlock()
+	return mock.UpdateRecordTypeByKeyFunc(ctx, key, param)
+}
+
+// UpdateRecordTypeByKeyCalls gets all the calls that were made to UpdateRecordTypeByKey.
+// Check the length with:
+//
+//	len(mockedStore.UpdateRecordTypeByKeyCalls())
+func (mock *StoreMock) UpdateRecordTypeByKeyCalls() []struct {
+	Ctx   context.Context
+	Key   string
+	Param parameter.UpdateRecordTypeByKeyParams
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Key   string
+		Param parameter.UpdateRecordTypeByKeyParams
+	}
+	mock.lockUpdateRecordTypeByKey.RLock()
+	calls = mock.calls.UpdateRecordTypeByKey
+	mock.lockUpdateRecordTypeByKey.RUnlock()
+	return calls
+}
+
+// UpdateRecordTypeByKeyWithSd calls UpdateRecordTypeByKeyWithSdFunc.
+func (mock *StoreMock) UpdateRecordTypeByKeyWithSd(ctx context.Context, sd Sd, key string, param parameter.UpdateRecordTypeByKeyParams) (entity.RecordType, error) {
+	if mock.UpdateRecordTypeByKeyWithSdFunc == nil {
+		panic("StoreMock.UpdateRecordTypeByKeyWithSdFunc: method is nil but Store.UpdateRecordTypeByKeyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Key   string
+		Param parameter.UpdateRecordTypeByKeyParams
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Key:   key,
+		Param: param,
+	}
+	mock.lockUpdateRecordTypeByKeyWithSd.Lock()
+	mock.calls.UpdateRecordTypeByKeyWithSd = append(mock.calls.UpdateRecordTypeByKeyWithSd, callInfo)
+	mock.lockUpdateRecordTypeByKeyWithSd.Unlock()
+	return mock.UpdateRecordTypeByKeyWithSdFunc(ctx, sd, key, param)
+}
+
+// UpdateRecordTypeByKeyWithSdCalls gets all the calls that were made to UpdateRecordTypeByKeyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.UpdateRecordTypeByKeyWithSdCalls())
+func (mock *StoreMock) UpdateRecordTypeByKeyWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Key   string
+	Param parameter.UpdateRecordTypeByKeyParams
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Key   string
+		Param parameter.UpdateRecordTypeByKeyParams
+	}
+	mock.lockUpdateRecordTypeByKeyWithSd.RLock()
+	calls = mock.calls.UpdateRecordTypeByKeyWithSd
+	mock.lockUpdateRecordTypeByKeyWithSd.RUnlock()
+	return calls
+}
+
+// UpdateRecordTypeWithSd calls UpdateRecordTypeWithSdFunc.
+func (mock *StoreMock) UpdateRecordTypeWithSd(ctx context.Context, sd Sd, recordTypeID uuid.UUID, param parameter.UpdateRecordTypeParams) (entity.RecordType, error) {
+	if mock.UpdateRecordTypeWithSdFunc == nil {
+		panic("StoreMock.UpdateRecordTypeWithSdFunc: method is nil but Store.UpdateRecordTypeWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		Sd           Sd
+		RecordTypeID uuid.UUID
+		Param        parameter.UpdateRecordTypeParams
+	}{
+		Ctx:          ctx,
+		Sd:           sd,
+		RecordTypeID: recordTypeID,
+		Param:        param,
+	}
+	mock.lockUpdateRecordTypeWithSd.Lock()
+	mock.calls.UpdateRecordTypeWithSd = append(mock.calls.UpdateRecordTypeWithSd, callInfo)
+	mock.lockUpdateRecordTypeWithSd.Unlock()
+	return mock.UpdateRecordTypeWithSdFunc(ctx, sd, recordTypeID, param)
+}
+
+// UpdateRecordTypeWithSdCalls gets all the calls that were made to UpdateRecordTypeWithSd.
+// Check the length with:
+//
+//	len(mockedStore.UpdateRecordTypeWithSdCalls())
+func (mock *StoreMock) UpdateRecordTypeWithSdCalls() []struct {
+	Ctx          context.Context
+	Sd           Sd
+	RecordTypeID uuid.UUID
+	Param        parameter.UpdateRecordTypeParams
+} {
+	var calls []struct {
+		Ctx          context.Context
+		Sd           Sd
+		RecordTypeID uuid.UUID
+		Param        parameter.UpdateRecordTypeParams
+	}
+	mock.lockUpdateRecordTypeWithSd.RLock()
+	calls = mock.calls.UpdateRecordTypeWithSd
+	mock.lockUpdateRecordTypeWithSd.RUnlock()
 	return calls
 }

@@ -2,10 +2,19 @@
 package batch
 
 import (
+	"context"
 	"reflect"
 
 	"github.com/google/uuid"
 )
+
+// Batch is a interface for batch.
+type Batch interface {
+	// Run runs the batch.
+	Run(ctx context.Context) error
+	// RunDiff runs the batch only if there is a difference.
+	RunDiff(ctx context.Context, notDel, deepEqual bool) error
+}
 
 // return match index
 // if not found, return -1

@@ -19,6 +19,8 @@ type Manager struct {
 	ManageEventType
 	ManagePermissionCategory
 	ManagePolicyCategory
+	ManageMimeType
+	ManageRecordType
 }
 
 // NewManager creates a new Manager.
@@ -30,6 +32,8 @@ func NewManager(db store.Store) *Manager {
 		ManageEventType:          ManageEventType{DB: db},
 		ManagePermissionCategory: ManagePermissionCategory{DB: db},
 		ManagePolicyCategory:     ManagePolicyCategory{DB: db},
+		ManageMimeType:           ManageMimeType{DB: db},
+		ManageRecordType:         ManageRecordType{DB: db},
 	}
 }
 
@@ -42,6 +46,8 @@ type ManagerInterface interface {
 	EventTypeManager
 	PermissionCategoryManager
 	PolicyCategoryManager
+	MimeTypeManager
+	RecordTypeManager
 }
 
 // AttendStatusManager is a interface for attend status service.
@@ -154,6 +160,50 @@ type PolicyCategoryManager interface {
 		withCount parameter.WithCount,
 	) (store.ListResult[entity.PolicyCategory], error)
 	GetPolicyCategoriesCount(ctx context.Context, whereSearchName string) (int64, error)
+}
+
+// MimeTypeManager is a interface for mime type service.
+type MimeTypeManager interface {
+	CreateMimeType(ctx context.Context, name, key, kind string) (entity.MimeType, error)
+	CreateMimeTypes(ctx context.Context, ps []parameter.CreateMimeTypeParam) (int64, error)
+	UpdateMimeType(ctx context.Context, id uuid.UUID, name, key, kind string) (entity.MimeType, error)
+	DeleteMimeType(ctx context.Context, id uuid.UUID) error
+	PluralDeleteMimeTypes(ctx context.Context, ids []uuid.UUID) error
+	FindMimeTypeByID(ctx context.Context, id uuid.UUID) (entity.MimeType, error)
+	FindMimeTypeByKey(ctx context.Context, key string) (entity.MimeType, error)
+	GetMimeTypes(
+		ctx context.Context,
+		whereSearchName string,
+		order parameter.MimeTypeOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.MimeType], error)
+	GetMimeTypesCount(ctx context.Context, whereSearchName string) (int64, error)
+}
+
+// RecordTypeManager is a interface for record type service.
+type RecordTypeManager interface {
+	CreateRecordType(ctx context.Context, name, key string) (entity.RecordType, error)
+	CreateRecordTypes(ctx context.Context, ps []parameter.CreateRecordTypeParam) (int64, error)
+	UpdateRecordType(ctx context.Context, id uuid.UUID, name, key string) (entity.RecordType, error)
+	DeleteRecordType(ctx context.Context, id uuid.UUID) error
+	PluralDeleteRecordTypes(ctx context.Context, ids []uuid.UUID) error
+	FindRecordTypeByID(ctx context.Context, id uuid.UUID) (entity.RecordType, error)
+	FindRecordTypeByKey(ctx context.Context, key string) (entity.RecordType, error)
+	GetRecordTypes(
+		ctx context.Context,
+		whereSearchName string,
+		order parameter.RecordTypeOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.RecordType], error)
+	GetRecordTypesCount(ctx context.Context, whereSearchName string) (int64, error)
 }
 
 var _ ManagerInterface = (*Manager)(nil)

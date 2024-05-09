@@ -35,11 +35,11 @@ type AttendStatus struct {
 
 // AttendStatuses 出席状況一覧。
 var AttendStatuses = []AttendStatus{
-	{Key: "present", Name: "出席"},
-	{Key: "absent", Name: "欠席"},
-	{Key: "temporarily_absent", Name: "一時退席"},
-	{Key: "go_home", Name: "退室"},
-	{Key: "not_attend", Name: "未出席"},
+	{Key: string(AttendStatusKeyPresent), Name: "出席"},
+	{Key: string(AttendStatusKeyAbsent), Name: "欠席"},
+	{Key: string(AttendStatusKeyTemporarilyAbsent), Name: "一時欠席"},
+	{Key: string(AttendStatusKeyGoHome), Name: "退室"},
+	{Key: string(AttendStatusKeyNotAttend), Name: "未出席"},
 }
 
 // ManageAttendStatus 出席状況管理サービス。

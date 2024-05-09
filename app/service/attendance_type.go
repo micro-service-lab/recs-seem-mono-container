@@ -32,9 +32,9 @@ type AttendanceType struct {
 
 // AttendanceTypes 出欠状況タイプ一覧。
 var AttendanceTypes = []AttendanceType{
-	{Key: "early_leave", Name: "早退", Color: "#ADFF66"},
-	{Key: "late_arrival", Name: "遅刻", Color: "#FFB866"},
-	{Key: "absence", Name: "欠席", Color: "#FF4D4D"},
+	{Key: string(AttendanceTypeKeyEarlyLeave), Name: "早退", Color: "#ADFF66"},
+	{Key: string(AttendanceTypeKeyLateArrival), Name: "遅刻", Color: "#FFB866"},
+	{Key: string(AttendanceTypeKeyAbsence), Name: "欠席", Color: "#FF4D4D"},
 }
 
 // ManageAttendanceType 出欠状況タイプ管理サービス。

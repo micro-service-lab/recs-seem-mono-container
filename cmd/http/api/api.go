@@ -61,6 +61,8 @@ func (s *API) Handler() http.Handler {
 	r.Mount("/event_types", EventTypeHandler(s.svc))
 	r.Mount("/permission_categories", PermissionCategoryHandler(s.svc))
 	r.Mount("/policy_categories", PolicyCategoryHandler(s.svc))
+	r.Mount("/record_types", RecordTypeHandler(s.svc))
+	r.Mount("/mime_types", MimeTypeHandler(s.svc))
 
 	r.NotFound(s.notFound)
 	r.MethodNotAllowed(s.methodNotAllowed)

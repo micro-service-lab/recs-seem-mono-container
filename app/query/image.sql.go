@@ -79,7 +79,7 @@ func (q *Queries) FindImageByID(ctx context.Context, imageID uuid.UUID) (Image, 
 }
 
 const findImageByIDWithAttachableItem = `-- name: FindImageByIDWithAttachableItem :one
-SELECT t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_attachable_items.owner_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_images
+SELECT t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_attachable_items.owner_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.kind, m_mime_types.key FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE image_id = $1
@@ -109,6 +109,7 @@ func (q *Queries) FindImageByIDWithAttachableItem(ctx context.Context, imageID u
 		&i.MimeType.MMimeTypesPkey,
 		&i.MimeType.MimeTypeID,
 		&i.MimeType.Name,
+		&i.MimeType.Kind,
 		&i.MimeType.Key,
 	)
 	return i, err
@@ -232,7 +233,7 @@ func (q *Queries) GetImagesUseNumberedPaginate(ctx context.Context, arg GetImage
 }
 
 const getImagesWithAttachableItem = `-- name: GetImagesWithAttachableItem :many
-SELECT t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_attachable_items.owner_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_images
+SELECT t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_attachable_items.owner_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.kind, m_mime_types.key FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
@@ -269,6 +270,7 @@ func (q *Queries) GetImagesWithAttachableItem(ctx context.Context) ([]GetImagesW
 			&i.MimeType.MMimeTypesPkey,
 			&i.MimeType.MimeTypeID,
 			&i.MimeType.Name,
+			&i.MimeType.Kind,
 			&i.MimeType.Key,
 		); err != nil {
 			return nil, err
@@ -282,7 +284,7 @@ func (q *Queries) GetImagesWithAttachableItem(ctx context.Context) ([]GetImagesW
 }
 
 const getImagesWithAttachableItemUseKeysetPaginate = `-- name: GetImagesWithAttachableItemUseKeysetPaginate :many
-SELECT t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_attachable_items.owner_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_images
+SELECT t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_attachable_items.owner_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.kind, m_mime_types.key FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE
@@ -334,6 +336,7 @@ func (q *Queries) GetImagesWithAttachableItemUseKeysetPaginate(ctx context.Conte
 			&i.MimeType.MMimeTypesPkey,
 			&i.MimeType.MimeTypeID,
 			&i.MimeType.Name,
+			&i.MimeType.Kind,
 			&i.MimeType.Key,
 		); err != nil {
 			return nil, err
@@ -347,7 +350,7 @@ func (q *Queries) GetImagesWithAttachableItemUseKeysetPaginate(ctx context.Conte
 }
 
 const getImagesWithAttachableItemUseNumberedPaginate = `-- name: GetImagesWithAttachableItemUseNumberedPaginate :many
-SELECT t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_attachable_items.owner_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_images
+SELECT t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_attachable_items.owner_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.kind, m_mime_types.key FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
@@ -390,6 +393,7 @@ func (q *Queries) GetImagesWithAttachableItemUseNumberedPaginate(ctx context.Con
 			&i.MimeType.MMimeTypesPkey,
 			&i.MimeType.MimeTypeID,
 			&i.MimeType.Name,
+			&i.MimeType.Kind,
 			&i.MimeType.Key,
 		); err != nil {
 			return nil, err
@@ -443,7 +447,7 @@ func (q *Queries) GetPluralImages(ctx context.Context, arg GetPluralImagesParams
 }
 
 const getPluralImagesWithAttachableItem = `-- name: GetPluralImagesWithAttachableItem :many
-SELECT t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_attachable_items.owner_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_images
+SELECT t_images.t_images_pkey, t_images.image_id, t_images.height, t_images.width, t_images.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_attachable_items.owner_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.kind, m_mime_types.key FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE attachable_item_id = ANY($3::uuid[])
@@ -488,6 +492,7 @@ func (q *Queries) GetPluralImagesWithAttachableItem(ctx context.Context, arg Get
 			&i.MimeType.MMimeTypesPkey,
 			&i.MimeType.MimeTypeID,
 			&i.MimeType.Name,
+			&i.MimeType.Kind,
 			&i.MimeType.Key,
 		); err != nil {
 			return nil, err

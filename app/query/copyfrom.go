@@ -699,6 +699,7 @@ func (r iteratorForCreateMimeTypes) Values() ([]interface{}, error) {
 	return []interface{}{
 		r.rows[0].Name,
 		r.rows[0].Key,
+		r.rows[0].Kind,
 	}, nil
 }
 
@@ -707,7 +708,7 @@ func (r iteratorForCreateMimeTypes) Err() error {
 }
 
 func (q *Queries) CreateMimeTypes(ctx context.Context, arg []CreateMimeTypesParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"m_mime_types"}, []string{"name", "key"}, &iteratorForCreateMimeTypes{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"m_mime_types"}, []string{"name", "key", "kind"}, &iteratorForCreateMimeTypes{rows: arg})
 }
 
 // iteratorForCreateOrganizations implements pgx.CopyFromSource.

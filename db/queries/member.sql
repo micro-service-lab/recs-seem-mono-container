@@ -1,8 +1,8 @@
 -- name: CreateMembers :copyfrom
-INSERT INTO m_members (login_id, password, email, name, attend_status_id, grade_id, group_id, role_id, personal_organization_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
+INSERT INTO m_members (login_id, password, email, name, attend_status_id, grade_id, group_id, profile_image_url, role_id, personal_organization_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12);
 
 -- name: CreateMember :one
-INSERT INTO m_members (login_id, password, email, name, attend_status_id, grade_id, group_id, role_id, personal_organization_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) RETURNING *;
+INSERT INTO m_members (login_id, password, email, name, attend_status_id, grade_id, group_id, profile_image_url, role_id, personal_organization_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *;
 
 -- name: DeleteMember :exec
 DELETE FROM m_members WHERE member_id = $1;
@@ -11,7 +11,7 @@ DELETE FROM m_members WHERE member_id = $1;
 DELETE FROM m_members WHERE member_id = ANY($1::uuid[]);
 
 -- name: UpdateMember :one
-UPDATE m_members SET email = $2, name = $3, updated_at = $4 WHERE member_id = $1 RETURNING *;
+UPDATE m_members SET email = $2, name = $3, profile_image_url = $4, updated_at = $5 WHERE member_id = $1 RETURNING *;
 
 -- name: UpdateMemberRole :one
 UPDATE m_members SET role_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING *;

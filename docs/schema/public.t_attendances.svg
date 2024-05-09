@@ -110,8 +110,8 @@
 <text text-anchor="start" x="703" y="-263.9" font-family="Arial" font-size="14.00" fill="#000000">attend_status_id    </text>
 <text text-anchor="start" x="839.9172" y="-263.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
 <polygon fill="none" stroke="#000000" points="696,-222.5 696,-252.5 989,-252.5 989,-222.5 696,-222.5"/>
-<text text-anchor="start" x="703" y="-233.9" font-family="Arial" font-size="14.00" fill="#000000">profile_image_id    </text>
-<text text-anchor="start" x="839.8864" y="-233.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<text text-anchor="start" x="703" y="-233.9" font-family="Arial" font-size="14.00" fill="#000000">profile_image_url    </text>
+<text text-anchor="start" x="844.547" y="-233.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
 <polygon fill="none" stroke="#000000" points="696,-192.5 696,-222.5 989,-222.5 989,-192.5 696,-192.5"/>
 <text text-anchor="start" x="703" y="-203.9" font-family="Arial" font-size="14.00" fill="#000000">grade_id    </text>
 <text text-anchor="start" x="791.6676" y="-203.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>

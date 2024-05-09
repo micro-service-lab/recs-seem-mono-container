@@ -149,7 +149,7 @@ func (q *Queries) FindMessageByID(ctx context.Context, messageID uuid.UUID) (Mes
 }
 
 const findMessageByIDWithAll = `-- name: FindMessageByIDWithAll :one
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE message_id = $1
@@ -176,7 +176,7 @@ func (q *Queries) FindMessageByIDWithAll(ctx context.Context, messageID uuid.UUI
 		&i.ChatRoom.ChatRoomID,
 		&i.ChatRoom.Name,
 		&i.ChatRoom.IsPrivate,
-		&i.ChatRoom.CoverImageID,
+		&i.ChatRoom.CoverImageUrl,
 		&i.ChatRoom.OwnerID,
 		&i.ChatRoom.FromOrganization,
 		&i.ChatRoom.CreatedAt,
@@ -188,7 +188,7 @@ func (q *Queries) FindMessageByIDWithAll(ctx context.Context, messageID uuid.UUI
 		&i.Member.Email,
 		&i.Member.Name,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageID,
+		&i.Member.ProfileImageUrl,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -200,7 +200,7 @@ func (q *Queries) FindMessageByIDWithAll(ctx context.Context, messageID uuid.UUI
 }
 
 const findMessageByIDWithChatRoom = `-- name: FindMessageByIDWithChatRoom :one
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 WHERE message_id = $1
 `
@@ -225,7 +225,7 @@ func (q *Queries) FindMessageByIDWithChatRoom(ctx context.Context, messageID uui
 		&i.ChatRoom.ChatRoomID,
 		&i.ChatRoom.Name,
 		&i.ChatRoom.IsPrivate,
-		&i.ChatRoom.CoverImageID,
+		&i.ChatRoom.CoverImageUrl,
 		&i.ChatRoom.OwnerID,
 		&i.ChatRoom.FromOrganization,
 		&i.ChatRoom.CreatedAt,
@@ -235,7 +235,7 @@ func (q *Queries) FindMessageByIDWithChatRoom(ctx context.Context, messageID uui
 }
 
 const findMessageByIDWithSender = `-- name: FindMessageByIDWithSender :one
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE message_id = $1
 `
@@ -263,7 +263,7 @@ func (q *Queries) FindMessageByIDWithSender(ctx context.Context, messageID uuid.
 		&i.Member.Email,
 		&i.Member.Name,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageID,
+		&i.Member.ProfileImageUrl,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -573,7 +573,7 @@ func (q *Queries) GetMessagesUseNumberedPaginate(ctx context.Context, arg GetMes
 }
 
 const getMessagesWithAll = `-- name: GetMessagesWithAll :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE
@@ -659,7 +659,7 @@ func (q *Queries) GetMessagesWithAll(ctx context.Context, arg GetMessagesWithAll
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.CoverImageUrl,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -671,7 +671,7 @@ func (q *Queries) GetMessagesWithAll(ctx context.Context, arg GetMessagesWithAll
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
+			&i.Member.ProfileImageUrl,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -690,7 +690,7 @@ func (q *Queries) GetMessagesWithAll(ctx context.Context, arg GetMessagesWithAll
 }
 
 const getMessagesWithAllUseKeysetPaginate = `-- name: GetMessagesWithAllUseKeysetPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE
@@ -811,7 +811,7 @@ func (q *Queries) GetMessagesWithAllUseKeysetPaginate(ctx context.Context, arg G
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.CoverImageUrl,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -823,7 +823,7 @@ func (q *Queries) GetMessagesWithAllUseKeysetPaginate(ctx context.Context, arg G
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
+			&i.Member.ProfileImageUrl,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -842,7 +842,7 @@ func (q *Queries) GetMessagesWithAllUseKeysetPaginate(ctx context.Context, arg G
 }
 
 const getMessagesWithAllUseNumberedPaginate = `-- name: GetMessagesWithAllUseNumberedPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE
@@ -933,7 +933,7 @@ func (q *Queries) GetMessagesWithAllUseNumberedPaginate(ctx context.Context, arg
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.CoverImageUrl,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -945,7 +945,7 @@ func (q *Queries) GetMessagesWithAllUseNumberedPaginate(ctx context.Context, arg
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
+			&i.Member.ProfileImageUrl,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -964,7 +964,7 @@ func (q *Queries) GetMessagesWithAllUseNumberedPaginate(ctx context.Context, arg
 }
 
 const getMessagesWithChatRoom = `-- name: GetMessagesWithChatRoom :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 WHERE
 	CASE WHEN $1::boolean = true THEN t_messages.chat_room_id = ANY($2) ELSE TRUE END
@@ -1048,7 +1048,7 @@ func (q *Queries) GetMessagesWithChatRoom(ctx context.Context, arg GetMessagesWi
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.CoverImageUrl,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -1065,7 +1065,7 @@ func (q *Queries) GetMessagesWithChatRoom(ctx context.Context, arg GetMessagesWi
 }
 
 const getMessagesWithChatRoomUseKeysetPaginate = `-- name: GetMessagesWithChatRoomUseKeysetPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 WHERE
 	CASE WHEN $2::boolean = true THEN t_messages.chat_room_id = ANY($3) ELSE TRUE END
@@ -1184,7 +1184,7 @@ func (q *Queries) GetMessagesWithChatRoomUseKeysetPaginate(ctx context.Context, 
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.CoverImageUrl,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -1201,7 +1201,7 @@ func (q *Queries) GetMessagesWithChatRoomUseKeysetPaginate(ctx context.Context, 
 }
 
 const getMessagesWithChatRoomUseNumberedPaginate = `-- name: GetMessagesWithChatRoomUseNumberedPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_messages.chat_room_id = ANY($4) ELSE TRUE END
@@ -1290,7 +1290,7 @@ func (q *Queries) GetMessagesWithChatRoomUseNumberedPaginate(ctx context.Context
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.CoverImageUrl,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -1307,7 +1307,7 @@ func (q *Queries) GetMessagesWithChatRoomUseNumberedPaginate(ctx context.Context
 }
 
 const getMessagesWithSender = `-- name: GetMessagesWithSender :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE
 	CASE WHEN $1::boolean = true THEN t_messages.chat_room_id = ANY($2) ELSE TRUE END
@@ -1394,7 +1394,7 @@ func (q *Queries) GetMessagesWithSender(ctx context.Context, arg GetMessagesWith
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
+			&i.Member.ProfileImageUrl,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1413,7 +1413,7 @@ func (q *Queries) GetMessagesWithSender(ctx context.Context, arg GetMessagesWith
 }
 
 const getMessagesWithSenderUseKeysetPaginate = `-- name: GetMessagesWithSenderUseKeysetPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE
 	CASE WHEN $2::boolean = true THEN t_messages.chat_room_id = ANY($3) ELSE TRUE END
@@ -1535,7 +1535,7 @@ func (q *Queries) GetMessagesWithSenderUseKeysetPaginate(ctx context.Context, ar
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
+			&i.Member.ProfileImageUrl,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1554,7 +1554,7 @@ func (q *Queries) GetMessagesWithSenderUseKeysetPaginate(ctx context.Context, ar
 }
 
 const getMessagesWithSenderUseNumberedPaginate = `-- name: GetMessagesWithSenderUseNumberedPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_messages.chat_room_id = ANY($4) ELSE TRUE END
@@ -1646,7 +1646,7 @@ func (q *Queries) GetMessagesWithSenderUseNumberedPaginate(ctx context.Context, 
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
+			&i.Member.ProfileImageUrl,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1706,7 +1706,7 @@ func (q *Queries) GetPluralMessages(ctx context.Context, arg GetPluralMessagesPa
 }
 
 const getPluralMessagesWithAll = `-- name: GetPluralMessagesWithAll :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE message_id = ANY($3::uuid[])
@@ -1748,7 +1748,7 @@ func (q *Queries) GetPluralMessagesWithAll(ctx context.Context, arg GetPluralMes
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.CoverImageUrl,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -1760,7 +1760,7 @@ func (q *Queries) GetPluralMessagesWithAll(ctx context.Context, arg GetPluralMes
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
+			&i.Member.ProfileImageUrl,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1779,7 +1779,7 @@ func (q *Queries) GetPluralMessagesWithAll(ctx context.Context, arg GetPluralMes
 }
 
 const getPluralMessagesWithChatRoom = `-- name: GetPluralMessagesWithChatRoom :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 WHERE message_id = ANY($3::uuid[])
 ORDER BY
@@ -1819,7 +1819,7 @@ func (q *Queries) GetPluralMessagesWithChatRoom(ctx context.Context, arg GetPlur
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.CoverImageUrl,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -1836,7 +1836,7 @@ func (q *Queries) GetPluralMessagesWithChatRoom(ctx context.Context, arg GetPlur
 }
 
 const getPluralMessagesWithSender = `-- name: GetPluralMessagesWithSender :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE message_id = ANY($3::uuid[])
 ORDER BY
@@ -1879,7 +1879,7 @@ func (q *Queries) GetPluralMessagesWithSender(ctx context.Context, arg GetPlural
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
+			&i.Member.ProfileImageUrl,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,

@@ -7,7 +7,7 @@
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | t_images_pkey | bigint | nextval('t_images_t_images_pkey_seq'::regclass) | false |  |  |  |
-| image_id | uuid | uuid_generate_v4() | false | [public.m_members](public.m_members.md) [public.m_chat_rooms](public.m_chat_rooms.md) |  |  |
+| image_id | uuid | uuid_generate_v4() | false |  |  |  |
 | height | double precision |  | true |  |  |  |
 | width | double precision |  | true |  |  |  |
 | attachable_item_id | uuid |  | false |  | [public.t_attachable_items](public.t_attachable_items.md) |  |

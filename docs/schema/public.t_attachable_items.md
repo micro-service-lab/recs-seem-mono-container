@@ -7,10 +7,11 @@
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | t_attachable_items_pkey | bigint | nextval('t_attachable_items_t_attachable_items_pkey_seq'::regclass) | false |  |  |  |
-| attachable_item_id | uuid | uuid_generate_v4() | false | [public.t_images](public.t_images.md) [public.t_files](public.t_files.md) [public.t_attached_messages](public.t_attached_messages.md) |  |  |
+| attachable_item_id | uuid | uuid_generate_v4() | false | [public.t_images](public.t_images.md) [public.t_files](public.t_files.md) |  |  |
 | url | text |  | false |  |  |  |
 | size | double precision |  | true |  |  |  |
 | mime_type_id | uuid |  | false |  | [public.m_mime_types](public.m_mime_types.md) |  |
+| owner_id | uuid |  | true |  | [public.m_members](public.m_members.md) |  |
 
 ## Constraints
 
@@ -18,6 +19,7 @@
 | ---- | ---- | ---------- |
 | fk_t_attachable_items_mime_type_id | FOREIGN KEY | FOREIGN KEY (mime_type_id) REFERENCES m_mime_types(mime_type_id) ON UPDATE RESTRICT ON DELETE RESTRICT |
 | t_attachable_items_pkey | PRIMARY KEY | PRIMARY KEY (t_attachable_items_pkey) |
+| fk_t_attachable_items_owner_id | FOREIGN KEY | FOREIGN KEY (owner_id) REFERENCES m_members(member_id) ON UPDATE SET NULL ON DELETE SET NULL |
 
 ## Indexes
 

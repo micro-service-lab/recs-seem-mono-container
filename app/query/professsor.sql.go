@@ -54,7 +54,7 @@ func (q *Queries) FindProfessorByID(ctx context.Context, professorID uuid.UUID) 
 }
 
 const findProfessorByIDWithMember = `-- name: FindProfessorByIDWithMember :one
-SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_professors
+SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_professors
 LEFT JOIN m_members ON m_professors.member_id = m_members.member_id
 WHERE professor_id = $1
 `
@@ -78,7 +78,7 @@ func (q *Queries) FindProfessorByIDWithMember(ctx context.Context, professorID u
 		&i.Member.Email,
 		&i.Member.Name,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageID,
+		&i.Member.ProfileImageUrl,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,

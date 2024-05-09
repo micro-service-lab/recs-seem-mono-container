@@ -14,8 +14,6 @@ import (
 type Querier interface {
 	CountAbsences(ctx context.Context) (int64, error)
 	CountAttachableItems(ctx context.Context, arg CountAttachableItemsParams) (int64, error)
-	CountAttachableItemsOnMessage(ctx context.Context, messageID pgtype.UUID) (int64, error)
-	CountAttachedMessagesOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) (int64, error)
 	CountAttendStatuses(ctx context.Context, arg CountAttendStatusesParams) (int64, error)
 	CountAttendanceTypes(ctx context.Context, arg CountAttendanceTypesParams) (int64, error)
 	CountAttendances(ctx context.Context, arg CountAttendancesParams) (int64, error)
@@ -25,6 +23,8 @@ type Querier interface {
 	CountEventTypes(ctx context.Context, arg CountEventTypesParams) (int64, error)
 	CountEvents(ctx context.Context, arg CountEventsParams) (int64, error)
 	CountFiles(ctx context.Context) (int64, error)
+	CountFilesOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) (int64, error)
+	CountFilesOnMessage(ctx context.Context, messageID pgtype.UUID) (int64, error)
 	CountGrades(ctx context.Context) (int64, error)
 	CountGroups(ctx context.Context) (int64, error)
 	CountImages(ctx context.Context) (int64, error)
@@ -120,9 +120,7 @@ type Querier interface {
 	CreateWorkPositions(ctx context.Context, arg []CreateWorkPositionsParams) (int64, error)
 	DeleteAbsence(ctx context.Context, absenceID uuid.UUID) error
 	DeleteAttachableItem(ctx context.Context, attachableItemID uuid.UUID) error
-	DeleteAttachedMessage(ctx context.Context, arg DeleteAttachedMessageParams) error
-	DeleteAttachedMessagesOnAttachableItem(ctx context.Context, attachableItemID uuid.UUID) error
-	DeleteAttachedMessagesOnAttachableItems(ctx context.Context, dollar_1 []uuid.UUID) error
+	DeleteAttachedMessage(ctx context.Context, attachedMessageID uuid.UUID) error
 	DeleteAttachedMessagesOnMessage(ctx context.Context, messageID pgtype.UUID) error
 	DeleteAttachedMessagesOnMessages(ctx context.Context, dollar_1 []uuid.UUID) error
 	DeleteAttendStatus(ctx context.Context, attendStatusID uuid.UUID) error
@@ -198,8 +196,6 @@ type Querier interface {
 	FindAttendanceTypeByID(ctx context.Context, attendanceTypeID uuid.UUID) (AttendanceType, error)
 	FindAttendanceTypeByKey(ctx context.Context, key string) (AttendanceType, error)
 	FindChatRoomByID(ctx context.Context, chatRoomID uuid.UUID) (ChatRoom, error)
-	FindChatRoomByIDWithAll(ctx context.Context, chatRoomID uuid.UUID) (FindChatRoomByIDWithAllRow, error)
-	FindChatRoomByIDWithCoverImage(ctx context.Context, chatRoomID uuid.UUID) (FindChatRoomByIDWithCoverImageRow, error)
 	FindChatRoomByIDWithOwner(ctx context.Context, chatRoomID uuid.UUID) (FindChatRoomByIDWithOwnerRow, error)
 	FindEarlyLeavingByID(ctx context.Context, earlyLeavingID uuid.UUID) (EarlyLeaving, error)
 	FindEventByID(ctx context.Context, eventID uuid.UUID) (Event, error)
@@ -279,17 +275,11 @@ type Querier interface {
 	GetAbsencesUseKeysetPaginate(ctx context.Context, arg GetAbsencesUseKeysetPaginateParams) ([]Absence, error)
 	GetAbsencesUseNumberedPaginate(ctx context.Context, arg GetAbsencesUseNumberedPaginateParams) ([]Absence, error)
 	GetAttachableItems(ctx context.Context, arg GetAttachableItemsParams) ([]GetAttachableItemsRow, error)
-	GetAttachableItemsOnMessage(ctx context.Context, messageID pgtype.UUID) ([]GetAttachableItemsOnMessageRow, error)
-	GetAttachableItemsOnMessageUseKeysetPaginate(ctx context.Context, arg GetAttachableItemsOnMessageUseKeysetPaginateParams) ([]GetAttachableItemsOnMessageUseKeysetPaginateRow, error)
-	GetAttachableItemsOnMessageUseNumberedPaginate(ctx context.Context, arg GetAttachableItemsOnMessageUseNumberedPaginateParams) ([]GetAttachableItemsOnMessageUseNumberedPaginateRow, error)
 	GetAttachableItemsUseKeysetPaginate(ctx context.Context, arg GetAttachableItemsUseKeysetPaginateParams) ([]GetAttachableItemsUseKeysetPaginateRow, error)
 	GetAttachableItemsUseNumberedPaginate(ctx context.Context, arg GetAttachableItemsUseNumberedPaginateParams) ([]GetAttachableItemsUseNumberedPaginateRow, error)
 	GetAttachableItemsWithMimeType(ctx context.Context, arg GetAttachableItemsWithMimeTypeParams) ([]GetAttachableItemsWithMimeTypeRow, error)
 	GetAttachableItemsWithMimeTypeUseKeysetPaginate(ctx context.Context, arg GetAttachableItemsWithMimeTypeUseKeysetPaginateParams) ([]GetAttachableItemsWithMimeTypeUseKeysetPaginateRow, error)
 	GetAttachableItemsWithMimeTypeUseNumberedPaginate(ctx context.Context, arg GetAttachableItemsWithMimeTypeUseNumberedPaginateParams) ([]GetAttachableItemsWithMimeTypeUseNumberedPaginateRow, error)
-	GetAttachedMessagesOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) ([]GetAttachedMessagesOnChatRoomRow, error)
-	GetAttachedMessagesOnChatRoomUseKeysetPaginate(ctx context.Context, arg GetAttachedMessagesOnChatRoomUseKeysetPaginateParams) ([]GetAttachedMessagesOnChatRoomUseKeysetPaginateRow, error)
-	GetAttachedMessagesOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetAttachedMessagesOnChatRoomUseNumberedPaginateParams) ([]GetAttachedMessagesOnChatRoomUseNumberedPaginateRow, error)
 	GetAttendStatuses(ctx context.Context, arg GetAttendStatusesParams) ([]AttendStatus, error)
 	GetAttendStatusesUseKeysetPaginate(ctx context.Context, arg GetAttendStatusesUseKeysetPaginateParams) ([]AttendStatus, error)
 	GetAttendStatusesUseNumberedPaginate(ctx context.Context, arg GetAttendStatusesUseNumberedPaginateParams) ([]AttendStatus, error)
@@ -320,12 +310,6 @@ type Querier interface {
 	GetChatRoomsOnMemberUseNumberedPaginate(ctx context.Context, arg GetChatRoomsOnMemberUseNumberedPaginateParams) ([]GetChatRoomsOnMemberUseNumberedPaginateRow, error)
 	GetChatRoomsUseKeysetPaginate(ctx context.Context, arg GetChatRoomsUseKeysetPaginateParams) ([]ChatRoom, error)
 	GetChatRoomsUseNumberedPaginate(ctx context.Context, arg GetChatRoomsUseNumberedPaginateParams) ([]ChatRoom, error)
-	GetChatRoomsWithAll(ctx context.Context, arg GetChatRoomsWithAllParams) ([]GetChatRoomsWithAllRow, error)
-	GetChatRoomsWithAllUseKeysetPaginate(ctx context.Context, arg GetChatRoomsWithAllUseKeysetPaginateParams) ([]GetChatRoomsWithAllUseKeysetPaginateRow, error)
-	GetChatRoomsWithAllUseNumberedPaginate(ctx context.Context, arg GetChatRoomsWithAllUseNumberedPaginateParams) ([]GetChatRoomsWithAllUseNumberedPaginateRow, error)
-	GetChatRoomsWithCoverImage(ctx context.Context, arg GetChatRoomsWithCoverImageParams) ([]GetChatRoomsWithCoverImageRow, error)
-	GetChatRoomsWithCoverImageUseKeysetPaginate(ctx context.Context, arg GetChatRoomsWithCoverImageUseKeysetPaginateParams) ([]GetChatRoomsWithCoverImageUseKeysetPaginateRow, error)
-	GetChatRoomsWithCoverImageUseNumberedPaginate(ctx context.Context, arg GetChatRoomsWithCoverImageUseNumberedPaginateParams) ([]GetChatRoomsWithCoverImageUseNumberedPaginateRow, error)
 	GetChatRoomsWithOwner(ctx context.Context, arg GetChatRoomsWithOwnerParams) ([]GetChatRoomsWithOwnerRow, error)
 	GetChatRoomsWithOwnerUseKeysetPaginate(ctx context.Context, arg GetChatRoomsWithOwnerUseKeysetPaginateParams) ([]GetChatRoomsWithOwnerUseKeysetPaginateRow, error)
 	GetChatRoomsWithOwnerUseNumberedPaginate(ctx context.Context, arg GetChatRoomsWithOwnerUseNumberedPaginateParams) ([]GetChatRoomsWithOwnerUseNumberedPaginateRow, error)
@@ -357,6 +341,12 @@ type Querier interface {
 	GetEventsWithTypeUseKeysetPaginate(ctx context.Context, arg GetEventsWithTypeUseKeysetPaginateParams) ([]GetEventsWithTypeUseKeysetPaginateRow, error)
 	GetEventsWithTypeUseNumberedPaginate(ctx context.Context, arg GetEventsWithTypeUseNumberedPaginateParams) ([]GetEventsWithTypeUseNumberedPaginateRow, error)
 	GetFiles(ctx context.Context) ([]File, error)
+	GetFilesOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) ([]GetFilesOnChatRoomRow, error)
+	GetFilesOnChatRoomUseKeysetPaginate(ctx context.Context, arg GetFilesOnChatRoomUseKeysetPaginateParams) ([]GetFilesOnChatRoomUseKeysetPaginateRow, error)
+	GetFilesOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetFilesOnChatRoomUseNumberedPaginateParams) ([]GetFilesOnChatRoomUseNumberedPaginateRow, error)
+	GetFilesOnMessage(ctx context.Context, messageID pgtype.UUID) ([]GetFilesOnMessageRow, error)
+	GetFilesOnMessageUseKeysetPaginate(ctx context.Context, arg GetFilesOnMessageUseKeysetPaginateParams) ([]GetFilesOnMessageUseKeysetPaginateRow, error)
+	GetFilesOnMessageUseNumberedPaginate(ctx context.Context, arg GetFilesOnMessageUseNumberedPaginateParams) ([]GetFilesOnMessageUseNumberedPaginateRow, error)
 	GetFilesUseKeysetPaginate(ctx context.Context, arg GetFilesUseKeysetPaginateParams) ([]File, error)
 	GetFilesUseNumberedPaginate(ctx context.Context, arg GetFilesUseNumberedPaginateParams) ([]File, error)
 	GetFilesWithAttachableItem(ctx context.Context) ([]GetFilesWithAttachableItemRow, error)
@@ -456,9 +446,7 @@ type Querier interface {
 	GetPluckWorkPositions(ctx context.Context, arg GetPluckWorkPositionsParams) ([]GetPluckWorkPositionsRow, error)
 	GetPluralAbsences(ctx context.Context, arg GetPluralAbsencesParams) ([]Absence, error)
 	GetPluralAttachableItems(ctx context.Context, arg GetPluralAttachableItemsParams) ([]GetPluralAttachableItemsRow, error)
-	GetPluralAttachableItemsOnMessage(ctx context.Context, arg GetPluralAttachableItemsOnMessageParams) ([]GetPluralAttachableItemsOnMessageRow, error)
 	GetPluralAttachableItemsWithMimeType(ctx context.Context, arg GetPluralAttachableItemsWithMimeTypeParams) ([]GetPluralAttachableItemsWithMimeTypeRow, error)
-	GetPluralAttachedMessagesOnChatRoom(ctx context.Context, arg GetPluralAttachedMessagesOnChatRoomParams) ([]GetPluralAttachedMessagesOnChatRoomRow, error)
 	GetPluralAttendStatuses(ctx context.Context, arg GetPluralAttendStatusesParams) ([]AttendStatus, error)
 	GetPluralAttendanceTypes(ctx context.Context, arg GetPluralAttendanceTypesParams) ([]AttendanceType, error)
 	GetPluralAttendanceWithAll(ctx context.Context, arg GetPluralAttendanceWithAllParams) ([]GetPluralAttendanceWithAllRow, error)
@@ -469,8 +457,6 @@ type Querier interface {
 	GetPluralAttendances(ctx context.Context, arg GetPluralAttendancesParams) ([]Attendance, error)
 	GetPluralChatRooms(ctx context.Context, arg GetPluralChatRoomsParams) ([]ChatRoom, error)
 	GetPluralChatRoomsOnMember(ctx context.Context, arg GetPluralChatRoomsOnMemberParams) ([]GetPluralChatRoomsOnMemberRow, error)
-	GetPluralChatRoomsWithAll(ctx context.Context, arg GetPluralChatRoomsWithAllParams) ([]GetPluralChatRoomsWithAllRow, error)
-	GetPluralChatRoomsWithCoverImage(ctx context.Context, arg GetPluralChatRoomsWithCoverImageParams) ([]GetPluralChatRoomsWithCoverImageRow, error)
 	GetPluralChatRoomsWithOwner(ctx context.Context, arg GetPluralChatRoomsWithOwnerParams) ([]GetPluralChatRoomsWithOwnerRow, error)
 	GetPluralEarlyLeavings(ctx context.Context, arg GetPluralEarlyLeavingsParams) ([]EarlyLeaving, error)
 	GetPluralEventTypes(ctx context.Context, arg GetPluralEventTypesParams) ([]EventType, error)
@@ -482,6 +468,8 @@ type Querier interface {
 	GetPluralEventsWithSendOrganization(ctx context.Context, arg GetPluralEventsWithSendOrganizationParams) ([]GetPluralEventsWithSendOrganizationRow, error)
 	GetPluralEventsWithType(ctx context.Context, arg GetPluralEventsWithTypeParams) ([]GetPluralEventsWithTypeRow, error)
 	GetPluralFiles(ctx context.Context, arg GetPluralFilesParams) ([]File, error)
+	GetPluralFilesOnChatRoom(ctx context.Context, arg GetPluralFilesOnChatRoomParams) ([]GetPluralFilesOnChatRoomRow, error)
+	GetPluralFilesOnMessage(ctx context.Context, arg GetPluralFilesOnMessageParams) ([]GetPluralFilesOnMessageRow, error)
 	GetPluralFilesWithAttachableItem(ctx context.Context, arg GetPluralFilesWithAttachableItemParams) ([]GetPluralFilesWithAttachableItemRow, error)
 	GetPluralGrades(ctx context.Context, arg GetPluralGradesParams) ([]Grade, error)
 	GetPluralGradesWithOrganization(ctx context.Context, arg GetPluralGradesWithOrganizationParams) ([]GetPluralGradesWithOrganizationRow, error)
@@ -589,8 +577,6 @@ type Querier interface {
 	GetWorkPositionsUseNumberedPaginate(ctx context.Context, arg GetWorkPositionsUseNumberedPaginateParams) ([]WorkPosition, error)
 	PluralDeleteAbsences(ctx context.Context, dollar_1 []uuid.UUID) error
 	PluralDeleteAttachableItems(ctx context.Context, dollar_1 []uuid.UUID) error
-	PluralDeleteAttachedMessagesOnAttachableItem(ctx context.Context, arg PluralDeleteAttachedMessagesOnAttachableItemParams) error
-	PluralDeleteAttachedMessagesOnMessage(ctx context.Context, arg PluralDeleteAttachedMessagesOnMessageParams) error
 	PluralDeleteAttendStatuses(ctx context.Context, dollar_1 []uuid.UUID) error
 	PluralDeleteAttendanceTypes(ctx context.Context, dollar_1 []uuid.UUID) error
 	PluralDeleteAttendances(ctx context.Context, dollar_1 []uuid.UUID) error

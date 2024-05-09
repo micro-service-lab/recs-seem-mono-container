@@ -145,7 +145,7 @@ func (q *Queries) FindLabIOHistoryByID(ctx context.Context, labIoHistoryID uuid.
 }
 
 const findLabIOHistoryWithMember = `-- name: FindLabIOHistoryWithMember :one
-SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
+SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE lab_io_history_id = $1
 `
@@ -171,7 +171,7 @@ func (q *Queries) FindLabIOHistoryWithMember(ctx context.Context, labIoHistoryID
 		&i.Member.Email,
 		&i.Member.Name,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageID,
+		&i.Member.ProfileImageUrl,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -439,7 +439,7 @@ func (q *Queries) GetLabIOHistoriesUseNumberedPaginate(ctx context.Context, arg 
 }
 
 const getLabIOHistoriesWithMember = `-- name: GetLabIOHistoriesWithMember :many
-SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
+SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE
 	CASE WHEN $1::boolean = true THEN t_lab_io_histories.member_id = ANY($2) ELSE TRUE END
@@ -512,7 +512,7 @@ func (q *Queries) GetLabIOHistoriesWithMember(ctx context.Context, arg GetLabIOH
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
+			&i.Member.ProfileImageUrl,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -531,7 +531,7 @@ func (q *Queries) GetLabIOHistoriesWithMember(ctx context.Context, arg GetLabIOH
 }
 
 const getLabIOHistoriesWithMemberUseKeysetPaginate = `-- name: GetLabIOHistoriesWithMemberUseKeysetPaginate :many
-SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
+SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE
 	CASE WHEN $2::boolean = true THEN t_lab_io_histories.member_id = ANY($3) ELSE TRUE END
@@ -639,7 +639,7 @@ func (q *Queries) GetLabIOHistoriesWithMemberUseKeysetPaginate(ctx context.Conte
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
+			&i.Member.ProfileImageUrl,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -658,7 +658,7 @@ func (q *Queries) GetLabIOHistoriesWithMemberUseKeysetPaginate(ctx context.Conte
 }
 
 const getLabIOHistoriesWithMemberUseNumberedPaginate = `-- name: GetLabIOHistoriesWithMemberUseNumberedPaginate :many
-SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
+SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_lab_io_histories.member_id = ANY($4) ELSE TRUE END
@@ -736,7 +736,7 @@ func (q *Queries) GetLabIOHistoriesWithMemberUseNumberedPaginate(ctx context.Con
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
+			&i.Member.ProfileImageUrl,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -794,7 +794,7 @@ func (q *Queries) GetPluralLabIOHistories(ctx context.Context, arg GetPluralLabI
 }
 
 const getPluralLabIOHistoriesWithMember = `-- name: GetPluralLabIOHistoriesWithMember :many
-SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
+SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE lab_io_history_id = ANY($3::uuid[])
 ORDER BY
@@ -835,7 +835,7 @@ func (q *Queries) GetPluralLabIOHistoriesWithMember(ctx context.Context, arg Get
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
+			&i.Member.ProfileImageUrl,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,

@@ -61,8 +61,8 @@
 <text text-anchor="start" x="407" y="-263.9" font-family="Arial" font-size="14.00" fill="#000000">attend_status_id    </text>
 <text text-anchor="start" x="543.9172" y="-263.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
 <polygon fill="none" stroke="#000000" points="400,-222.5 400,-252.5 693,-252.5 693,-222.5 400,-222.5"/>
-<text text-anchor="start" x="407" y="-233.9" font-family="Arial" font-size="14.00" fill="#000000">profile_image_id    </text>
-<text text-anchor="start" x="543.8864" y="-233.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<text text-anchor="start" x="407" y="-233.9" font-family="Arial" font-size="14.00" fill="#000000">profile_image_url    </text>
+<text text-anchor="start" x="548.547" y="-233.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
 <polygon fill="none" stroke="#000000" points="400,-192.5 400,-222.5 693,-222.5 693,-192.5 400,-192.5"/>
 <text text-anchor="start" x="407" y="-203.9" font-family="Arial" font-size="14.00" fill="#000000">grade_id    </text>
 <text text-anchor="start" x="495.6676" y="-203.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
@@ -110,8 +110,8 @@
 <text text-anchor="start" x="804" y="-278.9" font-family="Arial" font-size="14.00" fill="#000000">is_private    </text>
 <text text-anchor="start" x="898.0996" y="-278.9" font-family="Arial" font-size="14.00" fill="#666666">[boolean]</text>
 <polygon fill="none" stroke="#000000" points="797,-237.5 797,-267.5 1109,-267.5 1109,-237.5 797,-237.5"/>
-<text text-anchor="start" x="804" y="-248.9" font-family="Arial" font-size="14.00" fill="#000000">cover_image_id    </text>
-<text text-anchor="start" x="937" y="-248.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<text text-anchor="start" x="804" y="-248.9" font-family="Arial" font-size="14.00" fill="#000000">cover_image_url    </text>
+<text text-anchor="start" x="941.6606" y="-248.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
 <polygon fill="none" stroke="#000000" points="797,-207.5 797,-237.5 1109,-237.5 1109,-207.5 797,-207.5"/>
 <text text-anchor="start" x="804" y="-218.9" font-family="Arial" font-size="14.00" fill="#000000">owner_id    </text>
 <text text-anchor="start" x="894.9916" y="-218.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>

@@ -10,6 +10,12 @@ UPDATE t_events SET event_type_id = $2, title = $3, description = $4, organizati
 -- name: DeleteEvent :exec
 DELETE FROM t_events WHERE event_id = $1;
 
+-- name: DeleteEventOnOrganization :exec
+DELETE FROM t_events WHERE organization_id = $1;
+
+-- name: PluralDeleteEvents :exec
+DELETE FROM t_events WHERE event_id = ANY($1::uuid[]);
+
 -- name: FindEventByID :one
 SELECT * FROM t_events WHERE event_id = $1;
 

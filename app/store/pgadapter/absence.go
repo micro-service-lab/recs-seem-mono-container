@@ -2,9 +2,11 @@ package pgadapter
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
@@ -146,9 +148,42 @@ func (a *PgAdapter) DeleteAbsenceWithSd(ctx context.Context, sd store.Sd, absenc
 	return nil
 }
 
+func pluralDeleteAbsences(ctx context.Context, qtx *query.Queries, absenceIDs []uuid.UUID) error {
+	err := qtx.PluralDeleteAbsences(ctx, absenceIDs)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete absences: %w", err)
+	}
+	return nil
+}
+
+// PluralDeleteAbsences 欠席を複数削除する。
+func (a *PgAdapter) PluralDeleteAbsences(ctx context.Context, absenceIDs []uuid.UUID) error {
+	err := pluralDeleteAbsences(ctx, a.query, absenceIDs)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete absences: %w", err)
+	}
+	return nil
+}
+
+// PluralDeleteAbsencesWithSd SD付きで欠席を複数削除する。
+func (a *PgAdapter) PluralDeleteAbsencesWithSd(ctx context.Context, sd store.Sd, absenceIDs []uuid.UUID) error {
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ErrNotFoundDescriptor
+	}
+	err := pluralDeleteAbsences(ctx, qtx, absenceIDs)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete absences: %w", err)
+	}
+	return nil
+}
+
 func findAbsenceByID(ctx context.Context, qtx *query.Queries, absenceID uuid.UUID) (entity.Absence, error) {
 	e, err := qtx.FindAbsenceByID(ctx, absenceID)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.Absence{}, store.ErrDataNoRecord
+		}
 		return entity.Absence{}, fmt.Errorf("failed to find absence: %w", err)
 	}
 	entity := entity.Absence{

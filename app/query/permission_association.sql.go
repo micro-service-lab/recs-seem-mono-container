@@ -88,6 +88,42 @@ func (q *Queries) DeletePermissionAssociation(ctx context.Context, arg DeletePer
 	return err
 }
 
+const deletePermissionOnPermission = `-- name: DeletePermissionOnPermission :exec
+DELETE FROM m_permission_associations WHERE permission_id = $1
+`
+
+func (q *Queries) DeletePermissionOnPermission(ctx context.Context, permissionID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deletePermissionOnPermission, permissionID)
+	return err
+}
+
+const deletePermissionOnPermissions = `-- name: DeletePermissionOnPermissions :exec
+DELETE FROM m_permission_associations WHERE permission_id = ANY($1::uuid[])
+`
+
+func (q *Queries) DeletePermissionOnPermissions(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deletePermissionOnPermissions, dollar_1)
+	return err
+}
+
+const deletePermissionOnWorkPosition = `-- name: DeletePermissionOnWorkPosition :exec
+DELETE FROM m_permission_associations WHERE work_position_id = $1
+`
+
+func (q *Queries) DeletePermissionOnWorkPosition(ctx context.Context, workPositionID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deletePermissionOnWorkPosition, workPositionID)
+	return err
+}
+
+const deletePermissionOnWorkPositions = `-- name: DeletePermissionOnWorkPositions :exec
+DELETE FROM m_permission_associations WHERE work_position_id = ANY($1::uuid[])
+`
+
+func (q *Queries) DeletePermissionOnWorkPositions(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deletePermissionOnWorkPositions, dollar_1)
+	return err
+}
+
 const getPermissionsOnWorkPosition = `-- name: GetPermissionsOnWorkPosition :many
 SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id FROM m_permission_associations
 LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
@@ -348,7 +384,7 @@ func (q *Queries) GetPluralPermissionsOnWorkPosition(ctx context.Context, arg Ge
 }
 
 const getPluralWorkPositionsOnPermission = `-- name: GetPluralWorkPositionsOnPermission :many
-SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_work_positions.m_work_positions_pkey, m_work_positions.work_position_id, m_work_positions.name, m_work_positions.description, m_work_positions.created_at, m_work_positions.updated_at FROM m_permission_associations
+SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_work_positions.m_work_positions_pkey, m_work_positions.work_position_id, m_work_positions.organization_id, m_work_positions.name, m_work_positions.description, m_work_positions.created_at, m_work_positions.updated_at FROM m_permission_associations
 LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
 WHERE permission_id = ANY($3::uuid[])
 ORDER BY
@@ -382,6 +418,7 @@ func (q *Queries) GetPluralWorkPositionsOnPermission(ctx context.Context, arg Ge
 			&i.PermissionAssociation.WorkPositionID,
 			&i.WorkPosition.MWorkPositionsPkey,
 			&i.WorkPosition.WorkPositionID,
+			&i.WorkPosition.OrganizationID,
 			&i.WorkPosition.Name,
 			&i.WorkPosition.Description,
 			&i.WorkPosition.CreatedAt,
@@ -398,7 +435,7 @@ func (q *Queries) GetPluralWorkPositionsOnPermission(ctx context.Context, arg Ge
 }
 
 const getWorkPositionsOnPermission = `-- name: GetWorkPositionsOnPermission :many
-SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_work_positions.m_work_positions_pkey, m_work_positions.work_position_id, m_work_positions.name, m_work_positions.description, m_work_positions.created_at, m_work_positions.updated_at FROM m_permission_associations
+SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_work_positions.m_work_positions_pkey, m_work_positions.work_position_id, m_work_positions.organization_id, m_work_positions.name, m_work_positions.description, m_work_positions.created_at, m_work_positions.updated_at FROM m_permission_associations
 LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
 WHERE permission_id = $1
 AND
@@ -441,6 +478,7 @@ func (q *Queries) GetWorkPositionsOnPermission(ctx context.Context, arg GetWorkP
 			&i.PermissionAssociation.WorkPositionID,
 			&i.WorkPosition.MWorkPositionsPkey,
 			&i.WorkPosition.WorkPositionID,
+			&i.WorkPosition.OrganizationID,
 			&i.WorkPosition.Name,
 			&i.WorkPosition.Description,
 			&i.WorkPosition.CreatedAt,
@@ -457,7 +495,7 @@ func (q *Queries) GetWorkPositionsOnPermission(ctx context.Context, arg GetWorkP
 }
 
 const getWorkPositionsOnPermissionUseKeysetPaginate = `-- name: GetWorkPositionsOnPermissionUseKeysetPaginate :many
-SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_work_positions.m_work_positions_pkey, m_work_positions.work_position_id, m_work_positions.name, m_work_positions.description, m_work_positions.created_at, m_work_positions.updated_at FROM m_permission_associations
+SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_work_positions.m_work_positions_pkey, m_work_positions.work_position_id, m_work_positions.organization_id, m_work_positions.name, m_work_positions.description, m_work_positions.created_at, m_work_positions.updated_at FROM m_permission_associations
 LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
 WHERE permission_id = $1
 AND
@@ -527,6 +565,7 @@ func (q *Queries) GetWorkPositionsOnPermissionUseKeysetPaginate(ctx context.Cont
 			&i.PermissionAssociation.WorkPositionID,
 			&i.WorkPosition.MWorkPositionsPkey,
 			&i.WorkPosition.WorkPositionID,
+			&i.WorkPosition.OrganizationID,
 			&i.WorkPosition.Name,
 			&i.WorkPosition.Description,
 			&i.WorkPosition.CreatedAt,
@@ -543,7 +582,7 @@ func (q *Queries) GetWorkPositionsOnPermissionUseKeysetPaginate(ctx context.Cont
 }
 
 const getWorkPositionsOnPermissionUseNumberedPaginate = `-- name: GetWorkPositionsOnPermissionUseNumberedPaginate :many
-SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_work_positions.m_work_positions_pkey, m_work_positions.work_position_id, m_work_positions.name, m_work_positions.description, m_work_positions.created_at, m_work_positions.updated_at FROM m_permission_associations
+SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_work_positions.m_work_positions_pkey, m_work_positions.work_position_id, m_work_positions.organization_id, m_work_positions.name, m_work_positions.description, m_work_positions.created_at, m_work_positions.updated_at FROM m_permission_associations
 LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
 WHERE permission_id = $1
 AND
@@ -591,6 +630,7 @@ func (q *Queries) GetWorkPositionsOnPermissionUseNumberedPaginate(ctx context.Co
 			&i.PermissionAssociation.WorkPositionID,
 			&i.WorkPosition.MWorkPositionsPkey,
 			&i.WorkPosition.WorkPositionID,
+			&i.WorkPosition.OrganizationID,
 			&i.WorkPosition.Name,
 			&i.WorkPosition.Description,
 			&i.WorkPosition.CreatedAt,
@@ -604,4 +644,32 @@ func (q *Queries) GetWorkPositionsOnPermissionUseNumberedPaginate(ctx context.Co
 		return nil, err
 	}
 	return items, nil
+}
+
+const pluralDeletePermissionAssociationsOnPermission = `-- name: PluralDeletePermissionAssociationsOnPermission :exec
+DELETE FROM m_permission_associations WHERE permission_id = $1 AND work_position_id = ANY($2::uuid[])
+`
+
+type PluralDeletePermissionAssociationsOnPermissionParams struct {
+	PermissionID uuid.UUID   `json:"permission_id"`
+	Column2      []uuid.UUID `json:"column_2"`
+}
+
+func (q *Queries) PluralDeletePermissionAssociationsOnPermission(ctx context.Context, arg PluralDeletePermissionAssociationsOnPermissionParams) error {
+	_, err := q.db.Exec(ctx, pluralDeletePermissionAssociationsOnPermission, arg.PermissionID, arg.Column2)
+	return err
+}
+
+const pluralDeletePermissionAssociationsOnWorkPosition = `-- name: PluralDeletePermissionAssociationsOnWorkPosition :exec
+DELETE FROM m_permission_associations WHERE work_position_id = $1 AND permission_id = ANY($2::uuid[])
+`
+
+type PluralDeletePermissionAssociationsOnWorkPositionParams struct {
+	WorkPositionID uuid.UUID   `json:"work_position_id"`
+	Column2        []uuid.UUID `json:"column_2"`
+}
+
+func (q *Queries) PluralDeletePermissionAssociationsOnWorkPosition(ctx context.Context, arg PluralDeletePermissionAssociationsOnWorkPositionParams) error {
+	_, err := q.db.Exec(ctx, pluralDeletePermissionAssociationsOnWorkPosition, arg.WorkPositionID, arg.Column2)
+	return err
 }

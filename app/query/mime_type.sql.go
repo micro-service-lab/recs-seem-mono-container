@@ -30,21 +30,23 @@ func (q *Queries) CountMimeTypes(ctx context.Context, arg CountMimeTypesParams) 
 }
 
 const createMimeType = `-- name: CreateMimeType :one
-INSERT INTO m_mime_types (name, key) VALUES ($1, $2) RETURNING m_mime_types_pkey, mime_type_id, name, key
+INSERT INTO m_mime_types (name, key, kind) VALUES ($1, $2, $3) RETURNING m_mime_types_pkey, mime_type_id, name, kind, key
 `
 
 type CreateMimeTypeParams struct {
 	Name string `json:"name"`
 	Key  string `json:"key"`
+	Kind string `json:"kind"`
 }
 
 func (q *Queries) CreateMimeType(ctx context.Context, arg CreateMimeTypeParams) (MimeType, error) {
-	row := q.db.QueryRow(ctx, createMimeType, arg.Name, arg.Key)
+	row := q.db.QueryRow(ctx, createMimeType, arg.Name, arg.Key, arg.Kind)
 	var i MimeType
 	err := row.Scan(
 		&i.MMimeTypesPkey,
 		&i.MimeTypeID,
 		&i.Name,
+		&i.Kind,
 		&i.Key,
 	)
 	return i, err
@@ -53,6 +55,7 @@ func (q *Queries) CreateMimeType(ctx context.Context, arg CreateMimeTypeParams) 
 type CreateMimeTypesParams struct {
 	Name string `json:"name"`
 	Key  string `json:"key"`
+	Kind string `json:"kind"`
 }
 
 const deleteMimeType = `-- name: DeleteMimeType :exec
@@ -74,7 +77,7 @@ func (q *Queries) DeleteMimeTypeByKey(ctx context.Context, key string) error {
 }
 
 const findMimeTypeByID = `-- name: FindMimeTypeByID :one
-SELECT m_mime_types_pkey, mime_type_id, name, key FROM m_mime_types WHERE mime_type_id = $1
+SELECT m_mime_types_pkey, mime_type_id, name, kind, key FROM m_mime_types WHERE mime_type_id = $1
 `
 
 func (q *Queries) FindMimeTypeByID(ctx context.Context, mimeTypeID uuid.UUID) (MimeType, error) {
@@ -84,13 +87,14 @@ func (q *Queries) FindMimeTypeByID(ctx context.Context, mimeTypeID uuid.UUID) (M
 		&i.MMimeTypesPkey,
 		&i.MimeTypeID,
 		&i.Name,
+		&i.Kind,
 		&i.Key,
 	)
 	return i, err
 }
 
 const findMimeTypeByKey = `-- name: FindMimeTypeByKey :one
-SELECT m_mime_types_pkey, mime_type_id, name, key FROM m_mime_types WHERE key = $1
+SELECT m_mime_types_pkey, mime_type_id, name, kind, key FROM m_mime_types WHERE key = $1
 `
 
 func (q *Queries) FindMimeTypeByKey(ctx context.Context, key string) (MimeType, error) {
@@ -100,21 +104,30 @@ func (q *Queries) FindMimeTypeByKey(ctx context.Context, key string) (MimeType, 
 		&i.MMimeTypesPkey,
 		&i.MimeTypeID,
 		&i.Name,
+		&i.Kind,
 		&i.Key,
 	)
 	return i, err
 }
 
 const getMimeTypes = `-- name: GetMimeTypes :many
-SELECT m_mime_types_pkey, mime_type_id, name, key FROM m_mime_types
+SELECT m_mime_types_pkey, mime_type_id, name, kind, key FROM m_mime_types
+WHERE
+	CASE WHEN $1::boolean = true THEN m_mime_types.name LIKE '%' || $2::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $1::text = 'name' THEN name END ASC,
-	CASE WHEN $1::text = 'r_name' THEN name END DESC,
+	CASE WHEN $3::text = 'name' THEN name END ASC,
+	CASE WHEN $3::text = 'r_name' THEN name END DESC,
 	m_mime_types_pkey ASC
 `
 
-func (q *Queries) GetMimeTypes(ctx context.Context, orderMethod string) ([]MimeType, error) {
-	rows, err := q.db.Query(ctx, getMimeTypes, orderMethod)
+type GetMimeTypesParams struct {
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+	OrderMethod   string `json:"order_method"`
+}
+
+func (q *Queries) GetMimeTypes(ctx context.Context, arg GetMimeTypesParams) ([]MimeType, error) {
+	rows, err := q.db.Query(ctx, getMimeTypes, arg.WhereLikeName, arg.SearchName, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -126,6 +139,7 @@ func (q *Queries) GetMimeTypes(ctx context.Context, orderMethod string) ([]MimeT
 			&i.MMimeTypesPkey,
 			&i.MimeTypeID,
 			&i.Name,
+			&i.Kind,
 			&i.Key,
 		); err != nil {
 			return nil, err
@@ -139,34 +153,38 @@ func (q *Queries) GetMimeTypes(ctx context.Context, orderMethod string) ([]MimeT
 }
 
 const getMimeTypesUseKeysetPaginate = `-- name: GetMimeTypesUseKeysetPaginate :many
-SELECT m_mime_types_pkey, mime_type_id, name, key FROM m_mime_types
+SELECT m_mime_types_pkey, mime_type_id, name, kind, key FROM m_mime_types
 WHERE
-	CASE $2::text
+	CASE WHEN $2::boolean = true THEN m_mime_types.name LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE $4::text
 		WHEN 'next' THEN
-			CASE $3::text
-				WHEN 'name' THEN name > $4 OR (name = $4 AND m_mime_types_pkey > $5::int)
-				WHEN 'r_name' THEN name < $4 OR (name = $4 AND m_mime_types_pkey > $5::int)
-				ELSE m_mime_types_pkey > $5::int
+			CASE $5::text
+				WHEN 'name' THEN name > $6 OR (name = $6 AND m_mime_types_pkey > $7::int)
+				WHEN 'r_name' THEN name < $6 OR (name = $6 AND m_mime_types_pkey > $7::int)
+				ELSE m_mime_types_pkey > $7::int
 			END
 		WHEN 'prev' THEN
-			CASE $3::text
-				WHEN 'name' THEN name < $4 OR (name = $4 AND m_mime_types_pkey < $5::int)
-				WHEN 'r_name' THEN name > $4 OR (name = $4 AND m_mime_types_pkey < $5::int)
-				ELSE m_mime_types_pkey < $5::int
+			CASE $5::text
+				WHEN 'name' THEN name < $6 OR (name = $6 AND m_mime_types_pkey < $7::int)
+				WHEN 'r_name' THEN name > $6 OR (name = $6 AND m_mime_types_pkey < $7::int)
+				ELSE m_mime_types_pkey < $7::int
 			END
 	END
 ORDER BY
-	CASE WHEN $3::text = 'name' AND $2::text = 'next' THEN name END ASC,
-	CASE WHEN $3::text = 'name' AND $2::text = 'prev' THEN name END DESC,
-	CASE WHEN $3::text = 'r_name' AND $2::text = 'next' THEN name END ASC,
-	CASE WHEN $3::text = 'r_name' AND $2::text = 'prev' THEN name END DESC,
-	CASE WHEN $2::text = 'next' THEN m_mime_types_pkey END ASC,
-	CASE WHEN $2::text = 'prev' THEN m_mime_types_pkey END DESC
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN name END ASC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN name END DESC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN name END ASC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN name END DESC,
+	CASE WHEN $4::text = 'next' THEN m_mime_types_pkey END ASC,
+	CASE WHEN $4::text = 'prev' THEN m_mime_types_pkey END DESC
 LIMIT $1
 `
 
 type GetMimeTypesUseKeysetPaginateParams struct {
 	Limit           int32  `json:"limit"`
+	WhereLikeName   bool   `json:"where_like_name"`
+	SearchName      string `json:"search_name"`
 	CursorDirection string `json:"cursor_direction"`
 	OrderMethod     string `json:"order_method"`
 	NameCursor      string `json:"name_cursor"`
@@ -176,6 +194,8 @@ type GetMimeTypesUseKeysetPaginateParams struct {
 func (q *Queries) GetMimeTypesUseKeysetPaginate(ctx context.Context, arg GetMimeTypesUseKeysetPaginateParams) ([]MimeType, error) {
 	rows, err := q.db.Query(ctx, getMimeTypesUseKeysetPaginate,
 		arg.Limit,
+		arg.WhereLikeName,
+		arg.SearchName,
 		arg.CursorDirection,
 		arg.OrderMethod,
 		arg.NameCursor,
@@ -192,6 +212,7 @@ func (q *Queries) GetMimeTypesUseKeysetPaginate(ctx context.Context, arg GetMime
 			&i.MMimeTypesPkey,
 			&i.MimeTypeID,
 			&i.Name,
+			&i.Kind,
 			&i.Key,
 		); err != nil {
 			return nil, err
@@ -205,22 +226,32 @@ func (q *Queries) GetMimeTypesUseKeysetPaginate(ctx context.Context, arg GetMime
 }
 
 const getMimeTypesUseNumberedPaginate = `-- name: GetMimeTypesUseNumberedPaginate :many
-SELECT m_mime_types_pkey, mime_type_id, name, key FROM m_mime_types
+SELECT m_mime_types_pkey, mime_type_id, name, kind, key FROM m_mime_types
+WHERE
+	CASE WHEN $3::boolean = true THEN m_mime_types.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN name END ASC,
-	CASE WHEN $3::text = 'r_name' THEN name END DESC,
+	CASE WHEN $5::text = 'name' THEN name END ASC,
+	CASE WHEN $5::text = 'r_name' THEN name END DESC,
 	m_mime_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetMimeTypesUseNumberedPaginateParams struct {
-	Limit       int32  `json:"limit"`
-	Offset      int32  `json:"offset"`
-	OrderMethod string `json:"order_method"`
+	Limit         int32  `json:"limit"`
+	Offset        int32  `json:"offset"`
+	WhereLikeName bool   `json:"where_like_name"`
+	SearchName    string `json:"search_name"`
+	OrderMethod   string `json:"order_method"`
 }
 
 func (q *Queries) GetMimeTypesUseNumberedPaginate(ctx context.Context, arg GetMimeTypesUseNumberedPaginateParams) ([]MimeType, error) {
-	rows, err := q.db.Query(ctx, getMimeTypesUseNumberedPaginate, arg.Limit, arg.Offset, arg.OrderMethod)
+	rows, err := q.db.Query(ctx, getMimeTypesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -232,6 +263,7 @@ func (q *Queries) GetMimeTypesUseNumberedPaginate(ctx context.Context, arg GetMi
 			&i.MMimeTypesPkey,
 			&i.MimeTypeID,
 			&i.Name,
+			&i.Kind,
 			&i.Key,
 		); err != nil {
 			return nil, err
@@ -245,7 +277,7 @@ func (q *Queries) GetMimeTypesUseNumberedPaginate(ctx context.Context, arg GetMi
 }
 
 const getPluralMimeTypes = `-- name: GetPluralMimeTypes :many
-SELECT m_mime_types_pkey, mime_type_id, name, key FROM m_mime_types
+SELECT m_mime_types_pkey, mime_type_id, name, kind, key FROM m_mime_types
 WHERE mime_type_id = ANY($3::uuid[])
 ORDER BY
 	m_mime_types_pkey ASC
@@ -271,6 +303,7 @@ func (q *Queries) GetPluralMimeTypes(ctx context.Context, arg GetPluralMimeTypes
 			&i.MMimeTypesPkey,
 			&i.MimeTypeID,
 			&i.Name,
+			&i.Kind,
 			&i.Key,
 		); err != nil {
 			return nil, err
@@ -281,4 +314,65 @@ func (q *Queries) GetPluralMimeTypes(ctx context.Context, arg GetPluralMimeTypes
 		return nil, err
 	}
 	return items, nil
+}
+
+const pluralDeleteMimeTypes = `-- name: PluralDeleteMimeTypes :exec
+DELETE FROM m_mime_types WHERE mime_type_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteMimeTypes(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteMimeTypes, dollar_1)
+	return err
+}
+
+const updateMimeType = `-- name: UpdateMimeType :one
+UPDATE m_mime_types SET name = $2, key = $3, kind = $4 WHERE mime_type_id = $1 RETURNING m_mime_types_pkey, mime_type_id, name, kind, key
+`
+
+type UpdateMimeTypeParams struct {
+	MimeTypeID uuid.UUID `json:"mime_type_id"`
+	Name       string    `json:"name"`
+	Key        string    `json:"key"`
+	Kind       string    `json:"kind"`
+}
+
+func (q *Queries) UpdateMimeType(ctx context.Context, arg UpdateMimeTypeParams) (MimeType, error) {
+	row := q.db.QueryRow(ctx, updateMimeType,
+		arg.MimeTypeID,
+		arg.Name,
+		arg.Key,
+		arg.Kind,
+	)
+	var i MimeType
+	err := row.Scan(
+		&i.MMimeTypesPkey,
+		&i.MimeTypeID,
+		&i.Name,
+		&i.Kind,
+		&i.Key,
+	)
+	return i, err
+}
+
+const updateMimeTypeByKey = `-- name: UpdateMimeTypeByKey :one
+UPDATE m_mime_types SET name = $2, kind = $3 WHERE key = $1 RETURNING m_mime_types_pkey, mime_type_id, name, kind, key
+`
+
+type UpdateMimeTypeByKeyParams struct {
+	Key  string `json:"key"`
+	Name string `json:"name"`
+	Kind string `json:"kind"`
+}
+
+func (q *Queries) UpdateMimeTypeByKey(ctx context.Context, arg UpdateMimeTypeByKeyParams) (MimeType, error) {
+	row := q.db.QueryRow(ctx, updateMimeTypeByKey, arg.Key, arg.Name, arg.Kind)
+	var i MimeType
+	err := row.Scan(
+		&i.MMimeTypesPkey,
+		&i.MimeTypeID,
+		&i.Name,
+		&i.Kind,
+		&i.Key,
+	)
+	return i, err
 }

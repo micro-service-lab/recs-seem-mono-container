@@ -65,6 +65,7 @@ func (r iteratorForCreateAttachableItems) Values() ([]interface{}, error) {
 	return []interface{}{
 		r.rows[0].Url,
 		r.rows[0].Size,
+		r.rows[0].OwnerID,
 		r.rows[0].MimeTypeID,
 	}, nil
 }
@@ -74,7 +75,7 @@ func (r iteratorForCreateAttachableItems) Err() error {
 }
 
 func (q *Queries) CreateAttachableItems(ctx context.Context, arg []CreateAttachableItemsParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"t_attachable_items"}, []string{"url", "size", "mime_type_id"}, &iteratorForCreateAttachableItems{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"t_attachable_items"}, []string{"url", "size", "owner_id", "mime_type_id"}, &iteratorForCreateAttachableItems{rows: arg})
 }
 
 // iteratorForCreateAttachedMessages implements pgx.CopyFromSource.
@@ -98,7 +99,7 @@ func (r *iteratorForCreateAttachedMessages) Next() bool {
 func (r iteratorForCreateAttachedMessages) Values() ([]interface{}, error) {
 	return []interface{}{
 		r.rows[0].MessageID,
-		r.rows[0].AttachableItemID,
+		r.rows[0].FileUrl,
 	}, nil
 }
 
@@ -107,7 +108,7 @@ func (r iteratorForCreateAttachedMessages) Err() error {
 }
 
 func (q *Queries) CreateAttachedMessages(ctx context.Context, arg []CreateAttachedMessagesParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"t_attached_messages"}, []string{"message_id", "attachable_item_id"}, &iteratorForCreateAttachedMessages{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"t_attached_messages"}, []string{"message_id", "file_url"}, &iteratorForCreateAttachedMessages{rows: arg})
 }
 
 // iteratorForCreateAttendStatuses implements pgx.CopyFromSource.
@@ -272,7 +273,7 @@ func (r iteratorForCreateChatRooms) Values() ([]interface{}, error) {
 	return []interface{}{
 		r.rows[0].Name,
 		r.rows[0].IsPrivate,
-		r.rows[0].CoverImageID,
+		r.rows[0].CoverImageUrl,
 		r.rows[0].OwnerID,
 		r.rows[0].FromOrganization,
 		r.rows[0].CreatedAt,
@@ -285,7 +286,7 @@ func (r iteratorForCreateChatRooms) Err() error {
 }
 
 func (q *Queries) CreateChatRooms(ctx context.Context, arg []CreateChatRoomsParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"m_chat_rooms"}, []string{"name", "is_private", "cover_image_id", "owner_id", "from_organization", "created_at", "updated_at"}, &iteratorForCreateChatRooms{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"m_chat_rooms"}, []string{"name", "is_private", "cover_image_url", "owner_id", "from_organization", "created_at", "updated_at"}, &iteratorForCreateChatRooms{rows: arg})
 }
 
 // iteratorForCreateEarlyLeavings implements pgx.CopyFromSource.
@@ -624,6 +625,7 @@ func (r iteratorForCreateMembers) Values() ([]interface{}, error) {
 		r.rows[0].AttendStatusID,
 		r.rows[0].GradeID,
 		r.rows[0].GroupID,
+		r.rows[0].ProfileImageUrl,
 		r.rows[0].RoleID,
 		r.rows[0].PersonalOrganizationID,
 		r.rows[0].CreatedAt,
@@ -636,7 +638,7 @@ func (r iteratorForCreateMembers) Err() error {
 }
 
 func (q *Queries) CreateMembers(ctx context.Context, arg []CreateMembersParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"m_members"}, []string{"login_id", "password", "email", "name", "attend_status_id", "grade_id", "group_id", "role_id", "personal_organization_id", "created_at", "updated_at"}, &iteratorForCreateMembers{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"m_members"}, []string{"login_id", "password", "email", "name", "attend_status_id", "grade_id", "group_id", "profile_image_url", "role_id", "personal_organization_id", "created_at", "updated_at"}, &iteratorForCreateMembers{rows: arg})
 }
 
 // iteratorForCreateMessages implements pgx.CopyFromSource.
@@ -697,6 +699,7 @@ func (r iteratorForCreateMimeTypes) Values() ([]interface{}, error) {
 	return []interface{}{
 		r.rows[0].Name,
 		r.rows[0].Key,
+		r.rows[0].Kind,
 	}, nil
 }
 
@@ -705,7 +708,7 @@ func (r iteratorForCreateMimeTypes) Err() error {
 }
 
 func (q *Queries) CreateMimeTypes(ctx context.Context, arg []CreateMimeTypesParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"m_mime_types"}, []string{"name", "key"}, &iteratorForCreateMimeTypes{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"m_mime_types"}, []string{"name", "key", "kind"}, &iteratorForCreateMimeTypes{rows: arg})
 }
 
 // iteratorForCreateOrganizations implements pgx.CopyFromSource.
@@ -730,6 +733,7 @@ func (r iteratorForCreateOrganizations) Values() ([]interface{}, error) {
 	return []interface{}{
 		r.rows[0].Name,
 		r.rows[0].Description,
+		r.rows[0].Color,
 		r.rows[0].IsPersonal,
 		r.rows[0].IsWhole,
 		r.rows[0].ChatRoomID,
@@ -743,7 +747,7 @@ func (r iteratorForCreateOrganizations) Err() error {
 }
 
 func (q *Queries) CreateOrganizations(ctx context.Context, arg []CreateOrganizationsParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"m_organizations"}, []string{"name", "description", "is_personal", "is_whole", "chat_room_id", "created_at", "updated_at"}, &iteratorForCreateOrganizations{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"m_organizations"}, []string{"name", "description", "color", "is_personal", "is_whole", "chat_room_id", "created_at", "updated_at"}, &iteratorForCreateOrganizations{rows: arg})
 }
 
 // iteratorForCreatePermissionAssociations implements pgx.CopyFromSource.
@@ -1177,6 +1181,7 @@ func (r *iteratorForCreateWorkPositions) Next() bool {
 func (r iteratorForCreateWorkPositions) Values() ([]interface{}, error) {
 	return []interface{}{
 		r.rows[0].Name,
+		r.rows[0].OrganizationID,
 		r.rows[0].Description,
 		r.rows[0].CreatedAt,
 		r.rows[0].UpdatedAt,
@@ -1188,5 +1193,5 @@ func (r iteratorForCreateWorkPositions) Err() error {
 }
 
 func (q *Queries) CreateWorkPositions(ctx context.Context, arg []CreateWorkPositionsParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"m_work_positions"}, []string{"name", "description", "created_at", "updated_at"}, &iteratorForCreateWorkPositions{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"m_work_positions"}, []string{"name", "organization_id", "description", "created_at", "updated_at"}, &iteratorForCreateWorkPositions{rows: arg})
 }

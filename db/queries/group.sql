@@ -10,6 +10,9 @@ DELETE FROM m_groups WHERE group_id = $1;
 -- name: DeleteGroupByKey :exec
 DELETE FROM m_groups WHERE key = $1;
 
+-- name: PluralDeleteGroups :exec
+DELETE FROM m_groups WHERE group_id = ANY($1::uuid[]);
+
 -- name: FindGroupByID :one
 SELECT * FROM m_groups WHERE group_id = $1;
 

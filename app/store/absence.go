@@ -27,6 +27,10 @@ type Absence interface {
 	DeleteAbsence(ctx context.Context, absenceID uuid.UUID) error
 	// DeleteAbsenceWithSd SD付きで欠席を削除する。
 	DeleteAbsenceWithSd(ctx context.Context, sd Sd, absenceID uuid.UUID) error
+	// PluralDeleteAbsences 欠席を複数削除する。
+	PluralDeleteAbsences(ctx context.Context, absenceIDs []uuid.UUID) error
+	// PluralDeleteAbsencesWithSd SD付きで欠席を複数削除する。
+	PluralDeleteAbsencesWithSd(ctx context.Context, sd Sd, absenceIDs []uuid.UUID) error
 	// FindAbsenceByID 欠席を取得する。
 	FindAbsenceByID(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error)
 	// FindAbsenceByIDWithSd SD付きで欠席を取得する。

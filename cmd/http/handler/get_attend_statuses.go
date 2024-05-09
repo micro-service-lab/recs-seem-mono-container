@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"reflect"
@@ -13,12 +12,12 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 )
 
-// GetAttendStatues is a handler for getting attend statuses.
-type GetAttendStatues struct {
+// GetAttendStatuses is a handler for getting attend statuses.
+type GetAttendStatuses struct {
 	Service service.ManagerInterface
 }
 
-// GetAttendStatusesParam is a parameter for GetAttendStatues.
+// GetAttendStatusesParam is a parameter for GetAttendStatuses.
 type GetAttendStatusesParam struct {
 	SearchName string                            `queryParam:"search_name"`
 	Order      parameter.AttendStatusOrderMethod `queryParam:"order"`
@@ -29,7 +28,7 @@ type GetAttendStatusesParam struct {
 	WithCount  parameter.WithCount               `queryParam:"with_count"`
 }
 
-var parseFuncMap = map[reflect.Type]queryparam.ParserFunc{
+var getAttendStatusesParseFuncMap = map[reflect.Type]queryparam.ParserFunc{
 	reflect.TypeOf(parameter.AttendStatusOrderMethodName): parameter.ParseAttendStatusOrderMethod,
 	reflect.TypeOf(parameter.Limit(0)):                    parameter.ParseLimitParam,
 	reflect.TypeOf(parameter.Offset(0)):                   parameter.ParseOffsetParam,
@@ -38,13 +37,13 @@ var parseFuncMap = map[reflect.Type]queryparam.ParserFunc{
 	reflect.TypeOf(parameter.WithCount(false)):            parameter.ParseWithCountParam,
 }
 
-func (h *GetAttendStatues) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetAttendStatuses) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	parse := queryparam.NewParser(r.URL.Query())
 	var param GetAttendStatusesParam
 	err := parse.ParseWithOptions(&param, queryparam.Options{
 		TagName: "queryParam",
-		FuncMap: parseFuncMap,
+		FuncMap: getAttendStatusesParseFuncMap,
 	})
 	if err != nil {
 		log.Printf("failed to parse query: %v", err)
@@ -59,7 +58,6 @@ func (h *GetAttendStatues) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	fmt.Printf("param: %+v\n", param)
 	attendStatuses, err := h.Service.GetAttendStatuses(
 		ctx,
 		param.SearchName,

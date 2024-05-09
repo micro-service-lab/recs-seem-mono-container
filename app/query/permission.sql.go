@@ -751,6 +751,15 @@ func (q *Queries) GetPluralPermissionsWithCategory(ctx context.Context, arg GetP
 	return items, nil
 }
 
+const pluralDeletePermissions = `-- name: PluralDeletePermissions :exec
+DELETE FROM m_permissions WHERE permission_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeletePermissions(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeletePermissions, dollar_1)
+	return err
+}
+
 const updatePermission = `-- name: UpdatePermission :one
 UPDATE m_permissions SET name = $2, description = $3, key = $4, permission_category_id = $5 WHERE permission_id = $1 RETURNING m_permissions_pkey, permission_id, name, description, key, permission_category_id
 `

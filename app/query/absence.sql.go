@@ -185,3 +185,12 @@ func (q *Queries) GetPluralAbsences(ctx context.Context, arg GetPluralAbsencesPa
 	}
 	return items, nil
 }
+
+const pluralDeleteAbsences = `-- name: PluralDeleteAbsences :exec
+DELETE FROM t_absences WHERE absence_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteAbsences(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteAbsences, dollar_1)
+	return err
+}

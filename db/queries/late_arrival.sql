@@ -7,6 +7,9 @@ INSERT INTO t_late_arrivals (attendance_id, arrive_time) VALUES ($1, $2) RETURNI
 -- name: DeleteLateArrival :exec
 DELETE FROM t_late_arrivals WHERE late_arrival_id = $1;
 
+-- name: PluralDeleteLateArrivals :exec
+DELETE FROM t_late_arrivals WHERE late_arrival_id = ANY($1::uuid[]);
+
 -- name: FindLateArrivalByID :one
 SELECT * FROM t_late_arrivals WHERE late_arrival_id = $1;
 

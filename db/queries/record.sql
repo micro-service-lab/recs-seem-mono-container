@@ -10,6 +10,12 @@ UPDATE t_records SET record_type_id = $2, title = $3, body = $4, organization_id
 -- name: DeleteRecord :exec
 DELETE FROM t_records WHERE record_id = $1;
 
+-- name: DeleteRecordOnOrganization :exec
+DELETE FROM t_records WHERE organization_id = $1;
+
+-- name: PluralDeleteRecords :exec
+DELETE FROM t_records WHERE record_id = ANY($1::uuid[]);
+
 -- name: FindRecordByID :one
 SELECT * FROM t_records WHERE record_id = $1;
 

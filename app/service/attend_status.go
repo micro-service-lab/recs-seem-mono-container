@@ -33,18 +33,18 @@ type AttendStatus struct {
 	Name string
 }
 
-// AttendStatues 出席状況一覧。
-var AttendStatues = []AttendStatus{
-	{Key: "present", Name: "出席"},
-	{Key: "absent", Name: "欠席"},
-	{Key: "temporarily_absent", Name: "一時退席"},
-	{Key: "go_home", Name: "退室"},
-	{Key: "not_attend", Name: "未出席"},
+// AttendStatuses 出席状況一覧。
+var AttendStatuses = []AttendStatus{
+	{Key: string(AttendStatusKeyPresent), Name: "出席"},
+	{Key: string(AttendStatusKeyAbsent), Name: "欠席"},
+	{Key: string(AttendStatusKeyTemporarilyAbsent), Name: "一時欠席"},
+	{Key: string(AttendStatusKeyGoHome), Name: "退室"},
+	{Key: string(AttendStatusKeyNotAttend), Name: "未出席"},
 }
 
 // ManageAttendStatus 出席状況管理サービス。
 type ManageAttendStatus struct {
-	db store.Store
+	DB store.Store
 }
 
 // CreateAttendStatus 出席状況を作成する。
@@ -53,7 +53,7 @@ func (m *ManageAttendStatus) CreateAttendStatus(ctx context.Context, name, key s
 		Name: name,
 		Key:  key,
 	}
-	e, err := m.db.CreateAttendStatus(ctx, p)
+	e, err := m.DB.CreateAttendStatus(ctx, p)
 	if err != nil {
 		return entity.AttendStatus{}, fmt.Errorf("failed to create attend status: %w", err)
 	}
@@ -64,7 +64,7 @@ func (m *ManageAttendStatus) CreateAttendStatus(ctx context.Context, name, key s
 func (m *ManageAttendStatus) CreateAttendStatuses(
 	ctx context.Context, ps []parameter.CreateAttendStatusParam,
 ) (int64, error) {
-	es, err := m.db.CreateAttendStatuses(ctx, ps)
+	es, err := m.DB.CreateAttendStatuses(ctx, ps)
 	if err != nil {
 		return 0, fmt.Errorf("failed to create attend statuses: %w", err)
 	}
@@ -79,7 +79,7 @@ func (m *ManageAttendStatus) UpdateAttendStatus(
 		Name: name,
 		Key:  key,
 	}
-	e, err := m.db.UpdateAttendStatus(ctx, id, p)
+	e, err := m.DB.UpdateAttendStatus(ctx, id, p)
 	if err != nil {
 		return entity.AttendStatus{}, fmt.Errorf("failed to update attend status: %w", err)
 	}
@@ -88,16 +88,25 @@ func (m *ManageAttendStatus) UpdateAttendStatus(
 
 // DeleteAttendStatus 出席状況を削除する。
 func (m *ManageAttendStatus) DeleteAttendStatus(ctx context.Context, id uuid.UUID) error {
-	err := m.db.DeleteAttendStatus(ctx, id)
+	err := m.DB.DeleteAttendStatus(ctx, id)
 	if err != nil {
 		return fmt.Errorf("failed to delete attend status: %w", err)
 	}
 	return nil
 }
 
+// PluralDeleteAttendStatuses 出席状況を複数削除する。
+func (m *ManageAttendStatus) PluralDeleteAttendStatuses(ctx context.Context, ids []uuid.UUID) error {
+	err := m.DB.PluralDeleteAttendStatuses(ctx, ids)
+	if err != nil {
+		return fmt.Errorf("failed to plural delete attend statuses: %w", err)
+	}
+	return nil
+}
+
 // FindAttendStatusByID 出席状況をIDで取得する。
 func (m *ManageAttendStatus) FindAttendStatusByID(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error) {
-	e, err := m.db.FindAttendStatusByID(ctx, id)
+	e, err := m.DB.FindAttendStatusByID(ctx, id)
 	if err != nil {
 		return entity.AttendStatus{}, fmt.Errorf("failed to find attend status by id: %w", err)
 	}
@@ -106,7 +115,7 @@ func (m *ManageAttendStatus) FindAttendStatusByID(ctx context.Context, id uuid.U
 
 // FindAttendStatusByKey 出席状況をキーで取得する。
 func (m *ManageAttendStatus) FindAttendStatusByKey(ctx context.Context, key string) (entity.AttendStatus, error) {
-	e, err := m.db.FindAttendStatusByKey(ctx, key)
+	e, err := m.DB.FindAttendStatusByKey(ctx, key)
 	if err != nil {
 		return entity.AttendStatus{}, fmt.Errorf("failed to find attend status by key: %w", err)
 	}
@@ -148,7 +157,7 @@ func (m *ManageAttendStatus) GetAttendStatuses(
 		}
 	case parameter.NonePagination:
 	}
-	r, err := m.db.GetAttendStatuses(ctx, where, order, np, cp, wc)
+	r, err := m.DB.GetAttendStatuses(ctx, where, order, np, cp, wc)
 	if err != nil {
 		return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("failed to get attend statuses: %w", err)
 	}
@@ -164,7 +173,7 @@ func (m *ManageAttendStatus) GetAttendStatusesCount(
 		WhereLikeName: whereSearchName != "",
 		SearchName:    whereSearchName,
 	}
-	c, err := m.db.CountAttendStatuses(ctx, p)
+	c, err := m.DB.CountAttendStatuses(ctx, p)
 	if err != nil {
 		return 0, fmt.Errorf("failed to get attend statuses count: %w", err)
 	}

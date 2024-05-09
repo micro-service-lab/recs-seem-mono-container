@@ -7,6 +7,24 @@ INSERT INTO m_role_associations (role_id, policy_id) VALUES ($1, $2) RETURNING *
 -- name: DeleteRoleAssociation :exec
 DELETE FROM m_role_associations WHERE role_id = $1 AND policy_id = $2;
 
+-- name: DeleteRoleAssociationsOnRole :exec
+DELETE FROM m_role_associations WHERE role_id = $1;
+
+-- name: DeleteRoleAssociationsOnRoles :exec
+DELETE FROM m_role_associations WHERE role_id = ANY($1::uuid[]);
+
+-- name: PluralDeleteRoleAssociationsOnRole :exec
+DELETE FROM m_role_associations WHERE role_id = $1 AND policy_id = ANY($2::uuid[]);
+
+-- name: DeleteRoleAssociationsOnPolicy :exec
+DELETE FROM m_role_associations WHERE policy_id = $1;
+
+-- name: DeleteRoleAssociationsOnPolicies :exec
+DELETE FROM m_role_associations WHERE policy_id = ANY($1::uuid[]);
+
+-- name: PluralDeleteRoleAssociationsOnPolicy :exec
+DELETE FROM m_role_associations WHERE policy_id = $1 AND role_id = ANY($2::uuid[]);
+
 -- name: GetPoliciesOnRole :many
 SELECT sqlc.embed(m_role_associations), sqlc.embed(m_policies) FROM m_role_associations
 LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id

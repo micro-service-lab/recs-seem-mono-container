@@ -26,9 +26,21 @@ type Config struct {
 	DBPassword string `env:"DB_PASSWORD"`
 	DBUrl      string `env:"DB_URL,required"`
 
+	// Redis connection
+	RedisHost     string `env:"REDIS_HOST" envDefault:"localhost"`
+	RedisPort     uint16 `env:"REDIS_PORT" envDefault:"6379"`
+	RedisDB       int    `env:"REDIS_DB" envDefault:"0"`
+	RedisPassword string `env:"REDIS_PASSWORD"`
+
 	// AuthSecret 認証トークンの署名用シークレット
 	AuthSecret   string `env:"AUTH_SECRET,required"`
 	SecretIssuer string `env:"SECRET_ISSUER,required"`
+
+	// ClientOrigin クライアントのオリジン
+	ClientOrigin ClientOrigin `env:"CLIENT_ORIGIN"`
+
+	// DebugCORS CORS デバッグモード
+	DebugCORS bool `env:"DEBUG_CORS"`
 
 	AppDebug bool `env:"APP_DEBUG"`
 	// development, staging, production
@@ -38,12 +50,16 @@ type Config struct {
 	// If a truthy value is specified, fix to the default time.
 	FakeTime FakeTimeMode `env:"FAKE_TIME"`
 	LogLevel LogLevel     `env:"LOG_LEVEL,required"`
+
+	CORSMaxAge           int `env:"CORS_MAX_AGE" envDefault:"3600"`
+	ThrottleRequestLimit int `env:"THROTTLE_REQUEST_LIMIT" envDefault:"100"`
 }
 
 var parseFuncMap = map[reflect.Type]env.ParserFunc{
 	reflect.TypeOf(ProductionEnv):  parseEnvironmentMode,
 	reflect.TypeOf(FakeTimeMode{}): parseFakeTimeMode,
 	reflect.TypeOf(InfoLevel):      parseLogLevel,
+	reflect.TypeOf(ClientOrigin{}): parseClientOrigin,
 }
 
 // Get Get application settings from environment variables.

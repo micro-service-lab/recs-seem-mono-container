@@ -7,14 +7,14 @@
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | t_attached_messages_pkey | bigint | nextval('t_attached_messages_t_attached_messages_pkey_seq'::regclass) | false |  |  |  |
+| attached_message_id | uuid | uuid_generate_v4() | false |  |  |  |
 | message_id | uuid |  | true |  | [public.t_messages](public.t_messages.md) |  |
-| attachable_item_id | uuid |  | false |  | [public.t_attachable_items](public.t_attachable_items.md) |  |
+| file_url | text |  | false |  |  |  |
 
 ## Constraints
 
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
-| fk_t_attached_messages_attachable_item_id | FOREIGN KEY | FOREIGN KEY (attachable_item_id) REFERENCES t_attachable_items(attachable_item_id) ON UPDATE RESTRICT ON DELETE RESTRICT |
 | fk_t_attached_messages_message_id | FOREIGN KEY | FOREIGN KEY (message_id) REFERENCES t_messages(message_id) ON UPDATE SET NULL ON DELETE SET NULL |
 | t_attached_messages_pkey | PRIMARY KEY | PRIMARY KEY (t_attached_messages_pkey) |
 
@@ -23,7 +23,7 @@
 | Name | Definition |
 | ---- | ---------- |
 | t_attached_messages_pkey | CREATE UNIQUE INDEX t_attached_messages_pkey ON public.t_attached_messages USING btree (t_attached_messages_pkey) |
-| idx_t_attached_messages_id | CREATE UNIQUE INDEX idx_t_attached_messages_id ON public.t_attached_messages USING btree (message_id, attachable_item_id) |
+| idx_t_attached_messages_id | CREATE UNIQUE INDEX idx_t_attached_messages_id ON public.t_attached_messages USING btree (attached_message_id) |
 
 ## Relations
 

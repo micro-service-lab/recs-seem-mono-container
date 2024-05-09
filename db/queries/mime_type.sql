@@ -1,14 +1,23 @@
 -- name: CreateMimeTypes :copyfrom
-INSERT INTO m_mime_types (name, key) VALUES ($1, $2);
+INSERT INTO m_mime_types (name, key, kind) VALUES ($1, $2, $3);
 
 -- name: CreateMimeType :one
-INSERT INTO m_mime_types (name, key) VALUES ($1, $2) RETURNING *;
+INSERT INTO m_mime_types (name, key, kind) VALUES ($1, $2, $3) RETURNING *;
+
+-- name: UpdateMimeType :one
+UPDATE m_mime_types SET name = $2, key = $3, kind = $4 WHERE mime_type_id = $1 RETURNING *;
+
+-- name: UpdateMimeTypeByKey :one
+UPDATE m_mime_types SET name = $2, kind = $3 WHERE key = $1 RETURNING *;
 
 -- name: DeleteMimeType :exec
 DELETE FROM m_mime_types WHERE mime_type_id = $1;
 
 -- name: DeleteMimeTypeByKey :exec
 DELETE FROM m_mime_types WHERE key = $1;
+
+-- name: PluralDeleteMimeTypes :exec
+DELETE FROM m_mime_types WHERE mime_type_id = ANY($1::uuid[]);
 
 -- name: FindMimeTypeByID :one
 SELECT * FROM m_mime_types WHERE mime_type_id = $1;
@@ -18,6 +27,8 @@ SELECT * FROM m_mime_types WHERE key = $1;
 
 -- name: GetMimeTypes :many
 SELECT * FROM m_mime_types
+WHERE
+	CASE WHEN @where_like_name::boolean = true THEN m_mime_types.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
@@ -25,6 +36,8 @@ ORDER BY
 
 -- name: GetMimeTypesUseNumberedPaginate :many
 SELECT * FROM m_mime_types
+WHERE
+	CASE WHEN @where_like_name::boolean = true THEN m_mime_types.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
@@ -34,6 +47,8 @@ LIMIT $1 OFFSET $2;
 -- name: GetMimeTypesUseKeysetPaginate :many
 SELECT * FROM m_mime_types
 WHERE
+	CASE WHEN @where_like_name::boolean = true THEN m_mime_types.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
+AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text

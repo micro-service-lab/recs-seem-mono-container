@@ -10,6 +10,9 @@ UPDATE m_roles SET name = $2, description = $3, updated_at = $4 WHERE role_id = 
 -- name: DeleteRole :exec
 DELETE FROM m_roles WHERE role_id = $1;
 
+-- name: PluralDeleteRoles :exec
+DELETE FROM m_roles WHERE role_id = ANY($1::uuid[]);
+
 -- name: FindRoleByID :one
 SELECT * FROM m_roles WHERE role_id = $1;
 

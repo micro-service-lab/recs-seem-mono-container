@@ -3,6 +3,7 @@ CREATE TABLE m_organizations (
     organization_id UUID NOT NULL DEFAULT uuid_generate_v4(),
     name VARCHAR(255) NOT NULL,
 	description TEXT,
+	color VARCHAR(7),
 	is_personal BOOLEAN NOT NULL DEFAULT FALSE,
 	is_whole BOOLEAN NOT NULL DEFAULT FALSE,
 	created_at TIMESTAMPTZ NOT NULL,

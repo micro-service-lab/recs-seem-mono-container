@@ -226,3 +226,12 @@ func (q *Queries) GetPluralLateArrivals(ctx context.Context, arg GetPluralLateAr
 	}
 	return items, nil
 }
+
+const pluralDeleteLateArrivals = `-- name: PluralDeleteLateArrivals :exec
+DELETE FROM t_late_arrivals WHERE late_arrival_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteLateArrivals(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteLateArrivals, dollar_1)
+	return err
+}

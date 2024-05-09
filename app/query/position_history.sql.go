@@ -110,7 +110,7 @@ func (q *Queries) FindPositionHistoryByID(ctx context.Context, positionHistoryID
 }
 
 const findPositionHistoryByIDWithMember = `-- name: FindPositionHistoryByIDWithMember :one
-SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.sent_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
+SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.sent_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
 LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE position_history_id = $1
 `
@@ -137,7 +137,7 @@ func (q *Queries) FindPositionHistoryByIDWithMember(ctx context.Context, positio
 		&i.Member.Email,
 		&i.Member.Name,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageID,
+		&i.Member.ProfileImageUrl,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -189,7 +189,7 @@ func (q *Queries) GetPluralPositionHistories(ctx context.Context, arg GetPluralP
 }
 
 const getPluralPositionHistoriesWithMember = `-- name: GetPluralPositionHistoriesWithMember :many
-SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.sent_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
+SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.sent_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
 LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE position_history_id = ANY($3::uuid[])
 ORDER BY
@@ -231,7 +231,7 @@ func (q *Queries) GetPluralPositionHistoriesWithMember(ctx context.Context, arg 
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
+			&i.Member.ProfileImageUrl,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -459,7 +459,7 @@ func (q *Queries) GetPositionHistoriesUseNumberedPaginate(ctx context.Context, a
 }
 
 const getPositionHistoriesWithMember = `-- name: GetPositionHistoriesWithMember :many
-SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.sent_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
+SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.sent_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
 LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE
 	CASE WHEN $1::boolean = true THEN member_id = ANY($2::uuid[]) ELSE TRUE END
@@ -519,7 +519,7 @@ func (q *Queries) GetPositionHistoriesWithMember(ctx context.Context, arg GetPos
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
+			&i.Member.ProfileImageUrl,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -538,7 +538,7 @@ func (q *Queries) GetPositionHistoriesWithMember(ctx context.Context, arg GetPos
 }
 
 const getPositionHistoriesWithMemberUseKeysetPaginate = `-- name: GetPositionHistoriesWithMemberUseKeysetPaginate :many
-SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.sent_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
+SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.sent_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
 LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE
 	CASE WHEN $2::boolean = true THEN member_id = ANY($3::uuid[]) ELSE TRUE END
@@ -625,7 +625,7 @@ func (q *Queries) GetPositionHistoriesWithMemberUseKeysetPaginate(ctx context.Co
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
+			&i.Member.ProfileImageUrl,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -644,7 +644,7 @@ func (q *Queries) GetPositionHistoriesWithMemberUseKeysetPaginate(ctx context.Co
 }
 
 const getPositionHistoriesWithMemberUseNumberedPaginate = `-- name: GetPositionHistoriesWithMemberUseNumberedPaginate :many
-SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.sent_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
+SELECT t_position_histories.t_position_histories_pkey, t_position_histories.position_history_id, t_position_histories.member_id, t_position_histories.x_pos, t_position_histories.y_pos, t_position_histories.sent_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_position_histories
 LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN member_id = ANY($4::uuid[]) ELSE TRUE END
@@ -709,7 +709,7 @@ func (q *Queries) GetPositionHistoriesWithMemberUseNumberedPaginate(ctx context.
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
+			&i.Member.ProfileImageUrl,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -725,6 +725,15 @@ func (q *Queries) GetPositionHistoriesWithMemberUseNumberedPaginate(ctx context.
 		return nil, err
 	}
 	return items, nil
+}
+
+const pluralDeletePositionHistories = `-- name: PluralDeletePositionHistories :exec
+DELETE FROM t_position_histories WHERE position_history_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeletePositionHistories(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeletePositionHistories, dollar_1)
+	return err
 }
 
 const updatePositionHistory = `-- name: UpdatePositionHistory :one

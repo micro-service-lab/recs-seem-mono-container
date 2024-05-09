@@ -32,6 +32,10 @@ type AttendStatus interface {
 	DeleteAttendStatusByKey(ctx context.Context, key string) error
 	// DeleteAttendStatusByKeyWithSd SD付きで出席ステータスを削除する。
 	DeleteAttendStatusByKeyWithSd(ctx context.Context, sd Sd, key string) error
+	// PluralDeleteAttendStatuses 出席ステータスを複数削除する。
+	PluralDeleteAttendStatuses(ctx context.Context, attendStatusIDs []uuid.UUID) error
+	// PluralDeleteAttendStatusesWithSd SD付きで出席ステータスを複数削除する。
+	PluralDeleteAttendStatusesWithSd(ctx context.Context, sd Sd, attendStatusIDs []uuid.UUID) error
 	// FindAttendStatusByID 出席ステータスを取得する。
 	FindAttendStatusByID(ctx context.Context, attendStatusID uuid.UUID) (entity.AttendStatus, error)
 	// FindAttendStatusByIDWithSd SD付きで出席ステータスを取得する。

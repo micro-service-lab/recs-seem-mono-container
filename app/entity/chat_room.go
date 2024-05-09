@@ -8,6 +8,6 @@ type ChatRoom struct {
 	Name             String    `json:"name"`
 	IsPrivate        bool      `json:"is_private"`
 	FromOrganization bool      `json:"from_organization"`
-	CoverImageID     UUID      `json:"cover_image_id"`
+	CoverImageURL    String    `json:"cover_image_url"`
 	OwnerID          UUID      `json:"owner_id"`
 }

@@ -10,15 +10,15 @@
 | [public.m_roles](public.m_roles.md) | 6 |  | BASE TABLE |
 | [public.m_role_associations](public.m_role_associations.md) | 3 |  | BASE TABLE |
 | [public.m_attend_statuses](public.m_attend_statuses.md) | 4 |  | BASE TABLE |
-| [public.m_organizations](public.m_organizations.md) | 9 |  | BASE TABLE |
+| [public.m_organizations](public.m_organizations.md) | 10 |  | BASE TABLE |
 | [public.m_permission_categories](public.m_permission_categories.md) | 5 |  | BASE TABLE |
-| [public.m_work_positions](public.m_work_positions.md) | 6 |  | BASE TABLE |
+| [public.m_work_positions](public.m_work_positions.md) | 7 |  | BASE TABLE |
 | [public.m_permissions](public.m_permissions.md) | 6 |  | BASE TABLE |
 | [public.m_permission_associations](public.m_permission_associations.md) | 3 |  | BASE TABLE |
 | [public.m_groups](public.m_groups.md) | 4 |  | BASE TABLE |
 | [public.m_grades](public.m_grades.md) | 4 |  | BASE TABLE |
 | [public.m_mime_types](public.m_mime_types.md) | 4 |  | BASE TABLE |
-| [public.t_attachable_items](public.t_attachable_items.md) | 5 |  | BASE TABLE |
+| [public.t_attachable_items](public.t_attachable_items.md) | 6 |  | BASE TABLE |
 | [public.t_images](public.t_images.md) | 5 |  | BASE TABLE |
 | [public.t_files](public.t_files.md) | 3 |  | BASE TABLE |
 | [public.m_members](public.m_members.md) | 14 |  | BASE TABLE |
@@ -38,7 +38,7 @@
 | [public.m_chat_room_belongings](public.m_chat_room_belongings.md) | 4 |  | BASE TABLE |
 | [public.m_record_types](public.m_record_types.md) | 4 |  | BASE TABLE |
 | [public.t_records](public.t_records.md) | 10 |  | BASE TABLE |
-| [public.t_attached_messages](public.t_attached_messages.md) | 3 |  | BASE TABLE |
+| [public.t_attached_messages](public.t_attached_messages.md) | 4 |  | BASE TABLE |
 
 ## Stored procedures and functions
 

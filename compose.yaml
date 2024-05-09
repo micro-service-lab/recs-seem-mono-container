@@ -3,6 +3,7 @@ services:
     container_name: mono-api
     ports:
       - 8080:${PORT}
+      - 2345:${DEBUGGING_PORT}
     build:
       context: .
       dockerfile: Dockerfile
@@ -20,6 +21,13 @@ services:
       - POSTGRES_DB=${DB_NAME}
     volumes:
       - db-data:/var/lib/postgresql/data
+  mono-redis:
+    container_name: mono-redis
+    build:
+      context: ./redis
+    volumes:
+      - redisdata:/data
 
 volumes:
   db-data:
+  redisdata:

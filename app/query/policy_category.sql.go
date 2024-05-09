@@ -316,6 +316,15 @@ func (q *Queries) GetPolicyCategoriesUseNumberedPaginate(ctx context.Context, ar
 	return items, nil
 }
 
+const pluralDeletePolicyCategories = `-- name: PluralDeletePolicyCategories :exec
+DELETE FROM m_policy_categories WHERE policy_category_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeletePolicyCategories(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeletePolicyCategories, dollar_1)
+	return err
+}
+
 const updatePolicyCategory = `-- name: UpdatePolicyCategory :one
 UPDATE m_policy_categories SET name = $2, description = $3, key = $4 WHERE policy_category_id = $1 RETURNING m_policy_categories_pkey, policy_category_id, name, description, key
 `

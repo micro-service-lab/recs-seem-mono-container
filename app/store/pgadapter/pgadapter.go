@@ -30,7 +30,12 @@ var _ store.Store = (*PgAdapter)(nil)
 
 // NewPgAdapter creates a new PgAdapter.
 func NewPgAdapter(ctx context.Context, clocker clock.Clock, cfg config.Config) (*PgAdapter, error) {
-	poolConfig, err := pgxpool.ParseConfig(cfg.DBUrl)
+	return NewPgAdapterFromConnStr(ctx, cfg.DBUrl, clocker)
+}
+
+// NewPgAdapterFromConnStr creates a new PgAdapter from a connection string.
+func NewPgAdapterFromConnStr(ctx context.Context, connStr string, clocker clock.Clock) (*PgAdapter, error) {
+	poolConfig, err := pgxpool.ParseConfig(connStr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse config: %w", err)
 	}

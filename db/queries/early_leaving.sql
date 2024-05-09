@@ -7,6 +7,9 @@ INSERT INTO t_early_leavings (attendance_id, leave_time) VALUES ($1, $2) RETURNI
 -- name: DeleteEarlyLeaving :exec
 DELETE FROM t_early_leavings WHERE early_leaving_id = $1;
 
+-- name: PluralDeleteEarlyLeavings :exec
+DELETE FROM t_early_leavings WHERE early_leaving_id = ANY($1::uuid[]);
+
 -- name: FindEarlyLeavingByID :one
 SELECT * FROM t_early_leavings WHERE early_leaving_id = $1;
 

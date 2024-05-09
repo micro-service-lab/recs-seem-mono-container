@@ -54,7 +54,7 @@ func (q *Queries) FindFileByID(ctx context.Context, fileID uuid.UUID) (File, err
 }
 
 const findFileByIDWithAttachableItem = `-- name: FindFileByIDWithAttachableItem :one
-SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_files
+SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_attachable_items.owner_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.kind, m_mime_types.key FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE file_id = $1
@@ -78,9 +78,11 @@ func (q *Queries) FindFileByIDWithAttachableItem(ctx context.Context, fileID uui
 		&i.AttachableItem.Url,
 		&i.AttachableItem.Size,
 		&i.AttachableItem.MimeTypeID,
+		&i.AttachableItem.OwnerID,
 		&i.MimeType.MMimeTypesPkey,
 		&i.MimeType.MimeTypeID,
 		&i.MimeType.Name,
+		&i.MimeType.Kind,
 		&i.MimeType.Key,
 	)
 	return i, err
@@ -186,7 +188,7 @@ func (q *Queries) GetFilesUseNumberedPaginate(ctx context.Context, arg GetFilesU
 }
 
 const getFilesWithAttachableItem = `-- name: GetFilesWithAttachableItem :many
-SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_files
+SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_attachable_items.owner_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.kind, m_mime_types.key FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
@@ -217,9 +219,11 @@ func (q *Queries) GetFilesWithAttachableItem(ctx context.Context) ([]GetFilesWit
 			&i.AttachableItem.Url,
 			&i.AttachableItem.Size,
 			&i.AttachableItem.MimeTypeID,
+			&i.AttachableItem.OwnerID,
 			&i.MimeType.MMimeTypesPkey,
 			&i.MimeType.MimeTypeID,
 			&i.MimeType.Name,
+			&i.MimeType.Kind,
 			&i.MimeType.Key,
 		); err != nil {
 			return nil, err
@@ -233,7 +237,7 @@ func (q *Queries) GetFilesWithAttachableItem(ctx context.Context) ([]GetFilesWit
 }
 
 const getFilesWithAttachableItemUseKeysetPaginate = `-- name: GetFilesWithAttachableItemUseKeysetPaginate :many
-SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_files
+SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_attachable_items.owner_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.kind, m_mime_types.key FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE
@@ -279,9 +283,11 @@ func (q *Queries) GetFilesWithAttachableItemUseKeysetPaginate(ctx context.Contex
 			&i.AttachableItem.Url,
 			&i.AttachableItem.Size,
 			&i.AttachableItem.MimeTypeID,
+			&i.AttachableItem.OwnerID,
 			&i.MimeType.MMimeTypesPkey,
 			&i.MimeType.MimeTypeID,
 			&i.MimeType.Name,
+			&i.MimeType.Kind,
 			&i.MimeType.Key,
 		); err != nil {
 			return nil, err
@@ -295,7 +301,7 @@ func (q *Queries) GetFilesWithAttachableItemUseKeysetPaginate(ctx context.Contex
 }
 
 const getFilesWithAttachableItemUseNumberedPaginate = `-- name: GetFilesWithAttachableItemUseNumberedPaginate :many
-SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_files
+SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_attachable_items.owner_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.kind, m_mime_types.key FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
@@ -332,9 +338,11 @@ func (q *Queries) GetFilesWithAttachableItemUseNumberedPaginate(ctx context.Cont
 			&i.AttachableItem.Url,
 			&i.AttachableItem.Size,
 			&i.AttachableItem.MimeTypeID,
+			&i.AttachableItem.OwnerID,
 			&i.MimeType.MMimeTypesPkey,
 			&i.MimeType.MimeTypeID,
 			&i.MimeType.Name,
+			&i.MimeType.Kind,
 			&i.MimeType.Key,
 		); err != nil {
 			return nil, err
@@ -382,7 +390,7 @@ func (q *Queries) GetPluralFiles(ctx context.Context, arg GetPluralFilesParams) 
 }
 
 const getPluralFilesWithAttachableItem = `-- name: GetPluralFilesWithAttachableItem :many
-SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.key FROM t_files
+SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.t_attachable_items_pkey, t_attachable_items.attachable_item_id, t_attachable_items.url, t_attachable_items.size, t_attachable_items.mime_type_id, t_attachable_items.owner_id, m_mime_types.m_mime_types_pkey, m_mime_types.mime_type_id, m_mime_types.name, m_mime_types.kind, m_mime_types.key FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE attachable_item_id = ANY($3::uuid[])
@@ -421,9 +429,11 @@ func (q *Queries) GetPluralFilesWithAttachableItem(ctx context.Context, arg GetP
 			&i.AttachableItem.Url,
 			&i.AttachableItem.Size,
 			&i.AttachableItem.MimeTypeID,
+			&i.AttachableItem.OwnerID,
 			&i.MimeType.MMimeTypesPkey,
 			&i.MimeType.MimeTypeID,
 			&i.MimeType.Name,
+			&i.MimeType.Kind,
 			&i.MimeType.Key,
 		); err != nil {
 			return nil, err
@@ -434,4 +444,13 @@ func (q *Queries) GetPluralFilesWithAttachableItem(ctx context.Context, arg GetP
 		return nil, err
 	}
 	return items, nil
+}
+
+const pluralDeleteFiles = `-- name: PluralDeleteFiles :exec
+DELETE FROM t_files WHERE file_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteFiles(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteFiles, dollar_1)
+	return err
 }

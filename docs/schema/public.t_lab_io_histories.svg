@@ -64,8 +64,8 @@
 <text text-anchor="start" x="577" y="-263.9" font-family="Arial" font-size="14.00" fill="#000000">attend_status_id    </text>
 <text text-anchor="start" x="713.9172" y="-263.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
 <polygon fill="none" stroke="#000000" points="570,-222.5 570,-252.5 863,-252.5 863,-222.5 570,-222.5"/>
-<text text-anchor="start" x="577" y="-233.9" font-family="Arial" font-size="14.00" fill="#000000">profile_image_id    </text>
-<text text-anchor="start" x="713.8864" y="-233.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<text text-anchor="start" x="577" y="-233.9" font-family="Arial" font-size="14.00" fill="#000000">profile_image_url    </text>
+<text text-anchor="start" x="718.547" y="-233.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
 <polygon fill="none" stroke="#000000" points="570,-192.5 570,-222.5 863,-222.5 863,-192.5 570,-192.5"/>
 <text text-anchor="start" x="577" y="-203.9" font-family="Arial" font-size="14.00" fill="#000000">grade_id    </text>
 <text text-anchor="start" x="665.6676" y="-203.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>

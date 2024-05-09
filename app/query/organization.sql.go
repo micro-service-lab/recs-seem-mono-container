@@ -20,7 +20,7 @@ WHERE
 AND
 	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
 AND
 	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -57,12 +57,13 @@ func (q *Queries) CountOrganizations(ctx context.Context, arg CountOrganizations
 }
 
 const createOrganization = `-- name: CreateOrganization :one
-INSERT INTO m_organizations (name, description, is_personal, is_whole, chat_room_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING m_organizations_pkey, organization_id, name, description, is_personal, is_whole, created_at, updated_at, chat_room_id
+INSERT INTO m_organizations (name, description, color, is_personal, is_whole, chat_room_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id
 `
 
 type CreateOrganizationParams struct {
 	Name        string      `json:"name"`
 	Description pgtype.Text `json:"description"`
+	Color       pgtype.Text `json:"color"`
 	IsPersonal  bool        `json:"is_personal"`
 	IsWhole     bool        `json:"is_whole"`
 	ChatRoomID  pgtype.UUID `json:"chat_room_id"`
@@ -74,6 +75,7 @@ func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganization
 	row := q.db.QueryRow(ctx, createOrganization,
 		arg.Name,
 		arg.Description,
+		arg.Color,
 		arg.IsPersonal,
 		arg.IsWhole,
 		arg.ChatRoomID,
@@ -86,6 +88,7 @@ func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganization
 		&i.OrganizationID,
 		&i.Name,
 		&i.Description,
+		&i.Color,
 		&i.IsPersonal,
 		&i.IsWhole,
 		&i.CreatedAt,
@@ -98,6 +101,7 @@ func (q *Queries) CreateOrganization(ctx context.Context, arg CreateOrganization
 type CreateOrganizationsParams struct {
 	Name        string      `json:"name"`
 	Description pgtype.Text `json:"description"`
+	Color       pgtype.Text `json:"color"`
 	IsPersonal  bool        `json:"is_personal"`
 	IsWhole     bool        `json:"is_whole"`
 	ChatRoomID  pgtype.UUID `json:"chat_room_id"`
@@ -115,7 +119,7 @@ func (q *Queries) DeleteOrganization(ctx context.Context, organizationID uuid.UU
 }
 
 const findOrganizationByID = `-- name: FindOrganizationByID :one
-SELECT m_organizations_pkey, organization_id, name, description, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations WHERE organization_id = $1
+SELECT m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations WHERE organization_id = $1
 `
 
 func (q *Queries) FindOrganizationByID(ctx context.Context, organizationID uuid.UUID) (Organization, error) {
@@ -126,6 +130,7 @@ func (q *Queries) FindOrganizationByID(ctx context.Context, organizationID uuid.
 		&i.OrganizationID,
 		&i.Name,
 		&i.Description,
+		&i.Color,
 		&i.IsPersonal,
 		&i.IsWhole,
 		&i.CreatedAt,
@@ -136,7 +141,7 @@ func (q *Queries) FindOrganizationByID(ctx context.Context, organizationID uuid.
 }
 
 const findOrganizationByIDWithAll = `-- name: FindOrganizationByIDWithAll :one
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
@@ -158,6 +163,7 @@ func (q *Queries) FindOrganizationByIDWithAll(ctx context.Context, organizationI
 		&i.Organization.OrganizationID,
 		&i.Organization.Name,
 		&i.Organization.Description,
+		&i.Organization.Color,
 		&i.Organization.IsPersonal,
 		&i.Organization.IsWhole,
 		&i.Organization.CreatedAt,
@@ -175,7 +181,7 @@ func (q *Queries) FindOrganizationByIDWithAll(ctx context.Context, organizationI
 		&i.ChatRoom.ChatRoomID,
 		&i.ChatRoom.Name,
 		&i.ChatRoom.IsPrivate,
-		&i.ChatRoom.CoverImageID,
+		&i.ChatRoom.CoverImageUrl,
 		&i.ChatRoom.OwnerID,
 		&i.ChatRoom.FromOrganization,
 		&i.ChatRoom.CreatedAt,
@@ -185,7 +191,7 @@ func (q *Queries) FindOrganizationByIDWithAll(ctx context.Context, organizationI
 }
 
 const findOrganizationByIDWithChatRoom = `-- name: FindOrganizationByIDWithChatRoom :one
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
 WHERE m_organizations.organization_id = $1
 `
@@ -195,6 +201,7 @@ type FindOrganizationByIDWithChatRoomRow struct {
 	OrganizationID     uuid.UUID   `json:"organization_id"`
 	Name               string      `json:"name"`
 	Description        pgtype.Text `json:"description"`
+	Color              pgtype.Text `json:"color"`
 	IsPersonal         bool        `json:"is_personal"`
 	IsWhole            bool        `json:"is_whole"`
 	CreatedAt          time.Time   `json:"created_at"`
@@ -211,6 +218,7 @@ func (q *Queries) FindOrganizationByIDWithChatRoom(ctx context.Context, organiza
 		&i.OrganizationID,
 		&i.Name,
 		&i.Description,
+		&i.Color,
 		&i.IsPersonal,
 		&i.IsWhole,
 		&i.CreatedAt,
@@ -220,7 +228,7 @@ func (q *Queries) FindOrganizationByIDWithChatRoom(ctx context.Context, organiza
 		&i.ChatRoom.ChatRoomID,
 		&i.ChatRoom.Name,
 		&i.ChatRoom.IsPrivate,
-		&i.ChatRoom.CoverImageID,
+		&i.ChatRoom.CoverImageUrl,
 		&i.ChatRoom.OwnerID,
 		&i.ChatRoom.FromOrganization,
 		&i.ChatRoom.CreatedAt,
@@ -230,7 +238,7 @@ func (q *Queries) FindOrganizationByIDWithChatRoom(ctx context.Context, organiza
 }
 
 const findOrganizationByIDWithDetail = `-- name: FindOrganizationByIDWithDetail :one
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE m_organizations.organization_id = $1
@@ -250,6 +258,7 @@ func (q *Queries) FindOrganizationByIDWithDetail(ctx context.Context, organizati
 		&i.Organization.OrganizationID,
 		&i.Organization.Name,
 		&i.Organization.Description,
+		&i.Organization.Color,
 		&i.Organization.IsPersonal,
 		&i.Organization.IsWhole,
 		&i.Organization.CreatedAt,
@@ -268,7 +277,7 @@ func (q *Queries) FindOrganizationByIDWithDetail(ctx context.Context, organizati
 }
 
 const findPersonalOrganization = `-- name: FindPersonalOrganization :one
-SELECT m_organizations_pkey, organization_id, m_organizations.name, description, is_personal, is_whole, m_organizations.created_at, m_organizations.updated_at, chat_room_id, m_members_pkey, member_id, login_id, password, email, m_members.name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, m_members.created_at, m_members.updated_at FROM m_organizations
+SELECT m_organizations_pkey, organization_id, m_organizations.name, description, color, is_personal, is_whole, m_organizations.created_at, m_organizations.updated_at, chat_room_id, m_members_pkey, member_id, login_id, password, email, m_members.name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, m_members.created_at, m_members.updated_at FROM m_organizations
 LEFT JOIN m_members ON m_organizations.organization_id = m_members.personal_organization_id
 WHERE m_organizations.is_personal = true AND m_members.member_id = $1
 `
@@ -278,6 +287,7 @@ type FindPersonalOrganizationRow struct {
 	OrganizationID         uuid.UUID          `json:"organization_id"`
 	Name                   string             `json:"name"`
 	Description            pgtype.Text        `json:"description"`
+	Color                  pgtype.Text        `json:"color"`
 	IsPersonal             bool               `json:"is_personal"`
 	IsWhole                bool               `json:"is_whole"`
 	CreatedAt              time.Time          `json:"created_at"`
@@ -290,7 +300,7 @@ type FindPersonalOrganizationRow struct {
 	Email                  pgtype.Text        `json:"email"`
 	Name_2                 pgtype.Text        `json:"name_2"`
 	AttendStatusID         pgtype.UUID        `json:"attend_status_id"`
-	ProfileImageID         pgtype.UUID        `json:"profile_image_id"`
+	ProfileImageUrl        pgtype.Text        `json:"profile_image_url"`
 	GradeID                pgtype.UUID        `json:"grade_id"`
 	GroupID                pgtype.UUID        `json:"group_id"`
 	PersonalOrganizationID pgtype.UUID        `json:"personal_organization_id"`
@@ -307,6 +317,7 @@ func (q *Queries) FindPersonalOrganization(ctx context.Context, memberID uuid.UU
 		&i.OrganizationID,
 		&i.Name,
 		&i.Description,
+		&i.Color,
 		&i.IsPersonal,
 		&i.IsWhole,
 		&i.CreatedAt,
@@ -319,7 +330,7 @@ func (q *Queries) FindPersonalOrganization(ctx context.Context, memberID uuid.UU
 		&i.Email,
 		&i.Name_2,
 		&i.AttendStatusID,
-		&i.ProfileImageID,
+		&i.ProfileImageUrl,
 		&i.GradeID,
 		&i.GroupID,
 		&i.PersonalOrganizationID,
@@ -331,7 +342,7 @@ func (q *Queries) FindPersonalOrganization(ctx context.Context, memberID uuid.UU
 }
 
 const findWholeOrganization = `-- name: FindWholeOrganization :one
-SELECT m_organizations_pkey, organization_id, name, description, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations WHERE is_whole = true
+SELECT m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations WHERE is_whole = true
 `
 
 func (q *Queries) FindWholeOrganization(ctx context.Context) (Organization, error) {
@@ -342,6 +353,7 @@ func (q *Queries) FindWholeOrganization(ctx context.Context) (Organization, erro
 		&i.OrganizationID,
 		&i.Name,
 		&i.Description,
+		&i.Color,
 		&i.IsPersonal,
 		&i.IsWhole,
 		&i.CreatedAt,
@@ -352,7 +364,7 @@ func (q *Queries) FindWholeOrganization(ctx context.Context) (Organization, erro
 }
 
 const findWholeOrganizationWithChatRoom = `-- name: FindWholeOrganizationWithChatRoom :one
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
 WHERE m_organizations.is_whole = true
 `
@@ -362,6 +374,7 @@ type FindWholeOrganizationWithChatRoomRow struct {
 	OrganizationID     uuid.UUID   `json:"organization_id"`
 	Name               string      `json:"name"`
 	Description        pgtype.Text `json:"description"`
+	Color              pgtype.Text `json:"color"`
 	IsPersonal         bool        `json:"is_personal"`
 	IsWhole            bool        `json:"is_whole"`
 	CreatedAt          time.Time   `json:"created_at"`
@@ -378,6 +391,7 @@ func (q *Queries) FindWholeOrganizationWithChatRoom(ctx context.Context) (FindWh
 		&i.OrganizationID,
 		&i.Name,
 		&i.Description,
+		&i.Color,
 		&i.IsPersonal,
 		&i.IsWhole,
 		&i.CreatedAt,
@@ -387,7 +401,7 @@ func (q *Queries) FindWholeOrganizationWithChatRoom(ctx context.Context) (FindWh
 		&i.ChatRoom.ChatRoomID,
 		&i.ChatRoom.Name,
 		&i.ChatRoom.IsPrivate,
-		&i.ChatRoom.CoverImageID,
+		&i.ChatRoom.CoverImageUrl,
 		&i.ChatRoom.OwnerID,
 		&i.ChatRoom.FromOrganization,
 		&i.ChatRoom.CreatedAt,
@@ -397,13 +411,13 @@ func (q *Queries) FindWholeOrganizationWithChatRoom(ctx context.Context) (FindWh
 }
 
 const getOrganizations = `-- name: GetOrganizations :many
-SELECT m_organizations_pkey, organization_id, name, description, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations
+SELECT m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations
 WHERE
 	CASE WHEN $1::boolean = true THEN m_organizations.name LIKE '%' || $2::text || '%' END
 AND
 	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
 AND
 	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -452,6 +466,7 @@ func (q *Queries) GetOrganizations(ctx context.Context, arg GetOrganizationsPara
 			&i.OrganizationID,
 			&i.Name,
 			&i.Description,
+			&i.Color,
 			&i.IsPersonal,
 			&i.IsWhole,
 			&i.CreatedAt,
@@ -469,13 +484,13 @@ func (q *Queries) GetOrganizations(ctx context.Context, arg GetOrganizationsPara
 }
 
 const getOrganizationsUseKeysetPaginate = `-- name: GetOrganizationsUseKeysetPaginate :many
-SELECT m_organizations_pkey, organization_id, name, description, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations
+SELECT m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations
 WHERE
 	CASE WHEN $2::boolean = true THEN m_organizations.name LIKE '%' || $3::text || '%' END
 AND
 	CASE WHEN $4::boolean = true THEN m_organizations.is_whole = $5 END
 AND
-	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
+	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
 AND
 	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -551,6 +566,7 @@ func (q *Queries) GetOrganizationsUseKeysetPaginate(ctx context.Context, arg Get
 			&i.OrganizationID,
 			&i.Name,
 			&i.Description,
+			&i.Color,
 			&i.IsPersonal,
 			&i.IsWhole,
 			&i.CreatedAt,
@@ -568,13 +584,13 @@ func (q *Queries) GetOrganizationsUseKeysetPaginate(ctx context.Context, arg Get
 }
 
 const getOrganizationsUseNumberedPaginate = `-- name: GetOrganizationsUseNumberedPaginate :many
-SELECT m_organizations_pkey, organization_id, name, description, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations
+SELECT m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations
 WHERE
 	CASE WHEN $3::boolean = true THEN m_organizations.name LIKE '%' || $4::text || '%' END
 AND
 	CASE WHEN $5::boolean = true THEN m_organizations.is_whole = $6 END
 AND
-	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
+	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
 AND
 	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -628,6 +644,7 @@ func (q *Queries) GetOrganizationsUseNumberedPaginate(ctx context.Context, arg G
 			&i.OrganizationID,
 			&i.Name,
 			&i.Description,
+			&i.Color,
 			&i.IsPersonal,
 			&i.IsWhole,
 			&i.CreatedAt,
@@ -645,7 +662,7 @@ func (q *Queries) GetOrganizationsUseNumberedPaginate(ctx context.Context, arg G
 }
 
 const getOrganizationsWithAll = `-- name: GetOrganizationsWithAll :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
@@ -654,7 +671,7 @@ WHERE
 AND
 	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
 AND
 	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -710,6 +727,7 @@ func (q *Queries) GetOrganizationsWithAll(ctx context.Context, arg GetOrganizati
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
 			&i.Organization.Description,
+			&i.Organization.Color,
 			&i.Organization.IsPersonal,
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
@@ -727,7 +745,7 @@ func (q *Queries) GetOrganizationsWithAll(ctx context.Context, arg GetOrganizati
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.CoverImageUrl,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -744,7 +762,7 @@ func (q *Queries) GetOrganizationsWithAll(ctx context.Context, arg GetOrganizati
 }
 
 const getOrganizationsWithAllUseKeysetPaginate = `-- name: GetOrganizationsWithAllUseKeysetPaginate :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
@@ -753,7 +771,7 @@ WHERE
 AND
 	CASE WHEN $4::boolean = true THEN m_organizations.is_whole = $5 END
 AND
-	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
+	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
 AND
 	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -836,6 +854,7 @@ func (q *Queries) GetOrganizationsWithAllUseKeysetPaginate(ctx context.Context, 
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
 			&i.Organization.Description,
+			&i.Organization.Color,
 			&i.Organization.IsPersonal,
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
@@ -853,7 +872,7 @@ func (q *Queries) GetOrganizationsWithAllUseKeysetPaginate(ctx context.Context, 
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.CoverImageUrl,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -870,7 +889,7 @@ func (q *Queries) GetOrganizationsWithAllUseKeysetPaginate(ctx context.Context, 
 }
 
 const getOrganizationsWithAllUseNumberedPaginate = `-- name: GetOrganizationsWithAllUseNumberedPaginate :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
@@ -879,7 +898,7 @@ WHERE
 AND
 	CASE WHEN $5::boolean = true THEN m_organizations.is_whole = $6 END
 AND
-	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
+	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
 AND
 	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -940,6 +959,7 @@ func (q *Queries) GetOrganizationsWithAllUseNumberedPaginate(ctx context.Context
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
 			&i.Organization.Description,
+			&i.Organization.Color,
 			&i.Organization.IsPersonal,
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
@@ -957,7 +977,7 @@ func (q *Queries) GetOrganizationsWithAllUseNumberedPaginate(ctx context.Context
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.CoverImageUrl,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -974,14 +994,14 @@ func (q *Queries) GetOrganizationsWithAllUseNumberedPaginate(ctx context.Context
 }
 
 const getOrganizationsWithChatRoom = `-- name: GetOrganizationsWithChatRoom :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
 WHERE
 	CASE WHEN $1::boolean = true THEN m_organizations.name LIKE '%' || $2::text || '%' END
 AND
 	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
 AND
 	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -1010,6 +1030,7 @@ type GetOrganizationsWithChatRoomRow struct {
 	OrganizationID     uuid.UUID   `json:"organization_id"`
 	Name               string      `json:"name"`
 	Description        pgtype.Text `json:"description"`
+	Color              pgtype.Text `json:"color"`
 	IsPersonal         bool        `json:"is_personal"`
 	IsWhole            bool        `json:"is_whole"`
 	CreatedAt          time.Time   `json:"created_at"`
@@ -1043,6 +1064,7 @@ func (q *Queries) GetOrganizationsWithChatRoom(ctx context.Context, arg GetOrgan
 			&i.OrganizationID,
 			&i.Name,
 			&i.Description,
+			&i.Color,
 			&i.IsPersonal,
 			&i.IsWhole,
 			&i.CreatedAt,
@@ -1052,7 +1074,7 @@ func (q *Queries) GetOrganizationsWithChatRoom(ctx context.Context, arg GetOrgan
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.CoverImageUrl,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -1069,14 +1091,14 @@ func (q *Queries) GetOrganizationsWithChatRoom(ctx context.Context, arg GetOrgan
 }
 
 const getOrganizationsWithChatRoomUseKeysetPaginate = `-- name: GetOrganizationsWithChatRoomUseKeysetPaginate :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
 WHERE
 	CASE WHEN $2::boolean = true THEN m_organizations.name LIKE '%' || $3::text || '%' END
 AND
 	CASE WHEN $4::boolean = true THEN m_organizations.is_whole = $5 END
 AND
-	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
+	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
 AND
 	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -1128,6 +1150,7 @@ type GetOrganizationsWithChatRoomUseKeysetPaginateRow struct {
 	OrganizationID     uuid.UUID   `json:"organization_id"`
 	Name               string      `json:"name"`
 	Description        pgtype.Text `json:"description"`
+	Color              pgtype.Text `json:"color"`
 	IsPersonal         bool        `json:"is_personal"`
 	IsWhole            bool        `json:"is_whole"`
 	CreatedAt          time.Time   `json:"created_at"`
@@ -1165,6 +1188,7 @@ func (q *Queries) GetOrganizationsWithChatRoomUseKeysetPaginate(ctx context.Cont
 			&i.OrganizationID,
 			&i.Name,
 			&i.Description,
+			&i.Color,
 			&i.IsPersonal,
 			&i.IsWhole,
 			&i.CreatedAt,
@@ -1174,7 +1198,7 @@ func (q *Queries) GetOrganizationsWithChatRoomUseKeysetPaginate(ctx context.Cont
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.CoverImageUrl,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -1191,14 +1215,14 @@ func (q *Queries) GetOrganizationsWithChatRoomUseKeysetPaginate(ctx context.Cont
 }
 
 const getOrganizationsWithChatRoomUseNumberedPaginate = `-- name: GetOrganizationsWithChatRoomUseNumberedPaginate :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_organizations.name LIKE '%' || $4::text || '%' END
 AND
 	CASE WHEN $5::boolean = true THEN m_organizations.is_whole = $6 END
 AND
-	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
+	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
 AND
 	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -1230,6 +1254,7 @@ type GetOrganizationsWithChatRoomUseNumberedPaginateRow struct {
 	OrganizationID     uuid.UUID   `json:"organization_id"`
 	Name               string      `json:"name"`
 	Description        pgtype.Text `json:"description"`
+	Color              pgtype.Text `json:"color"`
 	IsPersonal         bool        `json:"is_personal"`
 	IsWhole            bool        `json:"is_whole"`
 	CreatedAt          time.Time   `json:"created_at"`
@@ -1265,6 +1290,7 @@ func (q *Queries) GetOrganizationsWithChatRoomUseNumberedPaginate(ctx context.Co
 			&i.OrganizationID,
 			&i.Name,
 			&i.Description,
+			&i.Color,
 			&i.IsPersonal,
 			&i.IsWhole,
 			&i.CreatedAt,
@@ -1274,7 +1300,7 @@ func (q *Queries) GetOrganizationsWithChatRoomUseNumberedPaginate(ctx context.Co
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.CoverImageUrl,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -1291,7 +1317,7 @@ func (q *Queries) GetOrganizationsWithChatRoomUseNumberedPaginate(ctx context.Co
 }
 
 const getOrganizationsWithDetail = `-- name: GetOrganizationsWithDetail :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
@@ -1299,7 +1325,7 @@ WHERE
 AND
 	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
 AND
 	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -1354,6 +1380,7 @@ func (q *Queries) GetOrganizationsWithDetail(ctx context.Context, arg GetOrganiz
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
 			&i.Organization.Description,
+			&i.Organization.Color,
 			&i.Organization.IsPersonal,
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
@@ -1379,7 +1406,7 @@ func (q *Queries) GetOrganizationsWithDetail(ctx context.Context, arg GetOrganiz
 }
 
 const getOrganizationsWithDetailUseKeysetPaginate = `-- name: GetOrganizationsWithDetailUseKeysetPaginate :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
@@ -1387,7 +1414,7 @@ WHERE
 AND
 	CASE WHEN $4::boolean = true THEN m_organizations.is_whole = $5 END
 AND
-	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
+	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
 AND
 	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -1469,6 +1496,7 @@ func (q *Queries) GetOrganizationsWithDetailUseKeysetPaginate(ctx context.Contex
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
 			&i.Organization.Description,
+			&i.Organization.Color,
 			&i.Organization.IsPersonal,
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
@@ -1494,7 +1522,7 @@ func (q *Queries) GetOrganizationsWithDetailUseKeysetPaginate(ctx context.Contex
 }
 
 const getOrganizationsWithDetailUseNumberedPaginate = `-- name: GetOrganizationsWithDetailUseNumberedPaginate :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
@@ -1502,7 +1530,7 @@ WHERE
 AND
 	CASE WHEN $5::boolean = true THEN m_organizations.is_whole = $6 END
 AND
-	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
+	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
 AND
 	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -1562,6 +1590,7 @@ func (q *Queries) GetOrganizationsWithDetailUseNumberedPaginate(ctx context.Cont
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
 			&i.Organization.Description,
+			&i.Organization.Color,
 			&i.Organization.IsPersonal,
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
@@ -1587,7 +1616,7 @@ func (q *Queries) GetOrganizationsWithDetailUseNumberedPaginate(ctx context.Cont
 }
 
 const getPluralOrganizations = `-- name: GetPluralOrganizations :many
-SELECT m_organizations_pkey, organization_id, name, description, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations WHERE organization_id = ANY($3::uuid[])
+SELECT m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations WHERE organization_id = ANY($3::uuid[])
 ORDER BY
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2
@@ -1613,6 +1642,7 @@ func (q *Queries) GetPluralOrganizations(ctx context.Context, arg GetPluralOrgan
 			&i.OrganizationID,
 			&i.Name,
 			&i.Description,
+			&i.Color,
 			&i.IsPersonal,
 			&i.IsWhole,
 			&i.CreatedAt,
@@ -1630,7 +1660,7 @@ func (q *Queries) GetPluralOrganizations(ctx context.Context, arg GetPluralOrgan
 }
 
 const getPluralOrganizationsWithAll = `-- name: GetPluralOrganizationsWithAll :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
@@ -1667,6 +1697,7 @@ func (q *Queries) GetPluralOrganizationsWithAll(ctx context.Context, arg GetPlur
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
 			&i.Organization.Description,
+			&i.Organization.Color,
 			&i.Organization.IsPersonal,
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
@@ -1684,7 +1715,7 @@ func (q *Queries) GetPluralOrganizationsWithAll(ctx context.Context, arg GetPlur
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.CoverImageUrl,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -1701,7 +1732,7 @@ func (q *Queries) GetPluralOrganizationsWithAll(ctx context.Context, arg GetPlur
 }
 
 const getPluralOrganizationsWithChatRoom = `-- name: GetPluralOrganizationsWithChatRoom :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
 WHERE organization_id = ANY($3::uuid[])
 ORDER BY
@@ -1720,6 +1751,7 @@ type GetPluralOrganizationsWithChatRoomRow struct {
 	OrganizationID     uuid.UUID   `json:"organization_id"`
 	Name               string      `json:"name"`
 	Description        pgtype.Text `json:"description"`
+	Color              pgtype.Text `json:"color"`
 	IsPersonal         bool        `json:"is_personal"`
 	IsWhole            bool        `json:"is_whole"`
 	CreatedAt          time.Time   `json:"created_at"`
@@ -1742,6 +1774,7 @@ func (q *Queries) GetPluralOrganizationsWithChatRoom(ctx context.Context, arg Ge
 			&i.OrganizationID,
 			&i.Name,
 			&i.Description,
+			&i.Color,
 			&i.IsPersonal,
 			&i.IsWhole,
 			&i.CreatedAt,
@@ -1751,7 +1784,7 @@ func (q *Queries) GetPluralOrganizationsWithChatRoom(ctx context.Context, arg Ge
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.CoverImageUrl,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -1768,7 +1801,7 @@ func (q *Queries) GetPluralOrganizationsWithChatRoom(ctx context.Context, arg Ge
 }
 
 const getPluralOrganizationsWithDetail = `-- name: GetPluralOrganizationsWithDetail :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE organization_id = ANY($3::uuid[])
@@ -1803,6 +1836,7 @@ func (q *Queries) GetPluralOrganizationsWithDetail(ctx context.Context, arg GetP
 			&i.Organization.OrganizationID,
 			&i.Organization.Name,
 			&i.Organization.Description,
+			&i.Organization.Color,
 			&i.Organization.IsPersonal,
 			&i.Organization.IsWhole,
 			&i.Organization.CreatedAt,
@@ -1827,13 +1861,23 @@ func (q *Queries) GetPluralOrganizationsWithDetail(ctx context.Context, arg GetP
 	return items, nil
 }
 
+const pluralDeleteOrganizations = `-- name: PluralDeleteOrganizations :exec
+DELETE FROM m_organizations WHERE organization_id = ANY($1::uuid[])
+`
+
+func (q *Queries) PluralDeleteOrganizations(ctx context.Context, dollar_1 []uuid.UUID) error {
+	_, err := q.db.Exec(ctx, pluralDeleteOrganizations, dollar_1)
+	return err
+}
+
 const updateOrganization = `-- name: UpdateOrganization :one
-UPDATE m_organizations SET name = $2, description = $3, updated_at = $4 WHERE organization_id = $1 RETURNING m_organizations_pkey, organization_id, name, description, is_personal, is_whole, created_at, updated_at, chat_room_id
+UPDATE m_organizations SET name = $2, color = $3, description = $4, updated_at = $5 WHERE organization_id = $1 RETURNING m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id
 `
 
 type UpdateOrganizationParams struct {
 	OrganizationID uuid.UUID   `json:"organization_id"`
 	Name           string      `json:"name"`
+	Color          pgtype.Text `json:"color"`
 	Description    pgtype.Text `json:"description"`
 	UpdatedAt      time.Time   `json:"updated_at"`
 }
@@ -1842,6 +1886,7 @@ func (q *Queries) UpdateOrganization(ctx context.Context, arg UpdateOrganization
 	row := q.db.QueryRow(ctx, updateOrganization,
 		arg.OrganizationID,
 		arg.Name,
+		arg.Color,
 		arg.Description,
 		arg.UpdatedAt,
 	)
@@ -1851,6 +1896,7 @@ func (q *Queries) UpdateOrganization(ctx context.Context, arg UpdateOrganization
 		&i.OrganizationID,
 		&i.Name,
 		&i.Description,
+		&i.Color,
 		&i.IsPersonal,
 		&i.IsWhole,
 		&i.CreatedAt,

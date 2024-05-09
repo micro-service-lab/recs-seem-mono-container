@@ -8,7 +8,7 @@ type Member struct {
 	Email                  string    `json:"email"`
 	Name                   string    `json:"name"`
 	AttendStatusID         uuid.UUID `json:"attend_status_id"`
-	ProfileImageID         UUID      `json:"profile_image_id"`
+	ProfileImageURL        String    `json:"profile_image_url"`
 	GradeID                uuid.UUID `json:"grade_id"`
 	GroupID                uuid.UUID `json:"group_id"`
 	PersonalOrganizationID uuid.UUID `json:"personal_organization_id"`

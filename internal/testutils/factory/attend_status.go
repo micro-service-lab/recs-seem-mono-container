@@ -22,7 +22,9 @@ type attendStatus struct {
 type AttendStatuses []attendStatus
 
 // NewAttendStatuses creates a new AttendStatuses factory.
-func NewAttendStatuses(num int) (AttendStatuses, error) {
+func (f *Factory) NewAttendStatuses(num int) (AttendStatuses, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	d := make([]attendStatus, num)
 	for i := 0; i < num; i++ { // Generate 5 structs having a unique word
 		err := faker.FakeData(&d[i])

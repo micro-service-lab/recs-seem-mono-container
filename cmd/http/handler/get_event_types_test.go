@@ -22,7 +22,7 @@ import (
 
 func TestGetEventTypes_ServeHTTP(t *testing.T) {
 	t.Parallel()
-	fd, err := factory.NewEventTypes(10)
+	fd, err := factory.Generator.NewEventTypes(10)
 	require.NoError(t, err)
 	type wants struct {
 		resType response.APIResponseType

@@ -22,7 +22,7 @@ import (
 
 func TestGetAttendStatuses_ServeHTTP(t *testing.T) {
 	t.Parallel()
-	fd, err := factory.NewAttendStatuses(10)
+	fd, err := factory.Generator.NewAttendStatuses(10)
 	require.NoError(t, err)
 	type wants struct {
 		resType response.APIResponseType

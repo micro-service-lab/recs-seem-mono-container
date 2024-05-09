@@ -22,7 +22,7 @@ import (
 
 func TestGetPermissionCategories_ServeHTTP(t *testing.T) {
 	t.Parallel()
-	fd, err := factory.NewPermissionCategories(10)
+	fd, err := factory.Generator.NewPermissionCategories(10)
 	require.NoError(t, err)
 	type wants struct {
 		resType response.APIResponseType

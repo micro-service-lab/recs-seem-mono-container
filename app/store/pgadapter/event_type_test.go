@@ -32,7 +32,7 @@ func TestPgAdapter_EventType(t *testing.T) {
 					err := adapter.Rollback(ctx, sd)
 					require.NoError(t, err)
 				})
-				fp, err := factory.NewEventTypes(1)
+				fp, err := factory.Generator.NewEventTypes(1)
 				assert.NoError(t, err)
 				p := fp.ForCreateParam()[0]
 				e, err := adapter.CreateEventTypeWithSd(ctx, sd, p)
@@ -91,7 +91,7 @@ func TestPgAdapter_EventType(t *testing.T) {
 					err := adapter.Rollback(ctx, sd)
 					require.NoError(t, err)
 				})
-				fp, err := factory.NewEventTypes(3)
+				fp, err := factory.Generator.NewEventTypes(3)
 				assert.NoError(t, err)
 				ps := fp.ForCreateParam()
 				count, err := adapter.CreateEventTypesWithSd(ctx, sd, ps)

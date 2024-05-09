@@ -32,7 +32,7 @@ func TestPgAdapter_PermissionCategory(t *testing.T) {
 					err := adapter.Rollback(ctx, sd)
 					require.NoError(t, err)
 				})
-				fp, err := factory.NewPermissionCategories(1)
+				fp, err := factory.Generator.NewPermissionCategories(1)
 				assert.NoError(t, err)
 				p := fp.ForCreateParam()[0]
 				e, err := adapter.CreatePermissionCategoryWithSd(ctx, sd, p)
@@ -91,7 +91,7 @@ func TestPgAdapter_PermissionCategory(t *testing.T) {
 					err := adapter.Rollback(ctx, sd)
 					require.NoError(t, err)
 				})
-				fp, err := factory.NewPermissionCategories(3)
+				fp, err := factory.Generator.NewPermissionCategories(3)
 				assert.NoError(t, err)
 				ps := fp.ForCreateParam()
 				count, err := adapter.CreatePermissionCategoriesWithSd(ctx, sd, ps)

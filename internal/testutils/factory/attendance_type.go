@@ -23,7 +23,9 @@ type attendanceType struct {
 type AttendanceType []attendanceType
 
 // NewAttendanceTypes creates a new AttendanceType factory.
-func NewAttendanceTypes(num int) (AttendanceType, error) {
+func (f *Factory) NewAttendanceTypes(num int) (AttendanceType, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	d := make([]attendanceType, num)
 	for i := 0; i < num; i++ { // Generate 5 structs having a unique word
 		err := faker.FakeData(&d[i])

@@ -32,7 +32,7 @@ func TestPgAdapter_AttendanceType(t *testing.T) {
 					err := adapter.Rollback(ctx, sd)
 					require.NoError(t, err)
 				})
-				fp, err := factory.NewAttendanceTypes(1)
+				fp, err := factory.Generator.NewAttendanceTypes(1)
 				assert.NoError(t, err)
 				p := fp.ForCreateParam()[0]
 				e, err := adapter.CreateAttendanceTypeWithSd(ctx, sd, p)
@@ -91,7 +91,7 @@ func TestPgAdapter_AttendanceType(t *testing.T) {
 					err := adapter.Rollback(ctx, sd)
 					require.NoError(t, err)
 				})
-				fp, err := factory.NewAttendanceTypes(3)
+				fp, err := factory.Generator.NewAttendanceTypes(3)
 				assert.NoError(t, err)
 				ps := fp.ForCreateParam()
 				count, err := adapter.CreateAttendanceTypesWithSd(ctx, sd, ps)

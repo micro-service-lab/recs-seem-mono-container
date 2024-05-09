@@ -22,7 +22,7 @@ import (
 
 func TestGetAttendanceTypes_ServeHTTP(t *testing.T) {
 	t.Parallel()
-	fd, err := factory.NewAttendanceTypes(10)
+	fd, err := factory.Generator.NewAttendanceTypes(10)
 	require.NoError(t, err)
 	type wants struct {
 		resType response.APIResponseType

@@ -23,7 +23,9 @@ type eventType struct {
 type EventType []eventType
 
 // NewEventTypes creates a new EventType factory.
-func NewEventTypes(num int) (EventType, error) {
+func (f *Factory) NewEventTypes(num int) (EventType, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	d := make([]eventType, num)
 	for i := 0; i < num; i++ { // Generate 5 structs having a unique word
 		err := faker.FakeData(&d[i])

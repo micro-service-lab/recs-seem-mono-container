@@ -23,7 +23,9 @@ type permissionCategory struct {
 type PermissionCategory []permissionCategory
 
 // NewPermissionCategories creates a new PermissionCategory factory.
-func NewPermissionCategories(num int) (PermissionCategory, error) {
+func (f *Factory) NewPermissionCategories(num int) (PermissionCategory, error) {
+	f.mu.Lock()
+	defer f.mu.Unlock()
 	d := make([]permissionCategory, num)
 	for i := 0; i < num; i++ { // Generate 5 structs having a unique word
 		err := faker.FakeData(&d[i])

@@ -32,7 +32,7 @@ func TestPgAdapter_AttendStatus(t *testing.T) {
 					err := adapter.Rollback(ctx, sd)
 					require.NoError(t, err)
 				})
-				fp, err := factory.NewAttendStatuses(1)
+				fp, err := factory.Generator.NewAttendStatuses(1)
 				assert.NoError(t, err)
 				p := fp.ForCreateParam()[0]
 				e, err := adapter.CreateAttendStatusWithSd(ctx, sd, p)
@@ -91,7 +91,7 @@ func TestPgAdapter_AttendStatus(t *testing.T) {
 					err := adapter.Rollback(ctx, sd)
 					require.NoError(t, err)
 				})
-				fp, err := factory.NewAttendStatuses(3)
+				fp, err := factory.Generator.NewAttendStatuses(3)
 				assert.NoError(t, err)
 				ps := fp.ForCreateParam()
 				count, err := adapter.CreateAttendStatusesWithSd(ctx, sd, ps)

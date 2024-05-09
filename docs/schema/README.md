@@ -12,7 +12,7 @@
 | [public.m_attend_statuses](public.m_attend_statuses.md) | 4 |  | BASE TABLE |
 | [public.m_organizations](public.m_organizations.md) | 10 |  | BASE TABLE |
 | [public.m_permission_categories](public.m_permission_categories.md) | 5 |  | BASE TABLE |
-| [public.m_work_positions](public.m_work_positions.md) | 6 |  | BASE TABLE |
+| [public.m_work_positions](public.m_work_positions.md) | 7 |  | BASE TABLE |
 | [public.m_permissions](public.m_permissions.md) | 6 |  | BASE TABLE |
 | [public.m_permission_associations](public.m_permission_associations.md) | 3 |  | BASE TABLE |
 | [public.m_groups](public.m_groups.md) | 4 |  | BASE TABLE |

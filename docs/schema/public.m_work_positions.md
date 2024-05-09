@@ -8,6 +8,7 @@
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | m_work_positions_pkey | bigint | nextval('m_work_positions_m_work_positions_pkey_seq'::regclass) | false |  |  |  |
 | work_position_id | uuid | uuid_generate_v4() | false | [public.m_permission_associations](public.m_permission_associations.md) |  |  |
+| organization_id | uuid |  | false |  | [public.m_organizations](public.m_organizations.md) |  |
 | name | varchar(255) |  | false |  |  |  |
 | description | text |  | false |  |  |  |
 | created_at | timestamp with time zone |  | false |  |  |  |
@@ -17,6 +18,7 @@
 
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
+| fk_m_work_positions_organization_id | FOREIGN KEY | FOREIGN KEY (organization_id) REFERENCES m_organizations(organization_id) ON UPDATE CASCADE ON DELETE CASCADE |
 | m_work_positions_pkey | PRIMARY KEY | PRIMARY KEY (m_work_positions_pkey) |
 
 ## Indexes

@@ -8,6 +8,7 @@ import (
 
 	"github.com/briandowns/spinner"
 	"github.com/fatih/color"
+	"github.com/google/uuid"
 	"github.com/spf13/cobra"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/batch"
@@ -110,6 +111,9 @@ var seedMimeTypesCmd *cobra.Command
 // seedRecordTypesCmd inserts record types.
 var seedRecordTypesCmd *cobra.Command
 
+// seedPermissionsCmd inserts permissions.
+var seedPermissionsCmd *cobra.Command
+
 // seedAllCmd inserts all seed data.
 var seedAllCmd = &cobra.Command{
 	Use:   "all",
@@ -128,6 +132,7 @@ The seed command is executed when the application is started for the first time.
 			seedPolicyCategoriesCmd.Run,
 			seedMimeTypesCmd.Run,
 			seedRecordTypesCmd.Run,
+			seedPermissionsCmd.Run,
 		}
 		var wg sync.WaitGroup
 		wg.Add(len(cmds))
@@ -223,6 +228,17 @@ func seedInit() {
 			Manager: &AppContainer.ServiceManager,
 		},
 	)
+	seedPermissionsCmd = seedCmdGenerator(
+		"permission",
+		"permissions",
+		"Permissions",
+		func(ctx context.Context) (int64, error) {
+			return AppContainer.ServiceManager.GetPermissionsCount(ctx, "", []uuid.UUID{})
+		},
+		&batch.InitPermissions{
+			Manager: &AppContainer.ServiceManager,
+		},
+	)
 
 	rootCmd.AddCommand(seedCmd)
 	seedCmd.AddCommand(seedAllCmd)
@@ -233,6 +249,7 @@ func seedInit() {
 	seedCmd.AddCommand(seedPolicyCategoriesCmd)
 	seedCmd.AddCommand(seedMimeTypesCmd)
 	seedCmd.AddCommand(seedRecordTypesCmd)
+	seedCmd.AddCommand(seedPermissionsCmd)
 
 	seedCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "Force seed")
 	seedCmd.PersistentFlags().BoolVarP(&diff, "diff", "d", false, "Seed only if there is a difference")

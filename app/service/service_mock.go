@@ -46,11 +46,17 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreateMimeTypesFunc: func(ctx context.Context, ps []parameter.CreateMimeTypeParam) (int64, error) {
 //				panic("mock out the CreateMimeTypes method")
 //			},
+//			CreatePermissionFunc: func(ctx context.Context, name string, key string, description string, categoryID uuid.UUID) (entity.Permission, error) {
+//				panic("mock out the CreatePermission method")
+//			},
 //			CreatePermissionCategoriesFunc: func(ctx context.Context, ps []parameter.CreatePermissionCategoryParam) (int64, error) {
 //				panic("mock out the CreatePermissionCategories method")
 //			},
 //			CreatePermissionCategoryFunc: func(ctx context.Context, name string, key string, description string) (entity.PermissionCategory, error) {
 //				panic("mock out the CreatePermissionCategory method")
+//			},
+//			CreatePermissionsFunc: func(ctx context.Context, ps []parameter.CreatePermissionParam) (int64, error) {
+//				panic("mock out the CreatePermissions method")
 //			},
 //			CreatePolicyCategoriesFunc: func(ctx context.Context, ps []parameter.CreatePolicyCategoryParam) (int64, error) {
 //				panic("mock out the CreatePolicyCategories method")
@@ -75,6 +81,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			DeleteMimeTypeFunc: func(ctx context.Context, id uuid.UUID) error {
 //				panic("mock out the DeleteMimeType method")
+//			},
+//			DeletePermissionFunc: func(ctx context.Context, id uuid.UUID) error {
+//				panic("mock out the DeletePermission method")
 //			},
 //			DeletePermissionCategoryFunc: func(ctx context.Context, id uuid.UUID) error {
 //				panic("mock out the DeletePermissionCategory method")
@@ -108,6 +117,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			FindMimeTypeByKeyFunc: func(ctx context.Context, key string) (entity.MimeType, error) {
 //				panic("mock out the FindMimeTypeByKey method")
+//			},
+//			FindPermissionByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.Permission, error) {
+//				panic("mock out the FindPermissionByID method")
+//			},
+//			FindPermissionByKeyFunc: func(ctx context.Context, key string) (entity.Permission, error) {
+//				panic("mock out the FindPermissionByKey method")
 //			},
 //			FindPermissionCategoryByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.PermissionCategory, error) {
 //				panic("mock out the FindPermissionCategoryByID method")
@@ -157,6 +172,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			GetPermissionCategoriesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
 //				panic("mock out the GetPermissionCategoriesCount method")
 //			},
+//			GetPermissionsFunc: func(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID, order parameter.PermissionOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Permission], error) {
+//				panic("mock out the GetPermissions method")
+//			},
+//			GetPermissionsCountFunc: func(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID) (int64, error) {
+//				panic("mock out the GetPermissionsCount method")
+//			},
 //			GetPolicyCategoriesFunc: func(ctx context.Context, whereSearchName string, order parameter.PolicyCategoryOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PolicyCategory], error) {
 //				panic("mock out the GetPolicyCategories method")
 //			},
@@ -184,6 +205,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			PluralDeletePermissionCategoriesFunc: func(ctx context.Context, ids []uuid.UUID) error {
 //				panic("mock out the PluralDeletePermissionCategories method")
 //			},
+//			PluralDeletePermissionsFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//				panic("mock out the PluralDeletePermissions method")
+//			},
 //			PluralDeletePolicyCategoriesFunc: func(ctx context.Context, ids []uuid.UUID) error {
 //				panic("mock out the PluralDeletePolicyCategories method")
 //			},
@@ -201,6 +225,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			UpdateMimeTypeFunc: func(ctx context.Context, id uuid.UUID, name string, key string, kind string) (entity.MimeType, error) {
 //				panic("mock out the UpdateMimeType method")
+//			},
+//			UpdatePermissionFunc: func(ctx context.Context, id uuid.UUID, name string, key string, description string, categoryID uuid.UUID) (entity.Permission, error) {
+//				panic("mock out the UpdatePermission method")
 //			},
 //			UpdatePermissionCategoryFunc: func(ctx context.Context, id uuid.UUID, name string, key string, description string) (entity.PermissionCategory, error) {
 //				panic("mock out the UpdatePermissionCategory method")
@@ -242,11 +269,17 @@ type ManagerInterfaceMock struct {
 	// CreateMimeTypesFunc mocks the CreateMimeTypes method.
 	CreateMimeTypesFunc func(ctx context.Context, ps []parameter.CreateMimeTypeParam) (int64, error)
 
+	// CreatePermissionFunc mocks the CreatePermission method.
+	CreatePermissionFunc func(ctx context.Context, name string, key string, description string, categoryID uuid.UUID) (entity.Permission, error)
+
 	// CreatePermissionCategoriesFunc mocks the CreatePermissionCategories method.
 	CreatePermissionCategoriesFunc func(ctx context.Context, ps []parameter.CreatePermissionCategoryParam) (int64, error)
 
 	// CreatePermissionCategoryFunc mocks the CreatePermissionCategory method.
 	CreatePermissionCategoryFunc func(ctx context.Context, name string, key string, description string) (entity.PermissionCategory, error)
+
+	// CreatePermissionsFunc mocks the CreatePermissions method.
+	CreatePermissionsFunc func(ctx context.Context, ps []parameter.CreatePermissionParam) (int64, error)
 
 	// CreatePolicyCategoriesFunc mocks the CreatePolicyCategories method.
 	CreatePolicyCategoriesFunc func(ctx context.Context, ps []parameter.CreatePolicyCategoryParam) (int64, error)
@@ -271,6 +304,9 @@ type ManagerInterfaceMock struct {
 
 	// DeleteMimeTypeFunc mocks the DeleteMimeType method.
 	DeleteMimeTypeFunc func(ctx context.Context, id uuid.UUID) error
+
+	// DeletePermissionFunc mocks the DeletePermission method.
+	DeletePermissionFunc func(ctx context.Context, id uuid.UUID) error
 
 	// DeletePermissionCategoryFunc mocks the DeletePermissionCategory method.
 	DeletePermissionCategoryFunc func(ctx context.Context, id uuid.UUID) error
@@ -304,6 +340,12 @@ type ManagerInterfaceMock struct {
 
 	// FindMimeTypeByKeyFunc mocks the FindMimeTypeByKey method.
 	FindMimeTypeByKeyFunc func(ctx context.Context, key string) (entity.MimeType, error)
+
+	// FindPermissionByIDFunc mocks the FindPermissionByID method.
+	FindPermissionByIDFunc func(ctx context.Context, id uuid.UUID) (entity.Permission, error)
+
+	// FindPermissionByKeyFunc mocks the FindPermissionByKey method.
+	FindPermissionByKeyFunc func(ctx context.Context, key string) (entity.Permission, error)
 
 	// FindPermissionCategoryByIDFunc mocks the FindPermissionCategoryByID method.
 	FindPermissionCategoryByIDFunc func(ctx context.Context, id uuid.UUID) (entity.PermissionCategory, error)
@@ -353,6 +395,12 @@ type ManagerInterfaceMock struct {
 	// GetPermissionCategoriesCountFunc mocks the GetPermissionCategoriesCount method.
 	GetPermissionCategoriesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
 
+	// GetPermissionsFunc mocks the GetPermissions method.
+	GetPermissionsFunc func(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID, order parameter.PermissionOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Permission], error)
+
+	// GetPermissionsCountFunc mocks the GetPermissionsCount method.
+	GetPermissionsCountFunc func(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID) (int64, error)
+
 	// GetPolicyCategoriesFunc mocks the GetPolicyCategories method.
 	GetPolicyCategoriesFunc func(ctx context.Context, whereSearchName string, order parameter.PolicyCategoryOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PolicyCategory], error)
 
@@ -380,6 +428,9 @@ type ManagerInterfaceMock struct {
 	// PluralDeletePermissionCategoriesFunc mocks the PluralDeletePermissionCategories method.
 	PluralDeletePermissionCategoriesFunc func(ctx context.Context, ids []uuid.UUID) error
 
+	// PluralDeletePermissionsFunc mocks the PluralDeletePermissions method.
+	PluralDeletePermissionsFunc func(ctx context.Context, ids []uuid.UUID) error
+
 	// PluralDeletePolicyCategoriesFunc mocks the PluralDeletePolicyCategories method.
 	PluralDeletePolicyCategoriesFunc func(ctx context.Context, ids []uuid.UUID) error
 
@@ -397,6 +448,9 @@ type ManagerInterfaceMock struct {
 
 	// UpdateMimeTypeFunc mocks the UpdateMimeType method.
 	UpdateMimeTypeFunc func(ctx context.Context, id uuid.UUID, name string, key string, kind string) (entity.MimeType, error)
+
+	// UpdatePermissionFunc mocks the UpdatePermission method.
+	UpdatePermissionFunc func(ctx context.Context, id uuid.UUID, name string, key string, description string, categoryID uuid.UUID) (entity.Permission, error)
 
 	// UpdatePermissionCategoryFunc mocks the UpdatePermissionCategory method.
 	UpdatePermissionCategoryFunc func(ctx context.Context, id uuid.UUID, name string, key string, description string) (entity.PermissionCategory, error)
@@ -479,6 +533,19 @@ type ManagerInterfaceMock struct {
 			// Ps is the ps argument value.
 			Ps []parameter.CreateMimeTypeParam
 		}
+		// CreatePermission holds details about calls to the CreatePermission method.
+		CreatePermission []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Name is the name argument value.
+			Name string
+			// Key is the key argument value.
+			Key string
+			// Description is the description argument value.
+			Description string
+			// CategoryID is the categoryID argument value.
+			CategoryID uuid.UUID
+		}
 		// CreatePermissionCategories holds details about calls to the CreatePermissionCategories method.
 		CreatePermissionCategories []struct {
 			// Ctx is the ctx argument value.
@@ -496,6 +563,13 @@ type ManagerInterfaceMock struct {
 			Key string
 			// Description is the description argument value.
 			Description string
+		}
+		// CreatePermissions holds details about calls to the CreatePermissions method.
+		CreatePermissions []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ps is the ps argument value.
+			Ps []parameter.CreatePermissionParam
 		}
 		// CreatePolicyCategories holds details about calls to the CreatePolicyCategories method.
 		CreatePolicyCategories []struct {
@@ -554,6 +628,13 @@ type ManagerInterfaceMock struct {
 		}
 		// DeleteMimeType holds details about calls to the DeleteMimeType method.
 		DeleteMimeType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// DeletePermission holds details about calls to the DeletePermission method.
+		DeletePermission []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// ID is the id argument value.
@@ -631,6 +712,20 @@ type ManagerInterfaceMock struct {
 		}
 		// FindMimeTypeByKey holds details about calls to the FindMimeTypeByKey method.
 		FindMimeTypeByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// FindPermissionByID holds details about calls to the FindPermissionByID method.
+		FindPermissionByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// FindPermissionByKey holds details about calls to the FindPermissionByKey method.
+		FindPermissionByKey []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Key is the key argument value.
@@ -808,6 +903,36 @@ type ManagerInterfaceMock struct {
 			// WhereSearchName is the whereSearchName argument value.
 			WhereSearchName string
 		}
+		// GetPermissions holds details about calls to the GetPermissions method.
+		GetPermissions []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// WhereInCategories is the whereInCategories argument value.
+			WhereInCategories []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.PermissionOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetPermissionsCount holds details about calls to the GetPermissionsCount method.
+		GetPermissionsCount []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// WhereInCategories is the whereInCategories argument value.
+			WhereInCategories []uuid.UUID
+		}
 		// GetPolicyCategories holds details about calls to the GetPolicyCategories method.
 		GetPolicyCategories []struct {
 			// Ctx is the ctx argument value.
@@ -895,6 +1020,13 @@ type ManagerInterfaceMock struct {
 			// Ids is the ids argument value.
 			Ids []uuid.UUID
 		}
+		// PluralDeletePermissions holds details about calls to the PluralDeletePermissions method.
+		PluralDeletePermissions []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ids is the ids argument value.
+			Ids []uuid.UUID
+		}
 		// PluralDeletePolicyCategories holds details about calls to the PluralDeletePolicyCategories method.
 		PluralDeletePolicyCategories []struct {
 			// Ctx is the ctx argument value.
@@ -959,6 +1091,21 @@ type ManagerInterfaceMock struct {
 			// Kind is the kind argument value.
 			Kind string
 		}
+		// UpdatePermission holds details about calls to the UpdatePermission method.
+		UpdatePermission []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+			// Name is the name argument value.
+			Name string
+			// Key is the key argument value.
+			Key string
+			// Description is the description argument value.
+			Description string
+			// CategoryID is the categoryID argument value.
+			CategoryID uuid.UUID
+		}
 		// UpdatePermissionCategory holds details about calls to the UpdatePermissionCategory method.
 		UpdatePermissionCategory []struct {
 			// Ctx is the ctx argument value.
@@ -1005,8 +1152,10 @@ type ManagerInterfaceMock struct {
 	lockCreateEventTypes                 sync.RWMutex
 	lockCreateMimeType                   sync.RWMutex
 	lockCreateMimeTypes                  sync.RWMutex
+	lockCreatePermission                 sync.RWMutex
 	lockCreatePermissionCategories       sync.RWMutex
 	lockCreatePermissionCategory         sync.RWMutex
+	lockCreatePermissions                sync.RWMutex
 	lockCreatePolicyCategories           sync.RWMutex
 	lockCreatePolicyCategory             sync.RWMutex
 	lockCreateRecordType                 sync.RWMutex
@@ -1015,6 +1164,7 @@ type ManagerInterfaceMock struct {
 	lockDeleteAttendanceType             sync.RWMutex
 	lockDeleteEventType                  sync.RWMutex
 	lockDeleteMimeType                   sync.RWMutex
+	lockDeletePermission                 sync.RWMutex
 	lockDeletePermissionCategory         sync.RWMutex
 	lockDeletePolicyCategory             sync.RWMutex
 	lockDeleteRecordType                 sync.RWMutex
@@ -1026,6 +1176,8 @@ type ManagerInterfaceMock struct {
 	lockFindEventTypeByKey               sync.RWMutex
 	lockFindMimeTypeByID                 sync.RWMutex
 	lockFindMimeTypeByKey                sync.RWMutex
+	lockFindPermissionByID               sync.RWMutex
+	lockFindPermissionByKey              sync.RWMutex
 	lockFindPermissionCategoryByID       sync.RWMutex
 	lockFindPermissionCategoryByKey      sync.RWMutex
 	lockFindPolicyCategoryByID           sync.RWMutex
@@ -1042,6 +1194,8 @@ type ManagerInterfaceMock struct {
 	lockGetMimeTypesCount                sync.RWMutex
 	lockGetPermissionCategories          sync.RWMutex
 	lockGetPermissionCategoriesCount     sync.RWMutex
+	lockGetPermissions                   sync.RWMutex
+	lockGetPermissionsCount              sync.RWMutex
 	lockGetPolicyCategories              sync.RWMutex
 	lockGetPolicyCategoriesCount         sync.RWMutex
 	lockGetRecordTypes                   sync.RWMutex
@@ -1051,12 +1205,14 @@ type ManagerInterfaceMock struct {
 	lockPluralDeleteEventTypes           sync.RWMutex
 	lockPluralDeleteMimeTypes            sync.RWMutex
 	lockPluralDeletePermissionCategories sync.RWMutex
+	lockPluralDeletePermissions          sync.RWMutex
 	lockPluralDeletePolicyCategories     sync.RWMutex
 	lockPluralDeleteRecordTypes          sync.RWMutex
 	lockUpdateAttendStatus               sync.RWMutex
 	lockUpdateAttendanceType             sync.RWMutex
 	lockUpdateEventType                  sync.RWMutex
 	lockUpdateMimeType                   sync.RWMutex
+	lockUpdatePermission                 sync.RWMutex
 	lockUpdatePermissionCategory         sync.RWMutex
 	lockUpdatePolicyCategory             sync.RWMutex
 	lockUpdateRecordType                 sync.RWMutex
@@ -1378,6 +1534,54 @@ func (mock *ManagerInterfaceMock) CreateMimeTypesCalls() []struct {
 	return calls
 }
 
+// CreatePermission calls CreatePermissionFunc.
+func (mock *ManagerInterfaceMock) CreatePermission(ctx context.Context, name string, key string, description string, categoryID uuid.UUID) (entity.Permission, error) {
+	if mock.CreatePermissionFunc == nil {
+		panic("ManagerInterfaceMock.CreatePermissionFunc: method is nil but ManagerInterface.CreatePermission was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		Name        string
+		Key         string
+		Description string
+		CategoryID  uuid.UUID
+	}{
+		Ctx:         ctx,
+		Name:        name,
+		Key:         key,
+		Description: description,
+		CategoryID:  categoryID,
+	}
+	mock.lockCreatePermission.Lock()
+	mock.calls.CreatePermission = append(mock.calls.CreatePermission, callInfo)
+	mock.lockCreatePermission.Unlock()
+	return mock.CreatePermissionFunc(ctx, name, key, description, categoryID)
+}
+
+// CreatePermissionCalls gets all the calls that were made to CreatePermission.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreatePermissionCalls())
+func (mock *ManagerInterfaceMock) CreatePermissionCalls() []struct {
+	Ctx         context.Context
+	Name        string
+	Key         string
+	Description string
+	CategoryID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx         context.Context
+		Name        string
+		Key         string
+		Description string
+		CategoryID  uuid.UUID
+	}
+	mock.lockCreatePermission.RLock()
+	calls = mock.calls.CreatePermission
+	mock.lockCreatePermission.RUnlock()
+	return calls
+}
+
 // CreatePermissionCategories calls CreatePermissionCategoriesFunc.
 func (mock *ManagerInterfaceMock) CreatePermissionCategories(ctx context.Context, ps []parameter.CreatePermissionCategoryParam) (int64, error) {
 	if mock.CreatePermissionCategoriesFunc == nil {
@@ -1455,6 +1659,42 @@ func (mock *ManagerInterfaceMock) CreatePermissionCategoryCalls() []struct {
 	mock.lockCreatePermissionCategory.RLock()
 	calls = mock.calls.CreatePermissionCategory
 	mock.lockCreatePermissionCategory.RUnlock()
+	return calls
+}
+
+// CreatePermissions calls CreatePermissionsFunc.
+func (mock *ManagerInterfaceMock) CreatePermissions(ctx context.Context, ps []parameter.CreatePermissionParam) (int64, error) {
+	if mock.CreatePermissionsFunc == nil {
+		panic("ManagerInterfaceMock.CreatePermissionsFunc: method is nil but ManagerInterface.CreatePermissions was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ps  []parameter.CreatePermissionParam
+	}{
+		Ctx: ctx,
+		Ps:  ps,
+	}
+	mock.lockCreatePermissions.Lock()
+	mock.calls.CreatePermissions = append(mock.calls.CreatePermissions, callInfo)
+	mock.lockCreatePermissions.Unlock()
+	return mock.CreatePermissionsFunc(ctx, ps)
+}
+
+// CreatePermissionsCalls gets all the calls that were made to CreatePermissions.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreatePermissionsCalls())
+func (mock *ManagerInterfaceMock) CreatePermissionsCalls() []struct {
+	Ctx context.Context
+	Ps  []parameter.CreatePermissionParam
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ps  []parameter.CreatePermissionParam
+	}
+	mock.lockCreatePermissions.RLock()
+	calls = mock.calls.CreatePermissions
+	mock.lockCreatePermissions.RUnlock()
 	return calls
 }
 
@@ -1755,6 +1995,42 @@ func (mock *ManagerInterfaceMock) DeleteMimeTypeCalls() []struct {
 	mock.lockDeleteMimeType.RLock()
 	calls = mock.calls.DeleteMimeType
 	mock.lockDeleteMimeType.RUnlock()
+	return calls
+}
+
+// DeletePermission calls DeletePermissionFunc.
+func (mock *ManagerInterfaceMock) DeletePermission(ctx context.Context, id uuid.UUID) error {
+	if mock.DeletePermissionFunc == nil {
+		panic("ManagerInterfaceMock.DeletePermissionFunc: method is nil but ManagerInterface.DeletePermission was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockDeletePermission.Lock()
+	mock.calls.DeletePermission = append(mock.calls.DeletePermission, callInfo)
+	mock.lockDeletePermission.Unlock()
+	return mock.DeletePermissionFunc(ctx, id)
+}
+
+// DeletePermissionCalls gets all the calls that were made to DeletePermission.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeletePermissionCalls())
+func (mock *ManagerInterfaceMock) DeletePermissionCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockDeletePermission.RLock()
+	calls = mock.calls.DeletePermission
+	mock.lockDeletePermission.RUnlock()
 	return calls
 }
 
@@ -2151,6 +2427,78 @@ func (mock *ManagerInterfaceMock) FindMimeTypeByKeyCalls() []struct {
 	mock.lockFindMimeTypeByKey.RLock()
 	calls = mock.calls.FindMimeTypeByKey
 	mock.lockFindMimeTypeByKey.RUnlock()
+	return calls
+}
+
+// FindPermissionByID calls FindPermissionByIDFunc.
+func (mock *ManagerInterfaceMock) FindPermissionByID(ctx context.Context, id uuid.UUID) (entity.Permission, error) {
+	if mock.FindPermissionByIDFunc == nil {
+		panic("ManagerInterfaceMock.FindPermissionByIDFunc: method is nil but ManagerInterface.FindPermissionByID was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockFindPermissionByID.Lock()
+	mock.calls.FindPermissionByID = append(mock.calls.FindPermissionByID, callInfo)
+	mock.lockFindPermissionByID.Unlock()
+	return mock.FindPermissionByIDFunc(ctx, id)
+}
+
+// FindPermissionByIDCalls gets all the calls that were made to FindPermissionByID.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindPermissionByIDCalls())
+func (mock *ManagerInterfaceMock) FindPermissionByIDCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockFindPermissionByID.RLock()
+	calls = mock.calls.FindPermissionByID
+	mock.lockFindPermissionByID.RUnlock()
+	return calls
+}
+
+// FindPermissionByKey calls FindPermissionByKeyFunc.
+func (mock *ManagerInterfaceMock) FindPermissionByKey(ctx context.Context, key string) (entity.Permission, error) {
+	if mock.FindPermissionByKeyFunc == nil {
+		panic("ManagerInterfaceMock.FindPermissionByKeyFunc: method is nil but ManagerInterface.FindPermissionByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockFindPermissionByKey.Lock()
+	mock.calls.FindPermissionByKey = append(mock.calls.FindPermissionByKey, callInfo)
+	mock.lockFindPermissionByKey.Unlock()
+	return mock.FindPermissionByKeyFunc(ctx, key)
+}
+
+// FindPermissionByKeyCalls gets all the calls that were made to FindPermissionByKey.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindPermissionByKeyCalls())
+func (mock *ManagerInterfaceMock) FindPermissionByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockFindPermissionByKey.RLock()
+	calls = mock.calls.FindPermissionByKey
+	mock.lockFindPermissionByKey.RUnlock()
 	return calls
 }
 
@@ -2850,6 +3198,110 @@ func (mock *ManagerInterfaceMock) GetPermissionCategoriesCountCalls() []struct {
 	return calls
 }
 
+// GetPermissions calls GetPermissionsFunc.
+func (mock *ManagerInterfaceMock) GetPermissions(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID, order parameter.PermissionOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Permission], error) {
+	if mock.GetPermissionsFunc == nil {
+		panic("ManagerInterfaceMock.GetPermissionsFunc: method is nil but ManagerInterface.GetPermissions was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		WhereSearchName   string
+		WhereInCategories []uuid.UUID
+		Order             parameter.PermissionOrderMethod
+		Pg                parameter.Pagination
+		Limit             parameter.Limit
+		Cursor            parameter.Cursor
+		Offset            parameter.Offset
+		WithCount         parameter.WithCount
+	}{
+		Ctx:               ctx,
+		WhereSearchName:   whereSearchName,
+		WhereInCategories: whereInCategories,
+		Order:             order,
+		Pg:                pg,
+		Limit:             limit,
+		Cursor:            cursor,
+		Offset:            offset,
+		WithCount:         withCount,
+	}
+	mock.lockGetPermissions.Lock()
+	mock.calls.GetPermissions = append(mock.calls.GetPermissions, callInfo)
+	mock.lockGetPermissions.Unlock()
+	return mock.GetPermissionsFunc(ctx, whereSearchName, whereInCategories, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetPermissionsCalls gets all the calls that were made to GetPermissions.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetPermissionsCalls())
+func (mock *ManagerInterfaceMock) GetPermissionsCalls() []struct {
+	Ctx               context.Context
+	WhereSearchName   string
+	WhereInCategories []uuid.UUID
+	Order             parameter.PermissionOrderMethod
+	Pg                parameter.Pagination
+	Limit             parameter.Limit
+	Cursor            parameter.Cursor
+	Offset            parameter.Offset
+	WithCount         parameter.WithCount
+} {
+	var calls []struct {
+		Ctx               context.Context
+		WhereSearchName   string
+		WhereInCategories []uuid.UUID
+		Order             parameter.PermissionOrderMethod
+		Pg                parameter.Pagination
+		Limit             parameter.Limit
+		Cursor            parameter.Cursor
+		Offset            parameter.Offset
+		WithCount         parameter.WithCount
+	}
+	mock.lockGetPermissions.RLock()
+	calls = mock.calls.GetPermissions
+	mock.lockGetPermissions.RUnlock()
+	return calls
+}
+
+// GetPermissionsCount calls GetPermissionsCountFunc.
+func (mock *ManagerInterfaceMock) GetPermissionsCount(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID) (int64, error) {
+	if mock.GetPermissionsCountFunc == nil {
+		panic("ManagerInterfaceMock.GetPermissionsCountFunc: method is nil but ManagerInterface.GetPermissionsCount was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		WhereSearchName   string
+		WhereInCategories []uuid.UUID
+	}{
+		Ctx:               ctx,
+		WhereSearchName:   whereSearchName,
+		WhereInCategories: whereInCategories,
+	}
+	mock.lockGetPermissionsCount.Lock()
+	mock.calls.GetPermissionsCount = append(mock.calls.GetPermissionsCount, callInfo)
+	mock.lockGetPermissionsCount.Unlock()
+	return mock.GetPermissionsCountFunc(ctx, whereSearchName, whereInCategories)
+}
+
+// GetPermissionsCountCalls gets all the calls that were made to GetPermissionsCount.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetPermissionsCountCalls())
+func (mock *ManagerInterfaceMock) GetPermissionsCountCalls() []struct {
+	Ctx               context.Context
+	WhereSearchName   string
+	WhereInCategories []uuid.UUID
+} {
+	var calls []struct {
+		Ctx               context.Context
+		WhereSearchName   string
+		WhereInCategories []uuid.UUID
+	}
+	mock.lockGetPermissionsCount.RLock()
+	calls = mock.calls.GetPermissionsCount
+	mock.lockGetPermissionsCount.RUnlock()
+	return calls
+}
+
 // GetPolicyCategories calls GetPolicyCategoriesFunc.
 func (mock *ManagerInterfaceMock) GetPolicyCategories(ctx context.Context, whereSearchName string, order parameter.PolicyCategoryOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PolicyCategory], error) {
 	if mock.GetPolicyCategoriesFunc == nil {
@@ -3222,6 +3674,42 @@ func (mock *ManagerInterfaceMock) PluralDeletePermissionCategoriesCalls() []stru
 	return calls
 }
 
+// PluralDeletePermissions calls PluralDeletePermissionsFunc.
+func (mock *ManagerInterfaceMock) PluralDeletePermissions(ctx context.Context, ids []uuid.UUID) error {
+	if mock.PluralDeletePermissionsFunc == nil {
+		panic("ManagerInterfaceMock.PluralDeletePermissionsFunc: method is nil but ManagerInterface.PluralDeletePermissions was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}{
+		Ctx: ctx,
+		Ids: ids,
+	}
+	mock.lockPluralDeletePermissions.Lock()
+	mock.calls.PluralDeletePermissions = append(mock.calls.PluralDeletePermissions, callInfo)
+	mock.lockPluralDeletePermissions.Unlock()
+	return mock.PluralDeletePermissionsFunc(ctx, ids)
+}
+
+// PluralDeletePermissionsCalls gets all the calls that were made to PluralDeletePermissions.
+// Check the length with:
+//
+//	len(mockedManagerInterface.PluralDeletePermissionsCalls())
+func (mock *ManagerInterfaceMock) PluralDeletePermissionsCalls() []struct {
+	Ctx context.Context
+	Ids []uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}
+	mock.lockPluralDeletePermissions.RLock()
+	calls = mock.calls.PluralDeletePermissions
+	mock.lockPluralDeletePermissions.RUnlock()
+	return calls
+}
+
 // PluralDeletePolicyCategories calls PluralDeletePolicyCategoriesFunc.
 func (mock *ManagerInterfaceMock) PluralDeletePolicyCategories(ctx context.Context, ids []uuid.UUID) error {
 	if mock.PluralDeletePolicyCategoriesFunc == nil {
@@ -3479,6 +3967,58 @@ func (mock *ManagerInterfaceMock) UpdateMimeTypeCalls() []struct {
 	mock.lockUpdateMimeType.RLock()
 	calls = mock.calls.UpdateMimeType
 	mock.lockUpdateMimeType.RUnlock()
+	return calls
+}
+
+// UpdatePermission calls UpdatePermissionFunc.
+func (mock *ManagerInterfaceMock) UpdatePermission(ctx context.Context, id uuid.UUID, name string, key string, description string, categoryID uuid.UUID) (entity.Permission, error) {
+	if mock.UpdatePermissionFunc == nil {
+		panic("ManagerInterfaceMock.UpdatePermissionFunc: method is nil but ManagerInterface.UpdatePermission was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		ID          uuid.UUID
+		Name        string
+		Key         string
+		Description string
+		CategoryID  uuid.UUID
+	}{
+		Ctx:         ctx,
+		ID:          id,
+		Name:        name,
+		Key:         key,
+		Description: description,
+		CategoryID:  categoryID,
+	}
+	mock.lockUpdatePermission.Lock()
+	mock.calls.UpdatePermission = append(mock.calls.UpdatePermission, callInfo)
+	mock.lockUpdatePermission.Unlock()
+	return mock.UpdatePermissionFunc(ctx, id, name, key, description, categoryID)
+}
+
+// UpdatePermissionCalls gets all the calls that were made to UpdatePermission.
+// Check the length with:
+//
+//	len(mockedManagerInterface.UpdatePermissionCalls())
+func (mock *ManagerInterfaceMock) UpdatePermissionCalls() []struct {
+	Ctx         context.Context
+	ID          uuid.UUID
+	Name        string
+	Key         string
+	Description string
+	CategoryID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx         context.Context
+		ID          uuid.UUID
+		Name        string
+		Key         string
+		Description string
+		CategoryID  uuid.UUID
+	}
+	mock.lockUpdatePermission.RLock()
+	calls = mock.calls.UpdatePermission
+	mock.lockUpdatePermission.RUnlock()
 	return calls
 }
 

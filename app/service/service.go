@@ -21,6 +21,7 @@ type Manager struct {
 	ManagePolicyCategory
 	ManageMimeType
 	ManageRecordType
+	ManagePermission
 }
 
 // NewManager creates a new Manager.
@@ -34,6 +35,7 @@ func NewManager(db store.Store) *Manager {
 		ManagePolicyCategory:     ManagePolicyCategory{DB: db},
 		ManageMimeType:           ManageMimeType{DB: db},
 		ManageRecordType:         ManageRecordType{DB: db},
+		ManagePermission:         ManagePermission{DB: db},
 	}
 }
 
@@ -48,6 +50,7 @@ type ManagerInterface interface {
 	PolicyCategoryManager
 	MimeTypeManager
 	RecordTypeManager
+	PermissionManager
 }
 
 // AttendStatusManager is a interface for attend status service.
@@ -204,6 +207,30 @@ type RecordTypeManager interface {
 		withCount parameter.WithCount,
 	) (store.ListResult[entity.RecordType], error)
 	GetRecordTypesCount(ctx context.Context, whereSearchName string) (int64, error)
+}
+
+// PermissionManager is a interface for event type service.
+type PermissionManager interface {
+	CreatePermission(ctx context.Context, name, key, description string, categoryID uuid.UUID) (entity.Permission, error)
+	CreatePermissions(ctx context.Context, ps []parameter.CreatePermissionParam) (int64, error)
+	UpdatePermission(
+		ctx context.Context, id uuid.UUID, name, key, description string, categoryID uuid.UUID) (entity.Permission, error)
+	DeletePermission(ctx context.Context, id uuid.UUID) error
+	PluralDeletePermissions(ctx context.Context, ids []uuid.UUID) error
+	FindPermissionByID(ctx context.Context, id uuid.UUID) (entity.Permission, error)
+	FindPermissionByKey(ctx context.Context, key string) (entity.Permission, error)
+	GetPermissions(
+		ctx context.Context,
+		whereSearchName string,
+		whereInCategories []uuid.UUID,
+		order parameter.PermissionOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.Permission], error)
+	GetPermissionsCount(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID) (int64, error)
 }
 
 var _ ManagerInterface = (*Manager)(nil)

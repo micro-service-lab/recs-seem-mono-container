@@ -51,6 +51,7 @@ func TestParser_Parse(t *testing.T) {
 					SliceSeparatorOverride: []int{10, 20, 30},
 					Custom:                 CustomType("no"),
 					SliceCustom:            []CustomType{"a b", "b c", "c"},
+					SliceCustomNoDefault:   []CustomType{},
 					CustomStruct:           CustomStruct{First: "no", Last: "no"},
 					Dive: Dive{
 						SliceInt: []int{},
@@ -84,6 +85,7 @@ func TestParser_Parse(t *testing.T) {
 					SliceSeparatorOverride: []int{10, 20, 30},
 					Custom:                 CustomType("no"),
 					SliceCustom:            []CustomType{"a b", "b c", "c"},
+					SliceCustomNoDefault:   []CustomType{},
 					CustomStruct:           CustomStruct{First: "no", Last: "no"},
 					Dive: Dive{
 						SliceInt: []int{},
@@ -104,6 +106,7 @@ func TestParser_Parse(t *testing.T) {
 					SliceSeparatorOverride: []int{10, 20, 30},
 					Custom:                 CustomType("no"),
 					SliceCustom:            []CustomType{"a b", "b c", "c"},
+					SliceCustomNoDefault:   []CustomType{},
 					CustomStruct:           CustomStruct{First: "no", Last: "no"},
 					Dive: Dive{
 						SliceInt: []int{},
@@ -123,6 +126,7 @@ func TestParser_Parse(t *testing.T) {
 					SliceSeparatorOverride: []int{10, 20, 30},
 					Custom:                 CustomType("no"),
 					SliceCustom:            []CustomType{"a b", "b c", "c"},
+					SliceCustomNoDefault:   []CustomType{},
 					CustomStruct:           CustomStruct{First: "no", Last: "no"},
 					Dive: Dive{
 						SliceInt: []int{},
@@ -142,6 +146,7 @@ func TestParser_Parse(t *testing.T) {
 					SliceSeparatorOverride: []int{10, 20, 30},
 					Custom:                 CustomType("no"),
 					SliceCustom:            []CustomType{"a b", "b c", "c"},
+					SliceCustomNoDefault:   []CustomType{},
 					CustomStruct:           CustomStruct{First: "no", Last: "no"},
 					Dive: Dive{
 						SliceInt: []int{},
@@ -161,6 +166,7 @@ func TestParser_Parse(t *testing.T) {
 					SliceSeparatorOverride: []int{10, 20, 30},
 					Custom:                 CustomType("no"),
 					SliceCustom:            []CustomType{"a b", "b c", "c"},
+					SliceCustomNoDefault:   []CustomType{},
 					CustomStruct:           CustomStruct{First: "no", Last: "no"},
 					Dive: Dive{
 						SliceInt: []int{},
@@ -170,7 +176,7 @@ func TestParser_Parse(t *testing.T) {
 		},
 		"custom": {
 			args: args{
-				query: "custom=first+last&sliceCustom=a+d&sliceCustom=a+ee+r&sliceCustom=fff",
+				query: "custom=first+last&sliceCustom=a+d&sliceCustom=a+ee+r&sliceCustom=fff&sliceCustomNoDefault=a+b&sliceCustomNoDefault=c+d",
 			},
 			want: wants{
 				ts: testStruct{
@@ -180,6 +186,7 @@ func TestParser_Parse(t *testing.T) {
 					SliceSeparatorOverride: []int{10, 20, 30},
 					Custom:                 CustomType("first last"),
 					SliceCustom:            []CustomType{"a d", "a ee r", "fff"},
+					SliceCustomNoDefault:   []CustomType{"a b", "c d"},
 					CustomStruct:           CustomStruct{First: "no", Last: "no"},
 					Dive: Dive{
 						SliceInt: []int{},
@@ -199,6 +206,7 @@ func TestParser_Parse(t *testing.T) {
 					SliceSeparatorOverride: []int{10, 20, 30},
 					Custom:                 CustomType("no"),
 					SliceCustom:            []CustomType{"a b", "b c", "c"},
+					SliceCustomNoDefault:   []CustomType{},
 					CustomStruct:           CustomStruct{First: "no", Last: "no"},
 					Dive: Dive{
 						Int:      10,
@@ -256,8 +264,9 @@ type testStruct struct {
 	DefaultSliceInt        []int `queryParam:"defaultSliceInt" paramDefault:"1,2,3"`
 	SliceSeparatorOverride []int `queryParam:"sliceSeparatorOverride" paramDefault:"10|20|30" paramSeparator:"|"`
 
-	Custom      CustomType   `queryParam:"custom"`
-	SliceCustom []CustomType `queryParam:"sliceCustom" paramSeparator:"@" paramDefault:"a+b@b+c@c"`
+	Custom               CustomType   `queryParam:"custom"`
+	SliceCustom          []CustomType `queryParam:"sliceCustom" paramSeparator:"@" paramDefault:"a+b@b+c@c"`
+	SliceCustomNoDefault []CustomType `queryParam:"sliceCustomNoDefault"`
 
 	CustomStruct CustomStruct `queryParam:"customStruct"`
 

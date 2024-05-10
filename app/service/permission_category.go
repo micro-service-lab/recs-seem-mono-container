@@ -17,8 +17,8 @@ type PermissionCategoryKey string
 const (
 	// PermissionCategoryKeyOrganization オーガナイゼーションの設定に関する権限。
 	PermissionCategoryKeyOrganization PermissionCategoryKey = "organization"
-	// PermissionCategoryKeyUser オーガナイゼーション所属ユーザー(権限含む)に関する権限。
-	PermissionCategoryKeyUser PermissionCategoryKey = "user"
+	// PermissionCategoryKeyMember オーガナイゼーション所属メンバー(権限含む)に関する権限。
+	PermissionCategoryKeyMember PermissionCategoryKey = "member"
 	// PermissionCategoryKeyEvent イベントに関する権限。
 	PermissionCategoryKeyEvent PermissionCategoryKey = "event"
 	// PermissionCategoryKeyChatRoom チャットルームに関する権限。
@@ -42,9 +42,9 @@ var PermissionCategories = []PermissionCategory{
 		Description: "オーガナイゼーションの設定に関する権限",
 	},
 	{
-		Key:         string(PermissionCategoryKeyUser),
-		Name:        "ユーザー",
-		Description: "オーガナイゼーション所属ユーザー(権限含む)に関する権限",
+		Key:         string(PermissionCategoryKeyMember),
+		Name:        "メンバー",
+		Description: "オーガナイゼーション所属メンバー(権限含む)に関する権限",
 	},
 	{
 		Key:         string(PermissionCategoryKeyEvent),

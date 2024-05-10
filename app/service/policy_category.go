@@ -15,8 +15,8 @@ import (
 type PolicyCategoryKey string
 
 const (
-	// PolicyCategoryKeyUser ユーザー(ポリシー含む)に関するポリシー。
-	PolicyCategoryKeyUser PolicyCategoryKey = "user"
+	// PolicyCategoryKeyMember メンバー(ポリシー含む)に関するポリシー。
+	PolicyCategoryKeyMember PolicyCategoryKey = "member"
 	// PolicyCategoryKeyOrganization オーガナイゼーションに関するポリシー。
 	PolicyCategoryKeyOrganization PolicyCategoryKey = "organization"
 	// PolicyCategoryKeyAttendance 出欠関連に関するポリシー。
@@ -40,9 +40,9 @@ var PolicyCategories = []PolicyCategory{
 		Description: "オーガナイゼーションの設定に関するポリシー",
 	},
 	{
-		Key:         string(PolicyCategoryKeyUser),
-		Name:        "ユーザー",
-		Description: "オーガナイゼーション所属ユーザー(ポリシー含む)に関するポリシー",
+		Key:         string(PolicyCategoryKeyMember),
+		Name:        "メンバー",
+		Description: "オーガナイゼーション所属メンバー(ポリシー含む)に関するポリシー",
 	},
 	{
 		Key:         string(PolicyCategoryKeyAttendance),

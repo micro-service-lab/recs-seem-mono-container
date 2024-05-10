@@ -143,6 +143,8 @@ The seed command is executed when the application is started for the first time.
 }
 
 // SeedInit initializes seed commands.
+//
+//nolint:wrapcheck
 func seedInit() {
 	seedAttendStatusesCmd = seedCmdGenerator(
 		"attend_status",

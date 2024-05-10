@@ -22,6 +22,20 @@ type permissionCategory struct {
 // PermissionCategory is a slice of permissionCategory.
 type PermissionCategory []permissionCategory
 
+// NewPermissionCategoriesFromEntities creates a new PermissionCategory from entities.
+func NewPermissionCategoriesFromEntities(entities []entity.PermissionCategory) PermissionCategory {
+	d := make([]permissionCategory, len(entities))
+	for i, v := range entities {
+		d[i] = permissionCategory{
+			PermissionCategoryID: v.PermissionCategoryID,
+			Key:                  v.Key,
+			Name:                 v.Name,
+			Description:          v.Description,
+		}
+	}
+	return d
+}
+
 // NewPermissionCategories creates a new PermissionCategory factory.
 func (f *Factory) NewPermissionCategories(num int) (PermissionCategory, error) {
 	f.mu.Lock()

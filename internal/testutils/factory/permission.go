@@ -1,7 +1,9 @@
 package factory
 
 import (
+	"crypto/rand"
 	"fmt"
+	"math/big"
 	"sort"
 	"strings"
 
@@ -20,11 +22,8 @@ type permission struct {
 	PermissionCategory permissionCategory `faker:"-"`
 }
 
-// Permission is a struct for Permission factory.
-type Permission struct {
-	f    *Factory
-	data []permission
-}
+// Permission is a slice of permission.
+type Permission []permission
 
 // NewPermissions creates a new Permission factory.
 func (f *Factory) NewPermissions(num int) (Permission, error) {
@@ -37,53 +36,48 @@ func (f *Factory) NewPermissions(num int) (Permission, error) {
 			return Permission{}, fmt.Errorf("failed to generate fake data: %w", err)
 		}
 	}
-	faker.ResetUnique() // Forget all generated unique values. Allows to start generating another unrelated dataset.
-	return Permission{data: d, f: f}, nil
+	faker.ResetUnique() // Forget all generated unique values. Allows to start generating another unrelated Dataset.
+	return d, nil
 }
 
 // WithPermissionCategory adds a permissionCategory to Permission.
-func (d Permission) WithPermissionCategory(categoryNum int) (Permission, error) {
-	cd, err := d.f.NewPermissionCategories(categoryNum)
-	if err != nil {
-		return Permission{}, fmt.Errorf("failed to generate fake data: %w", err)
-	}
+func (d Permission) WithPermissionCategory(categories []permissionCategory) (Permission, error) {
 	res := d.Copy()
-	for i := range res.data {
-		randI, err := faker.RandomInt(0, categoryNum-1, 1)
+	for i := range res {
+		randI, err := rand.Int(rand.Reader, big.NewInt(int64(len(categories))))
 		if err != nil {
 			return Permission{}, fmt.Errorf("failed to generate fake data: %w", err)
 		}
-		res.data[i].PermissionCategory = cd[randI[0]]
+		res[i].PermissionCategory = categories[randI.Int64()]
 	}
 	return res, nil
 }
 
 // Copy returns a copy of Permission.
 func (d Permission) Copy() Permission {
-	var res Permission
-	res.data = append(res.data, d.data...)
-	return res
+	return append(Permission{}, d...)
 }
 
 // LimitAndOffset returns a slice of Permission with the given limit and offset.
 func (d Permission) LimitAndOffset(limit, offset int) Permission {
-	if len(d.data) < offset {
+	if len(d) < offset {
 		return d
 	}
-	if len(d.data) < offset+limit {
-		return Permission{data: d.data[offset:], f: d.f}
+	if len(d) < offset+limit {
+		return d[offset:]
 	}
-	return Permission{data: d.data[offset : offset+limit], f: d.f}
+	return d[offset : offset+limit]
 }
 
 // ForCreateParam converts Permission to []parameter.CreatePermissionParam.
 func (d Permission) ForCreateParam() []parameter.CreatePermissionParam {
-	params := make([]parameter.CreatePermissionParam, len(d.data))
-	for i, v := range d.data {
+	params := make([]parameter.CreatePermissionParam, len(d))
+	for i, v := range d {
 		params[i] = parameter.CreatePermissionParam{
-			Key:         v.Key,
-			Name:        v.Name,
-			Description: v.Description,
+			Key:                  v.Key,
+			Name:                 v.Name,
+			Description:          v.Description,
+			PermissionCategoryID: v.PermissionCategory.PermissionCategoryID,
 		}
 	}
 	return params
@@ -91,13 +85,14 @@ func (d Permission) ForCreateParam() []parameter.CreatePermissionParam {
 
 // ForEntity converts Permission to []entity.Permission.
 func (d Permission) ForEntity() []entity.Permission {
-	entities := make([]entity.Permission, len(d.data))
-	for i, v := range d.data {
+	entities := make([]entity.Permission, len(d))
+	for i, v := range d {
 		entities[i] = entity.Permission{
-			PermissionID: v.PermissionID,
-			Key:          v.Key,
-			Name:         v.Name,
-			Description:  v.Description,
+			PermissionID:         v.PermissionID,
+			Key:                  v.Key,
+			Name:                 v.Name,
+			Description:          v.Description,
+			PermissionCategoryID: v.PermissionCategory.PermissionCategoryID,
 		}
 	}
 	return entities
@@ -106,7 +101,7 @@ func (d Permission) ForEntity() []entity.Permission {
 // CountContainsName returns the number of permissionCategories that contain the given name.
 func (d Permission) CountContainsName(name string) int64 {
 	count := int64(0)
-	for _, v := range d.data {
+	for _, v := range d {
 		if strings.Contains(v.Name, name) {
 			count++
 		}
@@ -117,10 +112,9 @@ func (d Permission) CountContainsName(name string) int64 {
 // FilterByName filters Permission by name.
 func (d Permission) FilterByName(name string) Permission {
 	var res Permission
-	res.f = d.f
-	for _, v := range d.data {
+	for _, v := range d {
 		if strings.Contains(v.Name, name) {
-			res.data = append(res.data, v)
+			res = append(res, v)
 		}
 	}
 	return res
@@ -128,21 +122,18 @@ func (d Permission) FilterByName(name string) Permission {
 
 // OrderByNames sorts Permission by name.
 func (d Permission) OrderByNames() Permission {
-	var res Permission
-	res.f = d.f
-	res.data = append(res.data, d.data...)
-	sort.Slice(res.data, func(i, j int) bool {
-		return res.data[i].Name < res.data[j].Name
+	res := d.Copy()
+	sort.Slice(res, func(i, j int) bool {
+		return res[i].Name < res[j].Name
 	})
 	return res
 }
 
 // OrderByReverseNames sorts Permission by name in reverse order.
 func (d Permission) OrderByReverseNames() Permission {
-	var res Permission
-	res.data = append(res.data, d.data...)
-	sort.Slice(res.data, func(i, j int) bool {
-		return res.data[i].Name > res.data[j].Name
+	res := d.Copy()
+	sort.Slice(res, func(i, j int) bool {
+		return res[i].Name > res[j].Name
 	})
 	return res
 }

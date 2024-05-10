@@ -41,6 +41,8 @@ func (a *PgAdapter) CountAttendStatuses(ctx context.Context, where parameter.Whe
 func (a *PgAdapter) CountAttendStatusesWithSd(
 	ctx context.Context, sd store.Sd, where parameter.WhereAttendStatusParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -86,6 +88,8 @@ func (a *PgAdapter) CreateAttendStatus(
 func (a *PgAdapter) CreateAttendStatusWithSd(
 	ctx context.Context, sd store.Sd, param parameter.CreateAttendStatusParam,
 ) (entity.AttendStatus, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.AttendStatus{}, store.ErrNotFoundDescriptor
@@ -129,6 +133,8 @@ func (a *PgAdapter) CreateAttendStatuses(
 func (a *PgAdapter) CreateAttendStatusesWithSd(
 	ctx context.Context, sd store.Sd, params []parameter.CreateAttendStatusParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -161,6 +167,8 @@ func (a *PgAdapter) DeleteAttendStatus(ctx context.Context, attendStatusID uuid.
 func (a *PgAdapter) DeleteAttendStatusWithSd(
 	ctx context.Context, sd store.Sd, attendStatusID uuid.UUID,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -193,6 +201,8 @@ func (a *PgAdapter) DeleteAttendStatusByKey(ctx context.Context, key string) err
 func (a *PgAdapter) DeleteAttendStatusByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -225,6 +235,8 @@ func (a *PgAdapter) PluralDeleteAttendStatuses(ctx context.Context, attendStatus
 func (a *PgAdapter) PluralDeleteAttendStatusesWithSd(
 	ctx context.Context, sd store.Sd, attendStatusIDs []uuid.UUID,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -269,6 +281,8 @@ func (a *PgAdapter) FindAttendStatusByID(
 func (a *PgAdapter) FindAttendStatusByIDWithSd(
 	ctx context.Context, sd store.Sd, attendStatusID uuid.UUID,
 ) (entity.AttendStatus, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.AttendStatus{}, store.ErrNotFoundDescriptor
@@ -309,6 +323,8 @@ func (a *PgAdapter) FindAttendStatusByKey(ctx context.Context, key string) (enti
 func (a *PgAdapter) FindAttendStatusByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) (entity.AttendStatus, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.AttendStatus{}, store.ErrNotFoundDescriptor
@@ -460,6 +476,8 @@ func (a *PgAdapter) GetAttendStatusesWithSd(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.AttendStatus], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.AttendStatus]{}, store.ErrNotFoundDescriptor
@@ -509,6 +527,8 @@ func (a *PgAdapter) GetPluralAttendStatuses(
 func (a *PgAdapter) GetPluralAttendStatusesWithSd(
 	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttendStatus], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.AttendStatus]{}, store.ErrNotFoundDescriptor
@@ -558,6 +578,8 @@ func (a *PgAdapter) UpdateAttendStatus(
 func (a *PgAdapter) UpdateAttendStatusWithSd(
 	ctx context.Context, sd store.Sd, attendStatusID uuid.UUID, param parameter.UpdateAttendStatusParams,
 ) (entity.AttendStatus, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.AttendStatus{}, store.ErrNotFoundDescriptor
@@ -606,6 +628,8 @@ func (a *PgAdapter) UpdateAttendStatusByKey(
 func (a *PgAdapter) UpdateAttendStatusByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string, param parameter.UpdateAttendStatusByKeyParams,
 ) (entity.AttendStatus, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.AttendStatus{}, store.ErrNotFoundDescriptor

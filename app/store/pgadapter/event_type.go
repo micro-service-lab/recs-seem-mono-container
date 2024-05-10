@@ -41,6 +41,8 @@ func (a *PgAdapter) CountEventTypes(ctx context.Context, where parameter.WhereEv
 func (a *PgAdapter) CountEventTypesWithSd(
 	ctx context.Context, sd store.Sd, where parameter.WhereEventTypeParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -88,6 +90,8 @@ func (a *PgAdapter) CreateEventType(
 func (a *PgAdapter) CreateEventTypeWithSd(
 	ctx context.Context, sd store.Sd, param parameter.CreateEventTypeParam,
 ) (entity.EventType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.EventType{}, store.ErrNotFoundDescriptor
@@ -132,6 +136,8 @@ func (a *PgAdapter) CreateEventTypes(
 func (a *PgAdapter) CreateEventTypesWithSd(
 	ctx context.Context, sd store.Sd, params []parameter.CreateEventTypeParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -164,6 +170,8 @@ func (a *PgAdapter) DeleteEventType(ctx context.Context, eventTypeID uuid.UUID) 
 func (a *PgAdapter) DeleteEventTypeWithSd(
 	ctx context.Context, sd store.Sd, eventTypeID uuid.UUID,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -196,6 +204,8 @@ func (a *PgAdapter) DeleteEventTypeByKey(ctx context.Context, key string) error 
 func (a *PgAdapter) DeleteEventTypeByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -228,6 +238,8 @@ func (a *PgAdapter) PluralDeleteEventTypes(ctx context.Context, eventTypeIDs []u
 func (a *PgAdapter) PluralDeleteEventTypesWithSd(
 	ctx context.Context, sd store.Sd, eventTypeIDs []uuid.UUID,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -273,6 +285,8 @@ func (a *PgAdapter) FindEventTypeByID(
 func (a *PgAdapter) FindEventTypeByIDWithSd(
 	ctx context.Context, sd store.Sd, eventTypeID uuid.UUID,
 ) (entity.EventType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.EventType{}, store.ErrNotFoundDescriptor
@@ -314,6 +328,8 @@ func (a *PgAdapter) FindEventTypeByKey(ctx context.Context, key string) (entity.
 func (a *PgAdapter) FindEventTypeByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) (entity.EventType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.EventType{}, store.ErrNotFoundDescriptor
@@ -469,6 +485,8 @@ func (a *PgAdapter) GetEventTypesWithSd(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.EventType], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.EventType]{}, store.ErrNotFoundDescriptor
@@ -519,6 +537,8 @@ func (a *PgAdapter) GetPluralEventTypes(
 func (a *PgAdapter) GetPluralEventTypesWithSd(
 	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.EventType], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.EventType]{}, store.ErrNotFoundDescriptor
@@ -570,6 +590,8 @@ func (a *PgAdapter) UpdateEventType(
 func (a *PgAdapter) UpdateEventTypeWithSd(
 	ctx context.Context, sd store.Sd, eventTypeID uuid.UUID, param parameter.UpdateEventTypeParams,
 ) (entity.EventType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.EventType{}, store.ErrNotFoundDescriptor
@@ -620,6 +642,8 @@ func (a *PgAdapter) UpdateEventTypeByKey(
 func (a *PgAdapter) UpdateEventTypeByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string, param parameter.UpdateEventTypeByKeyParams,
 ) (entity.EventType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.EventType{}, store.ErrNotFoundDescriptor

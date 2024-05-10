@@ -43,6 +43,8 @@ func (a *PgAdapter) CountPermissionCategories(
 func (a *PgAdapter) CountPermissionCategoriesWithSd(
 	ctx context.Context, sd store.Sd, where parameter.WherePermissionCategoryParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -90,6 +92,8 @@ func (a *PgAdapter) CreatePermissionCategory(
 func (a *PgAdapter) CreatePermissionCategoryWithSd(
 	ctx context.Context, sd store.Sd, param parameter.CreatePermissionCategoryParam,
 ) (entity.PermissionCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PermissionCategory{}, store.ErrNotFoundDescriptor
@@ -134,6 +138,8 @@ func (a *PgAdapter) CreatePermissionCategories(
 func (a *PgAdapter) CreatePermissionCategoriesWithSd(
 	ctx context.Context, sd store.Sd, params []parameter.CreatePermissionCategoryParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -166,6 +172,8 @@ func (a *PgAdapter) DeletePermissionCategory(ctx context.Context, permissionCate
 func (a *PgAdapter) DeletePermissionCategoryWithSd(
 	ctx context.Context, sd store.Sd, permissionCategoryID uuid.UUID,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -198,6 +206,8 @@ func (a *PgAdapter) DeletePermissionCategoryByKey(ctx context.Context, key strin
 func (a *PgAdapter) DeletePermissionCategoryByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -234,6 +244,8 @@ func (a *PgAdapter) PluralDeletePermissionCategories(
 func (a *PgAdapter) PluralDeletePermissionCategoriesWithSd(
 	ctx context.Context, sd store.Sd, permissionCategoryIDs []uuid.UUID,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -279,6 +291,8 @@ func (a *PgAdapter) FindPermissionCategoryByID(
 func (a *PgAdapter) FindPermissionCategoryByIDWithSd(
 	ctx context.Context, sd store.Sd, permissionCategoryID uuid.UUID,
 ) (entity.PermissionCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PermissionCategory{}, store.ErrNotFoundDescriptor
@@ -322,6 +336,8 @@ func (a *PgAdapter) FindPermissionCategoryByKey(ctx context.Context, key string)
 func (a *PgAdapter) FindPermissionCategoryByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) (entity.PermissionCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PermissionCategory{}, store.ErrNotFoundDescriptor
@@ -477,6 +493,8 @@ func (a *PgAdapter) GetPermissionCategoriesWithSd(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.PermissionCategory], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.PermissionCategory]{}, store.ErrNotFoundDescriptor
@@ -529,6 +547,8 @@ func (a *PgAdapter) GetPluralPermissionCategories(
 func (a *PgAdapter) GetPluralPermissionCategoriesWithSd(
 	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.PermissionCategory], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.PermissionCategory]{}, store.ErrNotFoundDescriptor
@@ -582,6 +602,8 @@ func (a *PgAdapter) UpdatePermissionCategory(
 func (a *PgAdapter) UpdatePermissionCategoryWithSd(
 	ctx context.Context, sd store.Sd, permissionCategoryID uuid.UUID, param parameter.UpdatePermissionCategoryParams,
 ) (entity.PermissionCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PermissionCategory{}, store.ErrNotFoundDescriptor
@@ -632,6 +654,8 @@ func (a *PgAdapter) UpdatePermissionCategoryByKey(
 func (a *PgAdapter) UpdatePermissionCategoryByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string, param parameter.UpdatePermissionCategoryByKeyParams,
 ) (entity.PermissionCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PermissionCategory{}, store.ErrNotFoundDescriptor

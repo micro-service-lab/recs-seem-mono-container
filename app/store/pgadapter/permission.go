@@ -45,6 +45,8 @@ func (a *PgAdapter) CountPermissions(
 func (a *PgAdapter) CountPermissionsWithSd(
 	ctx context.Context, sd store.Sd, where parameter.WherePermissionParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -94,6 +96,8 @@ func (a *PgAdapter) CreatePermission(
 func (a *PgAdapter) CreatePermissionWithSd(
 	ctx context.Context, sd store.Sd, param parameter.CreatePermissionParam,
 ) (entity.Permission, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.Permission{}, store.ErrNotFoundDescriptor
@@ -139,6 +143,8 @@ func (a *PgAdapter) CreatePermissions(
 func (a *PgAdapter) CreatePermissionsWithSd(
 	ctx context.Context, sd store.Sd, params []parameter.CreatePermissionParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -171,6 +177,8 @@ func (a *PgAdapter) DeletePermission(ctx context.Context, permissionID uuid.UUID
 func (a *PgAdapter) DeletePermissionWithSd(
 	ctx context.Context, sd store.Sd, permissionID uuid.UUID,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -203,6 +211,8 @@ func (a *PgAdapter) DeletePermissionByKey(ctx context.Context, key string) error
 func (a *PgAdapter) DeletePermissionByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -239,6 +249,8 @@ func (a *PgAdapter) PluralDeletePermissions(
 func (a *PgAdapter) PluralDeletePermissionsWithSd(
 	ctx context.Context, sd store.Sd, permissionIDs []uuid.UUID,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -285,6 +297,8 @@ func (a *PgAdapter) FindPermissionByID(
 func (a *PgAdapter) FindPermissionByIDWithSd(
 	ctx context.Context, sd store.Sd, permissionID uuid.UUID,
 ) (entity.Permission, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.Permission{}, store.ErrNotFoundDescriptor
@@ -329,6 +343,8 @@ func (a *PgAdapter) FindPermissionByKey(ctx context.Context, key string) (entity
 func (a *PgAdapter) FindPermissionByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) (entity.Permission, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.Permission{}, store.ErrNotFoundDescriptor
@@ -493,6 +509,8 @@ func (a *PgAdapter) GetPermissionsWithSd(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.Permission], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.Permission]{}, store.ErrNotFoundDescriptor
@@ -546,6 +564,8 @@ func (a *PgAdapter) GetPluralPermissions(
 func (a *PgAdapter) GetPluralPermissionsWithSd(
 	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Permission], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.Permission]{}, store.ErrNotFoundDescriptor
@@ -601,6 +621,8 @@ func (a *PgAdapter) UpdatePermission(
 func (a *PgAdapter) UpdatePermissionWithSd(
 	ctx context.Context, sd store.Sd, permissionID uuid.UUID, param parameter.UpdatePermissionParams,
 ) (entity.Permission, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.Permission{}, store.ErrNotFoundDescriptor
@@ -653,6 +675,8 @@ func (a *PgAdapter) UpdatePermissionByKey(
 func (a *PgAdapter) UpdatePermissionByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string, param parameter.UpdatePermissionByKeyParams,
 ) (entity.Permission, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.Permission{}, store.ErrNotFoundDescriptor

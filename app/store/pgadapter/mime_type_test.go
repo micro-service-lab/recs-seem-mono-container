@@ -13,7 +13,9 @@ import (
 )
 
 func TestPgAdapter_MimeType(t *testing.T) {
-	t.Parallel()
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 	ctx := context.Background()
 	adapter := NewDummyPgAdapter(t)
 
@@ -175,24 +177,31 @@ func TestPgAdapter_MimeType(t *testing.T) {
 				p := parameter.UpdateMimeTypeParams{
 					Name: "name4",
 					Key:  "key4",
+					Kind: "kind4",
 				}
 				e, err := adapter.UpdateMimeTypeWithSd(ctx, sd, el.Data[0].MimeTypeID, p)
 				assert.NoError(t, err)
 				assert.Equal(t, p.Name, e.Name)
 				assert.Equal(t, p.Key, e.Key)
+				assert.Equal(t, p.Kind, e.Kind)
 				e, err = adapter.FindMimeTypeByIDWithSd(ctx, sd, el.Data[0].MimeTypeID)
 				assert.NoError(t, err)
 				assert.Equal(t, p.Name, e.Name)
+				assert.Equal(t, p.Key, e.Key)
+				assert.Equal(t, p.Kind, e.Kind)
 				// update by key
 				p2 := parameter.UpdateMimeTypeByKeyParams{
 					Name: "name5",
+					Kind: "kind5",
 				}
 				e, err = adapter.UpdateMimeTypeByKeyWithSd(ctx, sd, el.Data[1].Key, p2)
 				assert.NoError(t, err)
 				assert.Equal(t, p2.Name, e.Name)
+				assert.Equal(t, p2.Kind, e.Kind)
 				e, err = adapter.FindMimeTypeByKeyWithSd(ctx, sd, el.Data[1].Key)
 				assert.NoError(t, err)
 				assert.Equal(t, p2.Name, e.Name)
+				assert.Equal(t, p2.Kind, e.Kind)
 			},
 		},
 	}

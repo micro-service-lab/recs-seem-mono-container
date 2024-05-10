@@ -33,6 +33,8 @@ func (a *PgAdapter) CountAbsences(ctx context.Context) (int64, error) {
 
 // CountAbsencesWithSd SD付きで欠席数を取得する。
 func (a *PgAdapter) CountAbsencesWithSd(ctx context.Context, sd store.Sd) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -71,6 +73,8 @@ func (a *PgAdapter) CreateAbsence(ctx context.Context, param parameter.CreateAbs
 func (a *PgAdapter) CreateAbsenceWithSd(
 	ctx context.Context, sd store.Sd, param parameter.CreateAbsenceParam,
 ) (entity.Absence, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.Absence{}, store.ErrNotFoundDescriptor
@@ -107,6 +111,8 @@ func (a *PgAdapter) CreateAbsences(ctx context.Context, params []parameter.Creat
 func (a *PgAdapter) CreateAbsencesWithSd(
 	ctx context.Context, sd store.Sd, params []parameter.CreateAbsenceParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -137,6 +143,8 @@ func (a *PgAdapter) DeleteAbsence(ctx context.Context, absenceID uuid.UUID) erro
 
 // DeleteAbsenceWithSd SD付きで欠席を削除する。
 func (a *PgAdapter) DeleteAbsenceWithSd(ctx context.Context, sd store.Sd, absenceID uuid.UUID) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -167,6 +175,8 @@ func (a *PgAdapter) PluralDeleteAbsences(ctx context.Context, absenceIDs []uuid.
 
 // PluralDeleteAbsencesWithSd SD付きで欠席を複数削除する。
 func (a *PgAdapter) PluralDeleteAbsencesWithSd(ctx context.Context, sd store.Sd, absenceIDs []uuid.UUID) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -206,6 +216,8 @@ func (a *PgAdapter) FindAbsenceByID(ctx context.Context, absenceID uuid.UUID) (e
 func (a *PgAdapter) FindAbsenceByIDWithSd(
 	ctx context.Context, sd store.Sd, absenceID uuid.UUID,
 ) (entity.Absence, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.Absence{}, store.ErrNotFoundDescriptor
@@ -316,6 +328,8 @@ func (a *PgAdapter) GetAbsencesWithSd(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.Absence], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.Absence]{}, store.ErrNotFoundDescriptor
@@ -359,6 +373,8 @@ func (a *PgAdapter) GetPluralAbsences(
 func (a *PgAdapter) GetPluralAbsencesWithSd(
 	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Absence], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.Absence]{}, store.ErrNotFoundDescriptor

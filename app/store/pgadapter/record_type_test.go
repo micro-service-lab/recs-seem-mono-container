@@ -13,7 +13,9 @@ import (
 )
 
 func TestPgAdapter_RecordType(t *testing.T) {
-	t.Parallel()
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 	ctx := context.Background()
 	adapter := NewDummyPgAdapter(t)
 
@@ -183,6 +185,7 @@ func TestPgAdapter_RecordType(t *testing.T) {
 				e, err = adapter.FindRecordTypeByIDWithSd(ctx, sd, el.Data[0].RecordTypeID)
 				assert.NoError(t, err)
 				assert.Equal(t, p.Name, e.Name)
+				assert.Equal(t, p.Key, e.Key)
 				// update by key
 				p2 := parameter.UpdateRecordTypeByKeyParams{
 					Name: "name5",

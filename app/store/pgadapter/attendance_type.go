@@ -41,6 +41,8 @@ func (a *PgAdapter) CountAttendanceTypes(ctx context.Context, where parameter.Wh
 func (a *PgAdapter) CountAttendanceTypesWithSd(
 	ctx context.Context, sd store.Sd, where parameter.WhereAttendanceTypeParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -88,6 +90,8 @@ func (a *PgAdapter) CreateAttendanceType(
 func (a *PgAdapter) CreateAttendanceTypeWithSd(
 	ctx context.Context, sd store.Sd, param parameter.CreateAttendanceTypeParam,
 ) (entity.AttendanceType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.AttendanceType{}, store.ErrNotFoundDescriptor
@@ -132,6 +136,8 @@ func (a *PgAdapter) CreateAttendanceTypes(
 func (a *PgAdapter) CreateAttendanceTypesWithSd(
 	ctx context.Context, sd store.Sd, params []parameter.CreateAttendanceTypeParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -164,6 +170,8 @@ func (a *PgAdapter) DeleteAttendanceType(ctx context.Context, attendanceTypeID u
 func (a *PgAdapter) DeleteAttendanceTypeWithSd(
 	ctx context.Context, sd store.Sd, attendanceTypeID uuid.UUID,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -196,6 +204,8 @@ func (a *PgAdapter) DeleteAttendanceTypeByKey(ctx context.Context, key string) e
 func (a *PgAdapter) DeleteAttendanceTypeByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -228,6 +238,8 @@ func (a *PgAdapter) PluralDeleteAttendanceTypes(ctx context.Context, attendanceT
 func (a *PgAdapter) PluralDeleteAttendanceTypesWithSd(
 	ctx context.Context, sd store.Sd, attendanceTypeIDs []uuid.UUID,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -273,6 +285,8 @@ func (a *PgAdapter) FindAttendanceTypeByID(
 func (a *PgAdapter) FindAttendanceTypeByIDWithSd(
 	ctx context.Context, sd store.Sd, attendanceTypeID uuid.UUID,
 ) (entity.AttendanceType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.AttendanceType{}, store.ErrNotFoundDescriptor
@@ -314,6 +328,8 @@ func (a *PgAdapter) FindAttendanceTypeByKey(ctx context.Context, key string) (en
 func (a *PgAdapter) FindAttendanceTypeByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) (entity.AttendanceType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.AttendanceType{}, store.ErrNotFoundDescriptor
@@ -469,6 +485,8 @@ func (a *PgAdapter) GetAttendanceTypesWithSd(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.AttendanceType], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.AttendanceType]{}, store.ErrNotFoundDescriptor
@@ -519,6 +537,8 @@ func (a *PgAdapter) GetPluralAttendanceTypes(
 func (a *PgAdapter) GetPluralAttendanceTypesWithSd(
 	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttendanceType], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.AttendanceType]{}, store.ErrNotFoundDescriptor
@@ -570,6 +590,8 @@ func (a *PgAdapter) UpdateAttendanceType(
 func (a *PgAdapter) UpdateAttendanceTypeWithSd(
 	ctx context.Context, sd store.Sd, attendanceTypeID uuid.UUID, param parameter.UpdateAttendanceTypeParams,
 ) (entity.AttendanceType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.AttendanceType{}, store.ErrNotFoundDescriptor
@@ -620,6 +642,8 @@ func (a *PgAdapter) UpdateAttendanceTypeByKey(
 func (a *PgAdapter) UpdateAttendanceTypeByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string, param parameter.UpdateAttendanceTypeByKeyParams,
 ) (entity.AttendanceType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.AttendanceType{}, store.ErrNotFoundDescriptor

@@ -12,7 +12,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/testutils/factory"
 )
 
-func TestPgAdapter_AttendStatus(t *testing.T) {
+func TestPgAdapter_Permission(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping test in short mode.")
 	}
@@ -34,46 +34,50 @@ func TestPgAdapter_AttendStatus(t *testing.T) {
 					err := adapter.Rollback(ctx, sd)
 					require.NoError(t, err)
 				})
-				fp, err := factory.Generator.NewAttendStatuses(1)
+				fp, err := factory.Generator.NewPermissions(1)
+				assert.NoError(t, err)
+				fp, err = fp.WithPermissionCategory(
+					createPermissionCategories(ctx, t, sd, adapter, 3),
+				)
 				assert.NoError(t, err)
 				p := fp.ForCreateParam()[0]
-				e, err := adapter.CreateAttendStatusWithSd(ctx, sd, p)
+				e, err := adapter.CreatePermissionWithSd(ctx, sd, p)
 				assert.NoError(t, err)
-				assert.NotEmpty(t, e.AttendStatusID)
+				assert.NotEmpty(t, e.PermissionID)
 				assert.Equal(t, p.Key, e.Key)
 				assert.Equal(t, p.Name, e.Name)
-				e, err = adapter.FindAttendStatusByIDWithSd(ctx, sd, e.AttendStatusID)
+				e, err = adapter.FindPermissionByIDWithSd(ctx, sd, e.PermissionID)
 				assert.NoError(t, err)
-				assert.NotEmpty(t, e.AttendStatusID)
+				assert.NotEmpty(t, e.PermissionID)
 				assert.Equal(t, p.Key, e.Key)
 				assert.Equal(t, p.Name, e.Name)
-				e, err = adapter.FindAttendStatusByKeyWithSd(ctx, sd, p.Key)
+				e, err = adapter.FindPermissionByKeyWithSd(ctx, sd, p.Key)
 				assert.NoError(t, err)
-				assert.NotEmpty(t, e.AttendStatusID)
+				assert.NotEmpty(t, e.PermissionID)
 				assert.Equal(t, p.Key, e.Key)
 				assert.Equal(t, p.Name, e.Name)
-				count, err := adapter.CountAttendStatusesWithSd(ctx, sd, parameter.WhereAttendStatusParam{})
+				count, err := adapter.CountPermissionsWithSd(ctx, sd, parameter.WherePermissionParam{})
 				assert.NoError(t, err)
 				assert.Equal(t, int64(1), count)
-				where1 := parameter.WhereAttendStatusParam{
+				where1 := parameter.WherePermissionParam{
 					WhereLikeName: true,
 					SearchName:    fp[0].Name,
 				}
-				where2 := parameter.WhereAttendStatusParam{
+				where2 := parameter.WherePermissionParam{
 					WhereLikeName: true,
 					SearchName:    "name",
 				}
-				count, err = adapter.CountAttendStatusesWithSd(ctx, sd, where1)
+				count, err = adapter.CountPermissionsWithSd(ctx, sd, where1)
 				assert.NoError(t, err)
 				assert.Equal(t, fp.CountContainsName(fp[0].Name), count)
-				count, err = adapter.CountAttendStatusesWithSd(ctx, sd, where2)
+				count, err = adapter.CountPermissionsWithSd(ctx, sd, where2)
 				assert.NoError(t, err)
 				assert.Equal(t, fp.CountContainsName("name"), count)
-				el, err := adapter.GetAttendStatusesWithSd(
+				el, err := adapter.GetPermissionsWithSd(
 					ctx,
 					sd,
 					where1,
-					parameter.AttendStatusOrderMethodDefault,
+					parameter.PermissionOrderMethodDefault,
 					validNp,
 					invalidCp,
 					validWc,
@@ -93,25 +97,29 @@ func TestPgAdapter_AttendStatus(t *testing.T) {
 					err := adapter.Rollback(ctx, sd)
 					require.NoError(t, err)
 				})
-				fp, err := factory.Generator.NewAttendStatuses(3)
+				fp, err := factory.Generator.NewPermissions(3)
+				assert.NoError(t, err)
+				fp, err = fp.WithPermissionCategory(
+					createPermissionCategories(ctx, t, sd, adapter, 5),
+				)
 				assert.NoError(t, err)
 				ps := fp.ForCreateParam()
-				count, err := adapter.CreateAttendStatusesWithSd(ctx, sd, ps)
+				count, err := adapter.CreatePermissionsWithSd(ctx, sd, ps)
 				assert.NoError(t, err)
 				assert.Equal(t, int64(3), count)
-				count, err = adapter.CountAttendStatusesWithSd(ctx, sd, parameter.WhereAttendStatusParam{})
+				count, err = adapter.CountPermissionsWithSd(ctx, sd, parameter.WherePermissionParam{})
 				assert.NoError(t, err)
 				assert.Equal(t, int64(3), count)
-				where := parameter.WhereAttendStatusParam{
+				where := parameter.WherePermissionParam{
 					WhereLikeName: true,
 					SearchName:    fp[0].Name,
 				}
-				where2 := parameter.WhereAttendStatusParam{}
-				el, err := adapter.GetAttendStatusesWithSd(
+				where2 := parameter.WherePermissionParam{}
+				el, err := adapter.GetPermissionsWithSd(
 					ctx,
 					sd,
 					where,
-					parameter.AttendStatusOrderMethodDefault,
+					parameter.PermissionOrderMethodDefault,
 					validNp,
 					invalidCp,
 					validWc,
@@ -119,11 +127,11 @@ func TestPgAdapter_AttendStatus(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Len(t, el.Data, int(fp.CountContainsName(fp[0].Name)))
 				assert.Equal(t, el.WithCount.Count, fp.CountContainsName(fp[0].Name))
-				el, err = adapter.GetAttendStatusesWithSd(
+				el, err = adapter.GetPermissionsWithSd(
 					ctx,
 					sd,
 					where2,
-					parameter.AttendStatusOrderMethodDefault,
+					parameter.PermissionOrderMethodDefault,
 					validNp,
 					invalidCp,
 					validWc,
@@ -131,11 +139,11 @@ func TestPgAdapter_AttendStatus(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Len(t, el.Data, 3)
 				assert.Equal(t, el.WithCount.Count, int64(3))
-				on, err := adapter.GetAttendStatusesWithSd(
+				on, err := adapter.GetPermissionsWithSd(
 					ctx,
 					sd,
 					where2,
-					parameter.AttendStatusOrderMethodName,
+					parameter.PermissionOrderMethodName,
 					validNp,
 					invalidCp,
 					validWc,
@@ -147,25 +155,25 @@ func TestPgAdapter_AttendStatus(t *testing.T) {
 				assert.Equal(t, on.Data[1].Name, fp.OrderByNames()[1].Name)
 				assert.Equal(t, on.Data[2].Name, fp.OrderByNames()[2].Name)
 				// getPlural
-				el, err = adapter.GetPluralAttendStatusesWithSd(
+				el, err = adapter.GetPluralPermissionsWithSd(
 					ctx,
 					sd,
-					[]uuid.UUID{el.Data[0].AttendStatusID, el.Data[1].AttendStatusID},
+					[]uuid.UUID{el.Data[0].PermissionID, el.Data[1].PermissionID},
 					validNp,
 				)
 				assert.NoError(t, err)
 				assert.Len(t, el.Data, 2)
 				// delete
-				err = adapter.DeleteAttendStatusWithSd(ctx, sd, el.Data[0].AttendStatusID)
+				err = adapter.DeletePermissionWithSd(ctx, sd, el.Data[0].PermissionID)
 				assert.NoError(t, err)
-				count, err = adapter.CountAttendStatusesWithSd(ctx, sd, parameter.WhereAttendStatusParam{})
+				count, err = adapter.CountPermissionsWithSd(ctx, sd, parameter.WherePermissionParam{})
 				assert.NoError(t, err)
 				assert.Equal(t, int64(2), count)
-				el, err = adapter.GetAttendStatusesWithSd(
+				el, err = adapter.GetPermissionsWithSd(
 					ctx,
 					sd,
 					where2,
-					parameter.AttendStatusOrderMethodDefault,
+					parameter.PermissionOrderMethodDefault,
 					validNp,
 					invalidCp,
 					validWc,
@@ -174,28 +182,37 @@ func TestPgAdapter_AttendStatus(t *testing.T) {
 				assert.Len(t, el.Data, 2)
 				assert.Equal(t, el.WithCount.Count, int64(2))
 				// update
-				p := parameter.UpdateAttendStatusParams{
-					Name: "name4",
-					Key:  "key4",
+				p := parameter.UpdatePermissionParams{
+					Name:                 "name4",
+					Key:                  "key4",
+					Description:          "description4",
+					PermissionCategoryID: el.Data[0].PermissionCategoryID,
 				}
-				e, err := adapter.UpdateAttendStatusWithSd(ctx, sd, el.Data[0].AttendStatusID, p)
+				e, err := adapter.UpdatePermissionWithSd(ctx, sd, el.Data[0].PermissionID, p)
 				assert.NoError(t, err)
 				assert.Equal(t, p.Name, e.Name)
 				assert.Equal(t, p.Key, e.Key)
-				e, err = adapter.FindAttendStatusByIDWithSd(ctx, sd, el.Data[0].AttendStatusID)
+				assert.Equal(t, p.Description, e.Description)
+				assert.Equal(t, p.PermissionCategoryID, e.PermissionCategoryID)
+				e, err = adapter.FindPermissionByIDWithSd(ctx, sd, el.Data[0].PermissionID)
 				assert.NoError(t, err)
 				assert.Equal(t, p.Name, e.Name)
-				assert.Equal(t, p.Key, e.Key)
 				// update by key
-				p2 := parameter.UpdateAttendStatusByKeyParams{
-					Name: "name5",
+				p2 := parameter.UpdatePermissionByKeyParams{
+					Name:                 "name5",
+					Description:          "description5",
+					PermissionCategoryID: el.Data[1].PermissionCategoryID,
 				}
-				e, err = adapter.UpdateAttendStatusByKeyWithSd(ctx, sd, el.Data[1].Key, p2)
+				e, err = adapter.UpdatePermissionByKeyWithSd(ctx, sd, el.Data[1].Key, p2)
 				assert.NoError(t, err)
 				assert.Equal(t, p2.Name, e.Name)
-				e, err = adapter.FindAttendStatusByKeyWithSd(ctx, sd, el.Data[1].Key)
+				assert.Equal(t, p2.Description, e.Description)
+				assert.Equal(t, p2.PermissionCategoryID, e.PermissionCategoryID)
+				e, err = adapter.FindPermissionByKeyWithSd(ctx, sd, el.Data[1].Key)
 				assert.NoError(t, err)
 				assert.Equal(t, p2.Name, e.Name)
+				assert.Equal(t, p2.Description, e.Description)
+				assert.Equal(t, p2.PermissionCategoryID, e.PermissionCategoryID)
 			},
 		},
 	}

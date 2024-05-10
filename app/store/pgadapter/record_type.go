@@ -41,6 +41,8 @@ func (a *PgAdapter) CountRecordTypes(ctx context.Context, where parameter.WhereR
 func (a *PgAdapter) CountRecordTypesWithSd(
 	ctx context.Context, sd store.Sd, where parameter.WhereRecordTypeParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -86,6 +88,8 @@ func (a *PgAdapter) CreateRecordType(
 func (a *PgAdapter) CreateRecordTypeWithSd(
 	ctx context.Context, sd store.Sd, param parameter.CreateRecordTypeParam,
 ) (entity.RecordType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.RecordType{}, store.ErrNotFoundDescriptor
@@ -129,6 +133,8 @@ func (a *PgAdapter) CreateRecordTypes(
 func (a *PgAdapter) CreateRecordTypesWithSd(
 	ctx context.Context, sd store.Sd, params []parameter.CreateRecordTypeParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -161,6 +167,8 @@ func (a *PgAdapter) DeleteRecordType(ctx context.Context, recordTypeID uuid.UUID
 func (a *PgAdapter) DeleteRecordTypeWithSd(
 	ctx context.Context, sd store.Sd, recordTypeID uuid.UUID,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -193,6 +201,8 @@ func (a *PgAdapter) DeleteRecordTypeByKey(ctx context.Context, key string) error
 func (a *PgAdapter) DeleteRecordTypeByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -225,6 +235,8 @@ func (a *PgAdapter) PluralDeleteRecordTypes(ctx context.Context, recordTypeIDs [
 func (a *PgAdapter) PluralDeleteRecordTypesWithSd(
 	ctx context.Context, sd store.Sd, recordTypeIDs []uuid.UUID,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -269,6 +281,8 @@ func (a *PgAdapter) FindRecordTypeByID(
 func (a *PgAdapter) FindRecordTypeByIDWithSd(
 	ctx context.Context, sd store.Sd, recordTypeID uuid.UUID,
 ) (entity.RecordType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.RecordType{}, store.ErrNotFoundDescriptor
@@ -309,6 +323,8 @@ func (a *PgAdapter) FindRecordTypeByKey(ctx context.Context, key string) (entity
 func (a *PgAdapter) FindRecordTypeByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) (entity.RecordType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.RecordType{}, store.ErrNotFoundDescriptor
@@ -463,6 +479,8 @@ func (a *PgAdapter) GetRecordTypesWithSd(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.RecordType], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.RecordType]{}, store.ErrNotFoundDescriptor
@@ -512,6 +530,8 @@ func (a *PgAdapter) GetPluralRecordTypes(
 func (a *PgAdapter) GetPluralRecordTypesWithSd(
 	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.RecordType], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.RecordType]{}, store.ErrNotFoundDescriptor
@@ -561,6 +581,8 @@ func (a *PgAdapter) UpdateRecordType(
 func (a *PgAdapter) UpdateRecordTypeWithSd(
 	ctx context.Context, sd store.Sd, recordTypeID uuid.UUID, param parameter.UpdateRecordTypeParams,
 ) (entity.RecordType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.RecordType{}, store.ErrNotFoundDescriptor
@@ -609,6 +631,8 @@ func (a *PgAdapter) UpdateRecordTypeByKey(
 func (a *PgAdapter) UpdateRecordTypeByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string, param parameter.UpdateRecordTypeByKeyParams,
 ) (entity.RecordType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.RecordType{}, store.ErrNotFoundDescriptor

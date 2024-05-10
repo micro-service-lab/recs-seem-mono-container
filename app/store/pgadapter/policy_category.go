@@ -43,6 +43,8 @@ func (a *PgAdapter) CountPolicyCategories(
 func (a *PgAdapter) CountPolicyCategoriesWithSd(
 	ctx context.Context, sd store.Sd, where parameter.WherePolicyCategoryParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -90,6 +92,8 @@ func (a *PgAdapter) CreatePolicyCategory(
 func (a *PgAdapter) CreatePolicyCategoryWithSd(
 	ctx context.Context, sd store.Sd, param parameter.CreatePolicyCategoryParam,
 ) (entity.PolicyCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PolicyCategory{}, store.ErrNotFoundDescriptor
@@ -134,6 +138,8 @@ func (a *PgAdapter) CreatePolicyCategories(
 func (a *PgAdapter) CreatePolicyCategoriesWithSd(
 	ctx context.Context, sd store.Sd, params []parameter.CreatePolicyCategoryParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -166,6 +172,8 @@ func (a *PgAdapter) DeletePolicyCategory(ctx context.Context, policyCategoryID u
 func (a *PgAdapter) DeletePolicyCategoryWithSd(
 	ctx context.Context, sd store.Sd, policyCategoryID uuid.UUID,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -198,6 +206,8 @@ func (a *PgAdapter) DeletePolicyCategoryByKey(ctx context.Context, key string) e
 func (a *PgAdapter) DeletePolicyCategoryByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -234,6 +244,8 @@ func (a *PgAdapter) PluralDeletePolicyCategories(
 func (a *PgAdapter) PluralDeletePolicyCategoriesWithSd(
 	ctx context.Context, sd store.Sd, policyCategoryIDs []uuid.UUID,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -279,6 +291,8 @@ func (a *PgAdapter) FindPolicyCategoryByID(
 func (a *PgAdapter) FindPolicyCategoryByIDWithSd(
 	ctx context.Context, sd store.Sd, policyCategoryID uuid.UUID,
 ) (entity.PolicyCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PolicyCategory{}, store.ErrNotFoundDescriptor
@@ -322,6 +336,8 @@ func (a *PgAdapter) FindPolicyCategoryByKey(ctx context.Context, key string) (en
 func (a *PgAdapter) FindPolicyCategoryByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) (entity.PolicyCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PolicyCategory{}, store.ErrNotFoundDescriptor
@@ -477,6 +493,8 @@ func (a *PgAdapter) GetPolicyCategoriesWithSd(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.PolicyCategory], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.PolicyCategory]{}, store.ErrNotFoundDescriptor
@@ -529,6 +547,8 @@ func (a *PgAdapter) GetPluralPolicyCategories(
 func (a *PgAdapter) GetPluralPolicyCategoriesWithSd(
 	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.PolicyCategory], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.PolicyCategory]{}, store.ErrNotFoundDescriptor
@@ -582,6 +602,8 @@ func (a *PgAdapter) UpdatePolicyCategory(
 func (a *PgAdapter) UpdatePolicyCategoryWithSd(
 	ctx context.Context, sd store.Sd, policyCategoryID uuid.UUID, param parameter.UpdatePolicyCategoryParams,
 ) (entity.PolicyCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PolicyCategory{}, store.ErrNotFoundDescriptor
@@ -632,6 +654,8 @@ func (a *PgAdapter) UpdatePolicyCategoryByKey(
 func (a *PgAdapter) UpdatePolicyCategoryByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string, param parameter.UpdatePolicyCategoryByKeyParams,
 ) (entity.PolicyCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PolicyCategory{}, store.ErrNotFoundDescriptor

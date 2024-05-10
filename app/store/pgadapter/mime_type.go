@@ -41,6 +41,8 @@ func (a *PgAdapter) CountMimeTypes(ctx context.Context, where parameter.WhereMim
 func (a *PgAdapter) CountMimeTypesWithSd(
 	ctx context.Context, sd store.Sd, where parameter.WhereMimeTypeParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -88,6 +90,8 @@ func (a *PgAdapter) CreateMimeType(
 func (a *PgAdapter) CreateMimeTypeWithSd(
 	ctx context.Context, sd store.Sd, param parameter.CreateMimeTypeParam,
 ) (entity.MimeType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.MimeType{}, store.ErrNotFoundDescriptor
@@ -132,6 +136,8 @@ func (a *PgAdapter) CreateMimeTypes(
 func (a *PgAdapter) CreateMimeTypesWithSd(
 	ctx context.Context, sd store.Sd, params []parameter.CreateMimeTypeParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
@@ -164,6 +170,8 @@ func (a *PgAdapter) DeleteMimeType(ctx context.Context, mimeTypeID uuid.UUID) er
 func (a *PgAdapter) DeleteMimeTypeWithSd(
 	ctx context.Context, sd store.Sd, mimeTypeID uuid.UUID,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -196,6 +204,8 @@ func (a *PgAdapter) DeleteMimeTypeByKey(ctx context.Context, key string) error {
 func (a *PgAdapter) DeleteMimeTypeByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -228,6 +238,8 @@ func (a *PgAdapter) PluralDeleteMimeTypes(ctx context.Context, mimeTypeIDs []uui
 func (a *PgAdapter) PluralDeleteMimeTypesWithSd(
 	ctx context.Context, sd store.Sd, mimeTypeIDs []uuid.UUID,
 ) error {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ErrNotFoundDescriptor
@@ -273,6 +285,8 @@ func (a *PgAdapter) FindMimeTypeByID(
 func (a *PgAdapter) FindMimeTypeByIDWithSd(
 	ctx context.Context, sd store.Sd, mimeTypeID uuid.UUID,
 ) (entity.MimeType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.MimeType{}, store.ErrNotFoundDescriptor
@@ -314,6 +328,8 @@ func (a *PgAdapter) FindMimeTypeByKey(ctx context.Context, key string) (entity.M
 func (a *PgAdapter) FindMimeTypeByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) (entity.MimeType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.MimeType{}, store.ErrNotFoundDescriptor
@@ -469,6 +485,8 @@ func (a *PgAdapter) GetMimeTypesWithSd(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.MimeType], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.MimeType]{}, store.ErrNotFoundDescriptor
@@ -519,6 +537,8 @@ func (a *PgAdapter) GetPluralMimeTypes(
 func (a *PgAdapter) GetPluralMimeTypesWithSd(
 	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.MimeType], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.MimeType]{}, store.ErrNotFoundDescriptor
@@ -570,6 +590,8 @@ func (a *PgAdapter) UpdateMimeType(
 func (a *PgAdapter) UpdateMimeTypeWithSd(
 	ctx context.Context, sd store.Sd, mimeTypeID uuid.UUID, param parameter.UpdateMimeTypeParams,
 ) (entity.MimeType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.MimeType{}, store.ErrNotFoundDescriptor
@@ -620,6 +642,8 @@ func (a *PgAdapter) UpdateMimeTypeByKey(
 func (a *PgAdapter) UpdateMimeTypeByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string, param parameter.UpdateMimeTypeByKeyParams,
 ) (entity.MimeType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.MimeType{}, store.ErrNotFoundDescriptor

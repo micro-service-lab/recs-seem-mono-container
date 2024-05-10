@@ -18,7 +18,7 @@ import (
 
 // PgAdapter is a Postgres adapter for the store package.
 type PgAdapter struct {
-	mu      sync.Mutex
+	mu      sync.RWMutex
 	query   *query.Queries
 	pool    *pgxpool.Pool
 	clocker clock.Clock

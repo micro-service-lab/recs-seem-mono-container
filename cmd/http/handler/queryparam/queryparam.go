@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/stoewer/go-strcase"
@@ -136,9 +137,6 @@ type processFieldFn func(
 
 // Options for the parser.
 type Options struct {
-	// Param keys and values that will be accessible for the service.
-	Param map[string][]string
-
 	// DefaultValueSeparator for slice values.
 	DefaultValueSeparator string
 
@@ -163,18 +161,28 @@ type Options struct {
 
 	// Custom parse functions for different types.
 	FuncMap map[reflect.Type]ParserFunc
+	funcMap *sync.Map
 
 	// Used internally. maps the param key to its resolved string value.
-	rawParams map[string][]string
+	rawParams *sync.Map
 }
 
 func defaultOptions(param url.Values) Options {
+	p := &sync.Map{}
+	for k, v := range param {
+		p.Store(k, v)
+	}
+	defaultParsers := defaultTypeParsers()
+	f := &sync.Map{}
+	for k, v := range defaultParsers {
+		f.Store(k, v)
+	}
 	return Options{
 		TagName:               "queryParam",
 		DefaultValueSeparator: "&",
-		Param:                 param,
-		FuncMap:               defaultTypeParsers(),
-		rawParams:             make(map[string][]string),
+		funcMap:               f,
+		FuncMap:               defaultParsers,
+		rawParams:             p,
 	}
 }
 
@@ -183,37 +191,37 @@ func customOptions(param url.Values, opt Options) Options {
 	if opt.TagName == "" {
 		opt.TagName = defOpts.TagName
 	}
-	if opt.Param == nil {
-		opt.Param = defOpts.Param
+	if opt.funcMap == nil {
+		opt.funcMap = &sync.Map{}
 	}
-	if opt.FuncMap == nil {
-		opt.FuncMap = map[reflect.Type]ParserFunc{}
+	for k, v := range opt.FuncMap {
+		if _, exists := opt.funcMap.Load(k); !exists {
+			opt.funcMap.Store(k, v)
+		}
+	}
+	for k, v := range defOpts.FuncMap {
+		if _, exists := opt.funcMap.Load(k); !exists {
+			opt.funcMap.Store(k, v)
+		}
 	}
 	if opt.DefaultValueSeparator == "" {
 		opt.DefaultValueSeparator = defOpts.DefaultValueSeparator
 	}
-	if opt.rawParams == nil {
-		opt.rawParams = defOpts.rawParams
-	}
-	for k, v := range defOpts.FuncMap {
-		if _, exists := opt.FuncMap[k]; !exists {
-			opt.FuncMap[k] = v
-		}
-	}
+	opt.rawParams = defOpts.rawParams
 	return opt
 }
 
 func optionsWithParamPrefix(field reflect.StructField, opts Options) Options {
 	return Options{
-		Param:                 opts.Param,
 		TagName:               opts.TagName,
 		RequiredIfNoDef:       opts.RequiredIfNoDef,
 		OnSet:                 opts.OnSet,
 		Prefix:                opts.Prefix + field.Tag.Get("paramPrefix"),
 		UseFieldNameByDefault: opts.UseFieldNameByDefault,
-		FuncMap:               opts.FuncMap,
 		DefaultValueSeparator: opts.DefaultValueSeparator,
 		rawParams:             opts.rawParams,
+		funcMap:               opts.funcMap,
+		FuncMap:               opts.FuncMap,
 	}
 }
 
@@ -361,7 +369,21 @@ func setField(refField reflect.Value, refTypeField reflect.StructField, opts Opt
 		value = []string{""}
 	}
 
-	return set(refField, refTypeField, value, opts.FuncMap)
+	funcMap := make(map[reflect.Type]ParserFunc)
+	opts.funcMap.Range(func(key, value any) bool {
+		k, ok := key.(reflect.Type)
+		if !ok {
+			return false
+		}
+		v, ok := value.(ParserFunc)
+		if !ok {
+			return false
+		}
+		funcMap[k] = v
+		return true
+	})
+
+	return set(refField, refTypeField, value, funcMap)
 }
 
 // フィールド名からキー(タグの名前)を生成する
@@ -419,9 +441,24 @@ func parseFieldParams(field reflect.StructField, opts Options) (FieldParams, err
 func get(fieldParams FieldParams, opts Options) (val []string) {
 	var isDefault bool
 
-	val, isDefault = getOr(fieldParams.Key, fieldParams.DefaultValue, fieldParams.HasDefaultValue, opts.Param)
+	param := make(map[string][]string)
 
-	opts.rawParams[fieldParams.OwnKey] = val
+	opts.rawParams.Range(func(key, value any) bool {
+		k, ok := key.(string)
+		if !ok {
+			return false
+		}
+		v, ok := value.([]string)
+		if !ok {
+			return false
+		}
+		param[k] = v
+		return true
+	})
+
+	val, isDefault = getOr(fieldParams.Key, fieldParams.DefaultValue, fieldParams.HasDefaultValue, param)
+
+	opts.rawParams.Store(fieldParams.Key, val)
 
 	if opts.OnSet != nil { // 値が設定されたときに実行される関数がある場合
 		if fieldParams.OwnKey != "" { // queryParamタグがある場合

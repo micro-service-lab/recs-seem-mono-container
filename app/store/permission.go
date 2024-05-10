@@ -11,10 +11,10 @@ import (
 
 // Permission 権限を表すインターフェース。
 type Permission interface {
-	// CountPermissionCategories 権限数を取得する。
-	CountPermissionCategories(ctx context.Context, where parameter.WherePermissionParam) (int64, error)
-	// CountPermissionCategoriesWithSd SD付きで権限数を取得する。
-	CountPermissionCategoriesWithSd(
+	// CountPermissions 権限数を取得する。
+	CountPermissions(ctx context.Context, where parameter.WherePermissionParam) (int64, error)
+	// CountPermissionsWithSd SD付きで権限数を取得する。
+	CountPermissionsWithSd(
 		ctx context.Context, sd Sd, where parameter.WherePermissionParam) (int64, error)
 	// CreatePermission 権限を作成する。
 	CreatePermission(
@@ -22,10 +22,10 @@ type Permission interface {
 	// CreatePermissionWithSd SD付きで権限を作成する。
 	CreatePermissionWithSd(
 		ctx context.Context, sd Sd, param parameter.CreatePermissionParam) (entity.Permission, error)
-	// CreatePermissionCategories 権限を作成する。
-	CreatePermissionCategories(ctx context.Context, params []parameter.CreatePermissionParam) (int64, error)
-	// CreatePermissionCategoriesWithSd SD付きで権限を作成する。
-	CreatePermissionCategoriesWithSd(
+	// CreatePermissions 権限を作成する。
+	CreatePermissions(ctx context.Context, params []parameter.CreatePermissionParam) (int64, error)
+	// CreatePermissionsWithSd SD付きで権限を作成する。
+	CreatePermissionsWithSd(
 		ctx context.Context, sd Sd, params []parameter.CreatePermissionParam) (int64, error)
 	// DeletePermission 権限を削除する。
 	DeletePermission(ctx context.Context, permissionID uuid.UUID) error
@@ -35,10 +35,10 @@ type Permission interface {
 	DeletePermissionByKey(ctx context.Context, key string) error
 	// DeletePermissionByKeyWithSd SD付きで権限を削除する。
 	DeletePermissionByKeyWithSd(ctx context.Context, sd Sd, key string) error
-	// PluralDeletePermissionCategories 権限を複数削除する。
-	PluralDeletePermissionCategories(ctx context.Context, permissionIDs []uuid.UUID) error
-	// PluralDeletePermissionCategoriesWithSd SD付きで権限を複数削除する。
-	PluralDeletePermissionCategoriesWithSd(ctx context.Context, sd Sd, permissionIDs []uuid.UUID) error
+	// PluralDeletePermissions 権限を複数削除する。
+	PluralDeletePermissions(ctx context.Context, permissionIDs []uuid.UUID) error
+	// PluralDeletePermissionsWithSd SD付きで権限を複数削除する。
+	PluralDeletePermissionsWithSd(ctx context.Context, sd Sd, permissionIDs []uuid.UUID) error
 	// FindPermissionByID 権限を取得する。
 	FindPermissionByID(ctx context.Context, permissionID uuid.UUID) (entity.Permission, error)
 	// FindPermissionByIDWithSd SD付きで権限を取得する。
@@ -48,8 +48,8 @@ type Permission interface {
 	FindPermissionByKey(ctx context.Context, key string) (entity.Permission, error)
 	// FindPermissionByKeyWithSd SD付きで権限を取得する。
 	FindPermissionByKeyWithSd(ctx context.Context, sd Sd, key string) (entity.Permission, error)
-	// GetPermissionCategories 権限を取得する。
-	GetPermissionCategories(
+	// GetPermissions 権限を取得する。
+	GetPermissions(
 		ctx context.Context,
 		where parameter.WherePermissionParam,
 		order parameter.PermissionOrderMethod,
@@ -57,8 +57,8 @@ type Permission interface {
 		cp CursorPaginationParam,
 		wc WithCountParam,
 	) (ListResult[entity.Permission], error)
-	// GetPermissionCategoriesWithSd SD付きで権限を取得する。
-	GetPermissionCategoriesWithSd(
+	// GetPermissionsWithSd SD付きで権限を取得する。
+	GetPermissionsWithSd(
 		ctx context.Context,
 		sd Sd,
 		where parameter.WherePermissionParam,
@@ -67,14 +67,14 @@ type Permission interface {
 		cp CursorPaginationParam,
 		wc WithCountParam,
 	) (ListResult[entity.Permission], error)
-	// GetPluralPermissionCategories 権限を取得する。
-	GetPluralPermissionCategories(
+	// GetPluralPermissions 権限を取得する。
+	GetPluralPermissions(
 		ctx context.Context,
 		PermissionIDs []uuid.UUID,
 		np NumberedPaginationParam,
 	) (ListResult[entity.Permission], error)
-	// GetPluralPermissionCategoriesWithSd SD付きで権限を取得する。
-	GetPluralPermissionCategoriesWithSd(
+	// GetPluralPermissionsWithSd SD付きで権限を取得する。
+	GetPluralPermissionsWithSd(
 		ctx context.Context,
 		sd Sd,
 		PermissionIDs []uuid.UUID,

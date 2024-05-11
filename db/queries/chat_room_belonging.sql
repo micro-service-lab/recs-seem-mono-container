@@ -67,12 +67,12 @@ END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC,
 	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC,
 	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'next' THEN m_chat_room_belongings.added_at END ASC,
 	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'prev' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'next' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'prev' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'next' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'prev' THEN m_chat_room_belongings.added_at END ASC,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_chat_room_belongings_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_chat_room_belongings_pkey END DESC
 LIMIT $2;
@@ -169,20 +169,20 @@ END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_chat_rooms.name END ASC,
 	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_chat_rooms.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_chat_rooms.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_chat_rooms.name END DESC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_chat_rooms.name END DESC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_chat_rooms.name END ASC,
 	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'next' THEN m_chat_room_belongings.added_at END ASC,
 	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'prev' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'next' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'prev' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'next' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'prev' THEN m_chat_room_belongings.added_at END ASC,
 	CASE WHEN @order_method::text = 'old_chat' AND @cursor_direction::text = 'next' THEN
 		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END ASC,
 	CASE WHEN @order_method::text = 'old_chat' AND @cursor_direction::text = 'prev' THEN
 		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END DESC,
 	CASE WHEN @order_method::text = 'late_chat' AND @cursor_direction::text = 'next' THEN
-		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END ASC,
-	CASE WHEN @order_method::text = 'late_chat' AND @cursor_direction::text = 'prev' THEN
 		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END DESC,
+	CASE WHEN @order_method::text = 'late_chat' AND @cursor_direction::text = 'prev' THEN
+		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END ASC,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_chat_room_belongings_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_chat_room_belongings_pkey END DESC
 LIMIT $2;

@@ -66,8 +66,8 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_permission_categories.name END ASC,
 	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_permission_categories.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_permission_categories.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_permission_categories.name END DESC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_permission_categories.name END DESC,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_permission_categories.name END ASC,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_permission_categories_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_permission_categories_pkey END DESC
 LIMIT $1;

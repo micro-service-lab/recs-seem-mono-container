@@ -135,8 +135,8 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
 	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
@@ -233,8 +233,8 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
 	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
@@ -333,8 +333,8 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
 	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
@@ -433,8 +433,8 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
 	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
@@ -533,8 +533,8 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
 	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
@@ -633,8 +633,8 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
 	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
@@ -745,8 +745,8 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
 	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;

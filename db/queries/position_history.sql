@@ -74,8 +74,8 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'old_send' AND @cursor_direction::text = 'next' THEN sent_at END ASC,
 	CASE WHEN @order_method::text = 'old_send' AND @cursor_direction::text = 'prev' THEN sent_at END DESC,
-	CASE WHEN @order_method::text = 'late_send' AND @cursor_direction::text = 'next' THEN sent_at END ASC,
-	CASE WHEN @order_method::text = 'late_send' AND @cursor_direction::text = 'prev' THEN sent_at END DESC,
+	CASE WHEN @order_method::text = 'late_send' AND @cursor_direction::text = 'next' THEN sent_at END DESC,
+	CASE WHEN @order_method::text = 'late_send' AND @cursor_direction::text = 'prev' THEN sent_at END ASC,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_position_histories_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_position_histories_pkey END DESC
 LIMIT $1;
@@ -142,8 +142,8 @@ AND
 ORDER BY
 	CASE WHEN @order_method::text = 'old_send' AND @cursor_direction::text = 'next' THEN sent_at END ASC,
 	CASE WHEN @order_method::text = 'old_send' AND @cursor_direction::text = 'prev' THEN sent_at END DESC,
-	CASE WHEN @order_method::text = 'late_send' AND @cursor_direction::text = 'next' THEN sent_at END ASC,
-	CASE WHEN @order_method::text = 'late_send' AND @cursor_direction::text = 'prev' THEN sent_at END DESC,
+	CASE WHEN @order_method::text = 'late_send' AND @cursor_direction::text = 'next' THEN sent_at END DESC,
+	CASE WHEN @order_method::text = 'late_send' AND @cursor_direction::text = 'prev' THEN sent_at END ASC,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_position_histories_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_position_histories_pkey END DESC
 LIMIT $1;

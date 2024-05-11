@@ -522,6 +522,231 @@ func (a *PgAdapter) GetPermissionsWithSd(
 	return r, nil
 }
 
+func getPermissionsWithCategory(
+	ctx context.Context, qtx *query.Queries, where parameter.WherePermissionParam,
+	order parameter.PermissionOrderMethod,
+	np store.NumberedPaginationParam,
+	cp store.CursorPaginationParam,
+	wc store.WithCountParam,
+) (store.ListResult[entity.PermissionWithCategory], error) {
+	eConvFunc := func(e entity.PermissionWithCategoryForQuery) (entity.PermissionWithCategory, error) {
+		return e.PermissionWithCategory, nil
+	}
+	runCFunc := func() (int64, error) {
+		p := query.CountPermissionsParams{
+			WhereLikeName:   where.WhereLikeName,
+			SearchName:      where.SearchName,
+			WhereInCategory: where.WhereInCategory,
+			InCategories:    where.InCategories,
+		}
+		r, err := qtx.CountPermissions(ctx, p)
+		if err != nil {
+			return 0, fmt.Errorf("failed to count permission: %w", err)
+		}
+		return r, nil
+	}
+	runQFunc := func(orderMethod string) ([]entity.PermissionWithCategoryForQuery, error) {
+		p := query.GetPermissionsWithCategoryParams{
+			WhereLikeName:   where.WhereLikeName,
+			SearchName:      where.SearchName,
+			WhereInCategory: where.WhereInCategory,
+			InCategories:    where.InCategories,
+			OrderMethod:     orderMethod,
+		}
+		r, err := qtx.GetPermissionsWithCategory(ctx, p)
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return []entity.PermissionWithCategoryForQuery{}, nil
+			}
+			return nil, fmt.Errorf("failed to get permission: %w", err)
+		}
+		e := make([]entity.PermissionWithCategoryForQuery, len(r))
+		for i, v := range r {
+			e[i] = entity.PermissionWithCategoryForQuery{
+				Pkey: entity.Int{
+					Int64: v.MPermissionsPkey.Int64,
+					Valid: v.MPermissionsPkey.Valid,
+				},
+				PermissionWithCategory: entity.PermissionWithCategory{
+					Permission: entity.Permission{
+						PermissionID:         v.PermissionID,
+						Name:                 v.Name,
+						Key:                  v.Key,
+						Description:          v.Description,
+						PermissionCategoryID: v.PermissionCategoryID,
+					},
+					PermissionCategory: entity.PermissionCategory{
+						PermissionCategoryID: v.PermissionCategoryID,
+						Name:                 v.PermissionCategoryName,
+						Key:                  v.PermissionCategoryKey,
+						Description:          v.PermissionCategoryDescription,
+					},
+				},
+			}
+		}
+		return e, nil
+	}
+	runQCPFunc := func(subCursor, orderMethod string,
+		limit int32, cursorDir string, cursor int32, subCursorValue any,
+	) ([]entity.PermissionWithCategoryForQuery, error) {
+		var nameCursor string
+		var ok bool
+		switch subCursor {
+		case parameter.PermissionNameCursorKey:
+			nameCursor, ok = subCursorValue.(string)
+			if !ok {
+				nameCursor = ""
+			}
+		}
+		p := query.GetPermissionsWithCategoryUseKeysetPaginateParams{
+			WhereLikeName:   where.WhereLikeName,
+			SearchName:      where.SearchName,
+			WhereInCategory: where.WhereInCategory,
+			InCategories:    where.InCategories,
+			OrderMethod:     orderMethod,
+			Limit:           limit,
+			CursorDirection: cursorDir,
+			Cursor:          cursor,
+			NameCursor:      nameCursor,
+		}
+		r, err := qtx.GetPermissionsWithCategoryUseKeysetPaginate(ctx, p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get permission: %w", err)
+		}
+		e := make([]entity.PermissionWithCategoryForQuery, len(r))
+		for i, v := range r {
+			e[i] = entity.PermissionWithCategoryForQuery{
+				Pkey: entity.Int{
+					Int64: v.MPermissionsPkey.Int64,
+					Valid: v.MPermissionsPkey.Valid,
+				},
+				PermissionWithCategory: entity.PermissionWithCategory{
+					Permission: entity.Permission{
+						PermissionID:         v.PermissionID,
+						Name:                 v.Name,
+						Key:                  v.Key,
+						Description:          v.Description,
+						PermissionCategoryID: v.PermissionCategoryID,
+					},
+					PermissionCategory: entity.PermissionCategory{
+						PermissionCategoryID: v.PermissionCategoryID,
+						Name:                 v.PermissionCategoryName,
+						Key:                  v.PermissionCategoryKey,
+						Description:          v.PermissionCategoryDescription,
+					},
+				},
+			}
+		}
+		return e, nil
+	}
+	runQNPFunc := func(orderMethod string, limit, offset int32) ([]entity.PermissionWithCategoryForQuery, error) {
+		p := query.GetPermissionsWithCategoryUseNumberedPaginateParams{
+			WhereLikeName:   where.WhereLikeName,
+			SearchName:      where.SearchName,
+			WhereInCategory: where.WhereInCategory,
+			InCategories:    where.InCategories,
+			OrderMethod:     orderMethod,
+			Offset:          offset,
+			Limit:           limit,
+		}
+		r, err := qtx.GetPermissionsWithCategoryUseNumberedPaginate(ctx, p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get permission: %w", err)
+		}
+		e := make([]entity.PermissionWithCategoryForQuery, len(r))
+		for i, v := range r {
+			e[i] = entity.PermissionWithCategoryForQuery{
+				Pkey: entity.Int{
+					Int64: v.MPermissionsPkey.Int64,
+					Valid: v.MPermissionsPkey.Valid,
+				},
+				PermissionWithCategory: entity.PermissionWithCategory{
+					Permission: entity.Permission{
+						PermissionID:         v.PermissionID,
+						Name:                 v.Name,
+						Key:                  v.Key,
+						Description:          v.Description,
+						PermissionCategoryID: v.PermissionCategoryID,
+					},
+					PermissionCategory: entity.PermissionCategory{
+						PermissionCategoryID: v.PermissionCategoryID,
+						Name:                 v.PermissionCategoryName,
+						Key:                  v.PermissionCategoryKey,
+						Description:          v.PermissionCategoryDescription,
+					},
+				},
+			}
+		}
+		return e, nil
+	}
+	selector := func(subCursor string, e entity.PermissionWithCategoryForQuery) (entity.Int, any) {
+		switch subCursor {
+		case parameter.PermissionDefaultCursorKey:
+			return entity.Int(e.Pkey), nil
+		case parameter.PermissionNameCursorKey:
+			return entity.Int(e.Pkey), e.Name
+		}
+		return entity.Int(e.Pkey), nil
+	}
+
+	res, err := store.RunListQuery(
+		ctx,
+		order,
+		np,
+		cp,
+		wc,
+		eConvFunc,
+		runCFunc,
+		runQFunc,
+		runQCPFunc,
+		runQNPFunc,
+		selector,
+	)
+	if err != nil {
+		return store.ListResult[entity.PermissionWithCategory]{}, fmt.Errorf("failed to get permission: %w", err)
+	}
+	return res, nil
+}
+
+// GetPermissionsWithCategory 権限とそのカテゴリーを取得する。
+func (a *PgAdapter) GetPermissionsWithCategory(
+	ctx context.Context,
+	where parameter.WherePermissionParam,
+	order parameter.PermissionOrderMethod,
+	np store.NumberedPaginationParam,
+	cp store.CursorPaginationParam,
+	wc store.WithCountParam,
+) (store.ListResult[entity.PermissionWithCategory], error) {
+	r, err := getPermissionsWithCategory(ctx, a.query, where, order, np, cp, wc)
+	if err != nil {
+		return store.ListResult[entity.PermissionWithCategory]{}, fmt.Errorf("failed to get permission: %w", err)
+	}
+	return r, nil
+}
+
+// GetPermissionsWithCategoryWithSd SD付きで権限とそのカテゴリーを取得する。
+func (a *PgAdapter) GetPermissionsWithCategoryWithSd(
+	ctx context.Context,
+	sd store.Sd,
+	where parameter.WherePermissionParam,
+	order parameter.PermissionOrderMethod,
+	np store.NumberedPaginationParam,
+	cp store.CursorPaginationParam,
+	wc store.WithCountParam,
+) (store.ListResult[entity.PermissionWithCategory], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ListResult[entity.PermissionWithCategory]{}, store.ErrNotFoundDescriptor
+	}
+	r, err := getPermissionsWithCategory(ctx, qtx, where, order, np, cp, wc)
+	if err != nil {
+		return store.ListResult[entity.PermissionWithCategory]{}, fmt.Errorf("failed to get permission: %w", err)
+	}
+	return r, nil
+}
+
 func getPluralPermissions(
 	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Permission], error) {

@@ -230,6 +230,17 @@ type PermissionManager interface {
 		offset parameter.Offset,
 		withCount parameter.WithCount,
 	) (store.ListResult[entity.Permission], error)
+	GetPermissionsWithCategory(
+		ctx context.Context,
+		whereSearchName string,
+		whereInCategories []uuid.UUID,
+		order parameter.PermissionOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.PermissionWithCategory], error)
 	GetPermissionsCount(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID) (int64, error)
 }
 

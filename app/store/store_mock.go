@@ -435,6 +435,12 @@ var _ Store = &StoreMock{}
 //			GetPermissionsFunc: func(ctx context.Context, where parameter.WherePermissionParam, order parameter.PermissionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Permission], error) {
 //				panic("mock out the GetPermissions method")
 //			},
+//			GetPermissionsWithCategoryFunc: func(ctx context.Context, where parameter.WherePermissionParam, order parameter.PermissionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PermissionWithCategory], error) {
+//				panic("mock out the GetPermissionsWithCategory method")
+//			},
+//			GetPermissionsWithCategoryWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WherePermissionParam, order parameter.PermissionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PermissionWithCategory], error) {
+//				panic("mock out the GetPermissionsWithCategoryWithSd method")
+//			},
 //			GetPermissionsWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WherePermissionParam, order parameter.PermissionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Permission], error) {
 //				panic("mock out the GetPermissionsWithSd method")
 //			},
@@ -1077,6 +1083,12 @@ type StoreMock struct {
 
 	// GetPermissionsFunc mocks the GetPermissions method.
 	GetPermissionsFunc func(ctx context.Context, where parameter.WherePermissionParam, order parameter.PermissionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Permission], error)
+
+	// GetPermissionsWithCategoryFunc mocks the GetPermissionsWithCategory method.
+	GetPermissionsWithCategoryFunc func(ctx context.Context, where parameter.WherePermissionParam, order parameter.PermissionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PermissionWithCategory], error)
+
+	// GetPermissionsWithCategoryWithSdFunc mocks the GetPermissionsWithCategoryWithSd method.
+	GetPermissionsWithCategoryWithSdFunc func(ctx context.Context, sd Sd, where parameter.WherePermissionParam, order parameter.PermissionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PermissionWithCategory], error)
 
 	// GetPermissionsWithSdFunc mocks the GetPermissionsWithSd method.
 	GetPermissionsWithSdFunc func(ctx context.Context, sd Sd, where parameter.WherePermissionParam, order parameter.PermissionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Permission], error)
@@ -2494,6 +2506,38 @@ type StoreMock struct {
 			// Wc is the wc argument value.
 			Wc WithCountParam
 		}
+		// GetPermissionsWithCategory holds details about calls to the GetPermissionsWithCategory method.
+		GetPermissionsWithCategory []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WherePermissionParam
+			// Order is the order argument value.
+			Order parameter.PermissionOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetPermissionsWithCategoryWithSd holds details about calls to the GetPermissionsWithCategoryWithSd method.
+		GetPermissionsWithCategoryWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WherePermissionParam
+			// Order is the order argument value.
+			Order parameter.PermissionOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
 		// GetPermissionsWithSd holds details about calls to the GetPermissionsWithSd method.
 		GetPermissionsWithSd []struct {
 			// Ctx is the ctx argument value.
@@ -3365,6 +3409,8 @@ type StoreMock struct {
 	lockGetPermissionCategories                sync.RWMutex
 	lockGetPermissionCategoriesWithSd          sync.RWMutex
 	lockGetPermissions                         sync.RWMutex
+	lockGetPermissionsWithCategory             sync.RWMutex
+	lockGetPermissionsWithCategoryWithSd       sync.RWMutex
 	lockGetPermissionsWithSd                   sync.RWMutex
 	lockGetPluralAbsences                      sync.RWMutex
 	lockGetPluralAbsencesWithSd                sync.RWMutex
@@ -8858,6 +8904,114 @@ func (mock *StoreMock) GetPermissionsCalls() []struct {
 	mock.lockGetPermissions.RLock()
 	calls = mock.calls.GetPermissions
 	mock.lockGetPermissions.RUnlock()
+	return calls
+}
+
+// GetPermissionsWithCategory calls GetPermissionsWithCategoryFunc.
+func (mock *StoreMock) GetPermissionsWithCategory(ctx context.Context, where parameter.WherePermissionParam, order parameter.PermissionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PermissionWithCategory], error) {
+	if mock.GetPermissionsWithCategoryFunc == nil {
+		panic("StoreMock.GetPermissionsWithCategoryFunc: method is nil but Store.GetPermissionsWithCategory was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WherePermissionParam
+		Order parameter.PermissionOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetPermissionsWithCategory.Lock()
+	mock.calls.GetPermissionsWithCategory = append(mock.calls.GetPermissionsWithCategory, callInfo)
+	mock.lockGetPermissionsWithCategory.Unlock()
+	return mock.GetPermissionsWithCategoryFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetPermissionsWithCategoryCalls gets all the calls that were made to GetPermissionsWithCategory.
+// Check the length with:
+//
+//	len(mockedStore.GetPermissionsWithCategoryCalls())
+func (mock *StoreMock) GetPermissionsWithCategoryCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WherePermissionParam
+	Order parameter.PermissionOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WherePermissionParam
+		Order parameter.PermissionOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetPermissionsWithCategory.RLock()
+	calls = mock.calls.GetPermissionsWithCategory
+	mock.lockGetPermissionsWithCategory.RUnlock()
+	return calls
+}
+
+// GetPermissionsWithCategoryWithSd calls GetPermissionsWithCategoryWithSdFunc.
+func (mock *StoreMock) GetPermissionsWithCategoryWithSd(ctx context.Context, sd Sd, where parameter.WherePermissionParam, order parameter.PermissionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PermissionWithCategory], error) {
+	if mock.GetPermissionsWithCategoryWithSdFunc == nil {
+		panic("StoreMock.GetPermissionsWithCategoryWithSdFunc: method is nil but Store.GetPermissionsWithCategoryWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WherePermissionParam
+		Order parameter.PermissionOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetPermissionsWithCategoryWithSd.Lock()
+	mock.calls.GetPermissionsWithCategoryWithSd = append(mock.calls.GetPermissionsWithCategoryWithSd, callInfo)
+	mock.lockGetPermissionsWithCategoryWithSd.Unlock()
+	return mock.GetPermissionsWithCategoryWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetPermissionsWithCategoryWithSdCalls gets all the calls that were made to GetPermissionsWithCategoryWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPermissionsWithCategoryWithSdCalls())
+func (mock *StoreMock) GetPermissionsWithCategoryWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WherePermissionParam
+	Order parameter.PermissionOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WherePermissionParam
+		Order parameter.PermissionOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetPermissionsWithCategoryWithSd.RLock()
+	calls = mock.calls.GetPermissionsWithCategoryWithSd
+	mock.lockGetPermissionsWithCategoryWithSd.RUnlock()
 	return calls
 }
 

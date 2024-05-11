@@ -67,6 +67,25 @@ type Permission interface {
 		cp CursorPaginationParam,
 		wc WithCountParam,
 	) (ListResult[entity.Permission], error)
+	// GetPermissionsWithCategory 権限とそのカテゴリを取得する。
+	GetPermissionsWithCategory(
+		ctx context.Context,
+		where parameter.WherePermissionParam,
+		order parameter.PermissionOrderMethod,
+		np NumberedPaginationParam,
+		cp CursorPaginationParam,
+		wc WithCountParam,
+	) (ListResult[entity.PermissionWithCategory], error)
+	// GetPermissionsWithCategoryWithSd SD付きで権限とそのカテゴリを取得する。
+	GetPermissionsWithCategoryWithSd(
+		ctx context.Context,
+		sd Sd,
+		where parameter.WherePermissionParam,
+		order parameter.PermissionOrderMethod,
+		np NumberedPaginationParam,
+		cp CursorPaginationParam,
+		wc WithCountParam,
+	) (ListResult[entity.PermissionWithCategory], error)
 	// GetPluralPermissions 権限を取得する。
 	GetPluralPermissions(
 		ctx context.Context,

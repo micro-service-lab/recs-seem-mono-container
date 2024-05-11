@@ -282,6 +282,52 @@ func (m *ManagePermission) GetPermissions(
 	return r, nil
 }
 
+// GetPermissionsWithCategory 権限を取得する。
+func (m *ManagePermission) GetPermissionsWithCategory(
+	ctx context.Context,
+	whereSearchName string,
+	whereInCategories []uuid.UUID,
+	order parameter.PermissionOrderMethod,
+	pg parameter.Pagination,
+	limit parameter.Limit,
+	cursor parameter.Cursor,
+	offset parameter.Offset,
+	withCount parameter.WithCount,
+) (store.ListResult[entity.PermissionWithCategory], error) {
+	wc := store.WithCountParam{
+		Valid: bool(withCount),
+	}
+	var np store.NumberedPaginationParam
+	var cp store.CursorPaginationParam
+	where := parameter.WherePermissionParam{
+		WhereLikeName:   whereSearchName != "",
+		SearchName:      whereSearchName,
+		WhereInCategory: len(whereInCategories) > 0,
+		InCategories:    whereInCategories,
+	}
+	switch pg {
+	case parameter.NumberedPagination:
+		np = store.NumberedPaginationParam{
+			Valid:  true,
+			Offset: entity.Int{Int64: int64(offset)},
+			Limit:  entity.Int{Int64: int64(limit)},
+		}
+	case parameter.CursorPagination:
+		cp = store.CursorPaginationParam{
+			Valid:  true,
+			Cursor: string(cursor),
+			Limit:  entity.Int{Int64: int64(limit)},
+		}
+	case parameter.NonePagination:
+	}
+	r, err := m.DB.GetPermissionsWithCategory(ctx, where, order, np, cp, wc)
+	if err != nil {
+		return store.ListResult[entity.PermissionWithCategory]{},
+			fmt.Errorf("failed to get permission with category: %w", err)
+	}
+	return r, nil
+}
+
 // GetPermissionsCount 権限の数を取得する。
 func (m *ManagePermission) GetPermissionsCount(
 	ctx context.Context,

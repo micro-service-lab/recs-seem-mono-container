@@ -400,12 +400,12 @@ func (q *Queries) GetPermissionsUseNumberedPaginate(ctx context.Context, arg Get
 }
 
 const getPermissionsWithCategory = `-- name: GetPermissionsWithCategory :many
-SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id, m_permission_categories.m_permission_categories_pkey, m_permission_categories.permission_category_id, m_permission_categories.name, m_permission_categories.description, m_permission_categories.key FROM m_permissions
+SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id, m_permission_categories.name permission_category_name, m_permission_categories.key permission_category_key, m_permission_categories.description permission_category_description FROM m_permissions
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE
 	CASE WHEN $1::boolean = true THEN m_permissions.name LIKE '%' || $2::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $3::boolean = true THEN permission_category_id = ANY($4::uuid[]) ELSE TRUE END
+	CASE WHEN $3::boolean = true THEN m_permissions.permission_category_id = ANY($4::uuid[]) ELSE TRUE END
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN $5::text = 'r_name' THEN m_permissions.name END DESC,
@@ -421,17 +421,15 @@ type GetPermissionsWithCategoryParams struct {
 }
 
 type GetPermissionsWithCategoryRow struct {
-	MPermissionsPkey          pgtype.Int8 `json:"m_permissions_pkey"`
-	PermissionID              uuid.UUID   `json:"permission_id"`
-	Name                      string      `json:"name"`
-	Description               string      `json:"description"`
-	Key                       string      `json:"key"`
-	PermissionCategoryID      uuid.UUID   `json:"permission_category_id"`
-	MPermissionCategoriesPkey pgtype.Int8 `json:"m_permission_categories_pkey"`
-	PermissionCategoryID_2    uuid.UUID   `json:"permission_category_id_2"`
-	Name_2                    string      `json:"name_2"`
-	Description_2             string      `json:"description_2"`
-	Key_2                     string      `json:"key_2"`
+	MPermissionsPkey              pgtype.Int8 `json:"m_permissions_pkey"`
+	PermissionID                  uuid.UUID   `json:"permission_id"`
+	Name                          string      `json:"name"`
+	Description                   string      `json:"description"`
+	Key                           string      `json:"key"`
+	PermissionCategoryID          uuid.UUID   `json:"permission_category_id"`
+	PermissionCategoryName        string      `json:"permission_category_name"`
+	PermissionCategoryKey         string      `json:"permission_category_key"`
+	PermissionCategoryDescription string      `json:"permission_category_description"`
 }
 
 func (q *Queries) GetPermissionsWithCategory(ctx context.Context, arg GetPermissionsWithCategoryParams) ([]GetPermissionsWithCategoryRow, error) {
@@ -456,11 +454,9 @@ func (q *Queries) GetPermissionsWithCategory(ctx context.Context, arg GetPermiss
 			&i.Description,
 			&i.Key,
 			&i.PermissionCategoryID,
-			&i.MPermissionCategoriesPkey,
-			&i.PermissionCategoryID_2,
-			&i.Name_2,
-			&i.Description_2,
-			&i.Key_2,
+			&i.PermissionCategoryName,
+			&i.PermissionCategoryKey,
+			&i.PermissionCategoryDescription,
 		); err != nil {
 			return nil, err
 		}
@@ -473,12 +469,12 @@ func (q *Queries) GetPermissionsWithCategory(ctx context.Context, arg GetPermiss
 }
 
 const getPermissionsWithCategoryUseKeysetPaginate = `-- name: GetPermissionsWithCategoryUseKeysetPaginate :many
-SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id, m_permission_categories.m_permission_categories_pkey, m_permission_categories.permission_category_id, m_permission_categories.name, m_permission_categories.description, m_permission_categories.key FROM m_permissions
+SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id, m_permission_categories.name permission_category_name, m_permission_categories.key permission_category_key, m_permission_categories.description permission_category_description FROM m_permissions
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE
 	CASE WHEN $2::boolean = true THEN m_permissions.name LIKE '%' || $3::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $4::boolean = true THEN permission_category_id = ANY($5::uuid[]) ELSE TRUE END
+	CASE WHEN $4::boolean = true THEN m_permissions.permission_category_id = ANY($5::uuid[]) ELSE TRUE END
 AND
 	CASE $6::text
 		WHEN 'next' THEN
@@ -517,17 +513,15 @@ type GetPermissionsWithCategoryUseKeysetPaginateParams struct {
 }
 
 type GetPermissionsWithCategoryUseKeysetPaginateRow struct {
-	MPermissionsPkey          pgtype.Int8 `json:"m_permissions_pkey"`
-	PermissionID              uuid.UUID   `json:"permission_id"`
-	Name                      string      `json:"name"`
-	Description               string      `json:"description"`
-	Key                       string      `json:"key"`
-	PermissionCategoryID      uuid.UUID   `json:"permission_category_id"`
-	MPermissionCategoriesPkey pgtype.Int8 `json:"m_permission_categories_pkey"`
-	PermissionCategoryID_2    uuid.UUID   `json:"permission_category_id_2"`
-	Name_2                    string      `json:"name_2"`
-	Description_2             string      `json:"description_2"`
-	Key_2                     string      `json:"key_2"`
+	MPermissionsPkey              pgtype.Int8 `json:"m_permissions_pkey"`
+	PermissionID                  uuid.UUID   `json:"permission_id"`
+	Name                          string      `json:"name"`
+	Description                   string      `json:"description"`
+	Key                           string      `json:"key"`
+	PermissionCategoryID          uuid.UUID   `json:"permission_category_id"`
+	PermissionCategoryName        string      `json:"permission_category_name"`
+	PermissionCategoryKey         string      `json:"permission_category_key"`
+	PermissionCategoryDescription string      `json:"permission_category_description"`
 }
 
 func (q *Queries) GetPermissionsWithCategoryUseKeysetPaginate(ctx context.Context, arg GetPermissionsWithCategoryUseKeysetPaginateParams) ([]GetPermissionsWithCategoryUseKeysetPaginateRow, error) {
@@ -556,11 +550,9 @@ func (q *Queries) GetPermissionsWithCategoryUseKeysetPaginate(ctx context.Contex
 			&i.Description,
 			&i.Key,
 			&i.PermissionCategoryID,
-			&i.MPermissionCategoriesPkey,
-			&i.PermissionCategoryID_2,
-			&i.Name_2,
-			&i.Description_2,
-			&i.Key_2,
+			&i.PermissionCategoryName,
+			&i.PermissionCategoryKey,
+			&i.PermissionCategoryDescription,
 		); err != nil {
 			return nil, err
 		}
@@ -573,12 +565,12 @@ func (q *Queries) GetPermissionsWithCategoryUseKeysetPaginate(ctx context.Contex
 }
 
 const getPermissionsWithCategoryUseNumberedPaginate = `-- name: GetPermissionsWithCategoryUseNumberedPaginate :many
-SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id, m_permission_categories.m_permission_categories_pkey, m_permission_categories.permission_category_id, m_permission_categories.name, m_permission_categories.description, m_permission_categories.key FROM m_permissions
+SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id, m_permission_categories.name permission_category_name, m_permission_categories.key permission_category_key, m_permission_categories.description permission_category_description FROM m_permissions
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_permissions.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN permission_category_id = ANY($6::uuid[]) ELSE TRUE END
+	CASE WHEN $5::boolean = true THEN m_permissions.permission_category_id = ANY($6::uuid[]) ELSE TRUE END
 ORDER BY
 	CASE WHEN $7::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN $7::text = 'r_name' THEN m_permissions.name END DESC,
@@ -597,17 +589,15 @@ type GetPermissionsWithCategoryUseNumberedPaginateParams struct {
 }
 
 type GetPermissionsWithCategoryUseNumberedPaginateRow struct {
-	MPermissionsPkey          pgtype.Int8 `json:"m_permissions_pkey"`
-	PermissionID              uuid.UUID   `json:"permission_id"`
-	Name                      string      `json:"name"`
-	Description               string      `json:"description"`
-	Key                       string      `json:"key"`
-	PermissionCategoryID      uuid.UUID   `json:"permission_category_id"`
-	MPermissionCategoriesPkey pgtype.Int8 `json:"m_permission_categories_pkey"`
-	PermissionCategoryID_2    uuid.UUID   `json:"permission_category_id_2"`
-	Name_2                    string      `json:"name_2"`
-	Description_2             string      `json:"description_2"`
-	Key_2                     string      `json:"key_2"`
+	MPermissionsPkey              pgtype.Int8 `json:"m_permissions_pkey"`
+	PermissionID                  uuid.UUID   `json:"permission_id"`
+	Name                          string      `json:"name"`
+	Description                   string      `json:"description"`
+	Key                           string      `json:"key"`
+	PermissionCategoryID          uuid.UUID   `json:"permission_category_id"`
+	PermissionCategoryName        string      `json:"permission_category_name"`
+	PermissionCategoryKey         string      `json:"permission_category_key"`
+	PermissionCategoryDescription string      `json:"permission_category_description"`
 }
 
 func (q *Queries) GetPermissionsWithCategoryUseNumberedPaginate(ctx context.Context, arg GetPermissionsWithCategoryUseNumberedPaginateParams) ([]GetPermissionsWithCategoryUseNumberedPaginateRow, error) {
@@ -634,11 +624,9 @@ func (q *Queries) GetPermissionsWithCategoryUseNumberedPaginate(ctx context.Cont
 			&i.Description,
 			&i.Key,
 			&i.PermissionCategoryID,
-			&i.MPermissionCategoriesPkey,
-			&i.PermissionCategoryID_2,
-			&i.Name_2,
-			&i.Description_2,
-			&i.Key_2,
+			&i.PermissionCategoryName,
+			&i.PermissionCategoryKey,
+			&i.PermissionCategoryDescription,
 		); err != nil {
 			return nil, err
 		}

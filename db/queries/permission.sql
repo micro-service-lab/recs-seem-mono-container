@@ -95,24 +95,24 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetPermissionsWithCategory :many
-SELECT m_permissions.*, m_permission_categories.* FROM m_permissions
+SELECT m_permissions.*, m_permission_categories.name permission_category_name, m_permission_categories.key permission_category_key, m_permission_categories.description permission_category_description FROM m_permissions
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_permissions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_in_category::boolean = true THEN permission_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
+	CASE WHEN @where_in_category::boolean = true THEN m_permissions.permission_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
 	m_permissions_pkey ASC;
 
 -- name: GetPermissionsWithCategoryUseNumberedPaginate :many
-SELECT m_permissions.*, m_permission_categories.* FROM m_permissions
+SELECT m_permissions.*, m_permission_categories.name permission_category_name, m_permission_categories.key permission_category_key, m_permission_categories.description permission_category_description FROM m_permissions
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_permissions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_in_category::boolean = true THEN permission_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
+	CASE WHEN @where_in_category::boolean = true THEN m_permissions.permission_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
@@ -120,12 +120,12 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetPermissionsWithCategoryUseKeysetPaginate :many
-SELECT m_permissions.*, m_permission_categories.* FROM m_permissions
+SELECT m_permissions.*, m_permission_categories.name permission_category_name, m_permission_categories.key permission_category_key, m_permission_categories.description permission_category_description FROM m_permissions
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_permissions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_in_category::boolean = true THEN permission_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
+	CASE WHEN @where_in_category::boolean = true THEN m_permissions.permission_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN

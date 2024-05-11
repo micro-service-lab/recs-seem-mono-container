@@ -33,6 +33,37 @@ type WherePermissionParam struct {
 	InCategories    []uuid.UUID
 }
 
+// PermissionWith 権限の付加情報。
+type PermissionWith struct {
+	withCategory bool
+}
+
+// PermissionWithParams 権限の付加情報。
+type PermissionWithParams []PermissionWith
+
+// ParsePermissionWithParam 権限の付加情報をパースする。
+func ParsePermissionWithParam(v string) (any, error) {
+	if v == "" {
+		return PermissionWith{}, nil
+	}
+	switch v {
+	case "category":
+		return PermissionWith{withCategory: true}, nil
+	default:
+		return PermissionWith{}, nil
+	}
+}
+
+// WithCategory はカテゴリを含むか。
+func (o PermissionWithParams) WithCategory() bool {
+	for _, v := range o {
+		if v.withCategory {
+			return true
+		}
+	}
+	return false
+}
+
 // PermissionOrderMethod 権限の並び替え方法。
 type PermissionOrderMethod string
 

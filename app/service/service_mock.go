@@ -178,6 +178,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			GetPermissionsCountFunc: func(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID) (int64, error) {
 //				panic("mock out the GetPermissionsCount method")
 //			},
+//			GetPermissionsWithCategoryFunc: func(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID, order parameter.PermissionOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PermissionWithCategory], error) {
+//				panic("mock out the GetPermissionsWithCategory method")
+//			},
 //			GetPolicyCategoriesFunc: func(ctx context.Context, whereSearchName string, order parameter.PolicyCategoryOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PolicyCategory], error) {
 //				panic("mock out the GetPolicyCategories method")
 //			},
@@ -400,6 +403,9 @@ type ManagerInterfaceMock struct {
 
 	// GetPermissionsCountFunc mocks the GetPermissionsCount method.
 	GetPermissionsCountFunc func(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID) (int64, error)
+
+	// GetPermissionsWithCategoryFunc mocks the GetPermissionsWithCategory method.
+	GetPermissionsWithCategoryFunc func(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID, order parameter.PermissionOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PermissionWithCategory], error)
 
 	// GetPolicyCategoriesFunc mocks the GetPolicyCategories method.
 	GetPolicyCategoriesFunc func(ctx context.Context, whereSearchName string, order parameter.PolicyCategoryOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PolicyCategory], error)
@@ -933,6 +939,27 @@ type ManagerInterfaceMock struct {
 			// WhereInCategories is the whereInCategories argument value.
 			WhereInCategories []uuid.UUID
 		}
+		// GetPermissionsWithCategory holds details about calls to the GetPermissionsWithCategory method.
+		GetPermissionsWithCategory []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// WhereInCategories is the whereInCategories argument value.
+			WhereInCategories []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.PermissionOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
 		// GetPolicyCategories holds details about calls to the GetPolicyCategories method.
 		GetPolicyCategories []struct {
 			// Ctx is the ctx argument value.
@@ -1196,6 +1223,7 @@ type ManagerInterfaceMock struct {
 	lockGetPermissionCategoriesCount     sync.RWMutex
 	lockGetPermissions                   sync.RWMutex
 	lockGetPermissionsCount              sync.RWMutex
+	lockGetPermissionsWithCategory       sync.RWMutex
 	lockGetPolicyCategories              sync.RWMutex
 	lockGetPolicyCategoriesCount         sync.RWMutex
 	lockGetRecordTypes                   sync.RWMutex
@@ -3299,6 +3327,70 @@ func (mock *ManagerInterfaceMock) GetPermissionsCountCalls() []struct {
 	mock.lockGetPermissionsCount.RLock()
 	calls = mock.calls.GetPermissionsCount
 	mock.lockGetPermissionsCount.RUnlock()
+	return calls
+}
+
+// GetPermissionsWithCategory calls GetPermissionsWithCategoryFunc.
+func (mock *ManagerInterfaceMock) GetPermissionsWithCategory(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID, order parameter.PermissionOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PermissionWithCategory], error) {
+	if mock.GetPermissionsWithCategoryFunc == nil {
+		panic("ManagerInterfaceMock.GetPermissionsWithCategoryFunc: method is nil but ManagerInterface.GetPermissionsWithCategory was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		WhereSearchName   string
+		WhereInCategories []uuid.UUID
+		Order             parameter.PermissionOrderMethod
+		Pg                parameter.Pagination
+		Limit             parameter.Limit
+		Cursor            parameter.Cursor
+		Offset            parameter.Offset
+		WithCount         parameter.WithCount
+	}{
+		Ctx:               ctx,
+		WhereSearchName:   whereSearchName,
+		WhereInCategories: whereInCategories,
+		Order:             order,
+		Pg:                pg,
+		Limit:             limit,
+		Cursor:            cursor,
+		Offset:            offset,
+		WithCount:         withCount,
+	}
+	mock.lockGetPermissionsWithCategory.Lock()
+	mock.calls.GetPermissionsWithCategory = append(mock.calls.GetPermissionsWithCategory, callInfo)
+	mock.lockGetPermissionsWithCategory.Unlock()
+	return mock.GetPermissionsWithCategoryFunc(ctx, whereSearchName, whereInCategories, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetPermissionsWithCategoryCalls gets all the calls that were made to GetPermissionsWithCategory.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetPermissionsWithCategoryCalls())
+func (mock *ManagerInterfaceMock) GetPermissionsWithCategoryCalls() []struct {
+	Ctx               context.Context
+	WhereSearchName   string
+	WhereInCategories []uuid.UUID
+	Order             parameter.PermissionOrderMethod
+	Pg                parameter.Pagination
+	Limit             parameter.Limit
+	Cursor            parameter.Cursor
+	Offset            parameter.Offset
+	WithCount         parameter.WithCount
+} {
+	var calls []struct {
+		Ctx               context.Context
+		WhereSearchName   string
+		WhereInCategories []uuid.UUID
+		Order             parameter.PermissionOrderMethod
+		Pg                parameter.Pagination
+		Limit             parameter.Limit
+		Cursor            parameter.Cursor
+		Offset            parameter.Offset
+		WithCount         parameter.WithCount
+	}
+	mock.lockGetPermissionsWithCategory.RLock()
+	calls = mock.calls.GetPermissionsWithCategory
+	mock.lockGetPermissionsWithCategory.RUnlock()
 	return calls
 }
 

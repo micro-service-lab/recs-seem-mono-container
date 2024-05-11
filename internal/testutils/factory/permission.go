@@ -98,6 +98,28 @@ func (d Permission) ForEntity() []entity.Permission {
 	return entities
 }
 
+// ForEntityWithPermissionCategory converts Permission to []entity.PermissionWithCategory.
+func (d Permission) ForEntityWithPermissionCategory() []entity.PermissionWithCategory {
+	entities := make([]entity.PermissionWithCategory, len(d))
+	for i, v := range d {
+		entities[i] = entity.PermissionWithCategory{
+			Permission: entity.Permission{
+				PermissionID:         v.PermissionID,
+				Key:                  v.Key,
+				Name:                 v.Name,
+				Description:          v.Description,
+				PermissionCategoryID: v.PermissionCategory.PermissionCategoryID,
+			},
+			PermissionCategory: entity.PermissionCategory{
+				PermissionCategoryID: v.PermissionCategory.PermissionCategoryID,
+				Name:                 v.PermissionCategory.Name,
+				Description:          v.PermissionCategory.Description,
+			},
+		}
+	}
+	return entities
+}
+
 // CountContainsName returns the number of permissionCategories that contain the given name.
 func (d Permission) CountContainsName(name string) int64 {
 	count := int64(0)
@@ -131,6 +153,66 @@ func (d Permission) FilterByPermissionCategories(categoryIDs []uuid.UUID) Permis
 		}
 	}
 	return res
+}
+
+// FilterByIDs filters Permission by permissionIDs.
+func (d Permission) FilterByIDs(permissionIDs []uuid.UUID) Permission {
+	var res Permission
+	for _, v := range d {
+		for _, id := range permissionIDs {
+			if v.PermissionID == id {
+				res = append(res, v)
+			}
+		}
+	}
+	return res
+}
+
+// Delete deletes the permission with the given permissionID.
+func (d Permission) Delete(permissionID uuid.UUID) Permission {
+	var res Permission
+	for _, v := range d {
+		if v.PermissionID != permissionID {
+			res = append(res, v)
+		}
+	}
+	return res
+}
+
+// Update updates the permission with the given permissionID.
+func (d Permission) Update(permissionID uuid.UUID, update parameter.UpdatePermissionParams) Permission {
+	var res Permission
+	for _, v := range d {
+		if v.PermissionID == permissionID {
+			v.Name = update.Name
+			v.Key = update.Key
+			v.Description = update.Description
+			res = append(res, v)
+		} else {
+			res = append(res, v)
+		}
+	}
+	return res
+}
+
+// UpdateByKey updates the permission with the given key.
+func (d Permission) UpdateByKey(key string, update parameter.UpdatePermissionByKeyParams) Permission {
+	var res Permission
+	for _, v := range d {
+		if v.Key == key {
+			v.Name = update.Name
+			v.Description = update.Description
+			res = append(res, v)
+		} else {
+			res = append(res, v)
+		}
+	}
+	return res
+}
+
+// Len returns the length of Permission.
+func (d Permission) Len() int64 {
+	return int64(len(d))
 }
 
 // OrderByNames sorts Permission by name.

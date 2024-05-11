@@ -44,6 +44,7 @@ func TestGetPermissions_ServeHTTP(t *testing.T) {
 		offset           string
 		pagination       string
 		withCount        string
+		with             []string
 		want             wants
 	}{
 		"simple": {
@@ -55,6 +56,7 @@ func TestGetPermissions_ServeHTTP(t *testing.T) {
 			offset:           "",
 			pagination:       "",
 			withCount:        "",
+			with:             []string{},
 			want: wants{
 				resType: response.Success,
 				data: store.ListResult[entity.Permission]{
@@ -72,6 +74,7 @@ func TestGetPermissions_ServeHTTP(t *testing.T) {
 			offset:           "",
 			pagination:       "",
 			withCount:        "true",
+			with:             []string{},
 			want: wants{
 				resType: response.Success,
 				data: store.ListResult[entity.Permission]{
@@ -92,6 +95,7 @@ func TestGetPermissions_ServeHTTP(t *testing.T) {
 			offset:           "",
 			pagination:       "",
 			withCount:        "true",
+			with:             []string{},
 			want: wants{
 				resType: response.Success,
 				data: store.ListResult[entity.Permission]{
@@ -112,6 +116,7 @@ func TestGetPermissions_ServeHTTP(t *testing.T) {
 			offset:           "",
 			pagination:       "",
 			withCount:        "true",
+			with:             []string{},
 			want: wants{
 				resType: response.Success,
 				data: store.ListResult[entity.Permission]{
@@ -131,6 +136,7 @@ func TestGetPermissions_ServeHTTP(t *testing.T) {
 			offset:           "",
 			pagination:       "",
 			withCount:        "true",
+			with:             []string{},
 			want: wants{
 				resType: response.Success,
 				data: store.ListResult[entity.Permission]{
@@ -150,6 +156,7 @@ func TestGetPermissions_ServeHTTP(t *testing.T) {
 			offset:           "",
 			pagination:       "",
 			withCount:        "true",
+			with:             []string{},
 			want: wants{
 				resType: response.Success,
 				data: store.ListResult[entity.Permission]{
@@ -169,6 +176,7 @@ func TestGetPermissions_ServeHTTP(t *testing.T) {
 			offset:           "",
 			pagination:       "",
 			withCount:        "true",
+			with:             []string{},
 			want: wants{
 				resType: response.Success,
 				data: store.ListResult[entity.Permission]{
@@ -188,6 +196,7 @@ func TestGetPermissions_ServeHTTP(t *testing.T) {
 			offset:           "",
 			pagination:       "",
 			withCount:        "true",
+			with:             []string{},
 			want: wants{
 				resType: response.Success,
 				data: store.ListResult[entity.Permission]{
@@ -207,6 +216,7 @@ func TestGetPermissions_ServeHTTP(t *testing.T) {
 			offset:           "",
 			pagination:       "",
 			withCount:        "true",
+			with:             []string{},
 			want: wants{
 				resType: response.Success,
 				data: store.ListResult[entity.Permission]{
@@ -226,6 +236,7 @@ func TestGetPermissions_ServeHTTP(t *testing.T) {
 			offset:           "",
 			pagination:       "numbered",
 			withCount:        "true",
+			with:             []string{},
 			want: wants{
 				resType: response.Success,
 				data: store.ListResult[entity.Permission]{
@@ -245,12 +256,31 @@ func TestGetPermissions_ServeHTTP(t *testing.T) {
 			offset:           "1",
 			pagination:       "numbered",
 			withCount:        "true",
+			with:             []string{},
 			want: wants{
 				resType: response.Success,
 				data: store.ListResult[entity.Permission]{
 					Data:             fd.LimitAndOffset(1, 1).ForEntity(),
 					WithCount:        store.WithCountAttribute{Count: int64(len(fd.LimitAndOffset(1, 1)))},
 					CursorPagination: store.CursorPaginationAttribute{},
+				},
+				errAttr: nil,
+			},
+		},
+		"with category": {
+			searchName:       "",
+			searchCategories: []uuid.UUID{},
+			order:            "",
+			limit:            "",
+			cursor:           "",
+			offset:           "",
+			pagination:       "",
+			withCount:        "",
+			with:             []string{"category"},
+			want: wants{
+				resType: response.Success,
+				data: store.ListResult[entity.PermissionWithCategory]{
+					Data: fd.ForEntityWithPermissionCategory(),
 				},
 				errAttr: nil,
 			},
@@ -301,6 +331,50 @@ func TestGetPermissions_ServeHTTP(t *testing.T) {
 				CursorPagination: cpa,
 			}, nil
 		},
+		GetPermissionsWithCategoryFunc: func(
+			_ context.Context,
+			whereSearchName string,
+			whereInCategories []uuid.UUID,
+			order parameter.PermissionOrderMethod,
+			pg parameter.Pagination,
+			limit parameter.Limit,
+			_ parameter.Cursor,
+			offset parameter.Offset,
+			wc parameter.WithCount,
+		) (store.ListResult[entity.PermissionWithCategory], error) {
+			dd := fd.Copy()
+			var wca store.WithCountAttribute
+			var cpa store.CursorPaginationAttribute
+			if whereSearchName != "" {
+				dd = dd.FilterByName(whereSearchName)
+			}
+			if len(whereInCategories) > 0 {
+				dd = dd.FilterByPermissionCategories(whereInCategories)
+			}
+			switch order {
+			case parameter.PermissionOrderMethodName:
+				dd = dd.OrderByNames()
+			case parameter.PermissionOrderMethodReverseName:
+				dd = dd.OrderByReverseNames()
+			case parameter.PermissionOrderMethodDefault:
+			}
+			switch pg {
+			case parameter.NumberedPagination:
+				dd = dd.LimitAndOffset(int(limit), int(offset))
+			case parameter.CursorPagination:
+			case parameter.NonePagination:
+			}
+			if bool(wc) {
+				wca = store.WithCountAttribute{
+					Count: int64(len(dd)),
+				}
+			}
+			return store.ListResult[entity.PermissionWithCategory]{
+				Data:             dd.ForEntityWithPermissionCategory(),
+				WithCount:        wca,
+				CursorPagination: cpa,
+			}, nil
+		},
 	}
 	h := handler.GetPermissions{
 		Service: mockService,
@@ -322,6 +396,9 @@ func TestGetPermissions_ServeHTTP(t *testing.T) {
 			q.Set("offset", tcc.offset)
 			q.Set("pagination", tcc.pagination)
 			q.Set("with_count", tcc.withCount)
+			for _, v := range tcc.with {
+				q.Add("with", v)
+			}
 			r.URL.RawQuery = q.Encode()
 			h.ServeHTTP(w, r)
 			resp := w.Result()

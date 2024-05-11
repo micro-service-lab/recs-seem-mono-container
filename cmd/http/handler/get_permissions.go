@@ -29,6 +29,7 @@ type GetPermissionsParam struct {
 	Cursor           parameter.Cursor                `queryParam:"cursor"`
 	Pagination       parameter.Pagination            `queryParam:"pagination"`
 	WithCount        parameter.WithCount             `queryParam:"with_count"`
+	With             parameter.PermissionWithParams  `queryParam:"with"`
 }
 
 var getPermissionsParseFuncMap = map[reflect.Type]queryparam.ParserFunc{
@@ -39,6 +40,7 @@ var getPermissionsParseFuncMap = map[reflect.Type]queryparam.ParserFunc{
 	reflect.TypeOf(parameter.Cursor("")):                parameter.ParseCursorParam,
 	reflect.TypeOf(parameter.NonePagination):            parameter.ParsePaginationParam,
 	reflect.TypeOf(parameter.WithCount(false)):          parameter.ParseWithCountParam,
+	reflect.TypeOf(parameter.PermissionWith{}):          parameter.ParsePermissionWithParam,
 }
 
 func (h *GetPermissions) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -68,17 +70,32 @@ func (h *GetPermissions) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			inCategories = append(inCategories, uuid.UUID(v))
 		}
 	}
-	permissions, err := h.Service.GetPermissions(
-		ctx,
-		param.SearchName,
-		inCategories,
-		param.Order,
-		param.Pagination,
-		param.Limit,
-		param.Cursor,
-		param.Offset,
-		param.WithCount,
-	)
+	var permissions any
+	if param.With.WithCategory() {
+		permissions, err = h.Service.GetPermissionsWithCategory(
+			ctx,
+			param.SearchName,
+			inCategories,
+			param.Order,
+			param.Pagination,
+			param.Limit,
+			param.Cursor,
+			param.Offset,
+			param.WithCount,
+		)
+	} else {
+		permissions, err = h.Service.GetPermissions(
+			ctx,
+			param.SearchName,
+			inCategories,
+			param.Order,
+			param.Pagination,
+			param.Limit,
+			param.Cursor,
+			param.Offset,
+			param.WithCount,
+		)
+	}
 	if err != nil {
 		log.Printf("failed to get permission: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)

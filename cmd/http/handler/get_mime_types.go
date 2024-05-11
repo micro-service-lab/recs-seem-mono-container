@@ -58,7 +58,7 @@ func (h *GetMimeTypes) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	attendStatuses, err := h.Service.GetMimeTypes(
+	mimeTypes, err := h.Service.GetMimeTypes(
 		ctx,
 		param.SearchName,
 		param.Order,
@@ -81,7 +81,7 @@ func (h *GetMimeTypes) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	err = response.JSONResponseWriter(ctx, w, response.Success, attendStatuses, nil)
+	err = response.JSONResponseWriter(ctx, w, response.Success, mimeTypes, nil)
 	if err != nil {
 		log.Printf("failed to write response: %v", err)
 	}

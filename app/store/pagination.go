@@ -42,6 +42,7 @@ type CursorPaginationParam struct {
 }
 
 // CursorPaginationAttribute カーソルページネーションのレスポンスを表す構造体。
+// Cursorは次回リクエスト時に利用可能だが、エスケープを行う必要がある。
 type CursorPaginationAttribute struct {
 	NextCursor string `json:"next_cursor"`
 	PrevCursor string `json:"prev_cursor"`

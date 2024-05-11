@@ -22,7 +22,7 @@ type FindMimeType struct {
 func (h *FindMimeType) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	id := uuid.MustParse(chi.URLParam(r, "mime_type_id"))
-	attendStatus, err := h.Service.FindMimeTypeByID(ctx, id)
+	mimeType, err := h.Service.FindMimeTypeByID(ctx, id)
 	if err != nil {
 		if errors.Is(err, store.ErrDataNoRecord) {
 			if err := response.JSONResponseWriter(ctx, w, response.NotFound, nil, nil); err != nil {
@@ -42,7 +42,7 @@ func (h *FindMimeType) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	err = response.JSONResponseWriter(ctx, w, response.Success, attendStatus, nil)
+	err = response.JSONResponseWriter(ctx, w, response.Success, mimeType, nil)
 	if err != nil {
 		log.Printf("failed to write response: %v", err)
 	}

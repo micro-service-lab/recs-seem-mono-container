@@ -22,7 +22,7 @@ type FindEventType struct {
 func (h *FindEventType) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	id := uuid.MustParse(chi.URLParam(r, "event_type_id"))
-	attendStatus, err := h.Service.FindEventTypeByID(ctx, id)
+	eventType, err := h.Service.FindEventTypeByID(ctx, id)
 	if err != nil {
 		if errors.Is(err, store.ErrDataNoRecord) {
 			if err := response.JSONResponseWriter(ctx, w, response.NotFound, nil, nil); err != nil {
@@ -42,7 +42,7 @@ func (h *FindEventType) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	err = response.JSONResponseWriter(ctx, w, response.Success, attendStatus, nil)
+	err = response.JSONResponseWriter(ctx, w, response.Success, eventType, nil)
 	if err != nil {
 		log.Printf("failed to write response: %v", err)
 	}

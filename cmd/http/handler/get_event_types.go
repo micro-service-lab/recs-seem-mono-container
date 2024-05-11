@@ -58,7 +58,7 @@ func (h *GetEventTypes) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	attendStatuses, err := h.Service.GetEventTypes(
+	eventTypes, err := h.Service.GetEventTypes(
 		ctx,
 		param.SearchName,
 		param.Order,
@@ -81,7 +81,7 @@ func (h *GetEventTypes) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	err = response.JSONResponseWriter(ctx, w, response.Success, attendStatuses, nil)
+	err = response.JSONResponseWriter(ctx, w, response.Success, eventTypes, nil)
 	if err != nil {
 		log.Printf("failed to write response: %v", err)
 	}

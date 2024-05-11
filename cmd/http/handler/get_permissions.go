@@ -68,7 +68,7 @@ func (h *GetPermissions) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			inCategories = append(inCategories, uuid.UUID(v))
 		}
 	}
-	attendStatuses, err := h.Service.GetPermissions(
+	permissions, err := h.Service.GetPermissions(
 		ctx,
 		param.SearchName,
 		inCategories,
@@ -92,7 +92,7 @@ func (h *GetPermissions) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	err = response.JSONResponseWriter(ctx, w, response.Success, attendStatuses, nil)
+	err = response.JSONResponseWriter(ctx, w, response.Success, permissions, nil)
 	if err != nil {
 		log.Printf("failed to write response: %v", err)
 	}

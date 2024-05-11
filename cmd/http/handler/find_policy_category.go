@@ -22,7 +22,7 @@ type FindPolicyCategory struct {
 func (h *FindPolicyCategory) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	id := uuid.MustParse(chi.URLParam(r, "policy_category_id"))
-	attendStatus, err := h.Service.FindPolicyCategoryByID(ctx, id)
+	policyCategory, err := h.Service.FindPolicyCategoryByID(ctx, id)
 	if err != nil {
 		if errors.Is(err, store.ErrDataNoRecord) {
 			if err := response.JSONResponseWriter(ctx, w, response.NotFound, nil, nil); err != nil {
@@ -42,7 +42,7 @@ func (h *FindPolicyCategory) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	err = response.JSONResponseWriter(ctx, w, response.Success, attendStatus, nil)
+	err = response.JSONResponseWriter(ctx, w, response.Success, policyCategory, nil)
 	if err != nil {
 		log.Printf("failed to write response: %v", err)
 	}

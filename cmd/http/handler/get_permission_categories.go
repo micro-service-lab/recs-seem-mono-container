@@ -58,7 +58,7 @@ func (h *GetPermissionCategories) ServeHTTP(w http.ResponseWriter, r *http.Reque
 		}
 		return
 	}
-	attendStatuses, err := h.Service.GetPermissionCategories(
+	permissionCategories, err := h.Service.GetPermissionCategories(
 		ctx,
 		param.SearchName,
 		param.Order,
@@ -81,7 +81,7 @@ func (h *GetPermissionCategories) ServeHTTP(w http.ResponseWriter, r *http.Reque
 		}
 		return
 	}
-	err = response.JSONResponseWriter(ctx, w, response.Success, attendStatuses, nil)
+	err = response.JSONResponseWriter(ctx, w, response.Success, permissionCategories, nil)
 	if err != nil {
 		log.Printf("failed to write response: %v", err)
 	}

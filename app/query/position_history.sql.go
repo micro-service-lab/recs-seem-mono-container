@@ -334,8 +334,8 @@ AND
 ORDER BY
 	CASE WHEN $9::text = 'old_send' AND $8::text = 'next' THEN sent_at END ASC,
 	CASE WHEN $9::text = 'old_send' AND $8::text = 'prev' THEN sent_at END DESC,
-	CASE WHEN $9::text = 'late_send' AND $8::text = 'next' THEN sent_at END ASC,
-	CASE WHEN $9::text = 'late_send' AND $8::text = 'prev' THEN sent_at END DESC,
+	CASE WHEN $9::text = 'late_send' AND $8::text = 'next' THEN sent_at END DESC,
+	CASE WHEN $9::text = 'late_send' AND $8::text = 'prev' THEN sent_at END ASC,
 	CASE WHEN $8::text = 'next' THEN t_position_histories_pkey END ASC,
 	CASE WHEN $8::text = 'prev' THEN t_position_histories_pkey END DESC
 LIMIT $1
@@ -564,8 +564,8 @@ AND
 ORDER BY
 	CASE WHEN $9::text = 'old_send' AND $8::text = 'next' THEN sent_at END ASC,
 	CASE WHEN $9::text = 'old_send' AND $8::text = 'prev' THEN sent_at END DESC,
-	CASE WHEN $9::text = 'late_send' AND $8::text = 'next' THEN sent_at END ASC,
-	CASE WHEN $9::text = 'late_send' AND $8::text = 'prev' THEN sent_at END DESC,
+	CASE WHEN $9::text = 'late_send' AND $8::text = 'next' THEN sent_at END DESC,
+	CASE WHEN $9::text = 'late_send' AND $8::text = 'prev' THEN sent_at END ASC,
 	CASE WHEN $8::text = 'next' THEN t_position_histories_pkey END ASC,
 	CASE WHEN $8::text = 'prev' THEN t_position_histories_pkey END DESC
 LIMIT $1

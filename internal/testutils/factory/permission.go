@@ -120,6 +120,19 @@ func (d Permission) FilterByName(name string) Permission {
 	return res
 }
 
+// FilterByPermissionCategories filters Permission by permissionCategories.
+func (d Permission) FilterByPermissionCategories(categoryIDs []uuid.UUID) Permission {
+	var res Permission
+	for _, v := range d {
+		for _, id := range categoryIDs {
+			if v.PermissionCategory.PermissionCategoryID == id {
+				res = append(res, v)
+			}
+		}
+	}
+	return res
+}
+
 // OrderByNames sorts Permission by name.
 func (d Permission) OrderByNames() Permission {
 	res := d.Copy()

@@ -58,7 +58,7 @@ func (h *GetPolicyCategories) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		return
 	}
-	attendStatuses, err := h.Service.GetPolicyCategories(
+	policyCategories, err := h.Service.GetPolicyCategories(
 		ctx,
 		param.SearchName,
 		param.Order,
@@ -81,7 +81,7 @@ func (h *GetPolicyCategories) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		return
 	}
-	err = response.JSONResponseWriter(ctx, w, response.Success, attendStatuses, nil)
+	err = response.JSONResponseWriter(ctx, w, response.Success, policyCategories, nil)
 	if err != nil {
 		log.Printf("failed to write response: %v", err)
 	}

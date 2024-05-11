@@ -21,7 +21,7 @@ type FindEventTypeByKey struct {
 func (h *FindEventTypeByKey) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	key := chi.URLParam(r, "event_type_key")
-	attendStatus, err := h.Service.FindEventTypeByKey(ctx, key)
+	eventType, err := h.Service.FindEventTypeByKey(ctx, key)
 	if err != nil {
 		if errors.Is(err, store.ErrDataNoRecord) {
 			if err := response.JSONResponseWriter(ctx, w, response.NotFound, nil, nil); err != nil {
@@ -41,7 +41,7 @@ func (h *FindEventTypeByKey) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	err = response.JSONResponseWriter(ctx, w, response.Success, attendStatus, nil)
+	err = response.JSONResponseWriter(ctx, w, response.Success, eventType, nil)
 	if err != nil {
 		log.Printf("failed to write response: %v", err)
 	}

@@ -21,7 +21,7 @@ type FindPermissionCategoryByKey struct {
 func (h *FindPermissionCategoryByKey) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	key := chi.URLParam(r, "permission_category_key")
-	attendStatus, err := h.Service.FindPermissionCategoryByKey(ctx, key)
+	permissionCategory, err := h.Service.FindPermissionCategoryByKey(ctx, key)
 	if err != nil {
 		if errors.Is(err, store.ErrDataNoRecord) {
 			if err := response.JSONResponseWriter(ctx, w, response.NotFound, nil, nil); err != nil {
@@ -41,7 +41,7 @@ func (h *FindPermissionCategoryByKey) ServeHTTP(w http.ResponseWriter, r *http.R
 		}
 		return
 	}
-	err = response.JSONResponseWriter(ctx, w, response.Success, attendStatus, nil)
+	err = response.JSONResponseWriter(ctx, w, response.Success, permissionCategory, nil)
 	if err != nil {
 		log.Printf("failed to write response: %v", err)
 	}

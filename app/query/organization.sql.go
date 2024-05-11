@@ -513,8 +513,8 @@ AND
 ORDER BY
 	CASE WHEN $12::text = 'name' AND $11::text = 'next' THEN m_organizations.name END ASC,
 	CASE WHEN $12::text = 'name' AND $11::text = 'prev' THEN m_organizations.name END DESC,
-	CASE WHEN $12::text = 'r_name' AND $11::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN $12::text = 'r_name' AND $11::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN $12::text = 'r_name' AND $11::text = 'next' THEN m_organizations.name END DESC,
+	CASE WHEN $12::text = 'r_name' AND $11::text = 'prev' THEN m_organizations.name END ASC,
 	CASE WHEN $11::text = 'next' THEN m_organizations_pkey END ASC,
 	CASE WHEN $11::text = 'prev' THEN m_organizations_pkey END DESC
 LIMIT $1
@@ -794,8 +794,8 @@ AND
 ORDER BY
 	CASE WHEN $12::text = 'name' AND $11::text = 'next' THEN m_organizations.name END ASC,
 	CASE WHEN $12::text = 'name' AND $11::text = 'prev' THEN m_organizations.name END DESC,
-	CASE WHEN $12::text = 'r_name' AND $11::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN $12::text = 'r_name' AND $11::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN $12::text = 'r_name' AND $11::text = 'next' THEN m_organizations.name END DESC,
+	CASE WHEN $12::text = 'r_name' AND $11::text = 'prev' THEN m_organizations.name END ASC,
 	CASE WHEN $11::text = 'next' THEN m_organizations_pkey END ASC,
 	CASE WHEN $11::text = 'prev' THEN m_organizations_pkey END DESC
 LIMIT $1
@@ -1121,8 +1121,8 @@ AND
 ORDER BY
 	CASE WHEN $12::text = 'name' AND $11::text = 'next' THEN m_organizations.name END ASC,
 	CASE WHEN $12::text = 'name' AND $11::text = 'prev' THEN m_organizations.name END DESC,
-	CASE WHEN $12::text = 'r_name' AND $11::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN $12::text = 'r_name' AND $11::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN $12::text = 'r_name' AND $11::text = 'next' THEN m_organizations.name END DESC,
+	CASE WHEN $12::text = 'r_name' AND $11::text = 'prev' THEN m_organizations.name END ASC,
 	CASE WHEN $11::text = 'next' THEN m_organizations_pkey END ASC,
 	CASE WHEN $11::text = 'prev' THEN m_organizations_pkey END DESC
 LIMIT $1
@@ -1437,8 +1437,8 @@ AND
 ORDER BY
 	CASE WHEN $12::text = 'name' AND $11::text = 'next' THEN m_organizations.name END ASC,
 	CASE WHEN $12::text = 'name' AND $11::text = 'prev' THEN m_organizations.name END DESC,
-	CASE WHEN $12::text = 'r_name' AND $11::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN $12::text = 'r_name' AND $11::text = 'prev' THEN m_organizations.name END DESC,
+	CASE WHEN $12::text = 'r_name' AND $11::text = 'next' THEN m_organizations.name END DESC,
+	CASE WHEN $12::text = 'r_name' AND $11::text = 'prev' THEN m_organizations.name END ASC,
 	CASE WHEN $11::text = 'next' THEN m_organizations_pkey END ASC,
 	CASE WHEN $11::text = 'prev' THEN m_organizations_pkey END DESC
 LIMIT $1

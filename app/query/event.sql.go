@@ -627,8 +627,8 @@ AND
 ORDER BY
 	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
 	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END DESC,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -1022,8 +1022,8 @@ AND
 ORDER BY
 	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
 	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END DESC,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -1495,8 +1495,8 @@ AND
 ORDER BY
 	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
 	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END DESC,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -1874,8 +1874,8 @@ AND
 ORDER BY
 	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
 	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END DESC,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -2249,8 +2249,8 @@ AND
 ORDER BY
 	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
 	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END DESC,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -2628,8 +2628,8 @@ AND
 ORDER BY
 	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
 	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END DESC,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -2994,8 +2994,8 @@ AND
 ORDER BY
 	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
 	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END DESC,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1

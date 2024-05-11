@@ -214,8 +214,8 @@ AND
 ORDER BY
 	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_policy_categories.name END ASC,
 	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_policy_categories.name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_policy_categories.name END ASC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_policy_categories.name END DESC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_policy_categories.name END DESC,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_policy_categories.name END ASC,
 	CASE WHEN $4::text = 'next' THEN m_policy_categories_pkey END ASC,
 	CASE WHEN $4::text = 'prev' THEN m_policy_categories_pkey END DESC
 LIMIT $1

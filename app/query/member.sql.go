@@ -602,8 +602,8 @@ AND
 ORDER BY
 	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC,
 	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
@@ -918,8 +918,8 @@ AND
 ORDER BY
 	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC,
 	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
@@ -1277,8 +1277,8 @@ AND
 ORDER BY
 	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC,
 	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
@@ -1578,8 +1578,8 @@ AND
 ORDER BY
 	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC,
 	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
@@ -1880,8 +1880,8 @@ AND
 ORDER BY
 	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC,
 	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
@@ -2186,8 +2186,8 @@ AND
 ORDER BY
 	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC,
 	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
@@ -2499,8 +2499,8 @@ AND
 ORDER BY
 	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC,
 	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC,
 	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1

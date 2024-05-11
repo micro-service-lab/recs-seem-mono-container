@@ -21,7 +21,7 @@ type FindRecordTypeByKey struct {
 func (h *FindRecordTypeByKey) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	key := chi.URLParam(r, "record_type_key")
-	attendStatus, err := h.Service.FindRecordTypeByKey(ctx, key)
+	recordType, err := h.Service.FindRecordTypeByKey(ctx, key)
 	if err != nil {
 		if errors.Is(err, store.ErrDataNoRecord) {
 			if err := response.JSONResponseWriter(ctx, w, response.NotFound, nil, nil); err != nil {
@@ -41,7 +41,7 @@ func (h *FindRecordTypeByKey) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		}
 		return
 	}
-	err = response.JSONResponseWriter(ctx, w, response.Success, attendStatus, nil)
+	err = response.JSONResponseWriter(ctx, w, response.Success, recordType, nil)
 	if err != nil {
 		log.Printf("failed to write response: %v", err)
 	}

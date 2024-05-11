@@ -226,8 +226,8 @@ AND
 ORDER BY
 	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_work_positions.name END ASC,
 	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_work_positions.name END DESC,
-	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_work_positions.name END ASC,
-	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_work_positions.name END DESC,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_work_positions.name END DESC,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_work_positions.name END ASC,
 	CASE WHEN $6::text = 'next' THEN m_work_positions_pkey END ASC,
 	CASE WHEN $6::text = 'prev' THEN m_work_positions_pkey END DESC
 LIMIT $1

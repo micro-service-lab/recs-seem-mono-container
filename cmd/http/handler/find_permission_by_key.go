@@ -13,15 +13,15 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 )
 
-// FindAttendanceTypeByKey is a handler for finding attendance type.
-type FindAttendanceTypeByKey struct {
+// FindPermissionByKey is a handler for finding permission.
+type FindPermissionByKey struct {
 	Service service.ManagerInterface
 }
 
-func (h *FindAttendanceTypeByKey) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *FindPermissionByKey) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	key := chi.URLParam(r, "attendance_type_key")
-	attendanceType, err := h.Service.FindAttendanceTypeByKey(ctx, key)
+	key := chi.URLParam(r, "permission_key")
+	permission, err := h.Service.FindPermissionByKey(ctx, key)
 	if err != nil {
 		if errors.Is(err, store.ErrDataNoRecord) {
 			if err := response.JSONResponseWriter(ctx, w, response.NotFound, nil, nil); err != nil {
@@ -29,7 +29,7 @@ func (h *FindAttendanceTypeByKey) ServeHTTP(w http.ResponseWriter, r *http.Reque
 			}
 			return
 		}
-		log.Printf("failed to find attendance type: %v", err)
+		log.Printf("failed to find permission: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
 		if err != nil {
 			log.Printf("failed to handle error: %v", err)
@@ -41,7 +41,7 @@ func (h *FindAttendanceTypeByKey) ServeHTTP(w http.ResponseWriter, r *http.Reque
 		}
 		return
 	}
-	err = response.JSONResponseWriter(ctx, w, response.Success, attendanceType, nil)
+	err = response.JSONResponseWriter(ctx, w, response.Success, permission, nil)
 	if err != nil {
 		log.Printf("failed to write response: %v", err)
 	}

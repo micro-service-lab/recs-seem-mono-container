@@ -23,12 +23,17 @@ DELETE FROM m_policies WHERE policy_id = ANY($1::uuid[]);
 SELECT * FROM m_policies WHERE policy_id = $1;
 
 -- name: FindPolicyByIDWithCategory :one
-SELECT m_policies.*, m_policy_categories.* FROM m_policies
+SELECT m_policies.*, m_policy_categories.name policy_category_name, m_policy_categories.key policy_category_key, m_policy_categories.description policy_category_description FROM m_policies
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE m_policies.policy_id = $1;
 
 -- name: FindPolicyByKey :one
 SELECT * FROM m_policies WHERE key = $1;
+
+-- name: FindPolicyByKeyWithCategory :one
+SELECT m_policies.*, m_policy_categories.name policy_category_name, m_policy_categories.key policy_category_key, m_policy_categories.description policy_category_description FROM m_policies
+JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
+WHERE m_policies.key = $1;
 
 -- name: GetPolicies :many
 SELECT * FROM m_policies
@@ -90,24 +95,24 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetPoliciesWithCategory :many
-SELECT m_policies.*, m_policy_categories.* FROM m_policies
+SELECT m_policies.*, m_policy_categories.name policy_category_name, m_policy_categories.key policy_category_key, m_policy_categories.description policy_category_description FROM m_policies
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_policies.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_in_category::boolean = true THEN policy_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
+	CASE WHEN @where_in_category::boolean = true THEN m_policies.policy_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
 	m_policies_pkey ASC;
 
 -- name: GetPoliciesWithCategoryUseNumberedPaginate :many
-SELECT m_policies.*, m_policy_categories.* FROM m_policies
+SELECT m_policies.*, m_policy_categories.name policy_category_name, m_policy_categories.key policy_category_key, m_policy_categories.description policy_category_description FROM m_policies
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_policies.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_in_category::boolean = true THEN policy_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
+	CASE WHEN @where_in_category::boolean = true THEN  m_policies.policy_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
@@ -115,12 +120,12 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetPoliciesWithCategoryUseKeysetPaginate :many
-SELECT m_policies.*, m_policy_categories.* FROM m_policies
+SELECT m_policies.*, m_policy_categories.name policy_category_name, m_policy_categories.key policy_category_key, m_policy_categories.description policy_category_description FROM m_policies
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_policies.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_in_category::boolean = true THEN policy_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
+	CASE WHEN @where_in_category::boolean = true THEN  m_policies.policy_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
@@ -146,7 +151,7 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralPoliciesWithCategory :many
-SELECT m_policies.*, m_policy_categories.* FROM m_policies
+SELECT m_policies.*, m_policy_categories.name policy_category_name, m_policy_categories.key policy_category_key, m_policy_categories.description policy_category_description FROM m_policies
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE policy_id = ANY(@policy_ids::uuid[])
 ORDER BY

@@ -113,23 +113,21 @@ func (q *Queries) FindPolicyByID(ctx context.Context, policyID uuid.UUID) (Polic
 }
 
 const findPolicyByIDWithCategory = `-- name: FindPolicyByIDWithCategory :one
-SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id, m_policy_categories.m_policy_categories_pkey, m_policy_categories.policy_category_id, m_policy_categories.name, m_policy_categories.description, m_policy_categories.key FROM m_policies
+SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id, m_policy_categories.name policy_category_name, m_policy_categories.key policy_category_key, m_policy_categories.description policy_category_description FROM m_policies
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE m_policies.policy_id = $1
 `
 
 type FindPolicyByIDWithCategoryRow struct {
-	MPoliciesPkey         pgtype.Int8 `json:"m_policies_pkey"`
-	PolicyID              uuid.UUID   `json:"policy_id"`
-	Name                  string      `json:"name"`
-	Description           string      `json:"description"`
-	Key                   string      `json:"key"`
-	PolicyCategoryID      uuid.UUID   `json:"policy_category_id"`
-	MPolicyCategoriesPkey pgtype.Int8 `json:"m_policy_categories_pkey"`
-	PolicyCategoryID_2    uuid.UUID   `json:"policy_category_id_2"`
-	Name_2                string      `json:"name_2"`
-	Description_2         string      `json:"description_2"`
-	Key_2                 string      `json:"key_2"`
+	MPoliciesPkey             pgtype.Int8 `json:"m_policies_pkey"`
+	PolicyID                  uuid.UUID   `json:"policy_id"`
+	Name                      string      `json:"name"`
+	Description               string      `json:"description"`
+	Key                       string      `json:"key"`
+	PolicyCategoryID          uuid.UUID   `json:"policy_category_id"`
+	PolicyCategoryName        string      `json:"policy_category_name"`
+	PolicyCategoryKey         string      `json:"policy_category_key"`
+	PolicyCategoryDescription string      `json:"policy_category_description"`
 }
 
 func (q *Queries) FindPolicyByIDWithCategory(ctx context.Context, policyID uuid.UUID) (FindPolicyByIDWithCategoryRow, error) {
@@ -142,11 +140,9 @@ func (q *Queries) FindPolicyByIDWithCategory(ctx context.Context, policyID uuid.
 		&i.Description,
 		&i.Key,
 		&i.PolicyCategoryID,
-		&i.MPolicyCategoriesPkey,
-		&i.PolicyCategoryID_2,
-		&i.Name_2,
-		&i.Description_2,
-		&i.Key_2,
+		&i.PolicyCategoryName,
+		&i.PolicyCategoryKey,
+		&i.PolicyCategoryDescription,
 	)
 	return i, err
 }
@@ -165,6 +161,41 @@ func (q *Queries) FindPolicyByKey(ctx context.Context, key string) (Policy, erro
 		&i.Description,
 		&i.Key,
 		&i.PolicyCategoryID,
+	)
+	return i, err
+}
+
+const findPolicyByKeyWithCategory = `-- name: FindPolicyByKeyWithCategory :one
+SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id, m_policy_categories.name policy_category_name, m_policy_categories.key policy_category_key, m_policy_categories.description policy_category_description FROM m_policies
+JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
+WHERE m_policies.key = $1
+`
+
+type FindPolicyByKeyWithCategoryRow struct {
+	MPoliciesPkey             pgtype.Int8 `json:"m_policies_pkey"`
+	PolicyID                  uuid.UUID   `json:"policy_id"`
+	Name                      string      `json:"name"`
+	Description               string      `json:"description"`
+	Key                       string      `json:"key"`
+	PolicyCategoryID          uuid.UUID   `json:"policy_category_id"`
+	PolicyCategoryName        string      `json:"policy_category_name"`
+	PolicyCategoryKey         string      `json:"policy_category_key"`
+	PolicyCategoryDescription string      `json:"policy_category_description"`
+}
+
+func (q *Queries) FindPolicyByKeyWithCategory(ctx context.Context, key string) (FindPolicyByKeyWithCategoryRow, error) {
+	row := q.db.QueryRow(ctx, findPolicyByKeyWithCategory, key)
+	var i FindPolicyByKeyWithCategoryRow
+	err := row.Scan(
+		&i.MPoliciesPkey,
+		&i.PolicyID,
+		&i.Name,
+		&i.Description,
+		&i.Key,
+		&i.PolicyCategoryID,
+		&i.PolicyCategoryName,
+		&i.PolicyCategoryKey,
+		&i.PolicyCategoryDescription,
 	)
 	return i, err
 }
@@ -210,7 +241,7 @@ func (q *Queries) GetPluralPolicies(ctx context.Context, arg GetPluralPoliciesPa
 }
 
 const getPluralPoliciesWithCategory = `-- name: GetPluralPoliciesWithCategory :many
-SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id, m_policy_categories.m_policy_categories_pkey, m_policy_categories.policy_category_id, m_policy_categories.name, m_policy_categories.description, m_policy_categories.key FROM m_policies
+SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id, m_policy_categories.name policy_category_name, m_policy_categories.key policy_category_key, m_policy_categories.description policy_category_description FROM m_policies
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE policy_id = ANY($3::uuid[])
 ORDER BY
@@ -225,17 +256,15 @@ type GetPluralPoliciesWithCategoryParams struct {
 }
 
 type GetPluralPoliciesWithCategoryRow struct {
-	MPoliciesPkey         pgtype.Int8 `json:"m_policies_pkey"`
-	PolicyID              uuid.UUID   `json:"policy_id"`
-	Name                  string      `json:"name"`
-	Description           string      `json:"description"`
-	Key                   string      `json:"key"`
-	PolicyCategoryID      uuid.UUID   `json:"policy_category_id"`
-	MPolicyCategoriesPkey pgtype.Int8 `json:"m_policy_categories_pkey"`
-	PolicyCategoryID_2    uuid.UUID   `json:"policy_category_id_2"`
-	Name_2                string      `json:"name_2"`
-	Description_2         string      `json:"description_2"`
-	Key_2                 string      `json:"key_2"`
+	MPoliciesPkey             pgtype.Int8 `json:"m_policies_pkey"`
+	PolicyID                  uuid.UUID   `json:"policy_id"`
+	Name                      string      `json:"name"`
+	Description               string      `json:"description"`
+	Key                       string      `json:"key"`
+	PolicyCategoryID          uuid.UUID   `json:"policy_category_id"`
+	PolicyCategoryName        string      `json:"policy_category_name"`
+	PolicyCategoryKey         string      `json:"policy_category_key"`
+	PolicyCategoryDescription string      `json:"policy_category_description"`
 }
 
 func (q *Queries) GetPluralPoliciesWithCategory(ctx context.Context, arg GetPluralPoliciesWithCategoryParams) ([]GetPluralPoliciesWithCategoryRow, error) {
@@ -254,11 +283,9 @@ func (q *Queries) GetPluralPoliciesWithCategory(ctx context.Context, arg GetPlur
 			&i.Description,
 			&i.Key,
 			&i.PolicyCategoryID,
-			&i.MPolicyCategoriesPkey,
-			&i.PolicyCategoryID_2,
-			&i.Name_2,
-			&i.Description_2,
-			&i.Key_2,
+			&i.PolicyCategoryName,
+			&i.PolicyCategoryKey,
+			&i.PolicyCategoryDescription,
 		); err != nil {
 			return nil, err
 		}
@@ -462,12 +489,12 @@ func (q *Queries) GetPoliciesUseNumberedPaginate(ctx context.Context, arg GetPol
 }
 
 const getPoliciesWithCategory = `-- name: GetPoliciesWithCategory :many
-SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id, m_policy_categories.m_policy_categories_pkey, m_policy_categories.policy_category_id, m_policy_categories.name, m_policy_categories.description, m_policy_categories.key FROM m_policies
+SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id, m_policy_categories.name policy_category_name, m_policy_categories.key policy_category_key, m_policy_categories.description policy_category_description FROM m_policies
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE
 	CASE WHEN $1::boolean = true THEN m_policies.name LIKE '%' || $2::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $3::boolean = true THEN policy_category_id = ANY($4::uuid[]) ELSE TRUE END
+	CASE WHEN $3::boolean = true THEN m_policies.policy_category_id = ANY($4::uuid[]) ELSE TRUE END
 ORDER BY
 	CASE WHEN $5::text = 'name' THEN m_policies.name END ASC,
 	CASE WHEN $5::text = 'r_name' THEN m_policies.name END DESC,
@@ -483,17 +510,15 @@ type GetPoliciesWithCategoryParams struct {
 }
 
 type GetPoliciesWithCategoryRow struct {
-	MPoliciesPkey         pgtype.Int8 `json:"m_policies_pkey"`
-	PolicyID              uuid.UUID   `json:"policy_id"`
-	Name                  string      `json:"name"`
-	Description           string      `json:"description"`
-	Key                   string      `json:"key"`
-	PolicyCategoryID      uuid.UUID   `json:"policy_category_id"`
-	MPolicyCategoriesPkey pgtype.Int8 `json:"m_policy_categories_pkey"`
-	PolicyCategoryID_2    uuid.UUID   `json:"policy_category_id_2"`
-	Name_2                string      `json:"name_2"`
-	Description_2         string      `json:"description_2"`
-	Key_2                 string      `json:"key_2"`
+	MPoliciesPkey             pgtype.Int8 `json:"m_policies_pkey"`
+	PolicyID                  uuid.UUID   `json:"policy_id"`
+	Name                      string      `json:"name"`
+	Description               string      `json:"description"`
+	Key                       string      `json:"key"`
+	PolicyCategoryID          uuid.UUID   `json:"policy_category_id"`
+	PolicyCategoryName        string      `json:"policy_category_name"`
+	PolicyCategoryKey         string      `json:"policy_category_key"`
+	PolicyCategoryDescription string      `json:"policy_category_description"`
 }
 
 func (q *Queries) GetPoliciesWithCategory(ctx context.Context, arg GetPoliciesWithCategoryParams) ([]GetPoliciesWithCategoryRow, error) {
@@ -518,11 +543,9 @@ func (q *Queries) GetPoliciesWithCategory(ctx context.Context, arg GetPoliciesWi
 			&i.Description,
 			&i.Key,
 			&i.PolicyCategoryID,
-			&i.MPolicyCategoriesPkey,
-			&i.PolicyCategoryID_2,
-			&i.Name_2,
-			&i.Description_2,
-			&i.Key_2,
+			&i.PolicyCategoryName,
+			&i.PolicyCategoryKey,
+			&i.PolicyCategoryDescription,
 		); err != nil {
 			return nil, err
 		}
@@ -535,12 +558,12 @@ func (q *Queries) GetPoliciesWithCategory(ctx context.Context, arg GetPoliciesWi
 }
 
 const getPoliciesWithCategoryUseKeysetPaginate = `-- name: GetPoliciesWithCategoryUseKeysetPaginate :many
-SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id, m_policy_categories.m_policy_categories_pkey, m_policy_categories.policy_category_id, m_policy_categories.name, m_policy_categories.description, m_policy_categories.key FROM m_policies
+SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id, m_policy_categories.name policy_category_name, m_policy_categories.key policy_category_key, m_policy_categories.description policy_category_description FROM m_policies
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE
 	CASE WHEN $2::boolean = true THEN m_policies.name LIKE '%' || $3::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $4::boolean = true THEN policy_category_id = ANY($5::uuid[]) ELSE TRUE END
+	CASE WHEN $4::boolean = true THEN  m_policies.policy_category_id = ANY($5::uuid[]) ELSE TRUE END
 AND
 	CASE $6::text
 		WHEN 'next' THEN
@@ -579,17 +602,15 @@ type GetPoliciesWithCategoryUseKeysetPaginateParams struct {
 }
 
 type GetPoliciesWithCategoryUseKeysetPaginateRow struct {
-	MPoliciesPkey         pgtype.Int8 `json:"m_policies_pkey"`
-	PolicyID              uuid.UUID   `json:"policy_id"`
-	Name                  string      `json:"name"`
-	Description           string      `json:"description"`
-	Key                   string      `json:"key"`
-	PolicyCategoryID      uuid.UUID   `json:"policy_category_id"`
-	MPolicyCategoriesPkey pgtype.Int8 `json:"m_policy_categories_pkey"`
-	PolicyCategoryID_2    uuid.UUID   `json:"policy_category_id_2"`
-	Name_2                string      `json:"name_2"`
-	Description_2         string      `json:"description_2"`
-	Key_2                 string      `json:"key_2"`
+	MPoliciesPkey             pgtype.Int8 `json:"m_policies_pkey"`
+	PolicyID                  uuid.UUID   `json:"policy_id"`
+	Name                      string      `json:"name"`
+	Description               string      `json:"description"`
+	Key                       string      `json:"key"`
+	PolicyCategoryID          uuid.UUID   `json:"policy_category_id"`
+	PolicyCategoryName        string      `json:"policy_category_name"`
+	PolicyCategoryKey         string      `json:"policy_category_key"`
+	PolicyCategoryDescription string      `json:"policy_category_description"`
 }
 
 func (q *Queries) GetPoliciesWithCategoryUseKeysetPaginate(ctx context.Context, arg GetPoliciesWithCategoryUseKeysetPaginateParams) ([]GetPoliciesWithCategoryUseKeysetPaginateRow, error) {
@@ -618,11 +639,9 @@ func (q *Queries) GetPoliciesWithCategoryUseKeysetPaginate(ctx context.Context, 
 			&i.Description,
 			&i.Key,
 			&i.PolicyCategoryID,
-			&i.MPolicyCategoriesPkey,
-			&i.PolicyCategoryID_2,
-			&i.Name_2,
-			&i.Description_2,
-			&i.Key_2,
+			&i.PolicyCategoryName,
+			&i.PolicyCategoryKey,
+			&i.PolicyCategoryDescription,
 		); err != nil {
 			return nil, err
 		}
@@ -635,12 +654,12 @@ func (q *Queries) GetPoliciesWithCategoryUseKeysetPaginate(ctx context.Context, 
 }
 
 const getPoliciesWithCategoryUseNumberedPaginate = `-- name: GetPoliciesWithCategoryUseNumberedPaginate :many
-SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id, m_policy_categories.m_policy_categories_pkey, m_policy_categories.policy_category_id, m_policy_categories.name, m_policy_categories.description, m_policy_categories.key FROM m_policies
+SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id, m_policy_categories.name policy_category_name, m_policy_categories.key policy_category_key, m_policy_categories.description policy_category_description FROM m_policies
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_policies.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN policy_category_id = ANY($6::uuid[]) ELSE TRUE END
+	CASE WHEN $5::boolean = true THEN  m_policies.policy_category_id = ANY($6::uuid[]) ELSE TRUE END
 ORDER BY
 	CASE WHEN $7::text = 'name' THEN m_policies.name END ASC,
 	CASE WHEN $7::text = 'r_name' THEN m_policies.name END DESC,
@@ -659,17 +678,15 @@ type GetPoliciesWithCategoryUseNumberedPaginateParams struct {
 }
 
 type GetPoliciesWithCategoryUseNumberedPaginateRow struct {
-	MPoliciesPkey         pgtype.Int8 `json:"m_policies_pkey"`
-	PolicyID              uuid.UUID   `json:"policy_id"`
-	Name                  string      `json:"name"`
-	Description           string      `json:"description"`
-	Key                   string      `json:"key"`
-	PolicyCategoryID      uuid.UUID   `json:"policy_category_id"`
-	MPolicyCategoriesPkey pgtype.Int8 `json:"m_policy_categories_pkey"`
-	PolicyCategoryID_2    uuid.UUID   `json:"policy_category_id_2"`
-	Name_2                string      `json:"name_2"`
-	Description_2         string      `json:"description_2"`
-	Key_2                 string      `json:"key_2"`
+	MPoliciesPkey             pgtype.Int8 `json:"m_policies_pkey"`
+	PolicyID                  uuid.UUID   `json:"policy_id"`
+	Name                      string      `json:"name"`
+	Description               string      `json:"description"`
+	Key                       string      `json:"key"`
+	PolicyCategoryID          uuid.UUID   `json:"policy_category_id"`
+	PolicyCategoryName        string      `json:"policy_category_name"`
+	PolicyCategoryKey         string      `json:"policy_category_key"`
+	PolicyCategoryDescription string      `json:"policy_category_description"`
 }
 
 func (q *Queries) GetPoliciesWithCategoryUseNumberedPaginate(ctx context.Context, arg GetPoliciesWithCategoryUseNumberedPaginateParams) ([]GetPoliciesWithCategoryUseNumberedPaginateRow, error) {
@@ -696,11 +713,9 @@ func (q *Queries) GetPoliciesWithCategoryUseNumberedPaginate(ctx context.Context
 			&i.Description,
 			&i.Key,
 			&i.PolicyCategoryID,
-			&i.MPolicyCategoriesPkey,
-			&i.PolicyCategoryID_2,
-			&i.Name_2,
-			&i.Description_2,
-			&i.Key_2,
+			&i.PolicyCategoryName,
+			&i.PolicyCategoryKey,
+			&i.PolicyCategoryDescription,
 		); err != nil {
 			return nil, err
 		}

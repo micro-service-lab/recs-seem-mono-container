@@ -114,6 +114,9 @@ var seedRecordTypesCmd *cobra.Command
 // seedPermissionsCmd inserts permissions.
 var seedPermissionsCmd *cobra.Command
 
+// seedPoliciesCmd inserts policies.
+var seedPoliciesCmd *cobra.Command
+
 // seedAllCmd inserts all seed data.
 var seedAllCmd = &cobra.Command{
 	Use:   "all",
@@ -128,11 +131,16 @@ The seed command is executed when the application is started for the first time.
 			seedAttendStatusesCmd.Run,
 			seedAttendanceTypesCmd.Run,
 			seedEventTypesCmd.Run,
-			seedPermissionCategoriesCmd.Run,
-			seedPolicyCategoriesCmd.Run,
+			func(cmd *cobra.Command, args []string) {
+				seedPermissionCategoriesCmd.Run(cmd, args)
+				seedPermissionsCmd.Run(cmd, args)
+			},
+			func(cmd *cobra.Command, args []string) {
+				seedPolicyCategoriesCmd.Run(cmd, args)
+				seedPoliciesCmd.Run(cmd, args)
+			},
 			seedMimeTypesCmd.Run,
 			seedRecordTypesCmd.Run,
-			seedPermissionsCmd.Run,
 		}
 		var wg sync.WaitGroup
 		wg.Add(len(cmds))
@@ -239,6 +247,17 @@ func seedInit() {
 			Manager: &AppContainer.ServiceManager,
 		},
 	)
+	seedPoliciesCmd = seedCmdGenerator(
+		"policy",
+		"policies",
+		"Policies",
+		func(ctx context.Context) (int64, error) {
+			return AppContainer.ServiceManager.GetPoliciesCount(ctx, "", []uuid.UUID{})
+		},
+		&batch.InitPolicies{
+			Manager: &AppContainer.ServiceManager,
+		},
+	)
 
 	rootCmd.AddCommand(seedCmd)
 	seedCmd.AddCommand(seedAllCmd)
@@ -250,6 +269,7 @@ func seedInit() {
 	seedCmd.AddCommand(seedMimeTypesCmd)
 	seedCmd.AddCommand(seedRecordTypesCmd)
 	seedCmd.AddCommand(seedPermissionsCmd)
+	seedCmd.AddCommand(seedPoliciesCmd)
 
 	seedCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "Force seed")
 	seedCmd.PersistentFlags().BoolVarP(&diff, "diff", "d", false, "Seed only if there is a difference")

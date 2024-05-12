@@ -23,12 +23,16 @@ const (
 	PermissionKeyMemberInvite PermissionKey = "member.invite"
 	// PermissionKeyMemberDelete メンバー削除。
 	PermissionKeyMemberDelete PermissionKey = "member.delete"
-	// PermissionKeyMemberAttachPermission メンバー権限付与。
-	PermissionKeyMemberAttachPermission PermissionKey = "member.attach_permission"
-	// PermissionKeyMemberDetachPermission メンバー権限剥奪。
-	PermissionKeyMemberDetachPermission PermissionKey = "member.detach_permission"
-	// PermissionKeyMemberViewPermission メンバー権限閲覧。
-	PermissionKeyMemberViewPermission PermissionKey = "member.view_permission"
+	// PermissionKeyWorkPositionCreateWorkPosition メンバーワークポジション作成。
+	PermissionKeyWorkPositionCreateWorkPosition PermissionKey = "work_position.create"
+	// PermissionKeyWorkPositionDeleteWorkPosition メンバーワークポジション削除。
+	PermissionKeyWorkPositionDeleteWorkPosition PermissionKey = "work_position.delete"
+	// PermissionKeyWorkPositionUpdateWorkPosition メンバーワークポジション更新。
+	PermissionKeyWorkPositionUpdateWorkPosition PermissionKey = "work_position.update"
+	// PermissionKeyWorkPositionAttachWorkPosition メンバーワークポジション付与。
+	PermissionKeyWorkPositionAttachWorkPosition PermissionKey = "work_position.attach"
+	// PermissionKeyWorkPositionDetachWorkPosition メンバーワークポジション剥奪。
+	PermissionKeyWorkPositionDetachWorkPosition PermissionKey = "work_position.detach"
 	// PermissionKeyEventCreate イベント作成。
 	PermissionKeyEventCreate PermissionKey = "event.create"
 	// PermissionKeyEventDelete イベント削除。
@@ -80,22 +84,34 @@ var Permissions = []Permission{
 		PermissionCategoryKey: PermissionCategoryKeyMember,
 	},
 	{
-		Key:                   string(PermissionKeyMemberAttachPermission),
-		Name:                  "メンバー権限付与",
-		Description:           "オーガナイゼーションのメンバーに権限を付与する権限",
-		PermissionCategoryKey: PermissionCategoryKeyMember,
+		Key:                   string(PermissionKeyWorkPositionCreateWorkPosition),
+		Name:                  "メンバーワークポジション作成",
+		Description:           "オーガナイゼーションのワークポジションを作成する権限",
+		PermissionCategoryKey: PermissionCategoryKeyWorkPosition,
 	},
 	{
-		Key:                   string(PermissionKeyMemberDetachPermission),
-		Name:                  "メンバー権限剥奪",
-		Description:           "オーガナイゼーションのメンバーから権限を剥奪する権限",
-		PermissionCategoryKey: PermissionCategoryKeyMember,
+		Key:                   string(PermissionKeyWorkPositionDeleteWorkPosition),
+		Name:                  "メンバーワークポジション削除",
+		Description:           "オーガナイゼーションのワークポジションを削除する権限",
+		PermissionCategoryKey: PermissionCategoryKeyWorkPosition,
 	},
 	{
-		Key:                   string(PermissionKeyMemberViewPermission),
-		Name:                  "メンバー権限閲覧",
-		Description:           "オーガナイゼーションのメンバーの権限を閲覧する権限",
-		PermissionCategoryKey: PermissionCategoryKeyMember,
+		Key:                   string(PermissionKeyWorkPositionUpdateWorkPosition),
+		Name:                  "メンバーワークポジション更新",
+		Description:           "オーガナイゼーションのワークポジションを更新する権限",
+		PermissionCategoryKey: PermissionCategoryKeyWorkPosition,
+	},
+	{
+		Key:                   string(PermissionKeyWorkPositionAttachWorkPosition),
+		Name:                  "メンバーワークポジション付与",
+		Description:           "オーガナイゼーションのワークポジションをメンバーに付与する権限",
+		PermissionCategoryKey: PermissionCategoryKeyWorkPosition,
+	},
+	{
+		Key:                   string(PermissionKeyWorkPositionDetachWorkPosition),
+		Name:                  "メンバーワークポジション剥奪",
+		Description:           "オーガナイゼーションのワークポジションをメンバーから剥奪する権限",
+		PermissionCategoryKey: PermissionCategoryKeyWorkPosition,
 	},
 	{
 		Key:                   string(PermissionKeyEventCreate),

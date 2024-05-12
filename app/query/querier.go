@@ -251,6 +251,7 @@ type Querier interface {
 	FindPolicyByID(ctx context.Context, policyID uuid.UUID) (Policy, error)
 	FindPolicyByIDWithCategory(ctx context.Context, policyID uuid.UUID) (FindPolicyByIDWithCategoryRow, error)
 	FindPolicyByKey(ctx context.Context, key string) (Policy, error)
+	FindPolicyByKeyWithCategory(ctx context.Context, key string) (FindPolicyByKeyWithCategoryRow, error)
 	FindPolicyCategoryByID(ctx context.Context, policyCategoryID uuid.UUID) (PolicyCategory, error)
 	FindPolicyCategoryByKey(ctx context.Context, key string) (PolicyCategory, error)
 	FindPositionHistoryByID(ctx context.Context, positionHistoryID uuid.UUID) (PositionHistory, error)

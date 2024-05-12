@@ -22,6 +22,7 @@ type Manager struct {
 	ManageMimeType
 	ManageRecordType
 	ManagePermission
+	ManagePolicy
 }
 
 // NewManager creates a new Manager.
@@ -36,6 +37,7 @@ func NewManager(db store.Store) *Manager {
 		ManageMimeType:           ManageMimeType{DB: db},
 		ManageRecordType:         ManageRecordType{DB: db},
 		ManagePermission:         ManagePermission{DB: db},
+		ManagePolicy:             ManagePolicy{DB: db},
 	}
 }
 
@@ -51,6 +53,7 @@ type ManagerInterface interface {
 	MimeTypeManager
 	RecordTypeManager
 	PermissionManager
+	PolicyManager
 }
 
 // AttendStatusManager is a interface for attend status service.
@@ -249,6 +252,48 @@ type PermissionManager interface {
 		withCount parameter.WithCount,
 	) (store.ListResult[entity.PermissionWithCategory], error)
 	GetPermissionsCount(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID) (int64, error)
+}
+
+// PolicyManager is a interface for event type service.
+type PolicyManager interface {
+	CreatePolicy(ctx context.Context, name, key, description string, categoryID uuid.UUID) (entity.Policy, error)
+	CreatePolicies(ctx context.Context, ps []parameter.CreatePolicyParam) (int64, error)
+	UpdatePolicy(
+		ctx context.Context, id uuid.UUID, name, key, description string, categoryID uuid.UUID) (entity.Policy, error)
+	DeletePolicy(ctx context.Context, id uuid.UUID) error
+	PluralDeletePolicies(ctx context.Context, ids []uuid.UUID) error
+	FindPolicyByID(ctx context.Context, id uuid.UUID) (entity.Policy, error)
+	FindPolicyByIDWithCategory(
+		ctx context.Context,
+		id uuid.UUID,
+	) (entity.PolicyWithCategory, error)
+	FindPolicyByKey(ctx context.Context, key string) (entity.Policy, error)
+	FindPolicyByKeyWithCategory(
+		ctx context.Context, key string,
+	) (entity.PolicyWithCategory, error)
+	GetPolicies(
+		ctx context.Context,
+		whereSearchName string,
+		whereInCategories []uuid.UUID,
+		order parameter.PolicyOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.Policy], error)
+	GetPoliciesWithCategory(
+		ctx context.Context,
+		whereSearchName string,
+		whereInCategories []uuid.UUID,
+		order parameter.PolicyOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.PolicyWithCategory], error)
+	GetPoliciesCount(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID) (int64, error)
 }
 
 var _ ManagerInterface = (*Manager)(nil)

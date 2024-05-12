@@ -72,6 +72,12 @@ var _ Store = &StoreMock{}
 //			CountPermissionsWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WherePermissionParam) (int64, error) {
 //				panic("mock out the CountPermissionsWithSd method")
 //			},
+//			CountPoliciesFunc: func(ctx context.Context, where parameter.WherePolicyParam) (int64, error) {
+//				panic("mock out the CountPolicies method")
+//			},
+//			CountPoliciesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WherePolicyParam) (int64, error) {
+//				panic("mock out the CountPoliciesWithSd method")
+//			},
 //			CountPolicyCategoriesFunc: func(ctx context.Context, where parameter.WherePolicyCategoryParam) (int64, error) {
 //				panic("mock out the CountPolicyCategories method")
 //			},
@@ -168,6 +174,15 @@ var _ Store = &StoreMock{}
 //			CreatePermissionsWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreatePermissionParam) (int64, error) {
 //				panic("mock out the CreatePermissionsWithSd method")
 //			},
+//			CreatePoliciesFunc: func(ctx context.Context, params []parameter.CreatePolicyParam) (int64, error) {
+//				panic("mock out the CreatePolicies method")
+//			},
+//			CreatePoliciesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreatePolicyParam) (int64, error) {
+//				panic("mock out the CreatePoliciesWithSd method")
+//			},
+//			CreatePolicyFunc: func(ctx context.Context, param parameter.CreatePolicyParam) (entity.Policy, error) {
+//				panic("mock out the CreatePolicy method")
+//			},
 //			CreatePolicyCategoriesFunc: func(ctx context.Context, params []parameter.CreatePolicyCategoryParam) (int64, error) {
 //				panic("mock out the CreatePolicyCategories method")
 //			},
@@ -179,6 +194,9 @@ var _ Store = &StoreMock{}
 //			},
 //			CreatePolicyCategoryWithSdFunc: func(ctx context.Context, sd Sd, param parameter.CreatePolicyCategoryParam) (entity.PolicyCategory, error) {
 //				panic("mock out the CreatePolicyCategoryWithSd method")
+//			},
+//			CreatePolicyWithSdFunc: func(ctx context.Context, sd Sd, param parameter.CreatePolicyParam) (entity.Policy, error) {
+//				panic("mock out the CreatePolicyWithSd method")
 //			},
 //			CreateRecordTypeFunc: func(ctx context.Context, param parameter.CreateRecordTypeParam) (entity.RecordType, error) {
 //				panic("mock out the CreateRecordType method")
@@ -270,6 +288,15 @@ var _ Store = &StoreMock{}
 //			DeletePermissionWithSdFunc: func(ctx context.Context, sd Sd, permissionID uuid.UUID) error {
 //				panic("mock out the DeletePermissionWithSd method")
 //			},
+//			DeletePolicyFunc: func(ctx context.Context, policyID uuid.UUID) error {
+//				panic("mock out the DeletePolicy method")
+//			},
+//			DeletePolicyByKeyFunc: func(ctx context.Context, key string) error {
+//				panic("mock out the DeletePolicyByKey method")
+//			},
+//			DeletePolicyByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) error {
+//				panic("mock out the DeletePolicyByKeyWithSd method")
+//			},
 //			DeletePolicyCategoryFunc: func(ctx context.Context, policyCategoryID uuid.UUID) error {
 //				panic("mock out the DeletePolicyCategory method")
 //			},
@@ -281,6 +308,9 @@ var _ Store = &StoreMock{}
 //			},
 //			DeletePolicyCategoryWithSdFunc: func(ctx context.Context, sd Sd, policyCategoryID uuid.UUID) error {
 //				panic("mock out the DeletePolicyCategoryWithSd method")
+//			},
+//			DeletePolicyWithSdFunc: func(ctx context.Context, sd Sd, policyID uuid.UUID) error {
+//				panic("mock out the DeletePolicyWithSd method")
 //			},
 //			DeleteRecordTypeFunc: func(ctx context.Context, recordTypeID uuid.UUID) error {
 //				panic("mock out the DeleteRecordType method")
@@ -383,6 +413,30 @@ var _ Store = &StoreMock{}
 //			},
 //			FindPermissionCategoryByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.PermissionCategory, error) {
 //				panic("mock out the FindPermissionCategoryByKeyWithSd method")
+//			},
+//			FindPolicyByIDFunc: func(ctx context.Context, policyID uuid.UUID) (entity.Policy, error) {
+//				panic("mock out the FindPolicyByID method")
+//			},
+//			FindPolicyByIDWithCategoryFunc: func(ctx context.Context, policyID uuid.UUID) (entity.PolicyWithCategory, error) {
+//				panic("mock out the FindPolicyByIDWithCategory method")
+//			},
+//			FindPolicyByIDWithCategoryWithSdFunc: func(ctx context.Context, sd Sd, policyID uuid.UUID) (entity.PolicyWithCategory, error) {
+//				panic("mock out the FindPolicyByIDWithCategoryWithSd method")
+//			},
+//			FindPolicyByIDWithSdFunc: func(ctx context.Context, sd Sd, policyID uuid.UUID) (entity.Policy, error) {
+//				panic("mock out the FindPolicyByIDWithSd method")
+//			},
+//			FindPolicyByKeyFunc: func(ctx context.Context, key string) (entity.Policy, error) {
+//				panic("mock out the FindPolicyByKey method")
+//			},
+//			FindPolicyByKeyWithCategoryFunc: func(ctx context.Context, key string) (entity.PolicyWithCategory, error) {
+//				panic("mock out the FindPolicyByKeyWithCategory method")
+//			},
+//			FindPolicyByKeyWithCategoryWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.PolicyWithCategory, error) {
+//				panic("mock out the FindPolicyByKeyWithCategoryWithSd method")
+//			},
+//			FindPolicyByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.Policy, error) {
+//				panic("mock out the FindPolicyByKeyWithSd method")
 //			},
 //			FindPolicyCategoryByIDFunc: func(ctx context.Context, policyCategoryID uuid.UUID) (entity.PolicyCategory, error) {
 //				panic("mock out the FindPolicyCategoryByID method")
@@ -498,6 +552,12 @@ var _ Store = &StoreMock{}
 //			GetPluralPermissionsWithSdFunc: func(ctx context.Context, sd Sd, PermissionIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Permission], error) {
 //				panic("mock out the GetPluralPermissionsWithSd method")
 //			},
+//			GetPluralPoliciesFunc: func(ctx context.Context, PolicyIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Policy], error) {
+//				panic("mock out the GetPluralPolicies method")
+//			},
+//			GetPluralPoliciesWithSdFunc: func(ctx context.Context, sd Sd, PolicyIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Policy], error) {
+//				panic("mock out the GetPluralPoliciesWithSd method")
+//			},
 //			GetPluralPolicyCategoriesFunc: func(ctx context.Context, policyCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PolicyCategory], error) {
 //				panic("mock out the GetPluralPolicyCategories method")
 //			},
@@ -509,6 +569,18 @@ var _ Store = &StoreMock{}
 //			},
 //			GetPluralRecordTypesWithSdFunc: func(ctx context.Context, sd Sd, RecordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error) {
 //				panic("mock out the GetPluralRecordTypesWithSd method")
+//			},
+//			GetPoliciesFunc: func(ctx context.Context, where parameter.WherePolicyParam, order parameter.PolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Policy], error) {
+//				panic("mock out the GetPolicies method")
+//			},
+//			GetPoliciesWithCategoryFunc: func(ctx context.Context, where parameter.WherePolicyParam, order parameter.PolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyWithCategory], error) {
+//				panic("mock out the GetPoliciesWithCategory method")
+//			},
+//			GetPoliciesWithCategoryWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WherePolicyParam, order parameter.PolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyWithCategory], error) {
+//				panic("mock out the GetPoliciesWithCategoryWithSd method")
+//			},
+//			GetPoliciesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WherePolicyParam, order parameter.PolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Policy], error) {
+//				panic("mock out the GetPoliciesWithSd method")
 //			},
 //			GetPolicyCategoriesFunc: func(ctx context.Context, where parameter.WherePolicyCategoryParam, order parameter.PolicyCategoryOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyCategory], error) {
 //				panic("mock out the GetPolicyCategories method")
@@ -563,6 +635,12 @@ var _ Store = &StoreMock{}
 //			},
 //			PluralDeletePermissionsWithSdFunc: func(ctx context.Context, sd Sd, permissionIDs []uuid.UUID) error {
 //				panic("mock out the PluralDeletePermissionsWithSd method")
+//			},
+//			PluralDeletePoliciesFunc: func(ctx context.Context, policyIDs []uuid.UUID) error {
+//				panic("mock out the PluralDeletePolicies method")
+//			},
+//			PluralDeletePoliciesWithSdFunc: func(ctx context.Context, sd Sd, policyIDs []uuid.UUID) error {
+//				panic("mock out the PluralDeletePoliciesWithSd method")
 //			},
 //			PluralDeletePolicyCategoriesFunc: func(ctx context.Context, policyCategoryIDs []uuid.UUID) error {
 //				panic("mock out the PluralDeletePolicyCategories method")
@@ -651,6 +729,15 @@ var _ Store = &StoreMock{}
 //			UpdatePermissionWithSdFunc: func(ctx context.Context, sd Sd, permissionID uuid.UUID, param parameter.UpdatePermissionParams) (entity.Permission, error) {
 //				panic("mock out the UpdatePermissionWithSd method")
 //			},
+//			UpdatePolicyFunc: func(ctx context.Context, policyID uuid.UUID, param parameter.UpdatePolicyParams) (entity.Policy, error) {
+//				panic("mock out the UpdatePolicy method")
+//			},
+//			UpdatePolicyByKeyFunc: func(ctx context.Context, key string, param parameter.UpdatePolicyByKeyParams) (entity.Policy, error) {
+//				panic("mock out the UpdatePolicyByKey method")
+//			},
+//			UpdatePolicyByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string, param parameter.UpdatePolicyByKeyParams) (entity.Policy, error) {
+//				panic("mock out the UpdatePolicyByKeyWithSd method")
+//			},
 //			UpdatePolicyCategoryFunc: func(ctx context.Context, policyCategoryID uuid.UUID, param parameter.UpdatePolicyCategoryParams) (entity.PolicyCategory, error) {
 //				panic("mock out the UpdatePolicyCategory method")
 //			},
@@ -662,6 +749,9 @@ var _ Store = &StoreMock{}
 //			},
 //			UpdatePolicyCategoryWithSdFunc: func(ctx context.Context, sd Sd, policyCategoryID uuid.UUID, param parameter.UpdatePolicyCategoryParams) (entity.PolicyCategory, error) {
 //				panic("mock out the UpdatePolicyCategoryWithSd method")
+//			},
+//			UpdatePolicyWithSdFunc: func(ctx context.Context, sd Sd, policyID uuid.UUID, param parameter.UpdatePolicyParams) (entity.Policy, error) {
+//				panic("mock out the UpdatePolicyWithSd method")
 //			},
 //			UpdateRecordTypeFunc: func(ctx context.Context, recordTypeID uuid.UUID, param parameter.UpdateRecordTypeParams) (entity.RecordType, error) {
 //				panic("mock out the UpdateRecordType method")
@@ -732,6 +822,12 @@ type StoreMock struct {
 
 	// CountPermissionsWithSdFunc mocks the CountPermissionsWithSd method.
 	CountPermissionsWithSdFunc func(ctx context.Context, sd Sd, where parameter.WherePermissionParam) (int64, error)
+
+	// CountPoliciesFunc mocks the CountPolicies method.
+	CountPoliciesFunc func(ctx context.Context, where parameter.WherePolicyParam) (int64, error)
+
+	// CountPoliciesWithSdFunc mocks the CountPoliciesWithSd method.
+	CountPoliciesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WherePolicyParam) (int64, error)
 
 	// CountPolicyCategoriesFunc mocks the CountPolicyCategories method.
 	CountPolicyCategoriesFunc func(ctx context.Context, where parameter.WherePolicyCategoryParam) (int64, error)
@@ -829,6 +925,15 @@ type StoreMock struct {
 	// CreatePermissionsWithSdFunc mocks the CreatePermissionsWithSd method.
 	CreatePermissionsWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreatePermissionParam) (int64, error)
 
+	// CreatePoliciesFunc mocks the CreatePolicies method.
+	CreatePoliciesFunc func(ctx context.Context, params []parameter.CreatePolicyParam) (int64, error)
+
+	// CreatePoliciesWithSdFunc mocks the CreatePoliciesWithSd method.
+	CreatePoliciesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreatePolicyParam) (int64, error)
+
+	// CreatePolicyFunc mocks the CreatePolicy method.
+	CreatePolicyFunc func(ctx context.Context, param parameter.CreatePolicyParam) (entity.Policy, error)
+
 	// CreatePolicyCategoriesFunc mocks the CreatePolicyCategories method.
 	CreatePolicyCategoriesFunc func(ctx context.Context, params []parameter.CreatePolicyCategoryParam) (int64, error)
 
@@ -840,6 +945,9 @@ type StoreMock struct {
 
 	// CreatePolicyCategoryWithSdFunc mocks the CreatePolicyCategoryWithSd method.
 	CreatePolicyCategoryWithSdFunc func(ctx context.Context, sd Sd, param parameter.CreatePolicyCategoryParam) (entity.PolicyCategory, error)
+
+	// CreatePolicyWithSdFunc mocks the CreatePolicyWithSd method.
+	CreatePolicyWithSdFunc func(ctx context.Context, sd Sd, param parameter.CreatePolicyParam) (entity.Policy, error)
 
 	// CreateRecordTypeFunc mocks the CreateRecordType method.
 	CreateRecordTypeFunc func(ctx context.Context, param parameter.CreateRecordTypeParam) (entity.RecordType, error)
@@ -931,6 +1039,15 @@ type StoreMock struct {
 	// DeletePermissionWithSdFunc mocks the DeletePermissionWithSd method.
 	DeletePermissionWithSdFunc func(ctx context.Context, sd Sd, permissionID uuid.UUID) error
 
+	// DeletePolicyFunc mocks the DeletePolicy method.
+	DeletePolicyFunc func(ctx context.Context, policyID uuid.UUID) error
+
+	// DeletePolicyByKeyFunc mocks the DeletePolicyByKey method.
+	DeletePolicyByKeyFunc func(ctx context.Context, key string) error
+
+	// DeletePolicyByKeyWithSdFunc mocks the DeletePolicyByKeyWithSd method.
+	DeletePolicyByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) error
+
 	// DeletePolicyCategoryFunc mocks the DeletePolicyCategory method.
 	DeletePolicyCategoryFunc func(ctx context.Context, policyCategoryID uuid.UUID) error
 
@@ -942,6 +1059,9 @@ type StoreMock struct {
 
 	// DeletePolicyCategoryWithSdFunc mocks the DeletePolicyCategoryWithSd method.
 	DeletePolicyCategoryWithSdFunc func(ctx context.Context, sd Sd, policyCategoryID uuid.UUID) error
+
+	// DeletePolicyWithSdFunc mocks the DeletePolicyWithSd method.
+	DeletePolicyWithSdFunc func(ctx context.Context, sd Sd, policyID uuid.UUID) error
 
 	// DeleteRecordTypeFunc mocks the DeleteRecordType method.
 	DeleteRecordTypeFunc func(ctx context.Context, recordTypeID uuid.UUID) error
@@ -1044,6 +1164,30 @@ type StoreMock struct {
 
 	// FindPermissionCategoryByKeyWithSdFunc mocks the FindPermissionCategoryByKeyWithSd method.
 	FindPermissionCategoryByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.PermissionCategory, error)
+
+	// FindPolicyByIDFunc mocks the FindPolicyByID method.
+	FindPolicyByIDFunc func(ctx context.Context, policyID uuid.UUID) (entity.Policy, error)
+
+	// FindPolicyByIDWithCategoryFunc mocks the FindPolicyByIDWithCategory method.
+	FindPolicyByIDWithCategoryFunc func(ctx context.Context, policyID uuid.UUID) (entity.PolicyWithCategory, error)
+
+	// FindPolicyByIDWithCategoryWithSdFunc mocks the FindPolicyByIDWithCategoryWithSd method.
+	FindPolicyByIDWithCategoryWithSdFunc func(ctx context.Context, sd Sd, policyID uuid.UUID) (entity.PolicyWithCategory, error)
+
+	// FindPolicyByIDWithSdFunc mocks the FindPolicyByIDWithSd method.
+	FindPolicyByIDWithSdFunc func(ctx context.Context, sd Sd, policyID uuid.UUID) (entity.Policy, error)
+
+	// FindPolicyByKeyFunc mocks the FindPolicyByKey method.
+	FindPolicyByKeyFunc func(ctx context.Context, key string) (entity.Policy, error)
+
+	// FindPolicyByKeyWithCategoryFunc mocks the FindPolicyByKeyWithCategory method.
+	FindPolicyByKeyWithCategoryFunc func(ctx context.Context, key string) (entity.PolicyWithCategory, error)
+
+	// FindPolicyByKeyWithCategoryWithSdFunc mocks the FindPolicyByKeyWithCategoryWithSd method.
+	FindPolicyByKeyWithCategoryWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.PolicyWithCategory, error)
+
+	// FindPolicyByKeyWithSdFunc mocks the FindPolicyByKeyWithSd method.
+	FindPolicyByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.Policy, error)
 
 	// FindPolicyCategoryByIDFunc mocks the FindPolicyCategoryByID method.
 	FindPolicyCategoryByIDFunc func(ctx context.Context, policyCategoryID uuid.UUID) (entity.PolicyCategory, error)
@@ -1159,6 +1303,12 @@ type StoreMock struct {
 	// GetPluralPermissionsWithSdFunc mocks the GetPluralPermissionsWithSd method.
 	GetPluralPermissionsWithSdFunc func(ctx context.Context, sd Sd, PermissionIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Permission], error)
 
+	// GetPluralPoliciesFunc mocks the GetPluralPolicies method.
+	GetPluralPoliciesFunc func(ctx context.Context, PolicyIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Policy], error)
+
+	// GetPluralPoliciesWithSdFunc mocks the GetPluralPoliciesWithSd method.
+	GetPluralPoliciesWithSdFunc func(ctx context.Context, sd Sd, PolicyIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Policy], error)
+
 	// GetPluralPolicyCategoriesFunc mocks the GetPluralPolicyCategories method.
 	GetPluralPolicyCategoriesFunc func(ctx context.Context, policyCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PolicyCategory], error)
 
@@ -1170,6 +1320,18 @@ type StoreMock struct {
 
 	// GetPluralRecordTypesWithSdFunc mocks the GetPluralRecordTypesWithSd method.
 	GetPluralRecordTypesWithSdFunc func(ctx context.Context, sd Sd, RecordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error)
+
+	// GetPoliciesFunc mocks the GetPolicies method.
+	GetPoliciesFunc func(ctx context.Context, where parameter.WherePolicyParam, order parameter.PolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Policy], error)
+
+	// GetPoliciesWithCategoryFunc mocks the GetPoliciesWithCategory method.
+	GetPoliciesWithCategoryFunc func(ctx context.Context, where parameter.WherePolicyParam, order parameter.PolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyWithCategory], error)
+
+	// GetPoliciesWithCategoryWithSdFunc mocks the GetPoliciesWithCategoryWithSd method.
+	GetPoliciesWithCategoryWithSdFunc func(ctx context.Context, sd Sd, where parameter.WherePolicyParam, order parameter.PolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyWithCategory], error)
+
+	// GetPoliciesWithSdFunc mocks the GetPoliciesWithSd method.
+	GetPoliciesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WherePolicyParam, order parameter.PolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Policy], error)
 
 	// GetPolicyCategoriesFunc mocks the GetPolicyCategories method.
 	GetPolicyCategoriesFunc func(ctx context.Context, where parameter.WherePolicyCategoryParam, order parameter.PolicyCategoryOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyCategory], error)
@@ -1224,6 +1386,12 @@ type StoreMock struct {
 
 	// PluralDeletePermissionsWithSdFunc mocks the PluralDeletePermissionsWithSd method.
 	PluralDeletePermissionsWithSdFunc func(ctx context.Context, sd Sd, permissionIDs []uuid.UUID) error
+
+	// PluralDeletePoliciesFunc mocks the PluralDeletePolicies method.
+	PluralDeletePoliciesFunc func(ctx context.Context, policyIDs []uuid.UUID) error
+
+	// PluralDeletePoliciesWithSdFunc mocks the PluralDeletePoliciesWithSd method.
+	PluralDeletePoliciesWithSdFunc func(ctx context.Context, sd Sd, policyIDs []uuid.UUID) error
 
 	// PluralDeletePolicyCategoriesFunc mocks the PluralDeletePolicyCategories method.
 	PluralDeletePolicyCategoriesFunc func(ctx context.Context, policyCategoryIDs []uuid.UUID) error
@@ -1312,6 +1480,15 @@ type StoreMock struct {
 	// UpdatePermissionWithSdFunc mocks the UpdatePermissionWithSd method.
 	UpdatePermissionWithSdFunc func(ctx context.Context, sd Sd, permissionID uuid.UUID, param parameter.UpdatePermissionParams) (entity.Permission, error)
 
+	// UpdatePolicyFunc mocks the UpdatePolicy method.
+	UpdatePolicyFunc func(ctx context.Context, policyID uuid.UUID, param parameter.UpdatePolicyParams) (entity.Policy, error)
+
+	// UpdatePolicyByKeyFunc mocks the UpdatePolicyByKey method.
+	UpdatePolicyByKeyFunc func(ctx context.Context, key string, param parameter.UpdatePolicyByKeyParams) (entity.Policy, error)
+
+	// UpdatePolicyByKeyWithSdFunc mocks the UpdatePolicyByKeyWithSd method.
+	UpdatePolicyByKeyWithSdFunc func(ctx context.Context, sd Sd, key string, param parameter.UpdatePolicyByKeyParams) (entity.Policy, error)
+
 	// UpdatePolicyCategoryFunc mocks the UpdatePolicyCategory method.
 	UpdatePolicyCategoryFunc func(ctx context.Context, policyCategoryID uuid.UUID, param parameter.UpdatePolicyCategoryParams) (entity.PolicyCategory, error)
 
@@ -1323,6 +1500,9 @@ type StoreMock struct {
 
 	// UpdatePolicyCategoryWithSdFunc mocks the UpdatePolicyCategoryWithSd method.
 	UpdatePolicyCategoryWithSdFunc func(ctx context.Context, sd Sd, policyCategoryID uuid.UUID, param parameter.UpdatePolicyCategoryParams) (entity.PolicyCategory, error)
+
+	// UpdatePolicyWithSdFunc mocks the UpdatePolicyWithSd method.
+	UpdatePolicyWithSdFunc func(ctx context.Context, sd Sd, policyID uuid.UUID, param parameter.UpdatePolicyParams) (entity.Policy, error)
 
 	// UpdateRecordTypeFunc mocks the UpdateRecordType method.
 	UpdateRecordTypeFunc func(ctx context.Context, recordTypeID uuid.UUID, param parameter.UpdateRecordTypeParams) (entity.RecordType, error)
@@ -1462,6 +1642,22 @@ type StoreMock struct {
 			Sd Sd
 			// Where is the where argument value.
 			Where parameter.WherePermissionParam
+		}
+		// CountPolicies holds details about calls to the CountPolicies method.
+		CountPolicies []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WherePolicyParam
+		}
+		// CountPoliciesWithSd holds details about calls to the CountPoliciesWithSd method.
+		CountPoliciesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WherePolicyParam
 		}
 		// CountPolicyCategories holds details about calls to the CountPolicyCategories method.
 		CountPolicyCategories []struct {
@@ -1719,6 +1915,29 @@ type StoreMock struct {
 			// Params is the params argument value.
 			Params []parameter.CreatePermissionParam
 		}
+		// CreatePolicies holds details about calls to the CreatePolicies method.
+		CreatePolicies []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.CreatePolicyParam
+		}
+		// CreatePoliciesWithSd holds details about calls to the CreatePoliciesWithSd method.
+		CreatePoliciesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Params is the params argument value.
+			Params []parameter.CreatePolicyParam
+		}
+		// CreatePolicy holds details about calls to the CreatePolicy method.
+		CreatePolicy []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Param is the param argument value.
+			Param parameter.CreatePolicyParam
+		}
 		// CreatePolicyCategories holds details about calls to the CreatePolicyCategories method.
 		CreatePolicyCategories []struct {
 			// Ctx is the ctx argument value.
@@ -1750,6 +1969,15 @@ type StoreMock struct {
 			Sd Sd
 			// Param is the param argument value.
 			Param parameter.CreatePolicyCategoryParam
+		}
+		// CreatePolicyWithSd holds details about calls to the CreatePolicyWithSd method.
+		CreatePolicyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Param is the param argument value.
+			Param parameter.CreatePolicyParam
 		}
 		// CreateRecordType holds details about calls to the CreateRecordType method.
 		CreateRecordType []struct {
@@ -1991,6 +2219,29 @@ type StoreMock struct {
 			// PermissionID is the permissionID argument value.
 			PermissionID uuid.UUID
 		}
+		// DeletePolicy holds details about calls to the DeletePolicy method.
+		DeletePolicy []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+		}
+		// DeletePolicyByKey holds details about calls to the DeletePolicyByKey method.
+		DeletePolicyByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// DeletePolicyByKeyWithSd holds details about calls to the DeletePolicyByKeyWithSd method.
+		DeletePolicyByKeyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
+		}
 		// DeletePolicyCategory holds details about calls to the DeletePolicyCategory method.
 		DeletePolicyCategory []struct {
 			// Ctx is the ctx argument value.
@@ -2022,6 +2273,15 @@ type StoreMock struct {
 			Sd Sd
 			// PolicyCategoryID is the policyCategoryID argument value.
 			PolicyCategoryID uuid.UUID
+		}
+		// DeletePolicyWithSd holds details about calls to the DeletePolicyWithSd method.
+		DeletePolicyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
 		}
 		// DeleteRecordType holds details about calls to the DeleteRecordType method.
 		DeleteRecordType []struct {
@@ -2288,6 +2548,70 @@ type StoreMock struct {
 		}
 		// FindPermissionCategoryByKeyWithSd holds details about calls to the FindPermissionCategoryByKeyWithSd method.
 		FindPermissionCategoryByKeyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
+		}
+		// FindPolicyByID holds details about calls to the FindPolicyByID method.
+		FindPolicyByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+		}
+		// FindPolicyByIDWithCategory holds details about calls to the FindPolicyByIDWithCategory method.
+		FindPolicyByIDWithCategory []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+		}
+		// FindPolicyByIDWithCategoryWithSd holds details about calls to the FindPolicyByIDWithCategoryWithSd method.
+		FindPolicyByIDWithCategoryWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+		}
+		// FindPolicyByIDWithSd holds details about calls to the FindPolicyByIDWithSd method.
+		FindPolicyByIDWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+		}
+		// FindPolicyByKey holds details about calls to the FindPolicyByKey method.
+		FindPolicyByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// FindPolicyByKeyWithCategory holds details about calls to the FindPolicyByKeyWithCategory method.
+		FindPolicyByKeyWithCategory []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// FindPolicyByKeyWithCategoryWithSd holds details about calls to the FindPolicyByKeyWithCategoryWithSd method.
+		FindPolicyByKeyWithCategoryWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
+		}
+		// FindPolicyByKeyWithSd holds details about calls to the FindPolicyByKeyWithSd method.
+		FindPolicyByKeyWithSd []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Sd is the sd argument value.
@@ -2751,6 +3075,26 @@ type StoreMock struct {
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 		}
+		// GetPluralPolicies holds details about calls to the GetPluralPolicies method.
+		GetPluralPolicies []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PolicyIDs is the PolicyIDs argument value.
+			PolicyIDs []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralPoliciesWithSd holds details about calls to the GetPluralPoliciesWithSd method.
+		GetPluralPoliciesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// PolicyIDs is the PolicyIDs argument value.
+			PolicyIDs []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
 		// GetPluralPolicyCategories holds details about calls to the GetPluralPolicyCategories method.
 		GetPluralPolicyCategories []struct {
 			// Ctx is the ctx argument value.
@@ -2790,6 +3134,70 @@ type StoreMock struct {
 			RecordTypeIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
+		}
+		// GetPolicies holds details about calls to the GetPolicies method.
+		GetPolicies []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WherePolicyParam
+			// Order is the order argument value.
+			Order parameter.PolicyOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetPoliciesWithCategory holds details about calls to the GetPoliciesWithCategory method.
+		GetPoliciesWithCategory []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WherePolicyParam
+			// Order is the order argument value.
+			Order parameter.PolicyOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetPoliciesWithCategoryWithSd holds details about calls to the GetPoliciesWithCategoryWithSd method.
+		GetPoliciesWithCategoryWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WherePolicyParam
+			// Order is the order argument value.
+			Order parameter.PolicyOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetPoliciesWithSd holds details about calls to the GetPoliciesWithSd method.
+		GetPoliciesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WherePolicyParam
+			// Order is the order argument value.
+			Order parameter.PolicyOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
 		}
 		// GetPolicyCategories holds details about calls to the GetPolicyCategories method.
 		GetPolicyCategories []struct {
@@ -2966,6 +3374,22 @@ type StoreMock struct {
 			Sd Sd
 			// PermissionIDs is the permissionIDs argument value.
 			PermissionIDs []uuid.UUID
+		}
+		// PluralDeletePolicies holds details about calls to the PluralDeletePolicies method.
+		PluralDeletePolicies []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PolicyIDs is the policyIDs argument value.
+			PolicyIDs []uuid.UUID
+		}
+		// PluralDeletePoliciesWithSd holds details about calls to the PluralDeletePoliciesWithSd method.
+		PluralDeletePoliciesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// PolicyIDs is the policyIDs argument value.
+			PolicyIDs []uuid.UUID
 		}
 		// PluralDeletePolicyCategories holds details about calls to the PluralDeletePolicyCategories method.
 		PluralDeletePolicyCategories []struct {
@@ -3246,6 +3670,35 @@ type StoreMock struct {
 			// Param is the param argument value.
 			Param parameter.UpdatePermissionParams
 		}
+		// UpdatePolicy holds details about calls to the UpdatePolicy method.
+		UpdatePolicy []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+			// Param is the param argument value.
+			Param parameter.UpdatePolicyParams
+		}
+		// UpdatePolicyByKey holds details about calls to the UpdatePolicyByKey method.
+		UpdatePolicyByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+			// Param is the param argument value.
+			Param parameter.UpdatePolicyByKeyParams
+		}
+		// UpdatePolicyByKeyWithSd holds details about calls to the UpdatePolicyByKeyWithSd method.
+		UpdatePolicyByKeyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
+			// Param is the param argument value.
+			Param parameter.UpdatePolicyByKeyParams
+		}
 		// UpdatePolicyCategory holds details about calls to the UpdatePolicyCategory method.
 		UpdatePolicyCategory []struct {
 			// Ctx is the ctx argument value.
@@ -3285,6 +3738,17 @@ type StoreMock struct {
 			PolicyCategoryID uuid.UUID
 			// Param is the param argument value.
 			Param parameter.UpdatePolicyCategoryParams
+		}
+		// UpdatePolicyWithSd holds details about calls to the UpdatePolicyWithSd method.
+		UpdatePolicyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+			// Param is the param argument value.
+			Param parameter.UpdatePolicyParams
 		}
 		// UpdateRecordType holds details about calls to the UpdateRecordType method.
 		UpdateRecordType []struct {
@@ -3344,6 +3808,8 @@ type StoreMock struct {
 	lockCountPermissionCategoriesWithSd        sync.RWMutex
 	lockCountPermissions                       sync.RWMutex
 	lockCountPermissionsWithSd                 sync.RWMutex
+	lockCountPolicies                          sync.RWMutex
+	lockCountPoliciesWithSd                    sync.RWMutex
 	lockCountPolicyCategories                  sync.RWMutex
 	lockCountPolicyCategoriesWithSd            sync.RWMutex
 	lockCountRecordTypes                       sync.RWMutex
@@ -3376,10 +3842,14 @@ type StoreMock struct {
 	lockCreatePermissionWithSd                 sync.RWMutex
 	lockCreatePermissions                      sync.RWMutex
 	lockCreatePermissionsWithSd                sync.RWMutex
+	lockCreatePolicies                         sync.RWMutex
+	lockCreatePoliciesWithSd                   sync.RWMutex
+	lockCreatePolicy                           sync.RWMutex
 	lockCreatePolicyCategories                 sync.RWMutex
 	lockCreatePolicyCategoriesWithSd           sync.RWMutex
 	lockCreatePolicyCategory                   sync.RWMutex
 	lockCreatePolicyCategoryWithSd             sync.RWMutex
+	lockCreatePolicyWithSd                     sync.RWMutex
 	lockCreateRecordType                       sync.RWMutex
 	lockCreateRecordTypeWithSd                 sync.RWMutex
 	lockCreateRecordTypes                      sync.RWMutex
@@ -3410,10 +3880,14 @@ type StoreMock struct {
 	lockDeletePermissionCategoryByKeyWithSd    sync.RWMutex
 	lockDeletePermissionCategoryWithSd         sync.RWMutex
 	lockDeletePermissionWithSd                 sync.RWMutex
+	lockDeletePolicy                           sync.RWMutex
+	lockDeletePolicyByKey                      sync.RWMutex
+	lockDeletePolicyByKeyWithSd                sync.RWMutex
 	lockDeletePolicyCategory                   sync.RWMutex
 	lockDeletePolicyCategoryByKey              sync.RWMutex
 	lockDeletePolicyCategoryByKeyWithSd        sync.RWMutex
 	lockDeletePolicyCategoryWithSd             sync.RWMutex
+	lockDeletePolicyWithSd                     sync.RWMutex
 	lockDeleteRecordType                       sync.RWMutex
 	lockDeleteRecordTypeByKey                  sync.RWMutex
 	lockDeleteRecordTypeByKeyWithSd            sync.RWMutex
@@ -3448,6 +3922,14 @@ type StoreMock struct {
 	lockFindPermissionCategoryByIDWithSd       sync.RWMutex
 	lockFindPermissionCategoryByKey            sync.RWMutex
 	lockFindPermissionCategoryByKeyWithSd      sync.RWMutex
+	lockFindPolicyByID                         sync.RWMutex
+	lockFindPolicyByIDWithCategory             sync.RWMutex
+	lockFindPolicyByIDWithCategoryWithSd       sync.RWMutex
+	lockFindPolicyByIDWithSd                   sync.RWMutex
+	lockFindPolicyByKey                        sync.RWMutex
+	lockFindPolicyByKeyWithCategory            sync.RWMutex
+	lockFindPolicyByKeyWithCategoryWithSd      sync.RWMutex
+	lockFindPolicyByKeyWithSd                  sync.RWMutex
 	lockFindPolicyCategoryByID                 sync.RWMutex
 	lockFindPolicyCategoryByIDWithSd           sync.RWMutex
 	lockFindPolicyCategoryByKey                sync.RWMutex
@@ -3486,10 +3968,16 @@ type StoreMock struct {
 	lockGetPluralPermissionCategoriesWithSd    sync.RWMutex
 	lockGetPluralPermissions                   sync.RWMutex
 	lockGetPluralPermissionsWithSd             sync.RWMutex
+	lockGetPluralPolicies                      sync.RWMutex
+	lockGetPluralPoliciesWithSd                sync.RWMutex
 	lockGetPluralPolicyCategories              sync.RWMutex
 	lockGetPluralPolicyCategoriesWithSd        sync.RWMutex
 	lockGetPluralRecordTypes                   sync.RWMutex
 	lockGetPluralRecordTypesWithSd             sync.RWMutex
+	lockGetPolicies                            sync.RWMutex
+	lockGetPoliciesWithCategory                sync.RWMutex
+	lockGetPoliciesWithCategoryWithSd          sync.RWMutex
+	lockGetPoliciesWithSd                      sync.RWMutex
 	lockGetPolicyCategories                    sync.RWMutex
 	lockGetPolicyCategoriesWithSd              sync.RWMutex
 	lockGetRecordTypes                         sync.RWMutex
@@ -3508,6 +3996,8 @@ type StoreMock struct {
 	lockPluralDeletePermissionCategoriesWithSd sync.RWMutex
 	lockPluralDeletePermissions                sync.RWMutex
 	lockPluralDeletePermissionsWithSd          sync.RWMutex
+	lockPluralDeletePolicies                   sync.RWMutex
+	lockPluralDeletePoliciesWithSd             sync.RWMutex
 	lockPluralDeletePolicyCategories           sync.RWMutex
 	lockPluralDeletePolicyCategoriesWithSd     sync.RWMutex
 	lockPluralDeleteRecordTypes                sync.RWMutex
@@ -3537,10 +4027,14 @@ type StoreMock struct {
 	lockUpdatePermissionCategoryByKeyWithSd    sync.RWMutex
 	lockUpdatePermissionCategoryWithSd         sync.RWMutex
 	lockUpdatePermissionWithSd                 sync.RWMutex
+	lockUpdatePolicy                           sync.RWMutex
+	lockUpdatePolicyByKey                      sync.RWMutex
+	lockUpdatePolicyByKeyWithSd                sync.RWMutex
 	lockUpdatePolicyCategory                   sync.RWMutex
 	lockUpdatePolicyCategoryByKey              sync.RWMutex
 	lockUpdatePolicyCategoryByKeyWithSd        sync.RWMutex
 	lockUpdatePolicyCategoryWithSd             sync.RWMutex
+	lockUpdatePolicyWithSd                     sync.RWMutex
 	lockUpdateRecordType                       sync.RWMutex
 	lockUpdateRecordTypeByKey                  sync.RWMutex
 	lockUpdateRecordTypeByKeyWithSd            sync.RWMutex
@@ -4168,6 +4662,82 @@ func (mock *StoreMock) CountPermissionsWithSdCalls() []struct {
 	mock.lockCountPermissionsWithSd.RLock()
 	calls = mock.calls.CountPermissionsWithSd
 	mock.lockCountPermissionsWithSd.RUnlock()
+	return calls
+}
+
+// CountPolicies calls CountPoliciesFunc.
+func (mock *StoreMock) CountPolicies(ctx context.Context, where parameter.WherePolicyParam) (int64, error) {
+	if mock.CountPoliciesFunc == nil {
+		panic("StoreMock.CountPoliciesFunc: method is nil but Store.CountPolicies was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WherePolicyParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+	}
+	mock.lockCountPolicies.Lock()
+	mock.calls.CountPolicies = append(mock.calls.CountPolicies, callInfo)
+	mock.lockCountPolicies.Unlock()
+	return mock.CountPoliciesFunc(ctx, where)
+}
+
+// CountPoliciesCalls gets all the calls that were made to CountPolicies.
+// Check the length with:
+//
+//	len(mockedStore.CountPoliciesCalls())
+func (mock *StoreMock) CountPoliciesCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WherePolicyParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WherePolicyParam
+	}
+	mock.lockCountPolicies.RLock()
+	calls = mock.calls.CountPolicies
+	mock.lockCountPolicies.RUnlock()
+	return calls
+}
+
+// CountPoliciesWithSd calls CountPoliciesWithSdFunc.
+func (mock *StoreMock) CountPoliciesWithSd(ctx context.Context, sd Sd, where parameter.WherePolicyParam) (int64, error) {
+	if mock.CountPoliciesWithSdFunc == nil {
+		panic("StoreMock.CountPoliciesWithSdFunc: method is nil but Store.CountPoliciesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WherePolicyParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+	}
+	mock.lockCountPoliciesWithSd.Lock()
+	mock.calls.CountPoliciesWithSd = append(mock.calls.CountPoliciesWithSd, callInfo)
+	mock.lockCountPoliciesWithSd.Unlock()
+	return mock.CountPoliciesWithSdFunc(ctx, sd, where)
+}
+
+// CountPoliciesWithSdCalls gets all the calls that were made to CountPoliciesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountPoliciesWithSdCalls())
+func (mock *StoreMock) CountPoliciesWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WherePolicyParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WherePolicyParam
+	}
+	mock.lockCountPoliciesWithSd.RLock()
+	calls = mock.calls.CountPoliciesWithSd
+	mock.lockCountPoliciesWithSd.RUnlock()
 	return calls
 }
 
@@ -5387,6 +5957,118 @@ func (mock *StoreMock) CreatePermissionsWithSdCalls() []struct {
 	return calls
 }
 
+// CreatePolicies calls CreatePoliciesFunc.
+func (mock *StoreMock) CreatePolicies(ctx context.Context, params []parameter.CreatePolicyParam) (int64, error) {
+	if mock.CreatePoliciesFunc == nil {
+		panic("StoreMock.CreatePoliciesFunc: method is nil but Store.CreatePolicies was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.CreatePolicyParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockCreatePolicies.Lock()
+	mock.calls.CreatePolicies = append(mock.calls.CreatePolicies, callInfo)
+	mock.lockCreatePolicies.Unlock()
+	return mock.CreatePoliciesFunc(ctx, params)
+}
+
+// CreatePoliciesCalls gets all the calls that were made to CreatePolicies.
+// Check the length with:
+//
+//	len(mockedStore.CreatePoliciesCalls())
+func (mock *StoreMock) CreatePoliciesCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.CreatePolicyParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.CreatePolicyParam
+	}
+	mock.lockCreatePolicies.RLock()
+	calls = mock.calls.CreatePolicies
+	mock.lockCreatePolicies.RUnlock()
+	return calls
+}
+
+// CreatePoliciesWithSd calls CreatePoliciesWithSdFunc.
+func (mock *StoreMock) CreatePoliciesWithSd(ctx context.Context, sd Sd, params []parameter.CreatePolicyParam) (int64, error) {
+	if mock.CreatePoliciesWithSdFunc == nil {
+		panic("StoreMock.CreatePoliciesWithSdFunc: method is nil but Store.CreatePoliciesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreatePolicyParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		Params: params,
+	}
+	mock.lockCreatePoliciesWithSd.Lock()
+	mock.calls.CreatePoliciesWithSd = append(mock.calls.CreatePoliciesWithSd, callInfo)
+	mock.lockCreatePoliciesWithSd.Unlock()
+	return mock.CreatePoliciesWithSdFunc(ctx, sd, params)
+}
+
+// CreatePoliciesWithSdCalls gets all the calls that were made to CreatePoliciesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreatePoliciesWithSdCalls())
+func (mock *StoreMock) CreatePoliciesWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	Params []parameter.CreatePolicyParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreatePolicyParam
+	}
+	mock.lockCreatePoliciesWithSd.RLock()
+	calls = mock.calls.CreatePoliciesWithSd
+	mock.lockCreatePoliciesWithSd.RUnlock()
+	return calls
+}
+
+// CreatePolicy calls CreatePolicyFunc.
+func (mock *StoreMock) CreatePolicy(ctx context.Context, param parameter.CreatePolicyParam) (entity.Policy, error) {
+	if mock.CreatePolicyFunc == nil {
+		panic("StoreMock.CreatePolicyFunc: method is nil but Store.CreatePolicy was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Param parameter.CreatePolicyParam
+	}{
+		Ctx:   ctx,
+		Param: param,
+	}
+	mock.lockCreatePolicy.Lock()
+	mock.calls.CreatePolicy = append(mock.calls.CreatePolicy, callInfo)
+	mock.lockCreatePolicy.Unlock()
+	return mock.CreatePolicyFunc(ctx, param)
+}
+
+// CreatePolicyCalls gets all the calls that were made to CreatePolicy.
+// Check the length with:
+//
+//	len(mockedStore.CreatePolicyCalls())
+func (mock *StoreMock) CreatePolicyCalls() []struct {
+	Ctx   context.Context
+	Param parameter.CreatePolicyParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Param parameter.CreatePolicyParam
+	}
+	mock.lockCreatePolicy.RLock()
+	calls = mock.calls.CreatePolicy
+	mock.lockCreatePolicy.RUnlock()
+	return calls
+}
+
 // CreatePolicyCategories calls CreatePolicyCategoriesFunc.
 func (mock *StoreMock) CreatePolicyCategories(ctx context.Context, params []parameter.CreatePolicyCategoryParam) (int64, error) {
 	if mock.CreatePolicyCategoriesFunc == nil {
@@ -5536,6 +6218,46 @@ func (mock *StoreMock) CreatePolicyCategoryWithSdCalls() []struct {
 	mock.lockCreatePolicyCategoryWithSd.RLock()
 	calls = mock.calls.CreatePolicyCategoryWithSd
 	mock.lockCreatePolicyCategoryWithSd.RUnlock()
+	return calls
+}
+
+// CreatePolicyWithSd calls CreatePolicyWithSdFunc.
+func (mock *StoreMock) CreatePolicyWithSd(ctx context.Context, sd Sd, param parameter.CreatePolicyParam) (entity.Policy, error) {
+	if mock.CreatePolicyWithSdFunc == nil {
+		panic("StoreMock.CreatePolicyWithSdFunc: method is nil but Store.CreatePolicyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreatePolicyParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Param: param,
+	}
+	mock.lockCreatePolicyWithSd.Lock()
+	mock.calls.CreatePolicyWithSd = append(mock.calls.CreatePolicyWithSd, callInfo)
+	mock.lockCreatePolicyWithSd.Unlock()
+	return mock.CreatePolicyWithSdFunc(ctx, sd, param)
+}
+
+// CreatePolicyWithSdCalls gets all the calls that were made to CreatePolicyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreatePolicyWithSdCalls())
+func (mock *StoreMock) CreatePolicyWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Param parameter.CreatePolicyParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreatePolicyParam
+	}
+	mock.lockCreatePolicyWithSd.RLock()
+	calls = mock.calls.CreatePolicyWithSd
+	mock.lockCreatePolicyWithSd.RUnlock()
 	return calls
 }
 
@@ -6679,6 +7401,118 @@ func (mock *StoreMock) DeletePermissionWithSdCalls() []struct {
 	return calls
 }
 
+// DeletePolicy calls DeletePolicyFunc.
+func (mock *StoreMock) DeletePolicy(ctx context.Context, policyID uuid.UUID) error {
+	if mock.DeletePolicyFunc == nil {
+		panic("StoreMock.DeletePolicyFunc: method is nil but Store.DeletePolicy was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+	}{
+		Ctx:      ctx,
+		PolicyID: policyID,
+	}
+	mock.lockDeletePolicy.Lock()
+	mock.calls.DeletePolicy = append(mock.calls.DeletePolicy, callInfo)
+	mock.lockDeletePolicy.Unlock()
+	return mock.DeletePolicyFunc(ctx, policyID)
+}
+
+// DeletePolicyCalls gets all the calls that were made to DeletePolicy.
+// Check the length with:
+//
+//	len(mockedStore.DeletePolicyCalls())
+func (mock *StoreMock) DeletePolicyCalls() []struct {
+	Ctx      context.Context
+	PolicyID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+	}
+	mock.lockDeletePolicy.RLock()
+	calls = mock.calls.DeletePolicy
+	mock.lockDeletePolicy.RUnlock()
+	return calls
+}
+
+// DeletePolicyByKey calls DeletePolicyByKeyFunc.
+func (mock *StoreMock) DeletePolicyByKey(ctx context.Context, key string) error {
+	if mock.DeletePolicyByKeyFunc == nil {
+		panic("StoreMock.DeletePolicyByKeyFunc: method is nil but Store.DeletePolicyByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockDeletePolicyByKey.Lock()
+	mock.calls.DeletePolicyByKey = append(mock.calls.DeletePolicyByKey, callInfo)
+	mock.lockDeletePolicyByKey.Unlock()
+	return mock.DeletePolicyByKeyFunc(ctx, key)
+}
+
+// DeletePolicyByKeyCalls gets all the calls that were made to DeletePolicyByKey.
+// Check the length with:
+//
+//	len(mockedStore.DeletePolicyByKeyCalls())
+func (mock *StoreMock) DeletePolicyByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockDeletePolicyByKey.RLock()
+	calls = mock.calls.DeletePolicyByKey
+	mock.lockDeletePolicyByKey.RUnlock()
+	return calls
+}
+
+// DeletePolicyByKeyWithSd calls DeletePolicyByKeyWithSdFunc.
+func (mock *StoreMock) DeletePolicyByKeyWithSd(ctx context.Context, sd Sd, key string) error {
+	if mock.DeletePolicyByKeyWithSdFunc == nil {
+		panic("StoreMock.DeletePolicyByKeyWithSdFunc: method is nil but Store.DeletePolicyByKeyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}{
+		Ctx: ctx,
+		Sd:  sd,
+		Key: key,
+	}
+	mock.lockDeletePolicyByKeyWithSd.Lock()
+	mock.calls.DeletePolicyByKeyWithSd = append(mock.calls.DeletePolicyByKeyWithSd, callInfo)
+	mock.lockDeletePolicyByKeyWithSd.Unlock()
+	return mock.DeletePolicyByKeyWithSdFunc(ctx, sd, key)
+}
+
+// DeletePolicyByKeyWithSdCalls gets all the calls that were made to DeletePolicyByKeyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeletePolicyByKeyWithSdCalls())
+func (mock *StoreMock) DeletePolicyByKeyWithSdCalls() []struct {
+	Ctx context.Context
+	Sd  Sd
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}
+	mock.lockDeletePolicyByKeyWithSd.RLock()
+	calls = mock.calls.DeletePolicyByKeyWithSd
+	mock.lockDeletePolicyByKeyWithSd.RUnlock()
+	return calls
+}
+
 // DeletePolicyCategory calls DeletePolicyCategoryFunc.
 func (mock *StoreMock) DeletePolicyCategory(ctx context.Context, policyCategoryID uuid.UUID) error {
 	if mock.DeletePolicyCategoryFunc == nil {
@@ -6828,6 +7662,46 @@ func (mock *StoreMock) DeletePolicyCategoryWithSdCalls() []struct {
 	mock.lockDeletePolicyCategoryWithSd.RLock()
 	calls = mock.calls.DeletePolicyCategoryWithSd
 	mock.lockDeletePolicyCategoryWithSd.RUnlock()
+	return calls
+}
+
+// DeletePolicyWithSd calls DeletePolicyWithSdFunc.
+func (mock *StoreMock) DeletePolicyWithSd(ctx context.Context, sd Sd, policyID uuid.UUID) error {
+	if mock.DeletePolicyWithSdFunc == nil {
+		panic("StoreMock.DeletePolicyWithSdFunc: method is nil but Store.DeletePolicyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		PolicyID uuid.UUID
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		PolicyID: policyID,
+	}
+	mock.lockDeletePolicyWithSd.Lock()
+	mock.calls.DeletePolicyWithSd = append(mock.calls.DeletePolicyWithSd, callInfo)
+	mock.lockDeletePolicyWithSd.Unlock()
+	return mock.DeletePolicyWithSdFunc(ctx, sd, policyID)
+}
+
+// DeletePolicyWithSdCalls gets all the calls that were made to DeletePolicyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeletePolicyWithSdCalls())
+func (mock *StoreMock) DeletePolicyWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	PolicyID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		PolicyID uuid.UUID
+	}
+	mock.lockDeletePolicyWithSd.RLock()
+	calls = mock.calls.DeletePolicyWithSd
+	mock.lockDeletePolicyWithSd.RUnlock()
 	return calls
 }
 
@@ -8120,6 +8994,310 @@ func (mock *StoreMock) FindPermissionCategoryByKeyWithSdCalls() []struct {
 	mock.lockFindPermissionCategoryByKeyWithSd.RLock()
 	calls = mock.calls.FindPermissionCategoryByKeyWithSd
 	mock.lockFindPermissionCategoryByKeyWithSd.RUnlock()
+	return calls
+}
+
+// FindPolicyByID calls FindPolicyByIDFunc.
+func (mock *StoreMock) FindPolicyByID(ctx context.Context, policyID uuid.UUID) (entity.Policy, error) {
+	if mock.FindPolicyByIDFunc == nil {
+		panic("StoreMock.FindPolicyByIDFunc: method is nil but Store.FindPolicyByID was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+	}{
+		Ctx:      ctx,
+		PolicyID: policyID,
+	}
+	mock.lockFindPolicyByID.Lock()
+	mock.calls.FindPolicyByID = append(mock.calls.FindPolicyByID, callInfo)
+	mock.lockFindPolicyByID.Unlock()
+	return mock.FindPolicyByIDFunc(ctx, policyID)
+}
+
+// FindPolicyByIDCalls gets all the calls that were made to FindPolicyByID.
+// Check the length with:
+//
+//	len(mockedStore.FindPolicyByIDCalls())
+func (mock *StoreMock) FindPolicyByIDCalls() []struct {
+	Ctx      context.Context
+	PolicyID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+	}
+	mock.lockFindPolicyByID.RLock()
+	calls = mock.calls.FindPolicyByID
+	mock.lockFindPolicyByID.RUnlock()
+	return calls
+}
+
+// FindPolicyByIDWithCategory calls FindPolicyByIDWithCategoryFunc.
+func (mock *StoreMock) FindPolicyByIDWithCategory(ctx context.Context, policyID uuid.UUID) (entity.PolicyWithCategory, error) {
+	if mock.FindPolicyByIDWithCategoryFunc == nil {
+		panic("StoreMock.FindPolicyByIDWithCategoryFunc: method is nil but Store.FindPolicyByIDWithCategory was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+	}{
+		Ctx:      ctx,
+		PolicyID: policyID,
+	}
+	mock.lockFindPolicyByIDWithCategory.Lock()
+	mock.calls.FindPolicyByIDWithCategory = append(mock.calls.FindPolicyByIDWithCategory, callInfo)
+	mock.lockFindPolicyByIDWithCategory.Unlock()
+	return mock.FindPolicyByIDWithCategoryFunc(ctx, policyID)
+}
+
+// FindPolicyByIDWithCategoryCalls gets all the calls that were made to FindPolicyByIDWithCategory.
+// Check the length with:
+//
+//	len(mockedStore.FindPolicyByIDWithCategoryCalls())
+func (mock *StoreMock) FindPolicyByIDWithCategoryCalls() []struct {
+	Ctx      context.Context
+	PolicyID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+	}
+	mock.lockFindPolicyByIDWithCategory.RLock()
+	calls = mock.calls.FindPolicyByIDWithCategory
+	mock.lockFindPolicyByIDWithCategory.RUnlock()
+	return calls
+}
+
+// FindPolicyByIDWithCategoryWithSd calls FindPolicyByIDWithCategoryWithSdFunc.
+func (mock *StoreMock) FindPolicyByIDWithCategoryWithSd(ctx context.Context, sd Sd, policyID uuid.UUID) (entity.PolicyWithCategory, error) {
+	if mock.FindPolicyByIDWithCategoryWithSdFunc == nil {
+		panic("StoreMock.FindPolicyByIDWithCategoryWithSdFunc: method is nil but Store.FindPolicyByIDWithCategoryWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		PolicyID uuid.UUID
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		PolicyID: policyID,
+	}
+	mock.lockFindPolicyByIDWithCategoryWithSd.Lock()
+	mock.calls.FindPolicyByIDWithCategoryWithSd = append(mock.calls.FindPolicyByIDWithCategoryWithSd, callInfo)
+	mock.lockFindPolicyByIDWithCategoryWithSd.Unlock()
+	return mock.FindPolicyByIDWithCategoryWithSdFunc(ctx, sd, policyID)
+}
+
+// FindPolicyByIDWithCategoryWithSdCalls gets all the calls that were made to FindPolicyByIDWithCategoryWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindPolicyByIDWithCategoryWithSdCalls())
+func (mock *StoreMock) FindPolicyByIDWithCategoryWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	PolicyID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		PolicyID uuid.UUID
+	}
+	mock.lockFindPolicyByIDWithCategoryWithSd.RLock()
+	calls = mock.calls.FindPolicyByIDWithCategoryWithSd
+	mock.lockFindPolicyByIDWithCategoryWithSd.RUnlock()
+	return calls
+}
+
+// FindPolicyByIDWithSd calls FindPolicyByIDWithSdFunc.
+func (mock *StoreMock) FindPolicyByIDWithSd(ctx context.Context, sd Sd, policyID uuid.UUID) (entity.Policy, error) {
+	if mock.FindPolicyByIDWithSdFunc == nil {
+		panic("StoreMock.FindPolicyByIDWithSdFunc: method is nil but Store.FindPolicyByIDWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		PolicyID uuid.UUID
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		PolicyID: policyID,
+	}
+	mock.lockFindPolicyByIDWithSd.Lock()
+	mock.calls.FindPolicyByIDWithSd = append(mock.calls.FindPolicyByIDWithSd, callInfo)
+	mock.lockFindPolicyByIDWithSd.Unlock()
+	return mock.FindPolicyByIDWithSdFunc(ctx, sd, policyID)
+}
+
+// FindPolicyByIDWithSdCalls gets all the calls that were made to FindPolicyByIDWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindPolicyByIDWithSdCalls())
+func (mock *StoreMock) FindPolicyByIDWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	PolicyID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		PolicyID uuid.UUID
+	}
+	mock.lockFindPolicyByIDWithSd.RLock()
+	calls = mock.calls.FindPolicyByIDWithSd
+	mock.lockFindPolicyByIDWithSd.RUnlock()
+	return calls
+}
+
+// FindPolicyByKey calls FindPolicyByKeyFunc.
+func (mock *StoreMock) FindPolicyByKey(ctx context.Context, key string) (entity.Policy, error) {
+	if mock.FindPolicyByKeyFunc == nil {
+		panic("StoreMock.FindPolicyByKeyFunc: method is nil but Store.FindPolicyByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockFindPolicyByKey.Lock()
+	mock.calls.FindPolicyByKey = append(mock.calls.FindPolicyByKey, callInfo)
+	mock.lockFindPolicyByKey.Unlock()
+	return mock.FindPolicyByKeyFunc(ctx, key)
+}
+
+// FindPolicyByKeyCalls gets all the calls that were made to FindPolicyByKey.
+// Check the length with:
+//
+//	len(mockedStore.FindPolicyByKeyCalls())
+func (mock *StoreMock) FindPolicyByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockFindPolicyByKey.RLock()
+	calls = mock.calls.FindPolicyByKey
+	mock.lockFindPolicyByKey.RUnlock()
+	return calls
+}
+
+// FindPolicyByKeyWithCategory calls FindPolicyByKeyWithCategoryFunc.
+func (mock *StoreMock) FindPolicyByKeyWithCategory(ctx context.Context, key string) (entity.PolicyWithCategory, error) {
+	if mock.FindPolicyByKeyWithCategoryFunc == nil {
+		panic("StoreMock.FindPolicyByKeyWithCategoryFunc: method is nil but Store.FindPolicyByKeyWithCategory was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockFindPolicyByKeyWithCategory.Lock()
+	mock.calls.FindPolicyByKeyWithCategory = append(mock.calls.FindPolicyByKeyWithCategory, callInfo)
+	mock.lockFindPolicyByKeyWithCategory.Unlock()
+	return mock.FindPolicyByKeyWithCategoryFunc(ctx, key)
+}
+
+// FindPolicyByKeyWithCategoryCalls gets all the calls that were made to FindPolicyByKeyWithCategory.
+// Check the length with:
+//
+//	len(mockedStore.FindPolicyByKeyWithCategoryCalls())
+func (mock *StoreMock) FindPolicyByKeyWithCategoryCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockFindPolicyByKeyWithCategory.RLock()
+	calls = mock.calls.FindPolicyByKeyWithCategory
+	mock.lockFindPolicyByKeyWithCategory.RUnlock()
+	return calls
+}
+
+// FindPolicyByKeyWithCategoryWithSd calls FindPolicyByKeyWithCategoryWithSdFunc.
+func (mock *StoreMock) FindPolicyByKeyWithCategoryWithSd(ctx context.Context, sd Sd, key string) (entity.PolicyWithCategory, error) {
+	if mock.FindPolicyByKeyWithCategoryWithSdFunc == nil {
+		panic("StoreMock.FindPolicyByKeyWithCategoryWithSdFunc: method is nil but Store.FindPolicyByKeyWithCategoryWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}{
+		Ctx: ctx,
+		Sd:  sd,
+		Key: key,
+	}
+	mock.lockFindPolicyByKeyWithCategoryWithSd.Lock()
+	mock.calls.FindPolicyByKeyWithCategoryWithSd = append(mock.calls.FindPolicyByKeyWithCategoryWithSd, callInfo)
+	mock.lockFindPolicyByKeyWithCategoryWithSd.Unlock()
+	return mock.FindPolicyByKeyWithCategoryWithSdFunc(ctx, sd, key)
+}
+
+// FindPolicyByKeyWithCategoryWithSdCalls gets all the calls that were made to FindPolicyByKeyWithCategoryWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindPolicyByKeyWithCategoryWithSdCalls())
+func (mock *StoreMock) FindPolicyByKeyWithCategoryWithSdCalls() []struct {
+	Ctx context.Context
+	Sd  Sd
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}
+	mock.lockFindPolicyByKeyWithCategoryWithSd.RLock()
+	calls = mock.calls.FindPolicyByKeyWithCategoryWithSd
+	mock.lockFindPolicyByKeyWithCategoryWithSd.RUnlock()
+	return calls
+}
+
+// FindPolicyByKeyWithSd calls FindPolicyByKeyWithSdFunc.
+func (mock *StoreMock) FindPolicyByKeyWithSd(ctx context.Context, sd Sd, key string) (entity.Policy, error) {
+	if mock.FindPolicyByKeyWithSdFunc == nil {
+		panic("StoreMock.FindPolicyByKeyWithSdFunc: method is nil but Store.FindPolicyByKeyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}{
+		Ctx: ctx,
+		Sd:  sd,
+		Key: key,
+	}
+	mock.lockFindPolicyByKeyWithSd.Lock()
+	mock.calls.FindPolicyByKeyWithSd = append(mock.calls.FindPolicyByKeyWithSd, callInfo)
+	mock.lockFindPolicyByKeyWithSd.Unlock()
+	return mock.FindPolicyByKeyWithSdFunc(ctx, sd, key)
+}
+
+// FindPolicyByKeyWithSdCalls gets all the calls that were made to FindPolicyByKeyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindPolicyByKeyWithSdCalls())
+func (mock *StoreMock) FindPolicyByKeyWithSdCalls() []struct {
+	Ctx context.Context
+	Sd  Sd
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}
+	mock.lockFindPolicyByKeyWithSd.RLock()
+	calls = mock.calls.FindPolicyByKeyWithSd
+	mock.lockFindPolicyByKeyWithSd.RUnlock()
 	return calls
 }
 
@@ -9871,6 +11049,90 @@ func (mock *StoreMock) GetPluralPermissionsWithSdCalls() []struct {
 	return calls
 }
 
+// GetPluralPolicies calls GetPluralPoliciesFunc.
+func (mock *StoreMock) GetPluralPolicies(ctx context.Context, PolicyIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Policy], error) {
+	if mock.GetPluralPoliciesFunc == nil {
+		panic("StoreMock.GetPluralPoliciesFunc: method is nil but Store.GetPluralPolicies was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		PolicyIDs []uuid.UUID
+		Np        NumberedPaginationParam
+	}{
+		Ctx:       ctx,
+		PolicyIDs: PolicyIDs,
+		Np:        np,
+	}
+	mock.lockGetPluralPolicies.Lock()
+	mock.calls.GetPluralPolicies = append(mock.calls.GetPluralPolicies, callInfo)
+	mock.lockGetPluralPolicies.Unlock()
+	return mock.GetPluralPoliciesFunc(ctx, PolicyIDs, np)
+}
+
+// GetPluralPoliciesCalls gets all the calls that were made to GetPluralPolicies.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralPoliciesCalls())
+func (mock *StoreMock) GetPluralPoliciesCalls() []struct {
+	Ctx       context.Context
+	PolicyIDs []uuid.UUID
+	Np        NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx       context.Context
+		PolicyIDs []uuid.UUID
+		Np        NumberedPaginationParam
+	}
+	mock.lockGetPluralPolicies.RLock()
+	calls = mock.calls.GetPluralPolicies
+	mock.lockGetPluralPolicies.RUnlock()
+	return calls
+}
+
+// GetPluralPoliciesWithSd calls GetPluralPoliciesWithSdFunc.
+func (mock *StoreMock) GetPluralPoliciesWithSd(ctx context.Context, sd Sd, PolicyIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Policy], error) {
+	if mock.GetPluralPoliciesWithSdFunc == nil {
+		panic("StoreMock.GetPluralPoliciesWithSdFunc: method is nil but Store.GetPluralPoliciesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Sd        Sd
+		PolicyIDs []uuid.UUID
+		Np        NumberedPaginationParam
+	}{
+		Ctx:       ctx,
+		Sd:        sd,
+		PolicyIDs: PolicyIDs,
+		Np:        np,
+	}
+	mock.lockGetPluralPoliciesWithSd.Lock()
+	mock.calls.GetPluralPoliciesWithSd = append(mock.calls.GetPluralPoliciesWithSd, callInfo)
+	mock.lockGetPluralPoliciesWithSd.Unlock()
+	return mock.GetPluralPoliciesWithSdFunc(ctx, sd, PolicyIDs, np)
+}
+
+// GetPluralPoliciesWithSdCalls gets all the calls that were made to GetPluralPoliciesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralPoliciesWithSdCalls())
+func (mock *StoreMock) GetPluralPoliciesWithSdCalls() []struct {
+	Ctx       context.Context
+	Sd        Sd
+	PolicyIDs []uuid.UUID
+	Np        NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Sd        Sd
+		PolicyIDs []uuid.UUID
+		Np        NumberedPaginationParam
+	}
+	mock.lockGetPluralPoliciesWithSd.RLock()
+	calls = mock.calls.GetPluralPoliciesWithSd
+	mock.lockGetPluralPoliciesWithSd.RUnlock()
+	return calls
+}
+
 // GetPluralPolicyCategories calls GetPluralPolicyCategoriesFunc.
 func (mock *StoreMock) GetPluralPolicyCategories(ctx context.Context, policyCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PolicyCategory], error) {
 	if mock.GetPluralPolicyCategoriesFunc == nil {
@@ -10036,6 +11298,222 @@ func (mock *StoreMock) GetPluralRecordTypesWithSdCalls() []struct {
 	mock.lockGetPluralRecordTypesWithSd.RLock()
 	calls = mock.calls.GetPluralRecordTypesWithSd
 	mock.lockGetPluralRecordTypesWithSd.RUnlock()
+	return calls
+}
+
+// GetPolicies calls GetPoliciesFunc.
+func (mock *StoreMock) GetPolicies(ctx context.Context, where parameter.WherePolicyParam, order parameter.PolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Policy], error) {
+	if mock.GetPoliciesFunc == nil {
+		panic("StoreMock.GetPoliciesFunc: method is nil but Store.GetPolicies was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WherePolicyParam
+		Order parameter.PolicyOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetPolicies.Lock()
+	mock.calls.GetPolicies = append(mock.calls.GetPolicies, callInfo)
+	mock.lockGetPolicies.Unlock()
+	return mock.GetPoliciesFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetPoliciesCalls gets all the calls that were made to GetPolicies.
+// Check the length with:
+//
+//	len(mockedStore.GetPoliciesCalls())
+func (mock *StoreMock) GetPoliciesCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WherePolicyParam
+	Order parameter.PolicyOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WherePolicyParam
+		Order parameter.PolicyOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetPolicies.RLock()
+	calls = mock.calls.GetPolicies
+	mock.lockGetPolicies.RUnlock()
+	return calls
+}
+
+// GetPoliciesWithCategory calls GetPoliciesWithCategoryFunc.
+func (mock *StoreMock) GetPoliciesWithCategory(ctx context.Context, where parameter.WherePolicyParam, order parameter.PolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyWithCategory], error) {
+	if mock.GetPoliciesWithCategoryFunc == nil {
+		panic("StoreMock.GetPoliciesWithCategoryFunc: method is nil but Store.GetPoliciesWithCategory was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WherePolicyParam
+		Order parameter.PolicyOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetPoliciesWithCategory.Lock()
+	mock.calls.GetPoliciesWithCategory = append(mock.calls.GetPoliciesWithCategory, callInfo)
+	mock.lockGetPoliciesWithCategory.Unlock()
+	return mock.GetPoliciesWithCategoryFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetPoliciesWithCategoryCalls gets all the calls that were made to GetPoliciesWithCategory.
+// Check the length with:
+//
+//	len(mockedStore.GetPoliciesWithCategoryCalls())
+func (mock *StoreMock) GetPoliciesWithCategoryCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WherePolicyParam
+	Order parameter.PolicyOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WherePolicyParam
+		Order parameter.PolicyOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetPoliciesWithCategory.RLock()
+	calls = mock.calls.GetPoliciesWithCategory
+	mock.lockGetPoliciesWithCategory.RUnlock()
+	return calls
+}
+
+// GetPoliciesWithCategoryWithSd calls GetPoliciesWithCategoryWithSdFunc.
+func (mock *StoreMock) GetPoliciesWithCategoryWithSd(ctx context.Context, sd Sd, where parameter.WherePolicyParam, order parameter.PolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyWithCategory], error) {
+	if mock.GetPoliciesWithCategoryWithSdFunc == nil {
+		panic("StoreMock.GetPoliciesWithCategoryWithSdFunc: method is nil but Store.GetPoliciesWithCategoryWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WherePolicyParam
+		Order parameter.PolicyOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetPoliciesWithCategoryWithSd.Lock()
+	mock.calls.GetPoliciesWithCategoryWithSd = append(mock.calls.GetPoliciesWithCategoryWithSd, callInfo)
+	mock.lockGetPoliciesWithCategoryWithSd.Unlock()
+	return mock.GetPoliciesWithCategoryWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetPoliciesWithCategoryWithSdCalls gets all the calls that were made to GetPoliciesWithCategoryWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPoliciesWithCategoryWithSdCalls())
+func (mock *StoreMock) GetPoliciesWithCategoryWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WherePolicyParam
+	Order parameter.PolicyOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WherePolicyParam
+		Order parameter.PolicyOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetPoliciesWithCategoryWithSd.RLock()
+	calls = mock.calls.GetPoliciesWithCategoryWithSd
+	mock.lockGetPoliciesWithCategoryWithSd.RUnlock()
+	return calls
+}
+
+// GetPoliciesWithSd calls GetPoliciesWithSdFunc.
+func (mock *StoreMock) GetPoliciesWithSd(ctx context.Context, sd Sd, where parameter.WherePolicyParam, order parameter.PolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Policy], error) {
+	if mock.GetPoliciesWithSdFunc == nil {
+		panic("StoreMock.GetPoliciesWithSdFunc: method is nil but Store.GetPoliciesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WherePolicyParam
+		Order parameter.PolicyOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetPoliciesWithSd.Lock()
+	mock.calls.GetPoliciesWithSd = append(mock.calls.GetPoliciesWithSd, callInfo)
+	mock.lockGetPoliciesWithSd.Unlock()
+	return mock.GetPoliciesWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetPoliciesWithSdCalls gets all the calls that were made to GetPoliciesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPoliciesWithSdCalls())
+func (mock *StoreMock) GetPoliciesWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WherePolicyParam
+	Order parameter.PolicyOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WherePolicyParam
+		Order parameter.PolicyOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetPoliciesWithSd.RLock()
+	calls = mock.calls.GetPoliciesWithSd
+	mock.lockGetPoliciesWithSd.RUnlock()
 	return calls
 }
 
@@ -10784,6 +12262,82 @@ func (mock *StoreMock) PluralDeletePermissionsWithSdCalls() []struct {
 	mock.lockPluralDeletePermissionsWithSd.RLock()
 	calls = mock.calls.PluralDeletePermissionsWithSd
 	mock.lockPluralDeletePermissionsWithSd.RUnlock()
+	return calls
+}
+
+// PluralDeletePolicies calls PluralDeletePoliciesFunc.
+func (mock *StoreMock) PluralDeletePolicies(ctx context.Context, policyIDs []uuid.UUID) error {
+	if mock.PluralDeletePoliciesFunc == nil {
+		panic("StoreMock.PluralDeletePoliciesFunc: method is nil but Store.PluralDeletePolicies was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		PolicyIDs []uuid.UUID
+	}{
+		Ctx:       ctx,
+		PolicyIDs: policyIDs,
+	}
+	mock.lockPluralDeletePolicies.Lock()
+	mock.calls.PluralDeletePolicies = append(mock.calls.PluralDeletePolicies, callInfo)
+	mock.lockPluralDeletePolicies.Unlock()
+	return mock.PluralDeletePoliciesFunc(ctx, policyIDs)
+}
+
+// PluralDeletePoliciesCalls gets all the calls that were made to PluralDeletePolicies.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeletePoliciesCalls())
+func (mock *StoreMock) PluralDeletePoliciesCalls() []struct {
+	Ctx       context.Context
+	PolicyIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		PolicyIDs []uuid.UUID
+	}
+	mock.lockPluralDeletePolicies.RLock()
+	calls = mock.calls.PluralDeletePolicies
+	mock.lockPluralDeletePolicies.RUnlock()
+	return calls
+}
+
+// PluralDeletePoliciesWithSd calls PluralDeletePoliciesWithSdFunc.
+func (mock *StoreMock) PluralDeletePoliciesWithSd(ctx context.Context, sd Sd, policyIDs []uuid.UUID) error {
+	if mock.PluralDeletePoliciesWithSdFunc == nil {
+		panic("StoreMock.PluralDeletePoliciesWithSdFunc: method is nil but Store.PluralDeletePoliciesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Sd        Sd
+		PolicyIDs []uuid.UUID
+	}{
+		Ctx:       ctx,
+		Sd:        sd,
+		PolicyIDs: policyIDs,
+	}
+	mock.lockPluralDeletePoliciesWithSd.Lock()
+	mock.calls.PluralDeletePoliciesWithSd = append(mock.calls.PluralDeletePoliciesWithSd, callInfo)
+	mock.lockPluralDeletePoliciesWithSd.Unlock()
+	return mock.PluralDeletePoliciesWithSdFunc(ctx, sd, policyIDs)
+}
+
+// PluralDeletePoliciesWithSdCalls gets all the calls that were made to PluralDeletePoliciesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeletePoliciesWithSdCalls())
+func (mock *StoreMock) PluralDeletePoliciesWithSdCalls() []struct {
+	Ctx       context.Context
+	Sd        Sd
+	PolicyIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Sd        Sd
+		PolicyIDs []uuid.UUID
+	}
+	mock.lockPluralDeletePoliciesWithSd.RLock()
+	calls = mock.calls.PluralDeletePoliciesWithSd
+	mock.lockPluralDeletePoliciesWithSd.RUnlock()
 	return calls
 }
 
@@ -11983,6 +13537,130 @@ func (mock *StoreMock) UpdatePermissionWithSdCalls() []struct {
 	return calls
 }
 
+// UpdatePolicy calls UpdatePolicyFunc.
+func (mock *StoreMock) UpdatePolicy(ctx context.Context, policyID uuid.UUID, param parameter.UpdatePolicyParams) (entity.Policy, error) {
+	if mock.UpdatePolicyFunc == nil {
+		panic("StoreMock.UpdatePolicyFunc: method is nil but Store.UpdatePolicy was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+		Param    parameter.UpdatePolicyParams
+	}{
+		Ctx:      ctx,
+		PolicyID: policyID,
+		Param:    param,
+	}
+	mock.lockUpdatePolicy.Lock()
+	mock.calls.UpdatePolicy = append(mock.calls.UpdatePolicy, callInfo)
+	mock.lockUpdatePolicy.Unlock()
+	return mock.UpdatePolicyFunc(ctx, policyID, param)
+}
+
+// UpdatePolicyCalls gets all the calls that were made to UpdatePolicy.
+// Check the length with:
+//
+//	len(mockedStore.UpdatePolicyCalls())
+func (mock *StoreMock) UpdatePolicyCalls() []struct {
+	Ctx      context.Context
+	PolicyID uuid.UUID
+	Param    parameter.UpdatePolicyParams
+} {
+	var calls []struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+		Param    parameter.UpdatePolicyParams
+	}
+	mock.lockUpdatePolicy.RLock()
+	calls = mock.calls.UpdatePolicy
+	mock.lockUpdatePolicy.RUnlock()
+	return calls
+}
+
+// UpdatePolicyByKey calls UpdatePolicyByKeyFunc.
+func (mock *StoreMock) UpdatePolicyByKey(ctx context.Context, key string, param parameter.UpdatePolicyByKeyParams) (entity.Policy, error) {
+	if mock.UpdatePolicyByKeyFunc == nil {
+		panic("StoreMock.UpdatePolicyByKeyFunc: method is nil but Store.UpdatePolicyByKey was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Key   string
+		Param parameter.UpdatePolicyByKeyParams
+	}{
+		Ctx:   ctx,
+		Key:   key,
+		Param: param,
+	}
+	mock.lockUpdatePolicyByKey.Lock()
+	mock.calls.UpdatePolicyByKey = append(mock.calls.UpdatePolicyByKey, callInfo)
+	mock.lockUpdatePolicyByKey.Unlock()
+	return mock.UpdatePolicyByKeyFunc(ctx, key, param)
+}
+
+// UpdatePolicyByKeyCalls gets all the calls that were made to UpdatePolicyByKey.
+// Check the length with:
+//
+//	len(mockedStore.UpdatePolicyByKeyCalls())
+func (mock *StoreMock) UpdatePolicyByKeyCalls() []struct {
+	Ctx   context.Context
+	Key   string
+	Param parameter.UpdatePolicyByKeyParams
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Key   string
+		Param parameter.UpdatePolicyByKeyParams
+	}
+	mock.lockUpdatePolicyByKey.RLock()
+	calls = mock.calls.UpdatePolicyByKey
+	mock.lockUpdatePolicyByKey.RUnlock()
+	return calls
+}
+
+// UpdatePolicyByKeyWithSd calls UpdatePolicyByKeyWithSdFunc.
+func (mock *StoreMock) UpdatePolicyByKeyWithSd(ctx context.Context, sd Sd, key string, param parameter.UpdatePolicyByKeyParams) (entity.Policy, error) {
+	if mock.UpdatePolicyByKeyWithSdFunc == nil {
+		panic("StoreMock.UpdatePolicyByKeyWithSdFunc: method is nil but Store.UpdatePolicyByKeyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Key   string
+		Param parameter.UpdatePolicyByKeyParams
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Key:   key,
+		Param: param,
+	}
+	mock.lockUpdatePolicyByKeyWithSd.Lock()
+	mock.calls.UpdatePolicyByKeyWithSd = append(mock.calls.UpdatePolicyByKeyWithSd, callInfo)
+	mock.lockUpdatePolicyByKeyWithSd.Unlock()
+	return mock.UpdatePolicyByKeyWithSdFunc(ctx, sd, key, param)
+}
+
+// UpdatePolicyByKeyWithSdCalls gets all the calls that were made to UpdatePolicyByKeyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.UpdatePolicyByKeyWithSdCalls())
+func (mock *StoreMock) UpdatePolicyByKeyWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Key   string
+	Param parameter.UpdatePolicyByKeyParams
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Key   string
+		Param parameter.UpdatePolicyByKeyParams
+	}
+	mock.lockUpdatePolicyByKeyWithSd.RLock()
+	calls = mock.calls.UpdatePolicyByKeyWithSd
+	mock.lockUpdatePolicyByKeyWithSd.RUnlock()
+	return calls
+}
+
 // UpdatePolicyCategory calls UpdatePolicyCategoryFunc.
 func (mock *StoreMock) UpdatePolicyCategory(ctx context.Context, policyCategoryID uuid.UUID, param parameter.UpdatePolicyCategoryParams) (entity.PolicyCategory, error) {
 	if mock.UpdatePolicyCategoryFunc == nil {
@@ -12148,6 +13826,50 @@ func (mock *StoreMock) UpdatePolicyCategoryWithSdCalls() []struct {
 	mock.lockUpdatePolicyCategoryWithSd.RLock()
 	calls = mock.calls.UpdatePolicyCategoryWithSd
 	mock.lockUpdatePolicyCategoryWithSd.RUnlock()
+	return calls
+}
+
+// UpdatePolicyWithSd calls UpdatePolicyWithSdFunc.
+func (mock *StoreMock) UpdatePolicyWithSd(ctx context.Context, sd Sd, policyID uuid.UUID, param parameter.UpdatePolicyParams) (entity.Policy, error) {
+	if mock.UpdatePolicyWithSdFunc == nil {
+		panic("StoreMock.UpdatePolicyWithSdFunc: method is nil but Store.UpdatePolicyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		PolicyID uuid.UUID
+		Param    parameter.UpdatePolicyParams
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		PolicyID: policyID,
+		Param:    param,
+	}
+	mock.lockUpdatePolicyWithSd.Lock()
+	mock.calls.UpdatePolicyWithSd = append(mock.calls.UpdatePolicyWithSd, callInfo)
+	mock.lockUpdatePolicyWithSd.Unlock()
+	return mock.UpdatePolicyWithSdFunc(ctx, sd, policyID, param)
+}
+
+// UpdatePolicyWithSdCalls gets all the calls that were made to UpdatePolicyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.UpdatePolicyWithSdCalls())
+func (mock *StoreMock) UpdatePolicyWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	PolicyID uuid.UUID
+	Param    parameter.UpdatePolicyParams
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		PolicyID uuid.UUID
+		Param    parameter.UpdatePolicyParams
+	}
+	mock.lockUpdatePolicyWithSd.RLock()
+	calls = mock.calls.UpdatePolicyWithSd
+	mock.lockUpdatePolicyWithSd.RUnlock()
 	return calls
 }
 

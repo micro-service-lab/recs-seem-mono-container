@@ -63,8 +63,8 @@ ORDER BY
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_roles_pkey END DESC
 LIMIT $1;
 
--- name: GetPluckRoles :many
-SELECT role_id, name FROM m_roles
+-- name: GetPluralRoles :many
+SELECT * FROM m_roles
 WHERE
 	role_id = ANY(@role_ids::uuid[])
 ORDER BY

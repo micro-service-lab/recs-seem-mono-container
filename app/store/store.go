@@ -41,4 +41,5 @@ type Store interface {
 	RecordType
 	MimeType
 	Policy
+	Role
 }

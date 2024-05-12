@@ -76,6 +76,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreateRecordTypesFunc: func(ctx context.Context, ps []parameter.CreateRecordTypeParam) (int64, error) {
 //				panic("mock out the CreateRecordTypes method")
 //			},
+//			CreateRoleFunc: func(ctx context.Context, name string, description string) (entity.Role, error) {
+//				panic("mock out the CreateRole method")
+//			},
+//			CreateRolesFunc: func(ctx context.Context, ps []parameter.CreateRoleParam) (int64, error) {
+//				panic("mock out the CreateRoles method")
+//			},
 //			DeleteAttendStatusFunc: func(ctx context.Context, id uuid.UUID) error {
 //				panic("mock out the DeleteAttendStatus method")
 //			},
@@ -102,6 +108,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			DeleteRecordTypeFunc: func(ctx context.Context, id uuid.UUID) error {
 //				panic("mock out the DeleteRecordType method")
+//			},
+//			DeleteRoleFunc: func(ctx context.Context, id uuid.UUID) error {
+//				panic("mock out the DeleteRole method")
 //			},
 //			FindAttendStatusByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error) {
 //				panic("mock out the FindAttendStatusByID method")
@@ -169,6 +178,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			FindRecordTypeByKeyFunc: func(ctx context.Context, key string) (entity.RecordType, error) {
 //				panic("mock out the FindRecordTypeByKey method")
 //			},
+//			FindRoleByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.Role, error) {
+//				panic("mock out the FindRoleByID method")
+//			},
 //			GetAttendStatusesFunc: func(ctx context.Context, whereSearchName string, order parameter.AttendStatusOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendStatus], error) {
 //				panic("mock out the GetAttendStatuses method")
 //			},
@@ -229,6 +241,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			GetRecordTypesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
 //				panic("mock out the GetRecordTypesCount method")
 //			},
+//			GetRolesFunc: func(ctx context.Context, whereSearchName string, order parameter.RoleOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Role], error) {
+//				panic("mock out the GetRoles method")
+//			},
+//			GetRolesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
+//				panic("mock out the GetRolesCount method")
+//			},
 //			PluralDeleteAttendStatusesFunc: func(ctx context.Context, ids []uuid.UUID) error {
 //				panic("mock out the PluralDeleteAttendStatuses method")
 //			},
@@ -256,6 +274,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			PluralDeleteRecordTypesFunc: func(ctx context.Context, ids []uuid.UUID) error {
 //				panic("mock out the PluralDeleteRecordTypes method")
 //			},
+//			PluralDeleteRolesFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//				panic("mock out the PluralDeleteRoles method")
+//			},
 //			UpdateAttendStatusFunc: func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error) {
 //				panic("mock out the UpdateAttendStatus method")
 //			},
@@ -282,6 +303,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			UpdateRecordTypeFunc: func(ctx context.Context, id uuid.UUID, name string, key string) (entity.RecordType, error) {
 //				panic("mock out the UpdateRecordType method")
+//			},
+//			UpdateRoleFunc: func(ctx context.Context, id uuid.UUID, name string, description string) (entity.Role, error) {
+//				panic("mock out the UpdateRole method")
 //			},
 //		}
 //
@@ -344,6 +368,12 @@ type ManagerInterfaceMock struct {
 	// CreateRecordTypesFunc mocks the CreateRecordTypes method.
 	CreateRecordTypesFunc func(ctx context.Context, ps []parameter.CreateRecordTypeParam) (int64, error)
 
+	// CreateRoleFunc mocks the CreateRole method.
+	CreateRoleFunc func(ctx context.Context, name string, description string) (entity.Role, error)
+
+	// CreateRolesFunc mocks the CreateRoles method.
+	CreateRolesFunc func(ctx context.Context, ps []parameter.CreateRoleParam) (int64, error)
+
 	// DeleteAttendStatusFunc mocks the DeleteAttendStatus method.
 	DeleteAttendStatusFunc func(ctx context.Context, id uuid.UUID) error
 
@@ -370,6 +400,9 @@ type ManagerInterfaceMock struct {
 
 	// DeleteRecordTypeFunc mocks the DeleteRecordType method.
 	DeleteRecordTypeFunc func(ctx context.Context, id uuid.UUID) error
+
+	// DeleteRoleFunc mocks the DeleteRole method.
+	DeleteRoleFunc func(ctx context.Context, id uuid.UUID) error
 
 	// FindAttendStatusByIDFunc mocks the FindAttendStatusByID method.
 	FindAttendStatusByIDFunc func(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error)
@@ -437,6 +470,9 @@ type ManagerInterfaceMock struct {
 	// FindRecordTypeByKeyFunc mocks the FindRecordTypeByKey method.
 	FindRecordTypeByKeyFunc func(ctx context.Context, key string) (entity.RecordType, error)
 
+	// FindRoleByIDFunc mocks the FindRoleByID method.
+	FindRoleByIDFunc func(ctx context.Context, id uuid.UUID) (entity.Role, error)
+
 	// GetAttendStatusesFunc mocks the GetAttendStatuses method.
 	GetAttendStatusesFunc func(ctx context.Context, whereSearchName string, order parameter.AttendStatusOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendStatus], error)
 
@@ -497,6 +533,12 @@ type ManagerInterfaceMock struct {
 	// GetRecordTypesCountFunc mocks the GetRecordTypesCount method.
 	GetRecordTypesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
 
+	// GetRolesFunc mocks the GetRoles method.
+	GetRolesFunc func(ctx context.Context, whereSearchName string, order parameter.RoleOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Role], error)
+
+	// GetRolesCountFunc mocks the GetRolesCount method.
+	GetRolesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
+
 	// PluralDeleteAttendStatusesFunc mocks the PluralDeleteAttendStatuses method.
 	PluralDeleteAttendStatusesFunc func(ctx context.Context, ids []uuid.UUID) error
 
@@ -524,6 +566,9 @@ type ManagerInterfaceMock struct {
 	// PluralDeleteRecordTypesFunc mocks the PluralDeleteRecordTypes method.
 	PluralDeleteRecordTypesFunc func(ctx context.Context, ids []uuid.UUID) error
 
+	// PluralDeleteRolesFunc mocks the PluralDeleteRoles method.
+	PluralDeleteRolesFunc func(ctx context.Context, ids []uuid.UUID) error
+
 	// UpdateAttendStatusFunc mocks the UpdateAttendStatus method.
 	UpdateAttendStatusFunc func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error)
 
@@ -550,6 +595,9 @@ type ManagerInterfaceMock struct {
 
 	// UpdateRecordTypeFunc mocks the UpdateRecordType method.
 	UpdateRecordTypeFunc func(ctx context.Context, id uuid.UUID, name string, key string) (entity.RecordType, error)
+
+	// UpdateRoleFunc mocks the UpdateRole method.
+	UpdateRoleFunc func(ctx context.Context, id uuid.UUID, name string, description string) (entity.Role, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -715,6 +763,22 @@ type ManagerInterfaceMock struct {
 			// Ps is the ps argument value.
 			Ps []parameter.CreateRecordTypeParam
 		}
+		// CreateRole holds details about calls to the CreateRole method.
+		CreateRole []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Name is the name argument value.
+			Name string
+			// Description is the description argument value.
+			Description string
+		}
+		// CreateRoles holds details about calls to the CreateRoles method.
+		CreateRoles []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ps is the ps argument value.
+			Ps []parameter.CreateRoleParam
+		}
 		// DeleteAttendStatus holds details about calls to the DeleteAttendStatus method.
 		DeleteAttendStatus []struct {
 			// Ctx is the ctx argument value.
@@ -773,6 +837,13 @@ type ManagerInterfaceMock struct {
 		}
 		// DeleteRecordType holds details about calls to the DeleteRecordType method.
 		DeleteRecordType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// DeleteRole holds details about calls to the DeleteRole method.
+		DeleteRole []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// ID is the id argument value.
@@ -931,6 +1002,13 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// Key is the key argument value.
 			Key string
+		}
+		// FindRoleByID holds details about calls to the FindRoleByID method.
+		FindRoleByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
 		}
 		// GetAttendStatuses holds details about calls to the GetAttendStatuses method.
 		GetAttendStatuses []struct {
@@ -1216,6 +1294,32 @@ type ManagerInterfaceMock struct {
 			// WhereSearchName is the whereSearchName argument value.
 			WhereSearchName string
 		}
+		// GetRoles holds details about calls to the GetRoles method.
+		GetRoles []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// Order is the order argument value.
+			Order parameter.RoleOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetRolesCount holds details about calls to the GetRolesCount method.
+		GetRolesCount []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+		}
 		// PluralDeleteAttendStatuses holds details about calls to the PluralDeleteAttendStatuses method.
 		PluralDeleteAttendStatuses []struct {
 			// Ctx is the ctx argument value.
@@ -1274,6 +1378,13 @@ type ManagerInterfaceMock struct {
 		}
 		// PluralDeleteRecordTypes holds details about calls to the PluralDeleteRecordTypes method.
 		PluralDeleteRecordTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ids is the ids argument value.
+			Ids []uuid.UUID
+		}
+		// PluralDeleteRoles holds details about calls to the PluralDeleteRoles method.
+		PluralDeleteRoles []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Ids is the ids argument value.
@@ -1396,6 +1507,17 @@ type ManagerInterfaceMock struct {
 			// Key is the key argument value.
 			Key string
 		}
+		// UpdateRole holds details about calls to the UpdateRole method.
+		UpdateRole []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+			// Name is the name argument value.
+			Name string
+			// Description is the description argument value.
+			Description string
+		}
 	}
 	lockCreateAttendStatus               sync.RWMutex
 	lockCreateAttendStatuses             sync.RWMutex
@@ -1415,6 +1537,8 @@ type ManagerInterfaceMock struct {
 	lockCreatePolicyCategory             sync.RWMutex
 	lockCreateRecordType                 sync.RWMutex
 	lockCreateRecordTypes                sync.RWMutex
+	lockCreateRole                       sync.RWMutex
+	lockCreateRoles                      sync.RWMutex
 	lockDeleteAttendStatus               sync.RWMutex
 	lockDeleteAttendanceType             sync.RWMutex
 	lockDeleteEventType                  sync.RWMutex
@@ -1424,6 +1548,7 @@ type ManagerInterfaceMock struct {
 	lockDeletePolicy                     sync.RWMutex
 	lockDeletePolicyCategory             sync.RWMutex
 	lockDeleteRecordType                 sync.RWMutex
+	lockDeleteRole                       sync.RWMutex
 	lockFindAttendStatusByID             sync.RWMutex
 	lockFindAttendStatusByKey            sync.RWMutex
 	lockFindAttendanceTypeByID           sync.RWMutex
@@ -1446,6 +1571,7 @@ type ManagerInterfaceMock struct {
 	lockFindPolicyCategoryByKey          sync.RWMutex
 	lockFindRecordTypeByID               sync.RWMutex
 	lockFindRecordTypeByKey              sync.RWMutex
+	lockFindRoleByID                     sync.RWMutex
 	lockGetAttendStatuses                sync.RWMutex
 	lockGetAttendStatusesCount           sync.RWMutex
 	lockGetAttendanceTypes               sync.RWMutex
@@ -1466,6 +1592,8 @@ type ManagerInterfaceMock struct {
 	lockGetPolicyCategoriesCount         sync.RWMutex
 	lockGetRecordTypes                   sync.RWMutex
 	lockGetRecordTypesCount              sync.RWMutex
+	lockGetRoles                         sync.RWMutex
+	lockGetRolesCount                    sync.RWMutex
 	lockPluralDeleteAttendStatuses       sync.RWMutex
 	lockPluralDeleteAttendanceTypes      sync.RWMutex
 	lockPluralDeleteEventTypes           sync.RWMutex
@@ -1475,6 +1603,7 @@ type ManagerInterfaceMock struct {
 	lockPluralDeletePolicies             sync.RWMutex
 	lockPluralDeletePolicyCategories     sync.RWMutex
 	lockPluralDeleteRecordTypes          sync.RWMutex
+	lockPluralDeleteRoles                sync.RWMutex
 	lockUpdateAttendStatus               sync.RWMutex
 	lockUpdateAttendanceType             sync.RWMutex
 	lockUpdateEventType                  sync.RWMutex
@@ -1484,6 +1613,7 @@ type ManagerInterfaceMock struct {
 	lockUpdatePolicy                     sync.RWMutex
 	lockUpdatePolicyCategory             sync.RWMutex
 	lockUpdateRecordType                 sync.RWMutex
+	lockUpdateRole                       sync.RWMutex
 }
 
 // CreateAttendStatus calls CreateAttendStatusFunc.
@@ -2206,6 +2336,82 @@ func (mock *ManagerInterfaceMock) CreateRecordTypesCalls() []struct {
 	return calls
 }
 
+// CreateRole calls CreateRoleFunc.
+func (mock *ManagerInterfaceMock) CreateRole(ctx context.Context, name string, description string) (entity.Role, error) {
+	if mock.CreateRoleFunc == nil {
+		panic("ManagerInterfaceMock.CreateRoleFunc: method is nil but ManagerInterface.CreateRole was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		Name        string
+		Description string
+	}{
+		Ctx:         ctx,
+		Name:        name,
+		Description: description,
+	}
+	mock.lockCreateRole.Lock()
+	mock.calls.CreateRole = append(mock.calls.CreateRole, callInfo)
+	mock.lockCreateRole.Unlock()
+	return mock.CreateRoleFunc(ctx, name, description)
+}
+
+// CreateRoleCalls gets all the calls that were made to CreateRole.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateRoleCalls())
+func (mock *ManagerInterfaceMock) CreateRoleCalls() []struct {
+	Ctx         context.Context
+	Name        string
+	Description string
+} {
+	var calls []struct {
+		Ctx         context.Context
+		Name        string
+		Description string
+	}
+	mock.lockCreateRole.RLock()
+	calls = mock.calls.CreateRole
+	mock.lockCreateRole.RUnlock()
+	return calls
+}
+
+// CreateRoles calls CreateRolesFunc.
+func (mock *ManagerInterfaceMock) CreateRoles(ctx context.Context, ps []parameter.CreateRoleParam) (int64, error) {
+	if mock.CreateRolesFunc == nil {
+		panic("ManagerInterfaceMock.CreateRolesFunc: method is nil but ManagerInterface.CreateRoles was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ps  []parameter.CreateRoleParam
+	}{
+		Ctx: ctx,
+		Ps:  ps,
+	}
+	mock.lockCreateRoles.Lock()
+	mock.calls.CreateRoles = append(mock.calls.CreateRoles, callInfo)
+	mock.lockCreateRoles.Unlock()
+	return mock.CreateRolesFunc(ctx, ps)
+}
+
+// CreateRolesCalls gets all the calls that were made to CreateRoles.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateRolesCalls())
+func (mock *ManagerInterfaceMock) CreateRolesCalls() []struct {
+	Ctx context.Context
+	Ps  []parameter.CreateRoleParam
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ps  []parameter.CreateRoleParam
+	}
+	mock.lockCreateRoles.RLock()
+	calls = mock.calls.CreateRoles
+	mock.lockCreateRoles.RUnlock()
+	return calls
+}
+
 // DeleteAttendStatus calls DeleteAttendStatusFunc.
 func (mock *ManagerInterfaceMock) DeleteAttendStatus(ctx context.Context, id uuid.UUID) error {
 	if mock.DeleteAttendStatusFunc == nil {
@@ -2527,6 +2733,42 @@ func (mock *ManagerInterfaceMock) DeleteRecordTypeCalls() []struct {
 	mock.lockDeleteRecordType.RLock()
 	calls = mock.calls.DeleteRecordType
 	mock.lockDeleteRecordType.RUnlock()
+	return calls
+}
+
+// DeleteRole calls DeleteRoleFunc.
+func (mock *ManagerInterfaceMock) DeleteRole(ctx context.Context, id uuid.UUID) error {
+	if mock.DeleteRoleFunc == nil {
+		panic("ManagerInterfaceMock.DeleteRoleFunc: method is nil but ManagerInterface.DeleteRole was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockDeleteRole.Lock()
+	mock.calls.DeleteRole = append(mock.calls.DeleteRole, callInfo)
+	mock.lockDeleteRole.Unlock()
+	return mock.DeleteRoleFunc(ctx, id)
+}
+
+// DeleteRoleCalls gets all the calls that were made to DeleteRole.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeleteRoleCalls())
+func (mock *ManagerInterfaceMock) DeleteRoleCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockDeleteRole.RLock()
+	calls = mock.calls.DeleteRole
+	mock.lockDeleteRole.RUnlock()
 	return calls
 }
 
@@ -3319,6 +3561,42 @@ func (mock *ManagerInterfaceMock) FindRecordTypeByKeyCalls() []struct {
 	mock.lockFindRecordTypeByKey.RLock()
 	calls = mock.calls.FindRecordTypeByKey
 	mock.lockFindRecordTypeByKey.RUnlock()
+	return calls
+}
+
+// FindRoleByID calls FindRoleByIDFunc.
+func (mock *ManagerInterfaceMock) FindRoleByID(ctx context.Context, id uuid.UUID) (entity.Role, error) {
+	if mock.FindRoleByIDFunc == nil {
+		panic("ManagerInterfaceMock.FindRoleByIDFunc: method is nil but ManagerInterface.FindRoleByID was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockFindRoleByID.Lock()
+	mock.calls.FindRoleByID = append(mock.calls.FindRoleByID, callInfo)
+	mock.lockFindRoleByID.Unlock()
+	return mock.FindRoleByIDFunc(ctx, id)
+}
+
+// FindRoleByIDCalls gets all the calls that were made to FindRoleByID.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindRoleByIDCalls())
+func (mock *ManagerInterfaceMock) FindRoleByIDCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockFindRoleByID.RLock()
+	calls = mock.calls.FindRoleByID
+	mock.lockFindRoleByID.RUnlock()
 	return calls
 }
 
@@ -4330,6 +4608,102 @@ func (mock *ManagerInterfaceMock) GetRecordTypesCountCalls() []struct {
 	return calls
 }
 
+// GetRoles calls GetRolesFunc.
+func (mock *ManagerInterfaceMock) GetRoles(ctx context.Context, whereSearchName string, order parameter.RoleOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Role], error) {
+	if mock.GetRolesFunc == nil {
+		panic("ManagerInterfaceMock.GetRolesFunc: method is nil but ManagerInterface.GetRoles was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		WhereSearchName string
+		Order           parameter.RoleOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}{
+		Ctx:             ctx,
+		WhereSearchName: whereSearchName,
+		Order:           order,
+		Pg:              pg,
+		Limit:           limit,
+		Cursor:          cursor,
+		Offset:          offset,
+		WithCount:       withCount,
+	}
+	mock.lockGetRoles.Lock()
+	mock.calls.GetRoles = append(mock.calls.GetRoles, callInfo)
+	mock.lockGetRoles.Unlock()
+	return mock.GetRolesFunc(ctx, whereSearchName, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetRolesCalls gets all the calls that were made to GetRoles.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetRolesCalls())
+func (mock *ManagerInterfaceMock) GetRolesCalls() []struct {
+	Ctx             context.Context
+	WhereSearchName string
+	Order           parameter.RoleOrderMethod
+	Pg              parameter.Pagination
+	Limit           parameter.Limit
+	Cursor          parameter.Cursor
+	Offset          parameter.Offset
+	WithCount       parameter.WithCount
+} {
+	var calls []struct {
+		Ctx             context.Context
+		WhereSearchName string
+		Order           parameter.RoleOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}
+	mock.lockGetRoles.RLock()
+	calls = mock.calls.GetRoles
+	mock.lockGetRoles.RUnlock()
+	return calls
+}
+
+// GetRolesCount calls GetRolesCountFunc.
+func (mock *ManagerInterfaceMock) GetRolesCount(ctx context.Context, whereSearchName string) (int64, error) {
+	if mock.GetRolesCountFunc == nil {
+		panic("ManagerInterfaceMock.GetRolesCountFunc: method is nil but ManagerInterface.GetRolesCount was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		WhereSearchName string
+	}{
+		Ctx:             ctx,
+		WhereSearchName: whereSearchName,
+	}
+	mock.lockGetRolesCount.Lock()
+	mock.calls.GetRolesCount = append(mock.calls.GetRolesCount, callInfo)
+	mock.lockGetRolesCount.Unlock()
+	return mock.GetRolesCountFunc(ctx, whereSearchName)
+}
+
+// GetRolesCountCalls gets all the calls that were made to GetRolesCount.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetRolesCountCalls())
+func (mock *ManagerInterfaceMock) GetRolesCountCalls() []struct {
+	Ctx             context.Context
+	WhereSearchName string
+} {
+	var calls []struct {
+		Ctx             context.Context
+		WhereSearchName string
+	}
+	mock.lockGetRolesCount.RLock()
+	calls = mock.calls.GetRolesCount
+	mock.lockGetRolesCount.RUnlock()
+	return calls
+}
+
 // PluralDeleteAttendStatuses calls PluralDeleteAttendStatusesFunc.
 func (mock *ManagerInterfaceMock) PluralDeleteAttendStatuses(ctx context.Context, ids []uuid.UUID) error {
 	if mock.PluralDeleteAttendStatusesFunc == nil {
@@ -4651,6 +5025,42 @@ func (mock *ManagerInterfaceMock) PluralDeleteRecordTypesCalls() []struct {
 	mock.lockPluralDeleteRecordTypes.RLock()
 	calls = mock.calls.PluralDeleteRecordTypes
 	mock.lockPluralDeleteRecordTypes.RUnlock()
+	return calls
+}
+
+// PluralDeleteRoles calls PluralDeleteRolesFunc.
+func (mock *ManagerInterfaceMock) PluralDeleteRoles(ctx context.Context, ids []uuid.UUID) error {
+	if mock.PluralDeleteRolesFunc == nil {
+		panic("ManagerInterfaceMock.PluralDeleteRolesFunc: method is nil but ManagerInterface.PluralDeleteRoles was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}{
+		Ctx: ctx,
+		Ids: ids,
+	}
+	mock.lockPluralDeleteRoles.Lock()
+	mock.calls.PluralDeleteRoles = append(mock.calls.PluralDeleteRoles, callInfo)
+	mock.lockPluralDeleteRoles.Unlock()
+	return mock.PluralDeleteRolesFunc(ctx, ids)
+}
+
+// PluralDeleteRolesCalls gets all the calls that were made to PluralDeleteRoles.
+// Check the length with:
+//
+//	len(mockedManagerInterface.PluralDeleteRolesCalls())
+func (mock *ManagerInterfaceMock) PluralDeleteRolesCalls() []struct {
+	Ctx context.Context
+	Ids []uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}
+	mock.lockPluralDeleteRoles.RLock()
+	calls = mock.calls.PluralDeleteRoles
+	mock.lockPluralDeleteRoles.RUnlock()
 	return calls
 }
 
@@ -5083,5 +5493,49 @@ func (mock *ManagerInterfaceMock) UpdateRecordTypeCalls() []struct {
 	mock.lockUpdateRecordType.RLock()
 	calls = mock.calls.UpdateRecordType
 	mock.lockUpdateRecordType.RUnlock()
+	return calls
+}
+
+// UpdateRole calls UpdateRoleFunc.
+func (mock *ManagerInterfaceMock) UpdateRole(ctx context.Context, id uuid.UUID, name string, description string) (entity.Role, error) {
+	if mock.UpdateRoleFunc == nil {
+		panic("ManagerInterfaceMock.UpdateRoleFunc: method is nil but ManagerInterface.UpdateRole was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		ID          uuid.UUID
+		Name        string
+		Description string
+	}{
+		Ctx:         ctx,
+		ID:          id,
+		Name:        name,
+		Description: description,
+	}
+	mock.lockUpdateRole.Lock()
+	mock.calls.UpdateRole = append(mock.calls.UpdateRole, callInfo)
+	mock.lockUpdateRole.Unlock()
+	return mock.UpdateRoleFunc(ctx, id, name, description)
+}
+
+// UpdateRoleCalls gets all the calls that were made to UpdateRole.
+// Check the length with:
+//
+//	len(mockedManagerInterface.UpdateRoleCalls())
+func (mock *ManagerInterfaceMock) UpdateRoleCalls() []struct {
+	Ctx         context.Context
+	ID          uuid.UUID
+	Name        string
+	Description string
+} {
+	var calls []struct {
+		Ctx         context.Context
+		ID          uuid.UUID
+		Name        string
+		Description string
+	}
+	mock.lockUpdateRole.RLock()
+	calls = mock.calls.UpdateRole
+	mock.lockUpdateRole.RUnlock()
 	return calls
 }

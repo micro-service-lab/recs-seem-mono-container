@@ -23,6 +23,7 @@ type Manager struct {
 	ManageRecordType
 	ManagePermission
 	ManagePolicy
+	ManageRole
 }
 
 // NewManager creates a new Manager.
@@ -38,6 +39,7 @@ func NewManager(db store.Store) *Manager {
 		ManageRecordType:         ManageRecordType{DB: db},
 		ManagePermission:         ManagePermission{DB: db},
 		ManagePolicy:             ManagePolicy{DB: db},
+		ManageRole:               ManageRole{DB: db},
 	}
 }
 
@@ -54,6 +56,7 @@ type ManagerInterface interface {
 	RecordTypeManager
 	PermissionManager
 	PolicyManager
+	RoleManager
 }
 
 // AttendStatusManager is a interface for attend status service.
@@ -294,6 +297,27 @@ type PolicyManager interface {
 		withCount parameter.WithCount,
 	) (store.ListResult[entity.PolicyWithCategory], error)
 	GetPoliciesCount(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID) (int64, error)
+}
+
+// RoleManager is a interface for event type service.
+type RoleManager interface {
+	CreateRole(ctx context.Context, name, description string) (entity.Role, error)
+	CreateRoles(ctx context.Context, ps []parameter.CreateRoleParam) (int64, error)
+	UpdateRole(ctx context.Context, id uuid.UUID, name, description string) (entity.Role, error)
+	DeleteRole(ctx context.Context, id uuid.UUID) error
+	PluralDeleteRoles(ctx context.Context, ids []uuid.UUID) error
+	FindRoleByID(ctx context.Context, id uuid.UUID) (entity.Role, error)
+	GetRoles(
+		ctx context.Context,
+		whereSearchName string,
+		order parameter.RoleOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.Role], error)
+	GetRolesCount(ctx context.Context, whereSearchName string) (int64, error)
 }
 
 var _ ManagerInterface = (*Manager)(nil)

@@ -98,14 +98,14 @@ type Policy interface {
 	// GetPluralPolicies ポリシーを取得する。
 	GetPluralPolicies(
 		ctx context.Context,
-		PolicyIDs []uuid.UUID,
+		policyIDs []uuid.UUID,
 		np NumberedPaginationParam,
 	) (ListResult[entity.Policy], error)
 	// GetPluralPoliciesWithSd SD付きでポリシーを取得する。
 	GetPluralPoliciesWithSd(
 		ctx context.Context,
 		sd Sd,
-		PolicyIDs []uuid.UUID,
+		policyIDs []uuid.UUID,
 		np NumberedPaginationParam,
 	) (ListResult[entity.Policy], error)
 	// UpdatePolicy ポリシーを更新する。

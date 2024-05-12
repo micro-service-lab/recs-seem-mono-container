@@ -94,8 +94,8 @@ func (q *Queries) FindRoleByID(ctx context.Context, roleID uuid.UUID) (Role, err
 	return i, err
 }
 
-const getPluckRoles = `-- name: GetPluckRoles :many
-SELECT role_id, name FROM m_roles
+const getPluralRoles = `-- name: GetPluralRoles :many
+SELECT m_roles_pkey, role_id, name, description, created_at, updated_at FROM m_roles
 WHERE
 	role_id = ANY($3::uuid[])
 ORDER BY
@@ -103,27 +103,29 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetPluckRolesParams struct {
+type GetPluralRolesParams struct {
 	Limit   int32       `json:"limit"`
 	Offset  int32       `json:"offset"`
 	RoleIds []uuid.UUID `json:"role_ids"`
 }
 
-type GetPluckRolesRow struct {
-	RoleID uuid.UUID `json:"role_id"`
-	Name   string    `json:"name"`
-}
-
-func (q *Queries) GetPluckRoles(ctx context.Context, arg GetPluckRolesParams) ([]GetPluckRolesRow, error) {
-	rows, err := q.db.Query(ctx, getPluckRoles, arg.Limit, arg.Offset, arg.RoleIds)
+func (q *Queries) GetPluralRoles(ctx context.Context, arg GetPluralRolesParams) ([]Role, error) {
+	rows, err := q.db.Query(ctx, getPluralRoles, arg.Limit, arg.Offset, arg.RoleIds)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluckRolesRow{}
+	items := []Role{}
 	for rows.Next() {
-		var i GetPluckRolesRow
-		if err := rows.Scan(&i.RoleID, &i.Name); err != nil {
+		var i Role
+		if err := rows.Scan(
+			&i.MRolesPkey,
+			&i.RoleID,
+			&i.Name,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

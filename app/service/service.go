@@ -218,7 +218,14 @@ type PermissionManager interface {
 	DeletePermission(ctx context.Context, id uuid.UUID) error
 	PluralDeletePermissions(ctx context.Context, ids []uuid.UUID) error
 	FindPermissionByID(ctx context.Context, id uuid.UUID) (entity.Permission, error)
+	FindPermissionByIDWithCategory(
+		ctx context.Context,
+		id uuid.UUID,
+	) (entity.PermissionWithCategory, error)
 	FindPermissionByKey(ctx context.Context, key string) (entity.Permission, error)
+	FindPermissionByKeyWithCategory(
+		ctx context.Context, key string,
+	) (entity.PermissionWithCategory, error)
 	GetPermissions(
 		ctx context.Context,
 		whereSearchName string,

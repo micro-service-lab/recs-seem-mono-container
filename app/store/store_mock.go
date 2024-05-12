@@ -351,11 +351,23 @@ var _ Store = &StoreMock{}
 //			FindPermissionByIDFunc: func(ctx context.Context, permissionID uuid.UUID) (entity.Permission, error) {
 //				panic("mock out the FindPermissionByID method")
 //			},
+//			FindPermissionByIDWithCategoryFunc: func(ctx context.Context, permissionID uuid.UUID) (entity.PermissionWithCategory, error) {
+//				panic("mock out the FindPermissionByIDWithCategory method")
+//			},
+//			FindPermissionByIDWithCategoryWithSdFunc: func(ctx context.Context, sd Sd, permissionID uuid.UUID) (entity.PermissionWithCategory, error) {
+//				panic("mock out the FindPermissionByIDWithCategoryWithSd method")
+//			},
 //			FindPermissionByIDWithSdFunc: func(ctx context.Context, sd Sd, permissionID uuid.UUID) (entity.Permission, error) {
 //				panic("mock out the FindPermissionByIDWithSd method")
 //			},
 //			FindPermissionByKeyFunc: func(ctx context.Context, key string) (entity.Permission, error) {
 //				panic("mock out the FindPermissionByKey method")
+//			},
+//			FindPermissionByKeyWithCategoryFunc: func(ctx context.Context, key string) (entity.PermissionWithCategory, error) {
+//				panic("mock out the FindPermissionByKeyWithCategory method")
+//			},
+//			FindPermissionByKeyWithCategoryWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.PermissionWithCategory, error) {
+//				panic("mock out the FindPermissionByKeyWithCategoryWithSd method")
 //			},
 //			FindPermissionByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.Permission, error) {
 //				panic("mock out the FindPermissionByKeyWithSd method")
@@ -1000,11 +1012,23 @@ type StoreMock struct {
 	// FindPermissionByIDFunc mocks the FindPermissionByID method.
 	FindPermissionByIDFunc func(ctx context.Context, permissionID uuid.UUID) (entity.Permission, error)
 
+	// FindPermissionByIDWithCategoryFunc mocks the FindPermissionByIDWithCategory method.
+	FindPermissionByIDWithCategoryFunc func(ctx context.Context, permissionID uuid.UUID) (entity.PermissionWithCategory, error)
+
+	// FindPermissionByIDWithCategoryWithSdFunc mocks the FindPermissionByIDWithCategoryWithSd method.
+	FindPermissionByIDWithCategoryWithSdFunc func(ctx context.Context, sd Sd, permissionID uuid.UUID) (entity.PermissionWithCategory, error)
+
 	// FindPermissionByIDWithSdFunc mocks the FindPermissionByIDWithSd method.
 	FindPermissionByIDWithSdFunc func(ctx context.Context, sd Sd, permissionID uuid.UUID) (entity.Permission, error)
 
 	// FindPermissionByKeyFunc mocks the FindPermissionByKey method.
 	FindPermissionByKeyFunc func(ctx context.Context, key string) (entity.Permission, error)
+
+	// FindPermissionByKeyWithCategoryFunc mocks the FindPermissionByKeyWithCategory method.
+	FindPermissionByKeyWithCategoryFunc func(ctx context.Context, key string) (entity.PermissionWithCategory, error)
+
+	// FindPermissionByKeyWithCategoryWithSdFunc mocks the FindPermissionByKeyWithCategoryWithSd method.
+	FindPermissionByKeyWithCategoryWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.PermissionWithCategory, error)
 
 	// FindPermissionByKeyWithSdFunc mocks the FindPermissionByKeyWithSd method.
 	FindPermissionByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.Permission, error)
@@ -2182,6 +2206,22 @@ type StoreMock struct {
 			// PermissionID is the permissionID argument value.
 			PermissionID uuid.UUID
 		}
+		// FindPermissionByIDWithCategory holds details about calls to the FindPermissionByIDWithCategory method.
+		FindPermissionByIDWithCategory []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PermissionID is the permissionID argument value.
+			PermissionID uuid.UUID
+		}
+		// FindPermissionByIDWithCategoryWithSd holds details about calls to the FindPermissionByIDWithCategoryWithSd method.
+		FindPermissionByIDWithCategoryWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// PermissionID is the permissionID argument value.
+			PermissionID uuid.UUID
+		}
 		// FindPermissionByIDWithSd holds details about calls to the FindPermissionByIDWithSd method.
 		FindPermissionByIDWithSd []struct {
 			// Ctx is the ctx argument value.
@@ -2195,6 +2235,22 @@ type StoreMock struct {
 		FindPermissionByKey []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// FindPermissionByKeyWithCategory holds details about calls to the FindPermissionByKeyWithCategory method.
+		FindPermissionByKeyWithCategory []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// FindPermissionByKeyWithCategoryWithSd holds details about calls to the FindPermissionByKeyWithCategoryWithSd method.
+		FindPermissionByKeyWithCategoryWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
 			// Key is the key argument value.
 			Key string
 		}
@@ -3381,8 +3437,12 @@ type StoreMock struct {
 	lockFindMimeTypeByKey                      sync.RWMutex
 	lockFindMimeTypeByKeyWithSd                sync.RWMutex
 	lockFindPermissionByID                     sync.RWMutex
+	lockFindPermissionByIDWithCategory         sync.RWMutex
+	lockFindPermissionByIDWithCategoryWithSd   sync.RWMutex
 	lockFindPermissionByIDWithSd               sync.RWMutex
 	lockFindPermissionByKey                    sync.RWMutex
+	lockFindPermissionByKeyWithCategory        sync.RWMutex
+	lockFindPermissionByKeyWithCategoryWithSd  sync.RWMutex
 	lockFindPermissionByKeyWithSd              sync.RWMutex
 	lockFindPermissionCategoryByID             sync.RWMutex
 	lockFindPermissionCategoryByIDWithSd       sync.RWMutex
@@ -7643,6 +7703,82 @@ func (mock *StoreMock) FindPermissionByIDCalls() []struct {
 	return calls
 }
 
+// FindPermissionByIDWithCategory calls FindPermissionByIDWithCategoryFunc.
+func (mock *StoreMock) FindPermissionByIDWithCategory(ctx context.Context, permissionID uuid.UUID) (entity.PermissionWithCategory, error) {
+	if mock.FindPermissionByIDWithCategoryFunc == nil {
+		panic("StoreMock.FindPermissionByIDWithCategoryFunc: method is nil but Store.FindPermissionByIDWithCategory was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		PermissionID uuid.UUID
+	}{
+		Ctx:          ctx,
+		PermissionID: permissionID,
+	}
+	mock.lockFindPermissionByIDWithCategory.Lock()
+	mock.calls.FindPermissionByIDWithCategory = append(mock.calls.FindPermissionByIDWithCategory, callInfo)
+	mock.lockFindPermissionByIDWithCategory.Unlock()
+	return mock.FindPermissionByIDWithCategoryFunc(ctx, permissionID)
+}
+
+// FindPermissionByIDWithCategoryCalls gets all the calls that were made to FindPermissionByIDWithCategory.
+// Check the length with:
+//
+//	len(mockedStore.FindPermissionByIDWithCategoryCalls())
+func (mock *StoreMock) FindPermissionByIDWithCategoryCalls() []struct {
+	Ctx          context.Context
+	PermissionID uuid.UUID
+} {
+	var calls []struct {
+		Ctx          context.Context
+		PermissionID uuid.UUID
+	}
+	mock.lockFindPermissionByIDWithCategory.RLock()
+	calls = mock.calls.FindPermissionByIDWithCategory
+	mock.lockFindPermissionByIDWithCategory.RUnlock()
+	return calls
+}
+
+// FindPermissionByIDWithCategoryWithSd calls FindPermissionByIDWithCategoryWithSdFunc.
+func (mock *StoreMock) FindPermissionByIDWithCategoryWithSd(ctx context.Context, sd Sd, permissionID uuid.UUID) (entity.PermissionWithCategory, error) {
+	if mock.FindPermissionByIDWithCategoryWithSdFunc == nil {
+		panic("StoreMock.FindPermissionByIDWithCategoryWithSdFunc: method is nil but Store.FindPermissionByIDWithCategoryWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		Sd           Sd
+		PermissionID uuid.UUID
+	}{
+		Ctx:          ctx,
+		Sd:           sd,
+		PermissionID: permissionID,
+	}
+	mock.lockFindPermissionByIDWithCategoryWithSd.Lock()
+	mock.calls.FindPermissionByIDWithCategoryWithSd = append(mock.calls.FindPermissionByIDWithCategoryWithSd, callInfo)
+	mock.lockFindPermissionByIDWithCategoryWithSd.Unlock()
+	return mock.FindPermissionByIDWithCategoryWithSdFunc(ctx, sd, permissionID)
+}
+
+// FindPermissionByIDWithCategoryWithSdCalls gets all the calls that were made to FindPermissionByIDWithCategoryWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindPermissionByIDWithCategoryWithSdCalls())
+func (mock *StoreMock) FindPermissionByIDWithCategoryWithSdCalls() []struct {
+	Ctx          context.Context
+	Sd           Sd
+	PermissionID uuid.UUID
+} {
+	var calls []struct {
+		Ctx          context.Context
+		Sd           Sd
+		PermissionID uuid.UUID
+	}
+	mock.lockFindPermissionByIDWithCategoryWithSd.RLock()
+	calls = mock.calls.FindPermissionByIDWithCategoryWithSd
+	mock.lockFindPermissionByIDWithCategoryWithSd.RUnlock()
+	return calls
+}
+
 // FindPermissionByIDWithSd calls FindPermissionByIDWithSdFunc.
 func (mock *StoreMock) FindPermissionByIDWithSd(ctx context.Context, sd Sd, permissionID uuid.UUID) (entity.Permission, error) {
 	if mock.FindPermissionByIDWithSdFunc == nil {
@@ -7716,6 +7852,82 @@ func (mock *StoreMock) FindPermissionByKeyCalls() []struct {
 	mock.lockFindPermissionByKey.RLock()
 	calls = mock.calls.FindPermissionByKey
 	mock.lockFindPermissionByKey.RUnlock()
+	return calls
+}
+
+// FindPermissionByKeyWithCategory calls FindPermissionByKeyWithCategoryFunc.
+func (mock *StoreMock) FindPermissionByKeyWithCategory(ctx context.Context, key string) (entity.PermissionWithCategory, error) {
+	if mock.FindPermissionByKeyWithCategoryFunc == nil {
+		panic("StoreMock.FindPermissionByKeyWithCategoryFunc: method is nil but Store.FindPermissionByKeyWithCategory was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockFindPermissionByKeyWithCategory.Lock()
+	mock.calls.FindPermissionByKeyWithCategory = append(mock.calls.FindPermissionByKeyWithCategory, callInfo)
+	mock.lockFindPermissionByKeyWithCategory.Unlock()
+	return mock.FindPermissionByKeyWithCategoryFunc(ctx, key)
+}
+
+// FindPermissionByKeyWithCategoryCalls gets all the calls that were made to FindPermissionByKeyWithCategory.
+// Check the length with:
+//
+//	len(mockedStore.FindPermissionByKeyWithCategoryCalls())
+func (mock *StoreMock) FindPermissionByKeyWithCategoryCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockFindPermissionByKeyWithCategory.RLock()
+	calls = mock.calls.FindPermissionByKeyWithCategory
+	mock.lockFindPermissionByKeyWithCategory.RUnlock()
+	return calls
+}
+
+// FindPermissionByKeyWithCategoryWithSd calls FindPermissionByKeyWithCategoryWithSdFunc.
+func (mock *StoreMock) FindPermissionByKeyWithCategoryWithSd(ctx context.Context, sd Sd, key string) (entity.PermissionWithCategory, error) {
+	if mock.FindPermissionByKeyWithCategoryWithSdFunc == nil {
+		panic("StoreMock.FindPermissionByKeyWithCategoryWithSdFunc: method is nil but Store.FindPermissionByKeyWithCategoryWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}{
+		Ctx: ctx,
+		Sd:  sd,
+		Key: key,
+	}
+	mock.lockFindPermissionByKeyWithCategoryWithSd.Lock()
+	mock.calls.FindPermissionByKeyWithCategoryWithSd = append(mock.calls.FindPermissionByKeyWithCategoryWithSd, callInfo)
+	mock.lockFindPermissionByKeyWithCategoryWithSd.Unlock()
+	return mock.FindPermissionByKeyWithCategoryWithSdFunc(ctx, sd, key)
+}
+
+// FindPermissionByKeyWithCategoryWithSdCalls gets all the calls that were made to FindPermissionByKeyWithCategoryWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindPermissionByKeyWithCategoryWithSdCalls())
+func (mock *StoreMock) FindPermissionByKeyWithCategoryWithSdCalls() []struct {
+	Ctx context.Context
+	Sd  Sd
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}
+	mock.lockFindPermissionByKeyWithCategoryWithSd.RLock()
+	calls = mock.calls.FindPermissionByKeyWithCategoryWithSd
+	mock.lockFindPermissionByKeyWithCategoryWithSd.RUnlock()
 	return calls
 }
 

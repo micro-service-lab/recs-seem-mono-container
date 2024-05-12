@@ -310,6 +310,62 @@ func (a *PgAdapter) FindPermissionByIDWithSd(
 	return e, nil
 }
 
+func findPermissionByIDWithCategory(
+	ctx context.Context, qtx *query.Queries, permissionID uuid.UUID,
+) (entity.PermissionWithCategory, error) {
+	e, err := qtx.FindPermissionByIDWithCategory(ctx, permissionID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.PermissionWithCategory{}, store.ErrDataNoRecord
+		}
+		return entity.PermissionWithCategory{}, fmt.Errorf("failed to find permission: %w", err)
+	}
+	entity := entity.PermissionWithCategory{
+		Permission: entity.Permission{
+			PermissionID:         e.PermissionID,
+			Name:                 e.Name,
+			Key:                  e.Key,
+			Description:          e.Description,
+			PermissionCategoryID: e.PermissionCategoryID,
+		},
+		PermissionCategory: entity.PermissionCategory{
+			PermissionCategoryID: e.PermissionCategoryID,
+			Name:                 e.PermissionCategoryName,
+			Key:                  e.PermissionCategoryKey,
+			Description:          e.PermissionCategoryDescription,
+		},
+	}
+	return entity, nil
+}
+
+// FindPermissionByIDWithCategory 権限カテゴリーを取得する。
+func (a *PgAdapter) FindPermissionByIDWithCategory(
+	ctx context.Context, permissionID uuid.UUID,
+) (entity.PermissionWithCategory, error) {
+	e, err := findPermissionByIDWithCategory(ctx, a.query, permissionID)
+	if err != nil {
+		return entity.PermissionWithCategory{}, fmt.Errorf("failed to find permission: %w", err)
+	}
+	return e, nil
+}
+
+// FindPermissionByIDWithCategoryWithSd SD付きで権限カテゴリーを取得する。
+func (a *PgAdapter) FindPermissionByIDWithCategoryWithSd(
+	ctx context.Context, sd store.Sd, permissionID uuid.UUID,
+) (entity.PermissionWithCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return entity.PermissionWithCategory{}, store.ErrNotFoundDescriptor
+	}
+	e, err := findPermissionByIDWithCategory(ctx, qtx, permissionID)
+	if err != nil {
+		return entity.PermissionWithCategory{}, fmt.Errorf("failed to find permission: %w", err)
+	}
+	return e, nil
+}
+
 func findPermissionByKey(
 	ctx context.Context, qtx *query.Queries, key string,
 ) (entity.Permission, error) {
@@ -352,6 +408,62 @@ func (a *PgAdapter) FindPermissionByKeyWithSd(
 	e, err := findPermissionByKey(ctx, qtx, key)
 	if err != nil {
 		return entity.Permission{}, fmt.Errorf("failed to find permission: %w", err)
+	}
+	return e, nil
+}
+
+func findPermissionByKeyWithCategory(
+	ctx context.Context, qtx *query.Queries, key string,
+) (entity.PermissionWithCategory, error) {
+	e, err := qtx.FindPermissionByKeyWithCategory(ctx, key)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.PermissionWithCategory{}, store.ErrDataNoRecord
+		}
+		return entity.PermissionWithCategory{}, fmt.Errorf("failed to find permission: %w", err)
+	}
+	entity := entity.PermissionWithCategory{
+		Permission: entity.Permission{
+			PermissionID:         e.PermissionID,
+			Name:                 e.Name,
+			Key:                  e.Key,
+			Description:          e.Description,
+			PermissionCategoryID: e.PermissionCategoryID,
+		},
+		PermissionCategory: entity.PermissionCategory{
+			PermissionCategoryID: e.PermissionCategoryID,
+			Name:                 e.PermissionCategoryName,
+			Key:                  e.PermissionCategoryKey,
+			Description:          e.PermissionCategoryDescription,
+		},
+	}
+	return entity, nil
+}
+
+// FindPermissionByKeyWithCategory 権限カテゴリーを取得する。
+func (a *PgAdapter) FindPermissionByKeyWithCategory(
+	ctx context.Context, key string,
+) (entity.PermissionWithCategory, error) {
+	e, err := findPermissionByKeyWithCategory(ctx, a.query, key)
+	if err != nil {
+		return entity.PermissionWithCategory{}, fmt.Errorf("failed to find permission: %w", err)
+	}
+	return e, nil
+}
+
+// FindPermissionByKeyWithCategoryWithSd SD付きで権限カテゴリーを取得する。
+func (a *PgAdapter) FindPermissionByKeyWithCategoryWithSd(
+	ctx context.Context, sd store.Sd, key string,
+) (entity.PermissionWithCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return entity.PermissionWithCategory{}, store.ErrNotFoundDescriptor
+	}
+	e, err := findPermissionByKeyWithCategory(ctx, qtx, key)
+	if err != nil {
+		return entity.PermissionWithCategory{}, fmt.Errorf("failed to find permission: %w", err)
 	}
 	return e, nil
 }

@@ -23,7 +23,7 @@ DELETE FROM m_permissions WHERE permission_id = ANY($1::uuid[]);
 SELECT * FROM m_permissions WHERE permission_id = $1;
 
 -- name: FindPermissionByIDWithCategory :one
-SELECT m_permissions.*, m_permission_categories.* FROM m_permissions
+SELECT m_permissions.*,  m_permission_categories.name permission_category_name, m_permission_categories.key permission_category_key, m_permission_categories.description permission_category_description FROM m_permissions
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE m_permissions.permission_id = $1;
 
@@ -31,7 +31,7 @@ WHERE m_permissions.permission_id = $1;
 SELECT * FROM m_permissions WHERE key = $1;
 
 -- name: FindPermissionByKeyWithCategory :one
-SELECT m_permissions.*, m_permission_categories.* FROM m_permissions
+SELECT m_permissions.*,  m_permission_categories.name permission_category_name, m_permission_categories.key permission_category_key, m_permission_categories.description permission_category_description FROM m_permissions
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE m_permissions.key = $1;
 
@@ -151,7 +151,7 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralPermissionsWithCategory :many
-SELECT m_permissions.*, m_permission_categories.* FROM m_permissions
+SELECT m_permissions.*,  m_permission_categories.name permission_category_name, m_permission_categories.key permission_category_key, m_permission_categories.description permission_category_description FROM m_permissions
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE permission_id = ANY(@permission_ids::uuid[])
 ORDER BY

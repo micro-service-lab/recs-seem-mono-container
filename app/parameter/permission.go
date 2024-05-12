@@ -54,14 +54,25 @@ func ParsePermissionWithParam(v string) (any, error) {
 	}
 }
 
-// WithCategory はカテゴリを含むか。
-func (o PermissionWithParams) WithCategory() bool {
-	for _, v := range o {
+// PermissionWithCase 権限の付加情報のケース。
+type PermissionWithCase int8
+
+const (
+	// PermissionWithCaseCategory はカテゴリを含む。
+	PermissionWithCaseCategory PermissionWithCase = 0b1
+	// PermissionWithCaseDefault はデフォルト。
+	PermissionWithCaseDefault PermissionWithCase = 0b0
+)
+
+// Case はケースを取得する。
+func (p PermissionWithParams) Case() PermissionWithCase {
+	var c PermissionWithCase
+	for _, v := range p {
 		if v.withCategory {
-			return true
+			c |= PermissionWithCaseCategory
 		}
 	}
-	return false
+	return c
 }
 
 // PermissionOrderMethod 権限の並び替え方法。

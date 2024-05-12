@@ -121,8 +121,14 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			FindPermissionByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.Permission, error) {
 //				panic("mock out the FindPermissionByID method")
 //			},
+//			FindPermissionByIDWithCategoryFunc: func(ctx context.Context, id uuid.UUID) (entity.PermissionWithCategory, error) {
+//				panic("mock out the FindPermissionByIDWithCategory method")
+//			},
 //			FindPermissionByKeyFunc: func(ctx context.Context, key string) (entity.Permission, error) {
 //				panic("mock out the FindPermissionByKey method")
+//			},
+//			FindPermissionByKeyWithCategoryFunc: func(ctx context.Context, key string) (entity.PermissionWithCategory, error) {
+//				panic("mock out the FindPermissionByKeyWithCategory method")
 //			},
 //			FindPermissionCategoryByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.PermissionCategory, error) {
 //				panic("mock out the FindPermissionCategoryByID method")
@@ -347,8 +353,14 @@ type ManagerInterfaceMock struct {
 	// FindPermissionByIDFunc mocks the FindPermissionByID method.
 	FindPermissionByIDFunc func(ctx context.Context, id uuid.UUID) (entity.Permission, error)
 
+	// FindPermissionByIDWithCategoryFunc mocks the FindPermissionByIDWithCategory method.
+	FindPermissionByIDWithCategoryFunc func(ctx context.Context, id uuid.UUID) (entity.PermissionWithCategory, error)
+
 	// FindPermissionByKeyFunc mocks the FindPermissionByKey method.
 	FindPermissionByKeyFunc func(ctx context.Context, key string) (entity.Permission, error)
+
+	// FindPermissionByKeyWithCategoryFunc mocks the FindPermissionByKeyWithCategory method.
+	FindPermissionByKeyWithCategoryFunc func(ctx context.Context, key string) (entity.PermissionWithCategory, error)
 
 	// FindPermissionCategoryByIDFunc mocks the FindPermissionCategoryByID method.
 	FindPermissionCategoryByIDFunc func(ctx context.Context, id uuid.UUID) (entity.PermissionCategory, error)
@@ -730,8 +742,22 @@ type ManagerInterfaceMock struct {
 			// ID is the id argument value.
 			ID uuid.UUID
 		}
+		// FindPermissionByIDWithCategory holds details about calls to the FindPermissionByIDWithCategory method.
+		FindPermissionByIDWithCategory []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
 		// FindPermissionByKey holds details about calls to the FindPermissionByKey method.
 		FindPermissionByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// FindPermissionByKeyWithCategory holds details about calls to the FindPermissionByKeyWithCategory method.
+		FindPermissionByKeyWithCategory []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Key is the key argument value.
@@ -1204,7 +1230,9 @@ type ManagerInterfaceMock struct {
 	lockFindMimeTypeByID                 sync.RWMutex
 	lockFindMimeTypeByKey                sync.RWMutex
 	lockFindPermissionByID               sync.RWMutex
+	lockFindPermissionByIDWithCategory   sync.RWMutex
 	lockFindPermissionByKey              sync.RWMutex
+	lockFindPermissionByKeyWithCategory  sync.RWMutex
 	lockFindPermissionCategoryByID       sync.RWMutex
 	lockFindPermissionCategoryByKey      sync.RWMutex
 	lockFindPolicyCategoryByID           sync.RWMutex
@@ -2494,6 +2522,42 @@ func (mock *ManagerInterfaceMock) FindPermissionByIDCalls() []struct {
 	return calls
 }
 
+// FindPermissionByIDWithCategory calls FindPermissionByIDWithCategoryFunc.
+func (mock *ManagerInterfaceMock) FindPermissionByIDWithCategory(ctx context.Context, id uuid.UUID) (entity.PermissionWithCategory, error) {
+	if mock.FindPermissionByIDWithCategoryFunc == nil {
+		panic("ManagerInterfaceMock.FindPermissionByIDWithCategoryFunc: method is nil but ManagerInterface.FindPermissionByIDWithCategory was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockFindPermissionByIDWithCategory.Lock()
+	mock.calls.FindPermissionByIDWithCategory = append(mock.calls.FindPermissionByIDWithCategory, callInfo)
+	mock.lockFindPermissionByIDWithCategory.Unlock()
+	return mock.FindPermissionByIDWithCategoryFunc(ctx, id)
+}
+
+// FindPermissionByIDWithCategoryCalls gets all the calls that were made to FindPermissionByIDWithCategory.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindPermissionByIDWithCategoryCalls())
+func (mock *ManagerInterfaceMock) FindPermissionByIDWithCategoryCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockFindPermissionByIDWithCategory.RLock()
+	calls = mock.calls.FindPermissionByIDWithCategory
+	mock.lockFindPermissionByIDWithCategory.RUnlock()
+	return calls
+}
+
 // FindPermissionByKey calls FindPermissionByKeyFunc.
 func (mock *ManagerInterfaceMock) FindPermissionByKey(ctx context.Context, key string) (entity.Permission, error) {
 	if mock.FindPermissionByKeyFunc == nil {
@@ -2527,6 +2591,42 @@ func (mock *ManagerInterfaceMock) FindPermissionByKeyCalls() []struct {
 	mock.lockFindPermissionByKey.RLock()
 	calls = mock.calls.FindPermissionByKey
 	mock.lockFindPermissionByKey.RUnlock()
+	return calls
+}
+
+// FindPermissionByKeyWithCategory calls FindPermissionByKeyWithCategoryFunc.
+func (mock *ManagerInterfaceMock) FindPermissionByKeyWithCategory(ctx context.Context, key string) (entity.PermissionWithCategory, error) {
+	if mock.FindPermissionByKeyWithCategoryFunc == nil {
+		panic("ManagerInterfaceMock.FindPermissionByKeyWithCategoryFunc: method is nil but ManagerInterface.FindPermissionByKeyWithCategory was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockFindPermissionByKeyWithCategory.Lock()
+	mock.calls.FindPermissionByKeyWithCategory = append(mock.calls.FindPermissionByKeyWithCategory, callInfo)
+	mock.lockFindPermissionByKeyWithCategory.Unlock()
+	return mock.FindPermissionByKeyWithCategoryFunc(ctx, key)
+}
+
+// FindPermissionByKeyWithCategoryCalls gets all the calls that were made to FindPermissionByKeyWithCategory.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindPermissionByKeyWithCategoryCalls())
+func (mock *ManagerInterfaceMock) FindPermissionByKeyWithCategoryCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockFindPermissionByKeyWithCategory.RLock()
+	calls = mock.calls.FindPermissionByKeyWithCategory
+	mock.lockFindPermissionByKeyWithCategory.RUnlock()
 	return calls
 }
 

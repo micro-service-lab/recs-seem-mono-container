@@ -71,7 +71,8 @@ func (h *GetPermissions) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	var permissions any
-	if param.With.WithCategory() {
+	switch param.With.Case() {
+	case parameter.PermissionWithCaseCategory:
 		permissions, err = h.Service.GetPermissionsWithCategory(
 			ctx,
 			param.SearchName,
@@ -83,7 +84,7 @@ func (h *GetPermissions) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			param.Offset,
 			param.WithCount,
 		)
-	} else {
+	case parameter.PermissionWithCaseDefault:
 		permissions, err = h.Service.GetPermissions(
 			ctx,
 			param.SearchName,

@@ -113,23 +113,21 @@ func (q *Queries) FindPermissionByID(ctx context.Context, permissionID uuid.UUID
 }
 
 const findPermissionByIDWithCategory = `-- name: FindPermissionByIDWithCategory :one
-SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id, m_permission_categories.m_permission_categories_pkey, m_permission_categories.permission_category_id, m_permission_categories.name, m_permission_categories.description, m_permission_categories.key FROM m_permissions
+SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id,  m_permission_categories.name permission_category_name, m_permission_categories.key permission_category_key, m_permission_categories.description permission_category_description FROM m_permissions
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE m_permissions.permission_id = $1
 `
 
 type FindPermissionByIDWithCategoryRow struct {
-	MPermissionsPkey          pgtype.Int8 `json:"m_permissions_pkey"`
-	PermissionID              uuid.UUID   `json:"permission_id"`
-	Name                      string      `json:"name"`
-	Description               string      `json:"description"`
-	Key                       string      `json:"key"`
-	PermissionCategoryID      uuid.UUID   `json:"permission_category_id"`
-	MPermissionCategoriesPkey pgtype.Int8 `json:"m_permission_categories_pkey"`
-	PermissionCategoryID_2    uuid.UUID   `json:"permission_category_id_2"`
-	Name_2                    string      `json:"name_2"`
-	Description_2             string      `json:"description_2"`
-	Key_2                     string      `json:"key_2"`
+	MPermissionsPkey              pgtype.Int8 `json:"m_permissions_pkey"`
+	PermissionID                  uuid.UUID   `json:"permission_id"`
+	Name                          string      `json:"name"`
+	Description                   string      `json:"description"`
+	Key                           string      `json:"key"`
+	PermissionCategoryID          uuid.UUID   `json:"permission_category_id"`
+	PermissionCategoryName        string      `json:"permission_category_name"`
+	PermissionCategoryKey         string      `json:"permission_category_key"`
+	PermissionCategoryDescription string      `json:"permission_category_description"`
 }
 
 func (q *Queries) FindPermissionByIDWithCategory(ctx context.Context, permissionID uuid.UUID) (FindPermissionByIDWithCategoryRow, error) {
@@ -142,11 +140,9 @@ func (q *Queries) FindPermissionByIDWithCategory(ctx context.Context, permission
 		&i.Description,
 		&i.Key,
 		&i.PermissionCategoryID,
-		&i.MPermissionCategoriesPkey,
-		&i.PermissionCategoryID_2,
-		&i.Name_2,
-		&i.Description_2,
-		&i.Key_2,
+		&i.PermissionCategoryName,
+		&i.PermissionCategoryKey,
+		&i.PermissionCategoryDescription,
 	)
 	return i, err
 }
@@ -170,23 +166,21 @@ func (q *Queries) FindPermissionByKey(ctx context.Context, key string) (Permissi
 }
 
 const findPermissionByKeyWithCategory = `-- name: FindPermissionByKeyWithCategory :one
-SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id, m_permission_categories.m_permission_categories_pkey, m_permission_categories.permission_category_id, m_permission_categories.name, m_permission_categories.description, m_permission_categories.key FROM m_permissions
+SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id,  m_permission_categories.name permission_category_name, m_permission_categories.key permission_category_key, m_permission_categories.description permission_category_description FROM m_permissions
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE m_permissions.key = $1
 `
 
 type FindPermissionByKeyWithCategoryRow struct {
-	MPermissionsPkey          pgtype.Int8 `json:"m_permissions_pkey"`
-	PermissionID              uuid.UUID   `json:"permission_id"`
-	Name                      string      `json:"name"`
-	Description               string      `json:"description"`
-	Key                       string      `json:"key"`
-	PermissionCategoryID      uuid.UUID   `json:"permission_category_id"`
-	MPermissionCategoriesPkey pgtype.Int8 `json:"m_permission_categories_pkey"`
-	PermissionCategoryID_2    uuid.UUID   `json:"permission_category_id_2"`
-	Name_2                    string      `json:"name_2"`
-	Description_2             string      `json:"description_2"`
-	Key_2                     string      `json:"key_2"`
+	MPermissionsPkey              pgtype.Int8 `json:"m_permissions_pkey"`
+	PermissionID                  uuid.UUID   `json:"permission_id"`
+	Name                          string      `json:"name"`
+	Description                   string      `json:"description"`
+	Key                           string      `json:"key"`
+	PermissionCategoryID          uuid.UUID   `json:"permission_category_id"`
+	PermissionCategoryName        string      `json:"permission_category_name"`
+	PermissionCategoryKey         string      `json:"permission_category_key"`
+	PermissionCategoryDescription string      `json:"permission_category_description"`
 }
 
 func (q *Queries) FindPermissionByKeyWithCategory(ctx context.Context, key string) (FindPermissionByKeyWithCategoryRow, error) {
@@ -199,11 +193,9 @@ func (q *Queries) FindPermissionByKeyWithCategory(ctx context.Context, key strin
 		&i.Description,
 		&i.Key,
 		&i.PermissionCategoryID,
-		&i.MPermissionCategoriesPkey,
-		&i.PermissionCategoryID_2,
-		&i.Name_2,
-		&i.Description_2,
-		&i.Key_2,
+		&i.PermissionCategoryName,
+		&i.PermissionCategoryKey,
+		&i.PermissionCategoryDescription,
 	)
 	return i, err
 }
@@ -679,7 +671,7 @@ func (q *Queries) GetPluralPermissions(ctx context.Context, arg GetPluralPermiss
 }
 
 const getPluralPermissionsWithCategory = `-- name: GetPluralPermissionsWithCategory :many
-SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id, m_permission_categories.m_permission_categories_pkey, m_permission_categories.permission_category_id, m_permission_categories.name, m_permission_categories.description, m_permission_categories.key FROM m_permissions
+SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id,  m_permission_categories.name permission_category_name, m_permission_categories.key permission_category_key, m_permission_categories.description permission_category_description FROM m_permissions
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE permission_id = ANY($3::uuid[])
 ORDER BY
@@ -694,17 +686,15 @@ type GetPluralPermissionsWithCategoryParams struct {
 }
 
 type GetPluralPermissionsWithCategoryRow struct {
-	MPermissionsPkey          pgtype.Int8 `json:"m_permissions_pkey"`
-	PermissionID              uuid.UUID   `json:"permission_id"`
-	Name                      string      `json:"name"`
-	Description               string      `json:"description"`
-	Key                       string      `json:"key"`
-	PermissionCategoryID      uuid.UUID   `json:"permission_category_id"`
-	MPermissionCategoriesPkey pgtype.Int8 `json:"m_permission_categories_pkey"`
-	PermissionCategoryID_2    uuid.UUID   `json:"permission_category_id_2"`
-	Name_2                    string      `json:"name_2"`
-	Description_2             string      `json:"description_2"`
-	Key_2                     string      `json:"key_2"`
+	MPermissionsPkey              pgtype.Int8 `json:"m_permissions_pkey"`
+	PermissionID                  uuid.UUID   `json:"permission_id"`
+	Name                          string      `json:"name"`
+	Description                   string      `json:"description"`
+	Key                           string      `json:"key"`
+	PermissionCategoryID          uuid.UUID   `json:"permission_category_id"`
+	PermissionCategoryName        string      `json:"permission_category_name"`
+	PermissionCategoryKey         string      `json:"permission_category_key"`
+	PermissionCategoryDescription string      `json:"permission_category_description"`
 }
 
 func (q *Queries) GetPluralPermissionsWithCategory(ctx context.Context, arg GetPluralPermissionsWithCategoryParams) ([]GetPluralPermissionsWithCategoryRow, error) {
@@ -723,11 +713,9 @@ func (q *Queries) GetPluralPermissionsWithCategory(ctx context.Context, arg GetP
 			&i.Description,
 			&i.Key,
 			&i.PermissionCategoryID,
-			&i.MPermissionCategoriesPkey,
-			&i.PermissionCategoryID_2,
-			&i.Name_2,
-			&i.Description_2,
-			&i.Key_2,
+			&i.PermissionCategoryName,
+			&i.PermissionCategoryKey,
+			&i.PermissionCategoryDescription,
 		); err != nil {
 			return nil, err
 		}

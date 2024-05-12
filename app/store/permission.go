@@ -44,10 +44,19 @@ type Permission interface {
 	// FindPermissionByIDWithSd SD付きで権限を取得する。
 	FindPermissionByIDWithSd(
 		ctx context.Context, sd Sd, permissionID uuid.UUID) (entity.Permission, error)
+	// FindPermissionByIDWithCategory 権限とそのカテゴリを取得する。
+	FindPermissionByIDWithCategory(ctx context.Context, permissionID uuid.UUID) (entity.PermissionWithCategory, error)
+	// FindPermissionByIDWithCategoryWithSd SD付きで権限とそのカテゴリを取得する。
+	FindPermissionByIDWithCategoryWithSd(
+		ctx context.Context, sd Sd, permissionID uuid.UUID) (entity.PermissionWithCategory, error)
 	// FindPermissionByKey 権限を取得する。
 	FindPermissionByKey(ctx context.Context, key string) (entity.Permission, error)
 	// FindPermissionByKeyWithSd SD付きで権限を取得する。
 	FindPermissionByKeyWithSd(ctx context.Context, sd Sd, key string) (entity.Permission, error)
+	// FindPermissionByKeyWithCategory 権限を取得する。
+	FindPermissionByKeyWithCategory(ctx context.Context, key string) (entity.PermissionWithCategory, error)
+	// FindPermissionByKeyWithCategoryWithSd SD付きで権限を取得する。
+	FindPermissionByKeyWithCategoryWithSd(ctx context.Context, sd Sd, key string) (entity.PermissionWithCategory, error)
 	// GetPermissions 権限を取得する。
 	GetPermissions(
 		ctx context.Context,

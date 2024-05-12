@@ -226,6 +226,18 @@ func (m *ManagePermission) FindPermissionByID(
 	return e, nil
 }
 
+// FindPermissionByIDWithCategory 権限とそのカテゴリをIDで取得する。
+func (m *ManagePermission) FindPermissionByIDWithCategory(
+	ctx context.Context,
+	id uuid.UUID,
+) (entity.PermissionWithCategory, error) {
+	e, err := m.DB.FindPermissionByIDWithCategory(ctx, id)
+	if err != nil {
+		return entity.PermissionWithCategory{}, fmt.Errorf("failed to find permission by id with category: %w", err)
+	}
+	return e, nil
+}
+
 // FindPermissionByKey 権限をキーで取得する。
 func (m *ManagePermission) FindPermissionByKey(
 	ctx context.Context, key string,
@@ -233,6 +245,17 @@ func (m *ManagePermission) FindPermissionByKey(
 	e, err := m.DB.FindPermissionByKey(ctx, key)
 	if err != nil {
 		return entity.Permission{}, fmt.Errorf("failed to find permission by key: %w", err)
+	}
+	return e, nil
+}
+
+// FindPermissionByKeyWithCategory 権限とそのカテゴリをキーで取得する。
+func (m *ManagePermission) FindPermissionByKeyWithCategory(
+	ctx context.Context, key string,
+) (entity.PermissionWithCategory, error) {
+	e, err := m.DB.FindPermissionByKeyWithCategory(ctx, key)
+	if err != nil {
+		return entity.PermissionWithCategory{}, fmt.Errorf("failed to find permission by key with category: %w", err)
 	}
 	return e, nil
 }

@@ -9,8 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
-	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
-	"github.com/micro-service-lab/recs-seem-mono-container/app/store/pgadapter"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/testutils/factory"
 )
 
@@ -215,31 +213,4 @@ func TestPgAdapter_PermissionCategory(t *testing.T) {
 			ss.Test(t)
 		})
 	}
-}
-
-func createPermissionCategories(
-	ctx context.Context, t *testing.T, sd store.Sd, adapter *pgadapter.PgAdapter, num int,
-) factory.PermissionCategory {
-	t.Helper()
-
-	fpc, err := factory.Generator.NewPermissionCategories(num)
-	assert.NoError(t, err)
-	pc := fpc.ForCreateParam()
-	count, err := adapter.CreatePermissionCategoriesWithSd(ctx, sd, pc)
-	assert.NoError(t, err)
-	assert.Equal(t, int64(num), count)
-	ce, err := adapter.GetPermissionCategoriesWithSd(
-		ctx,
-		sd,
-		parameter.WherePermissionCategoryParam{},
-		parameter.PermissionCategoryOrderMethodDefault,
-		validNp,
-		invalidCp,
-		validWc,
-	)
-	assert.NoError(t, err)
-	assert.Len(t, ce.Data, num)
-	assert.Equal(t, ce.WithCount.Count, int64(num))
-	fpc = factory.NewPermissionCategoriesFromEntities(ce.Data)
-	return fpc
 }

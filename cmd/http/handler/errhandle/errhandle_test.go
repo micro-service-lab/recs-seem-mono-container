@@ -21,7 +21,7 @@ func TestErrorHandle(t *testing.T) {
 	t.Parallel()
 	type wants struct {
 		resType response.APIResponseType
-		errAttr response.ApplicationErrorAttributes
+		errAttr map[string]any
 		handled bool
 	}
 	cases := map[string]struct {
@@ -54,13 +54,13 @@ func TestErrorHandle(t *testing.T) {
 		},
 		"wantErrWithAttr": {
 			err: wantErrWithAttr{
-				attr: response.ApplicationErrorAttributes{
+				attr: map[string]any{
 					"key": "value",
 				},
 			},
 			want: wants{
 				resType: response.Validation,
-				errAttr: response.ApplicationErrorAttributes{
+				errAttr: map[string]any{
 					"key": "value",
 				},
 				handled: true,
@@ -68,13 +68,13 @@ func TestErrorHandle(t *testing.T) {
 		},
 		"wrap wantErrWithAttr": {
 			err: fmt.Errorf("wrap: %w", wantErrWithAttr{
-				attr: response.ApplicationErrorAttributes{
+				attr: map[string]any{
 					"key": "value",
 				},
 			}),
 			want: wants{
 				resType: response.Validation,
-				errAttr: response.ApplicationErrorAttributes{
+				errAttr: map[string]any{
 					"key": "value",
 				},
 				handled: true,
@@ -82,13 +82,13 @@ func TestErrorHandle(t *testing.T) {
 		},
 		"wrap wrap wantErrWithAttr": {
 			err: fmt.Errorf("wrap: %w", fmt.Errorf("wrap: %w", wantErrWithAttr{
-				attr: response.ApplicationErrorAttributes{
+				attr: map[string]any{
 					"key": "value",
 				},
 			})),
 			want: wants{
 				resType: response.Validation,
-				errAttr: response.ApplicationErrorAttributes{
+				errAttr: map[string]any{
 					"key": "value",
 				},
 				handled: true,

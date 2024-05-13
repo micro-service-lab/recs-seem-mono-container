@@ -28,6 +28,7 @@ func ErrorHandle(
 		}
 		return true, nil
 	}
+	fmt.Printf("unexpected error: %+v\n", err)
 	er := response.JSONResponseWriter(ctx, w, response.System, nil, nil)
 	if er != nil {
 		return false, fmt.Errorf("failed to write response: %w", er)

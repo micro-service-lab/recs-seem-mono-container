@@ -51,8 +51,9 @@ type Config struct {
 	FakeTime FakeTimeMode `env:"FAKE_TIME"`
 	LogLevel LogLevel     `env:"LOG_LEVEL,required"`
 
-	CORSMaxAge           int `env:"CORS_MAX_AGE" envDefault:"3600"`
-	ThrottleRequestLimit int `env:"THROTTLE_REQUEST_LIMIT" envDefault:"100"`
+	CORSMaxAge           int      `env:"CORS_MAX_AGE" envDefault:"3600"`
+	ThrottleRequestLimit int      `env:"THROTTLE_REQUEST_LIMIT" envDefault:"100"`
+	DefaultLanguage      Language `env:"DEFAULT_LANGUAGE,required"`
 }
 
 var parseFuncMap = map[reflect.Type]env.ParserFunc{
@@ -60,6 +61,7 @@ var parseFuncMap = map[reflect.Type]env.ParserFunc{
 	reflect.TypeOf(FakeTimeMode{}): parseFakeTimeMode,
 	reflect.TypeOf(InfoLevel):      parseLogLevel,
 	reflect.TypeOf(ClientOrigin{}): parseClientOrigin,
+	reflect.TypeOf(Language("")):   parseLanguage,
 }
 
 // Get Get application settings from environment variables.

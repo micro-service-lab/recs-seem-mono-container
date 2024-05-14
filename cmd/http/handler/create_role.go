@@ -1,41 +1,43 @@
 package handler
 
 import (
+	"encoding/json"
 	"errors"
+	"io"
 	"log"
 	"net/http"
 
-	"github.com/go-playground/validator/v10"
-
+	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
-	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/lang"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"
 )
 
 // CreateRole is a handler for creating role.
 type CreateRole struct {
 	Service   service.ManagerInterface
-	Validator *validator.Validate
+	Validator validation.Validator
 }
 
 // CreateRoleRequest is a request for CreateRole.
 type CreateRoleRequest struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name        string `json:"name" validate:"required,max=255" ja:"名前" en:"Name"`
+	Description string `json:"description" validate:"required" ja:"説明" en:"Description"`
 }
 
 func (h *CreateRole) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	role, err := h.Service.CreateRole()
-	if err != nil {
-		if errors.Is(err, store.ErrDataNoRecord) {
-			if err := response.JSONResponseWriter(ctx, w, response.NotFound, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
-			return
+	var err error
+	var roleReq CreateRoleRequest
+	if err = json.NewDecoder(r.Body).Decode(&roleReq); err == nil || errors.Is(err, io.EOF) {
+		if errors.Is(err, io.EOF) {
+			roleReq = CreateRoleRequest{}
 		}
-		log.Printf("failed to find role: %v", err)
+		err = h.Validator.ValidateWithLocale(ctx, &roleReq, lang.GetLocale(r.Context()))
+	}
+	if err != nil {
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
 		if err != nil {
 			log.Printf("failed to handle error: %v", err)
@@ -47,7 +49,10 @@ func (h *CreateRole) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	err = response.JSONResponseWriter(ctx, w, response.Success, role, nil)
+	var role entity.Role
+	if role, err = h.Service.CreateRole(ctx, roleReq.Name, roleReq.Description); err == nil {
+		err = response.JSONResponseWriter(ctx, w, response.Success, role, nil)
+	}
 	if err != nil {
 		log.Printf("failed to write response: %v", err)
 	}

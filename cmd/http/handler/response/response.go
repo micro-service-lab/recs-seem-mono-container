@@ -11,4 +11,4 @@ type ApplicationResponse struct {
 }
 
 // ApplicationErrorAttributes エラー属性による追加情報
-type ApplicationErrorAttributes map[string]any
+type ApplicationErrorAttributes any

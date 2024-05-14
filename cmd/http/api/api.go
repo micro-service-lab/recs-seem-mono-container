@@ -11,6 +11,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 )
@@ -21,6 +22,8 @@ type API struct {
 	clk clock.Clock
 	// auth 認証サービス
 	auth auth.Auth
+	// validator バリデーションサービス
+	validator validation.Validator
 	// svc サービスハンドラ
 	svc service.ManagerInterface
 
@@ -29,10 +32,11 @@ type API struct {
 }
 
 // NewAPI API を生成して返す。
-func NewAPI(clk clock.Clock, auth auth.Auth, svc service.ManagerInterface) *API {
+func NewAPI(clk clock.Clock, auth auth.Auth, validator validation.Validator, svc service.ManagerInterface) *API {
 	return &API{
 		clk:         clk,
 		auth:        auth,
+		validator:   validator,
 		svc:         svc,
 		middlewares: make([]func(http.Handler) http.Handler, 0),
 	}
@@ -65,7 +69,7 @@ func (s *API) Handler() http.Handler {
 	r.Mount("/mime_types", MimeTypeHandler(s.svc))
 	r.Mount("/permissions", PermissionHandler(s.svc))
 	r.Mount("/policies", PolicyHandler(s.svc))
-	r.Mount("/roles", RoleHandler(s.svc))
+	r.Mount("/roles", RoleHandler(s.svc, s.validator))
 
 	r.NotFound(s.notFound)
 	r.MethodNotAllowed(s.methodNotAllowed)

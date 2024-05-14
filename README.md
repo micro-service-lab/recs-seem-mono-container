@@ -11,6 +11,14 @@ aqua policy allow "${PWD}/aqua-policy.yaml"
 aqua i -l
 ```
 
+- devで`too many open files`が出た場合、ホスト上で以下を実行。
+
+``` sh
+echo "fs.inotify.max_user_watches = 524288" >> /etc/sysctl.conf
+echo "fs.inotify.max_user_instances = 256" >> /etc/sysctl.conf
+sysctl -p
+```
+
 ## mageコマンド
 
 - コンテナ操作

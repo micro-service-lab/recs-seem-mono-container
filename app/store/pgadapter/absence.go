@@ -175,7 +175,9 @@ func (a *PgAdapter) PluralDeleteAbsences(ctx context.Context, absenceIDs []uuid.
 }
 
 // PluralDeleteAbsencesWithSd SD付きで欠席を複数削除する。
-func (a *PgAdapter) PluralDeleteAbsencesWithSd(ctx context.Context, sd store.Sd, absenceIDs []uuid.UUID) (int64, error) {
+func (a *PgAdapter) PluralDeleteAbsencesWithSd(
+	ctx context.Context, sd store.Sd, absenceIDs []uuid.UUID,
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]

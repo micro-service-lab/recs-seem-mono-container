@@ -66,14 +66,14 @@ type RecordType interface {
 	// GetPluralRecordTypes 議事録タイプを取得する。
 	GetPluralRecordTypes(
 		ctx context.Context,
-		RecordTypeIDs []uuid.UUID,
+		recordTypeIDs []uuid.UUID,
 		np NumberedPaginationParam,
 	) (ListResult[entity.RecordType], error)
 	// GetPluralRecordTypesWithSd SD付きで議事録タイプを取得する。
 	GetPluralRecordTypesWithSd(
 		ctx context.Context,
 		sd Sd,
-		RecordTypeIDs []uuid.UUID,
+		recordTypeIDs []uuid.UUID,
 		np NumberedPaginationParam,
 	) (ListResult[entity.RecordType], error)
 	// UpdateRecordType 議事録タイプを更新する。

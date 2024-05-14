@@ -66,14 +66,14 @@ type MimeType interface {
 	// GetPluralMimeTypes マイムタイプを取得する。
 	GetPluralMimeTypes(
 		ctx context.Context,
-		MimeTypeIDs []uuid.UUID,
+		mimeTypeIDs []uuid.UUID,
 		np NumberedPaginationParam,
 	) (ListResult[entity.MimeType], error)
 	// GetPluralMimeTypesWithSd SD付きでマイムタイプを取得する。
 	GetPluralMimeTypesWithSd(
 		ctx context.Context,
 		sd Sd,
-		MimeTypeIDs []uuid.UUID,
+		mimeTypeIDs []uuid.UUID,
 		np NumberedPaginationParam,
 	) (ListResult[entity.MimeType], error)
 	// UpdateMimeType マイムタイプを更新する。

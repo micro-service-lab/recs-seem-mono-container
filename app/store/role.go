@@ -58,14 +58,14 @@ type Role interface {
 	// GetPluralRoles ロールを取得する。
 	GetPluralRoles(
 		ctx context.Context,
-		RoleIDs []uuid.UUID,
+		roleIDs []uuid.UUID,
 		np NumberedPaginationParam,
 	) (ListResult[entity.Role], error)
 	// GetPluralRolesWithSd SD付きでロールを取得する。
 	GetPluralRolesWithSd(
 		ctx context.Context,
 		sd Sd,
-		RoleIDs []uuid.UUID,
+		roleIDs []uuid.UUID,
 		np NumberedPaginationParam,
 	) (ListResult[entity.Role], error)
 	// UpdateRole ロールを更新する。

@@ -218,7 +218,9 @@ func (a *PgAdapter) DeleteAttendanceTypeByKeyWithSd(
 	return c, nil
 }
 
-func pluralDeleteAttendanceTypes(ctx context.Context, qtx *query.Queries, attendanceTypeIDs []uuid.UUID) (int64, error) {
+func pluralDeleteAttendanceTypes(
+	ctx context.Context, qtx *query.Queries, attendanceTypeIDs []uuid.UUID,
+) (int64, error) {
 	c, err := qtx.PluralDeleteAttendanceTypes(ctx, attendanceTypeIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to plural delete attendance types: %w", err)

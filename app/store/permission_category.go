@@ -70,14 +70,14 @@ type PermissionCategory interface {
 	// GetPluralPermissionCategories 権限カテゴリーを取得する。
 	GetPluralPermissionCategories(
 		ctx context.Context,
-		PermissionCategoryIDs []uuid.UUID,
+		permissionCategoryIDs []uuid.UUID,
 		np NumberedPaginationParam,
 	) (ListResult[entity.PermissionCategory], error)
 	// GetPluralPermissionCategoriesWithSd SD付きで権限カテゴリーを取得する。
 	GetPluralPermissionCategoriesWithSd(
 		ctx context.Context,
 		sd Sd,
-		PermissionCategoryIDs []uuid.UUID,
+		permissionCategoryIDs []uuid.UUID,
 		np NumberedPaginationParam,
 	) (ListResult[entity.PermissionCategory], error)
 	// UpdatePermissionCategory 権限カテゴリーを更新する。

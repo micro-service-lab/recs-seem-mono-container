@@ -40,29 +40,32 @@
 <!-- public.m_mime_types -->
 <g id="node4" class="node">
 <title>public.m_mime_types</title>
-<polygon fill="#efefef" stroke="transparent" points="400,-312.5 400,-347.5 715,-347.5 715,-312.5 400,-312.5"/>
-<polygon fill="none" stroke="#000000" points="400,-312.5 400,-347.5 715,-347.5 715,-312.5 400,-312.5"/>
-<text text-anchor="start" x="406.7094" y="-325.3" font-family="Arial Bold" font-size="18.00" fill="#000000">public.m_mime_types</text>
-<text text-anchor="start" x="580.7226" y="-325.3" font-family="Arial" font-size="14.00" fill="#000000">    </text>
-<text text-anchor="start" x="614.9274" y="-325.3" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
-<polygon fill="none" stroke="#000000" points="400,-282.5 400,-312.5 715,-312.5 715,-282.5 400,-282.5"/>
-<text text-anchor="start" x="407" y="-293.9" font-family="Arial" font-size="14.00" fill="#000000">m_mime_types_pkey    </text>
-<text text-anchor="start" x="573.4446" y="-293.9" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
-<polygon fill="none" stroke="#000000" points="400,-252.5 400,-282.5 715,-282.5 715,-252.5 400,-252.5"/>
-<text text-anchor="start" x="407" y="-263.9" font-family="Arial" font-size="14.00" fill="#000000">mime_type_id    </text>
-<text text-anchor="start" x="528.3254" y="-263.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="#000000" points="400,-222.5 400,-252.5 715,-252.5 715,-222.5 400,-222.5"/>
-<text text-anchor="start" x="407" y="-233.9" font-family="Arial" font-size="14.00" fill="#000000">name    </text>
-<text text-anchor="start" x="476.2132" y="-233.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
-<polygon fill="none" stroke="#000000" points="400,-192.5 400,-222.5 715,-222.5 715,-192.5 400,-192.5"/>
-<text text-anchor="start" x="407" y="-203.9" font-family="Arial" font-size="14.00" fill="#000000">key    </text>
-<text text-anchor="start" x="462.9874" y="-203.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
+<polygon fill="#efefef" stroke="transparent" points="400,-327.5 400,-362.5 715,-362.5 715,-327.5 400,-327.5"/>
+<polygon fill="none" stroke="#000000" points="400,-327.5 400,-362.5 715,-362.5 715,-327.5 400,-327.5"/>
+<text text-anchor="start" x="406.7094" y="-340.3" font-family="Arial Bold" font-size="18.00" fill="#000000">public.m_mime_types</text>
+<text text-anchor="start" x="580.7226" y="-340.3" font-family="Arial" font-size="14.00" fill="#000000">    </text>
+<text text-anchor="start" x="614.9274" y="-340.3" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
+<polygon fill="none" stroke="#000000" points="400,-297.5 400,-327.5 715,-327.5 715,-297.5 400,-297.5"/>
+<text text-anchor="start" x="407" y="-308.9" font-family="Arial" font-size="14.00" fill="#000000">m_mime_types_pkey    </text>
+<text text-anchor="start" x="573.4446" y="-308.9" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
+<polygon fill="none" stroke="#000000" points="400,-267.5 400,-297.5 715,-297.5 715,-267.5 400,-267.5"/>
+<text text-anchor="start" x="407" y="-278.9" font-family="Arial" font-size="14.00" fill="#000000">mime_type_id    </text>
+<text text-anchor="start" x="528.3254" y="-278.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="#000000" points="400,-237.5 400,-267.5 715,-267.5 715,-237.5 400,-237.5"/>
+<text text-anchor="start" x="407" y="-248.9" font-family="Arial" font-size="14.00" fill="#000000">name    </text>
+<text text-anchor="start" x="476.2132" y="-248.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
+<polygon fill="none" stroke="#000000" points="400,-207.5 400,-237.5 715,-237.5 715,-207.5 400,-207.5"/>
+<text text-anchor="start" x="407" y="-218.9" font-family="Arial" font-size="14.00" fill="#000000">kind    </text>
+<text text-anchor="start" x="466.8766" y="-218.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
+<polygon fill="none" stroke="#000000" points="400,-177.5 400,-207.5 715,-207.5 715,-177.5 400,-177.5"/>
+<text text-anchor="start" x="407" y="-188.9" font-family="Arial" font-size="14.00" fill="#000000">key    </text>
+<text text-anchor="start" x="462.9874" y="-188.9" font-family="Arial" font-size="14.00" fill="#666666">[varchar(255)]</text>
 </g>
 <!-- public.t_attachable_items&#45;&gt;public.m_mime_types -->
 <g id="edge3" class="edge">
 <title>public.t_attachable_items:mime_type_id&#45;&gt;public.m_mime_types:mime_type_id</title>
-<path fill="none" stroke="#000000" d="M579.7817,-665.9588C555.3929,-657.0721 579.4638,-611.5671 590,-577 619.0395,-481.7272 685.9605,-486.2728 715,-391 731.0034,-338.4959 769.8889,-267.5 715,-267.5"/>
-<polygon fill="#000000" stroke="#000000" points="580.1118,-666.0085 589.3288,-671.9497 585.0559,-666.7542 590,-667.5 590,-667.5 590,-667.5 585.0559,-666.7542 590.6712,-663.0503 580.1118,-666.0085 580.1118,-666.0085"/>
+<path fill="none" stroke="#000000" d="M580.083,-666.0664C555.0498,-657.4259 578.7343,-611.5016 590,-577 619.2211,-487.5095 685.7789,-495.4905 715,-406 732.0375,-353.8223 769.8889,-282.5 715,-282.5"/>
+<polygon fill="#000000" stroke="#000000" points="580.1029,-666.0692 589.3562,-671.9537 585.0514,-666.7846 590,-667.5 590,-667.5 590,-667.5 585.0514,-666.7846 590.6438,-663.0463 580.1029,-666.0692 580.1029,-666.0692"/>
 <text text-anchor="start" x="6.669" y="-677.5" font-family="Arial" font-size="10.00" fill="#000000">FOREIGN KEY (mime_type_id) REFERENCES m_mime_types(mime_type_id) ON UPDATE RESTRICT ON DELETE RESTRICT</text>
 </g>
 <!-- public.m_members -->

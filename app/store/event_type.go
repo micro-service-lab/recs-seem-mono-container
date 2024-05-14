@@ -66,14 +66,14 @@ type EventType interface {
 	// GetPluralEventTypes イベントタイプを取得する。
 	GetPluralEventTypes(
 		ctx context.Context,
-		EventTypeIDs []uuid.UUID,
+		eventTypeIDs []uuid.UUID,
 		np NumberedPaginationParam,
 	) (ListResult[entity.EventType], error)
 	// GetPluralEventTypesWithSd SD付きでイベントタイプを取得する。
 	GetPluralEventTypesWithSd(
 		ctx context.Context,
 		sd Sd,
-		EventTypeIDs []uuid.UUID,
+		eventTypeIDs []uuid.UUID,
 		np NumberedPaginationParam,
 	) (ListResult[entity.EventType], error)
 	// UpdateEventType イベントタイプを更新する。

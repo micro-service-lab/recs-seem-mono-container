@@ -98,14 +98,14 @@ type Permission interface {
 	// GetPluralPermissions 権限を取得する。
 	GetPluralPermissions(
 		ctx context.Context,
-		PermissionIDs []uuid.UUID,
+		permissionIDs []uuid.UUID,
 		np NumberedPaginationParam,
 	) (ListResult[entity.Permission], error)
 	// GetPluralPermissionsWithSd SD付きで権限を取得する。
 	GetPluralPermissionsWithSd(
 		ctx context.Context,
 		sd Sd,
-		PermissionIDs []uuid.UUID,
+		permissionIDs []uuid.UUID,
 		np NumberedPaginationParam,
 	) (ListResult[entity.Permission], error)
 	// UpdatePermission 権限を更新する。

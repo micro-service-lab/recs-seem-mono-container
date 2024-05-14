@@ -66,14 +66,14 @@ type AttendanceType interface {
 	// GetPluralAttendanceTypes 出欠状況タイプを取得する。
 	GetPluralAttendanceTypes(
 		ctx context.Context,
-		AttendanceTypeIDs []uuid.UUID,
+		attendanceTypeIDs []uuid.UUID,
 		np NumberedPaginationParam,
 	) (ListResult[entity.AttendanceType], error)
 	// GetPluralAttendanceTypesWithSd SD付きで出欠状況タイプを取得する。
 	GetPluralAttendanceTypesWithSd(
 		ctx context.Context,
 		sd Sd,
-		AttendanceTypeIDs []uuid.UUID,
+		attendanceTypeIDs []uuid.UUID,
 		np NumberedPaginationParam,
 	) (ListResult[entity.AttendanceType], error)
 	// UpdateAttendanceType 出欠状況タイプを更新する。

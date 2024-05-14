@@ -4,13 +4,13 @@ INSERT INTO t_attached_messages (message_id, file_url) VALUES ($1, $2);
 -- name: CreateAttachedMessage :one
 INSERT INTO t_attached_messages (message_id, file_url) VALUES ($1, $2) RETURNING *;
 
--- name: DeleteAttachedMessage :exec
+-- name: DeleteAttachedMessage :execrows
 DELETE FROM t_attached_messages WHERE attached_message_id = $1;
 
--- name: DeleteAttachedMessagesOnMessage :exec
+-- name: DeleteAttachedMessagesOnMessage :execrows
 DELETE FROM t_attached_messages WHERE message_id = $1;
 
--- name: DeleteAttachedMessagesOnMessages :exec
+-- name: DeleteAttachedMessagesOnMessages :execrows
 DELETE FROM t_attached_messages WHERE message_id = ANY($1::uuid[]);
 
 -- name: GetFilesOnMessage :many

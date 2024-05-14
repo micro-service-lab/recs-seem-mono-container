@@ -12,6 +12,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countAbsences(ctx context.Context, qtx *query.Queries) (int64, error) {
@@ -124,75 +125,75 @@ func (a *PgAdapter) CreateAbsencesWithSd(
 	return e, nil
 }
 
-func deleteAbsence(ctx context.Context, qtx *query.Queries, absenceID uuid.UUID) error {
-	err := qtx.DeleteAbsence(ctx, absenceID)
+func deleteAbsence(ctx context.Context, qtx *query.Queries, absenceID uuid.UUID) (int64, error) {
+	c, err := qtx.DeleteAbsence(ctx, absenceID)
 	if err != nil {
-		return fmt.Errorf("failed to delete absence: %w", err)
+		return 0, fmt.Errorf("failed to delete absence: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteAbsence 欠席を削除する。
-func (a *PgAdapter) DeleteAbsence(ctx context.Context, absenceID uuid.UUID) error {
-	err := deleteAbsence(ctx, a.query, absenceID)
+func (a *PgAdapter) DeleteAbsence(ctx context.Context, absenceID uuid.UUID) (int64, error) {
+	c, err := deleteAbsence(ctx, a.query, absenceID)
 	if err != nil {
-		return fmt.Errorf("failed to delete absence: %w", err)
+		return 0, fmt.Errorf("failed to delete absence: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteAbsenceWithSd SD付きで欠席を削除する。
-func (a *PgAdapter) DeleteAbsenceWithSd(ctx context.Context, sd store.Sd, absenceID uuid.UUID) error {
+func (a *PgAdapter) DeleteAbsenceWithSd(ctx context.Context, sd store.Sd, absenceID uuid.UUID) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deleteAbsence(ctx, qtx, absenceID)
+	c, err := deleteAbsence(ctx, qtx, absenceID)
 	if err != nil {
-		return fmt.Errorf("failed to delete absence: %w", err)
+		return 0, fmt.Errorf("failed to delete absence: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
-func pluralDeleteAbsences(ctx context.Context, qtx *query.Queries, absenceIDs []uuid.UUID) error {
-	err := qtx.PluralDeleteAbsences(ctx, absenceIDs)
+func pluralDeleteAbsences(ctx context.Context, qtx *query.Queries, absenceIDs []uuid.UUID) (int64, error) {
+	c, err := qtx.PluralDeleteAbsences(ctx, absenceIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete absences: %w", err)
+		return 0, fmt.Errorf("failed to plural delete absences: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteAbsences 欠席を複数削除する。
-func (a *PgAdapter) PluralDeleteAbsences(ctx context.Context, absenceIDs []uuid.UUID) error {
-	err := pluralDeleteAbsences(ctx, a.query, absenceIDs)
+func (a *PgAdapter) PluralDeleteAbsences(ctx context.Context, absenceIDs []uuid.UUID) (int64, error) {
+	c, err := pluralDeleteAbsences(ctx, a.query, absenceIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete absences: %w", err)
+		return 0, fmt.Errorf("failed to plural delete absences: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteAbsencesWithSd SD付きで欠席を複数削除する。
-func (a *PgAdapter) PluralDeleteAbsencesWithSd(ctx context.Context, sd store.Sd, absenceIDs []uuid.UUID) error {
+func (a *PgAdapter) PluralDeleteAbsencesWithSd(ctx context.Context, sd store.Sd, absenceIDs []uuid.UUID) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := pluralDeleteAbsences(ctx, qtx, absenceIDs)
+	c, err := pluralDeleteAbsences(ctx, qtx, absenceIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete absences: %w", err)
+		return 0, fmt.Errorf("failed to plural delete absences: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 func findAbsenceByID(ctx context.Context, qtx *query.Queries, absenceID uuid.UUID) (entity.Absence, error) {
 	e, err := qtx.FindAbsenceByID(ctx, absenceID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.Absence{}, store.ErrDataNoRecord
+			return entity.Absence{}, errhandle.NewModelNotFoundError("absence")
 		}
 		return entity.Absence{}, fmt.Errorf("failed to find absence: %w", err)
 	}

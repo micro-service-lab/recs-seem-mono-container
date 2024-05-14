@@ -91,7 +91,7 @@ func (c *InitAttendStatuses) RunDiff(ctx context.Context, notDel, deepEqual bool
 		return fmt.Errorf("failed to create attend statuses: %w", err)
 	}
 	if len(existIDs) > 0 && !notDel {
-		err = (*c.Manager).PluralDeleteAttendStatuses(ctx, existIDs)
+		_, err = (*c.Manager).PluralDeleteAttendStatuses(ctx, existIDs)
 		if err != nil {
 			return fmt.Errorf("failed to delete attend statuses: %w", err)
 		}

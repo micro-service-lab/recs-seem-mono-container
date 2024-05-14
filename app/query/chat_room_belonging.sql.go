@@ -81,7 +81,7 @@ type CreateChatRoomBelongingsParams struct {
 	AddedAt    time.Time `json:"added_at"`
 }
 
-const deleteChatRoomBelonging = `-- name: DeleteChatRoomBelonging :exec
+const deleteChatRoomBelonging = `-- name: DeleteChatRoomBelonging :execrows
 DELETE FROM m_chat_room_belongings WHERE member_id = $1 AND chat_room_id = $2
 `
 
@@ -90,27 +90,36 @@ type DeleteChatRoomBelongingParams struct {
 	ChatRoomID uuid.UUID `json:"chat_room_id"`
 }
 
-func (q *Queries) DeleteChatRoomBelonging(ctx context.Context, arg DeleteChatRoomBelongingParams) error {
-	_, err := q.db.Exec(ctx, deleteChatRoomBelonging, arg.MemberID, arg.ChatRoomID)
-	return err
+func (q *Queries) DeleteChatRoomBelonging(ctx context.Context, arg DeleteChatRoomBelongingParams) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteChatRoomBelonging, arg.MemberID, arg.ChatRoomID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteChatRoomBelongingsOnMember = `-- name: DeleteChatRoomBelongingsOnMember :exec
+const deleteChatRoomBelongingsOnMember = `-- name: DeleteChatRoomBelongingsOnMember :execrows
 DELETE FROM m_chat_room_belongings WHERE member_id = $1
 `
 
-func (q *Queries) DeleteChatRoomBelongingsOnMember(ctx context.Context, memberID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteChatRoomBelongingsOnMember, memberID)
-	return err
+func (q *Queries) DeleteChatRoomBelongingsOnMember(ctx context.Context, memberID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteChatRoomBelongingsOnMember, memberID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteChatRoomBelongingsOnMembers = `-- name: DeleteChatRoomBelongingsOnMembers :exec
+const deleteChatRoomBelongingsOnMembers = `-- name: DeleteChatRoomBelongingsOnMembers :execrows
 DELETE FROM m_chat_room_belongings WHERE member_id = ANY($1::uuid[])
 `
 
-func (q *Queries) DeleteChatRoomBelongingsOnMembers(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteChatRoomBelongingsOnMembers, dollar_1)
-	return err
+func (q *Queries) DeleteChatRoomBelongingsOnMembers(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteChatRoomBelongingsOnMembers, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const getChatRoomsOnMember = `-- name: GetChatRoomsOnMember :many

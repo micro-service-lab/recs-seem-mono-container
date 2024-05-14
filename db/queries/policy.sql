@@ -10,13 +10,13 @@ UPDATE m_policies SET name = $2, description = $3, key = $4, policy_category_id 
 -- name: UpdatePolicyByKey :one
 UPDATE m_policies SET name = $2, description = $3, policy_category_id = $4 WHERE key = $1 RETURNING *;
 
--- name: DeletePolicy :exec
+-- name: DeletePolicy :execrows
 DELETE FROM m_policies WHERE policy_id = $1;
 
--- name: DeletePolicyByKey :exec
+-- name: DeletePolicyByKey :execrows
 DELETE FROM m_policies WHERE key = $1;
 
--- name: PluralDeletePolicies :exec
+-- name: PluralDeletePolicies :execrows
 DELETE FROM m_policies WHERE policy_id = ANY($1::uuid[]);
 
 -- name: FindPolicyByID :one

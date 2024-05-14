@@ -12,6 +12,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countRecordTypes(
@@ -146,106 +147,106 @@ func (a *PgAdapter) CreateRecordTypesWithSd(
 	return c, nil
 }
 
-func deleteRecordType(ctx context.Context, qtx *query.Queries, recordTypeID uuid.UUID) error {
-	err := qtx.DeleteRecordType(ctx, recordTypeID)
+func deleteRecordType(ctx context.Context, qtx *query.Queries, recordTypeID uuid.UUID) (int64, error) {
+	c, err := qtx.DeleteRecordType(ctx, recordTypeID)
 	if err != nil {
-		return fmt.Errorf("failed to delete record type: %w", err)
+		return 0, fmt.Errorf("failed to delete record type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteRecordType 議事録タイプを削除する。
-func (a *PgAdapter) DeleteRecordType(ctx context.Context, recordTypeID uuid.UUID) error {
-	err := deleteRecordType(ctx, a.query, recordTypeID)
+func (a *PgAdapter) DeleteRecordType(ctx context.Context, recordTypeID uuid.UUID) (int64, error) {
+	c, err := deleteRecordType(ctx, a.query, recordTypeID)
 	if err != nil {
-		return fmt.Errorf("failed to delete record type: %w", err)
+		return 0, fmt.Errorf("failed to delete record type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteRecordTypeWithSd SD付きで議事録タイプを削除する。
 func (a *PgAdapter) DeleteRecordTypeWithSd(
 	ctx context.Context, sd store.Sd, recordTypeID uuid.UUID,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deleteRecordType(ctx, qtx, recordTypeID)
+	c, err := deleteRecordType(ctx, qtx, recordTypeID)
 	if err != nil {
-		return fmt.Errorf("failed to delete record type: %w", err)
+		return 0, fmt.Errorf("failed to delete record type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
-func deleteRecordTypeByKey(ctx context.Context, qtx *query.Queries, key string) error {
-	err := qtx.DeleteRecordTypeByKey(ctx, key)
+func deleteRecordTypeByKey(ctx context.Context, qtx *query.Queries, key string) (int64, error) {
+	c, err := qtx.DeleteRecordTypeByKey(ctx, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete record type: %w", err)
+		return 0, fmt.Errorf("failed to delete record type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteRecordTypeByKey 議事録タイプを削除する。
-func (a *PgAdapter) DeleteRecordTypeByKey(ctx context.Context, key string) error {
-	err := deleteRecordTypeByKey(ctx, a.query, key)
+func (a *PgAdapter) DeleteRecordTypeByKey(ctx context.Context, key string) (int64, error) {
+	c, err := deleteRecordTypeByKey(ctx, a.query, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete record type: %w", err)
+		return 0, fmt.Errorf("failed to delete record type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteRecordTypeByKeyWithSd SD付きで議事録タイプを削除する。
 func (a *PgAdapter) DeleteRecordTypeByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deleteRecordTypeByKey(ctx, qtx, key)
+	c, err := deleteRecordTypeByKey(ctx, qtx, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete record type: %w", err)
+		return 0, fmt.Errorf("failed to delete record type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
-func pluralDeleteRecordTypes(ctx context.Context, qtx *query.Queries, recordTypeIDs []uuid.UUID) error {
-	err := qtx.PluralDeleteRecordTypes(ctx, recordTypeIDs)
+func pluralDeleteRecordTypes(ctx context.Context, qtx *query.Queries, recordTypeIDs []uuid.UUID) (int64, error) {
+	c, err := qtx.PluralDeleteRecordTypes(ctx, recordTypeIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete record types: %w", err)
+		return 0, fmt.Errorf("failed to plural delete record types: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteRecordTypes 議事録タイプを複数削除する。
-func (a *PgAdapter) PluralDeleteRecordTypes(ctx context.Context, recordTypeIDs []uuid.UUID) error {
-	err := pluralDeleteRecordTypes(ctx, a.query, recordTypeIDs)
+func (a *PgAdapter) PluralDeleteRecordTypes(ctx context.Context, recordTypeIDs []uuid.UUID) (int64, error) {
+	c, err := pluralDeleteRecordTypes(ctx, a.query, recordTypeIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete record types: %w", err)
+		return 0, fmt.Errorf("failed to plural delete record types: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteRecordTypesWithSd SD付きで議事録タイプを複数削除する。
 func (a *PgAdapter) PluralDeleteRecordTypesWithSd(
 	ctx context.Context, sd store.Sd, recordTypeIDs []uuid.UUID,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := pluralDeleteRecordTypes(ctx, qtx, recordTypeIDs)
+	c, err := pluralDeleteRecordTypes(ctx, qtx, recordTypeIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete record types: %w", err)
+		return 0, fmt.Errorf("failed to plural delete record types: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 func findRecordTypeByID(
@@ -254,7 +255,7 @@ func findRecordTypeByID(
 	e, err := qtx.FindRecordTypeByID(ctx, recordTypeID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.RecordType{}, store.ErrDataNoRecord
+			return entity.RecordType{}, errhandle.NewModelNotFoundError("record type")
 		}
 		return entity.RecordType{}, fmt.Errorf("failed to find record type: %w", err)
 	}
@@ -298,7 +299,7 @@ func findRecordTypeByKey(ctx context.Context, qtx *query.Queries, key string) (e
 	e, err := qtx.FindRecordTypeByKey(ctx, key)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.RecordType{}, store.ErrDataNoRecord
+			return entity.RecordType{}, errhandle.NewModelNotFoundError("record type")
 		}
 		return entity.RecordType{}, fmt.Errorf("failed to find record type: %w", err)
 	}
@@ -554,7 +555,7 @@ func updateRecordType(
 	e, err := qtx.UpdateRecordType(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.RecordType{}, store.ErrDataNoRecord
+			return entity.RecordType{}, errhandle.NewModelNotFoundError("record type")
 		}
 		return entity.RecordType{}, fmt.Errorf("failed to update record type: %w", err)
 	}
@@ -604,7 +605,7 @@ func updateRecordTypeByKey(
 	e, err := qtx.UpdateRecordTypeByKey(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.RecordType{}, store.ErrDataNoRecord
+			return entity.RecordType{}, errhandle.NewModelNotFoundError("record type")
 		}
 		return entity.RecordType{}, fmt.Errorf("failed to update record type: %w", err)
 	}

@@ -28,17 +28,17 @@ type Permission interface {
 	CreatePermissionsWithSd(
 		ctx context.Context, sd Sd, params []parameter.CreatePermissionParam) (int64, error)
 	// DeletePermission 権限を削除する。
-	DeletePermission(ctx context.Context, permissionID uuid.UUID) error
+	DeletePermission(ctx context.Context, permissionID uuid.UUID) (int64, error)
 	// DeletePermissionWithSd SD付きで権限を削除する。
-	DeletePermissionWithSd(ctx context.Context, sd Sd, permissionID uuid.UUID) error
+	DeletePermissionWithSd(ctx context.Context, sd Sd, permissionID uuid.UUID) (int64, error)
 	// DeletePermissionByKey 権限を削除する。
-	DeletePermissionByKey(ctx context.Context, key string) error
+	DeletePermissionByKey(ctx context.Context, key string) (int64, error)
 	// DeletePermissionByKeyWithSd SD付きで権限を削除する。
-	DeletePermissionByKeyWithSd(ctx context.Context, sd Sd, key string) error
+	DeletePermissionByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error)
 	// PluralDeletePermissions 権限を複数削除する。
-	PluralDeletePermissions(ctx context.Context, permissionIDs []uuid.UUID) error
+	PluralDeletePermissions(ctx context.Context, permissionIDs []uuid.UUID) (int64, error)
 	// PluralDeletePermissionsWithSd SD付きで権限を複数削除する。
-	PluralDeletePermissionsWithSd(ctx context.Context, sd Sd, permissionIDs []uuid.UUID) error
+	PluralDeletePermissionsWithSd(ctx context.Context, sd Sd, permissionIDs []uuid.UUID) (int64, error)
 	// FindPermissionByID 権限を取得する。
 	FindPermissionByID(ctx context.Context, permissionID uuid.UUID) (entity.Permission, error)
 	// FindPermissionByIDWithSd SD付きで権限を取得する。

@@ -34,13 +34,16 @@ func (q *Queries) CreateStudent(ctx context.Context, memberID uuid.UUID) (Studen
 	return i, err
 }
 
-const deleteStudent = `-- name: DeleteStudent :exec
+const deleteStudent = `-- name: DeleteStudent :execrows
 DELETE FROM m_students WHERE student_id = $1
 `
 
-func (q *Queries) DeleteStudent(ctx context.Context, studentID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteStudent, studentID)
-	return err
+func (q *Queries) DeleteStudent(ctx context.Context, studentID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteStudent, studentID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findStudentByID = `-- name: FindStudentByID :one
@@ -225,11 +228,14 @@ func (q *Queries) GetStudentsUseNumberedPaginate(ctx context.Context, arg GetStu
 	return items, nil
 }
 
-const pluralDeleteStudents = `-- name: PluralDeleteStudents :exec
+const pluralDeleteStudents = `-- name: PluralDeleteStudents :execrows
 DELETE FROM m_students WHERE student_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteStudents(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteStudents, dollar_1)
-	return err
+func (q *Queries) PluralDeleteStudents(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteStudents, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }

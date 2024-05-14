@@ -95,7 +95,7 @@ func (c *InitEventTypes) RunDiff(ctx context.Context, notDel, deepEqual bool) er
 		return fmt.Errorf("failed to create event types: %w", err)
 	}
 	if len(existIDs) > 0 && !notDel {
-		err = (*c.Manager).PluralDeleteEventTypes(ctx, existIDs)
+		_, err = (*c.Manager).PluralDeleteEventTypes(ctx, existIDs)
 		if err != nil {
 			return fmt.Errorf("failed to delete event types: %w", err)
 		}

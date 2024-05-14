@@ -48,22 +48,28 @@ type CreateGroupsParams struct {
 	OrganizationID uuid.UUID `json:"organization_id"`
 }
 
-const deleteGroup = `-- name: DeleteGroup :exec
+const deleteGroup = `-- name: DeleteGroup :execrows
 DELETE FROM m_groups WHERE group_id = $1
 `
 
-func (q *Queries) DeleteGroup(ctx context.Context, groupID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteGroup, groupID)
-	return err
+func (q *Queries) DeleteGroup(ctx context.Context, groupID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteGroup, groupID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteGroupByKey = `-- name: DeleteGroupByKey :exec
+const deleteGroupByKey = `-- name: DeleteGroupByKey :execrows
 DELETE FROM m_groups WHERE key = $1
 `
 
-func (q *Queries) DeleteGroupByKey(ctx context.Context, key string) error {
-	_, err := q.db.Exec(ctx, deleteGroupByKey, key)
-	return err
+func (q *Queries) DeleteGroupByKey(ctx context.Context, key string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteGroupByKey, key)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findGroupByID = `-- name: FindGroupByID :one
@@ -559,11 +565,14 @@ func (q *Queries) GetPluralGroupsWithOrganization(ctx context.Context, arg GetPl
 	return items, nil
 }
 
-const pluralDeleteGroups = `-- name: PluralDeleteGroups :exec
+const pluralDeleteGroups = `-- name: PluralDeleteGroups :execrows
 DELETE FROM m_groups WHERE group_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteGroups(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteGroups, dollar_1)
-	return err
+func (q *Queries) PluralDeleteGroups(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteGroups, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }

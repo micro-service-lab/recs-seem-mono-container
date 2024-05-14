@@ -58,22 +58,28 @@ func (q *Queries) CreatePolicyCategory(ctx context.Context, arg CreatePolicyCate
 	return i, err
 }
 
-const deletePolicyCategory = `-- name: DeletePolicyCategory :exec
+const deletePolicyCategory = `-- name: DeletePolicyCategory :execrows
 DELETE FROM m_policy_categories WHERE policy_category_id = $1
 `
 
-func (q *Queries) DeletePolicyCategory(ctx context.Context, policyCategoryID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePolicyCategory, policyCategoryID)
-	return err
+func (q *Queries) DeletePolicyCategory(ctx context.Context, policyCategoryID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePolicyCategory, policyCategoryID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deletePolicyCategoryByKey = `-- name: DeletePolicyCategoryByKey :exec
+const deletePolicyCategoryByKey = `-- name: DeletePolicyCategoryByKey :execrows
 DELETE FROM m_policy_categories WHERE key = $1
 `
 
-func (q *Queries) DeletePolicyCategoryByKey(ctx context.Context, key string) error {
-	_, err := q.db.Exec(ctx, deletePolicyCategoryByKey, key)
-	return err
+func (q *Queries) DeletePolicyCategoryByKey(ctx context.Context, key string) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePolicyCategoryByKey, key)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findPolicyCategoryByID = `-- name: FindPolicyCategoryByID :one
@@ -316,13 +322,16 @@ func (q *Queries) GetPolicyCategoriesUseNumberedPaginate(ctx context.Context, ar
 	return items, nil
 }
 
-const pluralDeletePolicyCategories = `-- name: PluralDeletePolicyCategories :exec
+const pluralDeletePolicyCategories = `-- name: PluralDeletePolicyCategories :execrows
 DELETE FROM m_policy_categories WHERE policy_category_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeletePolicyCategories(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeletePolicyCategories, dollar_1)
-	return err
+func (q *Queries) PluralDeletePolicyCategories(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeletePolicyCategories, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updatePolicyCategory = `-- name: UpdatePolicyCategory :one

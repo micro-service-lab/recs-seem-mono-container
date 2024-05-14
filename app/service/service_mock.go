@@ -82,34 +82,34 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreateRolesFunc: func(ctx context.Context, ps []parameter.CreateRoleParam) (int64, error) {
 //				panic("mock out the CreateRoles method")
 //			},
-//			DeleteAttendStatusFunc: func(ctx context.Context, id uuid.UUID) error {
+//			DeleteAttendStatusFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteAttendStatus method")
 //			},
-//			DeleteAttendanceTypeFunc: func(ctx context.Context, id uuid.UUID) error {
+//			DeleteAttendanceTypeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteAttendanceType method")
 //			},
-//			DeleteEventTypeFunc: func(ctx context.Context, id uuid.UUID) error {
+//			DeleteEventTypeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteEventType method")
 //			},
-//			DeleteMimeTypeFunc: func(ctx context.Context, id uuid.UUID) error {
+//			DeleteMimeTypeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteMimeType method")
 //			},
-//			DeletePermissionFunc: func(ctx context.Context, id uuid.UUID) error {
+//			DeletePermissionFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeletePermission method")
 //			},
-//			DeletePermissionCategoryFunc: func(ctx context.Context, id uuid.UUID) error {
+//			DeletePermissionCategoryFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeletePermissionCategory method")
 //			},
-//			DeletePolicyFunc: func(ctx context.Context, id uuid.UUID) error {
+//			DeletePolicyFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeletePolicy method")
 //			},
-//			DeletePolicyCategoryFunc: func(ctx context.Context, id uuid.UUID) error {
+//			DeletePolicyCategoryFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeletePolicyCategory method")
 //			},
-//			DeleteRecordTypeFunc: func(ctx context.Context, id uuid.UUID) error {
+//			DeleteRecordTypeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteRecordType method")
 //			},
-//			DeleteRoleFunc: func(ctx context.Context, id uuid.UUID) error {
+//			DeleteRoleFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteRole method")
 //			},
 //			FindAttendStatusByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error) {
@@ -247,34 +247,34 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			GetRolesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
 //				panic("mock out the GetRolesCount method")
 //			},
-//			PluralDeleteAttendStatusesFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//			PluralDeleteAttendStatusesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteAttendStatuses method")
 //			},
-//			PluralDeleteAttendanceTypesFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//			PluralDeleteAttendanceTypesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteAttendanceTypes method")
 //			},
-//			PluralDeleteEventTypesFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//			PluralDeleteEventTypesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteEventTypes method")
 //			},
-//			PluralDeleteMimeTypesFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//			PluralDeleteMimeTypesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteMimeTypes method")
 //			},
-//			PluralDeletePermissionCategoriesFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//			PluralDeletePermissionCategoriesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeletePermissionCategories method")
 //			},
-//			PluralDeletePermissionsFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//			PluralDeletePermissionsFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeletePermissions method")
 //			},
-//			PluralDeletePoliciesFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//			PluralDeletePoliciesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeletePolicies method")
 //			},
-//			PluralDeletePolicyCategoriesFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//			PluralDeletePolicyCategoriesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeletePolicyCategories method")
 //			},
-//			PluralDeleteRecordTypesFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//			PluralDeleteRecordTypesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteRecordTypes method")
 //			},
-//			PluralDeleteRolesFunc: func(ctx context.Context, ids []uuid.UUID) error {
+//			PluralDeleteRolesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteRoles method")
 //			},
 //			UpdateAttendStatusFunc: func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error) {
@@ -375,34 +375,34 @@ type ManagerInterfaceMock struct {
 	CreateRolesFunc func(ctx context.Context, ps []parameter.CreateRoleParam) (int64, error)
 
 	// DeleteAttendStatusFunc mocks the DeleteAttendStatus method.
-	DeleteAttendStatusFunc func(ctx context.Context, id uuid.UUID) error
+	DeleteAttendStatusFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
 	// DeleteAttendanceTypeFunc mocks the DeleteAttendanceType method.
-	DeleteAttendanceTypeFunc func(ctx context.Context, id uuid.UUID) error
+	DeleteAttendanceTypeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
 	// DeleteEventTypeFunc mocks the DeleteEventType method.
-	DeleteEventTypeFunc func(ctx context.Context, id uuid.UUID) error
+	DeleteEventTypeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
 	// DeleteMimeTypeFunc mocks the DeleteMimeType method.
-	DeleteMimeTypeFunc func(ctx context.Context, id uuid.UUID) error
+	DeleteMimeTypeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
 	// DeletePermissionFunc mocks the DeletePermission method.
-	DeletePermissionFunc func(ctx context.Context, id uuid.UUID) error
+	DeletePermissionFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
 	// DeletePermissionCategoryFunc mocks the DeletePermissionCategory method.
-	DeletePermissionCategoryFunc func(ctx context.Context, id uuid.UUID) error
+	DeletePermissionCategoryFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
 	// DeletePolicyFunc mocks the DeletePolicy method.
-	DeletePolicyFunc func(ctx context.Context, id uuid.UUID) error
+	DeletePolicyFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
 	// DeletePolicyCategoryFunc mocks the DeletePolicyCategory method.
-	DeletePolicyCategoryFunc func(ctx context.Context, id uuid.UUID) error
+	DeletePolicyCategoryFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
 	// DeleteRecordTypeFunc mocks the DeleteRecordType method.
-	DeleteRecordTypeFunc func(ctx context.Context, id uuid.UUID) error
+	DeleteRecordTypeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
 	// DeleteRoleFunc mocks the DeleteRole method.
-	DeleteRoleFunc func(ctx context.Context, id uuid.UUID) error
+	DeleteRoleFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
 	// FindAttendStatusByIDFunc mocks the FindAttendStatusByID method.
 	FindAttendStatusByIDFunc func(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error)
@@ -540,34 +540,34 @@ type ManagerInterfaceMock struct {
 	GetRolesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
 
 	// PluralDeleteAttendStatusesFunc mocks the PluralDeleteAttendStatuses method.
-	PluralDeleteAttendStatusesFunc func(ctx context.Context, ids []uuid.UUID) error
+	PluralDeleteAttendStatusesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
 	// PluralDeleteAttendanceTypesFunc mocks the PluralDeleteAttendanceTypes method.
-	PluralDeleteAttendanceTypesFunc func(ctx context.Context, ids []uuid.UUID) error
+	PluralDeleteAttendanceTypesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
 	// PluralDeleteEventTypesFunc mocks the PluralDeleteEventTypes method.
-	PluralDeleteEventTypesFunc func(ctx context.Context, ids []uuid.UUID) error
+	PluralDeleteEventTypesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
 	// PluralDeleteMimeTypesFunc mocks the PluralDeleteMimeTypes method.
-	PluralDeleteMimeTypesFunc func(ctx context.Context, ids []uuid.UUID) error
+	PluralDeleteMimeTypesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
 	// PluralDeletePermissionCategoriesFunc mocks the PluralDeletePermissionCategories method.
-	PluralDeletePermissionCategoriesFunc func(ctx context.Context, ids []uuid.UUID) error
+	PluralDeletePermissionCategoriesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
 	// PluralDeletePermissionsFunc mocks the PluralDeletePermissions method.
-	PluralDeletePermissionsFunc func(ctx context.Context, ids []uuid.UUID) error
+	PluralDeletePermissionsFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
 	// PluralDeletePoliciesFunc mocks the PluralDeletePolicies method.
-	PluralDeletePoliciesFunc func(ctx context.Context, ids []uuid.UUID) error
+	PluralDeletePoliciesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
 	// PluralDeletePolicyCategoriesFunc mocks the PluralDeletePolicyCategories method.
-	PluralDeletePolicyCategoriesFunc func(ctx context.Context, ids []uuid.UUID) error
+	PluralDeletePolicyCategoriesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
 	// PluralDeleteRecordTypesFunc mocks the PluralDeleteRecordTypes method.
-	PluralDeleteRecordTypesFunc func(ctx context.Context, ids []uuid.UUID) error
+	PluralDeleteRecordTypesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
 	// PluralDeleteRolesFunc mocks the PluralDeleteRoles method.
-	PluralDeleteRolesFunc func(ctx context.Context, ids []uuid.UUID) error
+	PluralDeleteRolesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
 	// UpdateAttendStatusFunc mocks the UpdateAttendStatus method.
 	UpdateAttendStatusFunc func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error)
@@ -2413,7 +2413,7 @@ func (mock *ManagerInterfaceMock) CreateRolesCalls() []struct {
 }
 
 // DeleteAttendStatus calls DeleteAttendStatusFunc.
-func (mock *ManagerInterfaceMock) DeleteAttendStatus(ctx context.Context, id uuid.UUID) error {
+func (mock *ManagerInterfaceMock) DeleteAttendStatus(ctx context.Context, id uuid.UUID) (int64, error) {
 	if mock.DeleteAttendStatusFunc == nil {
 		panic("ManagerInterfaceMock.DeleteAttendStatusFunc: method is nil but ManagerInterface.DeleteAttendStatus was just called")
 	}
@@ -2449,7 +2449,7 @@ func (mock *ManagerInterfaceMock) DeleteAttendStatusCalls() []struct {
 }
 
 // DeleteAttendanceType calls DeleteAttendanceTypeFunc.
-func (mock *ManagerInterfaceMock) DeleteAttendanceType(ctx context.Context, id uuid.UUID) error {
+func (mock *ManagerInterfaceMock) DeleteAttendanceType(ctx context.Context, id uuid.UUID) (int64, error) {
 	if mock.DeleteAttendanceTypeFunc == nil {
 		panic("ManagerInterfaceMock.DeleteAttendanceTypeFunc: method is nil but ManagerInterface.DeleteAttendanceType was just called")
 	}
@@ -2485,7 +2485,7 @@ func (mock *ManagerInterfaceMock) DeleteAttendanceTypeCalls() []struct {
 }
 
 // DeleteEventType calls DeleteEventTypeFunc.
-func (mock *ManagerInterfaceMock) DeleteEventType(ctx context.Context, id uuid.UUID) error {
+func (mock *ManagerInterfaceMock) DeleteEventType(ctx context.Context, id uuid.UUID) (int64, error) {
 	if mock.DeleteEventTypeFunc == nil {
 		panic("ManagerInterfaceMock.DeleteEventTypeFunc: method is nil but ManagerInterface.DeleteEventType was just called")
 	}
@@ -2521,7 +2521,7 @@ func (mock *ManagerInterfaceMock) DeleteEventTypeCalls() []struct {
 }
 
 // DeleteMimeType calls DeleteMimeTypeFunc.
-func (mock *ManagerInterfaceMock) DeleteMimeType(ctx context.Context, id uuid.UUID) error {
+func (mock *ManagerInterfaceMock) DeleteMimeType(ctx context.Context, id uuid.UUID) (int64, error) {
 	if mock.DeleteMimeTypeFunc == nil {
 		panic("ManagerInterfaceMock.DeleteMimeTypeFunc: method is nil but ManagerInterface.DeleteMimeType was just called")
 	}
@@ -2557,7 +2557,7 @@ func (mock *ManagerInterfaceMock) DeleteMimeTypeCalls() []struct {
 }
 
 // DeletePermission calls DeletePermissionFunc.
-func (mock *ManagerInterfaceMock) DeletePermission(ctx context.Context, id uuid.UUID) error {
+func (mock *ManagerInterfaceMock) DeletePermission(ctx context.Context, id uuid.UUID) (int64, error) {
 	if mock.DeletePermissionFunc == nil {
 		panic("ManagerInterfaceMock.DeletePermissionFunc: method is nil but ManagerInterface.DeletePermission was just called")
 	}
@@ -2593,7 +2593,7 @@ func (mock *ManagerInterfaceMock) DeletePermissionCalls() []struct {
 }
 
 // DeletePermissionCategory calls DeletePermissionCategoryFunc.
-func (mock *ManagerInterfaceMock) DeletePermissionCategory(ctx context.Context, id uuid.UUID) error {
+func (mock *ManagerInterfaceMock) DeletePermissionCategory(ctx context.Context, id uuid.UUID) (int64, error) {
 	if mock.DeletePermissionCategoryFunc == nil {
 		panic("ManagerInterfaceMock.DeletePermissionCategoryFunc: method is nil but ManagerInterface.DeletePermissionCategory was just called")
 	}
@@ -2629,7 +2629,7 @@ func (mock *ManagerInterfaceMock) DeletePermissionCategoryCalls() []struct {
 }
 
 // DeletePolicy calls DeletePolicyFunc.
-func (mock *ManagerInterfaceMock) DeletePolicy(ctx context.Context, id uuid.UUID) error {
+func (mock *ManagerInterfaceMock) DeletePolicy(ctx context.Context, id uuid.UUID) (int64, error) {
 	if mock.DeletePolicyFunc == nil {
 		panic("ManagerInterfaceMock.DeletePolicyFunc: method is nil but ManagerInterface.DeletePolicy was just called")
 	}
@@ -2665,7 +2665,7 @@ func (mock *ManagerInterfaceMock) DeletePolicyCalls() []struct {
 }
 
 // DeletePolicyCategory calls DeletePolicyCategoryFunc.
-func (mock *ManagerInterfaceMock) DeletePolicyCategory(ctx context.Context, id uuid.UUID) error {
+func (mock *ManagerInterfaceMock) DeletePolicyCategory(ctx context.Context, id uuid.UUID) (int64, error) {
 	if mock.DeletePolicyCategoryFunc == nil {
 		panic("ManagerInterfaceMock.DeletePolicyCategoryFunc: method is nil but ManagerInterface.DeletePolicyCategory was just called")
 	}
@@ -2701,7 +2701,7 @@ func (mock *ManagerInterfaceMock) DeletePolicyCategoryCalls() []struct {
 }
 
 // DeleteRecordType calls DeleteRecordTypeFunc.
-func (mock *ManagerInterfaceMock) DeleteRecordType(ctx context.Context, id uuid.UUID) error {
+func (mock *ManagerInterfaceMock) DeleteRecordType(ctx context.Context, id uuid.UUID) (int64, error) {
 	if mock.DeleteRecordTypeFunc == nil {
 		panic("ManagerInterfaceMock.DeleteRecordTypeFunc: method is nil but ManagerInterface.DeleteRecordType was just called")
 	}
@@ -2737,7 +2737,7 @@ func (mock *ManagerInterfaceMock) DeleteRecordTypeCalls() []struct {
 }
 
 // DeleteRole calls DeleteRoleFunc.
-func (mock *ManagerInterfaceMock) DeleteRole(ctx context.Context, id uuid.UUID) error {
+func (mock *ManagerInterfaceMock) DeleteRole(ctx context.Context, id uuid.UUID) (int64, error) {
 	if mock.DeleteRoleFunc == nil {
 		panic("ManagerInterfaceMock.DeleteRoleFunc: method is nil but ManagerInterface.DeleteRole was just called")
 	}
@@ -4705,7 +4705,7 @@ func (mock *ManagerInterfaceMock) GetRolesCountCalls() []struct {
 }
 
 // PluralDeleteAttendStatuses calls PluralDeleteAttendStatusesFunc.
-func (mock *ManagerInterfaceMock) PluralDeleteAttendStatuses(ctx context.Context, ids []uuid.UUID) error {
+func (mock *ManagerInterfaceMock) PluralDeleteAttendStatuses(ctx context.Context, ids []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteAttendStatusesFunc == nil {
 		panic("ManagerInterfaceMock.PluralDeleteAttendStatusesFunc: method is nil but ManagerInterface.PluralDeleteAttendStatuses was just called")
 	}
@@ -4741,7 +4741,7 @@ func (mock *ManagerInterfaceMock) PluralDeleteAttendStatusesCalls() []struct {
 }
 
 // PluralDeleteAttendanceTypes calls PluralDeleteAttendanceTypesFunc.
-func (mock *ManagerInterfaceMock) PluralDeleteAttendanceTypes(ctx context.Context, ids []uuid.UUID) error {
+func (mock *ManagerInterfaceMock) PluralDeleteAttendanceTypes(ctx context.Context, ids []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteAttendanceTypesFunc == nil {
 		panic("ManagerInterfaceMock.PluralDeleteAttendanceTypesFunc: method is nil but ManagerInterface.PluralDeleteAttendanceTypes was just called")
 	}
@@ -4777,7 +4777,7 @@ func (mock *ManagerInterfaceMock) PluralDeleteAttendanceTypesCalls() []struct {
 }
 
 // PluralDeleteEventTypes calls PluralDeleteEventTypesFunc.
-func (mock *ManagerInterfaceMock) PluralDeleteEventTypes(ctx context.Context, ids []uuid.UUID) error {
+func (mock *ManagerInterfaceMock) PluralDeleteEventTypes(ctx context.Context, ids []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteEventTypesFunc == nil {
 		panic("ManagerInterfaceMock.PluralDeleteEventTypesFunc: method is nil but ManagerInterface.PluralDeleteEventTypes was just called")
 	}
@@ -4813,7 +4813,7 @@ func (mock *ManagerInterfaceMock) PluralDeleteEventTypesCalls() []struct {
 }
 
 // PluralDeleteMimeTypes calls PluralDeleteMimeTypesFunc.
-func (mock *ManagerInterfaceMock) PluralDeleteMimeTypes(ctx context.Context, ids []uuid.UUID) error {
+func (mock *ManagerInterfaceMock) PluralDeleteMimeTypes(ctx context.Context, ids []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteMimeTypesFunc == nil {
 		panic("ManagerInterfaceMock.PluralDeleteMimeTypesFunc: method is nil but ManagerInterface.PluralDeleteMimeTypes was just called")
 	}
@@ -4849,7 +4849,7 @@ func (mock *ManagerInterfaceMock) PluralDeleteMimeTypesCalls() []struct {
 }
 
 // PluralDeletePermissionCategories calls PluralDeletePermissionCategoriesFunc.
-func (mock *ManagerInterfaceMock) PluralDeletePermissionCategories(ctx context.Context, ids []uuid.UUID) error {
+func (mock *ManagerInterfaceMock) PluralDeletePermissionCategories(ctx context.Context, ids []uuid.UUID) (int64, error) {
 	if mock.PluralDeletePermissionCategoriesFunc == nil {
 		panic("ManagerInterfaceMock.PluralDeletePermissionCategoriesFunc: method is nil but ManagerInterface.PluralDeletePermissionCategories was just called")
 	}
@@ -4885,7 +4885,7 @@ func (mock *ManagerInterfaceMock) PluralDeletePermissionCategoriesCalls() []stru
 }
 
 // PluralDeletePermissions calls PluralDeletePermissionsFunc.
-func (mock *ManagerInterfaceMock) PluralDeletePermissions(ctx context.Context, ids []uuid.UUID) error {
+func (mock *ManagerInterfaceMock) PluralDeletePermissions(ctx context.Context, ids []uuid.UUID) (int64, error) {
 	if mock.PluralDeletePermissionsFunc == nil {
 		panic("ManagerInterfaceMock.PluralDeletePermissionsFunc: method is nil but ManagerInterface.PluralDeletePermissions was just called")
 	}
@@ -4921,7 +4921,7 @@ func (mock *ManagerInterfaceMock) PluralDeletePermissionsCalls() []struct {
 }
 
 // PluralDeletePolicies calls PluralDeletePoliciesFunc.
-func (mock *ManagerInterfaceMock) PluralDeletePolicies(ctx context.Context, ids []uuid.UUID) error {
+func (mock *ManagerInterfaceMock) PluralDeletePolicies(ctx context.Context, ids []uuid.UUID) (int64, error) {
 	if mock.PluralDeletePoliciesFunc == nil {
 		panic("ManagerInterfaceMock.PluralDeletePoliciesFunc: method is nil but ManagerInterface.PluralDeletePolicies was just called")
 	}
@@ -4957,7 +4957,7 @@ func (mock *ManagerInterfaceMock) PluralDeletePoliciesCalls() []struct {
 }
 
 // PluralDeletePolicyCategories calls PluralDeletePolicyCategoriesFunc.
-func (mock *ManagerInterfaceMock) PluralDeletePolicyCategories(ctx context.Context, ids []uuid.UUID) error {
+func (mock *ManagerInterfaceMock) PluralDeletePolicyCategories(ctx context.Context, ids []uuid.UUID) (int64, error) {
 	if mock.PluralDeletePolicyCategoriesFunc == nil {
 		panic("ManagerInterfaceMock.PluralDeletePolicyCategoriesFunc: method is nil but ManagerInterface.PluralDeletePolicyCategories was just called")
 	}
@@ -4993,7 +4993,7 @@ func (mock *ManagerInterfaceMock) PluralDeletePolicyCategoriesCalls() []struct {
 }
 
 // PluralDeleteRecordTypes calls PluralDeleteRecordTypesFunc.
-func (mock *ManagerInterfaceMock) PluralDeleteRecordTypes(ctx context.Context, ids []uuid.UUID) error {
+func (mock *ManagerInterfaceMock) PluralDeleteRecordTypes(ctx context.Context, ids []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteRecordTypesFunc == nil {
 		panic("ManagerInterfaceMock.PluralDeleteRecordTypesFunc: method is nil but ManagerInterface.PluralDeleteRecordTypes was just called")
 	}
@@ -5029,7 +5029,7 @@ func (mock *ManagerInterfaceMock) PluralDeleteRecordTypesCalls() []struct {
 }
 
 // PluralDeleteRoles calls PluralDeleteRolesFunc.
-func (mock *ManagerInterfaceMock) PluralDeleteRoles(ctx context.Context, ids []uuid.UUID) error {
+func (mock *ManagerInterfaceMock) PluralDeleteRoles(ctx context.Context, ids []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteRolesFunc == nil {
 		panic("ManagerInterfaceMock.PluralDeleteRolesFunc: method is nil but ManagerInterface.PluralDeleteRoles was just called")
 	}

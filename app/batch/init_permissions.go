@@ -120,7 +120,7 @@ func (c *InitPermissions) RunDiff(ctx context.Context, notDel, deepEqual bool) e
 		return fmt.Errorf("failed to create permission: %w", err)
 	}
 	if len(existIDs) > 0 && !notDel {
-		err = (*c.Manager).PluralDeletePermissions(ctx, existIDs)
+		_, err = (*c.Manager).PluralDeletePermissions(ctx, existIDs)
 		if err != nil {
 			return fmt.Errorf("failed to delete permission: %w", err)
 		}

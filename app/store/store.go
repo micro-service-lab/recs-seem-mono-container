@@ -8,12 +8,8 @@ import (
 	"github.com/google/uuid"
 )
 
-var (
-	// ErrNotFoundDescriptor ディスクリプタが見つからないエラー。
-	ErrNotFoundDescriptor = errors.New("not found descriptor")
-	// ErrDataNoRecord レコードが存在しないエラー。
-	ErrDataNoRecord = errors.New("no record")
-)
+// ErrNotFoundDescriptor ディスクリプタが見つからないエラー。
+var ErrNotFoundDescriptor = errors.New("not found descriptor")
 
 // Sd Storeディスクリプタ。
 type Sd uuid.UUID

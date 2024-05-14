@@ -67,13 +67,16 @@ type CreateRolesParams struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-const deleteRole = `-- name: DeleteRole :exec
+const deleteRole = `-- name: DeleteRole :execrows
 DELETE FROM m_roles WHERE role_id = $1
 `
 
-func (q *Queries) DeleteRole(ctx context.Context, roleID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteRole, roleID)
-	return err
+func (q *Queries) DeleteRole(ctx context.Context, roleID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteRole, roleID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findRoleByID = `-- name: FindRoleByID :one
@@ -305,13 +308,16 @@ func (q *Queries) GetRolesUseNumberedPaginate(ctx context.Context, arg GetRolesU
 	return items, nil
 }
 
-const pluralDeleteRoles = `-- name: PluralDeleteRoles :exec
+const pluralDeleteRoles = `-- name: PluralDeleteRoles :execrows
 DELETE FROM m_roles WHERE role_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteRoles(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteRoles, dollar_1)
-	return err
+func (q *Queries) PluralDeleteRoles(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteRoles, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateRole = `-- name: UpdateRole :one

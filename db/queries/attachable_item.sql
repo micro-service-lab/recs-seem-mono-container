@@ -4,10 +4,10 @@ INSERT INTO t_attachable_items (url, size, owner_id, mime_type_id) VALUES ($1, $
 -- name: CreateAttachableItem :one
 INSERT INTO t_attachable_items (url, size, owner_id, mime_type_id) VALUES ($1, $2, $3, $4) RETURNING *;
 
--- name: DeleteAttachableItem :exec
+-- name: DeleteAttachableItem :execrows
 DELETE FROM t_attachable_items WHERE attachable_item_id = $1;
 
--- name: PluralDeleteAttachableItems :exec
+-- name: PluralDeleteAttachableItems :execrows
 DELETE FROM t_attachable_items WHERE attachable_item_id = ANY($1::uuid[]);
 
 -- name: FindAttachableItemByID :one

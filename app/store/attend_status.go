@@ -25,17 +25,17 @@ type AttendStatus interface {
 	// CreateAttendStatusesWithSd SD付きで出席ステータスを作成する。
 	CreateAttendStatusesWithSd(ctx context.Context, sd Sd, params []parameter.CreateAttendStatusParam) (int64, error)
 	// DeleteAttendStatus 出席ステータスを削除する。
-	DeleteAttendStatus(ctx context.Context, attendStatusID uuid.UUID) error
+	DeleteAttendStatus(ctx context.Context, attendStatusID uuid.UUID) (int64, error)
 	// DeleteAttendStatusWithSd SD付きで出席ステータスを削除する。
-	DeleteAttendStatusWithSd(ctx context.Context, sd Sd, attendStatusID uuid.UUID) error
+	DeleteAttendStatusWithSd(ctx context.Context, sd Sd, attendStatusID uuid.UUID) (int64, error)
 	// DeleteAttendStatusByKey 出席ステータスを削除する。
-	DeleteAttendStatusByKey(ctx context.Context, key string) error
+	DeleteAttendStatusByKey(ctx context.Context, key string) (int64, error)
 	// DeleteAttendStatusByKeyWithSd SD付きで出席ステータスを削除する。
-	DeleteAttendStatusByKeyWithSd(ctx context.Context, sd Sd, key string) error
+	DeleteAttendStatusByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error)
 	// PluralDeleteAttendStatuses 出席ステータスを複数削除する。
-	PluralDeleteAttendStatuses(ctx context.Context, attendStatusIDs []uuid.UUID) error
+	PluralDeleteAttendStatuses(ctx context.Context, attendStatusIDs []uuid.UUID) (int64, error)
 	// PluralDeleteAttendStatusesWithSd SD付きで出席ステータスを複数削除する。
-	PluralDeleteAttendStatusesWithSd(ctx context.Context, sd Sd, attendStatusIDs []uuid.UUID) error
+	PluralDeleteAttendStatusesWithSd(ctx context.Context, sd Sd, attendStatusIDs []uuid.UUID) (int64, error)
 	// FindAttendStatusByID 出席ステータスを取得する。
 	FindAttendStatusByID(ctx context.Context, attendStatusID uuid.UUID) (entity.AttendStatus, error)
 	// FindAttendStatusByIDWithSd SD付きで出席ステータスを取得する。

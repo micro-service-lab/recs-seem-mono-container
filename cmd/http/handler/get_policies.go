@@ -16,7 +16,7 @@ import (
 
 // GetPolicies is a handler for getting policy.
 type GetPolicies struct {
-	Service service.ManagerInterface
+	Service service.PolicyManager
 }
 
 // GetPoliciesParam is a parameter for GetPolicies.
@@ -52,15 +52,9 @@ func (h *GetPolicies) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		FuncMap: getPoliciesParseFuncMap,
 	})
 	if err != nil {
-		log.Printf("failed to parse query: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}
@@ -98,15 +92,9 @@ func (h *GetPolicies) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		)
 	}
 	if err != nil {
-		log.Printf("failed to get policy: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}

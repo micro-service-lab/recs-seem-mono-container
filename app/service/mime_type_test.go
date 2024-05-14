@@ -188,8 +188,8 @@ func TestManageMimeType_DeleteMimeType(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		DeleteMimeTypeFunc: func(_ context.Context, _ uuid.UUID) error {
-			return nil
+		DeleteMimeTypeFunc: func(_ context.Context, _ uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManageMimeType{
@@ -198,7 +198,7 @@ func TestManageMimeType_DeleteMimeType(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.DeleteMimeType(ctx, c.id)
+		_, err := s.DeleteMimeType(ctx, c.id)
 		assert.NoError(t, err)
 	}
 
@@ -234,8 +234,8 @@ func TestManageMimeType_PluralDeleteMimeTypes(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		PluralDeleteMimeTypesFunc: func(_ context.Context, _ []uuid.UUID) error {
-			return nil
+		PluralDeleteMimeTypesFunc: func(_ context.Context, _ []uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManageMimeType{
@@ -244,7 +244,7 @@ func TestManageMimeType_PluralDeleteMimeTypes(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.PluralDeleteMimeTypes(ctx, c.ids)
+		_, err := s.PluralDeleteMimeTypes(ctx, c.ids)
 		assert.NoError(t, err)
 	}
 

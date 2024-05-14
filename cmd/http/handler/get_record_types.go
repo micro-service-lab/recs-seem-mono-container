@@ -14,7 +14,7 @@ import (
 
 // GetRecordTypes is a handler for getting record types.
 type GetRecordTypes struct {
-	Service service.ManagerInterface
+	Service service.RecordTypeManager
 }
 
 // GetRecordTypesParam is a parameter for GetRecordTypes.
@@ -46,15 +46,9 @@ func (h *GetRecordTypes) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		FuncMap: getRecordTypesParseFuncMap,
 	})
 	if err != nil {
-		log.Printf("failed to parse query: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}
@@ -69,15 +63,9 @@ func (h *GetRecordTypes) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		param.WithCount,
 	)
 	if err != nil {
-		log.Printf("failed to get record types: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}

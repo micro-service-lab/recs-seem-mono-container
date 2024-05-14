@@ -10,13 +10,13 @@ UPDATE m_permissions SET name = $2, description = $3, key = $4, permission_categ
 -- name: UpdatePermissionByKey :one
 UPDATE m_permissions SET name = $2, description = $3, permission_category_id = $4 WHERE key = $1 RETURNING *;
 
--- name: DeletePermission :exec
+-- name: DeletePermission :execrows
 DELETE FROM m_permissions WHERE permission_id = $1;
 
--- name: DeletePermissionByKey :exec
+-- name: DeletePermissionByKey :execrows
 DELETE FROM m_permissions WHERE key = $1;
 
--- name: PluralDeletePermissions :exec
+-- name: PluralDeletePermissions :execrows
 DELETE FROM m_permissions WHERE permission_id = ANY($1::uuid[]);
 
 -- name: FindPermissionByID :one

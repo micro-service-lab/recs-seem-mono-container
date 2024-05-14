@@ -58,22 +58,28 @@ type CreateMimeTypesParams struct {
 	Kind string `json:"kind"`
 }
 
-const deleteMimeType = `-- name: DeleteMimeType :exec
+const deleteMimeType = `-- name: DeleteMimeType :execrows
 DELETE FROM m_mime_types WHERE mime_type_id = $1
 `
 
-func (q *Queries) DeleteMimeType(ctx context.Context, mimeTypeID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteMimeType, mimeTypeID)
-	return err
+func (q *Queries) DeleteMimeType(ctx context.Context, mimeTypeID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteMimeType, mimeTypeID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteMimeTypeByKey = `-- name: DeleteMimeTypeByKey :exec
+const deleteMimeTypeByKey = `-- name: DeleteMimeTypeByKey :execrows
 DELETE FROM m_mime_types WHERE key = $1
 `
 
-func (q *Queries) DeleteMimeTypeByKey(ctx context.Context, key string) error {
-	_, err := q.db.Exec(ctx, deleteMimeTypeByKey, key)
-	return err
+func (q *Queries) DeleteMimeTypeByKey(ctx context.Context, key string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteMimeTypeByKey, key)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findMimeTypeByID = `-- name: FindMimeTypeByID :one
@@ -316,13 +322,16 @@ func (q *Queries) GetPluralMimeTypes(ctx context.Context, arg GetPluralMimeTypes
 	return items, nil
 }
 
-const pluralDeleteMimeTypes = `-- name: PluralDeleteMimeTypes :exec
+const pluralDeleteMimeTypes = `-- name: PluralDeleteMimeTypes :execrows
 DELETE FROM m_mime_types WHERE mime_type_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteMimeTypes(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteMimeTypes, dollar_1)
-	return err
+func (q *Queries) PluralDeleteMimeTypes(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteMimeTypes, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateMimeType = `-- name: UpdateMimeType :one

@@ -12,6 +12,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countMimeTypes(
@@ -149,106 +150,106 @@ func (a *PgAdapter) CreateMimeTypesWithSd(
 	return c, nil
 }
 
-func deleteMimeType(ctx context.Context, qtx *query.Queries, mimeTypeID uuid.UUID) error {
-	err := qtx.DeleteMimeType(ctx, mimeTypeID)
+func deleteMimeType(ctx context.Context, qtx *query.Queries, mimeTypeID uuid.UUID) (int64, error) {
+	c, err := qtx.DeleteMimeType(ctx, mimeTypeID)
 	if err != nil {
-		return fmt.Errorf("failed to delete mime type: %w", err)
+		return 0, fmt.Errorf("failed to delete mime type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteMimeType マイムタイプを削除する。
-func (a *PgAdapter) DeleteMimeType(ctx context.Context, mimeTypeID uuid.UUID) error {
-	err := deleteMimeType(ctx, a.query, mimeTypeID)
+func (a *PgAdapter) DeleteMimeType(ctx context.Context, mimeTypeID uuid.UUID) (int64, error) {
+	c, err := deleteMimeType(ctx, a.query, mimeTypeID)
 	if err != nil {
-		return fmt.Errorf("failed to delete mime type: %w", err)
+		return 0, fmt.Errorf("failed to delete mime type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteMimeTypeWithSd SD付きでマイムタイプを削除する。
 func (a *PgAdapter) DeleteMimeTypeWithSd(
 	ctx context.Context, sd store.Sd, mimeTypeID uuid.UUID,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deleteMimeType(ctx, qtx, mimeTypeID)
+	c, err := deleteMimeType(ctx, qtx, mimeTypeID)
 	if err != nil {
-		return fmt.Errorf("failed to delete mime type: %w", err)
+		return 0, fmt.Errorf("failed to delete mime type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
-func deleteMimeTypeByKey(ctx context.Context, qtx *query.Queries, key string) error {
-	err := qtx.DeleteMimeTypeByKey(ctx, key)
+func deleteMimeTypeByKey(ctx context.Context, qtx *query.Queries, key string) (int64, error) {
+	c, err := qtx.DeleteMimeTypeByKey(ctx, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete mime type: %w", err)
+		return 0, fmt.Errorf("failed to delete mime type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteMimeTypeByKey マイムタイプを削除する。
-func (a *PgAdapter) DeleteMimeTypeByKey(ctx context.Context, key string) error {
-	err := deleteMimeTypeByKey(ctx, a.query, key)
+func (a *PgAdapter) DeleteMimeTypeByKey(ctx context.Context, key string) (int64, error) {
+	c, err := deleteMimeTypeByKey(ctx, a.query, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete mime type: %w", err)
+		return 0, fmt.Errorf("failed to delete mime type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteMimeTypeByKeyWithSd SD付きでマイムタイプを削除する。
 func (a *PgAdapter) DeleteMimeTypeByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deleteMimeTypeByKey(ctx, qtx, key)
+	c, err := deleteMimeTypeByKey(ctx, qtx, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete mime type: %w", err)
+		return 0, fmt.Errorf("failed to delete mime type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
-func pluralDeleteMimeTypes(ctx context.Context, qtx *query.Queries, mimeTypeIDs []uuid.UUID) error {
-	err := qtx.PluralDeleteMimeTypes(ctx, mimeTypeIDs)
+func pluralDeleteMimeTypes(ctx context.Context, qtx *query.Queries, mimeTypeIDs []uuid.UUID) (int64, error) {
+	c, err := qtx.PluralDeleteMimeTypes(ctx, mimeTypeIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete mime types: %w", err)
+		return 0, fmt.Errorf("failed to plural delete mime types: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteMimeTypes マイムタイプを複数削除する。
-func (a *PgAdapter) PluralDeleteMimeTypes(ctx context.Context, mimeTypeIDs []uuid.UUID) error {
-	err := pluralDeleteMimeTypes(ctx, a.query, mimeTypeIDs)
+func (a *PgAdapter) PluralDeleteMimeTypes(ctx context.Context, mimeTypeIDs []uuid.UUID) (int64, error) {
+	c, err := pluralDeleteMimeTypes(ctx, a.query, mimeTypeIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete mime types: %w", err)
+		return 0, fmt.Errorf("failed to plural delete mime types: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteMimeTypesWithSd SD付きでマイムタイプを複数削除する。
 func (a *PgAdapter) PluralDeleteMimeTypesWithSd(
 	ctx context.Context, sd store.Sd, mimeTypeIDs []uuid.UUID,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := pluralDeleteMimeTypes(ctx, qtx, mimeTypeIDs)
+	c, err := pluralDeleteMimeTypes(ctx, qtx, mimeTypeIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete mime types: %w", err)
+		return 0, fmt.Errorf("failed to plural delete mime types: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 func findMimeTypeByID(
@@ -257,7 +258,7 @@ func findMimeTypeByID(
 	e, err := qtx.FindMimeTypeByID(ctx, mimeTypeID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.MimeType{}, store.ErrDataNoRecord
+			return entity.MimeType{}, errhandle.NewModelNotFoundError("mime type")
 		}
 		return entity.MimeType{}, fmt.Errorf("failed to find mime type: %w", err)
 	}
@@ -302,7 +303,7 @@ func findMimeTypeByKey(ctx context.Context, qtx *query.Queries, key string) (ent
 	e, err := qtx.FindMimeTypeByKey(ctx, key)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.MimeType{}, store.ErrDataNoRecord
+			return entity.MimeType{}, errhandle.NewModelNotFoundError("mime type")
 		}
 		return entity.MimeType{}, fmt.Errorf("failed to find mime type: %w", err)
 	}
@@ -562,7 +563,7 @@ func updateMimeType(
 	e, err := qtx.UpdateMimeType(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.MimeType{}, store.ErrDataNoRecord
+			return entity.MimeType{}, errhandle.NewModelNotFoundError("mime type")
 		}
 		return entity.MimeType{}, fmt.Errorf("failed to update mime type: %w", err)
 	}
@@ -614,7 +615,7 @@ func updateMimeTypeByKey(
 	e, err := qtx.UpdateMimeTypeByKey(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.MimeType{}, store.ErrDataNoRecord
+			return entity.MimeType{}, errhandle.NewModelNotFoundError("mime type")
 		}
 		return entity.MimeType{}, fmt.Errorf("failed to update mime type: %w", err)
 	}

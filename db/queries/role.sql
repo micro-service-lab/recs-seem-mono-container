@@ -7,10 +7,10 @@ INSERT INTO m_roles (name, description, created_at, updated_at) VALUES ($1, $2, 
 -- name: UpdateRole :one
 UPDATE m_roles SET name = $2, description = $3, updated_at = $4 WHERE role_id = $1 RETURNING *;
 
--- name: DeleteRole :exec
+-- name: DeleteRole :execrows
 DELETE FROM m_roles WHERE role_id = $1;
 
--- name: PluralDeleteRoles :exec
+-- name: PluralDeleteRoles :execrows
 DELETE FROM m_roles WHERE role_id = ANY($1::uuid[]);
 
 -- name: FindRoleByID :one

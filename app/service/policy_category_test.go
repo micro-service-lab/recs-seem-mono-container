@@ -188,8 +188,8 @@ func TestManagePolicyCategory_DeletePolicyCategory(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		DeletePolicyCategoryFunc: func(_ context.Context, _ uuid.UUID) error {
-			return nil
+		DeletePolicyCategoryFunc: func(_ context.Context, _ uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManagePolicyCategory{
@@ -198,7 +198,7 @@ func TestManagePolicyCategory_DeletePolicyCategory(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.DeletePolicyCategory(ctx, c.id)
+		_, err := s.DeletePolicyCategory(ctx, c.id)
 		assert.NoError(t, err)
 	}
 
@@ -234,8 +234,8 @@ func TestManagePolicyCategory_PluralDeletePolicyCategories(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		PluralDeletePolicyCategoriesFunc: func(_ context.Context, _ []uuid.UUID) error {
-			return nil
+		PluralDeletePolicyCategoriesFunc: func(_ context.Context, _ []uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManagePolicyCategory{
@@ -244,7 +244,7 @@ func TestManagePolicyCategory_PluralDeletePolicyCategories(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.PluralDeletePolicyCategories(ctx, c.ids)
+		_, err := s.PluralDeletePolicyCategories(ctx, c.ids)
 		assert.NoError(t, err)
 	}
 

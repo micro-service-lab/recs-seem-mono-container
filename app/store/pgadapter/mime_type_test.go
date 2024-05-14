@@ -156,7 +156,7 @@ func TestPgAdapter_MimeType(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Len(t, el.Data, 2)
 				// delete
-				err = adapter.DeleteMimeTypeWithSd(ctx, sd, el.Data[0].MimeTypeID)
+				_, err = adapter.DeleteMimeTypeWithSd(ctx, sd, el.Data[0].MimeTypeID)
 				assert.NoError(t, err)
 				count, err = adapter.CountMimeTypesWithSd(ctx, sd, parameter.WhereMimeTypeParam{})
 				assert.NoError(t, err)

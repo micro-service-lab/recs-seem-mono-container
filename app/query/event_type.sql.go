@@ -58,22 +58,28 @@ type CreateEventTypesParams struct {
 	Color string `json:"color"`
 }
 
-const deleteEventType = `-- name: DeleteEventType :exec
+const deleteEventType = `-- name: DeleteEventType :execrows
 DELETE FROM m_event_types WHERE event_type_id = $1
 `
 
-func (q *Queries) DeleteEventType(ctx context.Context, eventTypeID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteEventType, eventTypeID)
-	return err
+func (q *Queries) DeleteEventType(ctx context.Context, eventTypeID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteEventType, eventTypeID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteEventTypeByKey = `-- name: DeleteEventTypeByKey :exec
+const deleteEventTypeByKey = `-- name: DeleteEventTypeByKey :execrows
 DELETE FROM m_event_types WHERE key = $1
 `
 
-func (q *Queries) DeleteEventTypeByKey(ctx context.Context, key string) error {
-	_, err := q.db.Exec(ctx, deleteEventTypeByKey, key)
-	return err
+func (q *Queries) DeleteEventTypeByKey(ctx context.Context, key string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteEventTypeByKey, key)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findEventTypeByID = `-- name: FindEventTypeByID :one
@@ -315,13 +321,16 @@ func (q *Queries) GetPluralEventTypes(ctx context.Context, arg GetPluralEventTyp
 	return items, nil
 }
 
-const pluralDeleteEventTypes = `-- name: PluralDeleteEventTypes :exec
+const pluralDeleteEventTypes = `-- name: PluralDeleteEventTypes :execrows
 DELETE FROM m_event_types WHERE event_type_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteEventTypes(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteEventTypes, dollar_1)
-	return err
+func (q *Queries) PluralDeleteEventTypes(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteEventTypes, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateEventType = `-- name: UpdateEventType :one

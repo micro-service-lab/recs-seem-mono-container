@@ -28,17 +28,17 @@ type Policy interface {
 	CreatePoliciesWithSd(
 		ctx context.Context, sd Sd, params []parameter.CreatePolicyParam) (int64, error)
 	// DeletePolicy ポリシーを削除する。
-	DeletePolicy(ctx context.Context, policyID uuid.UUID) error
+	DeletePolicy(ctx context.Context, policyID uuid.UUID) (int64, error)
 	// DeletePolicyWithSd SD付きでポリシーを削除する。
-	DeletePolicyWithSd(ctx context.Context, sd Sd, policyID uuid.UUID) error
+	DeletePolicyWithSd(ctx context.Context, sd Sd, policyID uuid.UUID) (int64, error)
 	// DeletePolicyByKey ポリシーを削除する。
-	DeletePolicyByKey(ctx context.Context, key string) error
+	DeletePolicyByKey(ctx context.Context, key string) (int64, error)
 	// DeletePolicyByKeyWithSd SD付きでポリシーを削除する。
-	DeletePolicyByKeyWithSd(ctx context.Context, sd Sd, key string) error
+	DeletePolicyByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error)
 	// PluralDeletePolicies ポリシーを複数削除する。
-	PluralDeletePolicies(ctx context.Context, policyIDs []uuid.UUID) error
+	PluralDeletePolicies(ctx context.Context, policyIDs []uuid.UUID) (int64, error)
 	// PluralDeletePoliciesWithSd SD付きでポリシーを複数削除する。
-	PluralDeletePoliciesWithSd(ctx context.Context, sd Sd, policyIDs []uuid.UUID) error
+	PluralDeletePoliciesWithSd(ctx context.Context, sd Sd, policyIDs []uuid.UUID) (int64, error)
 	// FindPolicyByID ポリシーを取得する。
 	FindPolicyByID(ctx context.Context, policyID uuid.UUID) (entity.Policy, error)
 	// FindPolicyByIDWithSd SD付きでポリシーを取得する。

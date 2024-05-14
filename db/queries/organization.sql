@@ -7,10 +7,10 @@ INSERT INTO m_organizations (name, description, color, is_personal, is_whole, ch
 -- name: UpdateOrganization :one
 UPDATE m_organizations SET name = $2, color = $3, description = $4, updated_at = $5 WHERE organization_id = $1 RETURNING *;
 
--- name: DeleteOrganization :exec
+-- name: DeleteOrganization :execrows
 DELETE FROM m_organizations WHERE organization_id = $1;
 
--- name: PluralDeleteOrganizations :exec
+-- name: PluralDeleteOrganizations :execrows
 DELETE FROM m_organizations WHERE organization_id = ANY($1::uuid[]);
 
 -- name: FindOrganizationByID :one

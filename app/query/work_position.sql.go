@@ -80,13 +80,16 @@ type CreateWorkPositionsParams struct {
 	UpdatedAt      time.Time `json:"updated_at"`
 }
 
-const deleteWorkPosition = `-- name: DeleteWorkPosition :exec
+const deleteWorkPosition = `-- name: DeleteWorkPosition :execrows
 DELETE FROM m_work_positions WHERE work_position_id = $1
 `
 
-func (q *Queries) DeleteWorkPosition(ctx context.Context, workPositionID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteWorkPosition, workPositionID)
-	return err
+func (q *Queries) DeleteWorkPosition(ctx context.Context, workPositionID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteWorkPosition, workPositionID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findWorkPositionByID = `-- name: FindWorkPositionByID :one
@@ -342,13 +345,16 @@ func (q *Queries) GetWorkPositionsUseNumberedPaginate(ctx context.Context, arg G
 	return items, nil
 }
 
-const pluralDeleteWorkPositions = `-- name: PluralDeleteWorkPositions :exec
+const pluralDeleteWorkPositions = `-- name: PluralDeleteWorkPositions :execrows
 DELETE FROM m_work_positions WHERE work_position_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteWorkPositions(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteWorkPositions, dollar_1)
-	return err
+func (q *Queries) PluralDeleteWorkPositions(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteWorkPositions, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateWorkPosition = `-- name: UpdateWorkPosition :one

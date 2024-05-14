@@ -10,13 +10,13 @@ UPDATE t_lab_io_histories SET member_id = $2, entered_at = $3, exited_at = $4 WH
 -- name: ExitLabIOHistory :one
 UPDATE t_lab_io_histories SET exited_at = $2 WHERE lab_io_history_id = $1 RETURNING *;
 
--- name: DeleteLabIOHistory :exec
+-- name: DeleteLabIOHistory :execrows
 DELETE FROM t_lab_io_histories WHERE lab_io_history_id = $1;
 
--- name: DeleteLabIOHistoryOnMember :exec
+-- name: DeleteLabIOHistoryOnMember :execrows
 DELETE FROM t_lab_io_histories WHERE member_id = $1;
 
--- name: PluralDeleteLabIOHistories :exec
+-- name: PluralDeleteLabIOHistories :execrows
 DELETE FROM t_lab_io_histories WHERE lab_io_history_id = ANY($1::uuid[]);
 
 -- name: FindLabIOHistoryByID :one

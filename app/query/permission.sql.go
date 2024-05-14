@@ -76,22 +76,28 @@ type CreatePermissionsParams struct {
 	PermissionCategoryID uuid.UUID `json:"permission_category_id"`
 }
 
-const deletePermission = `-- name: DeletePermission :exec
+const deletePermission = `-- name: DeletePermission :execrows
 DELETE FROM m_permissions WHERE permission_id = $1
 `
 
-func (q *Queries) DeletePermission(ctx context.Context, permissionID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePermission, permissionID)
-	return err
+func (q *Queries) DeletePermission(ctx context.Context, permissionID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermission, permissionID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deletePermissionByKey = `-- name: DeletePermissionByKey :exec
+const deletePermissionByKey = `-- name: DeletePermissionByKey :execrows
 DELETE FROM m_permissions WHERE key = $1
 `
 
-func (q *Queries) DeletePermissionByKey(ctx context.Context, key string) error {
-	_, err := q.db.Exec(ctx, deletePermissionByKey, key)
-	return err
+func (q *Queries) DeletePermissionByKey(ctx context.Context, key string) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermissionByKey, key)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findPermissionByID = `-- name: FindPermissionByID :one
@@ -727,13 +733,16 @@ func (q *Queries) GetPluralPermissionsWithCategory(ctx context.Context, arg GetP
 	return items, nil
 }
 
-const pluralDeletePermissions = `-- name: PluralDeletePermissions :exec
+const pluralDeletePermissions = `-- name: PluralDeletePermissions :execrows
 DELETE FROM m_permissions WHERE permission_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeletePermissions(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeletePermissions, dollar_1)
-	return err
+func (q *Queries) PluralDeletePermissions(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeletePermissions, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updatePermission = `-- name: UpdatePermission :one

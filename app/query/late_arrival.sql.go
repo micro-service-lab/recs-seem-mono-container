@@ -49,13 +49,16 @@ type CreateLateArrivalsParams struct {
 	ArriveTime   time.Time `json:"arrive_time"`
 }
 
-const deleteLateArrival = `-- name: DeleteLateArrival :exec
+const deleteLateArrival = `-- name: DeleteLateArrival :execrows
 DELETE FROM t_late_arrivals WHERE late_arrival_id = $1
 `
 
-func (q *Queries) DeleteLateArrival(ctx context.Context, lateArrivalID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteLateArrival, lateArrivalID)
-	return err
+func (q *Queries) DeleteLateArrival(ctx context.Context, lateArrivalID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteLateArrival, lateArrivalID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findLateArrivalByID = `-- name: FindLateArrivalByID :one
@@ -227,11 +230,14 @@ func (q *Queries) GetPluralLateArrivals(ctx context.Context, arg GetPluralLateAr
 	return items, nil
 }
 
-const pluralDeleteLateArrivals = `-- name: PluralDeleteLateArrivals :exec
+const pluralDeleteLateArrivals = `-- name: PluralDeleteLateArrivals :execrows
 DELETE FROM t_late_arrivals WHERE late_arrival_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteLateArrivals(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteLateArrivals, dollar_1)
-	return err
+func (q *Queries) PluralDeleteLateArrivals(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteLateArrivals, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }

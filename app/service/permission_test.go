@@ -195,8 +195,8 @@ func TestManagePermission_DeletePermission(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		DeletePermissionFunc: func(_ context.Context, _ uuid.UUID) error {
-			return nil
+		DeletePermissionFunc: func(_ context.Context, _ uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManagePermission{
@@ -205,7 +205,7 @@ func TestManagePermission_DeletePermission(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.DeletePermission(ctx, c.id)
+		_, err := s.DeletePermission(ctx, c.id)
 		assert.NoError(t, err)
 	}
 
@@ -241,8 +241,8 @@ func TestManagePermission_PluralDeletePermissions(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		PluralDeletePermissionsFunc: func(_ context.Context, _ []uuid.UUID) error {
-			return nil
+		PluralDeletePermissionsFunc: func(_ context.Context, _ []uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManagePermission{
@@ -251,7 +251,7 @@ func TestManagePermission_PluralDeletePermissions(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.PluralDeletePermissions(ctx, c.ids)
+		_, err := s.PluralDeletePermissions(ctx, c.ids)
 		assert.NoError(t, err)
 	}
 

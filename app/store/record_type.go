@@ -25,17 +25,17 @@ type RecordType interface {
 	// CreateRecordTypesWithSd SD付きで議事録タイプを作成する。
 	CreateRecordTypesWithSd(ctx context.Context, sd Sd, params []parameter.CreateRecordTypeParam) (int64, error)
 	// DeleteRecordType 議事録タイプを削除する。
-	DeleteRecordType(ctx context.Context, recordTypeID uuid.UUID) error
+	DeleteRecordType(ctx context.Context, recordTypeID uuid.UUID) (int64, error)
 	// DeleteRecordTypeWithSd SD付きで議事録タイプを削除する。
-	DeleteRecordTypeWithSd(ctx context.Context, sd Sd, recordTypeID uuid.UUID) error
+	DeleteRecordTypeWithSd(ctx context.Context, sd Sd, recordTypeID uuid.UUID) (int64, error)
 	// DeleteRecordTypeByKey 議事録タイプを削除する。
-	DeleteRecordTypeByKey(ctx context.Context, key string) error
+	DeleteRecordTypeByKey(ctx context.Context, key string) (int64, error)
 	// DeleteRecordTypeByKeyWithSd SD付きで議事録タイプを削除する。
-	DeleteRecordTypeByKeyWithSd(ctx context.Context, sd Sd, key string) error
+	DeleteRecordTypeByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error)
 	// PluralDeleteRecordTypes 議事録タイプを複数削除する。
-	PluralDeleteRecordTypes(ctx context.Context, recordTypeIDs []uuid.UUID) error
+	PluralDeleteRecordTypes(ctx context.Context, recordTypeIDs []uuid.UUID) (int64, error)
 	// PluralDeleteRecordTypesWithSd SD付きで議事録タイプを複数削除する。
-	PluralDeleteRecordTypesWithSd(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID) error
+	PluralDeleteRecordTypesWithSd(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID) (int64, error)
 	// FindRecordTypeByID 議事録タイプを取得する。
 	FindRecordTypeByID(ctx context.Context, recordTypeID uuid.UUID) (entity.RecordType, error)
 	// FindRecordTypeByIDWithSd SD付きで議事録タイプを取得する。

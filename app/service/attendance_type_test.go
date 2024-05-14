@@ -188,8 +188,8 @@ func TestManageAttendanceType_DeleteAttendanceType(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		DeleteAttendanceTypeFunc: func(_ context.Context, _ uuid.UUID) error {
-			return nil
+		DeleteAttendanceTypeFunc: func(_ context.Context, _ uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManageAttendanceType{
@@ -198,7 +198,7 @@ func TestManageAttendanceType_DeleteAttendanceType(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.DeleteAttendanceType(ctx, c.id)
+		_, err := s.DeleteAttendanceType(ctx, c.id)
 		assert.NoError(t, err)
 	}
 
@@ -234,8 +234,8 @@ func TestManageAttendanceType_PluralDeleteAttendanceTypes(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		PluralDeleteAttendanceTypesFunc: func(_ context.Context, _ []uuid.UUID) error {
-			return nil
+		PluralDeleteAttendanceTypesFunc: func(_ context.Context, _ []uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManageAttendanceType{
@@ -244,7 +244,7 @@ func TestManageAttendanceType_PluralDeleteAttendanceTypes(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.PluralDeleteAttendanceTypes(ctx, c.ids)
+		_, err := s.PluralDeleteAttendanceTypes(ctx, c.ids)
 		assert.NoError(t, err)
 	}
 

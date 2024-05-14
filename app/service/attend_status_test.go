@@ -181,8 +181,8 @@ func TestManageAttendStatus_DeleteAttendStatus(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		DeleteAttendStatusFunc: func(_ context.Context, _ uuid.UUID) error {
-			return nil
+		DeleteAttendStatusFunc: func(_ context.Context, _ uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManageAttendStatus{
@@ -191,7 +191,7 @@ func TestManageAttendStatus_DeleteAttendStatus(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.DeleteAttendStatus(ctx, c.id)
+		_, err := s.DeleteAttendStatus(ctx, c.id)
 		assert.NoError(t, err)
 	}
 
@@ -227,8 +227,8 @@ func TestManageAttendStatus_PluralDeleteAttendStatuses(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		PluralDeleteAttendStatusesFunc: func(_ context.Context, _ []uuid.UUID) error {
-			return nil
+		PluralDeleteAttendStatusesFunc: func(_ context.Context, _ []uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManageAttendStatus{
@@ -237,7 +237,7 @@ func TestManageAttendStatus_PluralDeleteAttendStatuses(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.PluralDeleteAttendStatuses(ctx, c.ids)
+		_, err := s.PluralDeleteAttendStatuses(ctx, c.ids)
 		assert.NoError(t, err)
 	}
 

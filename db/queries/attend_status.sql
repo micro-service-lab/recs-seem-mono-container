@@ -10,13 +10,13 @@ UPDATE m_attend_statuses SET name = $2, key = $3 WHERE attend_status_id = $1 RET
 -- name: UpdateAttendStatusByKey :one
 UPDATE m_attend_statuses SET name = $2 WHERE key = $1 RETURNING *;
 
--- name: DeleteAttendStatus :exec
+-- name: DeleteAttendStatus :execrows
 DELETE FROM m_attend_statuses WHERE attend_status_id = $1;
 
--- name: DeleteAttendStatusByKey :exec
+-- name: DeleteAttendStatusByKey :execrows
 DELETE FROM m_attend_statuses WHERE key = $1;
 
--- name: PluralDeleteAttendStatuses :exec
+-- name: PluralDeleteAttendStatuses :execrows
 DELETE FROM m_attend_statuses WHERE attend_status_id = ANY($1::uuid[]);
 
 -- name: FindAttendStatusByID :one

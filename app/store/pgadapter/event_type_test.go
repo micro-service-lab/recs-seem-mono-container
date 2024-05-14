@@ -156,7 +156,7 @@ func TestPgAdapter_EventType(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Len(t, el.Data, 2)
 				// delete
-				err = adapter.DeleteEventTypeWithSd(ctx, sd, el.Data[0].EventTypeID)
+				_, err = adapter.DeleteEventTypeWithSd(ctx, sd, el.Data[0].EventTypeID)
 				assert.NoError(t, err)
 				count, err = adapter.CountEventTypesWithSd(ctx, sd, parameter.WhereEventTypeParam{})
 				assert.NoError(t, err)

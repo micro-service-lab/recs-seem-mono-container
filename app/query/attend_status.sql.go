@@ -55,22 +55,28 @@ type CreateAttendStatusesParams struct {
 	Key  string `json:"key"`
 }
 
-const deleteAttendStatus = `-- name: DeleteAttendStatus :exec
+const deleteAttendStatus = `-- name: DeleteAttendStatus :execrows
 DELETE FROM m_attend_statuses WHERE attend_status_id = $1
 `
 
-func (q *Queries) DeleteAttendStatus(ctx context.Context, attendStatusID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAttendStatus, attendStatusID)
-	return err
+func (q *Queries) DeleteAttendStatus(ctx context.Context, attendStatusID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAttendStatus, attendStatusID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteAttendStatusByKey = `-- name: DeleteAttendStatusByKey :exec
+const deleteAttendStatusByKey = `-- name: DeleteAttendStatusByKey :execrows
 DELETE FROM m_attend_statuses WHERE key = $1
 `
 
-func (q *Queries) DeleteAttendStatusByKey(ctx context.Context, key string) error {
-	_, err := q.db.Exec(ctx, deleteAttendStatusByKey, key)
-	return err
+func (q *Queries) DeleteAttendStatusByKey(ctx context.Context, key string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAttendStatusByKey, key)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findAttendStatusByID = `-- name: FindAttendStatusByID :one
@@ -307,13 +313,16 @@ func (q *Queries) GetPluralAttendStatuses(ctx context.Context, arg GetPluralAtte
 	return items, nil
 }
 
-const pluralDeleteAttendStatuses = `-- name: PluralDeleteAttendStatuses :exec
+const pluralDeleteAttendStatuses = `-- name: PluralDeleteAttendStatuses :execrows
 DELETE FROM m_attend_statuses WHERE attend_status_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteAttendStatuses(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteAttendStatuses, dollar_1)
-	return err
+func (q *Queries) PluralDeleteAttendStatuses(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteAttendStatuses, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateAttendStatus = `-- name: UpdateAttendStatus :one

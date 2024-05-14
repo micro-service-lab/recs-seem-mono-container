@@ -28,17 +28,17 @@ type PermissionCategory interface {
 	CreatePermissionCategoriesWithSd(
 		ctx context.Context, sd Sd, params []parameter.CreatePermissionCategoryParam) (int64, error)
 	// DeletePermissionCategory 権限カテゴリーを削除する。
-	DeletePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID) error
+	DeletePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID) (int64, error)
 	// DeletePermissionCategoryWithSd SD付きで権限カテゴリーを削除する。
-	DeletePermissionCategoryWithSd(ctx context.Context, sd Sd, permissionCategoryID uuid.UUID) error
+	DeletePermissionCategoryWithSd(ctx context.Context, sd Sd, permissionCategoryID uuid.UUID) (int64, error)
 	// DeletePermissionCategoryByKey 権限カテゴリーを削除する。
-	DeletePermissionCategoryByKey(ctx context.Context, key string) error
+	DeletePermissionCategoryByKey(ctx context.Context, key string) (int64, error)
 	// DeletePermissionCategoryByKeyWithSd SD付きで権限カテゴリーを削除する。
-	DeletePermissionCategoryByKeyWithSd(ctx context.Context, sd Sd, key string) error
+	DeletePermissionCategoryByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error)
 	// PluralDeletePermissionCategories 権限カテゴリーを複数削除する。
-	PluralDeletePermissionCategories(ctx context.Context, permissionCategoryIDs []uuid.UUID) error
+	PluralDeletePermissionCategories(ctx context.Context, permissionCategoryIDs []uuid.UUID) (int64, error)
 	// PluralDeletePermissionCategoriesWithSd SD付きで権限カテゴリーを複数削除する。
-	PluralDeletePermissionCategoriesWithSd(ctx context.Context, sd Sd, permissionCategoryIDs []uuid.UUID) error
+	PluralDeletePermissionCategoriesWithSd(ctx context.Context, sd Sd, permissionCategoryIDs []uuid.UUID) (int64, error)
 	// FindPermissionCategoryByID 権限カテゴリーを取得する。
 	FindPermissionCategoryByID(ctx context.Context, permissionCategoryID uuid.UUID) (entity.PermissionCategory, error)
 	// FindPermissionCategoryByIDWithSd SD付きで権限カテゴリーを取得する。

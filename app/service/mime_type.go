@@ -602,21 +602,21 @@ func (m *ManageMimeType) UpdateMimeType(
 }
 
 // DeleteMimeType マイムタイプを削除する。
-func (m *ManageMimeType) DeleteMimeType(ctx context.Context, id uuid.UUID) error {
-	err := m.DB.DeleteMimeType(ctx, id)
+func (m *ManageMimeType) DeleteMimeType(ctx context.Context, id uuid.UUID) (int64, error) {
+	c, err := m.DB.DeleteMimeType(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to delete mime type: %w", err)
+		return 0, fmt.Errorf("failed to delete mime type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteMimeTypes マイムタイプを複数削除する。
-func (m *ManageMimeType) PluralDeleteMimeTypes(ctx context.Context, ids []uuid.UUID) error {
-	err := m.DB.PluralDeleteMimeTypes(ctx, ids)
+func (m *ManageMimeType) PluralDeleteMimeTypes(ctx context.Context, ids []uuid.UUID) (int64, error) {
+	c, err := m.DB.PluralDeleteMimeTypes(ctx, ids)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete mime types: %w", err)
+		return 0, fmt.Errorf("failed to plural delete mime types: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // FindMimeTypeByID マイムタイプをIDで取得する。

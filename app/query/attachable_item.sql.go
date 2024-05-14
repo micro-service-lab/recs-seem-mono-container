@@ -76,13 +76,16 @@ type CreateAttachableItemsParams struct {
 	MimeTypeID uuid.UUID     `json:"mime_type_id"`
 }
 
-const deleteAttachableItem = `-- name: DeleteAttachableItem :exec
+const deleteAttachableItem = `-- name: DeleteAttachableItem :execrows
 DELETE FROM t_attachable_items WHERE attachable_item_id = $1
 `
 
-func (q *Queries) DeleteAttachableItem(ctx context.Context, attachableItemID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAttachableItem, attachableItemID)
-	return err
+func (q *Queries) DeleteAttachableItem(ctx context.Context, attachableItemID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAttachableItem, attachableItemID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findAttachableItemByID = `-- name: FindAttachableItemByID :one
@@ -764,11 +767,14 @@ func (q *Queries) GetPluralAttachableItemsWithMimeType(ctx context.Context, arg 
 	return items, nil
 }
 
-const pluralDeleteAttachableItems = `-- name: PluralDeleteAttachableItems :exec
+const pluralDeleteAttachableItems = `-- name: PluralDeleteAttachableItems :execrows
 DELETE FROM t_attachable_items WHERE attachable_item_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteAttachableItems(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteAttachableItems, dollar_1)
-	return err
+func (q *Queries) PluralDeleteAttachableItems(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteAttachableItems, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }

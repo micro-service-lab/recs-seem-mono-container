@@ -22,8 +22,17 @@ func RoleHandler(svc service.ManagerInterface, vd validation.Validator) http.Han
 		Service:   svc,
 		Validator: vd,
 	}
+	updateHandler := handler.UpdateRole{
+		Service:   svc,
+		Validator: vd,
+	}
+	deleteHandler := handler.DeleteRole{
+		Service: svc,
+	}
 	r := chi.NewRouter()
 	r.Get("/", getHandler.ServeHTTP)
+	r.Put(uuidPath("/{role_id:uuid}"), updateHandler.ServeHTTP)
+	r.Delete(uuidPath("/{role_id:uuid}"), deleteHandler.ServeHTTP)
 	r.Post("/", createHandler.ServeHTTP)
 	r.Get(uuidPath("/{role_id:uuid}"), findHandler.ServeHTTP)
 

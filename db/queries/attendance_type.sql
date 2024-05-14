@@ -10,13 +10,13 @@ UPDATE m_attendance_types SET name = $2, key = $3, color = $4 WHERE attendance_t
 -- name: UpdateAttendanceTypeByKey :one
 UPDATE m_attendance_types SET name = $2, color = $3 WHERE key = $1 RETURNING *;
 
--- name: DeleteAttendanceType :exec
+-- name: DeleteAttendanceType :execrows
 DELETE FROM m_attendance_types WHERE attendance_type_id = $1;
 
--- name: DeleteAttendanceTypeByKey :exec
+-- name: DeleteAttendanceTypeByKey :execrows
 DELETE FROM m_attendance_types WHERE key = $1;
 
--- name: PluralDeleteAttendanceTypes :exec
+-- name: PluralDeleteAttendanceTypes :execrows
 DELETE FROM m_attendance_types WHERE attendance_type_id = ANY($1::uuid[]);
 
 -- name: FindAttendanceTypeByID :one

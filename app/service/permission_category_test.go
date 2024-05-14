@@ -188,8 +188,8 @@ func TestManagePermissionCategory_DeletePermissionCategory(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		DeletePermissionCategoryFunc: func(_ context.Context, _ uuid.UUID) error {
-			return nil
+		DeletePermissionCategoryFunc: func(_ context.Context, _ uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManagePermissionCategory{
@@ -198,7 +198,7 @@ func TestManagePermissionCategory_DeletePermissionCategory(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.DeletePermissionCategory(ctx, c.id)
+		_, err := s.DeletePermissionCategory(ctx, c.id)
 		assert.NoError(t, err)
 	}
 
@@ -234,8 +234,8 @@ func TestManagePermissionCategory_PluralDeletePermissionCategories(t *testing.T)
 	}
 
 	storeMock := &store.StoreMock{
-		PluralDeletePermissionCategoriesFunc: func(_ context.Context, _ []uuid.UUID) error {
-			return nil
+		PluralDeletePermissionCategoriesFunc: func(_ context.Context, _ []uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManagePermissionCategory{
@@ -244,7 +244,7 @@ func TestManagePermissionCategory_PluralDeletePermissionCategories(t *testing.T)
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.PluralDeletePermissionCategories(ctx, c.ids)
+		_, err := s.PluralDeletePermissionCategories(ctx, c.ids)
 		assert.NoError(t, err)
 	}
 

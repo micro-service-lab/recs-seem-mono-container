@@ -59,21 +59,21 @@ func (m *ManageRole) UpdateRole(
 }
 
 // DeleteRole ロールを削除する。
-func (m *ManageRole) DeleteRole(ctx context.Context, id uuid.UUID) error {
-	err := m.DB.DeleteRole(ctx, id)
+func (m *ManageRole) DeleteRole(ctx context.Context, id uuid.UUID) (int64, error) {
+	c, err := m.DB.DeleteRole(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to delete role: %w", err)
+		return 0, fmt.Errorf("failed to delete role: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteRoles ロールを複数削除する。
-func (m *ManageRole) PluralDeleteRoles(ctx context.Context, ids []uuid.UUID) error {
-	err := m.DB.PluralDeleteRoles(ctx, ids)
+func (m *ManageRole) PluralDeleteRoles(ctx context.Context, ids []uuid.UUID) (int64, error) {
+	c, err := m.DB.PluralDeleteRoles(ctx, ids)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete roles: %w", err)
+		return 0, fmt.Errorf("failed to plural delete roles: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // FindRoleByID ロールをIDで取得する。

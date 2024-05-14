@@ -4,10 +4,10 @@ INSERT INTO m_professors (member_id) VALUES ($1);
 -- name: CreateProfessor :one
 INSERT INTO m_professors (member_id) VALUES ($1) RETURNING *;
 
--- name: DeleteProfessor :exec
+-- name: DeleteProfessor :execrows
 DELETE FROM m_professors WHERE professor_id = $1;
 
--- name: PluralDeleteProfessors :exec
+-- name: PluralDeleteProfessors :execrows
 DELETE FROM m_professors WHERE professor_id = ANY($1::uuid[]);
 
 -- name: FindProfessorByID :one

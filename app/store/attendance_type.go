@@ -25,17 +25,17 @@ type AttendanceType interface {
 	// CreateAttendanceTypesWithSd SD付きで出欠状況タイプを作成する。
 	CreateAttendanceTypesWithSd(ctx context.Context, sd Sd, params []parameter.CreateAttendanceTypeParam) (int64, error)
 	// DeleteAttendanceType 出欠状況タイプを削除する。
-	DeleteAttendanceType(ctx context.Context, attendanceTypeID uuid.UUID) error
+	DeleteAttendanceType(ctx context.Context, attendanceTypeID uuid.UUID) (int64, error)
 	// DeleteAttendanceTypeWithSd SD付きで出欠状況タイプを削除する。
-	DeleteAttendanceTypeWithSd(ctx context.Context, sd Sd, attendanceTypeID uuid.UUID) error
+	DeleteAttendanceTypeWithSd(ctx context.Context, sd Sd, attendanceTypeID uuid.UUID) (int64, error)
 	// DeleteAttendanceTypeByKey 出欠状況タイプを削除する。
-	DeleteAttendanceTypeByKey(ctx context.Context, key string) error
+	DeleteAttendanceTypeByKey(ctx context.Context, key string) (int64, error)
 	// DeleteAttendanceTypeByKeyWithSd SD付きで出欠状況タイプを削除する。
-	DeleteAttendanceTypeByKeyWithSd(ctx context.Context, sd Sd, key string) error
+	DeleteAttendanceTypeByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error)
 	// PluralDeleteAttendanceTypes 出欠状況タイプを複数削除する。
-	PluralDeleteAttendanceTypes(ctx context.Context, attendanceTypeIDs []uuid.UUID) error
+	PluralDeleteAttendanceTypes(ctx context.Context, attendanceTypeIDs []uuid.UUID) (int64, error)
 	// PluralDeleteAttendanceTypesWithSd SD付きで出欠状況タイプを複数削除する。
-	PluralDeleteAttendanceTypesWithSd(ctx context.Context, sd Sd, attendanceTypeIDs []uuid.UUID) error
+	PluralDeleteAttendanceTypesWithSd(ctx context.Context, sd Sd, attendanceTypeIDs []uuid.UUID) (int64, error)
 	// FindAttendanceTypeByID 出欠状況タイプを取得する。
 	FindAttendanceTypeByID(ctx context.Context, attendanceTypeID uuid.UUID) (entity.AttendanceType, error)
 	// FindAttendanceTypeByIDWithSd SD付きで出欠状況タイプを取得する。

@@ -12,6 +12,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countPermissions(
@@ -156,110 +157,110 @@ func (a *PgAdapter) CreatePermissionsWithSd(
 	return c, nil
 }
 
-func deletePermission(ctx context.Context, qtx *query.Queries, permissionID uuid.UUID) error {
-	err := qtx.DeletePermission(ctx, permissionID)
+func deletePermission(ctx context.Context, qtx *query.Queries, permissionID uuid.UUID) (int64, error) {
+	c, err := qtx.DeletePermission(ctx, permissionID)
 	if err != nil {
-		return fmt.Errorf("failed to delete permission: %w", err)
+		return 0, fmt.Errorf("failed to delete permission: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeletePermission 権限カテゴリーを削除する。
-func (a *PgAdapter) DeletePermission(ctx context.Context, permissionID uuid.UUID) error {
-	err := deletePermission(ctx, a.query, permissionID)
+func (a *PgAdapter) DeletePermission(ctx context.Context, permissionID uuid.UUID) (int64, error) {
+	c, err := deletePermission(ctx, a.query, permissionID)
 	if err != nil {
-		return fmt.Errorf("failed to delete permission: %w", err)
+		return 0, fmt.Errorf("failed to delete permission: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeletePermissionWithSd SD付きで権限カテゴリーを削除する。
 func (a *PgAdapter) DeletePermissionWithSd(
 	ctx context.Context, sd store.Sd, permissionID uuid.UUID,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deletePermission(ctx, qtx, permissionID)
+	c, err := deletePermission(ctx, qtx, permissionID)
 	if err != nil {
-		return fmt.Errorf("failed to delete permission: %w", err)
+		return 0, fmt.Errorf("failed to delete permission: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
-func deletePermissionByKey(ctx context.Context, qtx *query.Queries, key string) error {
-	err := qtx.DeletePermissionByKey(ctx, key)
+func deletePermissionByKey(ctx context.Context, qtx *query.Queries, key string) (int64, error) {
+	c, err := qtx.DeletePermissionByKey(ctx, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete permission: %w", err)
+		return 0, fmt.Errorf("failed to delete permission: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeletePermissionByKey 権限カテゴリーを削除する。
-func (a *PgAdapter) DeletePermissionByKey(ctx context.Context, key string) error {
-	err := deletePermissionByKey(ctx, a.query, key)
+func (a *PgAdapter) DeletePermissionByKey(ctx context.Context, key string) (int64, error) {
+	c, err := deletePermissionByKey(ctx, a.query, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete permission: %w", err)
+		return 0, fmt.Errorf("failed to delete permission: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeletePermissionByKeyWithSd SD付きで権限カテゴリーを削除する。
 func (a *PgAdapter) DeletePermissionByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deletePermissionByKey(ctx, qtx, key)
+	c, err := deletePermissionByKey(ctx, qtx, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete permission: %w", err)
+		return 0, fmt.Errorf("failed to delete permission: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 func pluralDeletePermissions(
 	ctx context.Context, qtx *query.Queries, permissionIDs []uuid.UUID,
-) error {
-	err := qtx.PluralDeletePermissions(ctx, permissionIDs)
+) (int64, error) {
+	c, err := qtx.PluralDeletePermissions(ctx, permissionIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete permission: %w", err)
+		return 0, fmt.Errorf("failed to plural delete permission: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeletePermissions 権限カテゴリーを複数削除する。
 func (a *PgAdapter) PluralDeletePermissions(
 	ctx context.Context, permissionIDs []uuid.UUID,
-) error {
-	err := pluralDeletePermissions(ctx, a.query, permissionIDs)
+) (int64, error) {
+	c, err := pluralDeletePermissions(ctx, a.query, permissionIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete permission: %w", err)
+		return 0, fmt.Errorf("failed to plural delete permission: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeletePermissionsWithSd SD付きで権限カテゴリーを複数削除する。
 func (a *PgAdapter) PluralDeletePermissionsWithSd(
 	ctx context.Context, sd store.Sd, permissionIDs []uuid.UUID,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := pluralDeletePermissions(ctx, qtx, permissionIDs)
+	c, err := pluralDeletePermissions(ctx, qtx, permissionIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete permission: %w", err)
+		return 0, fmt.Errorf("failed to plural delete permission: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 func findPermissionByID(
@@ -268,7 +269,7 @@ func findPermissionByID(
 	e, err := qtx.FindPermissionByID(ctx, permissionID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.Permission{}, store.ErrDataNoRecord
+			return entity.Permission{}, errhandle.NewModelNotFoundError("permission")
 		}
 		return entity.Permission{}, fmt.Errorf("failed to find permission: %w", err)
 	}
@@ -316,7 +317,7 @@ func findPermissionByIDWithCategory(
 	e, err := qtx.FindPermissionByIDWithCategory(ctx, permissionID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.PermissionWithCategory{}, store.ErrDataNoRecord
+			return entity.PermissionWithCategory{}, errhandle.NewModelNotFoundError("permission")
 		}
 		return entity.PermissionWithCategory{}, fmt.Errorf("failed to find permission: %w", err)
 	}
@@ -372,7 +373,7 @@ func findPermissionByKey(
 	e, err := qtx.FindPermissionByKey(ctx, key)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.Permission{}, store.ErrDataNoRecord
+			return entity.Permission{}, errhandle.NewModelNotFoundError("permission")
 		}
 		return entity.Permission{}, fmt.Errorf("failed to find permission: %w", err)
 	}
@@ -418,7 +419,7 @@ func findPermissionByKeyWithCategory(
 	e, err := qtx.FindPermissionByKeyWithCategory(ctx, key)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.PermissionWithCategory{}, store.ErrDataNoRecord
+			return entity.PermissionWithCategory{}, errhandle.NewModelNotFoundError("permission")
 		}
 		return entity.PermissionWithCategory{}, fmt.Errorf("failed to find permission: %w", err)
 	}
@@ -929,7 +930,7 @@ func updatePermission(
 	e, err := qtx.UpdatePermission(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.Permission{}, store.ErrDataNoRecord
+			return entity.Permission{}, errhandle.NewModelNotFoundError("permission")
 		}
 		return entity.Permission{}, fmt.Errorf("failed to update permission: %w", err)
 	}
@@ -983,7 +984,7 @@ func updatePermissionByKey(
 	e, err := qtx.UpdatePermissionByKey(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.Permission{}, store.ErrDataNoRecord
+			return entity.Permission{}, errhandle.NewModelNotFoundError("permission")
 		}
 		return entity.Permission{}, fmt.Errorf("failed to update permission: %w", err)
 	}

@@ -87,21 +87,21 @@ func (m *ManageAttendanceType) UpdateAttendanceType(
 }
 
 // DeleteAttendanceType 出欠状況タイプを削除する。
-func (m *ManageAttendanceType) DeleteAttendanceType(ctx context.Context, id uuid.UUID) error {
-	err := m.DB.DeleteAttendanceType(ctx, id)
+func (m *ManageAttendanceType) DeleteAttendanceType(ctx context.Context, id uuid.UUID) (int64, error) {
+	c, err := m.DB.DeleteAttendanceType(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to delete attendance type: %w", err)
+		return 0, fmt.Errorf("failed to delete attendance type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteAttendanceTypes 出欠状況タイプを複数削除する。
-func (m *ManageAttendanceType) PluralDeleteAttendanceTypes(ctx context.Context, ids []uuid.UUID) error {
-	err := m.DB.PluralDeleteAttendanceTypes(ctx, ids)
+func (m *ManageAttendanceType) PluralDeleteAttendanceTypes(ctx context.Context, ids []uuid.UUID) (int64, error) {
+	c, err := m.DB.PluralDeleteAttendanceTypes(ctx, ids)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete attendance types: %w", err)
+		return 0, fmt.Errorf("failed to plural delete attendance types: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // FindAttendanceTypeByID 出欠状況タイプをIDで取得する。

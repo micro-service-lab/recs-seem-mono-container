@@ -7,6 +7,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
+
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
@@ -15,25 +18,26 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"
 )
 
-// CreateRole is a handler for creating role.
-type CreateRole struct {
+// UpdateRole is a handler for creating role.
+type UpdateRole struct {
 	Service   service.RoleManager
 	Validator validation.Validator
 }
 
-// CreateRoleRequest is a request for CreateRole.
-type CreateRoleRequest struct {
+// UpdateRoleRequest is a request for UpdateRole.
+type UpdateRoleRequest struct {
 	Name        string `json:"name" validate:"required,max=255" ja:"名前" en:"Name"`
 	Description string `json:"description" validate:"required" ja:"説明" en:"Description"`
 }
 
-func (h *CreateRole) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *UpdateRole) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	id := uuid.MustParse(chi.URLParam(r, "role_id"))
 	var err error
-	var roleReq CreateRoleRequest
+	var roleReq UpdateRoleRequest
 	if err = json.NewDecoder(r.Body).Decode(&roleReq); err == nil || errors.Is(err, io.EOF) {
 		if errors.Is(err, io.EOF) {
-			roleReq = CreateRoleRequest{}
+			roleReq = UpdateRoleRequest{}
 		}
 		err = h.Validator.ValidateWithLocale(ctx, &roleReq, lang.GetLocale(r.Context()))
 	}
@@ -45,7 +49,7 @@ func (h *CreateRole) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var role entity.Role
-	if role, err = h.Service.CreateRole(ctx, roleReq.Name, roleReq.Description); err == nil {
+	if role, err = h.Service.UpdateRole(ctx, id, roleReq.Name, roleReq.Description); err == nil {
 		err = response.JSONResponseWriter(ctx, w, response.Success, role, nil)
 	}
 	if err != nil {

@@ -14,7 +14,7 @@ import (
 
 // GetPermissionCategories is a handler for getting permission categories.
 type GetPermissionCategories struct {
-	Service service.ManagerInterface
+	Service service.PermissionCategoryManager
 }
 
 // GetPermissionCategoriesParam is a parameter for GetPermissionCategories.
@@ -46,15 +46,9 @@ func (h *GetPermissionCategories) ServeHTTP(w http.ResponseWriter, r *http.Reque
 		FuncMap: getPermissionCategoriesParseFuncMap,
 	})
 	if err != nil {
-		log.Printf("failed to parse query: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}
@@ -69,15 +63,9 @@ func (h *GetPermissionCategories) ServeHTTP(w http.ResponseWriter, r *http.Reque
 		param.WithCount,
 	)
 	if err != nil {
-		log.Printf("failed to get permission categories: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}

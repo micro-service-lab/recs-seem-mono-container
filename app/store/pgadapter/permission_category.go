@@ -12,6 +12,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countPermissionCategories(
@@ -151,110 +152,110 @@ func (a *PgAdapter) CreatePermissionCategoriesWithSd(
 	return c, nil
 }
 
-func deletePermissionCategory(ctx context.Context, qtx *query.Queries, permissionCategoryID uuid.UUID) error {
-	err := qtx.DeletePermissionCategory(ctx, permissionCategoryID)
+func deletePermissionCategory(ctx context.Context, qtx *query.Queries, permissionCategoryID uuid.UUID) (int64, error) {
+	c, err := qtx.DeletePermissionCategory(ctx, permissionCategoryID)
 	if err != nil {
-		return fmt.Errorf("failed to delete permission category: %w", err)
+		return 0, fmt.Errorf("failed to delete permission category: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeletePermissionCategory 権限カテゴリーを削除する。
-func (a *PgAdapter) DeletePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID) error {
-	err := deletePermissionCategory(ctx, a.query, permissionCategoryID)
+func (a *PgAdapter) DeletePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID) (int64, error) {
+	c, err := deletePermissionCategory(ctx, a.query, permissionCategoryID)
 	if err != nil {
-		return fmt.Errorf("failed to delete permission category: %w", err)
+		return 0, fmt.Errorf("failed to delete permission category: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeletePermissionCategoryWithSd SD付きで権限カテゴリーを削除する。
 func (a *PgAdapter) DeletePermissionCategoryWithSd(
 	ctx context.Context, sd store.Sd, permissionCategoryID uuid.UUID,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deletePermissionCategory(ctx, qtx, permissionCategoryID)
+	c, err := deletePermissionCategory(ctx, qtx, permissionCategoryID)
 	if err != nil {
-		return fmt.Errorf("failed to delete permission category: %w", err)
+		return 0, fmt.Errorf("failed to delete permission category: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
-func deletePermissionCategoryByKey(ctx context.Context, qtx *query.Queries, key string) error {
-	err := qtx.DeletePermissionCategoryByKey(ctx, key)
+func deletePermissionCategoryByKey(ctx context.Context, qtx *query.Queries, key string) (int64, error) {
+	c, err := qtx.DeletePermissionCategoryByKey(ctx, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete permission category: %w", err)
+		return 0, fmt.Errorf("failed to delete permission category: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeletePermissionCategoryByKey 権限カテゴリーを削除する。
-func (a *PgAdapter) DeletePermissionCategoryByKey(ctx context.Context, key string) error {
-	err := deletePermissionCategoryByKey(ctx, a.query, key)
+func (a *PgAdapter) DeletePermissionCategoryByKey(ctx context.Context, key string) (int64, error) {
+	c, err := deletePermissionCategoryByKey(ctx, a.query, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete permission category: %w", err)
+		return 0, fmt.Errorf("failed to delete permission category: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeletePermissionCategoryByKeyWithSd SD付きで権限カテゴリーを削除する。
 func (a *PgAdapter) DeletePermissionCategoryByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deletePermissionCategoryByKey(ctx, qtx, key)
+	c, err := deletePermissionCategoryByKey(ctx, qtx, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete permission category: %w", err)
+		return 0, fmt.Errorf("failed to delete permission category: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 func pluralDeletePermissionCategories(
 	ctx context.Context, qtx *query.Queries, permissionCategoryIDs []uuid.UUID,
-) error {
-	err := qtx.PluralDeletePermissionCategories(ctx, permissionCategoryIDs)
+) (int64, error) {
+	c, err := qtx.PluralDeletePermissionCategories(ctx, permissionCategoryIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete permission categories: %w", err)
+		return 0, fmt.Errorf("failed to plural delete permission categories: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeletePermissionCategories 権限カテゴリーを複数削除する。
 func (a *PgAdapter) PluralDeletePermissionCategories(
 	ctx context.Context, permissionCategoryIDs []uuid.UUID,
-) error {
-	err := pluralDeletePermissionCategories(ctx, a.query, permissionCategoryIDs)
+) (int64, error) {
+	c, err := pluralDeletePermissionCategories(ctx, a.query, permissionCategoryIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete permission categories: %w", err)
+		return 0, fmt.Errorf("failed to plural delete permission categories: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeletePermissionCategoriesWithSd SD付きで権限カテゴリーを複数削除する。
 func (a *PgAdapter) PluralDeletePermissionCategoriesWithSd(
 	ctx context.Context, sd store.Sd, permissionCategoryIDs []uuid.UUID,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := pluralDeletePermissionCategories(ctx, qtx, permissionCategoryIDs)
+	c, err := pluralDeletePermissionCategories(ctx, qtx, permissionCategoryIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete permission categories: %w", err)
+		return 0, fmt.Errorf("failed to plural delete permission categories: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 func findPermissionCategoryByID(
@@ -263,7 +264,7 @@ func findPermissionCategoryByID(
 	e, err := qtx.FindPermissionCategoryByID(ctx, permissionCategoryID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.PermissionCategory{}, store.ErrDataNoRecord
+			return entity.PermissionCategory{}, errhandle.NewModelNotFoundError("permission category")
 		}
 		return entity.PermissionCategory{}, fmt.Errorf("failed to find permission category: %w", err)
 	}
@@ -310,7 +311,7 @@ func findPermissionCategoryByKey(
 	e, err := qtx.FindPermissionCategoryByKey(ctx, key)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.PermissionCategory{}, store.ErrDataNoRecord
+			return entity.PermissionCategory{}, errhandle.NewModelNotFoundError("permission category")
 		}
 		return entity.PermissionCategory{}, fmt.Errorf("failed to find permission category: %w", err)
 	}
@@ -574,7 +575,7 @@ func updatePermissionCategory(
 	e, err := qtx.UpdatePermissionCategory(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.PermissionCategory{}, store.ErrDataNoRecord
+			return entity.PermissionCategory{}, errhandle.NewModelNotFoundError("permission category")
 		}
 		return entity.PermissionCategory{}, fmt.Errorf("failed to update permission category: %w", err)
 	}
@@ -626,7 +627,7 @@ func updatePermissionCategoryByKey(
 	e, err := qtx.UpdatePermissionCategoryByKey(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.PermissionCategory{}, store.ErrDataNoRecord
+			return entity.PermissionCategory{}, errhandle.NewModelNotFoundError("permission category")
 		}
 		return entity.PermissionCategory{}, fmt.Errorf("failed to update permission category: %w", err)
 	}

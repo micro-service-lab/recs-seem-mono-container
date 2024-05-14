@@ -87,22 +87,28 @@ func (q *Queries) CreateLabIOHistory(ctx context.Context, arg CreateLabIOHistory
 	return i, err
 }
 
-const deleteLabIOHistory = `-- name: DeleteLabIOHistory :exec
+const deleteLabIOHistory = `-- name: DeleteLabIOHistory :execrows
 DELETE FROM t_lab_io_histories WHERE lab_io_history_id = $1
 `
 
-func (q *Queries) DeleteLabIOHistory(ctx context.Context, labIoHistoryID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteLabIOHistory, labIoHistoryID)
-	return err
+func (q *Queries) DeleteLabIOHistory(ctx context.Context, labIoHistoryID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteLabIOHistory, labIoHistoryID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteLabIOHistoryOnMember = `-- name: DeleteLabIOHistoryOnMember :exec
+const deleteLabIOHistoryOnMember = `-- name: DeleteLabIOHistoryOnMember :execrows
 DELETE FROM t_lab_io_histories WHERE member_id = $1
 `
 
-func (q *Queries) DeleteLabIOHistoryOnMember(ctx context.Context, memberID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteLabIOHistoryOnMember, memberID)
-	return err
+func (q *Queries) DeleteLabIOHistoryOnMember(ctx context.Context, memberID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteLabIOHistoryOnMember, memberID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const exitLabIOHistory = `-- name: ExitLabIOHistory :one
@@ -853,13 +859,16 @@ func (q *Queries) GetPluralLabIOHistoriesWithMember(ctx context.Context, arg Get
 	return items, nil
 }
 
-const pluralDeleteLabIOHistories = `-- name: PluralDeleteLabIOHistories :exec
+const pluralDeleteLabIOHistories = `-- name: PluralDeleteLabIOHistories :execrows
 DELETE FROM t_lab_io_histories WHERE lab_io_history_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteLabIOHistories(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteLabIOHistories, dollar_1)
-	return err
+func (q *Queries) PluralDeleteLabIOHistories(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteLabIOHistories, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateLabIOHistory = `-- name: UpdateLabIOHistory :one

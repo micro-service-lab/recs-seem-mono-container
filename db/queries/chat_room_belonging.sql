@@ -4,13 +4,13 @@ INSERT INTO m_chat_room_belongings (member_id, chat_room_id, added_at) VALUES ($
 -- name: CreateChatRoomBelonging :one
 INSERT INTO m_chat_room_belongings (member_id, chat_room_id, added_at) VALUES ($1, $2, $3) RETURNING *;
 
--- name: DeleteChatRoomBelonging :exec
+-- name: DeleteChatRoomBelonging :execrows
 DELETE FROM m_chat_room_belongings WHERE member_id = $1 AND chat_room_id = $2;
 
--- name: DeleteChatRoomBelongingsOnMember :exec
+-- name: DeleteChatRoomBelongingsOnMember :execrows
 DELETE FROM m_chat_room_belongings WHERE member_id = $1;
 
--- name: DeleteChatRoomBelongingsOnMembers :exec
+-- name: DeleteChatRoomBelongingsOnMembers :execrows
 DELETE FROM m_chat_room_belongings WHERE member_id = ANY($1::uuid[]);
 
 -- name: GetMembersOnChatRoom :many

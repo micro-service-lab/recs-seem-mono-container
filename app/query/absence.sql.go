@@ -33,13 +33,16 @@ func (q *Queries) CreateAbsence(ctx context.Context, attendanceID uuid.UUID) (Ab
 	return i, err
 }
 
-const deleteAbsence = `-- name: DeleteAbsence :exec
+const deleteAbsence = `-- name: DeleteAbsence :execrows
 DELETE FROM t_absences WHERE absence_id = $1
 `
 
-func (q *Queries) DeleteAbsence(ctx context.Context, absenceID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAbsence, absenceID)
-	return err
+func (q *Queries) DeleteAbsence(ctx context.Context, absenceID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAbsence, absenceID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findAbsenceByID = `-- name: FindAbsenceByID :one
@@ -186,11 +189,14 @@ func (q *Queries) GetPluralAbsences(ctx context.Context, arg GetPluralAbsencesPa
 	return items, nil
 }
 
-const pluralDeleteAbsences = `-- name: PluralDeleteAbsences :exec
+const pluralDeleteAbsences = `-- name: PluralDeleteAbsences :execrows
 DELETE FROM t_absences WHERE absence_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteAbsences(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteAbsences, dollar_1)
-	return err
+func (q *Queries) PluralDeleteAbsences(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteAbsences, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }

@@ -48,22 +48,28 @@ type CreateGradesParams struct {
 	OrganizationID uuid.UUID `json:"organization_id"`
 }
 
-const deleteGrade = `-- name: DeleteGrade :exec
+const deleteGrade = `-- name: DeleteGrade :execrows
 DELETE FROM m_grades WHERE grade_id = $1
 `
 
-func (q *Queries) DeleteGrade(ctx context.Context, gradeID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteGrade, gradeID)
-	return err
+func (q *Queries) DeleteGrade(ctx context.Context, gradeID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteGrade, gradeID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteGradeByKey = `-- name: DeleteGradeByKey :exec
+const deleteGradeByKey = `-- name: DeleteGradeByKey :execrows
 DELETE FROM m_grades WHERE key = $1
 `
 
-func (q *Queries) DeleteGradeByKey(ctx context.Context, key string) error {
-	_, err := q.db.Exec(ctx, deleteGradeByKey, key)
-	return err
+func (q *Queries) DeleteGradeByKey(ctx context.Context, key string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteGradeByKey, key)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findGradeByID = `-- name: FindGradeByID :one
@@ -559,11 +565,14 @@ func (q *Queries) GetPluralGradesWithOrganization(ctx context.Context, arg GetPl
 	return items, nil
 }
 
-const pluralDeleteGrades = `-- name: PluralDeleteGrades :exec
+const pluralDeleteGrades = `-- name: PluralDeleteGrades :execrows
 DELETE FROM m_grades WHERE grade_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteGrades(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteGrades, dollar_1)
-	return err
+func (q *Queries) PluralDeleteGrades(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteGrades, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }

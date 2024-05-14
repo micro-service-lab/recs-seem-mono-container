@@ -16,7 +16,7 @@ import (
 
 // GetPermissions is a handler for getting permission.
 type GetPermissions struct {
-	Service service.ManagerInterface
+	Service service.PermissionManager
 }
 
 // GetPermissionsParam is a parameter for GetPermissions.
@@ -52,15 +52,9 @@ func (h *GetPermissions) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		FuncMap: getPermissionsParseFuncMap,
 	})
 	if err != nil {
-		log.Printf("failed to parse query: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}
@@ -98,15 +92,9 @@ func (h *GetPermissions) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		)
 	}
 	if err != nil {
-		log.Printf("failed to get permission: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}

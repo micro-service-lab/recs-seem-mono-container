@@ -156,7 +156,7 @@ func TestPgAdapter_RecordType(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Len(t, el.Data, 2)
 				// delete
-				err = adapter.DeleteRecordTypeWithSd(ctx, sd, el.Data[0].RecordTypeID)
+				_, err = adapter.DeleteRecordTypeWithSd(ctx, sd, el.Data[0].RecordTypeID)
 				assert.NoError(t, err)
 				count, err = adapter.CountRecordTypesWithSd(ctx, sd, parameter.WhereRecordTypeParam{})
 				assert.NoError(t, err)

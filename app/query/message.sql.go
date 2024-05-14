@@ -111,22 +111,28 @@ type CreateMessagesParams struct {
 	LastEditedAt time.Time   `json:"last_edited_at"`
 }
 
-const deleteMessage = `-- name: DeleteMessage :exec
+const deleteMessage = `-- name: DeleteMessage :execrows
 DELETE FROM t_messages WHERE message_id = $1
 `
 
-func (q *Queries) DeleteMessage(ctx context.Context, messageID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteMessage, messageID)
-	return err
+func (q *Queries) DeleteMessage(ctx context.Context, messageID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteMessage, messageID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteMessagesOnChatRoom = `-- name: DeleteMessagesOnChatRoom :exec
+const deleteMessagesOnChatRoom = `-- name: DeleteMessagesOnChatRoom :execrows
 DELETE FROM t_messages WHERE chat_room_id = $1
 `
 
-func (q *Queries) DeleteMessagesOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteMessagesOnChatRoom, chatRoomID)
-	return err
+func (q *Queries) DeleteMessagesOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteMessagesOnChatRoom, chatRoomID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findMessageByID = `-- name: FindMessageByID :one
@@ -1897,13 +1903,16 @@ func (q *Queries) GetPluralMessagesWithSender(ctx context.Context, arg GetPlural
 	return items, nil
 }
 
-const pluralDeleteMessages = `-- name: PluralDeleteMessages :exec
+const pluralDeleteMessages = `-- name: PluralDeleteMessages :execrows
 DELETE FROM t_messages WHERE message_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteMessages(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteMessages, dollar_1)
-	return err
+func (q *Queries) PluralDeleteMessages(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteMessages, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateMessage = `-- name: UpdateMessage :one

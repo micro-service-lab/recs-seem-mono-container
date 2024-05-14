@@ -14,7 +14,7 @@ import (
 
 // GetMimeTypes is a handler for getting mime types.
 type GetMimeTypes struct {
-	Service service.ManagerInterface
+	Service service.MimeTypeManager
 }
 
 // GetMimeTypesParam is a parameter for GetMimeTypes.
@@ -46,15 +46,9 @@ func (h *GetMimeTypes) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		FuncMap: getMimeTypesParseFuncMap,
 	})
 	if err != nil {
-		log.Printf("failed to parse query: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}
@@ -69,15 +63,9 @@ func (h *GetMimeTypes) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		param.WithCount,
 	)
 	if err != nil {
-		log.Printf("failed to get mime types: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}

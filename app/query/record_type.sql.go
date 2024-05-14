@@ -55,22 +55,28 @@ type CreateRecordTypesParams struct {
 	Key  string `json:"key"`
 }
 
-const deleteRecordType = `-- name: DeleteRecordType :exec
+const deleteRecordType = `-- name: DeleteRecordType :execrows
 DELETE FROM m_record_types WHERE record_type_id = $1
 `
 
-func (q *Queries) DeleteRecordType(ctx context.Context, recordTypeID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteRecordType, recordTypeID)
-	return err
+func (q *Queries) DeleteRecordType(ctx context.Context, recordTypeID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteRecordType, recordTypeID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteRecordTypeByKey = `-- name: DeleteRecordTypeByKey :exec
+const deleteRecordTypeByKey = `-- name: DeleteRecordTypeByKey :execrows
 DELETE FROM m_record_types WHERE key = $1
 `
 
-func (q *Queries) DeleteRecordTypeByKey(ctx context.Context, key string) error {
-	_, err := q.db.Exec(ctx, deleteRecordTypeByKey, key)
-	return err
+func (q *Queries) DeleteRecordTypeByKey(ctx context.Context, key string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteRecordTypeByKey, key)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findRecordTypeByID = `-- name: FindRecordTypeByID :one
@@ -308,13 +314,16 @@ func (q *Queries) GetRecordTypesUseNumberedPaginate(ctx context.Context, arg Get
 	return items, nil
 }
 
-const pluralDeleteRecordTypes = `-- name: PluralDeleteRecordTypes :exec
+const pluralDeleteRecordTypes = `-- name: PluralDeleteRecordTypes :execrows
 DELETE FROM m_record_types WHERE record_type_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteRecordTypes(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteRecordTypes, dollar_1)
-	return err
+func (q *Queries) PluralDeleteRecordTypes(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteRecordTypes, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateRecordType = `-- name: UpdateRecordType :one

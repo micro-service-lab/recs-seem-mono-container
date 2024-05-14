@@ -228,124 +228,124 @@ var _ Store = &StoreMock{}
 //			CreateRolesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateRoleParam) (int64, error) {
 //				panic("mock out the CreateRolesWithSd method")
 //			},
-//			DeleteAbsenceFunc: func(ctx context.Context, absenceID uuid.UUID) error {
+//			DeleteAbsenceFunc: func(ctx context.Context, absenceID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteAbsence method")
 //			},
-//			DeleteAbsenceWithSdFunc: func(ctx context.Context, sd Sd, absenceID uuid.UUID) error {
+//			DeleteAbsenceWithSdFunc: func(ctx context.Context, sd Sd, absenceID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteAbsenceWithSd method")
 //			},
-//			DeleteAttendStatusFunc: func(ctx context.Context, attendStatusID uuid.UUID) error {
+//			DeleteAttendStatusFunc: func(ctx context.Context, attendStatusID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteAttendStatus method")
 //			},
-//			DeleteAttendStatusByKeyFunc: func(ctx context.Context, key string) error {
+//			DeleteAttendStatusByKeyFunc: func(ctx context.Context, key string) (int64, error) {
 //				panic("mock out the DeleteAttendStatusByKey method")
 //			},
-//			DeleteAttendStatusByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) error {
+//			DeleteAttendStatusByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (int64, error) {
 //				panic("mock out the DeleteAttendStatusByKeyWithSd method")
 //			},
-//			DeleteAttendStatusWithSdFunc: func(ctx context.Context, sd Sd, attendStatusID uuid.UUID) error {
+//			DeleteAttendStatusWithSdFunc: func(ctx context.Context, sd Sd, attendStatusID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteAttendStatusWithSd method")
 //			},
-//			DeleteAttendanceTypeFunc: func(ctx context.Context, attendanceTypeID uuid.UUID) error {
+//			DeleteAttendanceTypeFunc: func(ctx context.Context, attendanceTypeID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteAttendanceType method")
 //			},
-//			DeleteAttendanceTypeByKeyFunc: func(ctx context.Context, key string) error {
+//			DeleteAttendanceTypeByKeyFunc: func(ctx context.Context, key string) (int64, error) {
 //				panic("mock out the DeleteAttendanceTypeByKey method")
 //			},
-//			DeleteAttendanceTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) error {
+//			DeleteAttendanceTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (int64, error) {
 //				panic("mock out the DeleteAttendanceTypeByKeyWithSd method")
 //			},
-//			DeleteAttendanceTypeWithSdFunc: func(ctx context.Context, sd Sd, attendanceTypeID uuid.UUID) error {
+//			DeleteAttendanceTypeWithSdFunc: func(ctx context.Context, sd Sd, attendanceTypeID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteAttendanceTypeWithSd method")
 //			},
-//			DeleteEventTypeFunc: func(ctx context.Context, eventTypeID uuid.UUID) error {
+//			DeleteEventTypeFunc: func(ctx context.Context, eventTypeID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteEventType method")
 //			},
-//			DeleteEventTypeByKeyFunc: func(ctx context.Context, key string) error {
+//			DeleteEventTypeByKeyFunc: func(ctx context.Context, key string) (int64, error) {
 //				panic("mock out the DeleteEventTypeByKey method")
 //			},
-//			DeleteEventTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) error {
+//			DeleteEventTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (int64, error) {
 //				panic("mock out the DeleteEventTypeByKeyWithSd method")
 //			},
-//			DeleteEventTypeWithSdFunc: func(ctx context.Context, sd Sd, eventTypeID uuid.UUID) error {
+//			DeleteEventTypeWithSdFunc: func(ctx context.Context, sd Sd, eventTypeID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteEventTypeWithSd method")
 //			},
-//			DeleteMimeTypeFunc: func(ctx context.Context, mimeTypeID uuid.UUID) error {
+//			DeleteMimeTypeFunc: func(ctx context.Context, mimeTypeID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteMimeType method")
 //			},
-//			DeleteMimeTypeByKeyFunc: func(ctx context.Context, key string) error {
+//			DeleteMimeTypeByKeyFunc: func(ctx context.Context, key string) (int64, error) {
 //				panic("mock out the DeleteMimeTypeByKey method")
 //			},
-//			DeleteMimeTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) error {
+//			DeleteMimeTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (int64, error) {
 //				panic("mock out the DeleteMimeTypeByKeyWithSd method")
 //			},
-//			DeleteMimeTypeWithSdFunc: func(ctx context.Context, sd Sd, mimeTypeID uuid.UUID) error {
+//			DeleteMimeTypeWithSdFunc: func(ctx context.Context, sd Sd, mimeTypeID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteMimeTypeWithSd method")
 //			},
-//			DeletePermissionFunc: func(ctx context.Context, permissionID uuid.UUID) error {
+//			DeletePermissionFunc: func(ctx context.Context, permissionID uuid.UUID) (int64, error) {
 //				panic("mock out the DeletePermission method")
 //			},
-//			DeletePermissionByKeyFunc: func(ctx context.Context, key string) error {
+//			DeletePermissionByKeyFunc: func(ctx context.Context, key string) (int64, error) {
 //				panic("mock out the DeletePermissionByKey method")
 //			},
-//			DeletePermissionByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) error {
+//			DeletePermissionByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (int64, error) {
 //				panic("mock out the DeletePermissionByKeyWithSd method")
 //			},
-//			DeletePermissionCategoryFunc: func(ctx context.Context, permissionCategoryID uuid.UUID) error {
+//			DeletePermissionCategoryFunc: func(ctx context.Context, permissionCategoryID uuid.UUID) (int64, error) {
 //				panic("mock out the DeletePermissionCategory method")
 //			},
-//			DeletePermissionCategoryByKeyFunc: func(ctx context.Context, key string) error {
+//			DeletePermissionCategoryByKeyFunc: func(ctx context.Context, key string) (int64, error) {
 //				panic("mock out the DeletePermissionCategoryByKey method")
 //			},
-//			DeletePermissionCategoryByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) error {
+//			DeletePermissionCategoryByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (int64, error) {
 //				panic("mock out the DeletePermissionCategoryByKeyWithSd method")
 //			},
-//			DeletePermissionCategoryWithSdFunc: func(ctx context.Context, sd Sd, permissionCategoryID uuid.UUID) error {
+//			DeletePermissionCategoryWithSdFunc: func(ctx context.Context, sd Sd, permissionCategoryID uuid.UUID) (int64, error) {
 //				panic("mock out the DeletePermissionCategoryWithSd method")
 //			},
-//			DeletePermissionWithSdFunc: func(ctx context.Context, sd Sd, permissionID uuid.UUID) error {
+//			DeletePermissionWithSdFunc: func(ctx context.Context, sd Sd, permissionID uuid.UUID) (int64, error) {
 //				panic("mock out the DeletePermissionWithSd method")
 //			},
-//			DeletePolicyFunc: func(ctx context.Context, policyID uuid.UUID) error {
+//			DeletePolicyFunc: func(ctx context.Context, policyID uuid.UUID) (int64, error) {
 //				panic("mock out the DeletePolicy method")
 //			},
-//			DeletePolicyByKeyFunc: func(ctx context.Context, key string) error {
+//			DeletePolicyByKeyFunc: func(ctx context.Context, key string) (int64, error) {
 //				panic("mock out the DeletePolicyByKey method")
 //			},
-//			DeletePolicyByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) error {
+//			DeletePolicyByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (int64, error) {
 //				panic("mock out the DeletePolicyByKeyWithSd method")
 //			},
-//			DeletePolicyCategoryFunc: func(ctx context.Context, policyCategoryID uuid.UUID) error {
+//			DeletePolicyCategoryFunc: func(ctx context.Context, policyCategoryID uuid.UUID) (int64, error) {
 //				panic("mock out the DeletePolicyCategory method")
 //			},
-//			DeletePolicyCategoryByKeyFunc: func(ctx context.Context, key string) error {
+//			DeletePolicyCategoryByKeyFunc: func(ctx context.Context, key string) (int64, error) {
 //				panic("mock out the DeletePolicyCategoryByKey method")
 //			},
-//			DeletePolicyCategoryByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) error {
+//			DeletePolicyCategoryByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (int64, error) {
 //				panic("mock out the DeletePolicyCategoryByKeyWithSd method")
 //			},
-//			DeletePolicyCategoryWithSdFunc: func(ctx context.Context, sd Sd, policyCategoryID uuid.UUID) error {
+//			DeletePolicyCategoryWithSdFunc: func(ctx context.Context, sd Sd, policyCategoryID uuid.UUID) (int64, error) {
 //				panic("mock out the DeletePolicyCategoryWithSd method")
 //			},
-//			DeletePolicyWithSdFunc: func(ctx context.Context, sd Sd, policyID uuid.UUID) error {
+//			DeletePolicyWithSdFunc: func(ctx context.Context, sd Sd, policyID uuid.UUID) (int64, error) {
 //				panic("mock out the DeletePolicyWithSd method")
 //			},
-//			DeleteRecordTypeFunc: func(ctx context.Context, recordTypeID uuid.UUID) error {
+//			DeleteRecordTypeFunc: func(ctx context.Context, recordTypeID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteRecordType method")
 //			},
-//			DeleteRecordTypeByKeyFunc: func(ctx context.Context, key string) error {
+//			DeleteRecordTypeByKeyFunc: func(ctx context.Context, key string) (int64, error) {
 //				panic("mock out the DeleteRecordTypeByKey method")
 //			},
-//			DeleteRecordTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) error {
+//			DeleteRecordTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (int64, error) {
 //				panic("mock out the DeleteRecordTypeByKeyWithSd method")
 //			},
-//			DeleteRecordTypeWithSdFunc: func(ctx context.Context, sd Sd, recordTypeID uuid.UUID) error {
+//			DeleteRecordTypeWithSdFunc: func(ctx context.Context, sd Sd, recordTypeID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteRecordTypeWithSd method")
 //			},
-//			DeleteRoleFunc: func(ctx context.Context, roleID uuid.UUID) error {
+//			DeleteRoleFunc: func(ctx context.Context, roleID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteRole method")
 //			},
-//			DeleteRoleWithSdFunc: func(ctx context.Context, sd Sd, roleID uuid.UUID) error {
+//			DeleteRoleWithSdFunc: func(ctx context.Context, sd Sd, roleID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteRoleWithSd method")
 //			},
 //			FindAbsenceByIDFunc: func(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error) {
@@ -636,70 +636,70 @@ var _ Store = &StoreMock{}
 //			GetRolesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereRoleParam, order parameter.RoleOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Role], error) {
 //				panic("mock out the GetRolesWithSd method")
 //			},
-//			PluralDeleteAbsencesFunc: func(ctx context.Context, absenceIDs []uuid.UUID) error {
+//			PluralDeleteAbsencesFunc: func(ctx context.Context, absenceIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteAbsences method")
 //			},
-//			PluralDeleteAbsencesWithSdFunc: func(ctx context.Context, sd Sd, absenceIDs []uuid.UUID) error {
+//			PluralDeleteAbsencesWithSdFunc: func(ctx context.Context, sd Sd, absenceIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteAbsencesWithSd method")
 //			},
-//			PluralDeleteAttendStatusesFunc: func(ctx context.Context, attendStatusIDs []uuid.UUID) error {
+//			PluralDeleteAttendStatusesFunc: func(ctx context.Context, attendStatusIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteAttendStatuses method")
 //			},
-//			PluralDeleteAttendStatusesWithSdFunc: func(ctx context.Context, sd Sd, attendStatusIDs []uuid.UUID) error {
+//			PluralDeleteAttendStatusesWithSdFunc: func(ctx context.Context, sd Sd, attendStatusIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteAttendStatusesWithSd method")
 //			},
-//			PluralDeleteAttendanceTypesFunc: func(ctx context.Context, attendanceTypeIDs []uuid.UUID) error {
+//			PluralDeleteAttendanceTypesFunc: func(ctx context.Context, attendanceTypeIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteAttendanceTypes method")
 //			},
-//			PluralDeleteAttendanceTypesWithSdFunc: func(ctx context.Context, sd Sd, attendanceTypeIDs []uuid.UUID) error {
+//			PluralDeleteAttendanceTypesWithSdFunc: func(ctx context.Context, sd Sd, attendanceTypeIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteAttendanceTypesWithSd method")
 //			},
-//			PluralDeleteEventTypesFunc: func(ctx context.Context, eventTypeIDs []uuid.UUID) error {
+//			PluralDeleteEventTypesFunc: func(ctx context.Context, eventTypeIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteEventTypes method")
 //			},
-//			PluralDeleteEventTypesWithSdFunc: func(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID) error {
+//			PluralDeleteEventTypesWithSdFunc: func(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteEventTypesWithSd method")
 //			},
-//			PluralDeleteMimeTypesFunc: func(ctx context.Context, mimeTypeIDs []uuid.UUID) error {
+//			PluralDeleteMimeTypesFunc: func(ctx context.Context, mimeTypeIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteMimeTypes method")
 //			},
-//			PluralDeleteMimeTypesWithSdFunc: func(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID) error {
+//			PluralDeleteMimeTypesWithSdFunc: func(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteMimeTypesWithSd method")
 //			},
-//			PluralDeletePermissionCategoriesFunc: func(ctx context.Context, permissionCategoryIDs []uuid.UUID) error {
+//			PluralDeletePermissionCategoriesFunc: func(ctx context.Context, permissionCategoryIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeletePermissionCategories method")
 //			},
-//			PluralDeletePermissionCategoriesWithSdFunc: func(ctx context.Context, sd Sd, permissionCategoryIDs []uuid.UUID) error {
+//			PluralDeletePermissionCategoriesWithSdFunc: func(ctx context.Context, sd Sd, permissionCategoryIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeletePermissionCategoriesWithSd method")
 //			},
-//			PluralDeletePermissionsFunc: func(ctx context.Context, permissionIDs []uuid.UUID) error {
+//			PluralDeletePermissionsFunc: func(ctx context.Context, permissionIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeletePermissions method")
 //			},
-//			PluralDeletePermissionsWithSdFunc: func(ctx context.Context, sd Sd, permissionIDs []uuid.UUID) error {
+//			PluralDeletePermissionsWithSdFunc: func(ctx context.Context, sd Sd, permissionIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeletePermissionsWithSd method")
 //			},
-//			PluralDeletePoliciesFunc: func(ctx context.Context, policyIDs []uuid.UUID) error {
+//			PluralDeletePoliciesFunc: func(ctx context.Context, policyIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeletePolicies method")
 //			},
-//			PluralDeletePoliciesWithSdFunc: func(ctx context.Context, sd Sd, policyIDs []uuid.UUID) error {
+//			PluralDeletePoliciesWithSdFunc: func(ctx context.Context, sd Sd, policyIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeletePoliciesWithSd method")
 //			},
-//			PluralDeletePolicyCategoriesFunc: func(ctx context.Context, policyCategoryIDs []uuid.UUID) error {
+//			PluralDeletePolicyCategoriesFunc: func(ctx context.Context, policyCategoryIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeletePolicyCategories method")
 //			},
-//			PluralDeletePolicyCategoriesWithSdFunc: func(ctx context.Context, sd Sd, policyCategoryIDs []uuid.UUID) error {
+//			PluralDeletePolicyCategoriesWithSdFunc: func(ctx context.Context, sd Sd, policyCategoryIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeletePolicyCategoriesWithSd method")
 //			},
-//			PluralDeleteRecordTypesFunc: func(ctx context.Context, recordTypeIDs []uuid.UUID) error {
+//			PluralDeleteRecordTypesFunc: func(ctx context.Context, recordTypeIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteRecordTypes method")
 //			},
-//			PluralDeleteRecordTypesWithSdFunc: func(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID) error {
+//			PluralDeleteRecordTypesWithSdFunc: func(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteRecordTypesWithSd method")
 //			},
-//			PluralDeleteRolesFunc: func(ctx context.Context, roleIDs []uuid.UUID) error {
+//			PluralDeleteRolesFunc: func(ctx context.Context, roleIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteRoles method")
 //			},
-//			PluralDeleteRolesWithSdFunc: func(ctx context.Context, sd Sd, roleIDs []uuid.UUID) error {
+//			PluralDeleteRolesWithSdFunc: func(ctx context.Context, sd Sd, roleIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteRolesWithSd method")
 //			},
 //			RollbackFunc: func(contextMoqParam context.Context, sd Sd) error {
@@ -1034,124 +1034,124 @@ type StoreMock struct {
 	CreateRolesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateRoleParam) (int64, error)
 
 	// DeleteAbsenceFunc mocks the DeleteAbsence method.
-	DeleteAbsenceFunc func(ctx context.Context, absenceID uuid.UUID) error
+	DeleteAbsenceFunc func(ctx context.Context, absenceID uuid.UUID) (int64, error)
 
 	// DeleteAbsenceWithSdFunc mocks the DeleteAbsenceWithSd method.
-	DeleteAbsenceWithSdFunc func(ctx context.Context, sd Sd, absenceID uuid.UUID) error
+	DeleteAbsenceWithSdFunc func(ctx context.Context, sd Sd, absenceID uuid.UUID) (int64, error)
 
 	// DeleteAttendStatusFunc mocks the DeleteAttendStatus method.
-	DeleteAttendStatusFunc func(ctx context.Context, attendStatusID uuid.UUID) error
+	DeleteAttendStatusFunc func(ctx context.Context, attendStatusID uuid.UUID) (int64, error)
 
 	// DeleteAttendStatusByKeyFunc mocks the DeleteAttendStatusByKey method.
-	DeleteAttendStatusByKeyFunc func(ctx context.Context, key string) error
+	DeleteAttendStatusByKeyFunc func(ctx context.Context, key string) (int64, error)
 
 	// DeleteAttendStatusByKeyWithSdFunc mocks the DeleteAttendStatusByKeyWithSd method.
-	DeleteAttendStatusByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) error
+	DeleteAttendStatusByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (int64, error)
 
 	// DeleteAttendStatusWithSdFunc mocks the DeleteAttendStatusWithSd method.
-	DeleteAttendStatusWithSdFunc func(ctx context.Context, sd Sd, attendStatusID uuid.UUID) error
+	DeleteAttendStatusWithSdFunc func(ctx context.Context, sd Sd, attendStatusID uuid.UUID) (int64, error)
 
 	// DeleteAttendanceTypeFunc mocks the DeleteAttendanceType method.
-	DeleteAttendanceTypeFunc func(ctx context.Context, attendanceTypeID uuid.UUID) error
+	DeleteAttendanceTypeFunc func(ctx context.Context, attendanceTypeID uuid.UUID) (int64, error)
 
 	// DeleteAttendanceTypeByKeyFunc mocks the DeleteAttendanceTypeByKey method.
-	DeleteAttendanceTypeByKeyFunc func(ctx context.Context, key string) error
+	DeleteAttendanceTypeByKeyFunc func(ctx context.Context, key string) (int64, error)
 
 	// DeleteAttendanceTypeByKeyWithSdFunc mocks the DeleteAttendanceTypeByKeyWithSd method.
-	DeleteAttendanceTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) error
+	DeleteAttendanceTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (int64, error)
 
 	// DeleteAttendanceTypeWithSdFunc mocks the DeleteAttendanceTypeWithSd method.
-	DeleteAttendanceTypeWithSdFunc func(ctx context.Context, sd Sd, attendanceTypeID uuid.UUID) error
+	DeleteAttendanceTypeWithSdFunc func(ctx context.Context, sd Sd, attendanceTypeID uuid.UUID) (int64, error)
 
 	// DeleteEventTypeFunc mocks the DeleteEventType method.
-	DeleteEventTypeFunc func(ctx context.Context, eventTypeID uuid.UUID) error
+	DeleteEventTypeFunc func(ctx context.Context, eventTypeID uuid.UUID) (int64, error)
 
 	// DeleteEventTypeByKeyFunc mocks the DeleteEventTypeByKey method.
-	DeleteEventTypeByKeyFunc func(ctx context.Context, key string) error
+	DeleteEventTypeByKeyFunc func(ctx context.Context, key string) (int64, error)
 
 	// DeleteEventTypeByKeyWithSdFunc mocks the DeleteEventTypeByKeyWithSd method.
-	DeleteEventTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) error
+	DeleteEventTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (int64, error)
 
 	// DeleteEventTypeWithSdFunc mocks the DeleteEventTypeWithSd method.
-	DeleteEventTypeWithSdFunc func(ctx context.Context, sd Sd, eventTypeID uuid.UUID) error
+	DeleteEventTypeWithSdFunc func(ctx context.Context, sd Sd, eventTypeID uuid.UUID) (int64, error)
 
 	// DeleteMimeTypeFunc mocks the DeleteMimeType method.
-	DeleteMimeTypeFunc func(ctx context.Context, mimeTypeID uuid.UUID) error
+	DeleteMimeTypeFunc func(ctx context.Context, mimeTypeID uuid.UUID) (int64, error)
 
 	// DeleteMimeTypeByKeyFunc mocks the DeleteMimeTypeByKey method.
-	DeleteMimeTypeByKeyFunc func(ctx context.Context, key string) error
+	DeleteMimeTypeByKeyFunc func(ctx context.Context, key string) (int64, error)
 
 	// DeleteMimeTypeByKeyWithSdFunc mocks the DeleteMimeTypeByKeyWithSd method.
-	DeleteMimeTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) error
+	DeleteMimeTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (int64, error)
 
 	// DeleteMimeTypeWithSdFunc mocks the DeleteMimeTypeWithSd method.
-	DeleteMimeTypeWithSdFunc func(ctx context.Context, sd Sd, mimeTypeID uuid.UUID) error
+	DeleteMimeTypeWithSdFunc func(ctx context.Context, sd Sd, mimeTypeID uuid.UUID) (int64, error)
 
 	// DeletePermissionFunc mocks the DeletePermission method.
-	DeletePermissionFunc func(ctx context.Context, permissionID uuid.UUID) error
+	DeletePermissionFunc func(ctx context.Context, permissionID uuid.UUID) (int64, error)
 
 	// DeletePermissionByKeyFunc mocks the DeletePermissionByKey method.
-	DeletePermissionByKeyFunc func(ctx context.Context, key string) error
+	DeletePermissionByKeyFunc func(ctx context.Context, key string) (int64, error)
 
 	// DeletePermissionByKeyWithSdFunc mocks the DeletePermissionByKeyWithSd method.
-	DeletePermissionByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) error
+	DeletePermissionByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (int64, error)
 
 	// DeletePermissionCategoryFunc mocks the DeletePermissionCategory method.
-	DeletePermissionCategoryFunc func(ctx context.Context, permissionCategoryID uuid.UUID) error
+	DeletePermissionCategoryFunc func(ctx context.Context, permissionCategoryID uuid.UUID) (int64, error)
 
 	// DeletePermissionCategoryByKeyFunc mocks the DeletePermissionCategoryByKey method.
-	DeletePermissionCategoryByKeyFunc func(ctx context.Context, key string) error
+	DeletePermissionCategoryByKeyFunc func(ctx context.Context, key string) (int64, error)
 
 	// DeletePermissionCategoryByKeyWithSdFunc mocks the DeletePermissionCategoryByKeyWithSd method.
-	DeletePermissionCategoryByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) error
+	DeletePermissionCategoryByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (int64, error)
 
 	// DeletePermissionCategoryWithSdFunc mocks the DeletePermissionCategoryWithSd method.
-	DeletePermissionCategoryWithSdFunc func(ctx context.Context, sd Sd, permissionCategoryID uuid.UUID) error
+	DeletePermissionCategoryWithSdFunc func(ctx context.Context, sd Sd, permissionCategoryID uuid.UUID) (int64, error)
 
 	// DeletePermissionWithSdFunc mocks the DeletePermissionWithSd method.
-	DeletePermissionWithSdFunc func(ctx context.Context, sd Sd, permissionID uuid.UUID) error
+	DeletePermissionWithSdFunc func(ctx context.Context, sd Sd, permissionID uuid.UUID) (int64, error)
 
 	// DeletePolicyFunc mocks the DeletePolicy method.
-	DeletePolicyFunc func(ctx context.Context, policyID uuid.UUID) error
+	DeletePolicyFunc func(ctx context.Context, policyID uuid.UUID) (int64, error)
 
 	// DeletePolicyByKeyFunc mocks the DeletePolicyByKey method.
-	DeletePolicyByKeyFunc func(ctx context.Context, key string) error
+	DeletePolicyByKeyFunc func(ctx context.Context, key string) (int64, error)
 
 	// DeletePolicyByKeyWithSdFunc mocks the DeletePolicyByKeyWithSd method.
-	DeletePolicyByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) error
+	DeletePolicyByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (int64, error)
 
 	// DeletePolicyCategoryFunc mocks the DeletePolicyCategory method.
-	DeletePolicyCategoryFunc func(ctx context.Context, policyCategoryID uuid.UUID) error
+	DeletePolicyCategoryFunc func(ctx context.Context, policyCategoryID uuid.UUID) (int64, error)
 
 	// DeletePolicyCategoryByKeyFunc mocks the DeletePolicyCategoryByKey method.
-	DeletePolicyCategoryByKeyFunc func(ctx context.Context, key string) error
+	DeletePolicyCategoryByKeyFunc func(ctx context.Context, key string) (int64, error)
 
 	// DeletePolicyCategoryByKeyWithSdFunc mocks the DeletePolicyCategoryByKeyWithSd method.
-	DeletePolicyCategoryByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) error
+	DeletePolicyCategoryByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (int64, error)
 
 	// DeletePolicyCategoryWithSdFunc mocks the DeletePolicyCategoryWithSd method.
-	DeletePolicyCategoryWithSdFunc func(ctx context.Context, sd Sd, policyCategoryID uuid.UUID) error
+	DeletePolicyCategoryWithSdFunc func(ctx context.Context, sd Sd, policyCategoryID uuid.UUID) (int64, error)
 
 	// DeletePolicyWithSdFunc mocks the DeletePolicyWithSd method.
-	DeletePolicyWithSdFunc func(ctx context.Context, sd Sd, policyID uuid.UUID) error
+	DeletePolicyWithSdFunc func(ctx context.Context, sd Sd, policyID uuid.UUID) (int64, error)
 
 	// DeleteRecordTypeFunc mocks the DeleteRecordType method.
-	DeleteRecordTypeFunc func(ctx context.Context, recordTypeID uuid.UUID) error
+	DeleteRecordTypeFunc func(ctx context.Context, recordTypeID uuid.UUID) (int64, error)
 
 	// DeleteRecordTypeByKeyFunc mocks the DeleteRecordTypeByKey method.
-	DeleteRecordTypeByKeyFunc func(ctx context.Context, key string) error
+	DeleteRecordTypeByKeyFunc func(ctx context.Context, key string) (int64, error)
 
 	// DeleteRecordTypeByKeyWithSdFunc mocks the DeleteRecordTypeByKeyWithSd method.
-	DeleteRecordTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) error
+	DeleteRecordTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (int64, error)
 
 	// DeleteRecordTypeWithSdFunc mocks the DeleteRecordTypeWithSd method.
-	DeleteRecordTypeWithSdFunc func(ctx context.Context, sd Sd, recordTypeID uuid.UUID) error
+	DeleteRecordTypeWithSdFunc func(ctx context.Context, sd Sd, recordTypeID uuid.UUID) (int64, error)
 
 	// DeleteRoleFunc mocks the DeleteRole method.
-	DeleteRoleFunc func(ctx context.Context, roleID uuid.UUID) error
+	DeleteRoleFunc func(ctx context.Context, roleID uuid.UUID) (int64, error)
 
 	// DeleteRoleWithSdFunc mocks the DeleteRoleWithSd method.
-	DeleteRoleWithSdFunc func(ctx context.Context, sd Sd, roleID uuid.UUID) error
+	DeleteRoleWithSdFunc func(ctx context.Context, sd Sd, roleID uuid.UUID) (int64, error)
 
 	// FindAbsenceByIDFunc mocks the FindAbsenceByID method.
 	FindAbsenceByIDFunc func(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error)
@@ -1442,70 +1442,70 @@ type StoreMock struct {
 	GetRolesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereRoleParam, order parameter.RoleOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Role], error)
 
 	// PluralDeleteAbsencesFunc mocks the PluralDeleteAbsences method.
-	PluralDeleteAbsencesFunc func(ctx context.Context, absenceIDs []uuid.UUID) error
+	PluralDeleteAbsencesFunc func(ctx context.Context, absenceIDs []uuid.UUID) (int64, error)
 
 	// PluralDeleteAbsencesWithSdFunc mocks the PluralDeleteAbsencesWithSd method.
-	PluralDeleteAbsencesWithSdFunc func(ctx context.Context, sd Sd, absenceIDs []uuid.UUID) error
+	PluralDeleteAbsencesWithSdFunc func(ctx context.Context, sd Sd, absenceIDs []uuid.UUID) (int64, error)
 
 	// PluralDeleteAttendStatusesFunc mocks the PluralDeleteAttendStatuses method.
-	PluralDeleteAttendStatusesFunc func(ctx context.Context, attendStatusIDs []uuid.UUID) error
+	PluralDeleteAttendStatusesFunc func(ctx context.Context, attendStatusIDs []uuid.UUID) (int64, error)
 
 	// PluralDeleteAttendStatusesWithSdFunc mocks the PluralDeleteAttendStatusesWithSd method.
-	PluralDeleteAttendStatusesWithSdFunc func(ctx context.Context, sd Sd, attendStatusIDs []uuid.UUID) error
+	PluralDeleteAttendStatusesWithSdFunc func(ctx context.Context, sd Sd, attendStatusIDs []uuid.UUID) (int64, error)
 
 	// PluralDeleteAttendanceTypesFunc mocks the PluralDeleteAttendanceTypes method.
-	PluralDeleteAttendanceTypesFunc func(ctx context.Context, attendanceTypeIDs []uuid.UUID) error
+	PluralDeleteAttendanceTypesFunc func(ctx context.Context, attendanceTypeIDs []uuid.UUID) (int64, error)
 
 	// PluralDeleteAttendanceTypesWithSdFunc mocks the PluralDeleteAttendanceTypesWithSd method.
-	PluralDeleteAttendanceTypesWithSdFunc func(ctx context.Context, sd Sd, attendanceTypeIDs []uuid.UUID) error
+	PluralDeleteAttendanceTypesWithSdFunc func(ctx context.Context, sd Sd, attendanceTypeIDs []uuid.UUID) (int64, error)
 
 	// PluralDeleteEventTypesFunc mocks the PluralDeleteEventTypes method.
-	PluralDeleteEventTypesFunc func(ctx context.Context, eventTypeIDs []uuid.UUID) error
+	PluralDeleteEventTypesFunc func(ctx context.Context, eventTypeIDs []uuid.UUID) (int64, error)
 
 	// PluralDeleteEventTypesWithSdFunc mocks the PluralDeleteEventTypesWithSd method.
-	PluralDeleteEventTypesWithSdFunc func(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID) error
+	PluralDeleteEventTypesWithSdFunc func(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID) (int64, error)
 
 	// PluralDeleteMimeTypesFunc mocks the PluralDeleteMimeTypes method.
-	PluralDeleteMimeTypesFunc func(ctx context.Context, mimeTypeIDs []uuid.UUID) error
+	PluralDeleteMimeTypesFunc func(ctx context.Context, mimeTypeIDs []uuid.UUID) (int64, error)
 
 	// PluralDeleteMimeTypesWithSdFunc mocks the PluralDeleteMimeTypesWithSd method.
-	PluralDeleteMimeTypesWithSdFunc func(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID) error
+	PluralDeleteMimeTypesWithSdFunc func(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID) (int64, error)
 
 	// PluralDeletePermissionCategoriesFunc mocks the PluralDeletePermissionCategories method.
-	PluralDeletePermissionCategoriesFunc func(ctx context.Context, permissionCategoryIDs []uuid.UUID) error
+	PluralDeletePermissionCategoriesFunc func(ctx context.Context, permissionCategoryIDs []uuid.UUID) (int64, error)
 
 	// PluralDeletePermissionCategoriesWithSdFunc mocks the PluralDeletePermissionCategoriesWithSd method.
-	PluralDeletePermissionCategoriesWithSdFunc func(ctx context.Context, sd Sd, permissionCategoryIDs []uuid.UUID) error
+	PluralDeletePermissionCategoriesWithSdFunc func(ctx context.Context, sd Sd, permissionCategoryIDs []uuid.UUID) (int64, error)
 
 	// PluralDeletePermissionsFunc mocks the PluralDeletePermissions method.
-	PluralDeletePermissionsFunc func(ctx context.Context, permissionIDs []uuid.UUID) error
+	PluralDeletePermissionsFunc func(ctx context.Context, permissionIDs []uuid.UUID) (int64, error)
 
 	// PluralDeletePermissionsWithSdFunc mocks the PluralDeletePermissionsWithSd method.
-	PluralDeletePermissionsWithSdFunc func(ctx context.Context, sd Sd, permissionIDs []uuid.UUID) error
+	PluralDeletePermissionsWithSdFunc func(ctx context.Context, sd Sd, permissionIDs []uuid.UUID) (int64, error)
 
 	// PluralDeletePoliciesFunc mocks the PluralDeletePolicies method.
-	PluralDeletePoliciesFunc func(ctx context.Context, policyIDs []uuid.UUID) error
+	PluralDeletePoliciesFunc func(ctx context.Context, policyIDs []uuid.UUID) (int64, error)
 
 	// PluralDeletePoliciesWithSdFunc mocks the PluralDeletePoliciesWithSd method.
-	PluralDeletePoliciesWithSdFunc func(ctx context.Context, sd Sd, policyIDs []uuid.UUID) error
+	PluralDeletePoliciesWithSdFunc func(ctx context.Context, sd Sd, policyIDs []uuid.UUID) (int64, error)
 
 	// PluralDeletePolicyCategoriesFunc mocks the PluralDeletePolicyCategories method.
-	PluralDeletePolicyCategoriesFunc func(ctx context.Context, policyCategoryIDs []uuid.UUID) error
+	PluralDeletePolicyCategoriesFunc func(ctx context.Context, policyCategoryIDs []uuid.UUID) (int64, error)
 
 	// PluralDeletePolicyCategoriesWithSdFunc mocks the PluralDeletePolicyCategoriesWithSd method.
-	PluralDeletePolicyCategoriesWithSdFunc func(ctx context.Context, sd Sd, policyCategoryIDs []uuid.UUID) error
+	PluralDeletePolicyCategoriesWithSdFunc func(ctx context.Context, sd Sd, policyCategoryIDs []uuid.UUID) (int64, error)
 
 	// PluralDeleteRecordTypesFunc mocks the PluralDeleteRecordTypes method.
-	PluralDeleteRecordTypesFunc func(ctx context.Context, recordTypeIDs []uuid.UUID) error
+	PluralDeleteRecordTypesFunc func(ctx context.Context, recordTypeIDs []uuid.UUID) (int64, error)
 
 	// PluralDeleteRecordTypesWithSdFunc mocks the PluralDeleteRecordTypesWithSd method.
-	PluralDeleteRecordTypesWithSdFunc func(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID) error
+	PluralDeleteRecordTypesWithSdFunc func(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID) (int64, error)
 
 	// PluralDeleteRolesFunc mocks the PluralDeleteRoles method.
-	PluralDeleteRolesFunc func(ctx context.Context, roleIDs []uuid.UUID) error
+	PluralDeleteRolesFunc func(ctx context.Context, roleIDs []uuid.UUID) (int64, error)
 
 	// PluralDeleteRolesWithSdFunc mocks the PluralDeleteRolesWithSd method.
-	PluralDeleteRolesWithSdFunc func(ctx context.Context, sd Sd, roleIDs []uuid.UUID) error
+	PluralDeleteRolesWithSdFunc func(ctx context.Context, sd Sd, roleIDs []uuid.UUID) (int64, error)
 
 	// RollbackFunc mocks the Rollback method.
 	RollbackFunc func(contextMoqParam context.Context, sd Sd) error
@@ -6936,7 +6936,7 @@ func (mock *StoreMock) CreateRolesWithSdCalls() []struct {
 }
 
 // DeleteAbsence calls DeleteAbsenceFunc.
-func (mock *StoreMock) DeleteAbsence(ctx context.Context, absenceID uuid.UUID) error {
+func (mock *StoreMock) DeleteAbsence(ctx context.Context, absenceID uuid.UUID) (int64, error) {
 	if mock.DeleteAbsenceFunc == nil {
 		panic("StoreMock.DeleteAbsenceFunc: method is nil but Store.DeleteAbsence was just called")
 	}
@@ -6972,7 +6972,7 @@ func (mock *StoreMock) DeleteAbsenceCalls() []struct {
 }
 
 // DeleteAbsenceWithSd calls DeleteAbsenceWithSdFunc.
-func (mock *StoreMock) DeleteAbsenceWithSd(ctx context.Context, sd Sd, absenceID uuid.UUID) error {
+func (mock *StoreMock) DeleteAbsenceWithSd(ctx context.Context, sd Sd, absenceID uuid.UUID) (int64, error) {
 	if mock.DeleteAbsenceWithSdFunc == nil {
 		panic("StoreMock.DeleteAbsenceWithSdFunc: method is nil but Store.DeleteAbsenceWithSd was just called")
 	}
@@ -7012,7 +7012,7 @@ func (mock *StoreMock) DeleteAbsenceWithSdCalls() []struct {
 }
 
 // DeleteAttendStatus calls DeleteAttendStatusFunc.
-func (mock *StoreMock) DeleteAttendStatus(ctx context.Context, attendStatusID uuid.UUID) error {
+func (mock *StoreMock) DeleteAttendStatus(ctx context.Context, attendStatusID uuid.UUID) (int64, error) {
 	if mock.DeleteAttendStatusFunc == nil {
 		panic("StoreMock.DeleteAttendStatusFunc: method is nil but Store.DeleteAttendStatus was just called")
 	}
@@ -7048,7 +7048,7 @@ func (mock *StoreMock) DeleteAttendStatusCalls() []struct {
 }
 
 // DeleteAttendStatusByKey calls DeleteAttendStatusByKeyFunc.
-func (mock *StoreMock) DeleteAttendStatusByKey(ctx context.Context, key string) error {
+func (mock *StoreMock) DeleteAttendStatusByKey(ctx context.Context, key string) (int64, error) {
 	if mock.DeleteAttendStatusByKeyFunc == nil {
 		panic("StoreMock.DeleteAttendStatusByKeyFunc: method is nil but Store.DeleteAttendStatusByKey was just called")
 	}
@@ -7084,7 +7084,7 @@ func (mock *StoreMock) DeleteAttendStatusByKeyCalls() []struct {
 }
 
 // DeleteAttendStatusByKeyWithSd calls DeleteAttendStatusByKeyWithSdFunc.
-func (mock *StoreMock) DeleteAttendStatusByKeyWithSd(ctx context.Context, sd Sd, key string) error {
+func (mock *StoreMock) DeleteAttendStatusByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error) {
 	if mock.DeleteAttendStatusByKeyWithSdFunc == nil {
 		panic("StoreMock.DeleteAttendStatusByKeyWithSdFunc: method is nil but Store.DeleteAttendStatusByKeyWithSd was just called")
 	}
@@ -7124,7 +7124,7 @@ func (mock *StoreMock) DeleteAttendStatusByKeyWithSdCalls() []struct {
 }
 
 // DeleteAttendStatusWithSd calls DeleteAttendStatusWithSdFunc.
-func (mock *StoreMock) DeleteAttendStatusWithSd(ctx context.Context, sd Sd, attendStatusID uuid.UUID) error {
+func (mock *StoreMock) DeleteAttendStatusWithSd(ctx context.Context, sd Sd, attendStatusID uuid.UUID) (int64, error) {
 	if mock.DeleteAttendStatusWithSdFunc == nil {
 		panic("StoreMock.DeleteAttendStatusWithSdFunc: method is nil but Store.DeleteAttendStatusWithSd was just called")
 	}
@@ -7164,7 +7164,7 @@ func (mock *StoreMock) DeleteAttendStatusWithSdCalls() []struct {
 }
 
 // DeleteAttendanceType calls DeleteAttendanceTypeFunc.
-func (mock *StoreMock) DeleteAttendanceType(ctx context.Context, attendanceTypeID uuid.UUID) error {
+func (mock *StoreMock) DeleteAttendanceType(ctx context.Context, attendanceTypeID uuid.UUID) (int64, error) {
 	if mock.DeleteAttendanceTypeFunc == nil {
 		panic("StoreMock.DeleteAttendanceTypeFunc: method is nil but Store.DeleteAttendanceType was just called")
 	}
@@ -7200,7 +7200,7 @@ func (mock *StoreMock) DeleteAttendanceTypeCalls() []struct {
 }
 
 // DeleteAttendanceTypeByKey calls DeleteAttendanceTypeByKeyFunc.
-func (mock *StoreMock) DeleteAttendanceTypeByKey(ctx context.Context, key string) error {
+func (mock *StoreMock) DeleteAttendanceTypeByKey(ctx context.Context, key string) (int64, error) {
 	if mock.DeleteAttendanceTypeByKeyFunc == nil {
 		panic("StoreMock.DeleteAttendanceTypeByKeyFunc: method is nil but Store.DeleteAttendanceTypeByKey was just called")
 	}
@@ -7236,7 +7236,7 @@ func (mock *StoreMock) DeleteAttendanceTypeByKeyCalls() []struct {
 }
 
 // DeleteAttendanceTypeByKeyWithSd calls DeleteAttendanceTypeByKeyWithSdFunc.
-func (mock *StoreMock) DeleteAttendanceTypeByKeyWithSd(ctx context.Context, sd Sd, key string) error {
+func (mock *StoreMock) DeleteAttendanceTypeByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error) {
 	if mock.DeleteAttendanceTypeByKeyWithSdFunc == nil {
 		panic("StoreMock.DeleteAttendanceTypeByKeyWithSdFunc: method is nil but Store.DeleteAttendanceTypeByKeyWithSd was just called")
 	}
@@ -7276,7 +7276,7 @@ func (mock *StoreMock) DeleteAttendanceTypeByKeyWithSdCalls() []struct {
 }
 
 // DeleteAttendanceTypeWithSd calls DeleteAttendanceTypeWithSdFunc.
-func (mock *StoreMock) DeleteAttendanceTypeWithSd(ctx context.Context, sd Sd, attendanceTypeID uuid.UUID) error {
+func (mock *StoreMock) DeleteAttendanceTypeWithSd(ctx context.Context, sd Sd, attendanceTypeID uuid.UUID) (int64, error) {
 	if mock.DeleteAttendanceTypeWithSdFunc == nil {
 		panic("StoreMock.DeleteAttendanceTypeWithSdFunc: method is nil but Store.DeleteAttendanceTypeWithSd was just called")
 	}
@@ -7316,7 +7316,7 @@ func (mock *StoreMock) DeleteAttendanceTypeWithSdCalls() []struct {
 }
 
 // DeleteEventType calls DeleteEventTypeFunc.
-func (mock *StoreMock) DeleteEventType(ctx context.Context, eventTypeID uuid.UUID) error {
+func (mock *StoreMock) DeleteEventType(ctx context.Context, eventTypeID uuid.UUID) (int64, error) {
 	if mock.DeleteEventTypeFunc == nil {
 		panic("StoreMock.DeleteEventTypeFunc: method is nil but Store.DeleteEventType was just called")
 	}
@@ -7352,7 +7352,7 @@ func (mock *StoreMock) DeleteEventTypeCalls() []struct {
 }
 
 // DeleteEventTypeByKey calls DeleteEventTypeByKeyFunc.
-func (mock *StoreMock) DeleteEventTypeByKey(ctx context.Context, key string) error {
+func (mock *StoreMock) DeleteEventTypeByKey(ctx context.Context, key string) (int64, error) {
 	if mock.DeleteEventTypeByKeyFunc == nil {
 		panic("StoreMock.DeleteEventTypeByKeyFunc: method is nil but Store.DeleteEventTypeByKey was just called")
 	}
@@ -7388,7 +7388,7 @@ func (mock *StoreMock) DeleteEventTypeByKeyCalls() []struct {
 }
 
 // DeleteEventTypeByKeyWithSd calls DeleteEventTypeByKeyWithSdFunc.
-func (mock *StoreMock) DeleteEventTypeByKeyWithSd(ctx context.Context, sd Sd, key string) error {
+func (mock *StoreMock) DeleteEventTypeByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error) {
 	if mock.DeleteEventTypeByKeyWithSdFunc == nil {
 		panic("StoreMock.DeleteEventTypeByKeyWithSdFunc: method is nil but Store.DeleteEventTypeByKeyWithSd was just called")
 	}
@@ -7428,7 +7428,7 @@ func (mock *StoreMock) DeleteEventTypeByKeyWithSdCalls() []struct {
 }
 
 // DeleteEventTypeWithSd calls DeleteEventTypeWithSdFunc.
-func (mock *StoreMock) DeleteEventTypeWithSd(ctx context.Context, sd Sd, eventTypeID uuid.UUID) error {
+func (mock *StoreMock) DeleteEventTypeWithSd(ctx context.Context, sd Sd, eventTypeID uuid.UUID) (int64, error) {
 	if mock.DeleteEventTypeWithSdFunc == nil {
 		panic("StoreMock.DeleteEventTypeWithSdFunc: method is nil but Store.DeleteEventTypeWithSd was just called")
 	}
@@ -7468,7 +7468,7 @@ func (mock *StoreMock) DeleteEventTypeWithSdCalls() []struct {
 }
 
 // DeleteMimeType calls DeleteMimeTypeFunc.
-func (mock *StoreMock) DeleteMimeType(ctx context.Context, mimeTypeID uuid.UUID) error {
+func (mock *StoreMock) DeleteMimeType(ctx context.Context, mimeTypeID uuid.UUID) (int64, error) {
 	if mock.DeleteMimeTypeFunc == nil {
 		panic("StoreMock.DeleteMimeTypeFunc: method is nil but Store.DeleteMimeType was just called")
 	}
@@ -7504,7 +7504,7 @@ func (mock *StoreMock) DeleteMimeTypeCalls() []struct {
 }
 
 // DeleteMimeTypeByKey calls DeleteMimeTypeByKeyFunc.
-func (mock *StoreMock) DeleteMimeTypeByKey(ctx context.Context, key string) error {
+func (mock *StoreMock) DeleteMimeTypeByKey(ctx context.Context, key string) (int64, error) {
 	if mock.DeleteMimeTypeByKeyFunc == nil {
 		panic("StoreMock.DeleteMimeTypeByKeyFunc: method is nil but Store.DeleteMimeTypeByKey was just called")
 	}
@@ -7540,7 +7540,7 @@ func (mock *StoreMock) DeleteMimeTypeByKeyCalls() []struct {
 }
 
 // DeleteMimeTypeByKeyWithSd calls DeleteMimeTypeByKeyWithSdFunc.
-func (mock *StoreMock) DeleteMimeTypeByKeyWithSd(ctx context.Context, sd Sd, key string) error {
+func (mock *StoreMock) DeleteMimeTypeByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error) {
 	if mock.DeleteMimeTypeByKeyWithSdFunc == nil {
 		panic("StoreMock.DeleteMimeTypeByKeyWithSdFunc: method is nil but Store.DeleteMimeTypeByKeyWithSd was just called")
 	}
@@ -7580,7 +7580,7 @@ func (mock *StoreMock) DeleteMimeTypeByKeyWithSdCalls() []struct {
 }
 
 // DeleteMimeTypeWithSd calls DeleteMimeTypeWithSdFunc.
-func (mock *StoreMock) DeleteMimeTypeWithSd(ctx context.Context, sd Sd, mimeTypeID uuid.UUID) error {
+func (mock *StoreMock) DeleteMimeTypeWithSd(ctx context.Context, sd Sd, mimeTypeID uuid.UUID) (int64, error) {
 	if mock.DeleteMimeTypeWithSdFunc == nil {
 		panic("StoreMock.DeleteMimeTypeWithSdFunc: method is nil but Store.DeleteMimeTypeWithSd was just called")
 	}
@@ -7620,7 +7620,7 @@ func (mock *StoreMock) DeleteMimeTypeWithSdCalls() []struct {
 }
 
 // DeletePermission calls DeletePermissionFunc.
-func (mock *StoreMock) DeletePermission(ctx context.Context, permissionID uuid.UUID) error {
+func (mock *StoreMock) DeletePermission(ctx context.Context, permissionID uuid.UUID) (int64, error) {
 	if mock.DeletePermissionFunc == nil {
 		panic("StoreMock.DeletePermissionFunc: method is nil but Store.DeletePermission was just called")
 	}
@@ -7656,7 +7656,7 @@ func (mock *StoreMock) DeletePermissionCalls() []struct {
 }
 
 // DeletePermissionByKey calls DeletePermissionByKeyFunc.
-func (mock *StoreMock) DeletePermissionByKey(ctx context.Context, key string) error {
+func (mock *StoreMock) DeletePermissionByKey(ctx context.Context, key string) (int64, error) {
 	if mock.DeletePermissionByKeyFunc == nil {
 		panic("StoreMock.DeletePermissionByKeyFunc: method is nil but Store.DeletePermissionByKey was just called")
 	}
@@ -7692,7 +7692,7 @@ func (mock *StoreMock) DeletePermissionByKeyCalls() []struct {
 }
 
 // DeletePermissionByKeyWithSd calls DeletePermissionByKeyWithSdFunc.
-func (mock *StoreMock) DeletePermissionByKeyWithSd(ctx context.Context, sd Sd, key string) error {
+func (mock *StoreMock) DeletePermissionByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error) {
 	if mock.DeletePermissionByKeyWithSdFunc == nil {
 		panic("StoreMock.DeletePermissionByKeyWithSdFunc: method is nil but Store.DeletePermissionByKeyWithSd was just called")
 	}
@@ -7732,7 +7732,7 @@ func (mock *StoreMock) DeletePermissionByKeyWithSdCalls() []struct {
 }
 
 // DeletePermissionCategory calls DeletePermissionCategoryFunc.
-func (mock *StoreMock) DeletePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID) error {
+func (mock *StoreMock) DeletePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID) (int64, error) {
 	if mock.DeletePermissionCategoryFunc == nil {
 		panic("StoreMock.DeletePermissionCategoryFunc: method is nil but Store.DeletePermissionCategory was just called")
 	}
@@ -7768,7 +7768,7 @@ func (mock *StoreMock) DeletePermissionCategoryCalls() []struct {
 }
 
 // DeletePermissionCategoryByKey calls DeletePermissionCategoryByKeyFunc.
-func (mock *StoreMock) DeletePermissionCategoryByKey(ctx context.Context, key string) error {
+func (mock *StoreMock) DeletePermissionCategoryByKey(ctx context.Context, key string) (int64, error) {
 	if mock.DeletePermissionCategoryByKeyFunc == nil {
 		panic("StoreMock.DeletePermissionCategoryByKeyFunc: method is nil but Store.DeletePermissionCategoryByKey was just called")
 	}
@@ -7804,7 +7804,7 @@ func (mock *StoreMock) DeletePermissionCategoryByKeyCalls() []struct {
 }
 
 // DeletePermissionCategoryByKeyWithSd calls DeletePermissionCategoryByKeyWithSdFunc.
-func (mock *StoreMock) DeletePermissionCategoryByKeyWithSd(ctx context.Context, sd Sd, key string) error {
+func (mock *StoreMock) DeletePermissionCategoryByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error) {
 	if mock.DeletePermissionCategoryByKeyWithSdFunc == nil {
 		panic("StoreMock.DeletePermissionCategoryByKeyWithSdFunc: method is nil but Store.DeletePermissionCategoryByKeyWithSd was just called")
 	}
@@ -7844,7 +7844,7 @@ func (mock *StoreMock) DeletePermissionCategoryByKeyWithSdCalls() []struct {
 }
 
 // DeletePermissionCategoryWithSd calls DeletePermissionCategoryWithSdFunc.
-func (mock *StoreMock) DeletePermissionCategoryWithSd(ctx context.Context, sd Sd, permissionCategoryID uuid.UUID) error {
+func (mock *StoreMock) DeletePermissionCategoryWithSd(ctx context.Context, sd Sd, permissionCategoryID uuid.UUID) (int64, error) {
 	if mock.DeletePermissionCategoryWithSdFunc == nil {
 		panic("StoreMock.DeletePermissionCategoryWithSdFunc: method is nil but Store.DeletePermissionCategoryWithSd was just called")
 	}
@@ -7884,7 +7884,7 @@ func (mock *StoreMock) DeletePermissionCategoryWithSdCalls() []struct {
 }
 
 // DeletePermissionWithSd calls DeletePermissionWithSdFunc.
-func (mock *StoreMock) DeletePermissionWithSd(ctx context.Context, sd Sd, permissionID uuid.UUID) error {
+func (mock *StoreMock) DeletePermissionWithSd(ctx context.Context, sd Sd, permissionID uuid.UUID) (int64, error) {
 	if mock.DeletePermissionWithSdFunc == nil {
 		panic("StoreMock.DeletePermissionWithSdFunc: method is nil but Store.DeletePermissionWithSd was just called")
 	}
@@ -7924,7 +7924,7 @@ func (mock *StoreMock) DeletePermissionWithSdCalls() []struct {
 }
 
 // DeletePolicy calls DeletePolicyFunc.
-func (mock *StoreMock) DeletePolicy(ctx context.Context, policyID uuid.UUID) error {
+func (mock *StoreMock) DeletePolicy(ctx context.Context, policyID uuid.UUID) (int64, error) {
 	if mock.DeletePolicyFunc == nil {
 		panic("StoreMock.DeletePolicyFunc: method is nil but Store.DeletePolicy was just called")
 	}
@@ -7960,7 +7960,7 @@ func (mock *StoreMock) DeletePolicyCalls() []struct {
 }
 
 // DeletePolicyByKey calls DeletePolicyByKeyFunc.
-func (mock *StoreMock) DeletePolicyByKey(ctx context.Context, key string) error {
+func (mock *StoreMock) DeletePolicyByKey(ctx context.Context, key string) (int64, error) {
 	if mock.DeletePolicyByKeyFunc == nil {
 		panic("StoreMock.DeletePolicyByKeyFunc: method is nil but Store.DeletePolicyByKey was just called")
 	}
@@ -7996,7 +7996,7 @@ func (mock *StoreMock) DeletePolicyByKeyCalls() []struct {
 }
 
 // DeletePolicyByKeyWithSd calls DeletePolicyByKeyWithSdFunc.
-func (mock *StoreMock) DeletePolicyByKeyWithSd(ctx context.Context, sd Sd, key string) error {
+func (mock *StoreMock) DeletePolicyByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error) {
 	if mock.DeletePolicyByKeyWithSdFunc == nil {
 		panic("StoreMock.DeletePolicyByKeyWithSdFunc: method is nil but Store.DeletePolicyByKeyWithSd was just called")
 	}
@@ -8036,7 +8036,7 @@ func (mock *StoreMock) DeletePolicyByKeyWithSdCalls() []struct {
 }
 
 // DeletePolicyCategory calls DeletePolicyCategoryFunc.
-func (mock *StoreMock) DeletePolicyCategory(ctx context.Context, policyCategoryID uuid.UUID) error {
+func (mock *StoreMock) DeletePolicyCategory(ctx context.Context, policyCategoryID uuid.UUID) (int64, error) {
 	if mock.DeletePolicyCategoryFunc == nil {
 		panic("StoreMock.DeletePolicyCategoryFunc: method is nil but Store.DeletePolicyCategory was just called")
 	}
@@ -8072,7 +8072,7 @@ func (mock *StoreMock) DeletePolicyCategoryCalls() []struct {
 }
 
 // DeletePolicyCategoryByKey calls DeletePolicyCategoryByKeyFunc.
-func (mock *StoreMock) DeletePolicyCategoryByKey(ctx context.Context, key string) error {
+func (mock *StoreMock) DeletePolicyCategoryByKey(ctx context.Context, key string) (int64, error) {
 	if mock.DeletePolicyCategoryByKeyFunc == nil {
 		panic("StoreMock.DeletePolicyCategoryByKeyFunc: method is nil but Store.DeletePolicyCategoryByKey was just called")
 	}
@@ -8108,7 +8108,7 @@ func (mock *StoreMock) DeletePolicyCategoryByKeyCalls() []struct {
 }
 
 // DeletePolicyCategoryByKeyWithSd calls DeletePolicyCategoryByKeyWithSdFunc.
-func (mock *StoreMock) DeletePolicyCategoryByKeyWithSd(ctx context.Context, sd Sd, key string) error {
+func (mock *StoreMock) DeletePolicyCategoryByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error) {
 	if mock.DeletePolicyCategoryByKeyWithSdFunc == nil {
 		panic("StoreMock.DeletePolicyCategoryByKeyWithSdFunc: method is nil but Store.DeletePolicyCategoryByKeyWithSd was just called")
 	}
@@ -8148,7 +8148,7 @@ func (mock *StoreMock) DeletePolicyCategoryByKeyWithSdCalls() []struct {
 }
 
 // DeletePolicyCategoryWithSd calls DeletePolicyCategoryWithSdFunc.
-func (mock *StoreMock) DeletePolicyCategoryWithSd(ctx context.Context, sd Sd, policyCategoryID uuid.UUID) error {
+func (mock *StoreMock) DeletePolicyCategoryWithSd(ctx context.Context, sd Sd, policyCategoryID uuid.UUID) (int64, error) {
 	if mock.DeletePolicyCategoryWithSdFunc == nil {
 		panic("StoreMock.DeletePolicyCategoryWithSdFunc: method is nil but Store.DeletePolicyCategoryWithSd was just called")
 	}
@@ -8188,7 +8188,7 @@ func (mock *StoreMock) DeletePolicyCategoryWithSdCalls() []struct {
 }
 
 // DeletePolicyWithSd calls DeletePolicyWithSdFunc.
-func (mock *StoreMock) DeletePolicyWithSd(ctx context.Context, sd Sd, policyID uuid.UUID) error {
+func (mock *StoreMock) DeletePolicyWithSd(ctx context.Context, sd Sd, policyID uuid.UUID) (int64, error) {
 	if mock.DeletePolicyWithSdFunc == nil {
 		panic("StoreMock.DeletePolicyWithSdFunc: method is nil but Store.DeletePolicyWithSd was just called")
 	}
@@ -8228,7 +8228,7 @@ func (mock *StoreMock) DeletePolicyWithSdCalls() []struct {
 }
 
 // DeleteRecordType calls DeleteRecordTypeFunc.
-func (mock *StoreMock) DeleteRecordType(ctx context.Context, recordTypeID uuid.UUID) error {
+func (mock *StoreMock) DeleteRecordType(ctx context.Context, recordTypeID uuid.UUID) (int64, error) {
 	if mock.DeleteRecordTypeFunc == nil {
 		panic("StoreMock.DeleteRecordTypeFunc: method is nil but Store.DeleteRecordType was just called")
 	}
@@ -8264,7 +8264,7 @@ func (mock *StoreMock) DeleteRecordTypeCalls() []struct {
 }
 
 // DeleteRecordTypeByKey calls DeleteRecordTypeByKeyFunc.
-func (mock *StoreMock) DeleteRecordTypeByKey(ctx context.Context, key string) error {
+func (mock *StoreMock) DeleteRecordTypeByKey(ctx context.Context, key string) (int64, error) {
 	if mock.DeleteRecordTypeByKeyFunc == nil {
 		panic("StoreMock.DeleteRecordTypeByKeyFunc: method is nil but Store.DeleteRecordTypeByKey was just called")
 	}
@@ -8300,7 +8300,7 @@ func (mock *StoreMock) DeleteRecordTypeByKeyCalls() []struct {
 }
 
 // DeleteRecordTypeByKeyWithSd calls DeleteRecordTypeByKeyWithSdFunc.
-func (mock *StoreMock) DeleteRecordTypeByKeyWithSd(ctx context.Context, sd Sd, key string) error {
+func (mock *StoreMock) DeleteRecordTypeByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error) {
 	if mock.DeleteRecordTypeByKeyWithSdFunc == nil {
 		panic("StoreMock.DeleteRecordTypeByKeyWithSdFunc: method is nil but Store.DeleteRecordTypeByKeyWithSd was just called")
 	}
@@ -8340,7 +8340,7 @@ func (mock *StoreMock) DeleteRecordTypeByKeyWithSdCalls() []struct {
 }
 
 // DeleteRecordTypeWithSd calls DeleteRecordTypeWithSdFunc.
-func (mock *StoreMock) DeleteRecordTypeWithSd(ctx context.Context, sd Sd, recordTypeID uuid.UUID) error {
+func (mock *StoreMock) DeleteRecordTypeWithSd(ctx context.Context, sd Sd, recordTypeID uuid.UUID) (int64, error) {
 	if mock.DeleteRecordTypeWithSdFunc == nil {
 		panic("StoreMock.DeleteRecordTypeWithSdFunc: method is nil but Store.DeleteRecordTypeWithSd was just called")
 	}
@@ -8380,7 +8380,7 @@ func (mock *StoreMock) DeleteRecordTypeWithSdCalls() []struct {
 }
 
 // DeleteRole calls DeleteRoleFunc.
-func (mock *StoreMock) DeleteRole(ctx context.Context, roleID uuid.UUID) error {
+func (mock *StoreMock) DeleteRole(ctx context.Context, roleID uuid.UUID) (int64, error) {
 	if mock.DeleteRoleFunc == nil {
 		panic("StoreMock.DeleteRoleFunc: method is nil but Store.DeleteRole was just called")
 	}
@@ -8416,7 +8416,7 @@ func (mock *StoreMock) DeleteRoleCalls() []struct {
 }
 
 // DeleteRoleWithSd calls DeleteRoleWithSdFunc.
-func (mock *StoreMock) DeleteRoleWithSd(ctx context.Context, sd Sd, roleID uuid.UUID) error {
+func (mock *StoreMock) DeleteRoleWithSd(ctx context.Context, sd Sd, roleID uuid.UUID) (int64, error) {
 	if mock.DeleteRoleWithSdFunc == nil {
 		panic("StoreMock.DeleteRoleWithSdFunc: method is nil but Store.DeleteRoleWithSd was just called")
 	}
@@ -12600,7 +12600,7 @@ func (mock *StoreMock) GetRolesWithSdCalls() []struct {
 }
 
 // PluralDeleteAbsences calls PluralDeleteAbsencesFunc.
-func (mock *StoreMock) PluralDeleteAbsences(ctx context.Context, absenceIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeleteAbsences(ctx context.Context, absenceIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteAbsencesFunc == nil {
 		panic("StoreMock.PluralDeleteAbsencesFunc: method is nil but Store.PluralDeleteAbsences was just called")
 	}
@@ -12636,7 +12636,7 @@ func (mock *StoreMock) PluralDeleteAbsencesCalls() []struct {
 }
 
 // PluralDeleteAbsencesWithSd calls PluralDeleteAbsencesWithSdFunc.
-func (mock *StoreMock) PluralDeleteAbsencesWithSd(ctx context.Context, sd Sd, absenceIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeleteAbsencesWithSd(ctx context.Context, sd Sd, absenceIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteAbsencesWithSdFunc == nil {
 		panic("StoreMock.PluralDeleteAbsencesWithSdFunc: method is nil but Store.PluralDeleteAbsencesWithSd was just called")
 	}
@@ -12676,7 +12676,7 @@ func (mock *StoreMock) PluralDeleteAbsencesWithSdCalls() []struct {
 }
 
 // PluralDeleteAttendStatuses calls PluralDeleteAttendStatusesFunc.
-func (mock *StoreMock) PluralDeleteAttendStatuses(ctx context.Context, attendStatusIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeleteAttendStatuses(ctx context.Context, attendStatusIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteAttendStatusesFunc == nil {
 		panic("StoreMock.PluralDeleteAttendStatusesFunc: method is nil but Store.PluralDeleteAttendStatuses was just called")
 	}
@@ -12712,7 +12712,7 @@ func (mock *StoreMock) PluralDeleteAttendStatusesCalls() []struct {
 }
 
 // PluralDeleteAttendStatusesWithSd calls PluralDeleteAttendStatusesWithSdFunc.
-func (mock *StoreMock) PluralDeleteAttendStatusesWithSd(ctx context.Context, sd Sd, attendStatusIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeleteAttendStatusesWithSd(ctx context.Context, sd Sd, attendStatusIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteAttendStatusesWithSdFunc == nil {
 		panic("StoreMock.PluralDeleteAttendStatusesWithSdFunc: method is nil but Store.PluralDeleteAttendStatusesWithSd was just called")
 	}
@@ -12752,7 +12752,7 @@ func (mock *StoreMock) PluralDeleteAttendStatusesWithSdCalls() []struct {
 }
 
 // PluralDeleteAttendanceTypes calls PluralDeleteAttendanceTypesFunc.
-func (mock *StoreMock) PluralDeleteAttendanceTypes(ctx context.Context, attendanceTypeIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeleteAttendanceTypes(ctx context.Context, attendanceTypeIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteAttendanceTypesFunc == nil {
 		panic("StoreMock.PluralDeleteAttendanceTypesFunc: method is nil but Store.PluralDeleteAttendanceTypes was just called")
 	}
@@ -12788,7 +12788,7 @@ func (mock *StoreMock) PluralDeleteAttendanceTypesCalls() []struct {
 }
 
 // PluralDeleteAttendanceTypesWithSd calls PluralDeleteAttendanceTypesWithSdFunc.
-func (mock *StoreMock) PluralDeleteAttendanceTypesWithSd(ctx context.Context, sd Sd, attendanceTypeIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeleteAttendanceTypesWithSd(ctx context.Context, sd Sd, attendanceTypeIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteAttendanceTypesWithSdFunc == nil {
 		panic("StoreMock.PluralDeleteAttendanceTypesWithSdFunc: method is nil but Store.PluralDeleteAttendanceTypesWithSd was just called")
 	}
@@ -12828,7 +12828,7 @@ func (mock *StoreMock) PluralDeleteAttendanceTypesWithSdCalls() []struct {
 }
 
 // PluralDeleteEventTypes calls PluralDeleteEventTypesFunc.
-func (mock *StoreMock) PluralDeleteEventTypes(ctx context.Context, eventTypeIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeleteEventTypes(ctx context.Context, eventTypeIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteEventTypesFunc == nil {
 		panic("StoreMock.PluralDeleteEventTypesFunc: method is nil but Store.PluralDeleteEventTypes was just called")
 	}
@@ -12864,7 +12864,7 @@ func (mock *StoreMock) PluralDeleteEventTypesCalls() []struct {
 }
 
 // PluralDeleteEventTypesWithSd calls PluralDeleteEventTypesWithSdFunc.
-func (mock *StoreMock) PluralDeleteEventTypesWithSd(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeleteEventTypesWithSd(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteEventTypesWithSdFunc == nil {
 		panic("StoreMock.PluralDeleteEventTypesWithSdFunc: method is nil but Store.PluralDeleteEventTypesWithSd was just called")
 	}
@@ -12904,7 +12904,7 @@ func (mock *StoreMock) PluralDeleteEventTypesWithSdCalls() []struct {
 }
 
 // PluralDeleteMimeTypes calls PluralDeleteMimeTypesFunc.
-func (mock *StoreMock) PluralDeleteMimeTypes(ctx context.Context, mimeTypeIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeleteMimeTypes(ctx context.Context, mimeTypeIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteMimeTypesFunc == nil {
 		panic("StoreMock.PluralDeleteMimeTypesFunc: method is nil but Store.PluralDeleteMimeTypes was just called")
 	}
@@ -12940,7 +12940,7 @@ func (mock *StoreMock) PluralDeleteMimeTypesCalls() []struct {
 }
 
 // PluralDeleteMimeTypesWithSd calls PluralDeleteMimeTypesWithSdFunc.
-func (mock *StoreMock) PluralDeleteMimeTypesWithSd(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeleteMimeTypesWithSd(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteMimeTypesWithSdFunc == nil {
 		panic("StoreMock.PluralDeleteMimeTypesWithSdFunc: method is nil but Store.PluralDeleteMimeTypesWithSd was just called")
 	}
@@ -12980,7 +12980,7 @@ func (mock *StoreMock) PluralDeleteMimeTypesWithSdCalls() []struct {
 }
 
 // PluralDeletePermissionCategories calls PluralDeletePermissionCategoriesFunc.
-func (mock *StoreMock) PluralDeletePermissionCategories(ctx context.Context, permissionCategoryIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeletePermissionCategories(ctx context.Context, permissionCategoryIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeletePermissionCategoriesFunc == nil {
 		panic("StoreMock.PluralDeletePermissionCategoriesFunc: method is nil but Store.PluralDeletePermissionCategories was just called")
 	}
@@ -13016,7 +13016,7 @@ func (mock *StoreMock) PluralDeletePermissionCategoriesCalls() []struct {
 }
 
 // PluralDeletePermissionCategoriesWithSd calls PluralDeletePermissionCategoriesWithSdFunc.
-func (mock *StoreMock) PluralDeletePermissionCategoriesWithSd(ctx context.Context, sd Sd, permissionCategoryIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeletePermissionCategoriesWithSd(ctx context.Context, sd Sd, permissionCategoryIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeletePermissionCategoriesWithSdFunc == nil {
 		panic("StoreMock.PluralDeletePermissionCategoriesWithSdFunc: method is nil but Store.PluralDeletePermissionCategoriesWithSd was just called")
 	}
@@ -13056,7 +13056,7 @@ func (mock *StoreMock) PluralDeletePermissionCategoriesWithSdCalls() []struct {
 }
 
 // PluralDeletePermissions calls PluralDeletePermissionsFunc.
-func (mock *StoreMock) PluralDeletePermissions(ctx context.Context, permissionIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeletePermissions(ctx context.Context, permissionIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeletePermissionsFunc == nil {
 		panic("StoreMock.PluralDeletePermissionsFunc: method is nil but Store.PluralDeletePermissions was just called")
 	}
@@ -13092,7 +13092,7 @@ func (mock *StoreMock) PluralDeletePermissionsCalls() []struct {
 }
 
 // PluralDeletePermissionsWithSd calls PluralDeletePermissionsWithSdFunc.
-func (mock *StoreMock) PluralDeletePermissionsWithSd(ctx context.Context, sd Sd, permissionIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeletePermissionsWithSd(ctx context.Context, sd Sd, permissionIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeletePermissionsWithSdFunc == nil {
 		panic("StoreMock.PluralDeletePermissionsWithSdFunc: method is nil but Store.PluralDeletePermissionsWithSd was just called")
 	}
@@ -13132,7 +13132,7 @@ func (mock *StoreMock) PluralDeletePermissionsWithSdCalls() []struct {
 }
 
 // PluralDeletePolicies calls PluralDeletePoliciesFunc.
-func (mock *StoreMock) PluralDeletePolicies(ctx context.Context, policyIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeletePolicies(ctx context.Context, policyIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeletePoliciesFunc == nil {
 		panic("StoreMock.PluralDeletePoliciesFunc: method is nil but Store.PluralDeletePolicies was just called")
 	}
@@ -13168,7 +13168,7 @@ func (mock *StoreMock) PluralDeletePoliciesCalls() []struct {
 }
 
 // PluralDeletePoliciesWithSd calls PluralDeletePoliciesWithSdFunc.
-func (mock *StoreMock) PluralDeletePoliciesWithSd(ctx context.Context, sd Sd, policyIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeletePoliciesWithSd(ctx context.Context, sd Sd, policyIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeletePoliciesWithSdFunc == nil {
 		panic("StoreMock.PluralDeletePoliciesWithSdFunc: method is nil but Store.PluralDeletePoliciesWithSd was just called")
 	}
@@ -13208,7 +13208,7 @@ func (mock *StoreMock) PluralDeletePoliciesWithSdCalls() []struct {
 }
 
 // PluralDeletePolicyCategories calls PluralDeletePolicyCategoriesFunc.
-func (mock *StoreMock) PluralDeletePolicyCategories(ctx context.Context, policyCategoryIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeletePolicyCategories(ctx context.Context, policyCategoryIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeletePolicyCategoriesFunc == nil {
 		panic("StoreMock.PluralDeletePolicyCategoriesFunc: method is nil but Store.PluralDeletePolicyCategories was just called")
 	}
@@ -13244,7 +13244,7 @@ func (mock *StoreMock) PluralDeletePolicyCategoriesCalls() []struct {
 }
 
 // PluralDeletePolicyCategoriesWithSd calls PluralDeletePolicyCategoriesWithSdFunc.
-func (mock *StoreMock) PluralDeletePolicyCategoriesWithSd(ctx context.Context, sd Sd, policyCategoryIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeletePolicyCategoriesWithSd(ctx context.Context, sd Sd, policyCategoryIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeletePolicyCategoriesWithSdFunc == nil {
 		panic("StoreMock.PluralDeletePolicyCategoriesWithSdFunc: method is nil but Store.PluralDeletePolicyCategoriesWithSd was just called")
 	}
@@ -13284,7 +13284,7 @@ func (mock *StoreMock) PluralDeletePolicyCategoriesWithSdCalls() []struct {
 }
 
 // PluralDeleteRecordTypes calls PluralDeleteRecordTypesFunc.
-func (mock *StoreMock) PluralDeleteRecordTypes(ctx context.Context, recordTypeIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeleteRecordTypes(ctx context.Context, recordTypeIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteRecordTypesFunc == nil {
 		panic("StoreMock.PluralDeleteRecordTypesFunc: method is nil but Store.PluralDeleteRecordTypes was just called")
 	}
@@ -13320,7 +13320,7 @@ func (mock *StoreMock) PluralDeleteRecordTypesCalls() []struct {
 }
 
 // PluralDeleteRecordTypesWithSd calls PluralDeleteRecordTypesWithSdFunc.
-func (mock *StoreMock) PluralDeleteRecordTypesWithSd(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeleteRecordTypesWithSd(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteRecordTypesWithSdFunc == nil {
 		panic("StoreMock.PluralDeleteRecordTypesWithSdFunc: method is nil but Store.PluralDeleteRecordTypesWithSd was just called")
 	}
@@ -13360,7 +13360,7 @@ func (mock *StoreMock) PluralDeleteRecordTypesWithSdCalls() []struct {
 }
 
 // PluralDeleteRoles calls PluralDeleteRolesFunc.
-func (mock *StoreMock) PluralDeleteRoles(ctx context.Context, roleIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeleteRoles(ctx context.Context, roleIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteRolesFunc == nil {
 		panic("StoreMock.PluralDeleteRolesFunc: method is nil but Store.PluralDeleteRoles was just called")
 	}
@@ -13396,7 +13396,7 @@ func (mock *StoreMock) PluralDeleteRolesCalls() []struct {
 }
 
 // PluralDeleteRolesWithSd calls PluralDeleteRolesWithSdFunc.
-func (mock *StoreMock) PluralDeleteRolesWithSd(ctx context.Context, sd Sd, roleIDs []uuid.UUID) error {
+func (mock *StoreMock) PluralDeleteRolesWithSd(ctx context.Context, sd Sd, roleIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteRolesWithSdFunc == nil {
 		panic("StoreMock.PluralDeleteRolesWithSdFunc: method is nil but Store.PluralDeleteRolesWithSd was just called")
 	}

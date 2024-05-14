@@ -90,21 +90,21 @@ func (m *ManageEventType) UpdateEventType(
 }
 
 // DeleteEventType イベントタイプを削除する。
-func (m *ManageEventType) DeleteEventType(ctx context.Context, id uuid.UUID) error {
-	err := m.DB.DeleteEventType(ctx, id)
+func (m *ManageEventType) DeleteEventType(ctx context.Context, id uuid.UUID) (int64, error) {
+	c, err := m.DB.DeleteEventType(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to delete event type: %w", err)
+		return 0, fmt.Errorf("failed to delete event type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteEventTypes イベントタイプを複数削除する。
-func (m *ManageEventType) PluralDeleteEventTypes(ctx context.Context, ids []uuid.UUID) error {
-	err := m.DB.PluralDeleteEventTypes(ctx, ids)
+func (m *ManageEventType) PluralDeleteEventTypes(ctx context.Context, ids []uuid.UUID) (int64, error) {
+	c, err := m.DB.PluralDeleteEventTypes(ctx, ids)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete event types: %w", err)
+		return 0, fmt.Errorf("failed to plural delete event types: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // FindEventTypeByID イベントタイプをIDで取得する。

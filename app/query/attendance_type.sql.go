@@ -58,22 +58,28 @@ type CreateAttendanceTypesParams struct {
 	Color string `json:"color"`
 }
 
-const deleteAttendanceType = `-- name: DeleteAttendanceType :exec
+const deleteAttendanceType = `-- name: DeleteAttendanceType :execrows
 DELETE FROM m_attendance_types WHERE attendance_type_id = $1
 `
 
-func (q *Queries) DeleteAttendanceType(ctx context.Context, attendanceTypeID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAttendanceType, attendanceTypeID)
-	return err
+func (q *Queries) DeleteAttendanceType(ctx context.Context, attendanceTypeID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAttendanceType, attendanceTypeID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteAttendanceTypeByKey = `-- name: DeleteAttendanceTypeByKey :exec
+const deleteAttendanceTypeByKey = `-- name: DeleteAttendanceTypeByKey :execrows
 DELETE FROM m_attendance_types WHERE key = $1
 `
 
-func (q *Queries) DeleteAttendanceTypeByKey(ctx context.Context, key string) error {
-	_, err := q.db.Exec(ctx, deleteAttendanceTypeByKey, key)
-	return err
+func (q *Queries) DeleteAttendanceTypeByKey(ctx context.Context, key string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAttendanceTypeByKey, key)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findAttendanceTypeByID = `-- name: FindAttendanceTypeByID :one
@@ -316,13 +322,16 @@ func (q *Queries) GetPluralAttendanceTypes(ctx context.Context, arg GetPluralAtt
 	return items, nil
 }
 
-const pluralDeleteAttendanceTypes = `-- name: PluralDeleteAttendanceTypes :exec
+const pluralDeleteAttendanceTypes = `-- name: PluralDeleteAttendanceTypes :execrows
 DELETE FROM m_attendance_types WHERE attendance_type_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteAttendanceTypes(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteAttendanceTypes, dollar_1)
-	return err
+func (q *Queries) PluralDeleteAttendanceTypes(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteAttendanceTypes, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateAttendanceType = `-- name: UpdateAttendanceType :one

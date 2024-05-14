@@ -4,25 +4,25 @@ INSERT INTO m_role_associations (role_id, policy_id) VALUES ($1, $2);
 -- name: CreateRoleAssociation :one
 INSERT INTO m_role_associations (role_id, policy_id) VALUES ($1, $2) RETURNING *;
 
--- name: DeleteRoleAssociation :exec
+-- name: DeleteRoleAssociation :execrows
 DELETE FROM m_role_associations WHERE role_id = $1 AND policy_id = $2;
 
--- name: DeleteRoleAssociationsOnRole :exec
+-- name: DeleteRoleAssociationsOnRole :execrows
 DELETE FROM m_role_associations WHERE role_id = $1;
 
--- name: DeleteRoleAssociationsOnRoles :exec
+-- name: DeleteRoleAssociationsOnRoles :execrows
 DELETE FROM m_role_associations WHERE role_id = ANY($1::uuid[]);
 
--- name: PluralDeleteRoleAssociationsOnRole :exec
+-- name: PluralDeleteRoleAssociationsOnRole :execrows
 DELETE FROM m_role_associations WHERE role_id = $1 AND policy_id = ANY($2::uuid[]);
 
--- name: DeleteRoleAssociationsOnPolicy :exec
+-- name: DeleteRoleAssociationsOnPolicy :execrows
 DELETE FROM m_role_associations WHERE policy_id = $1;
 
--- name: DeleteRoleAssociationsOnPolicies :exec
+-- name: DeleteRoleAssociationsOnPolicies :execrows
 DELETE FROM m_role_associations WHERE policy_id = ANY($1::uuid[]);
 
--- name: PluralDeleteRoleAssociationsOnPolicy :exec
+-- name: PluralDeleteRoleAssociationsOnPolicy :execrows
 DELETE FROM m_role_associations WHERE policy_id = $1 AND role_id = ANY($2::uuid[]);
 
 -- name: GetPoliciesOnRole :many

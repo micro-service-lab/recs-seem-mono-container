@@ -12,6 +12,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countEventTypes(
@@ -149,106 +150,106 @@ func (a *PgAdapter) CreateEventTypesWithSd(
 	return c, nil
 }
 
-func deleteEventType(ctx context.Context, qtx *query.Queries, eventTypeID uuid.UUID) error {
-	err := qtx.DeleteEventType(ctx, eventTypeID)
+func deleteEventType(ctx context.Context, qtx *query.Queries, eventTypeID uuid.UUID) (int64, error) {
+	c, err := qtx.DeleteEventType(ctx, eventTypeID)
 	if err != nil {
-		return fmt.Errorf("failed to delete event type: %w", err)
+		return 0, fmt.Errorf("failed to delete event type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteEventType イベントタイプを削除する。
-func (a *PgAdapter) DeleteEventType(ctx context.Context, eventTypeID uuid.UUID) error {
-	err := deleteEventType(ctx, a.query, eventTypeID)
+func (a *PgAdapter) DeleteEventType(ctx context.Context, eventTypeID uuid.UUID) (int64, error) {
+	c, err := deleteEventType(ctx, a.query, eventTypeID)
 	if err != nil {
-		return fmt.Errorf("failed to delete event type: %w", err)
+		return 0, fmt.Errorf("failed to delete event type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteEventTypeWithSd SD付きでイベントタイプを削除する。
 func (a *PgAdapter) DeleteEventTypeWithSd(
 	ctx context.Context, sd store.Sd, eventTypeID uuid.UUID,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deleteEventType(ctx, qtx, eventTypeID)
+	c, err := deleteEventType(ctx, qtx, eventTypeID)
 	if err != nil {
-		return fmt.Errorf("failed to delete event type: %w", err)
+		return 0, fmt.Errorf("failed to delete event type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
-func deleteEventTypeByKey(ctx context.Context, qtx *query.Queries, key string) error {
-	err := qtx.DeleteEventTypeByKey(ctx, key)
+func deleteEventTypeByKey(ctx context.Context, qtx *query.Queries, key string) (int64, error) {
+	c, err := qtx.DeleteEventTypeByKey(ctx, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete event type: %w", err)
+		return 0, fmt.Errorf("failed to delete event type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteEventTypeByKey イベントタイプを削除する。
-func (a *PgAdapter) DeleteEventTypeByKey(ctx context.Context, key string) error {
-	err := deleteEventTypeByKey(ctx, a.query, key)
+func (a *PgAdapter) DeleteEventTypeByKey(ctx context.Context, key string) (int64, error) {
+	c, err := deleteEventTypeByKey(ctx, a.query, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete event type: %w", err)
+		return 0, fmt.Errorf("failed to delete event type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteEventTypeByKeyWithSd SD付きでイベントタイプを削除する。
 func (a *PgAdapter) DeleteEventTypeByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deleteEventTypeByKey(ctx, qtx, key)
+	c, err := deleteEventTypeByKey(ctx, qtx, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete event type: %w", err)
+		return 0, fmt.Errorf("failed to delete event type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
-func pluralDeleteEventTypes(ctx context.Context, qtx *query.Queries, eventTypeIDs []uuid.UUID) error {
-	err := qtx.PluralDeleteEventTypes(ctx, eventTypeIDs)
+func pluralDeleteEventTypes(ctx context.Context, qtx *query.Queries, eventTypeIDs []uuid.UUID) (int64, error) {
+	c, err := qtx.PluralDeleteEventTypes(ctx, eventTypeIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete event types: %w", err)
+		return 0, fmt.Errorf("failed to plural delete event types: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteEventTypes イベントタイプを複数削除する。
-func (a *PgAdapter) PluralDeleteEventTypes(ctx context.Context, eventTypeIDs []uuid.UUID) error {
-	err := pluralDeleteEventTypes(ctx, a.query, eventTypeIDs)
+func (a *PgAdapter) PluralDeleteEventTypes(ctx context.Context, eventTypeIDs []uuid.UUID) (int64, error) {
+	c, err := pluralDeleteEventTypes(ctx, a.query, eventTypeIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete event types: %w", err)
+		return 0, fmt.Errorf("failed to plural delete event types: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteEventTypesWithSd SD付きでイベントタイプを複数削除する。
 func (a *PgAdapter) PluralDeleteEventTypesWithSd(
 	ctx context.Context, sd store.Sd, eventTypeIDs []uuid.UUID,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := pluralDeleteEventTypes(ctx, qtx, eventTypeIDs)
+	c, err := pluralDeleteEventTypes(ctx, qtx, eventTypeIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete event types: %w", err)
+		return 0, fmt.Errorf("failed to plural delete event types: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 func findEventTypeByID(
@@ -257,7 +258,7 @@ func findEventTypeByID(
 	e, err := qtx.FindEventTypeByID(ctx, eventTypeID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.EventType{}, store.ErrDataNoRecord
+			return entity.EventType{}, errhandle.NewModelNotFoundError("event type")
 		}
 		return entity.EventType{}, fmt.Errorf("failed to find event type: %w", err)
 	}
@@ -302,7 +303,7 @@ func findEventTypeByKey(ctx context.Context, qtx *query.Queries, key string) (en
 	e, err := qtx.FindEventTypeByKey(ctx, key)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.EventType{}, store.ErrDataNoRecord
+			return entity.EventType{}, errhandle.NewModelNotFoundError("event type")
 		}
 		return entity.EventType{}, fmt.Errorf("failed to find event type: %w", err)
 	}
@@ -562,7 +563,7 @@ func updateEventType(
 	e, err := qtx.UpdateEventType(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.EventType{}, store.ErrDataNoRecord
+			return entity.EventType{}, errhandle.NewModelNotFoundError("event type")
 		}
 		return entity.EventType{}, fmt.Errorf("failed to update event type: %w", err)
 	}
@@ -614,7 +615,7 @@ func updateEventTypeByKey(
 	e, err := qtx.UpdateEventTypeByKey(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.EventType{}, store.ErrDataNoRecord
+			return entity.EventType{}, errhandle.NewModelNotFoundError("event type")
 		}
 		return entity.EventType{}, fmt.Errorf("failed to update event type: %w", err)
 	}

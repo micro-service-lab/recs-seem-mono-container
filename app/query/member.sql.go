@@ -127,13 +127,16 @@ type CreateMembersParams struct {
 	UpdatedAt              time.Time   `json:"updated_at"`
 }
 
-const deleteMember = `-- name: DeleteMember :exec
+const deleteMember = `-- name: DeleteMember :execrows
 DELETE FROM m_members WHERE member_id = $1
 `
 
-func (q *Queries) DeleteMember(ctx context.Context, memberID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteMember, memberID)
-	return err
+func (q *Queries) DeleteMember(ctx context.Context, memberID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteMember, memberID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findMemberByID = `-- name: FindMemberByID :one
@@ -3126,13 +3129,16 @@ func (q *Queries) GetPluralMembersWithRole(ctx context.Context, arg GetPluralMem
 	return items, nil
 }
 
-const pluralDeleteMembers = `-- name: PluralDeleteMembers :exec
+const pluralDeleteMembers = `-- name: PluralDeleteMembers :execrows
 DELETE FROM m_members WHERE member_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteMembers(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteMembers, dollar_1)
-	return err
+func (q *Queries) PluralDeleteMembers(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteMembers, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateMember = `-- name: UpdateMember :one

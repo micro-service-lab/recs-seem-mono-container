@@ -4,10 +4,10 @@ INSERT INTO m_members (login_id, password, email, name, attend_status_id, grade_
 -- name: CreateMember :one
 INSERT INTO m_members (login_id, password, email, name, attend_status_id, grade_id, group_id, profile_image_url, role_id, personal_organization_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *;
 
--- name: DeleteMember :exec
+-- name: DeleteMember :execrows
 DELETE FROM m_members WHERE member_id = $1;
 
--- name: PluralDeleteMembers :exec
+-- name: PluralDeleteMembers :execrows
 DELETE FROM m_members WHERE member_id = ANY($1::uuid[]);
 
 -- name: UpdateMember :one

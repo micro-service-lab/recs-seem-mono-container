@@ -7,10 +7,10 @@ INSERT INTO m_chat_rooms (name, is_private, cover_image_url, owner_id, from_orga
 -- name: UpdateChatRoom :one
 UPDATE m_chat_rooms SET name = $2, is_private = $3, cover_image_url = $4, owner_id = $5, updated_at = $6 WHERE chat_room_id = $1 RETURNING *;
 
--- name: DeleteChatRoom :exec
+-- name: DeleteChatRoom :execrows
 DELETE FROM m_chat_rooms WHERE chat_room_id = $1;
 
--- name: PluralDeleteChatRooms :exec
+-- name: PluralDeleteChatRooms :execrows
 DELETE FROM m_chat_rooms WHERE chat_room_id = ANY($1::uuid[]);
 
 -- name: FindChatRoomByID :one

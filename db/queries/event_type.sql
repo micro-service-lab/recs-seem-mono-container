@@ -10,13 +10,13 @@ UPDATE m_event_types SET name = $2, key = $3, color = $4 WHERE event_type_id = $
 -- name: UpdateEventTypeByKey :one
 UPDATE m_event_types SET name = $2, color = $3 WHERE key = $1 RETURNING *;
 
--- name: DeleteEventType :exec
+-- name: DeleteEventType :execrows
 DELETE FROM m_event_types WHERE event_type_id = $1;
 
--- name: DeleteEventTypeByKey :exec
+-- name: DeleteEventTypeByKey :execrows
 DELETE FROM m_event_types WHERE key = $1;
 
--- name: PluralDeleteEventTypes :exec
+-- name: PluralDeleteEventTypes :execrows
 DELETE FROM m_event_types WHERE event_type_id = ANY($1::uuid[]);
 
 -- name: FindEventTypeByID :one

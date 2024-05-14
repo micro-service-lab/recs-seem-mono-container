@@ -64,8 +64,8 @@ type AttendStatusManager interface {
 	CreateAttendStatus(ctx context.Context, name, key string) (entity.AttendStatus, error)
 	CreateAttendStatuses(ctx context.Context, ps []parameter.CreateAttendStatusParam) (int64, error)
 	UpdateAttendStatus(ctx context.Context, id uuid.UUID, name, key string) (entity.AttendStatus, error)
-	DeleteAttendStatus(ctx context.Context, id uuid.UUID) error
-	PluralDeleteAttendStatuses(ctx context.Context, ids []uuid.UUID) error
+	DeleteAttendStatus(ctx context.Context, id uuid.UUID) (int64, error)
+	PluralDeleteAttendStatuses(ctx context.Context, ids []uuid.UUID) (int64, error)
 	FindAttendStatusByID(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error)
 	FindAttendStatusByKey(ctx context.Context, key string) (entity.AttendStatus, error)
 	GetAttendStatuses(
@@ -86,8 +86,8 @@ type AttendanceTypeManager interface {
 	CreateAttendanceType(ctx context.Context, name, key, color string) (entity.AttendanceType, error)
 	CreateAttendanceTypes(ctx context.Context, ps []parameter.CreateAttendanceTypeParam) (int64, error)
 	UpdateAttendanceType(ctx context.Context, id uuid.UUID, name, key, color string) (entity.AttendanceType, error)
-	DeleteAttendanceType(ctx context.Context, id uuid.UUID) error
-	PluralDeleteAttendanceTypes(ctx context.Context, ids []uuid.UUID) error
+	DeleteAttendanceType(ctx context.Context, id uuid.UUID) (int64, error)
+	PluralDeleteAttendanceTypes(ctx context.Context, ids []uuid.UUID) (int64, error)
 	FindAttendanceTypeByID(ctx context.Context, id uuid.UUID) (entity.AttendanceType, error)
 	FindAttendanceTypeByKey(ctx context.Context, key string) (entity.AttendanceType, error)
 	GetAttendanceTypes(
@@ -108,8 +108,8 @@ type EventTypeManager interface {
 	CreateEventType(ctx context.Context, name, key, color string) (entity.EventType, error)
 	CreateEventTypes(ctx context.Context, ps []parameter.CreateEventTypeParam) (int64, error)
 	UpdateEventType(ctx context.Context, id uuid.UUID, name, key, color string) (entity.EventType, error)
-	DeleteEventType(ctx context.Context, id uuid.UUID) error
-	PluralDeleteEventTypes(ctx context.Context, ids []uuid.UUID) error
+	DeleteEventType(ctx context.Context, id uuid.UUID) (int64, error)
+	PluralDeleteEventTypes(ctx context.Context, ids []uuid.UUID) (int64, error)
 	FindEventTypeByID(ctx context.Context, id uuid.UUID) (entity.EventType, error)
 	FindEventTypeByKey(ctx context.Context, key string) (entity.EventType, error)
 	GetEventTypes(
@@ -131,8 +131,8 @@ type PermissionCategoryManager interface {
 	CreatePermissionCategories(ctx context.Context, ps []parameter.CreatePermissionCategoryParam) (int64, error)
 	UpdatePermissionCategory(
 		ctx context.Context, id uuid.UUID, name, key, description string) (entity.PermissionCategory, error)
-	DeletePermissionCategory(ctx context.Context, id uuid.UUID) error
-	PluralDeletePermissionCategories(ctx context.Context, ids []uuid.UUID) error
+	DeletePermissionCategory(ctx context.Context, id uuid.UUID) (int64, error)
+	PluralDeletePermissionCategories(ctx context.Context, ids []uuid.UUID) (int64, error)
 	FindPermissionCategoryByID(ctx context.Context, id uuid.UUID) (entity.PermissionCategory, error)
 	FindPermissionCategoryByKey(ctx context.Context, key string) (entity.PermissionCategory, error)
 	GetPermissionCategories(
@@ -154,8 +154,8 @@ type PolicyCategoryManager interface {
 	CreatePolicyCategories(ctx context.Context, ps []parameter.CreatePolicyCategoryParam) (int64, error)
 	UpdatePolicyCategory(
 		ctx context.Context, id uuid.UUID, name, key, description string) (entity.PolicyCategory, error)
-	DeletePolicyCategory(ctx context.Context, id uuid.UUID) error
-	PluralDeletePolicyCategories(ctx context.Context, ids []uuid.UUID) error
+	DeletePolicyCategory(ctx context.Context, id uuid.UUID) (int64, error)
+	PluralDeletePolicyCategories(ctx context.Context, ids []uuid.UUID) (int64, error)
 	FindPolicyCategoryByID(ctx context.Context, id uuid.UUID) (entity.PolicyCategory, error)
 	FindPolicyCategoryByKey(ctx context.Context, key string) (entity.PolicyCategory, error)
 	GetPolicyCategories(
@@ -176,8 +176,8 @@ type MimeTypeManager interface {
 	CreateMimeType(ctx context.Context, name, key, kind string) (entity.MimeType, error)
 	CreateMimeTypes(ctx context.Context, ps []parameter.CreateMimeTypeParam) (int64, error)
 	UpdateMimeType(ctx context.Context, id uuid.UUID, name, key, kind string) (entity.MimeType, error)
-	DeleteMimeType(ctx context.Context, id uuid.UUID) error
-	PluralDeleteMimeTypes(ctx context.Context, ids []uuid.UUID) error
+	DeleteMimeType(ctx context.Context, id uuid.UUID) (int64, error)
+	PluralDeleteMimeTypes(ctx context.Context, ids []uuid.UUID) (int64, error)
 	FindMimeTypeByID(ctx context.Context, id uuid.UUID) (entity.MimeType, error)
 	FindMimeTypeByKey(ctx context.Context, key string) (entity.MimeType, error)
 	GetMimeTypes(
@@ -198,8 +198,8 @@ type RecordTypeManager interface {
 	CreateRecordType(ctx context.Context, name, key string) (entity.RecordType, error)
 	CreateRecordTypes(ctx context.Context, ps []parameter.CreateRecordTypeParam) (int64, error)
 	UpdateRecordType(ctx context.Context, id uuid.UUID, name, key string) (entity.RecordType, error)
-	DeleteRecordType(ctx context.Context, id uuid.UUID) error
-	PluralDeleteRecordTypes(ctx context.Context, ids []uuid.UUID) error
+	DeleteRecordType(ctx context.Context, id uuid.UUID) (int64, error)
+	PluralDeleteRecordTypes(ctx context.Context, ids []uuid.UUID) (int64, error)
 	FindRecordTypeByID(ctx context.Context, id uuid.UUID) (entity.RecordType, error)
 	FindRecordTypeByKey(ctx context.Context, key string) (entity.RecordType, error)
 	GetRecordTypes(
@@ -221,8 +221,8 @@ type PermissionManager interface {
 	CreatePermissions(ctx context.Context, ps []parameter.CreatePermissionParam) (int64, error)
 	UpdatePermission(
 		ctx context.Context, id uuid.UUID, name, key, description string, categoryID uuid.UUID) (entity.Permission, error)
-	DeletePermission(ctx context.Context, id uuid.UUID) error
-	PluralDeletePermissions(ctx context.Context, ids []uuid.UUID) error
+	DeletePermission(ctx context.Context, id uuid.UUID) (int64, error)
+	PluralDeletePermissions(ctx context.Context, ids []uuid.UUID) (int64, error)
 	FindPermissionByID(ctx context.Context, id uuid.UUID) (entity.Permission, error)
 	FindPermissionByIDWithCategory(
 		ctx context.Context,
@@ -263,8 +263,8 @@ type PolicyManager interface {
 	CreatePolicies(ctx context.Context, ps []parameter.CreatePolicyParam) (int64, error)
 	UpdatePolicy(
 		ctx context.Context, id uuid.UUID, name, key, description string, categoryID uuid.UUID) (entity.Policy, error)
-	DeletePolicy(ctx context.Context, id uuid.UUID) error
-	PluralDeletePolicies(ctx context.Context, ids []uuid.UUID) error
+	DeletePolicy(ctx context.Context, id uuid.UUID) (int64, error)
+	PluralDeletePolicies(ctx context.Context, ids []uuid.UUID) (int64, error)
 	FindPolicyByID(ctx context.Context, id uuid.UUID) (entity.Policy, error)
 	FindPolicyByIDWithCategory(
 		ctx context.Context,
@@ -304,8 +304,8 @@ type RoleManager interface {
 	CreateRole(ctx context.Context, name, description string) (entity.Role, error)
 	CreateRoles(ctx context.Context, ps []parameter.CreateRoleParam) (int64, error)
 	UpdateRole(ctx context.Context, id uuid.UUID, name, description string) (entity.Role, error)
-	DeleteRole(ctx context.Context, id uuid.UUID) error
-	PluralDeleteRoles(ctx context.Context, ids []uuid.UUID) error
+	DeleteRole(ctx context.Context, id uuid.UUID) (int64, error)
+	PluralDeleteRoles(ctx context.Context, ids []uuid.UUID) (int64, error)
 	FindRoleByID(ctx context.Context, id uuid.UUID) (entity.Role, error)
 	GetRoles(
 		ctx context.Context,

@@ -10,13 +10,13 @@ UPDATE m_mime_types SET name = $2, key = $3, kind = $4 WHERE mime_type_id = $1 R
 -- name: UpdateMimeTypeByKey :one
 UPDATE m_mime_types SET name = $2, kind = $3 WHERE key = $1 RETURNING *;
 
--- name: DeleteMimeType :exec
+-- name: DeleteMimeType :execrows
 DELETE FROM m_mime_types WHERE mime_type_id = $1;
 
--- name: DeleteMimeTypeByKey :exec
+-- name: DeleteMimeTypeByKey :execrows
 DELETE FROM m_mime_types WHERE key = $1;
 
--- name: PluralDeleteMimeTypes :exec
+-- name: PluralDeleteMimeTypes :execrows
 DELETE FROM m_mime_types WHERE mime_type_id = ANY($1::uuid[]);
 
 -- name: FindMimeTypeByID :one

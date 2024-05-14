@@ -4,25 +4,25 @@ INSERT INTO m_permission_associations (permission_id, work_position_id) VALUES (
 -- name: CreatePermissionAssociation :one
 INSERT INTO m_permission_associations (permission_id, work_position_id) VALUES ($1, $2) RETURNING *;
 
--- name: DeletePermissionAssociation :exec
+-- name: DeletePermissionAssociation :execrows
 DELETE FROM m_permission_associations WHERE permission_id = $1 AND work_position_id = $2;
 
--- name: DeletePermissionOnPermission :exec
+-- name: DeletePermissionOnPermission :execrows
 DELETE FROM m_permission_associations WHERE permission_id = $1;
 
--- name: DeletePermissionOnPermissions :exec
+-- name: DeletePermissionOnPermissions :execrows
 DELETE FROM m_permission_associations WHERE permission_id = ANY($1::uuid[]);
 
--- name: PluralDeletePermissionAssociationsOnPermission :exec
+-- name: PluralDeletePermissionAssociationsOnPermission :execrows
 DELETE FROM m_permission_associations WHERE permission_id = $1 AND work_position_id = ANY($2::uuid[]);
 
--- name: DeletePermissionOnWorkPosition :exec
+-- name: DeletePermissionOnWorkPosition :execrows
 DELETE FROM m_permission_associations WHERE work_position_id = $1;
 
--- name: DeletePermissionOnWorkPositions :exec
+-- name: DeletePermissionOnWorkPositions :execrows
 DELETE FROM m_permission_associations WHERE work_position_id = ANY($1::uuid[]);
 
--- name: PluralDeletePermissionAssociationsOnWorkPosition :exec
+-- name: PluralDeletePermissionAssociationsOnWorkPosition :execrows
 DELETE FROM m_permission_associations WHERE work_position_id = $1 AND permission_id = ANY($2::uuid[]);
 
 -- name: GetWorkPositionsOnPermission :many

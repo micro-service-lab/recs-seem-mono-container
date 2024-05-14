@@ -25,17 +25,17 @@ type EventType interface {
 	// CreateEventTypesWithSd SD付きでイベントタイプを作成する。
 	CreateEventTypesWithSd(ctx context.Context, sd Sd, params []parameter.CreateEventTypeParam) (int64, error)
 	// DeleteEventType イベントタイプを削除する。
-	DeleteEventType(ctx context.Context, eventTypeID uuid.UUID) error
+	DeleteEventType(ctx context.Context, eventTypeID uuid.UUID) (int64, error)
 	// DeleteEventTypeWithSd SD付きでイベントタイプを削除する。
-	DeleteEventTypeWithSd(ctx context.Context, sd Sd, eventTypeID uuid.UUID) error
+	DeleteEventTypeWithSd(ctx context.Context, sd Sd, eventTypeID uuid.UUID) (int64, error)
 	// DeleteEventTypeByKey イベントタイプを削除する。
-	DeleteEventTypeByKey(ctx context.Context, key string) error
+	DeleteEventTypeByKey(ctx context.Context, key string) (int64, error)
 	// DeleteEventTypeByKeyWithSd SD付きでイベントタイプを削除する。
-	DeleteEventTypeByKeyWithSd(ctx context.Context, sd Sd, key string) error
+	DeleteEventTypeByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error)
 	// PluralDeleteEventTypes イベントタイプを複数削除する。
-	PluralDeleteEventTypes(ctx context.Context, eventTypeIDs []uuid.UUID) error
+	PluralDeleteEventTypes(ctx context.Context, eventTypeIDs []uuid.UUID) (int64, error)
 	// PluralDeleteEventTypesWithSd SD付きでイベントタイプを複数削除する。
-	PluralDeleteEventTypesWithSd(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID) error
+	PluralDeleteEventTypesWithSd(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID) (int64, error)
 	// FindEventTypeByID イベントタイプを取得する。
 	FindEventTypeByID(ctx context.Context, eventTypeID uuid.UUID) (entity.EventType, error)
 	// FindEventTypeByIDWithSd SD付きでイベントタイプを取得する。

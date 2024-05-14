@@ -4,10 +4,10 @@ INSERT INTO t_files (attachable_item_id) VALUES ($1);
 -- name: CreateFile :one
 INSERT INTO t_files (attachable_item_id) VALUES ($1) RETURNING *;
 
--- name: DeleteFile :exec
+-- name: DeleteFile :execrows
 DELETE FROM t_files WHERE file_id = $1;
 
--- name: PluralDeleteFiles :exec
+-- name: PluralDeleteFiles :execrows
 DELETE FROM t_files WHERE file_id = ANY($1::uuid[]);
 
 -- name: FindFileByID :one

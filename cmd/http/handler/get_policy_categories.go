@@ -14,7 +14,7 @@ import (
 
 // GetPolicyCategories is a handler for getting policy categories.
 type GetPolicyCategories struct {
-	Service service.ManagerInterface
+	Service service.PolicyCategoryManager
 }
 
 // GetPolicyCategoriesParam is a parameter for GetPolicyCategories.
@@ -46,15 +46,9 @@ func (h *GetPolicyCategories) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		FuncMap: getPolicyCategoriesParseFuncMap,
 	})
 	if err != nil {
-		log.Printf("failed to parse query: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}
@@ -69,15 +63,9 @@ func (h *GetPolicyCategories) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 		param.WithCount,
 	)
 	if err != nil {
-		log.Printf("failed to get policy categories: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}

@@ -76,22 +76,28 @@ func (q *Queries) CreatePolicy(ctx context.Context, arg CreatePolicyParams) (Pol
 	return i, err
 }
 
-const deletePolicy = `-- name: DeletePolicy :exec
+const deletePolicy = `-- name: DeletePolicy :execrows
 DELETE FROM m_policies WHERE policy_id = $1
 `
 
-func (q *Queries) DeletePolicy(ctx context.Context, policyID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePolicy, policyID)
-	return err
+func (q *Queries) DeletePolicy(ctx context.Context, policyID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePolicy, policyID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deletePolicyByKey = `-- name: DeletePolicyByKey :exec
+const deletePolicyByKey = `-- name: DeletePolicyByKey :execrows
 DELETE FROM m_policies WHERE key = $1
 `
 
-func (q *Queries) DeletePolicyByKey(ctx context.Context, key string) error {
-	_, err := q.db.Exec(ctx, deletePolicyByKey, key)
-	return err
+func (q *Queries) DeletePolicyByKey(ctx context.Context, key string) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePolicyByKey, key)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findPolicyByID = `-- name: FindPolicyByID :one
@@ -727,13 +733,16 @@ func (q *Queries) GetPoliciesWithCategoryUseNumberedPaginate(ctx context.Context
 	return items, nil
 }
 
-const pluralDeletePolicies = `-- name: PluralDeletePolicies :exec
+const pluralDeletePolicies = `-- name: PluralDeletePolicies :execrows
 DELETE FROM m_policies WHERE policy_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeletePolicies(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeletePolicies, dollar_1)
-	return err
+func (q *Queries) PluralDeletePolicies(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeletePolicies, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updatePolicy = `-- name: UpdatePolicy :one

@@ -14,7 +14,7 @@ import (
 
 // GetRoles is a handler for getting roles.
 type GetRoles struct {
-	Service service.ManagerInterface
+	Service service.RoleManager
 }
 
 // GetRolesParam is a parameter for GetRoles.
@@ -46,15 +46,9 @@ func (h *GetRoles) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		FuncMap: getRolesParseFuncMap,
 	})
 	if err != nil {
-		log.Printf("failed to parse query: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}
@@ -69,15 +63,9 @@ func (h *GetRoles) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		param.WithCount,
 	)
 	if err != nil {
-		log.Printf("failed to get roles: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}

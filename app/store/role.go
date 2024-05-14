@@ -25,13 +25,13 @@ type Role interface {
 	// CreateRolesWithSd SD付きでロールを作成する。
 	CreateRolesWithSd(ctx context.Context, sd Sd, params []parameter.CreateRoleParam) (int64, error)
 	// DeleteRole ロールを削除する。
-	DeleteRole(ctx context.Context, roleID uuid.UUID) error
+	DeleteRole(ctx context.Context, roleID uuid.UUID) (int64, error)
 	// DeleteRoleWithSd SD付きでロールを削除する。
-	DeleteRoleWithSd(ctx context.Context, sd Sd, roleID uuid.UUID) error
+	DeleteRoleWithSd(ctx context.Context, sd Sd, roleID uuid.UUID) (int64, error)
 	// PluralDeleteRoles ロールを複数削除する。
-	PluralDeleteRoles(ctx context.Context, roleIDs []uuid.UUID) error
+	PluralDeleteRoles(ctx context.Context, roleIDs []uuid.UUID) (int64, error)
 	// PluralDeleteRolesWithSd SD付きでロールを複数削除する。
-	PluralDeleteRolesWithSd(ctx context.Context, sd Sd, roleIDs []uuid.UUID) error
+	PluralDeleteRolesWithSd(ctx context.Context, sd Sd, roleIDs []uuid.UUID) (int64, error)
 	// FindRoleByID ロールを取得する。
 	FindRoleByID(ctx context.Context, roleID uuid.UUID) (entity.Role, error)
 	// FindRoleByIDWithSd SD付きでロールを取得する。

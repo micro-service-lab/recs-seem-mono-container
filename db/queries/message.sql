@@ -7,13 +7,13 @@ INSERT INTO t_messages (chat_room_id, sender_id, body, posted_at, last_edited_at
 -- name: UpdateMessage :one
 UPDATE t_messages SET chat_room_id = $2, sender_id = $3, body = $4, last_edited_at = $5 WHERE message_id = $1 RETURNING *;
 
--- name: DeleteMessage :exec
+-- name: DeleteMessage :execrows
 DELETE FROM t_messages WHERE message_id = $1;
 
--- name: DeleteMessagesOnChatRoom :exec
+-- name: DeleteMessagesOnChatRoom :execrows
 DELETE FROM t_messages WHERE chat_room_id = $1;
 
--- name: PluralDeleteMessages :exec
+-- name: PluralDeleteMessages :execrows
 DELETE FROM t_messages WHERE message_id = ANY($1::uuid[]);
 
 -- name: FindMessageByID :one

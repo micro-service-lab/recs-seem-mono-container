@@ -117,31 +117,40 @@ type CreateAttendancesParams struct {
 	LastEditedAt       time.Time   `json:"last_edited_at"`
 }
 
-const deleteAttendance = `-- name: DeleteAttendance :exec
+const deleteAttendance = `-- name: DeleteAttendance :execrows
 DELETE FROM t_attendances WHERE attendance_id = $1
 `
 
-func (q *Queries) DeleteAttendance(ctx context.Context, attendanceID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAttendance, attendanceID)
-	return err
+func (q *Queries) DeleteAttendance(ctx context.Context, attendanceID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAttendance, attendanceID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteAttendancesOnMember = `-- name: DeleteAttendancesOnMember :exec
+const deleteAttendancesOnMember = `-- name: DeleteAttendancesOnMember :execrows
 DELETE FROM t_attendances WHERE member_id = $1
 `
 
-func (q *Queries) DeleteAttendancesOnMember(ctx context.Context, memberID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAttendancesOnMember, memberID)
-	return err
+func (q *Queries) DeleteAttendancesOnMember(ctx context.Context, memberID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAttendancesOnMember, memberID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteAttendancesOnMembers = `-- name: DeleteAttendancesOnMembers :exec
+const deleteAttendancesOnMembers = `-- name: DeleteAttendancesOnMembers :execrows
 DELETE FROM t_attendances WHERE member_id = ANY($1::uuid[])
 `
 
-func (q *Queries) DeleteAttendancesOnMembers(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAttendancesOnMembers, dollar_1)
-	return err
+func (q *Queries) DeleteAttendancesOnMembers(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAttendancesOnMembers, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findAttendanceByID = `-- name: FindAttendanceByID :one
@@ -3096,13 +3105,16 @@ func (q *Queries) GetPluralAttendances(ctx context.Context, arg GetPluralAttenda
 	return items, nil
 }
 
-const pluralDeleteAttendances = `-- name: PluralDeleteAttendances :exec
+const pluralDeleteAttendances = `-- name: PluralDeleteAttendances :execrows
 DELETE FROM t_attendances WHERE attendance_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteAttendances(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteAttendances, dollar_1)
-	return err
+func (q *Queries) PluralDeleteAttendances(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteAttendances, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateAttendance = `-- name: UpdateAttendance :one

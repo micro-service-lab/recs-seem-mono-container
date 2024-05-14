@@ -101,13 +101,16 @@ type CreateChatRoomsParams struct {
 	UpdatedAt        time.Time   `json:"updated_at"`
 }
 
-const deleteChatRoom = `-- name: DeleteChatRoom :exec
+const deleteChatRoom = `-- name: DeleteChatRoom :execrows
 DELETE FROM m_chat_rooms WHERE chat_room_id = $1
 `
 
-func (q *Queries) DeleteChatRoom(ctx context.Context, chatRoomID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteChatRoom, chatRoomID)
-	return err
+func (q *Queries) DeleteChatRoom(ctx context.Context, chatRoomID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteChatRoom, chatRoomID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findChatRoomByID = `-- name: FindChatRoomByID :one
@@ -765,13 +768,16 @@ func (q *Queries) GetPluralChatRoomsWithOwner(ctx context.Context, arg GetPlural
 	return items, nil
 }
 
-const pluralDeleteChatRooms = `-- name: PluralDeleteChatRooms :exec
+const pluralDeleteChatRooms = `-- name: PluralDeleteChatRooms :execrows
 DELETE FROM m_chat_rooms WHERE chat_room_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteChatRooms(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteChatRooms, dollar_1)
-	return err
+func (q *Queries) PluralDeleteChatRooms(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteChatRooms, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateChatRoom = `-- name: UpdateChatRoom :one

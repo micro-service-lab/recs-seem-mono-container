@@ -95,7 +95,7 @@ func (c *InitAttendanceTypes) RunDiff(ctx context.Context, notDel, deepEqual boo
 		return fmt.Errorf("failed to create attendance types: %w", err)
 	}
 	if len(existIDs) > 0 && !notDel {
-		err = (*c.Manager).PluralDeleteAttendanceTypes(ctx, existIDs)
+		_, err = (*c.Manager).PluralDeleteAttendanceTypes(ctx, existIDs)
 		if err != nil {
 			return fmt.Errorf("failed to delete attendance types: %w", err)
 		}

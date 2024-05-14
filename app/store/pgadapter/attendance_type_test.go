@@ -156,7 +156,7 @@ func TestPgAdapter_AttendanceType(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Len(t, el.Data, 2)
 				// delete
-				err = adapter.DeleteAttendanceTypeWithSd(ctx, sd, el.Data[0].AttendanceTypeID)
+				_, err = adapter.DeleteAttendanceTypeWithSd(ctx, sd, el.Data[0].AttendanceTypeID)
 				assert.NoError(t, err)
 				count, err = adapter.CountAttendanceTypesWithSd(ctx, sd, parameter.WhereAttendanceTypeParam{})
 				assert.NoError(t, err)

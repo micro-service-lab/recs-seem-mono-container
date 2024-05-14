@@ -120,7 +120,7 @@ func (c *InitPolicies) RunDiff(ctx context.Context, notDel, deepEqual bool) erro
 		return fmt.Errorf("failed to create policy: %w", err)
 	}
 	if len(existIDs) > 0 && !notDel {
-		err = (*c.Manager).PluralDeletePolicies(ctx, existIDs)
+		_, err = (*c.Manager).PluralDeletePolicies(ctx, existIDs)
 		if err != nil {
 			return fmt.Errorf("failed to delete policy: %w", err)
 		}

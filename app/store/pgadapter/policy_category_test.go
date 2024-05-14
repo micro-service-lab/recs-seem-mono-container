@@ -156,7 +156,7 @@ func TestPgAdapter_PolicyCategory(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Len(t, el.Data, 2)
 				// delete
-				err = adapter.DeletePolicyCategoryWithSd(ctx, sd, el.Data[0].PolicyCategoryID)
+				_, err = adapter.DeletePolicyCategoryWithSd(ctx, sd, el.Data[0].PolicyCategoryID)
 				assert.NoError(t, err)
 				count, err = adapter.CountPolicyCategoriesWithSd(ctx, sd, parameter.WherePolicyCategoryParam{})
 				assert.NoError(t, err)

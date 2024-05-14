@@ -74,7 +74,7 @@ type CreatePermissionAssociationsParams struct {
 	WorkPositionID uuid.UUID `json:"work_position_id"`
 }
 
-const deletePermissionAssociation = `-- name: DeletePermissionAssociation :exec
+const deletePermissionAssociation = `-- name: DeletePermissionAssociation :execrows
 DELETE FROM m_permission_associations WHERE permission_id = $1 AND work_position_id = $2
 `
 
@@ -83,45 +83,60 @@ type DeletePermissionAssociationParams struct {
 	WorkPositionID uuid.UUID `json:"work_position_id"`
 }
 
-func (q *Queries) DeletePermissionAssociation(ctx context.Context, arg DeletePermissionAssociationParams) error {
-	_, err := q.db.Exec(ctx, deletePermissionAssociation, arg.PermissionID, arg.WorkPositionID)
-	return err
+func (q *Queries) DeletePermissionAssociation(ctx context.Context, arg DeletePermissionAssociationParams) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermissionAssociation, arg.PermissionID, arg.WorkPositionID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deletePermissionOnPermission = `-- name: DeletePermissionOnPermission :exec
+const deletePermissionOnPermission = `-- name: DeletePermissionOnPermission :execrows
 DELETE FROM m_permission_associations WHERE permission_id = $1
 `
 
-func (q *Queries) DeletePermissionOnPermission(ctx context.Context, permissionID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePermissionOnPermission, permissionID)
-	return err
+func (q *Queries) DeletePermissionOnPermission(ctx context.Context, permissionID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermissionOnPermission, permissionID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deletePermissionOnPermissions = `-- name: DeletePermissionOnPermissions :exec
+const deletePermissionOnPermissions = `-- name: DeletePermissionOnPermissions :execrows
 DELETE FROM m_permission_associations WHERE permission_id = ANY($1::uuid[])
 `
 
-func (q *Queries) DeletePermissionOnPermissions(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePermissionOnPermissions, dollar_1)
-	return err
+func (q *Queries) DeletePermissionOnPermissions(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermissionOnPermissions, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deletePermissionOnWorkPosition = `-- name: DeletePermissionOnWorkPosition :exec
+const deletePermissionOnWorkPosition = `-- name: DeletePermissionOnWorkPosition :execrows
 DELETE FROM m_permission_associations WHERE work_position_id = $1
 `
 
-func (q *Queries) DeletePermissionOnWorkPosition(ctx context.Context, workPositionID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePermissionOnWorkPosition, workPositionID)
-	return err
+func (q *Queries) DeletePermissionOnWorkPosition(ctx context.Context, workPositionID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermissionOnWorkPosition, workPositionID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deletePermissionOnWorkPositions = `-- name: DeletePermissionOnWorkPositions :exec
+const deletePermissionOnWorkPositions = `-- name: DeletePermissionOnWorkPositions :execrows
 DELETE FROM m_permission_associations WHERE work_position_id = ANY($1::uuid[])
 `
 
-func (q *Queries) DeletePermissionOnWorkPositions(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePermissionOnWorkPositions, dollar_1)
-	return err
+func (q *Queries) DeletePermissionOnWorkPositions(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermissionOnWorkPositions, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const getPermissionsOnWorkPosition = `-- name: GetPermissionsOnWorkPosition :many
@@ -646,7 +661,7 @@ func (q *Queries) GetWorkPositionsOnPermissionUseNumberedPaginate(ctx context.Co
 	return items, nil
 }
 
-const pluralDeletePermissionAssociationsOnPermission = `-- name: PluralDeletePermissionAssociationsOnPermission :exec
+const pluralDeletePermissionAssociationsOnPermission = `-- name: PluralDeletePermissionAssociationsOnPermission :execrows
 DELETE FROM m_permission_associations WHERE permission_id = $1 AND work_position_id = ANY($2::uuid[])
 `
 
@@ -655,12 +670,15 @@ type PluralDeletePermissionAssociationsOnPermissionParams struct {
 	Column2      []uuid.UUID `json:"column_2"`
 }
 
-func (q *Queries) PluralDeletePermissionAssociationsOnPermission(ctx context.Context, arg PluralDeletePermissionAssociationsOnPermissionParams) error {
-	_, err := q.db.Exec(ctx, pluralDeletePermissionAssociationsOnPermission, arg.PermissionID, arg.Column2)
-	return err
+func (q *Queries) PluralDeletePermissionAssociationsOnPermission(ctx context.Context, arg PluralDeletePermissionAssociationsOnPermissionParams) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeletePermissionAssociationsOnPermission, arg.PermissionID, arg.Column2)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const pluralDeletePermissionAssociationsOnWorkPosition = `-- name: PluralDeletePermissionAssociationsOnWorkPosition :exec
+const pluralDeletePermissionAssociationsOnWorkPosition = `-- name: PluralDeletePermissionAssociationsOnWorkPosition :execrows
 DELETE FROM m_permission_associations WHERE work_position_id = $1 AND permission_id = ANY($2::uuid[])
 `
 
@@ -669,7 +687,10 @@ type PluralDeletePermissionAssociationsOnWorkPositionParams struct {
 	Column2        []uuid.UUID `json:"column_2"`
 }
 
-func (q *Queries) PluralDeletePermissionAssociationsOnWorkPosition(ctx context.Context, arg PluralDeletePermissionAssociationsOnWorkPositionParams) error {
-	_, err := q.db.Exec(ctx, pluralDeletePermissionAssociationsOnWorkPosition, arg.WorkPositionID, arg.Column2)
-	return err
+func (q *Queries) PluralDeletePermissionAssociationsOnWorkPosition(ctx context.Context, arg PluralDeletePermissionAssociationsOnWorkPositionParams) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeletePermissionAssociationsOnWorkPosition, arg.WorkPositionID, arg.Column2)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }

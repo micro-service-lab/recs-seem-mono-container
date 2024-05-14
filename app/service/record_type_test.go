@@ -181,8 +181,8 @@ func TestManageRecordType_DeleteRecordType(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		DeleteRecordTypeFunc: func(_ context.Context, _ uuid.UUID) error {
-			return nil
+		DeleteRecordTypeFunc: func(_ context.Context, _ uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManageRecordType{
@@ -191,7 +191,7 @@ func TestManageRecordType_DeleteRecordType(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.DeleteRecordType(ctx, c.id)
+		_, err := s.DeleteRecordType(ctx, c.id)
 		assert.NoError(t, err)
 	}
 
@@ -227,8 +227,8 @@ func TestManageRecordType_PluralDeleteRecordTypes(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		PluralDeleteRecordTypesFunc: func(_ context.Context, _ []uuid.UUID) error {
-			return nil
+		PluralDeleteRecordTypesFunc: func(_ context.Context, _ []uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManageRecordType{
@@ -237,7 +237,7 @@ func TestManageRecordType_PluralDeleteRecordTypes(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.PluralDeleteRecordTypes(ctx, c.ids)
+		_, err := s.PluralDeleteRecordTypes(ctx, c.ids)
 		assert.NoError(t, err)
 	}
 

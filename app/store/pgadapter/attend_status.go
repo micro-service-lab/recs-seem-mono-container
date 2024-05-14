@@ -12,6 +12,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countAttendStatuses(
@@ -146,106 +147,106 @@ func (a *PgAdapter) CreateAttendStatusesWithSd(
 	return c, nil
 }
 
-func deleteAttendStatus(ctx context.Context, qtx *query.Queries, attendStatusID uuid.UUID) error {
-	err := qtx.DeleteAttendStatus(ctx, attendStatusID)
+func deleteAttendStatus(ctx context.Context, qtx *query.Queries, attendStatusID uuid.UUID) (int64, error) {
+	c, err := qtx.DeleteAttendStatus(ctx, attendStatusID)
 	if err != nil {
-		return fmt.Errorf("failed to delete attend status: %w", err)
+		return 0, fmt.Errorf("failed to delete attend status: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteAttendStatus 出席ステータスを削除する。
-func (a *PgAdapter) DeleteAttendStatus(ctx context.Context, attendStatusID uuid.UUID) error {
-	err := deleteAttendStatus(ctx, a.query, attendStatusID)
+func (a *PgAdapter) DeleteAttendStatus(ctx context.Context, attendStatusID uuid.UUID) (int64, error) {
+	c, err := deleteAttendStatus(ctx, a.query, attendStatusID)
 	if err != nil {
-		return fmt.Errorf("failed to delete attend status: %w", err)
+		return 0, fmt.Errorf("failed to delete attend status: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteAttendStatusWithSd SD付きで出席ステータスを削除する。
 func (a *PgAdapter) DeleteAttendStatusWithSd(
 	ctx context.Context, sd store.Sd, attendStatusID uuid.UUID,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deleteAttendStatus(ctx, qtx, attendStatusID)
+	c, err := deleteAttendStatus(ctx, qtx, attendStatusID)
 	if err != nil {
-		return fmt.Errorf("failed to delete attend status: %w", err)
+		return 0, fmt.Errorf("failed to delete attend status: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
-func deleteAttendStatusByKey(ctx context.Context, qtx *query.Queries, key string) error {
-	err := qtx.DeleteAttendStatusByKey(ctx, key)
+func deleteAttendStatusByKey(ctx context.Context, qtx *query.Queries, key string) (int64, error) {
+	c, err := qtx.DeleteAttendStatusByKey(ctx, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete attend status: %w", err)
+		return 0, fmt.Errorf("failed to delete attend status: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteAttendStatusByKey 出席ステータスを削除する。
-func (a *PgAdapter) DeleteAttendStatusByKey(ctx context.Context, key string) error {
-	err := deleteAttendStatusByKey(ctx, a.query, key)
+func (a *PgAdapter) DeleteAttendStatusByKey(ctx context.Context, key string) (int64, error) {
+	c, err := deleteAttendStatusByKey(ctx, a.query, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete attend status: %w", err)
+		return 0, fmt.Errorf("failed to delete attend status: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteAttendStatusByKeyWithSd SD付きで出席ステータスを削除する。
 func (a *PgAdapter) DeleteAttendStatusByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deleteAttendStatusByKey(ctx, qtx, key)
+	c, err := deleteAttendStatusByKey(ctx, qtx, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete attend status: %w", err)
+		return 0, fmt.Errorf("failed to delete attend status: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
-func pluralDeleteAttendStatuses(ctx context.Context, qtx *query.Queries, attendStatusIDs []uuid.UUID) error {
-	err := qtx.PluralDeleteAttendStatuses(ctx, attendStatusIDs)
+func pluralDeleteAttendStatuses(ctx context.Context, qtx *query.Queries, attendStatusIDs []uuid.UUID) (int64, error) {
+	c, err := qtx.PluralDeleteAttendStatuses(ctx, attendStatusIDs)
 	if err != nil {
-		return fmt.Errorf("failed to delete attend statuses: %w", err)
+		return 0, fmt.Errorf("failed to delete attend statuses: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteAttendStatuses 出席ステータスを複数削除する。
-func (a *PgAdapter) PluralDeleteAttendStatuses(ctx context.Context, attendStatusIDs []uuid.UUID) error {
-	err := pluralDeleteAttendStatuses(ctx, a.query, attendStatusIDs)
+func (a *PgAdapter) PluralDeleteAttendStatuses(ctx context.Context, attendStatusIDs []uuid.UUID) (int64, error) {
+	c, err := pluralDeleteAttendStatuses(ctx, a.query, attendStatusIDs)
 	if err != nil {
-		return fmt.Errorf("failed to delete attend statuses: %w", err)
+		return 0, fmt.Errorf("failed to delete attend statuses: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteAttendStatusesWithSd SD付きで出席ステータスを複数削除する。
 func (a *PgAdapter) PluralDeleteAttendStatusesWithSd(
 	ctx context.Context, sd store.Sd, attendStatusIDs []uuid.UUID,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := pluralDeleteAttendStatuses(ctx, qtx, attendStatusIDs)
+	c, err := pluralDeleteAttendStatuses(ctx, qtx, attendStatusIDs)
 	if err != nil {
-		return fmt.Errorf("failed to delete attend statuses: %w", err)
+		return 0, fmt.Errorf("failed to delete attend statuses: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 func findAttendStatusByID(
@@ -254,7 +255,7 @@ func findAttendStatusByID(
 	e, err := qtx.FindAttendStatusByID(ctx, attendStatusID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.AttendStatus{}, store.ErrDataNoRecord
+			return entity.AttendStatus{}, errhandle.NewModelNotFoundError("attend status")
 		}
 		return entity.AttendStatus{}, fmt.Errorf("failed to find attend status: %w", err)
 	}
@@ -298,7 +299,7 @@ func findAttendStatusByKey(ctx context.Context, qtx *query.Queries, key string) 
 	e, err := qtx.FindAttendStatusByKey(ctx, key)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.AttendStatus{}, store.ErrDataNoRecord
+			return entity.AttendStatus{}, errhandle.NewModelNotFoundError("attend status")
 		}
 		return entity.AttendStatus{}, fmt.Errorf("failed to find attend status: %w", err)
 	}
@@ -551,7 +552,7 @@ func updateAttendStatus(
 	e, err := qtx.UpdateAttendStatus(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.AttendStatus{}, store.ErrDataNoRecord
+			return entity.AttendStatus{}, errhandle.NewModelNotFoundError("attend status")
 		}
 		return entity.AttendStatus{}, fmt.Errorf("failed to update attend status: %w", err)
 	}
@@ -601,7 +602,7 @@ func updateAttendStatusByKey(
 	e, err := qtx.UpdateAttendStatusByKey(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.AttendStatus{}, store.ErrDataNoRecord
+			return entity.AttendStatus{}, errhandle.NewModelNotFoundError("attend status")
 		}
 		return entity.AttendStatus{}, fmt.Errorf("failed to update attend status: %w", err)
 	}

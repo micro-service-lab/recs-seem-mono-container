@@ -25,17 +25,17 @@ type MimeType interface {
 	// CreateMimeTypesWithSd SD付きでマイムタイプを作成する。
 	CreateMimeTypesWithSd(ctx context.Context, sd Sd, params []parameter.CreateMimeTypeParam) (int64, error)
 	// DeleteMimeType マイムタイプを削除する。
-	DeleteMimeType(ctx context.Context, mimeTypeID uuid.UUID) error
+	DeleteMimeType(ctx context.Context, mimeTypeID uuid.UUID) (int64, error)
 	// DeleteMimeTypeWithSd SD付きでマイムタイプを削除する。
-	DeleteMimeTypeWithSd(ctx context.Context, sd Sd, mimeTypeID uuid.UUID) error
+	DeleteMimeTypeWithSd(ctx context.Context, sd Sd, mimeTypeID uuid.UUID) (int64, error)
 	// DeleteMimeTypeByKey マイムタイプを削除する。
-	DeleteMimeTypeByKey(ctx context.Context, key string) error
+	DeleteMimeTypeByKey(ctx context.Context, key string) (int64, error)
 	// DeleteMimeTypeByKeyWithSd SD付きでマイムタイプを削除する。
-	DeleteMimeTypeByKeyWithSd(ctx context.Context, sd Sd, key string) error
+	DeleteMimeTypeByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error)
 	// PluralDeleteMimeTypes マイムタイプを複数削除する。
-	PluralDeleteMimeTypes(ctx context.Context, mimeTypeIDs []uuid.UUID) error
+	PluralDeleteMimeTypes(ctx context.Context, mimeTypeIDs []uuid.UUID) (int64, error)
 	// PluralDeleteMimeTypesWithSd SD付きでマイムタイプを複数削除する。
-	PluralDeleteMimeTypesWithSd(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID) error
+	PluralDeleteMimeTypesWithSd(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID) (int64, error)
 	// FindMimeTypeByID マイムタイプを取得する。
 	FindMimeTypeByID(ctx context.Context, mimeTypeID uuid.UUID) (entity.MimeType, error)
 	// FindMimeTypeByIDWithSd SD付きでマイムタイプを取得する。

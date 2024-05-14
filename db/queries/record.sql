@@ -7,13 +7,13 @@ INSERT INTO t_records (record_type_id, title, body, organization_id, posted_by, 
 -- name: UpdateRecord :one
 UPDATE t_records SET record_type_id = $2, title = $3, body = $4, organization_id = $5, last_edited_by = $6, last_edited_at = $7 WHERE record_id = $1 RETURNING *;
 
--- name: DeleteRecord :exec
+-- name: DeleteRecord :execrows
 DELETE FROM t_records WHERE record_id = $1;
 
--- name: DeleteRecordOnOrganization :exec
+-- name: DeleteRecordOnOrganization :execrows
 DELETE FROM t_records WHERE organization_id = $1;
 
--- name: PluralDeleteRecords :exec
+-- name: PluralDeleteRecords :execrows
 DELETE FROM t_records WHERE record_id = ANY($1::uuid[]);
 
 -- name: FindRecordByID :one

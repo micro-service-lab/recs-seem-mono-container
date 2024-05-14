@@ -7,16 +7,16 @@ INSERT INTO t_attendances (attendance_type_id, member_id, description, date, mai
 -- name: UpdateAttendance :one
 UPDATE t_attendances SET attendance_type_id = $2, member_id = $3, description = $4, date = $5, mail_send_flag = $6, send_organization_id = $7, last_edited_at = $8 WHERE attendance_id = $1 RETURNING *;
 
--- name: DeleteAttendance :exec
+-- name: DeleteAttendance :execrows
 DELETE FROM t_attendances WHERE attendance_id = $1;
 
--- name: DeleteAttendancesOnMember :exec
+-- name: DeleteAttendancesOnMember :execrows
 DELETE FROM t_attendances WHERE member_id = $1;
 
--- name: DeleteAttendancesOnMembers :exec
+-- name: DeleteAttendancesOnMembers :execrows
 DELETE FROM t_attendances WHERE member_id = ANY($1::uuid[]);
 
--- name: PluralDeleteAttendances :exec
+-- name: PluralDeleteAttendances :execrows
 DELETE FROM t_attendances WHERE attendance_id = ANY($1::uuid[]);
 
 -- name: FindAttendanceByID :one

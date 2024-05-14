@@ -195,8 +195,8 @@ func TestManagePolicy_DeletePolicy(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		DeletePolicyFunc: func(_ context.Context, _ uuid.UUID) error {
-			return nil
+		DeletePolicyFunc: func(_ context.Context, _ uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManagePolicy{
@@ -205,7 +205,7 @@ func TestManagePolicy_DeletePolicy(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.DeletePolicy(ctx, c.id)
+		_, err := s.DeletePolicy(ctx, c.id)
 		assert.NoError(t, err)
 	}
 
@@ -241,8 +241,8 @@ func TestManagePolicy_PluralDeletePolicies(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		PluralDeletePoliciesFunc: func(_ context.Context, _ []uuid.UUID) error {
-			return nil
+		PluralDeletePoliciesFunc: func(_ context.Context, _ []uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManagePolicy{
@@ -251,7 +251,7 @@ func TestManagePolicy_PluralDeletePolicies(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.PluralDeletePolicies(ctx, c.ids)
+		_, err := s.PluralDeletePolicies(ctx, c.ids)
 		assert.NoError(t, err)
 	}
 

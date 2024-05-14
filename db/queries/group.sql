@@ -4,13 +4,13 @@ INSERT INTO m_groups (key, organization_id) VALUES ($1, $2);
 -- name: CreateGroup :one
 INSERT INTO m_groups (key, organization_id) VALUES ($1, $2) RETURNING *;
 
--- name: DeleteGroup :exec
+-- name: DeleteGroup :execrows
 DELETE FROM m_groups WHERE group_id = $1;
 
--- name: DeleteGroupByKey :exec
+-- name: DeleteGroupByKey :execrows
 DELETE FROM m_groups WHERE key = $1;
 
--- name: PluralDeleteGroups :exec
+-- name: PluralDeleteGroups :execrows
 DELETE FROM m_groups WHERE group_id = ANY($1::uuid[]);
 
 -- name: FindGroupByID :one

@@ -7,10 +7,10 @@ INSERT INTO m_work_positions (name, organization_id, description, created_at, up
 -- name: UpdateWorkPosition :one
 UPDATE m_work_positions SET name = $2, description = $3, updated_at = $4 WHERE work_position_id = $1 RETURNING *;
 
--- name: DeleteWorkPosition :exec
+-- name: DeleteWorkPosition :execrows
 DELETE FROM m_work_positions WHERE work_position_id = $1;
 
--- name: PluralDeleteWorkPositions :exec
+-- name: PluralDeleteWorkPositions :execrows
 DELETE FROM m_work_positions WHERE work_position_id = ANY($1::uuid[]);
 
 -- name: FindWorkPositionByID :one

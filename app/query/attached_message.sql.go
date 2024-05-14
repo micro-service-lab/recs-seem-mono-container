@@ -63,31 +63,40 @@ type CreateAttachedMessagesParams struct {
 	FileUrl   string      `json:"file_url"`
 }
 
-const deleteAttachedMessage = `-- name: DeleteAttachedMessage :exec
+const deleteAttachedMessage = `-- name: DeleteAttachedMessage :execrows
 DELETE FROM t_attached_messages WHERE attached_message_id = $1
 `
 
-func (q *Queries) DeleteAttachedMessage(ctx context.Context, attachedMessageID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAttachedMessage, attachedMessageID)
-	return err
+func (q *Queries) DeleteAttachedMessage(ctx context.Context, attachedMessageID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAttachedMessage, attachedMessageID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteAttachedMessagesOnMessage = `-- name: DeleteAttachedMessagesOnMessage :exec
+const deleteAttachedMessagesOnMessage = `-- name: DeleteAttachedMessagesOnMessage :execrows
 DELETE FROM t_attached_messages WHERE message_id = $1
 `
 
-func (q *Queries) DeleteAttachedMessagesOnMessage(ctx context.Context, messageID pgtype.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAttachedMessagesOnMessage, messageID)
-	return err
+func (q *Queries) DeleteAttachedMessagesOnMessage(ctx context.Context, messageID pgtype.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAttachedMessagesOnMessage, messageID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteAttachedMessagesOnMessages = `-- name: DeleteAttachedMessagesOnMessages :exec
+const deleteAttachedMessagesOnMessages = `-- name: DeleteAttachedMessagesOnMessages :execrows
 DELETE FROM t_attached_messages WHERE message_id = ANY($1::uuid[])
 `
 
-func (q *Queries) DeleteAttachedMessagesOnMessages(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAttachedMessagesOnMessages, dollar_1)
-	return err
+func (q *Queries) DeleteAttachedMessagesOnMessages(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAttachedMessagesOnMessages, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const getFilesOnChatRoom = `-- name: GetFilesOnChatRoom :many

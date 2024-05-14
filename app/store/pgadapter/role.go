@@ -13,6 +13,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countRoles(
@@ -151,72 +152,72 @@ func (a *PgAdapter) CreateRolesWithSd(
 	return c, nil
 }
 
-func deleteRole(ctx context.Context, qtx *query.Queries, roleID uuid.UUID) error {
-	err := qtx.DeleteRole(ctx, roleID)
+func deleteRole(ctx context.Context, qtx *query.Queries, roleID uuid.UUID) (int64, error) {
+	c, err := qtx.DeleteRole(ctx, roleID)
 	if err != nil {
-		return fmt.Errorf("failed to delete role: %w", err)
+		return 0, fmt.Errorf("failed to delete role: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteRole ロールを削除する。
-func (a *PgAdapter) DeleteRole(ctx context.Context, roleID uuid.UUID) error {
-	err := deleteRole(ctx, a.query, roleID)
+func (a *PgAdapter) DeleteRole(ctx context.Context, roleID uuid.UUID) (int64, error) {
+	c, err := deleteRole(ctx, a.query, roleID)
 	if err != nil {
-		return fmt.Errorf("failed to delete role: %w", err)
+		return 0, fmt.Errorf("failed to delete role: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteRoleWithSd SD付きでロールを削除する。
 func (a *PgAdapter) DeleteRoleWithSd(
 	ctx context.Context, sd store.Sd, roleID uuid.UUID,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deleteRole(ctx, qtx, roleID)
+	c, err := deleteRole(ctx, qtx, roleID)
 	if err != nil {
-		return fmt.Errorf("failed to delete role: %w", err)
+		return 0, fmt.Errorf("failed to delete role: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
-func pluralDeleteRoles(ctx context.Context, qtx *query.Queries, roleIDs []uuid.UUID) error {
-	err := qtx.PluralDeleteRoles(ctx, roleIDs)
+func pluralDeleteRoles(ctx context.Context, qtx *query.Queries, roleIDs []uuid.UUID) (int64, error) {
+	c, err := qtx.PluralDeleteRoles(ctx, roleIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete roles: %w", err)
+		return 0, fmt.Errorf("failed to plural delete roles: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteRoles ロールを複数削除する。
-func (a *PgAdapter) PluralDeleteRoles(ctx context.Context, roleIDs []uuid.UUID) error {
-	err := pluralDeleteRoles(ctx, a.query, roleIDs)
+func (a *PgAdapter) PluralDeleteRoles(ctx context.Context, roleIDs []uuid.UUID) (int64, error) {
+	c, err := pluralDeleteRoles(ctx, a.query, roleIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete roles: %w", err)
+		return 0, fmt.Errorf("failed to plural delete roles: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteRolesWithSd SD付きでロールを複数削除する。
 func (a *PgAdapter) PluralDeleteRolesWithSd(
 	ctx context.Context, sd store.Sd, roleIDs []uuid.UUID,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := pluralDeleteRoles(ctx, qtx, roleIDs)
+	c, err := pluralDeleteRoles(ctx, qtx, roleIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete roles: %w", err)
+		return 0, fmt.Errorf("failed to plural delete roles: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 func findRoleByID(
@@ -225,7 +226,7 @@ func findRoleByID(
 	e, err := qtx.FindRoleByID(ctx, roleID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.Role{}, store.ErrDataNoRecord
+			return entity.Role{}, errhandle.NewModelNotFoundError("role")
 		}
 		return entity.Role{}, fmt.Errorf("failed to find role: %w", err)
 	}
@@ -484,7 +485,7 @@ func updateRole(
 	e, err := qtx.UpdateRole(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.Role{}, store.ErrDataNoRecord
+			return entity.Role{}, errhandle.NewModelNotFoundError("role")
 		}
 		return entity.Role{}, fmt.Errorf("failed to update role: %w", err)
 	}

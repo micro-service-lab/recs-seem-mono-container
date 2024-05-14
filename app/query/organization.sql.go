@@ -109,13 +109,16 @@ type CreateOrganizationsParams struct {
 	UpdatedAt   time.Time   `json:"updated_at"`
 }
 
-const deleteOrganization = `-- name: DeleteOrganization :exec
+const deleteOrganization = `-- name: DeleteOrganization :execrows
 DELETE FROM m_organizations WHERE organization_id = $1
 `
 
-func (q *Queries) DeleteOrganization(ctx context.Context, organizationID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteOrganization, organizationID)
-	return err
+func (q *Queries) DeleteOrganization(ctx context.Context, organizationID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteOrganization, organizationID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findOrganizationByID = `-- name: FindOrganizationByID :one
@@ -1861,13 +1864,16 @@ func (q *Queries) GetPluralOrganizationsWithDetail(ctx context.Context, arg GetP
 	return items, nil
 }
 
-const pluralDeleteOrganizations = `-- name: PluralDeleteOrganizations :exec
+const pluralDeleteOrganizations = `-- name: PluralDeleteOrganizations :execrows
 DELETE FROM m_organizations WHERE organization_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteOrganizations(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteOrganizations, dollar_1)
-	return err
+func (q *Queries) PluralDeleteOrganizations(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteOrganizations, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateOrganization = `-- name: UpdateOrganization :one

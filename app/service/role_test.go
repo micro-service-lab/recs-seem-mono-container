@@ -181,8 +181,8 @@ func TestManageRole_DeleteRole(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		DeleteRoleFunc: func(_ context.Context, _ uuid.UUID) error {
-			return nil
+		DeleteRoleFunc: func(_ context.Context, _ uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManageRole{
@@ -191,7 +191,7 @@ func TestManageRole_DeleteRole(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.DeleteRole(ctx, c.id)
+		_, err := s.DeleteRole(ctx, c.id)
 		assert.NoError(t, err)
 	}
 
@@ -227,8 +227,8 @@ func TestManageRole_PluralDeleteRoles(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		PluralDeleteRolesFunc: func(_ context.Context, _ []uuid.UUID) error {
-			return nil
+		PluralDeleteRolesFunc: func(_ context.Context, _ []uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManageRole{
@@ -237,7 +237,7 @@ func TestManageRole_PluralDeleteRoles(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.PluralDeleteRoles(ctx, c.ids)
+		_, err := s.PluralDeleteRoles(ctx, c.ids)
 		assert.NoError(t, err)
 	}
 

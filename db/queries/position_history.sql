@@ -7,10 +7,10 @@ INSERT INTO t_position_histories (member_id, x_pos, y_pos, sent_at) VALUES ($1, 
 -- name: UpdatePositionHistory :one
 UPDATE t_position_histories SET member_id = $2, x_pos = $3, y_pos = $4, sent_at = $5 WHERE position_history_id = $1 RETURNING *;
 
--- name: DeletePositionHistory :exec
+-- name: DeletePositionHistory :execrows
 DELETE FROM t_position_histories WHERE position_history_id = $1;
 
--- name: PluralDeletePositionHistories :exec
+-- name: PluralDeletePositionHistories :execrows
 DELETE FROM t_position_histories WHERE position_history_id = ANY($1::uuid[]);
 
 -- name: FindPositionHistoryByID :one

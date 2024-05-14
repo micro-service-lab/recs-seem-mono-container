@@ -145,22 +145,28 @@ type CreateEventsParams struct {
 	LastEditedAt       time.Time   `json:"last_edited_at"`
 }
 
-const deleteEvent = `-- name: DeleteEvent :exec
+const deleteEvent = `-- name: DeleteEvent :execrows
 DELETE FROM t_events WHERE event_id = $1
 `
 
-func (q *Queries) DeleteEvent(ctx context.Context, eventID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteEvent, eventID)
-	return err
+func (q *Queries) DeleteEvent(ctx context.Context, eventID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteEvent, eventID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteEventOnOrganization = `-- name: DeleteEventOnOrganization :exec
+const deleteEventOnOrganization = `-- name: DeleteEventOnOrganization :execrows
 DELETE FROM t_events WHERE organization_id = $1
 `
 
-func (q *Queries) DeleteEventOnOrganization(ctx context.Context, organizationID pgtype.UUID) error {
-	_, err := q.db.Exec(ctx, deleteEventOnOrganization, organizationID)
-	return err
+func (q *Queries) DeleteEventOnOrganization(ctx context.Context, organizationID pgtype.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteEventOnOrganization, organizationID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findEventByID = `-- name: FindEventByID :one
@@ -3697,13 +3703,16 @@ func (q *Queries) GetPluralEventsWithType(ctx context.Context, arg GetPluralEven
 	return items, nil
 }
 
-const pluralDeleteEvents = `-- name: PluralDeleteEvents :exec
+const pluralDeleteEvents = `-- name: PluralDeleteEvents :execrows
 DELETE FROM t_events WHERE event_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteEvents(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteEvents, dollar_1)
-	return err
+func (q *Queries) PluralDeleteEvents(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteEvents, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateEvent = `-- name: UpdateEvent :one

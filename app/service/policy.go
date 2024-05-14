@@ -163,23 +163,23 @@ func (m *ManagePolicy) UpdatePolicy(
 }
 
 // DeletePolicy ポリシーを削除する。
-func (m *ManagePolicy) DeletePolicy(ctx context.Context, id uuid.UUID) error {
-	err := m.DB.DeletePolicy(ctx, id)
+func (m *ManagePolicy) DeletePolicy(ctx context.Context, id uuid.UUID) (int64, error) {
+	c, err := m.DB.DeletePolicy(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to delete policy: %w", err)
+		return 0, fmt.Errorf("failed to delete policy: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeletePolicies ポリシーを複数削除する。
 func (m *ManagePolicy) PluralDeletePolicies(
 	ctx context.Context, ids []uuid.UUID,
-) error {
-	err := m.DB.PluralDeletePolicies(ctx, ids)
+) (int64, error) {
+	c, err := m.DB.PluralDeletePolicies(ctx, ids)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete policy: %w", err)
+		return 0, fmt.Errorf("failed to plural delete policy: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // FindPolicyByID ポリシーをIDで取得する。

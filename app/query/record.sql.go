@@ -111,22 +111,28 @@ type CreateRecordsParams struct {
 	LastEditedAt   time.Time   `json:"last_edited_at"`
 }
 
-const deleteRecord = `-- name: DeleteRecord :exec
+const deleteRecord = `-- name: DeleteRecord :execrows
 DELETE FROM t_records WHERE record_id = $1
 `
 
-func (q *Queries) DeleteRecord(ctx context.Context, recordID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteRecord, recordID)
-	return err
+func (q *Queries) DeleteRecord(ctx context.Context, recordID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteRecord, recordID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteRecordOnOrganization = `-- name: DeleteRecordOnOrganization :exec
+const deleteRecordOnOrganization = `-- name: DeleteRecordOnOrganization :execrows
 DELETE FROM t_records WHERE organization_id = $1
 `
 
-func (q *Queries) DeleteRecordOnOrganization(ctx context.Context, organizationID pgtype.UUID) error {
-	_, err := q.db.Exec(ctx, deleteRecordOnOrganization, organizationID)
-	return err
+func (q *Queries) DeleteRecordOnOrganization(ctx context.Context, organizationID pgtype.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteRecordOnOrganization, organizationID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findRecordByID = `-- name: FindRecordByID :one
@@ -2830,13 +2836,16 @@ func (q *Queries) GetRecordsWithRecordTypeUseNumberedPaginate(ctx context.Contex
 	return items, nil
 }
 
-const pluralDeleteRecords = `-- name: PluralDeleteRecords :exec
+const pluralDeleteRecords = `-- name: PluralDeleteRecords :execrows
 DELETE FROM t_records WHERE record_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteRecords(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteRecords, dollar_1)
-	return err
+func (q *Queries) PluralDeleteRecords(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteRecords, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateRecord = `-- name: UpdateRecord :one

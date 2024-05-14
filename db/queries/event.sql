@@ -7,13 +7,13 @@ INSERT INTO t_events (event_type_id, title, description, organization_id, start_
 -- name: UpdateEvent :one
 UPDATE t_events SET event_type_id = $2, title = $3, description = $4, organization_id = $5, start_time = $6, end_time = $7, send_organization_id = $8, last_edited_by = $9, last_edited_at = $10 WHERE event_id = $1 RETURNING *;
 
--- name: DeleteEvent :exec
+-- name: DeleteEvent :execrows
 DELETE FROM t_events WHERE event_id = $1;
 
--- name: DeleteEventOnOrganization :exec
+-- name: DeleteEventOnOrganization :execrows
 DELETE FROM t_events WHERE organization_id = $1;
 
--- name: PluralDeleteEvents :exec
+-- name: PluralDeleteEvents :execrows
 DELETE FROM t_events WHERE event_id = ANY($1::uuid[]);
 
 -- name: FindEventByID :one

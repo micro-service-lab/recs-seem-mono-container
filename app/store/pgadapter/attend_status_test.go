@@ -156,7 +156,7 @@ func TestPgAdapter_AttendStatus(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Len(t, el.Data, 2)
 				// delete
-				err = adapter.DeleteAttendStatusWithSd(ctx, sd, el.Data[0].AttendStatusID)
+				_, err = adapter.DeleteAttendStatusWithSd(ctx, sd, el.Data[0].AttendStatusID)
 				assert.NoError(t, err)
 				count, err = adapter.CountAttendStatusesWithSd(ctx, sd, parameter.WhereAttendStatusParam{})
 				assert.NoError(t, err)

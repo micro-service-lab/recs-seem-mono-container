@@ -24,13 +24,13 @@ type Absence interface {
 	// CreateAbsencesWithSd SD付きで欠席を作成する。
 	CreateAbsencesWithSd(ctx context.Context, sd Sd, params []parameter.CreateAbsenceParam) (int64, error)
 	// DeleteAbsence 欠席を削除する。
-	DeleteAbsence(ctx context.Context, absenceID uuid.UUID) error
+	DeleteAbsence(ctx context.Context, absenceID uuid.UUID) (int64, error)
 	// DeleteAbsenceWithSd SD付きで欠席を削除する。
-	DeleteAbsenceWithSd(ctx context.Context, sd Sd, absenceID uuid.UUID) error
+	DeleteAbsenceWithSd(ctx context.Context, sd Sd, absenceID uuid.UUID) (int64, error)
 	// PluralDeleteAbsences 欠席を複数削除する。
-	PluralDeleteAbsences(ctx context.Context, absenceIDs []uuid.UUID) error
+	PluralDeleteAbsences(ctx context.Context, absenceIDs []uuid.UUID) (int64, error)
 	// PluralDeleteAbsencesWithSd SD付きで欠席を複数削除する。
-	PluralDeleteAbsencesWithSd(ctx context.Context, sd Sd, absenceIDs []uuid.UUID) error
+	PluralDeleteAbsencesWithSd(ctx context.Context, sd Sd, absenceIDs []uuid.UUID) (int64, error)
 	// FindAbsenceByID 欠席を取得する。
 	FindAbsenceByID(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error)
 	// FindAbsenceByIDWithSd SD付きで欠席を取得する。

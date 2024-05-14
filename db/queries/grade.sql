@@ -4,13 +4,13 @@ INSERT INTO m_grades (key, organization_id) VALUES ($1, $2);
 -- name: CreateGrade :one
 INSERT INTO m_grades (key, organization_id) VALUES ($1, $2) RETURNING *;
 
--- name: DeleteGrade :exec
+-- name: DeleteGrade :execrows
 DELETE FROM m_grades WHERE grade_id = $1;
 
--- name: DeleteGradeByKey :exec
+-- name: DeleteGradeByKey :execrows
 DELETE FROM m_grades WHERE key = $1;
 
--- name: PluralDeleteGrades :exec
+-- name: PluralDeleteGrades :execrows
 DELETE FROM m_grades WHERE grade_id = ANY($1::uuid[]);
 
 -- name: FindGradeByID :one

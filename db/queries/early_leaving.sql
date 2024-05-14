@@ -4,10 +4,10 @@ INSERT INTO t_early_leavings (attendance_id, leave_time) VALUES ($1, $2);
 -- name: CreateEarlyLeaving :one
 INSERT INTO t_early_leavings (attendance_id, leave_time) VALUES ($1, $2) RETURNING *;
 
--- name: DeleteEarlyLeaving :exec
+-- name: DeleteEarlyLeaving :execrows
 DELETE FROM t_early_leavings WHERE early_leaving_id = $1;
 
--- name: PluralDeleteEarlyLeavings :exec
+-- name: PluralDeleteEarlyLeavings :execrows
 DELETE FROM t_early_leavings WHERE early_leaving_id = ANY($1::uuid[]);
 
 -- name: FindEarlyLeavingByID :one

@@ -82,13 +82,16 @@ func (q *Queries) CreatePositionHistory(ctx context.Context, arg CreatePositionH
 	return i, err
 }
 
-const deletePositionHistory = `-- name: DeletePositionHistory :exec
+const deletePositionHistory = `-- name: DeletePositionHistory :execrows
 DELETE FROM t_position_histories WHERE position_history_id = $1
 `
 
-func (q *Queries) DeletePositionHistory(ctx context.Context, positionHistoryID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePositionHistory, positionHistoryID)
-	return err
+func (q *Queries) DeletePositionHistory(ctx context.Context, positionHistoryID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePositionHistory, positionHistoryID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findPositionHistoryByID = `-- name: FindPositionHistoryByID :one
@@ -727,13 +730,16 @@ func (q *Queries) GetPositionHistoriesWithMemberUseNumberedPaginate(ctx context.
 	return items, nil
 }
 
-const pluralDeletePositionHistories = `-- name: PluralDeletePositionHistories :exec
+const pluralDeletePositionHistories = `-- name: PluralDeletePositionHistories :execrows
 DELETE FROM t_position_histories WHERE position_history_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeletePositionHistories(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeletePositionHistories, dollar_1)
-	return err
+func (q *Queries) PluralDeletePositionHistories(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeletePositionHistories, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updatePositionHistory = `-- name: UpdatePositionHistory :one

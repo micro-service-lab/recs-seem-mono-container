@@ -14,7 +14,7 @@ import (
 
 // GetAttendStatuses is a handler for getting attend statuses.
 type GetAttendStatuses struct {
-	Service service.ManagerInterface
+	Service service.AttendStatusManager
 }
 
 // GetAttendStatusesParam is a parameter for GetAttendStatuses.
@@ -46,15 +46,9 @@ func (h *GetAttendStatuses) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		FuncMap: getAttendStatusesParseFuncMap,
 	})
 	if err != nil {
-		log.Printf("failed to parse query: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}
@@ -69,15 +63,9 @@ func (h *GetAttendStatuses) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		param.WithCount,
 	)
 	if err != nil {
-		log.Printf("failed to get attend statuses: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}

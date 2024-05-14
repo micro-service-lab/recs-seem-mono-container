@@ -58,22 +58,28 @@ func (q *Queries) CreatePermissionCategory(ctx context.Context, arg CreatePermis
 	return i, err
 }
 
-const deletePermissionCategory = `-- name: DeletePermissionCategory :exec
+const deletePermissionCategory = `-- name: DeletePermissionCategory :execrows
 DELETE FROM m_permission_categories WHERE permission_category_id = $1
 `
 
-func (q *Queries) DeletePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePermissionCategory, permissionCategoryID)
-	return err
+func (q *Queries) DeletePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermissionCategory, permissionCategoryID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deletePermissionCategoryByKey = `-- name: DeletePermissionCategoryByKey :exec
+const deletePermissionCategoryByKey = `-- name: DeletePermissionCategoryByKey :execrows
 DELETE FROM m_permission_categories WHERE key = $1
 `
 
-func (q *Queries) DeletePermissionCategoryByKey(ctx context.Context, key string) error {
-	_, err := q.db.Exec(ctx, deletePermissionCategoryByKey, key)
-	return err
+func (q *Queries) DeletePermissionCategoryByKey(ctx context.Context, key string) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermissionCategoryByKey, key)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findPermissionCategoryByID = `-- name: FindPermissionCategoryByID :one
@@ -316,13 +322,16 @@ func (q *Queries) GetPluralPermissionCategories(ctx context.Context, arg GetPlur
 	return items, nil
 }
 
-const pluralDeletePermissionCategories = `-- name: PluralDeletePermissionCategories :exec
+const pluralDeletePermissionCategories = `-- name: PluralDeletePermissionCategories :execrows
 DELETE FROM m_permission_categories WHERE permission_category_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeletePermissionCategories(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeletePermissionCategories, dollar_1)
-	return err
+func (q *Queries) PluralDeletePermissionCategories(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeletePermissionCategories, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updatePermissionCategory = `-- name: UpdatePermissionCategory :one

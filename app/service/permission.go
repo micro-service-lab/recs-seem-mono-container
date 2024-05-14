@@ -211,23 +211,23 @@ func (m *ManagePermission) UpdatePermission(
 }
 
 // DeletePermission 権限を削除する。
-func (m *ManagePermission) DeletePermission(ctx context.Context, id uuid.UUID) error {
-	err := m.DB.DeletePermission(ctx, id)
+func (m *ManagePermission) DeletePermission(ctx context.Context, id uuid.UUID) (int64, error) {
+	c, err := m.DB.DeletePermission(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to delete permission: %w", err)
+		return 0, fmt.Errorf("failed to delete permission: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeletePermissions 権限を複数削除する。
 func (m *ManagePermission) PluralDeletePermissions(
 	ctx context.Context, ids []uuid.UUID,
-) error {
-	err := m.DB.PluralDeletePermissions(ctx, ids)
+) (int64, error) {
+	c, err := m.DB.PluralDeletePermissions(ctx, ids)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete permission: %w", err)
+		return 0, fmt.Errorf("failed to plural delete permission: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // FindPermissionByID 権限をIDで取得する。

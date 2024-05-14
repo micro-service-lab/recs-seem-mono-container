@@ -10,13 +10,13 @@ UPDATE m_record_types SET name = $2, key = $3 WHERE record_type_id = $1 RETURNIN
 -- name: UpdateRecordTypeByKey :one
 UPDATE m_record_types SET name = $2 WHERE key = $1 RETURNING *;
 
--- name: DeleteRecordType :exec
+-- name: DeleteRecordType :execrows
 DELETE FROM m_record_types WHERE record_type_id = $1;
 
--- name: DeleteRecordTypeByKey :exec
+-- name: DeleteRecordTypeByKey :execrows
 DELETE FROM m_record_types WHERE key = $1;
 
--- name: PluralDeleteRecordTypes :exec
+-- name: PluralDeleteRecordTypes :execrows
 DELETE FROM m_record_types WHERE record_type_id = ANY($1::uuid[]);
 
 -- name: FindRecordTypeByID :one

@@ -12,6 +12,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countAttendanceTypes(
@@ -149,106 +150,106 @@ func (a *PgAdapter) CreateAttendanceTypesWithSd(
 	return c, nil
 }
 
-func deleteAttendanceType(ctx context.Context, qtx *query.Queries, attendanceTypeID uuid.UUID) error {
-	err := qtx.DeleteAttendanceType(ctx, attendanceTypeID)
+func deleteAttendanceType(ctx context.Context, qtx *query.Queries, attendanceTypeID uuid.UUID) (int64, error) {
+	c, err := qtx.DeleteAttendanceType(ctx, attendanceTypeID)
 	if err != nil {
-		return fmt.Errorf("failed to delete attendance type: %w", err)
+		return 0, fmt.Errorf("failed to delete attendance type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteAttendanceType 出欠状況タイプを削除する。
-func (a *PgAdapter) DeleteAttendanceType(ctx context.Context, attendanceTypeID uuid.UUID) error {
-	err := deleteAttendanceType(ctx, a.query, attendanceTypeID)
+func (a *PgAdapter) DeleteAttendanceType(ctx context.Context, attendanceTypeID uuid.UUID) (int64, error) {
+	c, err := deleteAttendanceType(ctx, a.query, attendanceTypeID)
 	if err != nil {
-		return fmt.Errorf("failed to delete attendance type: %w", err)
+		return 0, fmt.Errorf("failed to delete attendance type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteAttendanceTypeWithSd SD付きで出欠状況タイプを削除する。
 func (a *PgAdapter) DeleteAttendanceTypeWithSd(
 	ctx context.Context, sd store.Sd, attendanceTypeID uuid.UUID,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deleteAttendanceType(ctx, qtx, attendanceTypeID)
+	c, err := deleteAttendanceType(ctx, qtx, attendanceTypeID)
 	if err != nil {
-		return fmt.Errorf("failed to delete attendance type: %w", err)
+		return 0, fmt.Errorf("failed to delete attendance type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
-func deleteAttendanceTypeByKey(ctx context.Context, qtx *query.Queries, key string) error {
-	err := qtx.DeleteAttendanceTypeByKey(ctx, key)
+func deleteAttendanceTypeByKey(ctx context.Context, qtx *query.Queries, key string) (int64, error) {
+	c, err := qtx.DeleteAttendanceTypeByKey(ctx, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete attendance type: %w", err)
+		return 0, fmt.Errorf("failed to delete attendance type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteAttendanceTypeByKey 出欠状況タイプを削除する。
-func (a *PgAdapter) DeleteAttendanceTypeByKey(ctx context.Context, key string) error {
-	err := deleteAttendanceTypeByKey(ctx, a.query, key)
+func (a *PgAdapter) DeleteAttendanceTypeByKey(ctx context.Context, key string) (int64, error) {
+	c, err := deleteAttendanceTypeByKey(ctx, a.query, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete attendance type: %w", err)
+		return 0, fmt.Errorf("failed to delete attendance type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // DeleteAttendanceTypeByKeyWithSd SD付きで出欠状況タイプを削除する。
 func (a *PgAdapter) DeleteAttendanceTypeByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deleteAttendanceTypeByKey(ctx, qtx, key)
+	c, err := deleteAttendanceTypeByKey(ctx, qtx, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete attendance type: %w", err)
+		return 0, fmt.Errorf("failed to delete attendance type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
-func pluralDeleteAttendanceTypes(ctx context.Context, qtx *query.Queries, attendanceTypeIDs []uuid.UUID) error {
-	err := qtx.PluralDeleteAttendanceTypes(ctx, attendanceTypeIDs)
+func pluralDeleteAttendanceTypes(ctx context.Context, qtx *query.Queries, attendanceTypeIDs []uuid.UUID) (int64, error) {
+	c, err := qtx.PluralDeleteAttendanceTypes(ctx, attendanceTypeIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete attendance types: %w", err)
+		return 0, fmt.Errorf("failed to plural delete attendance types: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteAttendanceTypes 出欠状況タイプを複数削除する。
-func (a *PgAdapter) PluralDeleteAttendanceTypes(ctx context.Context, attendanceTypeIDs []uuid.UUID) error {
-	err := pluralDeleteAttendanceTypes(ctx, a.query, attendanceTypeIDs)
+func (a *PgAdapter) PluralDeleteAttendanceTypes(ctx context.Context, attendanceTypeIDs []uuid.UUID) (int64, error) {
+	c, err := pluralDeleteAttendanceTypes(ctx, a.query, attendanceTypeIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete attendance types: %w", err)
+		return 0, fmt.Errorf("failed to plural delete attendance types: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteAttendanceTypesWithSd SD付きで出欠状況タイプを複数削除する。
 func (a *PgAdapter) PluralDeleteAttendanceTypesWithSd(
 	ctx context.Context, sd store.Sd, attendanceTypeIDs []uuid.UUID,
-) error {
+) (int64, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := pluralDeleteAttendanceTypes(ctx, qtx, attendanceTypeIDs)
+	c, err := pluralDeleteAttendanceTypes(ctx, qtx, attendanceTypeIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete attendance types: %w", err)
+		return 0, fmt.Errorf("failed to plural delete attendance types: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 func findAttendanceTypeByID(
@@ -257,7 +258,7 @@ func findAttendanceTypeByID(
 	e, err := qtx.FindAttendanceTypeByID(ctx, attendanceTypeID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.AttendanceType{}, store.ErrDataNoRecord
+			return entity.AttendanceType{}, errhandle.NewModelNotFoundError("attendance type")
 		}
 		return entity.AttendanceType{}, fmt.Errorf("failed to find attendance type: %w", err)
 	}
@@ -302,7 +303,7 @@ func findAttendanceTypeByKey(ctx context.Context, qtx *query.Queries, key string
 	e, err := qtx.FindAttendanceTypeByKey(ctx, key)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.AttendanceType{}, store.ErrDataNoRecord
+			return entity.AttendanceType{}, errhandle.NewModelNotFoundError("attendance type")
 		}
 		return entity.AttendanceType{}, fmt.Errorf("failed to find attendance type: %w", err)
 	}
@@ -562,7 +563,7 @@ func updateAttendanceType(
 	e, err := qtx.UpdateAttendanceType(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.AttendanceType{}, store.ErrDataNoRecord
+			return entity.AttendanceType{}, errhandle.NewModelNotFoundError("attendance type")
 		}
 		return entity.AttendanceType{}, fmt.Errorf("failed to update attendance type: %w", err)
 	}
@@ -614,7 +615,7 @@ func updateAttendanceTypeByKey(
 	e, err := qtx.UpdateAttendanceTypeByKey(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.AttendanceType{}, store.ErrDataNoRecord
+			return entity.AttendanceType{}, errhandle.NewModelNotFoundError("attendance type")
 		}
 		return entity.AttendanceType{}, fmt.Errorf("failed to update attendance type: %w", err)
 	}

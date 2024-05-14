@@ -120,23 +120,23 @@ func (m *ManagePermissionCategory) UpdatePermissionCategory(
 }
 
 // DeletePermissionCategory 権限カテゴリーを削除する。
-func (m *ManagePermissionCategory) DeletePermissionCategory(ctx context.Context, id uuid.UUID) error {
-	err := m.DB.DeletePermissionCategory(ctx, id)
+func (m *ManagePermissionCategory) DeletePermissionCategory(ctx context.Context, id uuid.UUID) (int64, error) {
+	c, err := m.DB.DeletePermissionCategory(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to delete permission category: %w", err)
+		return 0, fmt.Errorf("failed to delete permission category: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeletePermissionCategories 権限カテゴリーを複数削除する。
 func (m *ManagePermissionCategory) PluralDeletePermissionCategories(
 	ctx context.Context, ids []uuid.UUID,
-) error {
-	err := m.DB.PluralDeletePermissionCategories(ctx, ids)
+) (int64, error) {
+	c, err := m.DB.PluralDeletePermissionCategories(ctx, ids)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete permission categories: %w", err)
+		return 0, fmt.Errorf("failed to plural delete permission categories: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // FindPermissionCategoryByID 権限カテゴリーをIDで取得する。

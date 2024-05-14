@@ -95,7 +95,7 @@ func (c *InitPolicyCategories) RunDiff(ctx context.Context, notDel, deepEqual bo
 		return fmt.Errorf("failed to create policy categories: %w", err)
 	}
 	if len(existIDs) > 0 && !notDel {
-		err = (*c.Manager).PluralDeletePolicyCategories(ctx, existIDs)
+		_, err = (*c.Manager).PluralDeletePolicyCategories(ctx, existIDs)
 		if err != nil {
 			return fmt.Errorf("failed to delete policy categories: %w", err)
 		}

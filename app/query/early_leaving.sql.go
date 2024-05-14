@@ -49,13 +49,16 @@ type CreateEarlyLeavingsParams struct {
 	LeaveTime    time.Time `json:"leave_time"`
 }
 
-const deleteEarlyLeaving = `-- name: DeleteEarlyLeaving :exec
+const deleteEarlyLeaving = `-- name: DeleteEarlyLeaving :execrows
 DELETE FROM t_early_leavings WHERE early_leaving_id = $1
 `
 
-func (q *Queries) DeleteEarlyLeaving(ctx context.Context, earlyLeavingID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteEarlyLeaving, earlyLeavingID)
-	return err
+func (q *Queries) DeleteEarlyLeaving(ctx context.Context, earlyLeavingID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteEarlyLeaving, earlyLeavingID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findEarlyLeavingByID = `-- name: FindEarlyLeavingByID :one
@@ -227,11 +230,14 @@ func (q *Queries) GetPluralEarlyLeavings(ctx context.Context, arg GetPluralEarly
 	return items, nil
 }
 
-const pluralDeleteEarlyLeavings = `-- name: PluralDeleteEarlyLeavings :exec
+const pluralDeleteEarlyLeavings = `-- name: PluralDeleteEarlyLeavings :execrows
 DELETE FROM t_early_leavings WHERE early_leaving_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteEarlyLeavings(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteEarlyLeavings, dollar_1)
-	return err
+func (q *Queries) PluralDeleteEarlyLeavings(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteEarlyLeavings, dollar_1)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }

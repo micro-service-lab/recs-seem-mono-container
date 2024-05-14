@@ -87,21 +87,21 @@ func (m *ManageAttendStatus) UpdateAttendStatus(
 }
 
 // DeleteAttendStatus 出席状況を削除する。
-func (m *ManageAttendStatus) DeleteAttendStatus(ctx context.Context, id uuid.UUID) error {
-	err := m.DB.DeleteAttendStatus(ctx, id)
+func (m *ManageAttendStatus) DeleteAttendStatus(ctx context.Context, id uuid.UUID) (int64, error) {
+	c, err := m.DB.DeleteAttendStatus(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to delete attend status: %w", err)
+		return 0, fmt.Errorf("failed to delete attend status: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteAttendStatuses 出席状況を複数削除する。
-func (m *ManageAttendStatus) PluralDeleteAttendStatuses(ctx context.Context, ids []uuid.UUID) error {
-	err := m.DB.PluralDeleteAttendStatuses(ctx, ids)
+func (m *ManageAttendStatus) PluralDeleteAttendStatuses(ctx context.Context, ids []uuid.UUID) (int64, error) {
+	c, err := m.DB.PluralDeleteAttendStatuses(ctx, ids)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete attend statuses: %w", err)
+		return 0, fmt.Errorf("failed to plural delete attend statuses: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // FindAttendStatusByID 出席状況をIDで取得する。

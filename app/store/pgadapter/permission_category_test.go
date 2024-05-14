@@ -156,7 +156,7 @@ func TestPgAdapter_PermissionCategory(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Len(t, el.Data, 2)
 				// delete
-				err = adapter.DeletePermissionCategoryWithSd(ctx, sd, el.Data[0].PermissionCategoryID)
+				_, err = adapter.DeletePermissionCategoryWithSd(ctx, sd, el.Data[0].PermissionCategoryID)
 				assert.NoError(t, err)
 				count, err = adapter.CountPermissionCategoriesWithSd(ctx, sd, parameter.WherePermissionCategoryParam{})
 				assert.NoError(t, err)

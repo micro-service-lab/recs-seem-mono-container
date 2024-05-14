@@ -4,10 +4,10 @@ INSERT INTO t_images (height, width, attachable_item_id) VALUES ($1, $2, $3);
 -- name: CreateImage :one
 INSERT INTO t_images (height, width, attachable_item_id) VALUES ($1, $2, $3) RETURNING *;
 
--- name: DeleteImage :exec
+-- name: DeleteImage :execrows
 DELETE FROM t_images WHERE image_id = $1;
 
--- name: PluralDeleteImages :exec
+-- name: PluralDeleteImages :execrows
 DELETE FROM t_images WHERE image_id = ANY($1::uuid[]);
 
 -- name: FindImageByID :one

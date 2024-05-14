@@ -59,7 +59,7 @@ func (q *Queries) CountMembers(ctx context.Context, arg CountMembersParams) (int
 }
 
 const createMember = `-- name: CreateMember :one
-INSERT INTO m_members (login_id, password, email, name, attend_status_id, grade_id, group_id, profile_image_url, role_id, personal_organization_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+INSERT INTO m_members (login_id, password, email, name, attend_status_id, grade_id, group_id, profile_image_id, role_id, personal_organization_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `
 
 type CreateMemberParams struct {
@@ -70,7 +70,7 @@ type CreateMemberParams struct {
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
 	GroupID                uuid.UUID   `json:"group_id"`
-	ProfileImageUrl        pgtype.Text `json:"profile_image_url"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	RoleID                 pgtype.UUID `json:"role_id"`
 	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
 	CreatedAt              time.Time   `json:"created_at"`
@@ -86,7 +86,7 @@ func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) (Mem
 		arg.AttendStatusID,
 		arg.GradeID,
 		arg.GroupID,
-		arg.ProfileImageUrl,
+		arg.ProfileImageID,
 		arg.RoleID,
 		arg.PersonalOrganizationID,
 		arg.CreatedAt,
@@ -101,7 +101,7 @@ func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) (Mem
 		&i.Email,
 		&i.Name,
 		&i.AttendStatusID,
-		&i.ProfileImageUrl,
+		&i.ProfileImageID,
 		&i.GradeID,
 		&i.GroupID,
 		&i.PersonalOrganizationID,
@@ -120,7 +120,7 @@ type CreateMembersParams struct {
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
 	GroupID                uuid.UUID   `json:"group_id"`
-	ProfileImageUrl        pgtype.Text `json:"profile_image_url"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	RoleID                 pgtype.UUID `json:"role_id"`
 	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
 	CreatedAt              time.Time   `json:"created_at"`
@@ -140,7 +140,7 @@ func (q *Queries) DeleteMember(ctx context.Context, memberID uuid.UUID) (int64, 
 }
 
 const findMemberByID = `-- name: FindMemberByID :one
-SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE member_id = $1
+SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE member_id = $1
 `
 
 func (q *Queries) FindMemberByID(ctx context.Context, memberID uuid.UUID) (Member, error) {
@@ -154,7 +154,7 @@ func (q *Queries) FindMemberByID(ctx context.Context, memberID uuid.UUID) (Membe
 		&i.Email,
 		&i.Name,
 		&i.AttendStatusID,
-		&i.ProfileImageUrl,
+		&i.ProfileImageID,
 		&i.GradeID,
 		&i.GroupID,
 		&i.PersonalOrganizationID,
@@ -166,7 +166,7 @@ func (q *Queries) FindMemberByID(ctx context.Context, memberID uuid.UUID) (Membe
 }
 
 const findMemberByIDWithAttendStatus = `-- name: FindMemberByIDWithAttendStatus :one
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE member_id = $1
 `
@@ -187,7 +187,7 @@ func (q *Queries) FindMemberByIDWithAttendStatus(ctx context.Context, memberID u
 		&i.Member.Email,
 		&i.Member.Name,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageUrl,
+		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -203,7 +203,7 @@ func (q *Queries) FindMemberByIDWithAttendStatus(ctx context.Context, memberID u
 }
 
 const findMemberByIDWithGrade = `-- name: FindMemberByIDWithGrade :one
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE member_id = $1
@@ -225,7 +225,7 @@ func (q *Queries) FindMemberByIDWithGrade(ctx context.Context, memberID uuid.UUI
 		&i.Member.Email,
 		&i.Member.Name,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageUrl,
+		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -241,7 +241,7 @@ func (q *Queries) FindMemberByIDWithGrade(ctx context.Context, memberID uuid.UUI
 }
 
 const findMemberByIDWithGroup = `-- name: FindMemberByIDWithGroup :one
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE member_id = $1
@@ -263,7 +263,7 @@ func (q *Queries) FindMemberByIDWithGroup(ctx context.Context, memberID uuid.UUI
 		&i.Member.Email,
 		&i.Member.Name,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageUrl,
+		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -279,7 +279,7 @@ func (q *Queries) FindMemberByIDWithGroup(ctx context.Context, memberID uuid.UUI
 }
 
 const findMemberByIDWithPersonalOrganization = `-- name: FindMemberByIDWithPersonalOrganization :one
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE member_id = $1
 `
@@ -300,7 +300,7 @@ func (q *Queries) FindMemberByIDWithPersonalOrganization(ctx context.Context, me
 		&i.Member.Email,
 		&i.Member.Name,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageUrl,
+		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -322,7 +322,7 @@ func (q *Queries) FindMemberByIDWithPersonalOrganization(ctx context.Context, me
 }
 
 const findMemberByIDWithRole = `-- name: FindMemberByIDWithRole :one
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE member_id = $1
 `
@@ -343,7 +343,7 @@ func (q *Queries) FindMemberByIDWithRole(ctx context.Context, memberID uuid.UUID
 		&i.Member.Email,
 		&i.Member.Name,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageUrl,
+		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -361,7 +361,7 @@ func (q *Queries) FindMemberByIDWithRole(ctx context.Context, memberID uuid.UUID
 }
 
 const findMemberByLoginID = `-- name: FindMemberByLoginID :one
-SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE login_id = $1
+SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE login_id = $1
 `
 
 func (q *Queries) FindMemberByLoginID(ctx context.Context, loginID string) (Member, error) {
@@ -375,7 +375,7 @@ func (q *Queries) FindMemberByLoginID(ctx context.Context, loginID string) (Memb
 		&i.Email,
 		&i.Name,
 		&i.AttendStatusID,
-		&i.ProfileImageUrl,
+		&i.ProfileImageID,
 		&i.GradeID,
 		&i.GroupID,
 		&i.PersonalOrganizationID,
@@ -387,7 +387,7 @@ func (q *Queries) FindMemberByLoginID(ctx context.Context, loginID string) (Memb
 }
 
 const findMemberWithAll = `-- name: FindMemberWithAll :one
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
@@ -416,7 +416,7 @@ func (q *Queries) FindMemberWithAll(ctx context.Context, memberID uuid.UUID) (Fi
 		&i.Member.Email,
 		&i.Member.Name,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageUrl,
+		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -456,7 +456,7 @@ func (q *Queries) FindMemberWithAll(ctx context.Context, memberID uuid.UUID) (Fi
 }
 
 const findMemberWithDetail = `-- name: FindMemberWithDetail :one
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id FROM m_members
 LEFT JOIN m_students ON m_members.member_id = m_students.member_id
 LEFT JOIN m_professors ON m_members.member_id = m_professor.member_id
 WHERE m_members.member_id = $1
@@ -479,7 +479,7 @@ func (q *Queries) FindMemberWithDetail(ctx context.Context, memberID uuid.UUID) 
 		&i.Member.Email,
 		&i.Member.Name,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageUrl,
+		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -497,7 +497,7 @@ func (q *Queries) FindMemberWithDetail(ctx context.Context, memberID uuid.UUID) 
 }
 
 const getMembers = `-- name: GetMembers :many
-SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members
+SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members
 WHERE
 	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
 AND
@@ -557,7 +557,7 @@ func (q *Queries) GetMembers(ctx context.Context, arg GetMembersParams) ([]Membe
 			&i.Email,
 			&i.Name,
 			&i.AttendStatusID,
-			&i.ProfileImageUrl,
+			&i.ProfileImageID,
 			&i.GradeID,
 			&i.GroupID,
 			&i.PersonalOrganizationID,
@@ -576,7 +576,7 @@ func (q *Queries) GetMembers(ctx context.Context, arg GetMembersParams) ([]Membe
 }
 
 const getMembersUseKeysetPaginate = `-- name: GetMembersUseKeysetPaginate :many
-SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members
+SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members
 WHERE
 	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
 AND
@@ -663,7 +663,7 @@ func (q *Queries) GetMembersUseKeysetPaginate(ctx context.Context, arg GetMember
 			&i.Email,
 			&i.Name,
 			&i.AttendStatusID,
-			&i.ProfileImageUrl,
+			&i.ProfileImageID,
 			&i.GradeID,
 			&i.GroupID,
 			&i.PersonalOrganizationID,
@@ -682,7 +682,7 @@ func (q *Queries) GetMembersUseKeysetPaginate(ctx context.Context, arg GetMember
 }
 
 const getMembersUseNumberedPaginate = `-- name: GetMembersUseNumberedPaginate :many
-SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members
+SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members
 WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -747,7 +747,7 @@ func (q *Queries) GetMembersUseNumberedPaginate(ctx context.Context, arg GetMemb
 			&i.Email,
 			&i.Name,
 			&i.AttendStatusID,
-			&i.ProfileImageUrl,
+			&i.ProfileImageID,
 			&i.GradeID,
 			&i.GroupID,
 			&i.PersonalOrganizationID,
@@ -766,7 +766,7 @@ func (q *Queries) GetMembersUseNumberedPaginate(ctx context.Context, arg GetMemb
 }
 
 const getMembersWithAll = `-- name: GetMembersWithAll :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
@@ -840,7 +840,7 @@ func (q *Queries) GetMembersWithAll(ctx context.Context, arg GetMembersWithAllPa
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -887,7 +887,7 @@ func (q *Queries) GetMembersWithAll(ctx context.Context, arg GetMembersWithAllPa
 }
 
 const getMembersWithAllUseKeysetPaginate = `-- name: GetMembersWithAllUseKeysetPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
@@ -988,7 +988,7 @@ func (q *Queries) GetMembersWithAllUseKeysetPaginate(ctx context.Context, arg Ge
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1035,7 +1035,7 @@ func (q *Queries) GetMembersWithAllUseKeysetPaginate(ctx context.Context, arg Ge
 }
 
 const getMembersWithAllUseNumberedPaginate = `-- name: GetMembersWithAllUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
@@ -1114,7 +1114,7 @@ func (q *Queries) GetMembersWithAllUseNumberedPaginate(ctx context.Context, arg 
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1161,7 +1161,7 @@ func (q *Queries) GetMembersWithAllUseNumberedPaginate(ctx context.Context, arg 
 }
 
 const getMembersWithAttendStatus = `-- name: GetMembersWithAttendStatus :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE
 	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
@@ -1227,7 +1227,7 @@ func (q *Queries) GetMembersWithAttendStatus(ctx context.Context, arg GetMembers
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1250,7 +1250,7 @@ func (q *Queries) GetMembersWithAttendStatus(ctx context.Context, arg GetMembers
 }
 
 const getMembersWithAttendStatusUseKeysetPaginate = `-- name: GetMembersWithAttendStatusUseKeysetPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE
 	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
@@ -1343,7 +1343,7 @@ func (q *Queries) GetMembersWithAttendStatusUseKeysetPaginate(ctx context.Contex
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1366,7 +1366,7 @@ func (q *Queries) GetMembersWithAttendStatusUseKeysetPaginate(ctx context.Contex
 }
 
 const getMembersWithAttendStatusUseNumberedPaginate = `-- name: GetMembersWithAttendStatusUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
@@ -1437,7 +1437,7 @@ func (q *Queries) GetMembersWithAttendStatusUseNumberedPaginate(ctx context.Cont
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1460,7 +1460,7 @@ func (q *Queries) GetMembersWithAttendStatusUseNumberedPaginate(ctx context.Cont
 }
 
 const getMembersWithGrade = `-- name: GetMembersWithGrade :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE
@@ -1527,7 +1527,7 @@ func (q *Queries) GetMembersWithGrade(ctx context.Context, arg GetMembersWithGra
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1550,7 +1550,7 @@ func (q *Queries) GetMembersWithGrade(ctx context.Context, arg GetMembersWithGra
 }
 
 const getMembersWithGradeUseKeysetPaginate = `-- name: GetMembersWithGradeUseKeysetPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE
@@ -1644,7 +1644,7 @@ func (q *Queries) GetMembersWithGradeUseKeysetPaginate(ctx context.Context, arg 
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1667,7 +1667,7 @@ func (q *Queries) GetMembersWithGradeUseKeysetPaginate(ctx context.Context, arg 
 }
 
 const getMembersWithGradeUseNumberedPaginate = `-- name: GetMembersWithGradeUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE
@@ -1739,7 +1739,7 @@ func (q *Queries) GetMembersWithGradeUseNumberedPaginate(ctx context.Context, ar
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1762,7 +1762,7 @@ func (q *Queries) GetMembersWithGradeUseNumberedPaginate(ctx context.Context, ar
 }
 
 const getMembersWithGroup = `-- name: GetMembersWithGroup :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE
@@ -1829,7 +1829,7 @@ func (q *Queries) GetMembersWithGroup(ctx context.Context, arg GetMembersWithGro
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1852,7 +1852,7 @@ func (q *Queries) GetMembersWithGroup(ctx context.Context, arg GetMembersWithGro
 }
 
 const getMembersWithGroupUseKeysetPaginate = `-- name: GetMembersWithGroupUseKeysetPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE
@@ -1946,7 +1946,7 @@ func (q *Queries) GetMembersWithGroupUseKeysetPaginate(ctx context.Context, arg 
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1969,7 +1969,7 @@ func (q *Queries) GetMembersWithGroupUseKeysetPaginate(ctx context.Context, arg 
 }
 
 const getMembersWithGroupUseNumberedPaginate = `-- name: GetMembersWithGroupUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE
@@ -2041,7 +2041,7 @@ func (q *Queries) GetMembersWithGroupUseNumberedPaginate(ctx context.Context, ar
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2064,7 +2064,7 @@ func (q *Queries) GetMembersWithGroupUseNumberedPaginate(ctx context.Context, ar
 }
 
 const getMembersWithPersonalOrganization = `-- name: GetMembersWithPersonalOrganization :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
@@ -2130,7 +2130,7 @@ func (q *Queries) GetMembersWithPersonalOrganization(ctx context.Context, arg Ge
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2159,7 +2159,7 @@ func (q *Queries) GetMembersWithPersonalOrganization(ctx context.Context, arg Ge
 }
 
 const getMembersWithPersonalOrganizationUseKeysetPaginate = `-- name: GetMembersWithPersonalOrganizationUseKeysetPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
@@ -2252,7 +2252,7 @@ func (q *Queries) GetMembersWithPersonalOrganizationUseKeysetPaginate(ctx contex
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2281,7 +2281,7 @@ func (q *Queries) GetMembersWithPersonalOrganizationUseKeysetPaginate(ctx contex
 }
 
 const getMembersWithPersonalOrganizationUseNumberedPaginate = `-- name: GetMembersWithPersonalOrganizationUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
@@ -2352,7 +2352,7 @@ func (q *Queries) GetMembersWithPersonalOrganizationUseNumberedPaginate(ctx cont
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2381,7 +2381,7 @@ func (q *Queries) GetMembersWithPersonalOrganizationUseNumberedPaginate(ctx cont
 }
 
 const getMembersWithRole = `-- name: GetMembersWithRole :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE
 	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
@@ -2447,7 +2447,7 @@ func (q *Queries) GetMembersWithRole(ctx context.Context, arg GetMembersWithRole
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2472,7 +2472,7 @@ func (q *Queries) GetMembersWithRole(ctx context.Context, arg GetMembersWithRole
 }
 
 const getMembersWithRoleUseKeysetPaginate = `-- name: GetMembersWithRoleUseKeysetPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE
 	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
@@ -2565,7 +2565,7 @@ func (q *Queries) GetMembersWithRoleUseKeysetPaginate(ctx context.Context, arg G
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2590,7 +2590,7 @@ func (q *Queries) GetMembersWithRoleUseKeysetPaginate(ctx context.Context, arg G
 }
 
 const getMembersWithRoleUseNumberedPaginate = `-- name: GetMembersWithRoleUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
@@ -2661,7 +2661,7 @@ func (q *Queries) GetMembersWithRoleUseNumberedPaginate(ctx context.Context, arg
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2686,7 +2686,7 @@ func (q *Queries) GetMembersWithRoleUseNumberedPaginate(ctx context.Context, arg
 }
 
 const getPluralMembers = `-- name: GetPluralMembers :many
-SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE member_id = ANY($3::uuid[])
+SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE member_id = ANY($3::uuid[])
 ORDER BY
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
@@ -2715,7 +2715,7 @@ func (q *Queries) GetPluralMembers(ctx context.Context, arg GetPluralMembersPara
 			&i.Email,
 			&i.Name,
 			&i.AttendStatusID,
-			&i.ProfileImageUrl,
+			&i.ProfileImageID,
 			&i.GradeID,
 			&i.GroupID,
 			&i.PersonalOrganizationID,
@@ -2734,7 +2734,7 @@ func (q *Queries) GetPluralMembers(ctx context.Context, arg GetPluralMembersPara
 }
 
 const getPluralMembersWithAll = `-- name: GetPluralMembersWithAll :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
@@ -2778,7 +2778,7 @@ func (q *Queries) GetPluralMembersWithAll(ctx context.Context, arg GetPluralMemb
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2825,7 +2825,7 @@ func (q *Queries) GetPluralMembersWithAll(ctx context.Context, arg GetPluralMemb
 }
 
 const getPluralMembersWithAttendStatus = `-- name: GetPluralMembersWithAttendStatus :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
@@ -2861,7 +2861,7 @@ func (q *Queries) GetPluralMembersWithAttendStatus(ctx context.Context, arg GetP
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2884,7 +2884,7 @@ func (q *Queries) GetPluralMembersWithAttendStatus(ctx context.Context, arg GetP
 }
 
 const getPluralMembersWithGrade = `-- name: GetPluralMembersWithGrade :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE member_id = ANY($3::uuid[])
@@ -2921,7 +2921,7 @@ func (q *Queries) GetPluralMembersWithGrade(ctx context.Context, arg GetPluralMe
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2944,7 +2944,7 @@ func (q *Queries) GetPluralMembersWithGrade(ctx context.Context, arg GetPluralMe
 }
 
 const getPluralMembersWithGroup = `-- name: GetPluralMembersWithGroup :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE member_id = ANY($3::uuid[])
@@ -2981,7 +2981,7 @@ func (q *Queries) GetPluralMembersWithGroup(ctx context.Context, arg GetPluralMe
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -3004,7 +3004,7 @@ func (q *Queries) GetPluralMembersWithGroup(ctx context.Context, arg GetPluralMe
 }
 
 const getPluralMembersWithPersonalOrganization = `-- name: GetPluralMembersWithPersonalOrganization :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
@@ -3040,7 +3040,7 @@ func (q *Queries) GetPluralMembersWithPersonalOrganization(ctx context.Context, 
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -3069,7 +3069,7 @@ func (q *Queries) GetPluralMembersWithPersonalOrganization(ctx context.Context, 
 }
 
 const getPluralMembersWithRole = `-- name: GetPluralMembersWithRole :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
@@ -3105,7 +3105,7 @@ func (q *Queries) GetPluralMembersWithRole(ctx context.Context, arg GetPluralMem
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -3142,15 +3142,15 @@ func (q *Queries) PluralDeleteMembers(ctx context.Context, dollar_1 []uuid.UUID)
 }
 
 const updateMember = `-- name: UpdateMember :one
-UPDATE m_members SET email = $2, name = $3, profile_image_url = $4, updated_at = $5 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+UPDATE m_members SET email = $2, name = $3, profile_image_id = $4, updated_at = $5 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `
 
 type UpdateMemberParams struct {
-	MemberID        uuid.UUID   `json:"member_id"`
-	Email           string      `json:"email"`
-	Name            string      `json:"name"`
-	ProfileImageUrl pgtype.Text `json:"profile_image_url"`
-	UpdatedAt       time.Time   `json:"updated_at"`
+	MemberID       uuid.UUID   `json:"member_id"`
+	Email          string      `json:"email"`
+	Name           string      `json:"name"`
+	ProfileImageID pgtype.UUID `json:"profile_image_id"`
+	UpdatedAt      time.Time   `json:"updated_at"`
 }
 
 func (q *Queries) UpdateMember(ctx context.Context, arg UpdateMemberParams) (Member, error) {
@@ -3158,7 +3158,7 @@ func (q *Queries) UpdateMember(ctx context.Context, arg UpdateMemberParams) (Mem
 		arg.MemberID,
 		arg.Email,
 		arg.Name,
-		arg.ProfileImageUrl,
+		arg.ProfileImageID,
 		arg.UpdatedAt,
 	)
 	var i Member
@@ -3170,7 +3170,7 @@ func (q *Queries) UpdateMember(ctx context.Context, arg UpdateMemberParams) (Mem
 		&i.Email,
 		&i.Name,
 		&i.AttendStatusID,
-		&i.ProfileImageUrl,
+		&i.ProfileImageID,
 		&i.GradeID,
 		&i.GroupID,
 		&i.PersonalOrganizationID,
@@ -3182,7 +3182,7 @@ func (q *Queries) UpdateMember(ctx context.Context, arg UpdateMemberParams) (Mem
 }
 
 const updateMemberAttendStatus = `-- name: UpdateMemberAttendStatus :one
-UPDATE m_members SET attend_status_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+UPDATE m_members SET attend_status_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `
 
 type UpdateMemberAttendStatusParams struct {
@@ -3202,7 +3202,7 @@ func (q *Queries) UpdateMemberAttendStatus(ctx context.Context, arg UpdateMember
 		&i.Email,
 		&i.Name,
 		&i.AttendStatusID,
-		&i.ProfileImageUrl,
+		&i.ProfileImageID,
 		&i.GradeID,
 		&i.GroupID,
 		&i.PersonalOrganizationID,
@@ -3214,7 +3214,7 @@ func (q *Queries) UpdateMemberAttendStatus(ctx context.Context, arg UpdateMember
 }
 
 const updateMemberGrade = `-- name: UpdateMemberGrade :one
-UPDATE m_members SET grade_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+UPDATE m_members SET grade_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `
 
 type UpdateMemberGradeParams struct {
@@ -3234,7 +3234,7 @@ func (q *Queries) UpdateMemberGrade(ctx context.Context, arg UpdateMemberGradePa
 		&i.Email,
 		&i.Name,
 		&i.AttendStatusID,
-		&i.ProfileImageUrl,
+		&i.ProfileImageID,
 		&i.GradeID,
 		&i.GroupID,
 		&i.PersonalOrganizationID,
@@ -3246,7 +3246,7 @@ func (q *Queries) UpdateMemberGrade(ctx context.Context, arg UpdateMemberGradePa
 }
 
 const updateMemberGroup = `-- name: UpdateMemberGroup :one
-UPDATE m_members SET group_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+UPDATE m_members SET group_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `
 
 type UpdateMemberGroupParams struct {
@@ -3266,7 +3266,7 @@ func (q *Queries) UpdateMemberGroup(ctx context.Context, arg UpdateMemberGroupPa
 		&i.Email,
 		&i.Name,
 		&i.AttendStatusID,
-		&i.ProfileImageUrl,
+		&i.ProfileImageID,
 		&i.GradeID,
 		&i.GroupID,
 		&i.PersonalOrganizationID,
@@ -3278,7 +3278,7 @@ func (q *Queries) UpdateMemberGroup(ctx context.Context, arg UpdateMemberGroupPa
 }
 
 const updateMemberLoginID = `-- name: UpdateMemberLoginID :one
-UPDATE m_members SET login_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+UPDATE m_members SET login_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `
 
 type UpdateMemberLoginIDParams struct {
@@ -3298,7 +3298,7 @@ func (q *Queries) UpdateMemberLoginID(ctx context.Context, arg UpdateMemberLogin
 		&i.Email,
 		&i.Name,
 		&i.AttendStatusID,
-		&i.ProfileImageUrl,
+		&i.ProfileImageID,
 		&i.GradeID,
 		&i.GroupID,
 		&i.PersonalOrganizationID,
@@ -3310,7 +3310,7 @@ func (q *Queries) UpdateMemberLoginID(ctx context.Context, arg UpdateMemberLogin
 }
 
 const updateMemberPassword = `-- name: UpdateMemberPassword :one
-UPDATE m_members SET password = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+UPDATE m_members SET password = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `
 
 type UpdateMemberPasswordParams struct {
@@ -3330,7 +3330,7 @@ func (q *Queries) UpdateMemberPassword(ctx context.Context, arg UpdateMemberPass
 		&i.Email,
 		&i.Name,
 		&i.AttendStatusID,
-		&i.ProfileImageUrl,
+		&i.ProfileImageID,
 		&i.GradeID,
 		&i.GroupID,
 		&i.PersonalOrganizationID,
@@ -3342,7 +3342,7 @@ func (q *Queries) UpdateMemberPassword(ctx context.Context, arg UpdateMemberPass
 }
 
 const updateMemberRole = `-- name: UpdateMemberRole :one
-UPDATE m_members SET role_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_url, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+UPDATE m_members SET role_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `
 
 type UpdateMemberRoleParams struct {
@@ -3362,7 +3362,7 @@ func (q *Queries) UpdateMemberRole(ctx context.Context, arg UpdateMemberRolePara
 		&i.Email,
 		&i.Name,
 		&i.AttendStatusID,
-		&i.ProfileImageUrl,
+		&i.ProfileImageID,
 		&i.GradeID,
 		&i.GroupID,
 		&i.PersonalOrganizationID,

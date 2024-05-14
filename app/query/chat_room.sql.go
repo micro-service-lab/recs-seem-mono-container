@@ -53,13 +53,13 @@ func (q *Queries) CountChatRooms(ctx context.Context, arg CountChatRoomsParams) 
 }
 
 const createChatRoom = `-- name: CreateChatRoom :one
-INSERT INTO m_chat_rooms (name, is_private, cover_image_url, owner_id, from_organization, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_url, owner_id, from_organization, created_at, updated_at
+INSERT INTO m_chat_rooms (name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at
 `
 
 type CreateChatRoomParams struct {
 	Name             pgtype.Text `json:"name"`
 	IsPrivate        bool        `json:"is_private"`
-	CoverImageUrl    pgtype.Text `json:"cover_image_url"`
+	CoverImageID     pgtype.UUID `json:"cover_image_id"`
 	OwnerID          pgtype.UUID `json:"owner_id"`
 	FromOrganization bool        `json:"from_organization"`
 	CreatedAt        time.Time   `json:"created_at"`
@@ -70,7 +70,7 @@ func (q *Queries) CreateChatRoom(ctx context.Context, arg CreateChatRoomParams) 
 	row := q.db.QueryRow(ctx, createChatRoom,
 		arg.Name,
 		arg.IsPrivate,
-		arg.CoverImageUrl,
+		arg.CoverImageID,
 		arg.OwnerID,
 		arg.FromOrganization,
 		arg.CreatedAt,
@@ -82,7 +82,7 @@ func (q *Queries) CreateChatRoom(ctx context.Context, arg CreateChatRoomParams) 
 		&i.ChatRoomID,
 		&i.Name,
 		&i.IsPrivate,
-		&i.CoverImageUrl,
+		&i.CoverImageID,
 		&i.OwnerID,
 		&i.FromOrganization,
 		&i.CreatedAt,
@@ -94,7 +94,7 @@ func (q *Queries) CreateChatRoom(ctx context.Context, arg CreateChatRoomParams) 
 type CreateChatRoomsParams struct {
 	Name             pgtype.Text `json:"name"`
 	IsPrivate        bool        `json:"is_private"`
-	CoverImageUrl    pgtype.Text `json:"cover_image_url"`
+	CoverImageID     pgtype.UUID `json:"cover_image_id"`
 	OwnerID          pgtype.UUID `json:"owner_id"`
 	FromOrganization bool        `json:"from_organization"`
 	CreatedAt        time.Time   `json:"created_at"`
@@ -114,7 +114,7 @@ func (q *Queries) DeleteChatRoom(ctx context.Context, chatRoomID uuid.UUID) (int
 }
 
 const findChatRoomByID = `-- name: FindChatRoomByID :one
-SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_url, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms WHERE chat_room_id = $1
+SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms WHERE chat_room_id = $1
 `
 
 func (q *Queries) FindChatRoomByID(ctx context.Context, chatRoomID uuid.UUID) (ChatRoom, error) {
@@ -125,7 +125,7 @@ func (q *Queries) FindChatRoomByID(ctx context.Context, chatRoomID uuid.UUID) (C
 		&i.ChatRoomID,
 		&i.Name,
 		&i.IsPrivate,
-		&i.CoverImageUrl,
+		&i.CoverImageID,
 		&i.OwnerID,
 		&i.FromOrganization,
 		&i.CreatedAt,
@@ -135,7 +135,7 @@ func (q *Queries) FindChatRoomByID(ctx context.Context, chatRoomID uuid.UUID) (C
 }
 
 const findChatRoomByIDWithOwner = `-- name: FindChatRoomByIDWithOwner :one
-SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_rooms
+SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE chat_room_id = $1
 `
@@ -153,7 +153,7 @@ func (q *Queries) FindChatRoomByIDWithOwner(ctx context.Context, chatRoomID uuid
 		&i.ChatRoom.ChatRoomID,
 		&i.ChatRoom.Name,
 		&i.ChatRoom.IsPrivate,
-		&i.ChatRoom.CoverImageUrl,
+		&i.ChatRoom.CoverImageID,
 		&i.ChatRoom.OwnerID,
 		&i.ChatRoom.FromOrganization,
 		&i.ChatRoom.CreatedAt,
@@ -165,7 +165,7 @@ func (q *Queries) FindChatRoomByIDWithOwner(ctx context.Context, chatRoomID uuid
 		&i.Member.Email,
 		&i.Member.Name,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageUrl,
+		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -176,8 +176,96 @@ func (q *Queries) FindChatRoomByIDWithOwner(ctx context.Context, chatRoomID uuid
 	return i, err
 }
 
+const findChatRoomOnPrivate = `-- name: FindChatRoomOnPrivate :one
+SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms
+WHERE (SELECT COUNT(chat_room_id) FROM m_chat_room_belongings WHERE chat_room_id = m_chat_rooms.chat_room_id AND
+(m_chat_room_belongings.member_id = $1 OR m_chat_room_belongings.member_id = $2)) = 2
+AND is_private = true
+AND m_chat_rooms_belongs.member_id <> $1
+`
+
+type FindChatRoomOnPrivateParams struct {
+	OwnerID  uuid.UUID `json:"owner_id"`
+	MemberID uuid.UUID `json:"member_id"`
+}
+
+func (q *Queries) FindChatRoomOnPrivate(ctx context.Context, arg FindChatRoomOnPrivateParams) (ChatRoom, error) {
+	row := q.db.QueryRow(ctx, findChatRoomOnPrivate, arg.OwnerID, arg.MemberID)
+	var i ChatRoom
+	err := row.Scan(
+		&i.MChatRoomsPkey,
+		&i.ChatRoomID,
+		&i.Name,
+		&i.IsPrivate,
+		&i.CoverImageID,
+		&i.OwnerID,
+		&i.FromOrganization,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const findChatRoomOnPrivateWithMember = `-- name: FindChatRoomOnPrivateWithMember :one
+SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_chat_room_belongings.added_at member_added_at, m_members.member_id, m_members.name member_name, m_members.email member_email,
+m_members.profile_image_id member_profile_image_id
+FROM m_chat_rooms
+LEFT JOIN m_chat_room_belongings ON m_chat_rooms.chat_room_id = m_chat_room_belongings.chat_room_id
+LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE (SELECT COUNT(chat_room_id) FROM m_chat_room_belongings WHERE chat_room_id = m_chat_rooms.chat_room_id AND
+(m_chat_room_belongings.member_id = $1 OR m_chat_room_belongings.member_id = $2)) = 2
+AND is_private = true
+AND m_chat_rooms_belongs.member_id <> $1
+`
+
+type FindChatRoomOnPrivateWithMemberParams struct {
+	OwnerID  uuid.UUID `json:"owner_id"`
+	MemberID uuid.UUID `json:"member_id"`
+}
+
+type FindChatRoomOnPrivateWithMemberRow struct {
+	MChatRoomsPkey       pgtype.Int8        `json:"m_chat_rooms_pkey"`
+	ChatRoomID           uuid.UUID          `json:"chat_room_id"`
+	Name                 pgtype.Text        `json:"name"`
+	IsPrivate            bool               `json:"is_private"`
+	CoverImageID         pgtype.UUID        `json:"cover_image_id"`
+	OwnerID              pgtype.UUID        `json:"owner_id"`
+	FromOrganization     bool               `json:"from_organization"`
+	CreatedAt            time.Time          `json:"created_at"`
+	UpdatedAt            time.Time          `json:"updated_at"`
+	MemberAddedAt        pgtype.Timestamptz `json:"member_added_at"`
+	MemberID             pgtype.UUID        `json:"member_id"`
+	MemberName           pgtype.Text        `json:"member_name"`
+	MemberEmail          pgtype.Text        `json:"member_email"`
+	MemberProfileImageID pgtype.UUID        `json:"member_profile_image_id"`
+}
+
+func (q *Queries) FindChatRoomOnPrivateWithMember(ctx context.Context, arg FindChatRoomOnPrivateWithMemberParams) (FindChatRoomOnPrivateWithMemberRow, error) {
+	row := q.db.QueryRow(ctx, findChatRoomOnPrivateWithMember, arg.OwnerID, arg.MemberID)
+	var i FindChatRoomOnPrivateWithMemberRow
+	err := row.Scan(
+		&i.MChatRoomsPkey,
+		&i.ChatRoomID,
+		&i.Name,
+		&i.IsPrivate,
+		&i.CoverImageID,
+		&i.OwnerID,
+		&i.FromOrganization,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.MemberAddedAt,
+		&i.MemberID,
+		&i.MemberName,
+		&i.MemberEmail,
+		&i.MemberProfileImageID,
+	)
+	return i, err
+}
+
 const getChatRooms = `-- name: GetChatRooms :many
-SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_url, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms
+SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms
 WHERE
 	CASE WHEN $1::boolean = true THEN owner_id = ANY($2) ELSE TRUE END
 AND
@@ -224,7 +312,7 @@ func (q *Queries) GetChatRooms(ctx context.Context, arg GetChatRoomsParams) ([]C
 			&i.ChatRoomID,
 			&i.Name,
 			&i.IsPrivate,
-			&i.CoverImageUrl,
+			&i.CoverImageID,
 			&i.OwnerID,
 			&i.FromOrganization,
 			&i.CreatedAt,
@@ -241,7 +329,7 @@ func (q *Queries) GetChatRooms(ctx context.Context, arg GetChatRoomsParams) ([]C
 }
 
 const getChatRoomsUseKeysetPaginate = `-- name: GetChatRoomsUseKeysetPaginate :many
-SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_url, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms
+SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms
 WHERE
 	CASE WHEN $2::boolean = true THEN owner_id = ANY($3) ELSE TRUE END
 AND
@@ -303,7 +391,7 @@ func (q *Queries) GetChatRoomsUseKeysetPaginate(ctx context.Context, arg GetChat
 			&i.ChatRoomID,
 			&i.Name,
 			&i.IsPrivate,
-			&i.CoverImageUrl,
+			&i.CoverImageID,
 			&i.OwnerID,
 			&i.FromOrganization,
 			&i.CreatedAt,
@@ -320,7 +408,7 @@ func (q *Queries) GetChatRoomsUseKeysetPaginate(ctx context.Context, arg GetChat
 }
 
 const getChatRoomsUseNumberedPaginate = `-- name: GetChatRoomsUseNumberedPaginate :many
-SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_url, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms
+SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms
 WHERE
 	CASE WHEN $3::boolean = true THEN owner_id = ANY($4) ELSE TRUE END
 AND
@@ -372,7 +460,7 @@ func (q *Queries) GetChatRoomsUseNumberedPaginate(ctx context.Context, arg GetCh
 			&i.ChatRoomID,
 			&i.Name,
 			&i.IsPrivate,
-			&i.CoverImageUrl,
+			&i.CoverImageID,
 			&i.OwnerID,
 			&i.FromOrganization,
 			&i.CreatedAt,
@@ -389,7 +477,7 @@ func (q *Queries) GetChatRoomsUseNumberedPaginate(ctx context.Context, arg GetCh
 }
 
 const getChatRoomsWithOwner = `-- name: GetChatRoomsWithOwner :many
-SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_rooms
+SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE
 	CASE WHEN $1::boolean THEN owner_id = ANY($2) ELSE TRUE END
@@ -442,7 +530,7 @@ func (q *Queries) GetChatRoomsWithOwner(ctx context.Context, arg GetChatRoomsWit
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageUrl,
+			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -454,7 +542,7 @@ func (q *Queries) GetChatRoomsWithOwner(ctx context.Context, arg GetChatRoomsWit
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -473,7 +561,7 @@ func (q *Queries) GetChatRoomsWithOwner(ctx context.Context, arg GetChatRoomsWit
 }
 
 const getChatRoomsWithOwnerUseKeysetPaginate = `-- name: GetChatRoomsWithOwnerUseKeysetPaginate :many
-SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_rooms
+SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE
 	CASE WHEN $2::boolean = true THEN owner_id = ANY($3) ELSE TRUE END
@@ -541,7 +629,7 @@ func (q *Queries) GetChatRoomsWithOwnerUseKeysetPaginate(ctx context.Context, ar
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageUrl,
+			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -553,7 +641,7 @@ func (q *Queries) GetChatRoomsWithOwnerUseKeysetPaginate(ctx context.Context, ar
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -572,7 +660,7 @@ func (q *Queries) GetChatRoomsWithOwnerUseKeysetPaginate(ctx context.Context, ar
 }
 
 const getChatRoomsWithOwnerUseNumberedPaginate = `-- name: GetChatRoomsWithOwnerUseNumberedPaginate :many
-SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_rooms
+SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean THEN owner_id = ANY($4) ELSE TRUE END
@@ -630,7 +718,7 @@ func (q *Queries) GetChatRoomsWithOwnerUseNumberedPaginate(ctx context.Context, 
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageUrl,
+			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -642,7 +730,7 @@ func (q *Queries) GetChatRoomsWithOwnerUseNumberedPaginate(ctx context.Context, 
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -661,7 +749,7 @@ func (q *Queries) GetChatRoomsWithOwnerUseNumberedPaginate(ctx context.Context, 
 }
 
 const getPluralChatRooms = `-- name: GetPluralChatRooms :many
-SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_url, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms
+SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms
 WHERE chat_room_id = ANY($3::uuid[])
 ORDER BY
 	m_chat_rooms_pkey ASC
@@ -688,7 +776,7 @@ func (q *Queries) GetPluralChatRooms(ctx context.Context, arg GetPluralChatRooms
 			&i.ChatRoomID,
 			&i.Name,
 			&i.IsPrivate,
-			&i.CoverImageUrl,
+			&i.CoverImageID,
 			&i.OwnerID,
 			&i.FromOrganization,
 			&i.CreatedAt,
@@ -705,7 +793,7 @@ func (q *Queries) GetPluralChatRooms(ctx context.Context, arg GetPluralChatRooms
 }
 
 const getPluralChatRoomsWithOwner = `-- name: GetPluralChatRoomsWithOwner :many
-SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_rooms
+SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE chat_room_id = ANY($3::uuid[])
 ORDER BY
@@ -738,7 +826,7 @@ func (q *Queries) GetPluralChatRoomsWithOwner(ctx context.Context, arg GetPlural
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageUrl,
+			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -750,7 +838,7 @@ func (q *Queries) GetPluralChatRoomsWithOwner(ctx context.Context, arg GetPlural
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -781,16 +869,16 @@ func (q *Queries) PluralDeleteChatRooms(ctx context.Context, dollar_1 []uuid.UUI
 }
 
 const updateChatRoom = `-- name: UpdateChatRoom :one
-UPDATE m_chat_rooms SET name = $2, is_private = $3, cover_image_url = $4, owner_id = $5, updated_at = $6 WHERE chat_room_id = $1 RETURNING m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_url, owner_id, from_organization, created_at, updated_at
+UPDATE m_chat_rooms SET name = $2, is_private = $3, cover_image_id = $4, owner_id = $5, updated_at = $6 WHERE chat_room_id = $1 RETURNING m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at
 `
 
 type UpdateChatRoomParams struct {
-	ChatRoomID    uuid.UUID   `json:"chat_room_id"`
-	Name          pgtype.Text `json:"name"`
-	IsPrivate     bool        `json:"is_private"`
-	CoverImageUrl pgtype.Text `json:"cover_image_url"`
-	OwnerID       pgtype.UUID `json:"owner_id"`
-	UpdatedAt     time.Time   `json:"updated_at"`
+	ChatRoomID   uuid.UUID   `json:"chat_room_id"`
+	Name         pgtype.Text `json:"name"`
+	IsPrivate    bool        `json:"is_private"`
+	CoverImageID pgtype.UUID `json:"cover_image_id"`
+	OwnerID      pgtype.UUID `json:"owner_id"`
+	UpdatedAt    time.Time   `json:"updated_at"`
 }
 
 func (q *Queries) UpdateChatRoom(ctx context.Context, arg UpdateChatRoomParams) (ChatRoom, error) {
@@ -798,7 +886,7 @@ func (q *Queries) UpdateChatRoom(ctx context.Context, arg UpdateChatRoomParams) 
 		arg.ChatRoomID,
 		arg.Name,
 		arg.IsPrivate,
-		arg.CoverImageUrl,
+		arg.CoverImageID,
 		arg.OwnerID,
 		arg.UpdatedAt,
 	)
@@ -808,7 +896,7 @@ func (q *Queries) UpdateChatRoom(ctx context.Context, arg UpdateChatRoomParams) 
 		&i.ChatRoomID,
 		&i.Name,
 		&i.IsPrivate,
-		&i.CoverImageUrl,
+		&i.CoverImageID,
 		&i.OwnerID,
 		&i.FromOrganization,
 		&i.CreatedAt,

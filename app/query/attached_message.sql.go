@@ -30,7 +30,7 @@ const countFilesOnMessage = `-- name: CountFilesOnMessage :one
 SELECT COUNT(*) FROM t_attached_messages WHERE message_id = $1
 `
 
-func (q *Queries) CountFilesOnMessage(ctx context.Context, messageID pgtype.UUID) (int64, error) {
+func (q *Queries) CountFilesOnMessage(ctx context.Context, messageID uuid.UUID) (int64, error) {
 	row := q.db.QueryRow(ctx, countFilesOnMessage, messageID)
 	var count int64
 	err := row.Scan(&count)
@@ -38,29 +38,29 @@ func (q *Queries) CountFilesOnMessage(ctx context.Context, messageID pgtype.UUID
 }
 
 const createAttachedMessage = `-- name: CreateAttachedMessage :one
-INSERT INTO t_attached_messages (message_id, file_url) VALUES ($1, $2) RETURNING t_attached_messages_pkey, attached_message_id, message_id, file_url
+INSERT INTO t_attached_messages (message_id, attachable_item_id) VALUES ($1, $2) RETURNING t_attached_messages_pkey, attached_message_id, message_id, attachable_item_id
 `
 
 type CreateAttachedMessageParams struct {
-	MessageID pgtype.UUID `json:"message_id"`
-	FileUrl   string      `json:"file_url"`
+	MessageID        uuid.UUID   `json:"message_id"`
+	AttachableItemID pgtype.UUID `json:"attachable_item_id"`
 }
 
 func (q *Queries) CreateAttachedMessage(ctx context.Context, arg CreateAttachedMessageParams) (AttachedMessage, error) {
-	row := q.db.QueryRow(ctx, createAttachedMessage, arg.MessageID, arg.FileUrl)
+	row := q.db.QueryRow(ctx, createAttachedMessage, arg.MessageID, arg.AttachableItemID)
 	var i AttachedMessage
 	err := row.Scan(
 		&i.TAttachedMessagesPkey,
 		&i.AttachedMessageID,
 		&i.MessageID,
-		&i.FileUrl,
+		&i.AttachableItemID,
 	)
 	return i, err
 }
 
 type CreateAttachedMessagesParams struct {
-	MessageID pgtype.UUID `json:"message_id"`
-	FileUrl   string      `json:"file_url"`
+	MessageID        uuid.UUID   `json:"message_id"`
+	AttachableItemID pgtype.UUID `json:"attachable_item_id"`
 }
 
 const deleteAttachedMessage = `-- name: DeleteAttachedMessage :execrows
@@ -79,7 +79,7 @@ const deleteAttachedMessagesOnMessage = `-- name: DeleteAttachedMessagesOnMessag
 DELETE FROM t_attached_messages WHERE message_id = $1
 `
 
-func (q *Queries) DeleteAttachedMessagesOnMessage(ctx context.Context, messageID pgtype.UUID) (int64, error) {
+func (q *Queries) DeleteAttachedMessagesOnMessage(ctx context.Context, messageID uuid.UUID) (int64, error) {
 	result, err := q.db.Exec(ctx, deleteAttachedMessagesOnMessage, messageID)
 	if err != nil {
 		return 0, err
@@ -233,7 +233,7 @@ ORDER BY
 type GetFilesOnMessageRow struct {
 }
 
-func (q *Queries) GetFilesOnMessage(ctx context.Context, messageID pgtype.UUID) ([]GetFilesOnMessageRow, error) {
+func (q *Queries) GetFilesOnMessage(ctx context.Context, messageID uuid.UUID) ([]GetFilesOnMessageRow, error) {
 	rows, err := q.db.Query(ctx, getFilesOnMessage, messageID)
 	if err != nil {
 		return nil, err
@@ -270,10 +270,10 @@ LIMIT $2
 `
 
 type GetFilesOnMessageUseKeysetPaginateParams struct {
-	MessageID       pgtype.UUID `json:"message_id"`
-	Limit           int32       `json:"limit"`
-	CursorDirection string      `json:"cursor_direction"`
-	Cursor          int32       `json:"cursor"`
+	MessageID       uuid.UUID `json:"message_id"`
+	Limit           int32     `json:"limit"`
+	CursorDirection string    `json:"cursor_direction"`
+	Cursor          int32     `json:"cursor"`
 }
 
 type GetFilesOnMessageUseKeysetPaginateRow struct {
@@ -313,9 +313,9 @@ LIMIT $2 OFFSET $3
 `
 
 type GetFilesOnMessageUseNumberedPaginateParams struct {
-	MessageID pgtype.UUID `json:"message_id"`
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
+	MessageID uuid.UUID `json:"message_id"`
+	Limit     int32     `json:"limit"`
+	Offset    int32     `json:"offset"`
 }
 
 type GetFilesOnMessageUseNumberedPaginateRow struct {

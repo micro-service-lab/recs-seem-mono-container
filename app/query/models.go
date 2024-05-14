@@ -24,13 +24,14 @@ type AttachableItem struct {
 	Size                 pgtype.Float8 `json:"size"`
 	MimeTypeID           uuid.UUID     `json:"mime_type_id"`
 	OwnerID              pgtype.UUID   `json:"owner_id"`
+	FromOuter            bool          `json:"from_outer"`
 }
 
 type AttachedMessage struct {
 	TAttachedMessagesPkey pgtype.Int8 `json:"t_attached_messages_pkey"`
 	AttachedMessageID     uuid.UUID   `json:"attached_message_id"`
-	MessageID             pgtype.UUID `json:"message_id"`
-	FileUrl               string      `json:"file_url"`
+	MessageID             uuid.UUID   `json:"message_id"`
+	AttachableItemID      pgtype.UUID `json:"attachable_item_id"`
 }
 
 type AttendStatus struct {
@@ -66,7 +67,7 @@ type ChatRoom struct {
 	ChatRoomID       uuid.UUID   `json:"chat_room_id"`
 	Name             pgtype.Text `json:"name"`
 	IsPrivate        bool        `json:"is_private"`
-	CoverImageUrl    pgtype.Text `json:"cover_image_url"`
+	CoverImageID     pgtype.UUID `json:"cover_image_id"`
 	OwnerID          pgtype.UUID `json:"owner_id"`
 	FromOrganization bool        `json:"from_organization"`
 	CreatedAt        time.Time   `json:"created_at"`
@@ -163,7 +164,7 @@ type Member struct {
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
-	ProfileImageUrl        pgtype.Text `json:"profile_image_url"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
 	GroupID                uuid.UUID   `json:"group_id"`
 	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`

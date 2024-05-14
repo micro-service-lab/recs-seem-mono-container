@@ -123,7 +123,7 @@ func (q *Queries) DeleteChatRoomBelongingsOnMembers(ctx context.Context, dollar_
 }
 
 const getChatRoomsOnMember = `-- name: GetChatRoomsOnMember :many
-SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = $1
 AND CASE
@@ -181,7 +181,7 @@ func (q *Queries) GetChatRoomsOnMember(ctx context.Context, arg GetChatRoomsOnMe
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageUrl,
+			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -198,7 +198,7 @@ func (q *Queries) GetChatRoomsOnMember(ctx context.Context, arg GetChatRoomsOnMe
 }
 
 const getChatRoomsOnMemberUseKeysetPaginate = `-- name: GetChatRoomsOnMemberUseKeysetPaginate :many
-SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = $1
 AND CASE $3::text
@@ -299,7 +299,7 @@ func (q *Queries) GetChatRoomsOnMemberUseKeysetPaginate(ctx context.Context, arg
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageUrl,
+			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -316,7 +316,7 @@ func (q *Queries) GetChatRoomsOnMemberUseKeysetPaginate(ctx context.Context, arg
 }
 
 const getChatRoomsOnMemberUseNumberedPaginate = `-- name: GetChatRoomsOnMemberUseNumberedPaginate :many
-SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = $1
 AND CASE
@@ -379,7 +379,7 @@ func (q *Queries) GetChatRoomsOnMemberUseNumberedPaginate(ctx context.Context, a
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageUrl,
+			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -396,7 +396,7 @@ func (q *Queries) GetChatRoomsOnMemberUseNumberedPaginate(ctx context.Context, a
 }
 
 const getMembersOnChatRoom = `-- name: GetMembersOnChatRoom :many
-SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_room_belongings
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 WHERE chat_room_id = $1
 AND CASE
@@ -429,7 +429,7 @@ type GetMembersOnChatRoomRow struct {
 	Email                   pgtype.Text        `json:"email"`
 	Name                    pgtype.Text        `json:"name"`
 	AttendStatusID          pgtype.UUID        `json:"attend_status_id"`
-	ProfileImageUrl         pgtype.Text        `json:"profile_image_url"`
+	ProfileImageID          pgtype.UUID        `json:"profile_image_id"`
 	GradeID                 pgtype.UUID        `json:"grade_id"`
 	GroupID                 pgtype.UUID        `json:"group_id"`
 	PersonalOrganizationID  pgtype.UUID        `json:"personal_organization_id"`
@@ -464,7 +464,7 @@ func (q *Queries) GetMembersOnChatRoom(ctx context.Context, arg GetMembersOnChat
 			&i.Email,
 			&i.Name,
 			&i.AttendStatusID,
-			&i.ProfileImageUrl,
+			&i.ProfileImageID,
 			&i.GradeID,
 			&i.GroupID,
 			&i.PersonalOrganizationID,
@@ -483,7 +483,7 @@ func (q *Queries) GetMembersOnChatRoom(ctx context.Context, arg GetMembersOnChat
 }
 
 const getMembersOnChatRoomUseKeysetPaginate = `-- name: GetMembersOnChatRoomUseKeysetPaginate :many
-SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_room_belongings
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 WHERE chat_room_id = $1
 AND CASE $3::text
@@ -540,7 +540,7 @@ type GetMembersOnChatRoomUseKeysetPaginateRow struct {
 	Email                   pgtype.Text        `json:"email"`
 	Name                    pgtype.Text        `json:"name"`
 	AttendStatusID          pgtype.UUID        `json:"attend_status_id"`
-	ProfileImageUrl         pgtype.Text        `json:"profile_image_url"`
+	ProfileImageID          pgtype.UUID        `json:"profile_image_id"`
 	GradeID                 pgtype.UUID        `json:"grade_id"`
 	GroupID                 pgtype.UUID        `json:"group_id"`
 	PersonalOrganizationID  pgtype.UUID        `json:"personal_organization_id"`
@@ -578,7 +578,7 @@ func (q *Queries) GetMembersOnChatRoomUseKeysetPaginate(ctx context.Context, arg
 			&i.Email,
 			&i.Name,
 			&i.AttendStatusID,
-			&i.ProfileImageUrl,
+			&i.ProfileImageID,
 			&i.GradeID,
 			&i.GroupID,
 			&i.PersonalOrganizationID,
@@ -597,7 +597,7 @@ func (q *Queries) GetMembersOnChatRoomUseKeysetPaginate(ctx context.Context, arg
 }
 
 const getMembersOnChatRoomUseNumberedPaginate = `-- name: GetMembersOnChatRoomUseNumberedPaginate :many
-SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_room_belongings
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 WHERE chat_room_id = $1
 AND CASE
@@ -633,7 +633,7 @@ type GetMembersOnChatRoomUseNumberedPaginateRow struct {
 	Email                   pgtype.Text        `json:"email"`
 	Name                    pgtype.Text        `json:"name"`
 	AttendStatusID          pgtype.UUID        `json:"attend_status_id"`
-	ProfileImageUrl         pgtype.Text        `json:"profile_image_url"`
+	ProfileImageID          pgtype.UUID        `json:"profile_image_id"`
 	GradeID                 pgtype.UUID        `json:"grade_id"`
 	GroupID                 pgtype.UUID        `json:"group_id"`
 	PersonalOrganizationID  pgtype.UUID        `json:"personal_organization_id"`
@@ -670,7 +670,7 @@ func (q *Queries) GetMembersOnChatRoomUseNumberedPaginate(ctx context.Context, a
 			&i.Email,
 			&i.Name,
 			&i.AttendStatusID,
-			&i.ProfileImageUrl,
+			&i.ProfileImageID,
 			&i.GradeID,
 			&i.GroupID,
 			&i.PersonalOrganizationID,
@@ -689,7 +689,7 @@ func (q *Queries) GetMembersOnChatRoomUseNumberedPaginate(ctx context.Context, a
 }
 
 const getPluralChatRoomsOnMember = `-- name: GetPluralChatRoomsOnMember :many
-SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_url, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
@@ -729,7 +729,7 @@ func (q *Queries) GetPluralChatRoomsOnMember(ctx context.Context, arg GetPluralC
 			&i.ChatRoom.ChatRoomID,
 			&i.ChatRoom.Name,
 			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageUrl,
+			&i.ChatRoom.CoverImageID,
 			&i.ChatRoom.OwnerID,
 			&i.ChatRoom.FromOrganization,
 			&i.ChatRoom.CreatedAt,
@@ -746,7 +746,7 @@ func (q *Queries) GetPluralChatRoomsOnMember(ctx context.Context, arg GetPluralC
 }
 
 const getPluralMembersOnChatRoom = `-- name: GetPluralMembersOnChatRoom :many
-SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_room_belongings
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_room_belongings
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 WHERE chat_room_id = ANY($3::uuid[])
 ORDER BY
@@ -772,7 +772,7 @@ type GetPluralMembersOnChatRoomRow struct {
 	Email                   pgtype.Text        `json:"email"`
 	Name                    pgtype.Text        `json:"name"`
 	AttendStatusID          pgtype.UUID        `json:"attend_status_id"`
-	ProfileImageUrl         pgtype.Text        `json:"profile_image_url"`
+	ProfileImageID          pgtype.UUID        `json:"profile_image_id"`
 	GradeID                 pgtype.UUID        `json:"grade_id"`
 	GroupID                 pgtype.UUID        `json:"group_id"`
 	PersonalOrganizationID  pgtype.UUID        `json:"personal_organization_id"`
@@ -802,7 +802,7 @@ func (q *Queries) GetPluralMembersOnChatRoom(ctx context.Context, arg GetPluralM
 			&i.Email,
 			&i.Name,
 			&i.AttendStatusID,
-			&i.ProfileImageUrl,
+			&i.ProfileImageID,
 			&i.GradeID,
 			&i.GroupID,
 			&i.PersonalOrganizationID,

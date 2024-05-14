@@ -176,7 +176,7 @@ func (q *Queries) FindAttendanceByID(ctx context.Context, attendanceID uuid.UUID
 }
 
 const findAttendanceByIDWithAll = `-- name: FindAttendanceByIDWithAll :one
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
@@ -232,7 +232,7 @@ func (q *Queries) FindAttendanceByIDWithAll(ctx context.Context, attendanceID uu
 		&i.Member.Email,
 		&i.Member.Name,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageUrl,
+		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -367,7 +367,7 @@ func (q *Queries) FindAttendanceByIDWithDetails(ctx context.Context, attendanceI
 }
 
 const findAttendanceByIDWithMember = `-- name: FindAttendanceByIDWithMember :one
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
@@ -410,7 +410,7 @@ func (q *Queries) FindAttendanceByIDWithMember(ctx context.Context, attendanceID
 		&i.Member.Email,
 		&i.Member.Name,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageUrl,
+		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -664,7 +664,7 @@ func (q *Queries) GetAttendanceUseNumberedPaginate(ctx context.Context, arg GetA
 }
 
 const getAttendanceWithAll = `-- name: GetAttendanceWithAll :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
@@ -771,7 +771,7 @@ func (q *Queries) GetAttendanceWithAll(ctx context.Context, arg GetAttendanceWit
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -815,7 +815,7 @@ func (q *Queries) GetAttendanceWithAll(ctx context.Context, arg GetAttendanceWit
 }
 
 const getAttendanceWithAllUseKeysetPaginate = `-- name: GetAttendanceWithAllUseKeysetPaginate :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
@@ -949,7 +949,7 @@ func (q *Queries) GetAttendanceWithAllUseKeysetPaginate(ctx context.Context, arg
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -993,7 +993,7 @@ func (q *Queries) GetAttendanceWithAllUseKeysetPaginate(ctx context.Context, arg
 }
 
 const getAttendanceWithAllUseNumberedPaginate = `-- name: GetAttendanceWithAllUseNumberedPaginate :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
@@ -1105,7 +1105,7 @@ func (q *Queries) GetAttendanceWithAllUseNumberedPaginate(ctx context.Context, a
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1855,7 +1855,7 @@ func (q *Queries) GetAttendanceWithDetailsUseNumberedPaginate(ctx context.Contex
 }
 
 const getAttendanceWithMember = `-- name: GetAttendanceWithMember :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
@@ -1949,7 +1949,7 @@ func (q *Queries) GetAttendanceWithMember(ctx context.Context, arg GetAttendance
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1968,7 +1968,7 @@ func (q *Queries) GetAttendanceWithMember(ctx context.Context, arg GetAttendance
 }
 
 const getAttendanceWithMemberUseKeysetPaginate = `-- name: GetAttendanceWithMemberUseKeysetPaginate :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
@@ -2089,7 +2089,7 @@ func (q *Queries) GetAttendanceWithMemberUseKeysetPaginate(ctx context.Context, 
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2108,7 +2108,7 @@ func (q *Queries) GetAttendanceWithMemberUseKeysetPaginate(ctx context.Context, 
 }
 
 const getAttendanceWithMemberUseNumberedPaginate = `-- name: GetAttendanceWithMemberUseNumberedPaginate :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
@@ -2207,7 +2207,7 @@ func (q *Queries) GetAttendanceWithMemberUseNumberedPaginate(ctx context.Context
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2657,7 +2657,7 @@ func (q *Queries) GetAttendances(ctx context.Context, arg GetAttendancesParams) 
 }
 
 const getPluralAttendanceWithAll = `-- name: GetPluralAttendanceWithAll :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
 LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
 LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
@@ -2728,7 +2728,7 @@ func (q *Queries) GetPluralAttendanceWithAll(ctx context.Context, arg GetPluralA
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2914,7 +2914,7 @@ func (q *Queries) GetPluralAttendanceWithDetails(ctx context.Context, arg GetPlu
 }
 
 const getPluralAttendanceWithMember = `-- name: GetPluralAttendanceWithMember :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
 LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
@@ -2972,7 +2972,7 @@ func (q *Queries) GetPluralAttendanceWithMember(ctx context.Context, arg GetPlur
 			&i.Member.Email,
 			&i.Member.Name,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,

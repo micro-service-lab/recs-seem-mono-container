@@ -12,3 +12,9 @@ type ChatRoomBelonging struct {
 	ChatRoomID uuid.UUID `json:"chat_room_id"`
 	AddedAt    time.Time `json:"added_at"`
 }
+
+// ChatRoomBelongingMember チャットルーム所属のメンバーを表す構造体。
+type ChatRoomBelongingMember struct {
+	Member  MemberCard `json:"member"`
+	AddedAt time.Time  `json:"added_at"`
+}

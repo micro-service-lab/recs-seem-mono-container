@@ -1,8 +1,8 @@
 -- name: CreateAttachableItems :copyfrom
-INSERT INTO t_attachable_items (url, size, owner_id, mime_type_id) VALUES ($1, $2, $3, $4);
+INSERT INTO t_attachable_items (url, size, owner_id, from_outer, mime_type_id) VALUES ($1, $2, $3, $4, $5);
 
 -- name: CreateAttachableItem :one
-INSERT INTO t_attachable_items (url, size, owner_id, mime_type_id) VALUES ($1, $2, $3, $4) RETURNING *;
+INSERT INTO t_attachable_items (url, size, owner_id, from_outer, mime_type_id) VALUES ($1, $2, $3, $4, $5) RETURNING *;
 
 -- name: DeleteAttachableItem :execrows
 DELETE FROM t_attachable_items WHERE attachable_item_id = $1;

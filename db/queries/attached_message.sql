@@ -1,8 +1,8 @@
 -- name: CreateAttachedMessages :copyfrom
-INSERT INTO t_attached_messages (message_id, file_url) VALUES ($1, $2);
+INSERT INTO t_attached_messages (message_id, attachable_item_id) VALUES ($1, $2);
 
 -- name: CreateAttachedMessage :one
-INSERT INTO t_attached_messages (message_id, file_url) VALUES ($1, $2) RETURNING *;
+INSERT INTO t_attached_messages (message_id, attachable_item_id) VALUES ($1, $2) RETURNING *;
 
 -- name: DeleteAttachedMessage :execrows
 DELETE FROM t_attached_messages WHERE attached_message_id = $1;

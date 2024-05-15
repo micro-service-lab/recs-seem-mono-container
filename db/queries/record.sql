@@ -145,6 +145,11 @@ LIMIT $1;
 -- name: GetPluralRecords :many
 SELECT * FROM t_records WHERE record_id = ANY(@record_ids::uuid[])
 ORDER BY
+	t_records_pkey ASC;
+
+-- name: GetPluralRecordsUseNumberedPaginate :many
+SELECT * FROM t_records WHERE record_id = ANY(@record_ids::uuid[])
+ORDER BY
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -247,6 +252,13 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralRecordsWithRecordType :many
+SELECT sqlc.embed(t_records), sqlc.embed(m_record_types) FROM t_records
+LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
+WHERE record_id = ANY(@record_ids::uuid[])
+ORDER BY
+	t_records_pkey ASC;
+
+-- name: GetPluralRecordsWithRecordTypeUseNumberedPaginate :many
 SELECT sqlc.embed(t_records), sqlc.embed(m_record_types) FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 WHERE record_id = ANY(@record_ids::uuid[])
@@ -357,6 +369,13 @@ SELECT sqlc.embed(t_records), sqlc.embed(m_organizations) FROM t_records
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 WHERE record_id = ANY(@record_ids::uuid[])
 ORDER BY
+	t_records_pkey ASC;
+
+-- name: GetPluralRecordsWithOrganizationUseNumberedPaginate :many
+SELECT sqlc.embed(t_records), sqlc.embed(m_organizations) FROM t_records
+LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
+WHERE record_id = ANY(@record_ids::uuid[])
+ORDER BY
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -463,6 +482,13 @@ SELECT sqlc.embed(t_records), sqlc.embed(m_members) FROM t_records
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 WHERE record_id = ANY(@record_ids::uuid[])
 ORDER BY
+	t_records_pkey ASC;
+
+-- name: GetPluralRecordsWithPostedByUseNumberedPaginate :many
+SELECT sqlc.embed(t_records), sqlc.embed(m_members) FROM t_records
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+WHERE record_id = ANY(@record_ids::uuid[])
+ORDER BY
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -565,6 +591,13 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralRecordsWithLastEditedBy :many
+SELECT sqlc.embed(t_records), sqlc.embed(m_members) FROM t_records
+LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
+WHERE record_id = ANY(@record_ids::uuid[])
+ORDER BY
+	t_records_pkey ASC;
+
+-- name: GetPluralRecordsWithLastEditedByUseNumberedPaginate :many
 SELECT sqlc.embed(t_records), sqlc.embed(m_members) FROM t_records
 LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE record_id = ANY(@record_ids::uuid[])
@@ -680,6 +713,16 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralRecordsWithAll :many
+SELECT sqlc.embed(t_records), sqlc.embed(m_record_types), sqlc.embed(m_organizations), sqlc.embed(m_members), sqlc.embed(m_members) FROM t_records
+LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
+LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+LEFT JOIN m_members AS m_members_2 ON t_records.last_edited_by = m_members_2.member_id
+WHERE record_id = ANY(@record_ids::uuid[])
+ORDER BY
+	t_records_pkey ASC;
+
+-- name: GetPluralRecordsWithAllUseNumberedPaginate :many
 SELECT sqlc.embed(t_records), sqlc.embed(m_record_types), sqlc.embed(m_organizations), sqlc.embed(m_members), sqlc.embed(m_members) FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id

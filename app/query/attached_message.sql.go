@@ -344,24 +344,17 @@ func (q *Queries) GetFilesOnMessageUseNumberedPaginate(ctx context.Context, arg 
 const getPluralFilesOnChatRoom = `-- name: GetPluralFilesOnChatRoom :many
 SELECT  FROM t_attached_messages
 WHERE message_id IN (
-	SELECT message_id FROM t_messages WHERE chat_room_id = ANY($3::uuid[])
+	SELECT message_id FROM t_messages WHERE chat_room_id = ANY($1::uuid[])
 )
 ORDER BY
 	t_attached_messages_pkey ASC
-LIMIT $1 OFFSET $2
 `
-
-type GetPluralFilesOnChatRoomParams struct {
-	Limit       int32       `json:"limit"`
-	Offset      int32       `json:"offset"`
-	ChatRoomIds []uuid.UUID `json:"chat_room_ids"`
-}
 
 type GetPluralFilesOnChatRoomRow struct {
 }
 
-func (q *Queries) GetPluralFilesOnChatRoom(ctx context.Context, arg GetPluralFilesOnChatRoomParams) ([]GetPluralFilesOnChatRoomRow, error) {
-	rows, err := q.db.Query(ctx, getPluralFilesOnChatRoom, arg.Limit, arg.Offset, arg.ChatRoomIds)
+func (q *Queries) GetPluralFilesOnChatRoom(ctx context.Context, chatRoomIds []uuid.UUID) ([]GetPluralFilesOnChatRoomRow, error) {
+	rows, err := q.db.Query(ctx, getPluralFilesOnChatRoom, chatRoomIds)
 	if err != nil {
 		return nil, err
 	}
@@ -380,25 +373,57 @@ func (q *Queries) GetPluralFilesOnChatRoom(ctx context.Context, arg GetPluralFil
 	return items, nil
 }
 
-const getPluralFilesOnMessage = `-- name: GetPluralFilesOnMessage :many
+const getPluralFilesOnChatRoomUseNumberedPaginate = `-- name: GetPluralFilesOnChatRoomUseNumberedPaginate :many
 SELECT  FROM t_attached_messages
-WHERE message_id = ANY($3::uuid[])
+WHERE message_id IN (
+	SELECT message_id FROM t_messages WHERE chat_room_id = ANY($3::uuid[])
+)
 ORDER BY
 	t_attached_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralFilesOnMessageParams struct {
-	Limit      int32       `json:"limit"`
-	Offset     int32       `json:"offset"`
-	MessageIds []uuid.UUID `json:"message_ids"`
+type GetPluralFilesOnChatRoomUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	ChatRoomIds []uuid.UUID `json:"chat_room_ids"`
 }
+
+type GetPluralFilesOnChatRoomUseNumberedPaginateRow struct {
+}
+
+func (q *Queries) GetPluralFilesOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetPluralFilesOnChatRoomUseNumberedPaginateParams) ([]GetPluralFilesOnChatRoomUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralFilesOnChatRoomUseNumberedPaginate, arg.Limit, arg.Offset, arg.ChatRoomIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralFilesOnChatRoomUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralFilesOnChatRoomUseNumberedPaginateRow
+		if err := rows.Scan(); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralFilesOnMessage = `-- name: GetPluralFilesOnMessage :many
+SELECT  FROM t_attached_messages
+WHERE message_id = ANY($1::uuid[])
+ORDER BY
+	t_attached_messages_pkey ASC
+`
 
 type GetPluralFilesOnMessageRow struct {
 }
 
-func (q *Queries) GetPluralFilesOnMessage(ctx context.Context, arg GetPluralFilesOnMessageParams) ([]GetPluralFilesOnMessageRow, error) {
-	rows, err := q.db.Query(ctx, getPluralFilesOnMessage, arg.Limit, arg.Offset, arg.MessageIds)
+func (q *Queries) GetPluralFilesOnMessage(ctx context.Context, messageIds []uuid.UUID) ([]GetPluralFilesOnMessageRow, error) {
+	rows, err := q.db.Query(ctx, getPluralFilesOnMessage, messageIds)
 	if err != nil {
 		return nil, err
 	}
@@ -406,6 +431,43 @@ func (q *Queries) GetPluralFilesOnMessage(ctx context.Context, arg GetPluralFile
 	items := []GetPluralFilesOnMessageRow{}
 	for rows.Next() {
 		var i GetPluralFilesOnMessageRow
+		if err := rows.Scan(); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralFilesOnMessageUseNumberedPaginate = `-- name: GetPluralFilesOnMessageUseNumberedPaginate :many
+SELECT  FROM t_attached_messages
+WHERE message_id = ANY($3::uuid[])
+ORDER BY
+	t_attached_messages_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralFilesOnMessageUseNumberedPaginateParams struct {
+	Limit      int32       `json:"limit"`
+	Offset     int32       `json:"offset"`
+	MessageIds []uuid.UUID `json:"message_ids"`
+}
+
+type GetPluralFilesOnMessageUseNumberedPaginateRow struct {
+}
+
+func (q *Queries) GetPluralFilesOnMessageUseNumberedPaginate(ctx context.Context, arg GetPluralFilesOnMessageUseNumberedPaginateParams) ([]GetPluralFilesOnMessageUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralFilesOnMessageUseNumberedPaginate, arg.Limit, arg.Offset, arg.MessageIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralFilesOnMessageUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralFilesOnMessageUseNumberedPaginateRow
 		if err := rows.Scan(); err != nil {
 			return nil, err
 		}

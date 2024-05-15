@@ -369,12 +369,18 @@ func (a *PgAdapter) GetRolesWithSd(
 func getPluralRoles(
 	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Role], error) {
-	p := query.GetPluralRolesParams{
-		RoleIds: ids,
-		Offset:  int32(np.Offset.Int64),
-		Limit:   int32(np.Limit.Int64),
+	var e []query.Role
+	var err error
+	if !np.Valid {
+		e, err = qtx.GetPluralRoles(ctx, ids)
+	} else {
+		p := query.GetPluralRolesUseNumberedPaginateParams{
+			RoleIds: ids,
+			Offset:  int32(np.Offset.Int64),
+			Limit:   int32(np.Limit.Int64),
+		}
+		e, err = qtx.GetPluralRolesUseNumberedPaginate(ctx, p)
 	}
-	e, err := qtx.GetPluralRoles(ctx, p)
 	if err != nil {
 		return store.ListResult[entity.Role]{}, fmt.Errorf("failed to get plural roles: %w", err)
 	}

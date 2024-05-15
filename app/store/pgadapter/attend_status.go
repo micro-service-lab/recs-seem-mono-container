@@ -421,12 +421,17 @@ func (a *PgAdapter) GetAttendStatusesWithSd(
 func getPluralAttendStatuses(
 	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttendStatus], error) {
-	p := query.GetPluralAttendStatusesParams{
-		AttendStatusIds: ids,
-		Offset:          int32(np.Offset.Int64),
-		Limit:           int32(np.Limit.Int64),
+	var e []query.AttendStatus
+	var err error
+	if !np.Valid {
+		e, err = qtx.GetPluralAttendStatuses(ctx, ids)
+	} else {
+		e, err = qtx.GetPluralAttendStatusesUseNumberedPaginate(ctx, query.GetPluralAttendStatusesUseNumberedPaginateParams{
+			AttendStatusIds: ids,
+			Offset:          int32(np.Offset.Int64),
+			Limit:           int32(np.Limit.Int64),
+		})
 	}
-	e, err := qtx.GetPluralAttendStatuses(ctx, p)
 	if err != nil {
 		return store.ListResult[entity.AttendStatus]{}, fmt.Errorf("failed to get plural attend statuses: %w", err)
 	}

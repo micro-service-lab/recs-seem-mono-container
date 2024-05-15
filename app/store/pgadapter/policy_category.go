@@ -438,12 +438,17 @@ func (a *PgAdapter) GetPolicyCategoriesWithSd(
 func getPluralPolicyCategories(
 	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.PolicyCategory], error) {
-	p := query.GetPluralPolicyCategoriesParams{
-		PolicyCategoryIds: ids,
-		Offset:            int32(np.Offset.Int64),
-		Limit:             int32(np.Limit.Int64),
+	var e []query.PolicyCategory
+	var err error
+	if !np.Valid {
+		e, err = qtx.GetPluralPolicyCategories(ctx, ids)
+	} else {
+		e, err = qtx.GetPluralPolicyCategoriesUseNumberedPaginate(ctx, query.GetPluralPolicyCategoriesUseNumberedPaginateParams{
+			PolicyCategoryIds: ids,
+			Offset:            int32(np.Offset.Int64),
+			Limit:             int32(np.Limit.Int64),
+		})
 	}
-	e, err := qtx.GetPluralPolicyCategories(ctx, p)
 	if err != nil {
 		return store.ListResult[entity.PolicyCategory]{},
 			fmt.Errorf("failed to get plural policy categories: %w", err)

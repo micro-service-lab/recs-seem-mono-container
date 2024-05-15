@@ -276,20 +276,52 @@ func (q *Queries) GetAttendStatusesUseNumberedPaginate(ctx context.Context, arg 
 
 const getPluralAttendStatuses = `-- name: GetPluralAttendStatuses :many
 SELECT m_attend_statuses_pkey, attend_status_id, name, key FROM m_attend_statuses
+WHERE attend_status_id = ANY($1::uuid[])
+ORDER BY
+	m_attend_statuses_pkey ASC
+`
+
+func (q *Queries) GetPluralAttendStatuses(ctx context.Context, attendStatusIds []uuid.UUID) ([]AttendStatus, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendStatuses, attendStatusIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []AttendStatus{}
+	for rows.Next() {
+		var i AttendStatus
+		if err := rows.Scan(
+			&i.MAttendStatusesPkey,
+			&i.AttendStatusID,
+			&i.Name,
+			&i.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAttendStatusesUseNumberedPaginate = `-- name: GetPluralAttendStatusesUseNumberedPaginate :many
+SELECT m_attend_statuses_pkey, attend_status_id, name, key FROM m_attend_statuses
 WHERE attend_status_id = ANY($3::uuid[])
 ORDER BY
 	m_attend_statuses_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralAttendStatusesParams struct {
+type GetPluralAttendStatusesUseNumberedPaginateParams struct {
 	Limit           int32       `json:"limit"`
 	Offset          int32       `json:"offset"`
 	AttendStatusIds []uuid.UUID `json:"attend_status_ids"`
 }
 
-func (q *Queries) GetPluralAttendStatuses(ctx context.Context, arg GetPluralAttendStatusesParams) ([]AttendStatus, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendStatuses, arg.Limit, arg.Offset, arg.AttendStatusIds)
+func (q *Queries) GetPluralAttendStatusesUseNumberedPaginate(ctx context.Context, arg GetPluralAttendStatusesUseNumberedPaginateParams) ([]AttendStatus, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendStatusesUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendStatusIds)
 	if err != nil {
 		return nil, err
 	}

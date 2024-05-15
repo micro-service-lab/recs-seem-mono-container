@@ -193,20 +193,52 @@ func (q *Queries) GetEarlyLeavingsUseNumberedPaginate(ctx context.Context, arg G
 
 const getPluralEarlyLeavings = `-- name: GetPluralEarlyLeavings :many
 SELECT t_early_leavings_pkey, early_leaving_id, attendance_id, leave_time FROM t_early_leavings
+WHERE attendance_id = ANY($1::uuid[])
+ORDER BY
+	t_early_leavings_pkey ASC
+`
+
+func (q *Queries) GetPluralEarlyLeavings(ctx context.Context, attendanceIds []uuid.UUID) ([]EarlyLeaving, error) {
+	rows, err := q.db.Query(ctx, getPluralEarlyLeavings, attendanceIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []EarlyLeaving{}
+	for rows.Next() {
+		var i EarlyLeaving
+		if err := rows.Scan(
+			&i.TEarlyLeavingsPkey,
+			&i.EarlyLeavingID,
+			&i.AttendanceID,
+			&i.LeaveTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralEarlyLeavingsUseNumberedPaginate = `-- name: GetPluralEarlyLeavingsUseNumberedPaginate :many
+SELECT t_early_leavings_pkey, early_leaving_id, attendance_id, leave_time FROM t_early_leavings
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
 	t_early_leavings_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralEarlyLeavingsParams struct {
+type GetPluralEarlyLeavingsUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	AttendanceIds []uuid.UUID `json:"attendance_ids"`
 }
 
-func (q *Queries) GetPluralEarlyLeavings(ctx context.Context, arg GetPluralEarlyLeavingsParams) ([]EarlyLeaving, error) {
-	rows, err := q.db.Query(ctx, getPluralEarlyLeavings, arg.Limit, arg.Offset, arg.AttendanceIds)
+func (q *Queries) GetPluralEarlyLeavingsUseNumberedPaginate(ctx context.Context, arg GetPluralEarlyLeavingsUseNumberedPaginateParams) ([]EarlyLeaving, error) {
+	rows, err := q.db.Query(ctx, getPluralEarlyLeavingsUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendanceIds)
 	if err != nil {
 		return nil, err
 	}

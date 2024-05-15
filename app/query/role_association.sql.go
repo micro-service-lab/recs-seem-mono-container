@@ -143,25 +143,18 @@ const getPluralPoliciesOnRole = `-- name: GetPluralPoliciesOnRole :many
 SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id FROM m_role_associations
 LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE
-	role_id = ANY($3::uuid[])
+	role_id = ANY($1::uuid[])
 ORDER BY
 	m_role_associations_pkey ASC
-LIMIT $1 OFFSET $2
 `
-
-type GetPluralPoliciesOnRoleParams struct {
-	Limit   int32       `json:"limit"`
-	Offset  int32       `json:"offset"`
-	RoleIds []uuid.UUID `json:"role_ids"`
-}
 
 type GetPluralPoliciesOnRoleRow struct {
 	RoleAssociation RoleAssociation `json:"role_association"`
 	Policy          Policy          `json:"policy"`
 }
 
-func (q *Queries) GetPluralPoliciesOnRole(ctx context.Context, arg GetPluralPoliciesOnRoleParams) ([]GetPluralPoliciesOnRoleRow, error) {
-	rows, err := q.db.Query(ctx, getPluralPoliciesOnRole, arg.Limit, arg.Offset, arg.RoleIds)
+func (q *Queries) GetPluralPoliciesOnRole(ctx context.Context, roleIds []uuid.UUID) ([]GetPluralPoliciesOnRoleRow, error) {
+	rows, err := q.db.Query(ctx, getPluralPoliciesOnRole, roleIds)
 	if err != nil {
 		return nil, err
 	}
@@ -190,7 +183,102 @@ func (q *Queries) GetPluralPoliciesOnRole(ctx context.Context, arg GetPluralPoli
 	return items, nil
 }
 
+const getPluralPoliciesOnRoleUseNumberedPaginate = `-- name: GetPluralPoliciesOnRoleUseNumberedPaginate :many
+SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id FROM m_role_associations
+LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
+WHERE
+	role_id = ANY($3::uuid[])
+ORDER BY
+	m_role_associations_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralPoliciesOnRoleUseNumberedPaginateParams struct {
+	Limit   int32       `json:"limit"`
+	Offset  int32       `json:"offset"`
+	RoleIds []uuid.UUID `json:"role_ids"`
+}
+
+type GetPluralPoliciesOnRoleUseNumberedPaginateRow struct {
+	RoleAssociation RoleAssociation `json:"role_association"`
+	Policy          Policy          `json:"policy"`
+}
+
+func (q *Queries) GetPluralPoliciesOnRoleUseNumberedPaginate(ctx context.Context, arg GetPluralPoliciesOnRoleUseNumberedPaginateParams) ([]GetPluralPoliciesOnRoleUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralPoliciesOnRoleUseNumberedPaginate, arg.Limit, arg.Offset, arg.RoleIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralPoliciesOnRoleUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralPoliciesOnRoleUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.RoleAssociation.MRoleAssociationsPkey,
+			&i.RoleAssociation.RoleID,
+			&i.RoleAssociation.PolicyID,
+			&i.Policy.MPoliciesPkey,
+			&i.Policy.PolicyID,
+			&i.Policy.Name,
+			&i.Policy.Description,
+			&i.Policy.Key,
+			&i.Policy.PolicyCategoryID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPluralRolesOnPolicy = `-- name: GetPluralRolesOnPolicy :many
+SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_role_associations
+LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
+WHERE
+	policy_id = ANY($1::uuid[])
+ORDER BY
+	m_role_associations_pkey ASC
+`
+
+type GetPluralRolesOnPolicyRow struct {
+	RoleAssociation RoleAssociation `json:"role_association"`
+	Role            Role            `json:"role"`
+}
+
+func (q *Queries) GetPluralRolesOnPolicy(ctx context.Context, policyIds []uuid.UUID) ([]GetPluralRolesOnPolicyRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRolesOnPolicy, policyIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralRolesOnPolicyRow{}
+	for rows.Next() {
+		var i GetPluralRolesOnPolicyRow
+		if err := rows.Scan(
+			&i.RoleAssociation.MRoleAssociationsPkey,
+			&i.RoleAssociation.RoleID,
+			&i.RoleAssociation.PolicyID,
+			&i.Role.MRolesPkey,
+			&i.Role.RoleID,
+			&i.Role.Name,
+			&i.Role.Description,
+			&i.Role.CreatedAt,
+			&i.Role.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralRolesOnPolicyUseNumberedPaginate = `-- name: GetPluralRolesOnPolicyUseNumberedPaginate :many
 SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_role_associations
 LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE
@@ -200,26 +288,26 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralRolesOnPolicyParams struct {
+type GetPluralRolesOnPolicyUseNumberedPaginateParams struct {
 	Limit     int32       `json:"limit"`
 	Offset    int32       `json:"offset"`
 	PolicyIds []uuid.UUID `json:"policy_ids"`
 }
 
-type GetPluralRolesOnPolicyRow struct {
+type GetPluralRolesOnPolicyUseNumberedPaginateRow struct {
 	RoleAssociation RoleAssociation `json:"role_association"`
 	Role            Role            `json:"role"`
 }
 
-func (q *Queries) GetPluralRolesOnPolicy(ctx context.Context, arg GetPluralRolesOnPolicyParams) ([]GetPluralRolesOnPolicyRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRolesOnPolicy, arg.Limit, arg.Offset, arg.PolicyIds)
+func (q *Queries) GetPluralRolesOnPolicyUseNumberedPaginate(ctx context.Context, arg GetPluralRolesOnPolicyUseNumberedPaginateParams) ([]GetPluralRolesOnPolicyUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRolesOnPolicyUseNumberedPaginate, arg.Limit, arg.Offset, arg.PolicyIds)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluralRolesOnPolicyRow{}
+	items := []GetPluralRolesOnPolicyUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetPluralRolesOnPolicyRow
+		var i GetPluralRolesOnPolicyUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.RoleAssociation.MRoleAssociationsPkey,
 			&i.RoleAssociation.RoleID,

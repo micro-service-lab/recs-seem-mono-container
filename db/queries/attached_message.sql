@@ -45,6 +45,12 @@ LIMIT $2;
 SELECT t_attachable_items.* FROM t_attached_messages
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
+	t_attached_messages_pkey ASC;
+
+-- name: GetPluralFilesOnMessageUseNumberedPaginate :many
+SELECT t_attachable_items.* FROM t_attached_messages
+WHERE message_id = ANY(@message_ids::uuid[])
+ORDER BY
 	t_attached_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -91,8 +97,17 @@ WHERE message_id IN (
 	SELECT message_id FROM t_messages WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
 )
 ORDER BY
+	t_attached_messages_pkey ASC;
+
+-- name: GetPluralFilesOnChatRoomUseNumberedPaginate :many
+SELECT t_attachable_items.* FROM t_attached_messages
+WHERE message_id IN (
+	SELECT message_id FROM t_messages WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
+)
+ORDER BY
 	t_attached_messages_pkey ASC
 LIMIT $1 OFFSET $2;
+
 
 -- name: CountFilesOnChatRoom :one
 SELECT COUNT(*) FROM t_attached_messages

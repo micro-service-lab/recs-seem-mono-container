@@ -94,6 +94,12 @@ LIMIT $1;
 SELECT * FROM m_chat_rooms
 WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
 ORDER BY
+	m_chat_rooms_pkey ASC;
+
+-- name: GetPluralChatRoomsUseNumberedPaginate :many
+SELECT * FROM m_chat_rooms
+WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
+ORDER BY
 	m_chat_rooms_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -150,6 +156,13 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralChatRoomsWithOwner :many
+SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members) FROM m_chat_rooms
+LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
+WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
+ORDER BY
+	m_chat_rooms_pkey ASC;
+
+-- name: GetPluralChatRoomsWithOwnerUseNumberedPaginate :many
 SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members) FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE chat_room_id = ANY(@chat_room_ids::uuid[])

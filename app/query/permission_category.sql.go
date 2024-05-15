@@ -284,20 +284,53 @@ func (q *Queries) GetPermissionCategoriesUseNumberedPaginate(ctx context.Context
 
 const getPluralPermissionCategories = `-- name: GetPluralPermissionCategories :many
 SELECT m_permission_categories_pkey, permission_category_id, name, description, key FROM m_permission_categories
+WHERE permission_category_id = ANY($1::uuid[])
+ORDER BY
+	m_permission_categories_pkey ASC
+`
+
+func (q *Queries) GetPluralPermissionCategories(ctx context.Context, permissionCategoryIds []uuid.UUID) ([]PermissionCategory, error) {
+	rows, err := q.db.Query(ctx, getPluralPermissionCategories, permissionCategoryIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []PermissionCategory{}
+	for rows.Next() {
+		var i PermissionCategory
+		if err := rows.Scan(
+			&i.MPermissionCategoriesPkey,
+			&i.PermissionCategoryID,
+			&i.Name,
+			&i.Description,
+			&i.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralPermissionCategoriesUseNumberedPaginate = `-- name: GetPluralPermissionCategoriesUseNumberedPaginate :many
+SELECT m_permission_categories_pkey, permission_category_id, name, description, key FROM m_permission_categories
 WHERE permission_category_id = ANY($3::uuid[])
 ORDER BY
 	m_permission_categories_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralPermissionCategoriesParams struct {
+type GetPluralPermissionCategoriesUseNumberedPaginateParams struct {
 	Limit                 int32       `json:"limit"`
 	Offset                int32       `json:"offset"`
 	PermissionCategoryIds []uuid.UUID `json:"permission_category_ids"`
 }
 
-func (q *Queries) GetPluralPermissionCategories(ctx context.Context, arg GetPluralPermissionCategoriesParams) ([]PermissionCategory, error) {
-	rows, err := q.db.Query(ctx, getPluralPermissionCategories, arg.Limit, arg.Offset, arg.PermissionCategoryIds)
+func (q *Queries) GetPluralPermissionCategoriesUseNumberedPaginate(ctx context.Context, arg GetPluralPermissionCategoriesUseNumberedPaginateParams) ([]PermissionCategory, error) {
+	rows, err := q.db.Query(ctx, getPluralPermissionCategoriesUseNumberedPaginate, arg.Limit, arg.Offset, arg.PermissionCategoryIds)
 	if err != nil {
 		return nil, err
 	}

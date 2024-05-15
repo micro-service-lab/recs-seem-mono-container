@@ -111,7 +111,40 @@ func (q *Queries) FindWorkPositionByID(ctx context.Context, workPositionID uuid.
 	return i, err
 }
 
-const getPluckWorkPositions = `-- name: GetPluckWorkPositions :many
+const getPluralWorkPositions = `-- name: GetPluralWorkPositions :many
+SELECT work_position_id, name FROM m_work_positions
+WHERE
+	work_position_id = ANY($1::uuid[])
+ORDER BY
+	m_work_positions_pkey ASC
+`
+
+type GetPluralWorkPositionsRow struct {
+	WorkPositionID uuid.UUID `json:"work_position_id"`
+	Name           string    `json:"name"`
+}
+
+func (q *Queries) GetPluralWorkPositions(ctx context.Context, workPositionIds []uuid.UUID) ([]GetPluralWorkPositionsRow, error) {
+	rows, err := q.db.Query(ctx, getPluralWorkPositions, workPositionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralWorkPositionsRow{}
+	for rows.Next() {
+		var i GetPluralWorkPositionsRow
+		if err := rows.Scan(&i.WorkPositionID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralWorkPositionsUseNumberedPaginate = `-- name: GetPluralWorkPositionsUseNumberedPaginate :many
 SELECT work_position_id, name FROM m_work_positions
 WHERE
 	work_position_id = ANY($3::uuid[])
@@ -120,26 +153,26 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetPluckWorkPositionsParams struct {
+type GetPluralWorkPositionsUseNumberedPaginateParams struct {
 	Limit           int32       `json:"limit"`
 	Offset          int32       `json:"offset"`
 	WorkPositionIds []uuid.UUID `json:"work_position_ids"`
 }
 
-type GetPluckWorkPositionsRow struct {
+type GetPluralWorkPositionsUseNumberedPaginateRow struct {
 	WorkPositionID uuid.UUID `json:"work_position_id"`
 	Name           string    `json:"name"`
 }
 
-func (q *Queries) GetPluckWorkPositions(ctx context.Context, arg GetPluckWorkPositionsParams) ([]GetPluckWorkPositionsRow, error) {
-	rows, err := q.db.Query(ctx, getPluckWorkPositions, arg.Limit, arg.Offset, arg.WorkPositionIds)
+func (q *Queries) GetPluralWorkPositionsUseNumberedPaginate(ctx context.Context, arg GetPluralWorkPositionsUseNumberedPaginateParams) ([]GetPluralWorkPositionsUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralWorkPositionsUseNumberedPaginate, arg.Limit, arg.Offset, arg.WorkPositionIds)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluckWorkPositionsRow{}
+	items := []GetPluralWorkPositionsUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetPluckWorkPositionsRow
+		var i GetPluralWorkPositionsUseNumberedPaginateRow
 		if err := rows.Scan(&i.WorkPositionID, &i.Name); err != nil {
 			return nil, err
 		}

@@ -42,6 +42,12 @@ LIMIT $1;
 SELECT * FROM t_late_arrivals
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
+	t_late_arrivals_pkey ASC;
+
+-- name: GetPluralLateArrivalsUseNumberedPaginate :many
+SELECT * FROM t_late_arrivals
+WHERE attendance_id = ANY(@attendance_ids::uuid[])
+ORDER BY
 	t_late_arrivals_pkey ASC
 LIMIT $1 OFFSET $2;
 

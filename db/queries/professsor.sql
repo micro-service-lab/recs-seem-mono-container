@@ -47,6 +47,12 @@ LIMIT $1;
 SELECT * FROM m_professors
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
+	m_professors_pkey ASC;
+
+-- name: GetPluralProfessorsUseNumberedPaginate :many
+SELECT * FROM m_professors
+WHERE member_id = ANY(@member_ids::uuid[])
+ORDER BY
 	m_professors_pkey ASC
 LIMIT $1 OFFSET $2;
 

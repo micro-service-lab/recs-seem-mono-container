@@ -157,20 +157,47 @@ func (q *Queries) GetAbsencesUseNumberedPaginate(ctx context.Context, arg GetAbs
 
 const getPluralAbsences = `-- name: GetPluralAbsences :many
 SELECT t_absences_pkey, absence_id, attendance_id FROM t_absences
+WHERE absence_id = ANY($1::uuid[])
+ORDER BY
+	t_absences_pkey ASC
+`
+
+func (q *Queries) GetPluralAbsences(ctx context.Context, absenceIds []uuid.UUID) ([]Absence, error) {
+	rows, err := q.db.Query(ctx, getPluralAbsences, absenceIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Absence{}
+	for rows.Next() {
+		var i Absence
+		if err := rows.Scan(&i.TAbsencesPkey, &i.AbsenceID, &i.AttendanceID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAbsencesUseNumberedPaginate = `-- name: GetPluralAbsencesUseNumberedPaginate :many
+SELECT t_absences_pkey, absence_id, attendance_id FROM t_absences
 WHERE absence_id = ANY($3::uuid[])
 ORDER BY
 	t_absences_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralAbsencesParams struct {
+type GetPluralAbsencesUseNumberedPaginateParams struct {
 	Limit      int32       `json:"limit"`
 	Offset     int32       `json:"offset"`
 	AbsenceIds []uuid.UUID `json:"absence_ids"`
 }
 
-func (q *Queries) GetPluralAbsences(ctx context.Context, arg GetPluralAbsencesParams) ([]Absence, error) {
-	rows, err := q.db.Query(ctx, getPluralAbsences, arg.Limit, arg.Offset, arg.AbsenceIds)
+func (q *Queries) GetPluralAbsencesUseNumberedPaginate(ctx context.Context, arg GetPluralAbsencesUseNumberedPaginateParams) ([]Absence, error) {
+	rows, err := q.db.Query(ctx, getPluralAbsencesUseNumberedPaginate, arg.Limit, arg.Offset, arg.AbsenceIds)
 	if err != nil {
 		return nil, err
 	}

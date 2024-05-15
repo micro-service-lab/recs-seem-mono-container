@@ -100,20 +100,55 @@ func (q *Queries) FindRoleByID(ctx context.Context, roleID uuid.UUID) (Role, err
 const getPluralRoles = `-- name: GetPluralRoles :many
 SELECT m_roles_pkey, role_id, name, description, created_at, updated_at FROM m_roles
 WHERE
+	role_id = ANY($1::uuid[])
+ORDER BY
+	m_roles_pkey ASC
+`
+
+func (q *Queries) GetPluralRoles(ctx context.Context, roleIds []uuid.UUID) ([]Role, error) {
+	rows, err := q.db.Query(ctx, getPluralRoles, roleIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Role{}
+	for rows.Next() {
+		var i Role
+		if err := rows.Scan(
+			&i.MRolesPkey,
+			&i.RoleID,
+			&i.Name,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralRolesUseNumberedPaginate = `-- name: GetPluralRolesUseNumberedPaginate :many
+SELECT m_roles_pkey, role_id, name, description, created_at, updated_at FROM m_roles
+WHERE
 	role_id = ANY($3::uuid[])
 ORDER BY
 	m_roles_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralRolesParams struct {
+type GetPluralRolesUseNumberedPaginateParams struct {
 	Limit   int32       `json:"limit"`
 	Offset  int32       `json:"offset"`
 	RoleIds []uuid.UUID `json:"role_ids"`
 }
 
-func (q *Queries) GetPluralRoles(ctx context.Context, arg GetPluralRolesParams) ([]Role, error) {
-	rows, err := q.db.Query(ctx, getPluralRoles, arg.Limit, arg.Offset, arg.RoleIds)
+func (q *Queries) GetPluralRolesUseNumberedPaginate(ctx context.Context, arg GetPluralRolesUseNumberedPaginateParams) ([]Role, error) {
+	rows, err := q.db.Query(ctx, getPluralRolesUseNumberedPaginate, arg.Limit, arg.Offset, arg.RoleIds)
 	if err != nil {
 		return nil, err
 	}

@@ -1671,20 +1671,54 @@ func (q *Queries) GetMessagesWithSenderUseNumberedPaginate(ctx context.Context, 
 }
 
 const getPluralMessages = `-- name: GetPluralMessages :many
+SELECT t_messages_pkey, message_id, chat_room_id, sender_id, body, posted_at, last_edited_at FROM t_messages WHERE message_id = ANY($1::uuid[])
+ORDER BY
+	t_messages_pkey ASC
+`
+
+func (q *Queries) GetPluralMessages(ctx context.Context, messageIds []uuid.UUID) ([]Message, error) {
+	rows, err := q.db.Query(ctx, getPluralMessages, messageIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Message{}
+	for rows.Next() {
+		var i Message
+		if err := rows.Scan(
+			&i.TMessagesPkey,
+			&i.MessageID,
+			&i.ChatRoomID,
+			&i.SenderID,
+			&i.Body,
+			&i.PostedAt,
+			&i.LastEditedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMessagesUseNumberedPaginate = `-- name: GetPluralMessagesUseNumberedPaginate :many
 SELECT t_messages_pkey, message_id, chat_room_id, sender_id, body, posted_at, last_edited_at FROM t_messages WHERE message_id = ANY($3::uuid[])
 ORDER BY
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralMessagesParams struct {
+type GetPluralMessagesUseNumberedPaginateParams struct {
 	Limit      int32       `json:"limit"`
 	Offset     int32       `json:"offset"`
 	MessageIds []uuid.UUID `json:"message_ids"`
 }
 
-func (q *Queries) GetPluralMessages(ctx context.Context, arg GetPluralMessagesParams) ([]Message, error) {
-	rows, err := q.db.Query(ctx, getPluralMessages, arg.Limit, arg.Offset, arg.MessageIds)
+func (q *Queries) GetPluralMessagesUseNumberedPaginate(ctx context.Context, arg GetPluralMessagesUseNumberedPaginateParams) ([]Message, error) {
+	rows, err := q.db.Query(ctx, getPluralMessagesUseNumberedPaginate, arg.Limit, arg.Offset, arg.MessageIds)
 	if err != nil {
 		return nil, err
 	}
@@ -1715,17 +1749,10 @@ const getPluralMessagesWithAll = `-- name: GetPluralMessagesWithAll :many
 SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
-WHERE message_id = ANY($3::uuid[])
+WHERE message_id = ANY($1::uuid[])
 ORDER BY
 	t_messages_pkey ASC
-LIMIT $1 OFFSET $2
 `
-
-type GetPluralMessagesWithAllParams struct {
-	Limit      int32       `json:"limit"`
-	Offset     int32       `json:"offset"`
-	MessageIds []uuid.UUID `json:"message_ids"`
-}
 
 type GetPluralMessagesWithAllRow struct {
 	Message  Message  `json:"message"`
@@ -1733,8 +1760,8 @@ type GetPluralMessagesWithAllRow struct {
 	Member   Member   `json:"member"`
 }
 
-func (q *Queries) GetPluralMessagesWithAll(ctx context.Context, arg GetPluralMessagesWithAllParams) ([]GetPluralMessagesWithAllRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMessagesWithAll, arg.Limit, arg.Offset, arg.MessageIds)
+func (q *Queries) GetPluralMessagesWithAll(ctx context.Context, messageIds []uuid.UUID) ([]GetPluralMessagesWithAllRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMessagesWithAll, messageIds)
 	if err != nil {
 		return nil, err
 	}
@@ -1784,28 +1811,94 @@ func (q *Queries) GetPluralMessagesWithAll(ctx context.Context, arg GetPluralMes
 	return items, nil
 }
 
-const getPluralMessagesWithChatRoom = `-- name: GetPluralMessagesWithChatRoom :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+const getPluralMessagesWithAllUseNumberedPaginate = `-- name: GetPluralMessagesWithAllUseNumberedPaginate :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE message_id = ANY($3::uuid[])
 ORDER BY
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralMessagesWithChatRoomParams struct {
+type GetPluralMessagesWithAllUseNumberedPaginateParams struct {
 	Limit      int32       `json:"limit"`
 	Offset     int32       `json:"offset"`
 	MessageIds []uuid.UUID `json:"message_ids"`
 }
+
+type GetPluralMessagesWithAllUseNumberedPaginateRow struct {
+	Message  Message  `json:"message"`
+	ChatRoom ChatRoom `json:"chat_room"`
+	Member   Member   `json:"member"`
+}
+
+func (q *Queries) GetPluralMessagesWithAllUseNumberedPaginate(ctx context.Context, arg GetPluralMessagesWithAllUseNumberedPaginateParams) ([]GetPluralMessagesWithAllUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMessagesWithAllUseNumberedPaginate, arg.Limit, arg.Offset, arg.MessageIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralMessagesWithAllUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralMessagesWithAllUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Message.TMessagesPkey,
+			&i.Message.MessageID,
+			&i.Message.ChatRoomID,
+			&i.Message.SenderID,
+			&i.Message.Body,
+			&i.Message.PostedAt,
+			&i.Message.LastEditedAt,
+			&i.ChatRoom.MChatRoomsPkey,
+			&i.ChatRoom.ChatRoomID,
+			&i.ChatRoom.Name,
+			&i.ChatRoom.IsPrivate,
+			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.FromOrganization,
+			&i.ChatRoom.CreatedAt,
+			&i.ChatRoom.UpdatedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMessagesWithChatRoom = `-- name: GetPluralMessagesWithChatRoom :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
+WHERE message_id = ANY($1::uuid[])
+ORDER BY
+	t_messages_pkey ASC
+`
 
 type GetPluralMessagesWithChatRoomRow struct {
 	Message  Message  `json:"message"`
 	ChatRoom ChatRoom `json:"chat_room"`
 }
 
-func (q *Queries) GetPluralMessagesWithChatRoom(ctx context.Context, arg GetPluralMessagesWithChatRoomParams) ([]GetPluralMessagesWithChatRoomRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMessagesWithChatRoom, arg.Limit, arg.Offset, arg.MessageIds)
+func (q *Queries) GetPluralMessagesWithChatRoom(ctx context.Context, messageIds []uuid.UUID) ([]GetPluralMessagesWithChatRoomRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMessagesWithChatRoom, messageIds)
 	if err != nil {
 		return nil, err
 	}
@@ -1841,7 +1934,119 @@ func (q *Queries) GetPluralMessagesWithChatRoom(ctx context.Context, arg GetPlur
 	return items, nil
 }
 
+const getPluralMessagesWithChatRoomUseNumberedPaginate = `-- name: GetPluralMessagesWithChatRoomUseNumberedPaginate :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM t_messages
+LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
+WHERE message_id = ANY($3::uuid[])
+ORDER BY
+	t_messages_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralMessagesWithChatRoomUseNumberedPaginateParams struct {
+	Limit      int32       `json:"limit"`
+	Offset     int32       `json:"offset"`
+	MessageIds []uuid.UUID `json:"message_ids"`
+}
+
+type GetPluralMessagesWithChatRoomUseNumberedPaginateRow struct {
+	Message  Message  `json:"message"`
+	ChatRoom ChatRoom `json:"chat_room"`
+}
+
+func (q *Queries) GetPluralMessagesWithChatRoomUseNumberedPaginate(ctx context.Context, arg GetPluralMessagesWithChatRoomUseNumberedPaginateParams) ([]GetPluralMessagesWithChatRoomUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMessagesWithChatRoomUseNumberedPaginate, arg.Limit, arg.Offset, arg.MessageIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralMessagesWithChatRoomUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralMessagesWithChatRoomUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Message.TMessagesPkey,
+			&i.Message.MessageID,
+			&i.Message.ChatRoomID,
+			&i.Message.SenderID,
+			&i.Message.Body,
+			&i.Message.PostedAt,
+			&i.Message.LastEditedAt,
+			&i.ChatRoom.MChatRoomsPkey,
+			&i.ChatRoom.ChatRoomID,
+			&i.ChatRoom.Name,
+			&i.ChatRoom.IsPrivate,
+			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.FromOrganization,
+			&i.ChatRoom.CreatedAt,
+			&i.ChatRoom.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPluralMessagesWithSender = `-- name: GetPluralMessagesWithSender :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
+LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
+WHERE message_id = ANY($1::uuid[])
+ORDER BY
+	t_messages_pkey ASC
+`
+
+type GetPluralMessagesWithSenderRow struct {
+	Message Message `json:"message"`
+	Member  Member  `json:"member"`
+}
+
+func (q *Queries) GetPluralMessagesWithSender(ctx context.Context, messageIds []uuid.UUID) ([]GetPluralMessagesWithSenderRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMessagesWithSender, messageIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralMessagesWithSenderRow{}
+	for rows.Next() {
+		var i GetPluralMessagesWithSenderRow
+		if err := rows.Scan(
+			&i.Message.TMessagesPkey,
+			&i.Message.MessageID,
+			&i.Message.ChatRoomID,
+			&i.Message.SenderID,
+			&i.Message.Body,
+			&i.Message.PostedAt,
+			&i.Message.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMessagesWithSenderUseNumberedPaginate = `-- name: GetPluralMessagesWithSenderUseNumberedPaginate :many
 SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_messages
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE message_id = ANY($3::uuid[])
@@ -1850,26 +2055,26 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralMessagesWithSenderParams struct {
+type GetPluralMessagesWithSenderUseNumberedPaginateParams struct {
 	Limit      int32       `json:"limit"`
 	Offset     int32       `json:"offset"`
 	MessageIds []uuid.UUID `json:"message_ids"`
 }
 
-type GetPluralMessagesWithSenderRow struct {
+type GetPluralMessagesWithSenderUseNumberedPaginateRow struct {
 	Message Message `json:"message"`
 	Member  Member  `json:"member"`
 }
 
-func (q *Queries) GetPluralMessagesWithSender(ctx context.Context, arg GetPluralMessagesWithSenderParams) ([]GetPluralMessagesWithSenderRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMessagesWithSender, arg.Limit, arg.Offset, arg.MessageIds)
+func (q *Queries) GetPluralMessagesWithSenderUseNumberedPaginate(ctx context.Context, arg GetPluralMessagesWithSenderUseNumberedPaginateParams) ([]GetPluralMessagesWithSenderUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMessagesWithSenderUseNumberedPaginate, arg.Limit, arg.Offset, arg.MessageIds)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluralMessagesWithSenderRow{}
+	items := []GetPluralMessagesWithSenderUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetPluralMessagesWithSenderRow
+		var i GetPluralMessagesWithSenderUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.Message.TMessagesPkey,
 			&i.Message.MessageID,

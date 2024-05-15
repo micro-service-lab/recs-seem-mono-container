@@ -767,12 +767,17 @@ func (a *PgAdapter) GetPermissionsWithCategoryWithSd(
 func getPluralPermissions(
 	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Permission], error) {
-	p := query.GetPluralPermissionsParams{
-		PermissionIds: ids,
-		Offset:        int32(np.Offset.Int64),
-		Limit:         int32(np.Limit.Int64),
+	var e []query.Permission
+	var err error
+	if !np.Valid {
+		e, err = qtx.GetPluralPermissions(ctx, ids)
+	} else {
+		e, err = qtx.GetPluralPermissionsUseNumberedPaginate(ctx, query.GetPluralPermissionsUseNumberedPaginateParams{
+			PermissionIds: ids,
+			Offset:        int32(np.Offset.Int64),
+			Limit:         int32(np.Limit.Int64),
+		})
 	}
-	e, err := qtx.GetPluralPermissions(ctx, p)
 	if err != nil {
 		return store.ListResult[entity.Permission]{},
 			fmt.Errorf("failed to get plural permission: %w", err)

@@ -118,20 +118,53 @@ func (q *Queries) FindPolicyCategoryByKey(ctx context.Context, key string) (Poli
 
 const getPluralPolicyCategories = `-- name: GetPluralPolicyCategories :many
 SELECT m_policy_categories_pkey, policy_category_id, name, description, key FROM m_policy_categories
+WHERE policy_category_id = ANY($1::uuid[])
+ORDER BY
+	m_policy_categories_pkey ASC
+`
+
+func (q *Queries) GetPluralPolicyCategories(ctx context.Context, policyCategoryIds []uuid.UUID) ([]PolicyCategory, error) {
+	rows, err := q.db.Query(ctx, getPluralPolicyCategories, policyCategoryIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []PolicyCategory{}
+	for rows.Next() {
+		var i PolicyCategory
+		if err := rows.Scan(
+			&i.MPolicyCategoriesPkey,
+			&i.PolicyCategoryID,
+			&i.Name,
+			&i.Description,
+			&i.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralPolicyCategoriesUseNumberedPaginate = `-- name: GetPluralPolicyCategoriesUseNumberedPaginate :many
+SELECT m_policy_categories_pkey, policy_category_id, name, description, key FROM m_policy_categories
 WHERE policy_category_id = ANY($3::uuid[])
 ORDER BY
 	m_policy_categories_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralPolicyCategoriesParams struct {
+type GetPluralPolicyCategoriesUseNumberedPaginateParams struct {
 	Limit             int32       `json:"limit"`
 	Offset            int32       `json:"offset"`
 	PolicyCategoryIds []uuid.UUID `json:"policy_category_ids"`
 }
 
-func (q *Queries) GetPluralPolicyCategories(ctx context.Context, arg GetPluralPolicyCategoriesParams) ([]PolicyCategory, error) {
-	rows, err := q.db.Query(ctx, getPluralPolicyCategories, arg.Limit, arg.Offset, arg.PolicyCategoryIds)
+func (q *Queries) GetPluralPolicyCategoriesUseNumberedPaginate(ctx context.Context, arg GetPluralPolicyCategoriesUseNumberedPaginateParams) ([]PolicyCategory, error) {
+	rows, err := q.db.Query(ctx, getPluralPolicyCategoriesUseNumberedPaginate, arg.Limit, arg.Offset, arg.PolicyCategoryIds)
 	if err != nil {
 		return nil, err
 	}

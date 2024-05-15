@@ -113,6 +113,11 @@ LIMIT $1;
 -- name: GetPluralLabIOHistories :many
 SELECT * FROM t_lab_io_histories WHERE lab_io_history_id = ANY(@lab_io_history_ids::uuid[])
 ORDER BY
+	t_lab_io_histories_pkey ASC;
+
+-- name: GetPluralLabIOHistoriesUseNumberedPaginate :many
+SELECT * FROM t_lab_io_histories WHERE lab_io_history_id = ANY(@lab_io_history_ids::uuid[])
+ORDER BY
 	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -203,6 +208,13 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralLabIOHistoriesWithMember :many
+SELECT sqlc.embed(t_lab_io_histories), sqlc.embed(m_members) FROM t_lab_io_histories
+LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
+WHERE lab_io_history_id = ANY(@lab_io_history_ids::uuid[])
+ORDER BY
+	t_lab_io_histories_pkey ASC;
+
+-- name: GetPluralLabIOHistoriesWithMemberUseNumberedPaginate :many
 SELECT sqlc.embed(t_lab_io_histories), sqlc.embed(m_members) FROM t_lab_io_histories
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE lab_io_history_id = ANY(@lab_io_history_ids::uuid[])

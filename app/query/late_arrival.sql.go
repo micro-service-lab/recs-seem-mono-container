@@ -193,20 +193,52 @@ func (q *Queries) GetLateArrivalsUseNumberedPaginate(ctx context.Context, arg Ge
 
 const getPluralLateArrivals = `-- name: GetPluralLateArrivals :many
 SELECT t_late_arrivals_pkey, late_arrival_id, attendance_id, arrive_time FROM t_late_arrivals
+WHERE attendance_id = ANY($1::uuid[])
+ORDER BY
+	t_late_arrivals_pkey ASC
+`
+
+func (q *Queries) GetPluralLateArrivals(ctx context.Context, attendanceIds []uuid.UUID) ([]LateArrival, error) {
+	rows, err := q.db.Query(ctx, getPluralLateArrivals, attendanceIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []LateArrival{}
+	for rows.Next() {
+		var i LateArrival
+		if err := rows.Scan(
+			&i.TLateArrivalsPkey,
+			&i.LateArrivalID,
+			&i.AttendanceID,
+			&i.ArriveTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralLateArrivalsUseNumberedPaginate = `-- name: GetPluralLateArrivalsUseNumberedPaginate :many
+SELECT t_late_arrivals_pkey, late_arrival_id, attendance_id, arrive_time FROM t_late_arrivals
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
 	t_late_arrivals_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralLateArrivalsParams struct {
+type GetPluralLateArrivalsUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	AttendanceIds []uuid.UUID `json:"attendance_ids"`
 }
 
-func (q *Queries) GetPluralLateArrivals(ctx context.Context, arg GetPluralLateArrivalsParams) ([]LateArrival, error) {
-	rows, err := q.db.Query(ctx, getPluralLateArrivals, arg.Limit, arg.Offset, arg.AttendanceIds)
+func (q *Queries) GetPluralLateArrivalsUseNumberedPaginate(ctx context.Context, arg GetPluralLateArrivalsUseNumberedPaginateParams) ([]LateArrival, error) {
+	rows, err := q.db.Query(ctx, getPluralLateArrivalsUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendanceIds)
 	if err != nil {
 		return nil, err
 	}

@@ -121,6 +121,11 @@ LIMIT $1;
 -- name: GetPluralOrganizations :many
 SELECT * FROM m_organizations WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
+	m_organizations_pkey ASC;
+
+-- name: GetPluralOrganizationsUseNumberedPaginate :many
+SELECT * FROM m_organizations WHERE organization_id = ANY(@organization_ids::uuid[])
+ORDER BY
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -207,6 +212,14 @@ LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
+	m_organizations_pkey ASC;
+
+-- name: GetPluralOrganizationsWithDetailUseNumberedPaginate :many
+SELECT sqlc.embed(m_organizations), sqlc.embed(m_groups), sqlc.embed(m_grades) FROM m_organizations
+LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
+LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
+WHERE organization_id = ANY(@organization_ids::uuid[])
+ORDER BY
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -285,6 +298,13 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralOrganizationsWithChatRoom :many
+SELECT m_organizations.*, sqlc.embed(m_chat_rooms) FROM m_organizations
+LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+WHERE organization_id = ANY(@organization_ids::uuid[])
+ORDER BY
+	m_organizations_pkey ASC;
+
+-- name: GetPluralOrganizationsWithChatRoomUseNumberedPaginate :many
 SELECT m_organizations.*, sqlc.embed(m_chat_rooms) FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
@@ -373,6 +393,15 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralOrganizationsWithAll :many
+SELECT sqlc.embed(m_organizations), sqlc.embed(m_groups), sqlc.embed(m_grades), sqlc.embed(m_chat_rooms) FROM m_organizations
+LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
+LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
+LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+WHERE organization_id = ANY(@organization_ids::uuid[])
+ORDER BY
+	m_organizations_pkey ASC;
+
+-- name: GetPluralOrganizationsWithAllUseNumberedPaginate :many
 SELECT sqlc.embed(m_organizations), sqlc.embed(m_groups), sqlc.embed(m_grades), sqlc.embed(m_chat_rooms) FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id

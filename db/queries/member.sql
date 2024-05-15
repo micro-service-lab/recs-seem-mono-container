@@ -153,6 +153,11 @@ LIMIT $1;
 -- name: GetPluralMembers :many
 SELECT * FROM m_members WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
+	m_members_pkey ASC;
+
+-- name: GetPluralMembersUseNumberedPaginate :many
+SELECT * FROM m_members WHERE member_id = ANY(@member_ids::uuid[])
+ORDER BY
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -231,6 +236,13 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralMembersWithAttendStatus :many
+SELECT sqlc.embed(m_members), sqlc.embed(m_attend_statuses) FROM m_members
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+WHERE member_id = ANY(@member_ids::uuid[])
+ORDER BY
+	m_members_pkey ASC;
+
+-- name: GetPluralMembersWithAttendStatusUseNumberedPaginate :many
 SELECT sqlc.embed(m_members), sqlc.embed(m_attend_statuses) FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE member_id = ANY(@member_ids::uuid[])
@@ -316,6 +328,14 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralMembersWithGrade :many
+SELECT sqlc.embed(m_members), sqlc.embed(m_grades) FROM m_members
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+WHERE member_id = ANY(@member_ids::uuid[])
+ORDER BY
+	m_members_pkey ASC;
+
+-- name: GetPluralMembersWithGradeUseNumberedPaginate :many
 SELECT sqlc.embed(m_members), sqlc.embed(m_grades) FROM m_members
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
@@ -407,6 +427,14 @@ LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
+	m_members_pkey ASC;
+
+-- name: GetPluralMembersWithGroupUseNumberedPaginate :many
+SELECT sqlc.embed(m_members), sqlc.embed(m_groups) FROM m_members
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+WHERE member_id = ANY(@member_ids::uuid[])
+ORDER BY
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -489,6 +517,13 @@ SELECT sqlc.embed(m_members), sqlc.embed(m_organizations) FROM m_members
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
+	m_members_pkey ASC;
+
+-- name: GetPluralMembersWithPersonalOrganizationUseNumberedPaginate :many
+SELECT sqlc.embed(m_members), sqlc.embed(m_organizations) FROM m_members
+LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
+WHERE member_id = ANY(@member_ids::uuid[])
+ORDER BY
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -567,6 +602,13 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralMembersWithRole :many
+SELECT sqlc.embed(m_members), sqlc.embed(m_roles) FROM m_members
+LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
+WHERE member_id = ANY(@member_ids::uuid[])
+ORDER BY
+	m_members_pkey ASC;
+
+-- name: GetPluralMembersWithRoleUseNumberedPaginate :many
 SELECT sqlc.embed(m_members), sqlc.embed(m_roles) FROM m_members
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE member_id = ANY(@member_ids::uuid[])
@@ -661,6 +703,17 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralMembersWithAll :many
+SELECT sqlc.embed(m_members), sqlc.embed(m_attend_statuses), sqlc.embed(m_grades), sqlc.embed(m_groups), sqlc.embed(m_organizations), sqlc.embed(m_roles) FROM m_members
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
+LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
+WHERE member_id = ANY(@member_ids::uuid[])
+ORDER BY
+	m_members_pkey ASC;
+
+-- name: GetPluralMembersWithAllUseNumberedPaginate :many
 SELECT sqlc.embed(m_members), sqlc.embed(m_attend_statuses), sqlc.embed(m_grades), sqlc.embed(m_groups), sqlc.embed(m_organizations), sqlc.embed(m_roles) FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id

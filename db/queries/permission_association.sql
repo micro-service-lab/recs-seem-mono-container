@@ -83,6 +83,13 @@ SELECT sqlc.embed(m_permission_associations), sqlc.embed(m_work_positions) FROM 
 LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
 WHERE permission_id = ANY(@permission_ids::uuid[])
 ORDER BY
+	m_permission_associations_pkey ASC;
+
+-- name: GetPluralWorkPositionsOnPermissionUseNumberedPaginate :many
+SELECT sqlc.embed(m_permission_associations), sqlc.embed(m_work_positions) FROM m_permission_associations
+LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
+WHERE permission_id = ANY(@permission_ids::uuid[])
+ORDER BY
 	m_permission_associations_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -147,6 +154,13 @@ ORDER BY
 LIMIT $2;
 
 -- name: GetPluralPermissionsOnWorkPosition :many
+SELECT sqlc.embed(m_permission_associations), sqlc.embed(m_permissions) FROM m_permission_associations
+LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
+WHERE work_position_id = ANY(@work_position_ids::uuid[])
+ORDER BY
+	m_permission_associations_pkey ASC;
+
+-- name: GetPluralPermissionsOnWorkPositionUseNumberedPaginate :many
 SELECT sqlc.embed(m_permission_associations), sqlc.embed(m_permissions) FROM m_permission_associations
 LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
 WHERE work_position_id = ANY(@work_position_ids::uuid[])

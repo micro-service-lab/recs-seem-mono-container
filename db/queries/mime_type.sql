@@ -76,6 +76,12 @@ LIMIT $1;
 SELECT * FROM m_mime_types
 WHERE mime_type_id = ANY(@mime_type_ids::uuid[])
 ORDER BY
+	m_mime_types_pkey ASC;
+
+-- name: GetPluralMimeTypesUseNumberedPaginate :many
+SELECT * FROM m_mime_types
+WHERE mime_type_id = ANY(@mime_type_ids::uuid[])
+ORDER BY
 	m_mime_types_pkey ASC
 LIMIT $1 OFFSET $2;
 

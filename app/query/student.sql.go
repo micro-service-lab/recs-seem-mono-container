@@ -97,20 +97,47 @@ func (q *Queries) FindStudentByIDWithMember(ctx context.Context, studentID uuid.
 
 const getPluralStudents = `-- name: GetPluralStudents :many
 SELECT m_students_pkey, student_id, member_id FROM m_students
+WHERE member_id = ANY($1::uuid[])
+ORDER BY
+	m_students_pkey ASC
+`
+
+func (q *Queries) GetPluralStudents(ctx context.Context, memberIds []uuid.UUID) ([]Student, error) {
+	rows, err := q.db.Query(ctx, getPluralStudents, memberIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Student{}
+	for rows.Next() {
+		var i Student
+		if err := rows.Scan(&i.MStudentsPkey, &i.StudentID, &i.MemberID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralStudentsUseNumberedPaginate = `-- name: GetPluralStudentsUseNumberedPaginate :many
+SELECT m_students_pkey, student_id, member_id FROM m_students
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
 	m_students_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralStudentsParams struct {
+type GetPluralStudentsUseNumberedPaginateParams struct {
 	Limit     int32       `json:"limit"`
 	Offset    int32       `json:"offset"`
 	MemberIds []uuid.UUID `json:"member_ids"`
 }
 
-func (q *Queries) GetPluralStudents(ctx context.Context, arg GetPluralStudentsParams) ([]Student, error) {
-	rows, err := q.db.Query(ctx, getPluralStudents, arg.Limit, arg.Offset, arg.MemberIds)
+func (q *Queries) GetPluralStudentsUseNumberedPaginate(ctx context.Context, arg GetPluralStudentsUseNumberedPaginateParams) ([]Student, error) {
+	rows, err := q.db.Query(ctx, getPluralStudentsUseNumberedPaginate, arg.Limit, arg.Offset, arg.MemberIds)
 	if err != nil {
 		return nil, err
 	}

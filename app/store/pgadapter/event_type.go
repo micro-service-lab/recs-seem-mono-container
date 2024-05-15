@@ -430,12 +430,18 @@ func (a *PgAdapter) GetEventTypesWithSd(
 func getPluralEventTypes(
 	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.EventType], error) {
-	p := query.GetPluralEventTypesParams{
-		EventTypeIds: ids,
-		Offset:       int32(np.Offset.Int64),
-		Limit:        int32(np.Limit.Int64),
+	var e []query.EventType
+	var err error
+	if !np.Valid {
+		e, err = qtx.GetPluralEventTypes(ctx, ids)
+	} else {
+		p := query.GetPluralEventTypesUseNumberedPaginateParams{
+			EventTypeIds: ids,
+			Offset:       int32(np.Offset.Int64),
+			Limit:        int32(np.Limit.Int64),
+		}
+		e, err = qtx.GetPluralEventTypesUseNumberedPaginate(ctx, p)
 	}
-	e, err := qtx.GetPluralEventTypes(ctx, p)
 	if err != nil {
 		return store.ListResult[entity.EventType]{}, fmt.Errorf("failed to get plural event types: %w", err)
 	}

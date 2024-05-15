@@ -298,12 +298,18 @@ func getPluralAbsences(
 	ids []uuid.UUID,
 	np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Absence], error) {
-	p := query.GetPluralAbsencesParams{
-		AbsenceIds: ids,
-		Limit:      int32(np.Limit.Int64),
-		Offset:     int32(np.Offset.Int64),
+	var ql []query.Absence
+	var err error
+	if !np.Valid {
+		ql, err = qtx.GetPluralAbsences(ctx, ids)
+	} else {
+		p := query.GetPluralAbsencesUseNumberedPaginateParams{
+			AbsenceIds: ids,
+			Limit:      int32(np.Limit.Int64),
+			Offset:     int32(np.Offset.Int64),
+		}
+		ql, err = qtx.GetPluralAbsencesUseNumberedPaginate(ctx, p)
 	}
-	ql, err := qtx.GetPluralAbsences(ctx, p)
 	if err != nil {
 		return store.ListResult[entity.Absence]{}, fmt.Errorf("failed to get plural absences: %w", err)
 	}

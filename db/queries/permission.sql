@@ -91,6 +91,11 @@ LIMIT $1;
 -- name: GetPluralPermissions :many
 SELECT * FROM m_permissions WHERE permission_id = ANY(@permission_ids::uuid[])
 ORDER BY
+	m_permissions_pkey ASC;
+
+-- name: GetPluralPermissionsUseNumberedPaginate :many
+SELECT * FROM m_permissions WHERE permission_id = ANY(@permission_ids::uuid[])
+ORDER BY
 	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -151,6 +156,13 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralPermissionsWithCategory :many
+SELECT m_permissions.*,  m_permission_categories.name permission_category_name, m_permission_categories.key permission_category_key, m_permission_categories.description permission_category_description FROM m_permissions
+JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
+WHERE permission_id = ANY(@permission_ids::uuid[])
+ORDER BY
+	m_permissions_pkey ASC;
+
+-- name: GetPluralPermissionsWithCategoryUseNumberedPaginate :many
 SELECT m_permissions.*,  m_permission_categories.name permission_category_name, m_permission_categories.key permission_category_key, m_permission_categories.description permission_category_description FROM m_permissions
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE permission_id = ANY(@permission_ids::uuid[])

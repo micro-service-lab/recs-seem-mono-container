@@ -58,6 +58,12 @@ LIMIT $1;
 SELECT * FROM m_grades
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
+	m_grades_pkey ASC;
+
+-- name: GetPluralGradesUseNumberedPaginate :many
+SELECT * FROM m_grades
+WHERE organization_id = ANY(@organization_ids::uuid[])
+ORDER BY
 	m_grades_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -106,6 +112,13 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralGradesWithOrganization :many
+SELECT sqlc.embed(m_grades), sqlc.embed(m_organizations) FROM m_grades
+LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+WHERE organization_id = ANY(@organization_ids::uuid[])
+ORDER BY
+	m_grades_pkey ASC;
+
+-- name: GetPluralGradesWithOrganizationUseNumberedPaginate :many
 SELECT sqlc.embed(m_grades), sqlc.embed(m_organizations) FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE organization_id = ANY(@organization_ids::uuid[])

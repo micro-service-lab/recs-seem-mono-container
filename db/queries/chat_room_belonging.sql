@@ -82,6 +82,13 @@ SELECT m_chat_room_belongings.*, m_members.* FROM m_chat_room_belongings
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
 ORDER BY
+	m_chat_room_belongings_pkey ASC;
+
+-- name: GetPluralMembersOnChatRoomUseNumberedPaginate :many
+SELECT m_chat_room_belongings.*, m_members.* FROM m_chat_room_belongings
+LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
+WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
+ORDER BY
 	m_chat_room_belongings_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -188,6 +195,13 @@ ORDER BY
 LIMIT $2;
 
 -- name: GetPluralChatRoomsOnMember :many
+SELECT m_chat_room_belongings.*, sqlc.embed(m_chat_rooms) FROM m_chat_room_belongings
+LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
+WHERE member_id = ANY(@member_ids::uuid[])
+ORDER BY
+	m_chat_room_belongings_pkey ASC;
+
+-- name: GetPluralChatRoomsOnMemberUseNumberedPaginate :many
 SELECT m_chat_room_belongings.*, sqlc.embed(m_chat_rooms) FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = ANY(@member_ids::uuid[])

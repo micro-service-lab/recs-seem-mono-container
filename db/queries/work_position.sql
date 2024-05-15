@@ -69,7 +69,14 @@ ORDER BY
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_work_positions_pkey END DESC
 LIMIT $1;
 
--- name: GetPluckWorkPositions :many
+-- name: GetPluralWorkPositions :many
+SELECT work_position_id, name FROM m_work_positions
+WHERE
+	work_position_id = ANY(@work_position_ids::uuid[])
+ORDER BY
+	m_work_positions_pkey ASC;
+
+-- name: GetPluralWorkPositionsUseNumberedPaginate :many
 SELECT work_position_id, name FROM m_work_positions
 WHERE
 	work_position_id = ANY(@work_position_ids::uuid[])

@@ -144,6 +144,11 @@ LIMIT $1;
 -- name: GetPluralEvents :many
 SELECT * FROM t_events WHERE event_id = ANY(@event_ids::uuid[])
 ORDER BY
+	t_events_pkey ASC;
+
+-- name: GetPluralEventsUseNumberedPaginate :many
+SELECT * FROM t_events WHERE event_id = ANY(@event_ids::uuid[])
+ORDER BY
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -240,6 +245,13 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralEventsWithType :many
+SELECT sqlc.embed(t_events), sqlc.embed(m_event_types) FROM t_events
+LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
+WHERE event_id = ANY(@event_ids::uuid[])
+ORDER BY
+	t_events_pkey ASC;
+
+-- name: GetPluralEventsWithTypeUseNumberedPaginate :many
 SELECT sqlc.embed(t_events), sqlc.embed(m_event_types) FROM t_events
 LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
 WHERE event_id = ANY(@event_ids::uuid[])
@@ -344,6 +356,13 @@ SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
 LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
 WHERE event_id = ANY(@event_ids::uuid[])
 ORDER BY
+	t_events_pkey ASC;
+
+-- name: GetPluralEventsWithOrganizationUseNumberedPaginate :many
+SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
+LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
+WHERE event_id = ANY(@event_ids::uuid[])
+ORDER BY
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -440,6 +459,13 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralEventsWithSendOrganization :many
+SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
+LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
+WHERE event_id = ANY(@event_ids::uuid[])
+ORDER BY
+	t_events_pkey ASC;
+
+-- name: GetPluralEventsWithSendOrganizationUseNumberedPaginate :many
 SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
 LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
 WHERE event_id = ANY(@event_ids::uuid[])
@@ -544,6 +570,13 @@ SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
 LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
 WHERE event_id = ANY(@event_ids::uuid[])
 ORDER BY
+	t_events_pkey ASC;
+
+-- name: GetPluralEventsWithPostUserUseNumberedPaginate :many
+SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
+LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
+WHERE event_id = ANY(@event_ids::uuid[])
+ORDER BY
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -640,6 +673,13 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralEventsWithLastEditUser :many
+SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
+LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
+WHERE event_id = ANY(@event_ids::uuid[])
+ORDER BY
+	t_events_pkey ASC;
+
+-- name: GetPluralEventsWithLastEditUserUseNumberedPaginate :many
 SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
 LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
 WHERE event_id = ANY(@event_ids::uuid[])
@@ -752,6 +792,17 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralEventsWithAll :many
+SELECT sqlc.embed(t_events), sqlc.embed(o), sqlc.embed(s), sqlc.embed(p), sqlc.embed(l), sqlc.embed(l) FROM t_events
+LEFT JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
+LEFT JOIN m_organizations s ON t_events.organization_id = s.organization_id
+LEFT JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
+LEFT JOIN m_members l ON t_events.posted_by = l.member_id
+LEFT JOIN m_members l ON t_events.last_edited_by = l.member_id
+WHERE event_id = ANY(@event_ids::uuid[])
+ORDER BY
+	t_events_pkey ASC;
+
+-- name: GetPluralEventsWithAllUseNumberedPaginate :many
 SELECT sqlc.embed(t_events), sqlc.embed(o), sqlc.embed(s), sqlc.embed(p), sqlc.embed(l), sqlc.embed(l) FROM t_events
 LEFT JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
 LEFT JOIN m_organizations s ON t_events.organization_id = s.organization_id

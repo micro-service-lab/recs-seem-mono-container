@@ -283,20 +283,52 @@ func (q *Queries) GetEventTypesUseNumberedPaginate(ctx context.Context, arg GetE
 }
 
 const getPluralEventTypes = `-- name: GetPluralEventTypes :many
+SELECT m_event_types_pkey, event_type_id, name, key, color FROM m_event_types WHERE event_type_id = ANY($1::uuid[])
+ORDER BY
+	m_event_types_pkey ASC
+`
+
+func (q *Queries) GetPluralEventTypes(ctx context.Context, eventTypeIds []uuid.UUID) ([]EventType, error) {
+	rows, err := q.db.Query(ctx, getPluralEventTypes, eventTypeIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []EventType{}
+	for rows.Next() {
+		var i EventType
+		if err := rows.Scan(
+			&i.MEventTypesPkey,
+			&i.EventTypeID,
+			&i.Name,
+			&i.Key,
+			&i.Color,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralEventTypesUseNumberedPaginate = `-- name: GetPluralEventTypesUseNumberedPaginate :many
 SELECT m_event_types_pkey, event_type_id, name, key, color FROM m_event_types WHERE event_type_id = ANY($3::uuid[])
 ORDER BY
 	m_event_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralEventTypesParams struct {
+type GetPluralEventTypesUseNumberedPaginateParams struct {
 	Limit        int32       `json:"limit"`
 	Offset       int32       `json:"offset"`
 	EventTypeIds []uuid.UUID `json:"event_type_ids"`
 }
 
-func (q *Queries) GetPluralEventTypes(ctx context.Context, arg GetPluralEventTypesParams) ([]EventType, error) {
-	rows, err := q.db.Query(ctx, getPluralEventTypes, arg.Limit, arg.Offset, arg.EventTypeIds)
+func (q *Queries) GetPluralEventTypesUseNumberedPaginate(ctx context.Context, arg GetPluralEventTypesUseNumberedPaginateParams) ([]EventType, error) {
+	rows, err := q.db.Query(ctx, getPluralEventTypesUseNumberedPaginate, arg.Limit, arg.Offset, arg.EventTypeIds)
 	if err != nil {
 		return nil, err
 	}

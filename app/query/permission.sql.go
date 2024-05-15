@@ -637,20 +637,53 @@ func (q *Queries) GetPermissionsWithCategoryUseNumberedPaginate(ctx context.Cont
 }
 
 const getPluralPermissions = `-- name: GetPluralPermissions :many
+SELECT m_permissions_pkey, permission_id, name, description, key, permission_category_id FROM m_permissions WHERE permission_id = ANY($1::uuid[])
+ORDER BY
+	m_permissions_pkey ASC
+`
+
+func (q *Queries) GetPluralPermissions(ctx context.Context, permissionIds []uuid.UUID) ([]Permission, error) {
+	rows, err := q.db.Query(ctx, getPluralPermissions, permissionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Permission{}
+	for rows.Next() {
+		var i Permission
+		if err := rows.Scan(
+			&i.MPermissionsPkey,
+			&i.PermissionID,
+			&i.Name,
+			&i.Description,
+			&i.Key,
+			&i.PermissionCategoryID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralPermissionsUseNumberedPaginate = `-- name: GetPluralPermissionsUseNumberedPaginate :many
 SELECT m_permissions_pkey, permission_id, name, description, key, permission_category_id FROM m_permissions WHERE permission_id = ANY($3::uuid[])
 ORDER BY
 	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralPermissionsParams struct {
+type GetPluralPermissionsUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	PermissionIds []uuid.UUID `json:"permission_ids"`
 }
 
-func (q *Queries) GetPluralPermissions(ctx context.Context, arg GetPluralPermissionsParams) ([]Permission, error) {
-	rows, err := q.db.Query(ctx, getPluralPermissions, arg.Limit, arg.Offset, arg.PermissionIds)
+func (q *Queries) GetPluralPermissionsUseNumberedPaginate(ctx context.Context, arg GetPluralPermissionsUseNumberedPaginateParams) ([]Permission, error) {
+	rows, err := q.db.Query(ctx, getPluralPermissionsUseNumberedPaginate, arg.Limit, arg.Offset, arg.PermissionIds)
 	if err != nil {
 		return nil, err
 	}
@@ -679,17 +712,10 @@ func (q *Queries) GetPluralPermissions(ctx context.Context, arg GetPluralPermiss
 const getPluralPermissionsWithCategory = `-- name: GetPluralPermissionsWithCategory :many
 SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id,  m_permission_categories.name permission_category_name, m_permission_categories.key permission_category_key, m_permission_categories.description permission_category_description FROM m_permissions
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
-WHERE permission_id = ANY($3::uuid[])
+WHERE permission_id = ANY($1::uuid[])
 ORDER BY
 	m_permissions_pkey ASC
-LIMIT $1 OFFSET $2
 `
-
-type GetPluralPermissionsWithCategoryParams struct {
-	Limit         int32       `json:"limit"`
-	Offset        int32       `json:"offset"`
-	PermissionIds []uuid.UUID `json:"permission_ids"`
-}
 
 type GetPluralPermissionsWithCategoryRow struct {
 	MPermissionsPkey              pgtype.Int8 `json:"m_permissions_pkey"`
@@ -703,8 +729,8 @@ type GetPluralPermissionsWithCategoryRow struct {
 	PermissionCategoryDescription string      `json:"permission_category_description"`
 }
 
-func (q *Queries) GetPluralPermissionsWithCategory(ctx context.Context, arg GetPluralPermissionsWithCategoryParams) ([]GetPluralPermissionsWithCategoryRow, error) {
-	rows, err := q.db.Query(ctx, getPluralPermissionsWithCategory, arg.Limit, arg.Offset, arg.PermissionIds)
+func (q *Queries) GetPluralPermissionsWithCategory(ctx context.Context, permissionIds []uuid.UUID) ([]GetPluralPermissionsWithCategoryRow, error) {
+	rows, err := q.db.Query(ctx, getPluralPermissionsWithCategory, permissionIds)
 	if err != nil {
 		return nil, err
 	}
@@ -712,6 +738,63 @@ func (q *Queries) GetPluralPermissionsWithCategory(ctx context.Context, arg GetP
 	items := []GetPluralPermissionsWithCategoryRow{}
 	for rows.Next() {
 		var i GetPluralPermissionsWithCategoryRow
+		if err := rows.Scan(
+			&i.MPermissionsPkey,
+			&i.PermissionID,
+			&i.Name,
+			&i.Description,
+			&i.Key,
+			&i.PermissionCategoryID,
+			&i.PermissionCategoryName,
+			&i.PermissionCategoryKey,
+			&i.PermissionCategoryDescription,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralPermissionsWithCategoryUseNumberedPaginate = `-- name: GetPluralPermissionsWithCategoryUseNumberedPaginate :many
+SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id,  m_permission_categories.name permission_category_name, m_permission_categories.key permission_category_key, m_permission_categories.description permission_category_description FROM m_permissions
+JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
+WHERE permission_id = ANY($3::uuid[])
+ORDER BY
+	m_permissions_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralPermissionsWithCategoryUseNumberedPaginateParams struct {
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+	PermissionIds []uuid.UUID `json:"permission_ids"`
+}
+
+type GetPluralPermissionsWithCategoryUseNumberedPaginateRow struct {
+	MPermissionsPkey              pgtype.Int8 `json:"m_permissions_pkey"`
+	PermissionID                  uuid.UUID   `json:"permission_id"`
+	Name                          string      `json:"name"`
+	Description                   string      `json:"description"`
+	Key                           string      `json:"key"`
+	PermissionCategoryID          uuid.UUID   `json:"permission_category_id"`
+	PermissionCategoryName        string      `json:"permission_category_name"`
+	PermissionCategoryKey         string      `json:"permission_category_key"`
+	PermissionCategoryDescription string      `json:"permission_category_description"`
+}
+
+func (q *Queries) GetPluralPermissionsWithCategoryUseNumberedPaginate(ctx context.Context, arg GetPluralPermissionsWithCategoryUseNumberedPaginateParams) ([]GetPluralPermissionsWithCategoryUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralPermissionsWithCategoryUseNumberedPaginate, arg.Limit, arg.Offset, arg.PermissionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralPermissionsWithCategoryUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralPermissionsWithCategoryUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.MPermissionsPkey,
 			&i.PermissionID,

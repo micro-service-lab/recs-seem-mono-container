@@ -378,20 +378,57 @@ func (q *Queries) FindRecordByIDWithRecordType(ctx context.Context, recordID uui
 }
 
 const getPluralRecords = `-- name: GetPluralRecords :many
+SELECT t_records_pkey, record_id, record_type_id, title, body, organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_records WHERE record_id = ANY($1::uuid[])
+ORDER BY
+	t_records_pkey ASC
+`
+
+func (q *Queries) GetPluralRecords(ctx context.Context, recordIds []uuid.UUID) ([]Record, error) {
+	rows, err := q.db.Query(ctx, getPluralRecords, recordIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Record{}
+	for rows.Next() {
+		var i Record
+		if err := rows.Scan(
+			&i.TRecordsPkey,
+			&i.RecordID,
+			&i.RecordTypeID,
+			&i.Title,
+			&i.Body,
+			&i.OrganizationID,
+			&i.PostedBy,
+			&i.LastEditedBy,
+			&i.PostedAt,
+			&i.LastEditedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralRecordsUseNumberedPaginate = `-- name: GetPluralRecordsUseNumberedPaginate :many
 SELECT t_records_pkey, record_id, record_type_id, title, body, organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_records WHERE record_id = ANY($3::uuid[])
 ORDER BY
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralRecordsParams struct {
+type GetPluralRecordsUseNumberedPaginateParams struct {
 	Limit     int32       `json:"limit"`
 	Offset    int32       `json:"offset"`
 	RecordIds []uuid.UUID `json:"record_ids"`
 }
 
-func (q *Queries) GetPluralRecords(ctx context.Context, arg GetPluralRecordsParams) ([]Record, error) {
-	rows, err := q.db.Query(ctx, getPluralRecords, arg.Limit, arg.Offset, arg.RecordIds)
+func (q *Queries) GetPluralRecordsUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsUseNumberedPaginateParams) ([]Record, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsUseNumberedPaginate, arg.Limit, arg.Offset, arg.RecordIds)
 	if err != nil {
 		return nil, err
 	}
@@ -427,17 +464,10 @@ LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_typ
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 LEFT JOIN m_members AS m_members_2 ON t_records.last_edited_by = m_members_2.member_id
-WHERE record_id = ANY($3::uuid[])
+WHERE record_id = ANY($1::uuid[])
 ORDER BY
 	t_records_pkey ASC
-LIMIT $1 OFFSET $2
 `
-
-type GetPluralRecordsWithAllParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	RecordIds []uuid.UUID `json:"record_ids"`
-}
 
 type GetPluralRecordsWithAllRow struct {
 	Record       Record       `json:"record"`
@@ -447,8 +477,8 @@ type GetPluralRecordsWithAllRow struct {
 	Member_2     Member       `json:"member_2"`
 }
 
-func (q *Queries) GetPluralRecordsWithAll(ctx context.Context, arg GetPluralRecordsWithAllParams) ([]GetPluralRecordsWithAllRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithAll, arg.Limit, arg.Offset, arg.RecordIds)
+func (q *Queries) GetPluralRecordsWithAll(ctx context.Context, recordIds []uuid.UUID) ([]GetPluralRecordsWithAllRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithAll, recordIds)
 	if err != nil {
 		return nil, err
 	}
@@ -520,28 +550,120 @@ func (q *Queries) GetPluralRecordsWithAll(ctx context.Context, arg GetPluralReco
 	return items, nil
 }
 
-const getPluralRecordsWithLastEditedBy = `-- name: GetPluralRecordsWithLastEditedBy :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
-LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
+const getPluralRecordsWithAllUseNumberedPaginate = `-- name: GetPluralRecordsWithAllUseNumberedPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
+LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+LEFT JOIN m_members AS m_members_2 ON t_records.last_edited_by = m_members_2.member_id
 WHERE record_id = ANY($3::uuid[])
 ORDER BY
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralRecordsWithLastEditedByParams struct {
+type GetPluralRecordsWithAllUseNumberedPaginateParams struct {
 	Limit     int32       `json:"limit"`
 	Offset    int32       `json:"offset"`
 	RecordIds []uuid.UUID `json:"record_ids"`
 }
+
+type GetPluralRecordsWithAllUseNumberedPaginateRow struct {
+	Record       Record       `json:"record"`
+	RecordType   RecordType   `json:"record_type"`
+	Organization Organization `json:"organization"`
+	Member       Member       `json:"member"`
+	Member_2     Member       `json:"member_2"`
+}
+
+func (q *Queries) GetPluralRecordsWithAllUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsWithAllUseNumberedPaginateParams) ([]GetPluralRecordsWithAllUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithAllUseNumberedPaginate, arg.Limit, arg.Offset, arg.RecordIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralRecordsWithAllUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralRecordsWithAllUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.RecordType.MRecordTypesPkey,
+			&i.RecordType.RecordTypeID,
+			&i.RecordType.Name,
+			&i.RecordType.Key,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.Color,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Member_2.MMembersPkey,
+			&i.Member_2.MemberID,
+			&i.Member_2.LoginID,
+			&i.Member_2.Password,
+			&i.Member_2.Email,
+			&i.Member_2.Name,
+			&i.Member_2.AttendStatusID,
+			&i.Member_2.ProfileImageID,
+			&i.Member_2.GradeID,
+			&i.Member_2.GroupID,
+			&i.Member_2.PersonalOrganizationID,
+			&i.Member_2.RoleID,
+			&i.Member_2.CreatedAt,
+			&i.Member_2.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralRecordsWithLastEditedBy = `-- name: GetPluralRecordsWithLastEditedBy :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
+WHERE record_id = ANY($1::uuid[])
+ORDER BY
+	t_records_pkey ASC
+`
 
 type GetPluralRecordsWithLastEditedByRow struct {
 	Record Record `json:"record"`
 	Member Member `json:"member"`
 }
 
-func (q *Queries) GetPluralRecordsWithLastEditedBy(ctx context.Context, arg GetPluralRecordsWithLastEditedByParams) ([]GetPluralRecordsWithLastEditedByRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithLastEditedBy, arg.Limit, arg.Offset, arg.RecordIds)
+func (q *Queries) GetPluralRecordsWithLastEditedBy(ctx context.Context, recordIds []uuid.UUID) ([]GetPluralRecordsWithLastEditedByRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithLastEditedBy, recordIds)
 	if err != nil {
 		return nil, err
 	}
@@ -585,28 +707,86 @@ func (q *Queries) GetPluralRecordsWithLastEditedBy(ctx context.Context, arg GetP
 	return items, nil
 }
 
-const getPluralRecordsWithOrganization = `-- name: GetPluralRecordsWithOrganization :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM t_records
-LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
+const getPluralRecordsWithLastEditedByUseNumberedPaginate = `-- name: GetPluralRecordsWithLastEditedByUseNumberedPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE record_id = ANY($3::uuid[])
 ORDER BY
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralRecordsWithOrganizationParams struct {
+type GetPluralRecordsWithLastEditedByUseNumberedPaginateParams struct {
 	Limit     int32       `json:"limit"`
 	Offset    int32       `json:"offset"`
 	RecordIds []uuid.UUID `json:"record_ids"`
 }
+
+type GetPluralRecordsWithLastEditedByUseNumberedPaginateRow struct {
+	Record Record `json:"record"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) GetPluralRecordsWithLastEditedByUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsWithLastEditedByUseNumberedPaginateParams) ([]GetPluralRecordsWithLastEditedByUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithLastEditedByUseNumberedPaginate, arg.Limit, arg.Offset, arg.RecordIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralRecordsWithLastEditedByUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralRecordsWithLastEditedByUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralRecordsWithOrganization = `-- name: GetPluralRecordsWithOrganization :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM t_records
+LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
+WHERE record_id = ANY($1::uuid[])
+ORDER BY
+	t_records_pkey ASC
+`
 
 type GetPluralRecordsWithOrganizationRow struct {
 	Record       Record       `json:"record"`
 	Organization Organization `json:"organization"`
 }
 
-func (q *Queries) GetPluralRecordsWithOrganization(ctx context.Context, arg GetPluralRecordsWithOrganizationParams) ([]GetPluralRecordsWithOrganizationRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithOrganization, arg.Limit, arg.Offset, arg.RecordIds)
+func (q *Queries) GetPluralRecordsWithOrganization(ctx context.Context, recordIds []uuid.UUID) ([]GetPluralRecordsWithOrganizationRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithOrganization, recordIds)
 	if err != nil {
 		return nil, err
 	}
@@ -646,28 +826,82 @@ func (q *Queries) GetPluralRecordsWithOrganization(ctx context.Context, arg GetP
 	return items, nil
 }
 
-const getPluralRecordsWithPostedBy = `-- name: GetPluralRecordsWithPostedBy :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
-LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+const getPluralRecordsWithOrganizationUseNumberedPaginate = `-- name: GetPluralRecordsWithOrganizationUseNumberedPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM t_records
+LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 WHERE record_id = ANY($3::uuid[])
 ORDER BY
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralRecordsWithPostedByParams struct {
+type GetPluralRecordsWithOrganizationUseNumberedPaginateParams struct {
 	Limit     int32       `json:"limit"`
 	Offset    int32       `json:"offset"`
 	RecordIds []uuid.UUID `json:"record_ids"`
 }
+
+type GetPluralRecordsWithOrganizationUseNumberedPaginateRow struct {
+	Record       Record       `json:"record"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetPluralRecordsWithOrganizationUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsWithOrganizationUseNumberedPaginateParams) ([]GetPluralRecordsWithOrganizationUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithOrganizationUseNumberedPaginate, arg.Limit, arg.Offset, arg.RecordIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralRecordsWithOrganizationUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralRecordsWithOrganizationUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.Color,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralRecordsWithPostedBy = `-- name: GetPluralRecordsWithPostedBy :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+WHERE record_id = ANY($1::uuid[])
+ORDER BY
+	t_records_pkey ASC
+`
 
 type GetPluralRecordsWithPostedByRow struct {
 	Record Record `json:"record"`
 	Member Member `json:"member"`
 }
 
-func (q *Queries) GetPluralRecordsWithPostedBy(ctx context.Context, arg GetPluralRecordsWithPostedByParams) ([]GetPluralRecordsWithPostedByRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithPostedBy, arg.Limit, arg.Offset, arg.RecordIds)
+func (q *Queries) GetPluralRecordsWithPostedBy(ctx context.Context, recordIds []uuid.UUID) ([]GetPluralRecordsWithPostedByRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithPostedBy, recordIds)
 	if err != nil {
 		return nil, err
 	}
@@ -711,7 +945,120 @@ func (q *Queries) GetPluralRecordsWithPostedBy(ctx context.Context, arg GetPlura
 	return items, nil
 }
 
+const getPluralRecordsWithPostedByUseNumberedPaginate = `-- name: GetPluralRecordsWithPostedByUseNumberedPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+WHERE record_id = ANY($3::uuid[])
+ORDER BY
+	t_records_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralRecordsWithPostedByUseNumberedPaginateParams struct {
+	Limit     int32       `json:"limit"`
+	Offset    int32       `json:"offset"`
+	RecordIds []uuid.UUID `json:"record_ids"`
+}
+
+type GetPluralRecordsWithPostedByUseNumberedPaginateRow struct {
+	Record Record `json:"record"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) GetPluralRecordsWithPostedByUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsWithPostedByUseNumberedPaginateParams) ([]GetPluralRecordsWithPostedByUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithPostedByUseNumberedPaginate, arg.Limit, arg.Offset, arg.RecordIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralRecordsWithPostedByUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralRecordsWithPostedByUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPluralRecordsWithRecordType = `-- name: GetPluralRecordsWithRecordType :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key FROM t_records
+LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
+WHERE record_id = ANY($1::uuid[])
+ORDER BY
+	t_records_pkey ASC
+`
+
+type GetPluralRecordsWithRecordTypeRow struct {
+	Record     Record     `json:"record"`
+	RecordType RecordType `json:"record_type"`
+}
+
+func (q *Queries) GetPluralRecordsWithRecordType(ctx context.Context, recordIds []uuid.UUID) ([]GetPluralRecordsWithRecordTypeRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithRecordType, recordIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralRecordsWithRecordTypeRow{}
+	for rows.Next() {
+		var i GetPluralRecordsWithRecordTypeRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.RecordType.MRecordTypesPkey,
+			&i.RecordType.RecordTypeID,
+			&i.RecordType.Name,
+			&i.RecordType.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralRecordsWithRecordTypeUseNumberedPaginate = `-- name: GetPluralRecordsWithRecordTypeUseNumberedPaginate :many
 SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 WHERE record_id = ANY($3::uuid[])
@@ -720,26 +1067,26 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralRecordsWithRecordTypeParams struct {
+type GetPluralRecordsWithRecordTypeUseNumberedPaginateParams struct {
 	Limit     int32       `json:"limit"`
 	Offset    int32       `json:"offset"`
 	RecordIds []uuid.UUID `json:"record_ids"`
 }
 
-type GetPluralRecordsWithRecordTypeRow struct {
+type GetPluralRecordsWithRecordTypeUseNumberedPaginateRow struct {
 	Record     Record     `json:"record"`
 	RecordType RecordType `json:"record_type"`
 }
 
-func (q *Queries) GetPluralRecordsWithRecordType(ctx context.Context, arg GetPluralRecordsWithRecordTypeParams) ([]GetPluralRecordsWithRecordTypeRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithRecordType, arg.Limit, arg.Offset, arg.RecordIds)
+func (q *Queries) GetPluralRecordsWithRecordTypeUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsWithRecordTypeUseNumberedPaginateParams) ([]GetPluralRecordsWithRecordTypeUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithRecordTypeUseNumberedPaginate, arg.Limit, arg.Offset, arg.RecordIds)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluralRecordsWithRecordTypeRow{}
+	items := []GetPluralRecordsWithRecordTypeUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetPluralRecordsWithRecordTypeRow
+		var i GetPluralRecordsWithRecordTypeUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.Record.TRecordsPkey,
 			&i.Record.RecordID,

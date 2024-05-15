@@ -284,20 +284,53 @@ func (q *Queries) GetMimeTypesUseNumberedPaginate(ctx context.Context, arg GetMi
 
 const getPluralMimeTypes = `-- name: GetPluralMimeTypes :many
 SELECT m_mime_types_pkey, mime_type_id, name, kind, key FROM m_mime_types
+WHERE mime_type_id = ANY($1::uuid[])
+ORDER BY
+	m_mime_types_pkey ASC
+`
+
+func (q *Queries) GetPluralMimeTypes(ctx context.Context, mimeTypeIds []uuid.UUID) ([]MimeType, error) {
+	rows, err := q.db.Query(ctx, getPluralMimeTypes, mimeTypeIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []MimeType{}
+	for rows.Next() {
+		var i MimeType
+		if err := rows.Scan(
+			&i.MMimeTypesPkey,
+			&i.MimeTypeID,
+			&i.Name,
+			&i.Kind,
+			&i.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMimeTypesUseNumberedPaginate = `-- name: GetPluralMimeTypesUseNumberedPaginate :many
+SELECT m_mime_types_pkey, mime_type_id, name, kind, key FROM m_mime_types
 WHERE mime_type_id = ANY($3::uuid[])
 ORDER BY
 	m_mime_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralMimeTypesParams struct {
+type GetPluralMimeTypesUseNumberedPaginateParams struct {
 	Limit       int32       `json:"limit"`
 	Offset      int32       `json:"offset"`
 	MimeTypeIds []uuid.UUID `json:"mime_type_ids"`
 }
 
-func (q *Queries) GetPluralMimeTypes(ctx context.Context, arg GetPluralMimeTypesParams) ([]MimeType, error) {
-	rows, err := q.db.Query(ctx, getPluralMimeTypes, arg.Limit, arg.Offset, arg.MimeTypeIds)
+func (q *Queries) GetPluralMimeTypesUseNumberedPaginate(ctx context.Context, arg GetPluralMimeTypesUseNumberedPaginateParams) ([]MimeType, error) {
+	rows, err := q.db.Query(ctx, getPluralMimeTypesUseNumberedPaginate, arg.Limit, arg.Offset, arg.MimeTypeIds)
 	if err != nil {
 		return nil, err
 	}

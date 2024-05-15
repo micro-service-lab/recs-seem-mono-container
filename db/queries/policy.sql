@@ -91,6 +91,11 @@ LIMIT $1;
 -- name: GetPluralPolicies :many
 SELECT * FROM m_policies WHERE policy_id = ANY(@policy_ids::uuid[])
 ORDER BY
+	m_policies_pkey ASC;
+
+-- name: GetPluralPoliciesUseNumberedPaginate :many
+SELECT * FROM m_policies WHERE policy_id = ANY(@policy_ids::uuid[])
+ORDER BY
 	m_policies_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -151,6 +156,13 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralPoliciesWithCategory :many
+SELECT m_policies.*, m_policy_categories.name policy_category_name, m_policy_categories.key policy_category_key, m_policy_categories.description policy_category_description FROM m_policies
+JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
+WHERE policy_id = ANY(@policy_ids::uuid[])
+ORDER BY
+	m_policies_pkey ASC;
+
+-- name: GetPluralPoliciesWithCategoryUseNumberedPaginate :many
 SELECT m_policies.*, m_policy_categories.name policy_category_name, m_policy_categories.key policy_category_key, m_policy_categories.description policy_category_description FROM m_policies
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE policy_id = ANY(@policy_ids::uuid[])

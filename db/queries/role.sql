@@ -68,6 +68,13 @@ SELECT * FROM m_roles
 WHERE
 	role_id = ANY(@role_ids::uuid[])
 ORDER BY
+	m_roles_pkey ASC;
+
+-- name: GetPluralRolesUseNumberedPaginate :many
+SELECT * FROM m_roles
+WHERE
+	role_id = ANY(@role_ids::uuid[])
+ORDER BY
 	m_roles_pkey ASC
 LIMIT $1 OFFSET $2;
 

@@ -83,6 +83,11 @@ LIMIT $1;
 -- name: GetPluralPositionHistories :many
 SELECT * FROM t_position_histories WHERE position_history_id = ANY(@position_history_ids::uuid[])
 ORDER BY
+	t_position_histories_pkey ASC;
+
+-- name: GetPluralPositionHistoriesUseNumberedPaginate :many
+SELECT * FROM t_position_histories WHERE position_history_id = ANY(@position_history_ids::uuid[])
+ORDER BY
 	t_position_histories_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -149,6 +154,13 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralPositionHistoriesWithMember :many
+SELECT sqlc.embed(t_position_histories), sqlc.embed(m_members) FROM t_position_histories
+LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
+WHERE position_history_id = ANY(@position_history_ids::uuid[])
+ORDER BY
+	t_position_histories_pkey ASC;
+
+-- name: GetPluralPositionHistoriesWithMemberUseNumberedPaginate :many
 SELECT sqlc.embed(t_position_histories), sqlc.embed(m_members) FROM t_position_histories
 LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE position_history_id = ANY(@position_history_ids::uuid[])

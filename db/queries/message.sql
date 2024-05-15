@@ -133,6 +133,11 @@ LIMIT $1;
 -- name: GetPluralMessages :many
 SELECT * FROM t_messages WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
+	t_messages_pkey ASC;
+
+-- name: GetPluralMessagesUseNumberedPaginate :many
+SELECT * FROM t_messages WHERE message_id = ANY(@message_ids::uuid[])
+ORDER BY
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -235,6 +240,13 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralMessagesWithChatRoom :many
+SELECT sqlc.embed(t_messages), sqlc.embed(m_chat_rooms) FROM t_messages
+LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
+WHERE message_id = ANY(@message_ids::uuid[])
+ORDER BY
+	t_messages_pkey ASC;
+
+-- name: GetPluralMessagesWithChatRoomUseNumberedPaginate :many
 SELECT sqlc.embed(t_messages), sqlc.embed(m_chat_rooms) FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 WHERE message_id = ANY(@message_ids::uuid[])
@@ -345,6 +357,13 @@ SELECT sqlc.embed(t_messages), sqlc.embed(m_members) FROM t_messages
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
+	t_messages_pkey ASC;
+
+-- name: GetPluralMessagesWithSenderUseNumberedPaginate :many
+SELECT sqlc.embed(t_messages), sqlc.embed(m_members) FROM t_messages
+LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
+WHERE message_id = ANY(@message_ids::uuid[])
+ORDER BY
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -450,6 +469,14 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralMessagesWithAll :many
+SELECT sqlc.embed(t_messages), sqlc.embed(m_chat_rooms), sqlc.embed(m_members) FROM t_messages
+LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
+WHERE message_id = ANY(@message_ids::uuid[])
+ORDER BY
+	t_messages_pkey ASC;
+
+-- name: GetPluralMessagesWithAllUseNumberedPaginate :many
 SELECT sqlc.embed(t_messages), sqlc.embed(m_chat_rooms), sqlc.embed(m_members) FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id

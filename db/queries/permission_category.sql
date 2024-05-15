@@ -76,6 +76,12 @@ LIMIT $1;
 SELECT * FROM m_permission_categories
 WHERE permission_category_id = ANY(@permission_category_ids::uuid[])
 ORDER BY
+	m_permission_categories_pkey ASC;
+
+-- name: GetPluralPermissionCategoriesUseNumberedPaginate :many
+SELECT * FROM m_permission_categories
+WHERE permission_category_id = ANY(@permission_category_ids::uuid[])
+ORDER BY
 	m_permission_categories_pkey ASC
 LIMIT $1 OFFSET $2;
 

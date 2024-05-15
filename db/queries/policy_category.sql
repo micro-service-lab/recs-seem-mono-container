@@ -76,6 +76,12 @@ LIMIT $1;
 SELECT * FROM m_policy_categories
 WHERE policy_category_id = ANY(@policy_category_ids::uuid[])
 ORDER BY
+	m_policy_categories_pkey ASC;
+
+-- name: GetPluralPolicyCategoriesUseNumberedPaginate :many
+SELECT * FROM m_policy_categories
+WHERE policy_category_id = ANY(@policy_category_ids::uuid[])
+ORDER BY
 	m_policy_categories_pkey ASC
 LIMIT $1 OFFSET $2;
 

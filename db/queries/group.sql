@@ -58,6 +58,12 @@ LIMIT $1;
 SELECT * FROM m_groups
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
+	m_groups_pkey ASC;
+
+-- name: GetPluralGroupsUseNumberedPaginate :many
+SELECT * FROM m_groups
+WHERE organization_id = ANY(@organization_ids::uuid[])
+ORDER BY
 	m_groups_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -106,6 +112,13 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralGroupsWithOrganization :many
+SELECT sqlc.embed(m_groups), sqlc.embed(m_organizations) FROM m_groups
+LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+WHERE group_id = ANY(@group_ids::uuid[])
+ORDER BY
+	m_groups_pkey ASC;
+
+-- name: GetPluralGroupsWithOrganizationUseNumberedPaginate :many
 SELECT sqlc.embed(m_groups), sqlc.embed(m_organizations) FROM m_groups
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE group_id = ANY(@group_ids::uuid[])

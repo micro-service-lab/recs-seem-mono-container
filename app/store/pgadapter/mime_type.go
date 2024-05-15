@@ -430,12 +430,18 @@ func (a *PgAdapter) GetMimeTypesWithSd(
 func getPluralMimeTypes(
 	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.MimeType], error) {
-	p := query.GetPluralMimeTypesParams{
-		MimeTypeIds: ids,
-		Offset:      int32(np.Offset.Int64),
-		Limit:       int32(np.Limit.Int64),
+	var e []query.MimeType
+	var err error
+	if !np.Valid {
+		e, err = qtx.GetPluralMimeTypes(ctx, ids)
+	} else {
+		p := query.GetPluralMimeTypesUseNumberedPaginateParams{
+			MimeTypeIds: ids,
+			Offset:      int32(np.Offset.Int64),
+			Limit:       int32(np.Limit.Int64),
+		}
+		e, err = qtx.GetPluralMimeTypesUseNumberedPaginate(ctx, p)
 	}
-	e, err := qtx.GetPluralMimeTypes(ctx, p)
 	if err != nil {
 		return store.ListResult[entity.MimeType]{}, fmt.Errorf("failed to get plural mime types: %w", err)
 	}

@@ -432,12 +432,17 @@ func (a *PgAdapter) GetAttendanceTypesWithSd(
 func getPluralAttendanceTypes(
 	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttendanceType], error) {
-	p := query.GetPluralAttendanceTypesParams{
-		AttendanceTypeIds: ids,
-		Offset:            int32(np.Offset.Int64),
-		Limit:             int32(np.Limit.Int64),
+	var e []query.AttendanceType
+	var err error
+	if !np.Valid {
+		e, err = qtx.GetPluralAttendanceTypes(ctx, ids)
+	} else {
+		e, err = qtx.GetPluralAttendanceTypesUseNumberedPaginate(ctx, query.GetPluralAttendanceTypesUseNumberedPaginateParams{
+			AttendanceTypeIds: ids,
+			Offset:            int32(np.Offset.Int64),
+			Limit:             int32(np.Limit.Int64),
+		})
 	}
-	e, err := qtx.GetPluralAttendanceTypes(ctx, p)
 	if err != nil {
 		return store.ListResult[entity.AttendanceType]{}, fmt.Errorf("failed to get plural attendance types: %w", err)
 	}

@@ -1619,20 +1619,57 @@ func (q *Queries) GetOrganizationsWithDetailUseNumberedPaginate(ctx context.Cont
 }
 
 const getPluralOrganizations = `-- name: GetPluralOrganizations :many
+SELECT m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations WHERE organization_id = ANY($1::uuid[])
+ORDER BY
+	m_organizations_pkey ASC
+`
+
+func (q *Queries) GetPluralOrganizations(ctx context.Context, organizationIds []uuid.UUID) ([]Organization, error) {
+	rows, err := q.db.Query(ctx, getPluralOrganizations, organizationIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Organization{}
+	for rows.Next() {
+		var i Organization
+		if err := rows.Scan(
+			&i.MOrganizationsPkey,
+			&i.OrganizationID,
+			&i.Name,
+			&i.Description,
+			&i.Color,
+			&i.IsPersonal,
+			&i.IsWhole,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ChatRoomID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralOrganizationsUseNumberedPaginate = `-- name: GetPluralOrganizationsUseNumberedPaginate :many
 SELECT m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations WHERE organization_id = ANY($3::uuid[])
 ORDER BY
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralOrganizationsParams struct {
+type GetPluralOrganizationsUseNumberedPaginateParams struct {
 	Limit           int32       `json:"limit"`
 	Offset          int32       `json:"offset"`
 	OrganizationIds []uuid.UUID `json:"organization_ids"`
 }
 
-func (q *Queries) GetPluralOrganizations(ctx context.Context, arg GetPluralOrganizationsParams) ([]Organization, error) {
-	rows, err := q.db.Query(ctx, getPluralOrganizations, arg.Limit, arg.Offset, arg.OrganizationIds)
+func (q *Queries) GetPluralOrganizationsUseNumberedPaginate(ctx context.Context, arg GetPluralOrganizationsUseNumberedPaginateParams) ([]Organization, error) {
+	rows, err := q.db.Query(ctx, getPluralOrganizationsUseNumberedPaginate, arg.Limit, arg.Offset, arg.OrganizationIds)
 	if err != nil {
 		return nil, err
 	}
@@ -1667,17 +1704,10 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
-WHERE organization_id = ANY($3::uuid[])
+WHERE organization_id = ANY($1::uuid[])
 ORDER BY
 	m_organizations_pkey ASC
-LIMIT $1 OFFSET $2
 `
-
-type GetPluralOrganizationsWithAllParams struct {
-	Limit           int32       `json:"limit"`
-	Offset          int32       `json:"offset"`
-	OrganizationIds []uuid.UUID `json:"organization_ids"`
-}
 
 type GetPluralOrganizationsWithAllRow struct {
 	Organization Organization `json:"organization"`
@@ -1686,8 +1716,8 @@ type GetPluralOrganizationsWithAllRow struct {
 	ChatRoom     ChatRoom     `json:"chat_room"`
 }
 
-func (q *Queries) GetPluralOrganizationsWithAll(ctx context.Context, arg GetPluralOrganizationsWithAllParams) ([]GetPluralOrganizationsWithAllRow, error) {
-	rows, err := q.db.Query(ctx, getPluralOrganizationsWithAll, arg.Limit, arg.Offset, arg.OrganizationIds)
+func (q *Queries) GetPluralOrganizationsWithAll(ctx context.Context, organizationIds []uuid.UUID) ([]GetPluralOrganizationsWithAllRow, error) {
+	rows, err := q.db.Query(ctx, getPluralOrganizationsWithAll, organizationIds)
 	if err != nil {
 		return nil, err
 	}
@@ -1734,8 +1764,10 @@ func (q *Queries) GetPluralOrganizationsWithAll(ctx context.Context, arg GetPlur
 	return items, nil
 }
 
-const getPluralOrganizationsWithChatRoom = `-- name: GetPluralOrganizationsWithChatRoom :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+const getPluralOrganizationsWithAllUseNumberedPaginate = `-- name: GetPluralOrganizationsWithAllUseNumberedPaginate :many
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
+LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
 WHERE organization_id = ANY($3::uuid[])
 ORDER BY
@@ -1743,11 +1775,74 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralOrganizationsWithChatRoomParams struct {
+type GetPluralOrganizationsWithAllUseNumberedPaginateParams struct {
 	Limit           int32       `json:"limit"`
 	Offset          int32       `json:"offset"`
 	OrganizationIds []uuid.UUID `json:"organization_ids"`
 }
+
+type GetPluralOrganizationsWithAllUseNumberedPaginateRow struct {
+	Organization Organization `json:"organization"`
+	Group        Group        `json:"group"`
+	Grade        Grade        `json:"grade"`
+	ChatRoom     ChatRoom     `json:"chat_room"`
+}
+
+func (q *Queries) GetPluralOrganizationsWithAllUseNumberedPaginate(ctx context.Context, arg GetPluralOrganizationsWithAllUseNumberedPaginateParams) ([]GetPluralOrganizationsWithAllUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralOrganizationsWithAllUseNumberedPaginate, arg.Limit, arg.Offset, arg.OrganizationIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralOrganizationsWithAllUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralOrganizationsWithAllUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.Color,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
+			&i.Group.MGroupsPkey,
+			&i.Group.GroupID,
+			&i.Group.Key,
+			&i.Group.OrganizationID,
+			&i.Grade.MGradesPkey,
+			&i.Grade.GradeID,
+			&i.Grade.Key,
+			&i.Grade.OrganizationID,
+			&i.ChatRoom.MChatRoomsPkey,
+			&i.ChatRoom.ChatRoomID,
+			&i.ChatRoom.Name,
+			&i.ChatRoom.IsPrivate,
+			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.FromOrganization,
+			&i.ChatRoom.CreatedAt,
+			&i.ChatRoom.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralOrganizationsWithChatRoom = `-- name: GetPluralOrganizationsWithChatRoom :many
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+WHERE organization_id = ANY($1::uuid[])
+ORDER BY
+	m_organizations_pkey ASC
+`
 
 type GetPluralOrganizationsWithChatRoomRow struct {
 	MOrganizationsPkey pgtype.Int8 `json:"m_organizations_pkey"`
@@ -1763,8 +1858,8 @@ type GetPluralOrganizationsWithChatRoomRow struct {
 	ChatRoom           ChatRoom    `json:"chat_room"`
 }
 
-func (q *Queries) GetPluralOrganizationsWithChatRoom(ctx context.Context, arg GetPluralOrganizationsWithChatRoomParams) ([]GetPluralOrganizationsWithChatRoomRow, error) {
-	rows, err := q.db.Query(ctx, getPluralOrganizationsWithChatRoom, arg.Limit, arg.Offset, arg.OrganizationIds)
+func (q *Queries) GetPluralOrganizationsWithChatRoom(ctx context.Context, organizationIds []uuid.UUID) ([]GetPluralOrganizationsWithChatRoomRow, error) {
+	rows, err := q.db.Query(ctx, getPluralOrganizationsWithChatRoom, organizationIds)
 	if err != nil {
 		return nil, err
 	}
@@ -1803,7 +1898,130 @@ func (q *Queries) GetPluralOrganizationsWithChatRoom(ctx context.Context, arg Ge
 	return items, nil
 }
 
+const getPluralOrganizationsWithChatRoomUseNumberedPaginate = `-- name: GetPluralOrganizationsWithChatRoomUseNumberedPaginate :many
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+WHERE organization_id = ANY($3::uuid[])
+ORDER BY
+	m_organizations_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralOrganizationsWithChatRoomUseNumberedPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	Offset          int32       `json:"offset"`
+	OrganizationIds []uuid.UUID `json:"organization_ids"`
+}
+
+type GetPluralOrganizationsWithChatRoomUseNumberedPaginateRow struct {
+	MOrganizationsPkey pgtype.Int8 `json:"m_organizations_pkey"`
+	OrganizationID     uuid.UUID   `json:"organization_id"`
+	Name               string      `json:"name"`
+	Description        pgtype.Text `json:"description"`
+	Color              pgtype.Text `json:"color"`
+	IsPersonal         bool        `json:"is_personal"`
+	IsWhole            bool        `json:"is_whole"`
+	CreatedAt          time.Time   `json:"created_at"`
+	UpdatedAt          time.Time   `json:"updated_at"`
+	ChatRoomID         pgtype.UUID `json:"chat_room_id"`
+	ChatRoom           ChatRoom    `json:"chat_room"`
+}
+
+func (q *Queries) GetPluralOrganizationsWithChatRoomUseNumberedPaginate(ctx context.Context, arg GetPluralOrganizationsWithChatRoomUseNumberedPaginateParams) ([]GetPluralOrganizationsWithChatRoomUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralOrganizationsWithChatRoomUseNumberedPaginate, arg.Limit, arg.Offset, arg.OrganizationIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralOrganizationsWithChatRoomUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralOrganizationsWithChatRoomUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.MOrganizationsPkey,
+			&i.OrganizationID,
+			&i.Name,
+			&i.Description,
+			&i.Color,
+			&i.IsPersonal,
+			&i.IsWhole,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ChatRoomID,
+			&i.ChatRoom.MChatRoomsPkey,
+			&i.ChatRoom.ChatRoomID,
+			&i.ChatRoom.Name,
+			&i.ChatRoom.IsPrivate,
+			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.FromOrganization,
+			&i.ChatRoom.CreatedAt,
+			&i.ChatRoom.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPluralOrganizationsWithDetail = `-- name: GetPluralOrganizationsWithDetail :many
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
+LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
+LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
+WHERE organization_id = ANY($1::uuid[])
+ORDER BY
+	m_organizations_pkey ASC
+`
+
+type GetPluralOrganizationsWithDetailRow struct {
+	Organization Organization `json:"organization"`
+	Group        Group        `json:"group"`
+	Grade        Grade        `json:"grade"`
+}
+
+func (q *Queries) GetPluralOrganizationsWithDetail(ctx context.Context, organizationIds []uuid.UUID) ([]GetPluralOrganizationsWithDetailRow, error) {
+	rows, err := q.db.Query(ctx, getPluralOrganizationsWithDetail, organizationIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralOrganizationsWithDetailRow{}
+	for rows.Next() {
+		var i GetPluralOrganizationsWithDetailRow
+		if err := rows.Scan(
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.Color,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
+			&i.Group.MGroupsPkey,
+			&i.Group.GroupID,
+			&i.Group.Key,
+			&i.Group.OrganizationID,
+			&i.Grade.MGradesPkey,
+			&i.Grade.GradeID,
+			&i.Grade.Key,
+			&i.Grade.OrganizationID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralOrganizationsWithDetailUseNumberedPaginate = `-- name: GetPluralOrganizationsWithDetailUseNumberedPaginate :many
 SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
@@ -1813,27 +2031,27 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralOrganizationsWithDetailParams struct {
+type GetPluralOrganizationsWithDetailUseNumberedPaginateParams struct {
 	Limit           int32       `json:"limit"`
 	Offset          int32       `json:"offset"`
 	OrganizationIds []uuid.UUID `json:"organization_ids"`
 }
 
-type GetPluralOrganizationsWithDetailRow struct {
+type GetPluralOrganizationsWithDetailUseNumberedPaginateRow struct {
 	Organization Organization `json:"organization"`
 	Group        Group        `json:"group"`
 	Grade        Grade        `json:"grade"`
 }
 
-func (q *Queries) GetPluralOrganizationsWithDetail(ctx context.Context, arg GetPluralOrganizationsWithDetailParams) ([]GetPluralOrganizationsWithDetailRow, error) {
-	rows, err := q.db.Query(ctx, getPluralOrganizationsWithDetail, arg.Limit, arg.Offset, arg.OrganizationIds)
+func (q *Queries) GetPluralOrganizationsWithDetailUseNumberedPaginate(ctx context.Context, arg GetPluralOrganizationsWithDetailUseNumberedPaginateParams) ([]GetPluralOrganizationsWithDetailUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralOrganizationsWithDetailUseNumberedPaginate, arg.Limit, arg.Offset, arg.OrganizationIds)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluralOrganizationsWithDetailRow{}
+	items := []GetPluralOrganizationsWithDetailUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetPluralOrganizationsWithDetailRow
+		var i GetPluralOrganizationsWithDetailUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.Organization.MOrganizationsPkey,
 			&i.Organization.OrganizationID,

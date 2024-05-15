@@ -114,20 +114,53 @@ func (q *Queries) FindRecordTypeByKey(ctx context.Context, key string) (RecordTy
 const getPluralRecordTypes = `-- name: GetPluralRecordTypes :many
 SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
 WHERE
+	record_type_id = ANY($1::uuid[])
+ORDER BY
+	m_record_types_pkey ASC
+`
+
+func (q *Queries) GetPluralRecordTypes(ctx context.Context, recordTypeIds []uuid.UUID) ([]RecordType, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordTypes, recordTypeIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []RecordType{}
+	for rows.Next() {
+		var i RecordType
+		if err := rows.Scan(
+			&i.MRecordTypesPkey,
+			&i.RecordTypeID,
+			&i.Name,
+			&i.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralRecordTypesUseNumberedPaginate = `-- name: GetPluralRecordTypesUseNumberedPaginate :many
+SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
+WHERE
 	record_type_id = ANY($3::uuid[])
 ORDER BY
 	m_record_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralRecordTypesParams struct {
+type GetPluralRecordTypesUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	RecordTypeIds []uuid.UUID `json:"record_type_ids"`
 }
 
-func (q *Queries) GetPluralRecordTypes(ctx context.Context, arg GetPluralRecordTypesParams) ([]RecordType, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordTypes, arg.Limit, arg.Offset, arg.RecordTypeIds)
+func (q *Queries) GetPluralRecordTypesUseNumberedPaginate(ctx context.Context, arg GetPluralRecordTypesUseNumberedPaginateParams) ([]RecordType, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordTypesUseNumberedPaginate, arg.Limit, arg.Offset, arg.RecordTypeIds)
 	if err != nil {
 		return nil, err
 	}

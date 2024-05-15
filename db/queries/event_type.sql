@@ -75,6 +75,11 @@ LIMIT $1;
 -- name: GetPluralEventTypes :many
 SELECT * FROM m_event_types WHERE event_type_id = ANY(@event_type_ids::uuid[])
 ORDER BY
+	m_event_types_pkey ASC;
+
+-- name: GetPluralEventTypesUseNumberedPaginate :many
+SELECT * FROM m_event_types WHERE event_type_id = ANY(@event_type_ids::uuid[])
+ORDER BY
 	m_event_types_pkey ASC
 LIMIT $1 OFFSET $2;
 

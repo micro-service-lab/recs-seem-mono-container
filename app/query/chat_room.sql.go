@@ -750,20 +750,57 @@ func (q *Queries) GetChatRoomsWithOwnerUseNumberedPaginate(ctx context.Context, 
 
 const getPluralChatRooms = `-- name: GetPluralChatRooms :many
 SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms
+WHERE chat_room_id = ANY($1::uuid[])
+ORDER BY
+	m_chat_rooms_pkey ASC
+`
+
+func (q *Queries) GetPluralChatRooms(ctx context.Context, chatRoomIds []uuid.UUID) ([]ChatRoom, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRooms, chatRoomIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ChatRoom{}
+	for rows.Next() {
+		var i ChatRoom
+		if err := rows.Scan(
+			&i.MChatRoomsPkey,
+			&i.ChatRoomID,
+			&i.Name,
+			&i.IsPrivate,
+			&i.CoverImageID,
+			&i.OwnerID,
+			&i.FromOrganization,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralChatRoomsUseNumberedPaginate = `-- name: GetPluralChatRoomsUseNumberedPaginate :many
+SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms
 WHERE chat_room_id = ANY($3::uuid[])
 ORDER BY
 	m_chat_rooms_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralChatRoomsParams struct {
+type GetPluralChatRoomsUseNumberedPaginateParams struct {
 	Limit       int32       `json:"limit"`
 	Offset      int32       `json:"offset"`
 	ChatRoomIds []uuid.UUID `json:"chat_room_ids"`
 }
 
-func (q *Queries) GetPluralChatRooms(ctx context.Context, arg GetPluralChatRoomsParams) ([]ChatRoom, error) {
-	rows, err := q.db.Query(ctx, getPluralChatRooms, arg.Limit, arg.Offset, arg.ChatRoomIds)
+func (q *Queries) GetPluralChatRoomsUseNumberedPaginate(ctx context.Context, arg GetPluralChatRoomsUseNumberedPaginateParams) ([]ChatRoom, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomsUseNumberedPaginate, arg.Limit, arg.Offset, arg.ChatRoomIds)
 	if err != nil {
 		return nil, err
 	}
@@ -795,25 +832,18 @@ func (q *Queries) GetPluralChatRooms(ctx context.Context, arg GetPluralChatRooms
 const getPluralChatRoomsWithOwner = `-- name: GetPluralChatRoomsWithOwner :many
 SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
-WHERE chat_room_id = ANY($3::uuid[])
+WHERE chat_room_id = ANY($1::uuid[])
 ORDER BY
 	m_chat_rooms_pkey ASC
-LIMIT $1 OFFSET $2
 `
-
-type GetPluralChatRoomsWithOwnerParams struct {
-	Limit       int32       `json:"limit"`
-	Offset      int32       `json:"offset"`
-	ChatRoomIds []uuid.UUID `json:"chat_room_ids"`
-}
 
 type GetPluralChatRoomsWithOwnerRow struct {
 	ChatRoom ChatRoom `json:"chat_room"`
 	Member   Member   `json:"member"`
 }
 
-func (q *Queries) GetPluralChatRoomsWithOwner(ctx context.Context, arg GetPluralChatRoomsWithOwnerParams) ([]GetPluralChatRoomsWithOwnerRow, error) {
-	rows, err := q.db.Query(ctx, getPluralChatRoomsWithOwner, arg.Limit, arg.Offset, arg.ChatRoomIds)
+func (q *Queries) GetPluralChatRoomsWithOwner(ctx context.Context, chatRoomIds []uuid.UUID) ([]GetPluralChatRoomsWithOwnerRow, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomsWithOwner, chatRoomIds)
 	if err != nil {
 		return nil, err
 	}
@@ -821,6 +851,70 @@ func (q *Queries) GetPluralChatRoomsWithOwner(ctx context.Context, arg GetPlural
 	items := []GetPluralChatRoomsWithOwnerRow{}
 	for rows.Next() {
 		var i GetPluralChatRoomsWithOwnerRow
+		if err := rows.Scan(
+			&i.ChatRoom.MChatRoomsPkey,
+			&i.ChatRoom.ChatRoomID,
+			&i.ChatRoom.Name,
+			&i.ChatRoom.IsPrivate,
+			&i.ChatRoom.CoverImageID,
+			&i.ChatRoom.OwnerID,
+			&i.ChatRoom.FromOrganization,
+			&i.ChatRoom.CreatedAt,
+			&i.ChatRoom.UpdatedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralChatRoomsWithOwnerUseNumberedPaginate = `-- name: GetPluralChatRoomsWithOwnerUseNumberedPaginate :many
+SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_rooms
+LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
+WHERE chat_room_id = ANY($3::uuid[])
+ORDER BY
+	m_chat_rooms_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralChatRoomsWithOwnerUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	ChatRoomIds []uuid.UUID `json:"chat_room_ids"`
+}
+
+type GetPluralChatRoomsWithOwnerUseNumberedPaginateRow struct {
+	ChatRoom ChatRoom `json:"chat_room"`
+	Member   Member   `json:"member"`
+}
+
+func (q *Queries) GetPluralChatRoomsWithOwnerUseNumberedPaginate(ctx context.Context, arg GetPluralChatRoomsWithOwnerUseNumberedPaginateParams) ([]GetPluralChatRoomsWithOwnerUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomsWithOwnerUseNumberedPaginate, arg.Limit, arg.Offset, arg.ChatRoomIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralChatRoomsWithOwnerUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralChatRoomsWithOwnerUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.ChatRoom.MChatRoomsPkey,
 			&i.ChatRoom.ChatRoomID,

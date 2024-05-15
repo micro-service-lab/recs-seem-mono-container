@@ -76,6 +76,12 @@ LIMIT $1;
 SELECT * FROM m_attend_statuses
 WHERE attend_status_id = ANY(@attend_status_ids::uuid[])
 ORDER BY
+	m_attend_statuses_pkey ASC;
+
+-- name: GetPluralAttendStatusesUseNumberedPaginate :many
+SELECT * FROM m_attend_statuses
+WHERE attend_status_id = ANY(@attend_status_ids::uuid[])
+ORDER BY
 	m_attend_statuses_pkey ASC
 LIMIT $1 OFFSET $2;
 

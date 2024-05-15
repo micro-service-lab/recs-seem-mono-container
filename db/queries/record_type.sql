@@ -77,6 +77,13 @@ SELECT * FROM m_record_types
 WHERE
 	record_type_id = ANY(@record_type_ids::uuid[])
 ORDER BY
+	m_record_types_pkey ASC;
+
+-- name: GetPluralRecordTypesUseNumberedPaginate :many
+SELECT * FROM m_record_types
+WHERE
+	record_type_id = ANY(@record_type_ids::uuid[])
+ORDER BY
 	m_record_types_pkey ASC
 LIMIT $1 OFFSET $2;
 

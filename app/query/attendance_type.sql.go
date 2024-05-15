@@ -284,20 +284,53 @@ func (q *Queries) GetAttendanceTypesUseNumberedPaginate(ctx context.Context, arg
 
 const getPluralAttendanceTypes = `-- name: GetPluralAttendanceTypes :many
 SELECT m_attendance_types_pkey, attendance_type_id, name, key, color FROM m_attendance_types
+WHERE attendance_type_id = ANY($1::uuid[])
+ORDER BY
+	m_attendance_types_pkey ASC
+`
+
+func (q *Queries) GetPluralAttendanceTypes(ctx context.Context, attendanceTypeIds []uuid.UUID) ([]AttendanceType, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceTypes, attendanceTypeIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []AttendanceType{}
+	for rows.Next() {
+		var i AttendanceType
+		if err := rows.Scan(
+			&i.MAttendanceTypesPkey,
+			&i.AttendanceTypeID,
+			&i.Name,
+			&i.Key,
+			&i.Color,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAttendanceTypesUseNumberedPaginate = `-- name: GetPluralAttendanceTypesUseNumberedPaginate :many
+SELECT m_attendance_types_pkey, attendance_type_id, name, key, color FROM m_attendance_types
 WHERE attendance_type_id = ANY($3::uuid[])
 ORDER BY
 	m_attendance_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralAttendanceTypesParams struct {
+type GetPluralAttendanceTypesUseNumberedPaginateParams struct {
 	Limit             int32       `json:"limit"`
 	Offset            int32       `json:"offset"`
 	AttendanceTypeIds []uuid.UUID `json:"attendance_type_ids"`
 }
 
-func (q *Queries) GetPluralAttendanceTypes(ctx context.Context, arg GetPluralAttendanceTypesParams) ([]AttendanceType, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceTypes, arg.Limit, arg.Offset, arg.AttendanceTypeIds)
+func (q *Queries) GetPluralAttendanceTypesUseNumberedPaginate(ctx context.Context, arg GetPluralAttendanceTypesUseNumberedPaginateParams) ([]AttendanceType, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceTypesUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendanceTypeIds)
 	if err != nil {
 		return nil, err
 	}

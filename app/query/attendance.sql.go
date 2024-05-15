@@ -2667,17 +2667,10 @@ LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
-WHERE attendance_id = ANY($3::uuid[])
+WHERE attendance_id = ANY($1::uuid[])
 ORDER BY
 	t_attendances_pkey ASC
-LIMIT $1 OFFSET $2
 `
-
-type GetPluralAttendanceWithAllParams struct {
-	Limit         int32       `json:"limit"`
-	Offset        int32       `json:"offset"`
-	AttendanceIds []uuid.UUID `json:"attendance_ids"`
-}
 
 type GetPluralAttendanceWithAllRow struct {
 	TAttendancesPkey    pgtype.Int8  `json:"t_attendances_pkey"`
@@ -2701,8 +2694,8 @@ type GetPluralAttendanceWithAllRow struct {
 	Absence             Absence      `json:"absence"`
 }
 
-func (q *Queries) GetPluralAttendanceWithAll(ctx context.Context, arg GetPluralAttendanceWithAllParams) ([]GetPluralAttendanceWithAllRow, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceWithAll, arg.Limit, arg.Offset, arg.AttendanceIds)
+func (q *Queries) GetPluralAttendanceWithAll(ctx context.Context, attendanceIds []uuid.UUID) ([]GetPluralAttendanceWithAllRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithAll, attendanceIds)
 	if err != nil {
 		return nil, err
 	}
@@ -2771,20 +2764,128 @@ func (q *Queries) GetPluralAttendanceWithAll(ctx context.Context, arg GetPluralA
 	return items, nil
 }
 
-const getPluralAttendanceWithAttendanceType = `-- name: GetPluralAttendanceWithAttendanceType :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color FROM t_attendances
+const getPluralAttendanceWithAllUseNumberedPaginate = `-- name: GetPluralAttendanceWithAllUseNumberedPaginate :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
+LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
+LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
+LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralAttendanceWithAttendanceTypeParams struct {
+type GetPluralAttendanceWithAllUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	AttendanceIds []uuid.UUID `json:"attendance_ids"`
 }
+
+type GetPluralAttendanceWithAllUseNumberedPaginateRow struct {
+	TAttendancesPkey    pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID        uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID    uuid.UUID    `json:"attendance_type_id"`
+	MemberID            uuid.UUID    `json:"member_id"`
+	Description         string       `json:"description"`
+	Date                pgtype.Date  `json:"date"`
+	MailSendFlag        bool         `json:"mail_send_flag"`
+	SendOrganizationID  pgtype.UUID  `json:"send_organization_id"`
+	PostedAt            time.Time    `json:"posted_at"`
+	LastEditedAt        time.Time    `json:"last_edited_at"`
+	Member              Member       `json:"member"`
+	AttendanceTypeID_2  pgtype.UUID  `json:"attendance_type_id_2"`
+	AttendanceTypeName  pgtype.Text  `json:"attendance_type_name"`
+	AttendanceTypeKey   pgtype.Text  `json:"attendance_type_key"`
+	AttendanceTypeColor pgtype.Text  `json:"attendance_type_color"`
+	Organization        Organization `json:"organization"`
+	EarlyLeaving        EarlyLeaving `json:"early_leaving"`
+	LateArrival         LateArrival  `json:"late_arrival"`
+	Absence             Absence      `json:"absence"`
+}
+
+func (q *Queries) GetPluralAttendanceWithAllUseNumberedPaginate(ctx context.Context, arg GetPluralAttendanceWithAllUseNumberedPaginateParams) ([]GetPluralAttendanceWithAllUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithAllUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendanceIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralAttendanceWithAllUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralAttendanceWithAllUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.AttendanceTypeID_2,
+			&i.AttendanceTypeName,
+			&i.AttendanceTypeKey,
+			&i.AttendanceTypeColor,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.Color,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
+			&i.EarlyLeaving.TEarlyLeavingsPkey,
+			&i.EarlyLeaving.EarlyLeavingID,
+			&i.EarlyLeaving.AttendanceID,
+			&i.EarlyLeaving.LeaveTime,
+			&i.LateArrival.TLateArrivalsPkey,
+			&i.LateArrival.LateArrivalID,
+			&i.LateArrival.AttendanceID,
+			&i.LateArrival.ArriveTime,
+			&i.Absence.TAbsencesPkey,
+			&i.Absence.AbsenceID,
+			&i.Absence.AttendanceID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAttendanceWithAttendanceType = `-- name: GetPluralAttendanceWithAttendanceType :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color FROM t_attendances
+LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
+WHERE attendance_id = ANY($1::uuid[])
+ORDER BY
+	t_attendances_pkey ASC
+`
 
 type GetPluralAttendanceWithAttendanceTypeRow struct {
 	TAttendancesPkey    pgtype.Int8 `json:"t_attendances_pkey"`
@@ -2803,8 +2904,8 @@ type GetPluralAttendanceWithAttendanceTypeRow struct {
 	AttendanceTypeColor pgtype.Text `json:"attendance_type_color"`
 }
 
-func (q *Queries) GetPluralAttendanceWithAttendanceType(ctx context.Context, arg GetPluralAttendanceWithAttendanceTypeParams) ([]GetPluralAttendanceWithAttendanceTypeRow, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceWithAttendanceType, arg.Limit, arg.Offset, arg.AttendanceIds)
+func (q *Queries) GetPluralAttendanceWithAttendanceType(ctx context.Context, attendanceIds []uuid.UUID) ([]GetPluralAttendanceWithAttendanceTypeRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithAttendanceType, attendanceIds)
 	if err != nil {
 		return nil, err
 	}
@@ -2838,22 +2939,82 @@ func (q *Queries) GetPluralAttendanceWithAttendanceType(ctx context.Context, arg
 	return items, nil
 }
 
-const getPluralAttendanceWithDetails = `-- name: GetPluralAttendanceWithDetails :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
-LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
-LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
-LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
+const getPluralAttendanceWithAttendanceTypeUseNumberedPaginate = `-- name: GetPluralAttendanceWithAttendanceTypeUseNumberedPaginate :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_attendance_types.attendance_type_id, m_attendance_types.name as attendance_type_name, m_attendance_types.key as attendance_type_key, m_attendance_types.color as attendance_type_color FROM t_attendances
+LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralAttendanceWithDetailsParams struct {
+type GetPluralAttendanceWithAttendanceTypeUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	AttendanceIds []uuid.UUID `json:"attendance_ids"`
 }
+
+type GetPluralAttendanceWithAttendanceTypeUseNumberedPaginateRow struct {
+	TAttendancesPkey    pgtype.Int8 `json:"t_attendances_pkey"`
+	AttendanceID        uuid.UUID   `json:"attendance_id"`
+	AttendanceTypeID    uuid.UUID   `json:"attendance_type_id"`
+	MemberID            uuid.UUID   `json:"member_id"`
+	Description         string      `json:"description"`
+	Date                pgtype.Date `json:"date"`
+	MailSendFlag        bool        `json:"mail_send_flag"`
+	SendOrganizationID  pgtype.UUID `json:"send_organization_id"`
+	PostedAt            time.Time   `json:"posted_at"`
+	LastEditedAt        time.Time   `json:"last_edited_at"`
+	AttendanceTypeID_2  pgtype.UUID `json:"attendance_type_id_2"`
+	AttendanceTypeName  pgtype.Text `json:"attendance_type_name"`
+	AttendanceTypeKey   pgtype.Text `json:"attendance_type_key"`
+	AttendanceTypeColor pgtype.Text `json:"attendance_type_color"`
+}
+
+func (q *Queries) GetPluralAttendanceWithAttendanceTypeUseNumberedPaginate(ctx context.Context, arg GetPluralAttendanceWithAttendanceTypeUseNumberedPaginateParams) ([]GetPluralAttendanceWithAttendanceTypeUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithAttendanceTypeUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendanceIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralAttendanceWithAttendanceTypeUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralAttendanceWithAttendanceTypeUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.AttendanceTypeID_2,
+			&i.AttendanceTypeName,
+			&i.AttendanceTypeKey,
+			&i.AttendanceTypeColor,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAttendanceWithDetails = `-- name: GetPluralAttendanceWithDetails :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
+LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
+LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
+WHERE attendance_id = ANY($1::uuid[])
+ORDER BY
+	t_attendances_pkey ASC
+`
 
 type GetPluralAttendanceWithDetailsRow struct {
 	TAttendancesPkey   pgtype.Int8  `json:"t_attendances_pkey"`
@@ -2871,8 +3032,8 @@ type GetPluralAttendanceWithDetailsRow struct {
 	Absence            Absence      `json:"absence"`
 }
 
-func (q *Queries) GetPluralAttendanceWithDetails(ctx context.Context, arg GetPluralAttendanceWithDetailsParams) ([]GetPluralAttendanceWithDetailsRow, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceWithDetails, arg.Limit, arg.Offset, arg.AttendanceIds)
+func (q *Queries) GetPluralAttendanceWithDetails(ctx context.Context, attendanceIds []uuid.UUID) ([]GetPluralAttendanceWithDetailsRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithDetails, attendanceIds)
 	if err != nil {
 		return nil, err
 	}
@@ -2913,23 +3074,91 @@ func (q *Queries) GetPluralAttendanceWithDetails(ctx context.Context, arg GetPlu
 	return items, nil
 }
 
-const getPluralAttendanceWithMember = `-- name: GetPluralAttendanceWithMember :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
-LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
-LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
-LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
-LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+const getPluralAttendanceWithDetailsUseNumberedPaginate = `-- name: GetPluralAttendanceWithDetailsUseNumberedPaginate :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, t_early_leavings.t_early_leavings_pkey, t_early_leavings.early_leaving_id, t_early_leavings.attendance_id, t_early_leavings.leave_time, t_late_arrivals.t_late_arrivals_pkey, t_late_arrivals.late_arrival_id, t_late_arrivals.attendance_id, t_late_arrivals.arrive_time, t_absences.t_absences_pkey, t_absences.absence_id, t_absences.attendance_id FROM t_attendances
+LEFT JOIN t_early_leavings ON t_attendances.attendance_id = t_early_leavings.attendance_id
+LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.attendance_id
+LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralAttendanceWithMemberParams struct {
+type GetPluralAttendanceWithDetailsUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	AttendanceIds []uuid.UUID `json:"attendance_ids"`
 }
+
+type GetPluralAttendanceWithDetailsUseNumberedPaginateRow struct {
+	TAttendancesPkey   pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID    `json:"attendance_type_id"`
+	MemberID           uuid.UUID    `json:"member_id"`
+	Description        string       `json:"description"`
+	Date               pgtype.Date  `json:"date"`
+	MailSendFlag       bool         `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID  `json:"send_organization_id"`
+	PostedAt           time.Time    `json:"posted_at"`
+	LastEditedAt       time.Time    `json:"last_edited_at"`
+	EarlyLeaving       EarlyLeaving `json:"early_leaving"`
+	LateArrival        LateArrival  `json:"late_arrival"`
+	Absence            Absence      `json:"absence"`
+}
+
+func (q *Queries) GetPluralAttendanceWithDetailsUseNumberedPaginate(ctx context.Context, arg GetPluralAttendanceWithDetailsUseNumberedPaginateParams) ([]GetPluralAttendanceWithDetailsUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithDetailsUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendanceIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralAttendanceWithDetailsUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralAttendanceWithDetailsUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.EarlyLeaving.TEarlyLeavingsPkey,
+			&i.EarlyLeaving.EarlyLeavingID,
+			&i.EarlyLeaving.AttendanceID,
+			&i.EarlyLeaving.LeaveTime,
+			&i.LateArrival.TLateArrivalsPkey,
+			&i.LateArrival.LateArrivalID,
+			&i.LateArrival.AttendanceID,
+			&i.LateArrival.ArriveTime,
+			&i.Absence.TAbsencesPkey,
+			&i.Absence.AbsenceID,
+			&i.Absence.AttendanceID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAttendanceWithMember = `-- name: GetPluralAttendanceWithMember :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
+LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+WHERE attendance_id = ANY($1::uuid[])
+ORDER BY
+	t_attendances_pkey ASC
+`
 
 type GetPluralAttendanceWithMemberRow struct {
 	TAttendancesPkey   pgtype.Int8 `json:"t_attendances_pkey"`
@@ -2945,8 +3174,8 @@ type GetPluralAttendanceWithMemberRow struct {
 	Member             Member      `json:"member"`
 }
 
-func (q *Queries) GetPluralAttendanceWithMember(ctx context.Context, arg GetPluralAttendanceWithMemberParams) ([]GetPluralAttendanceWithMemberRow, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceWithMember, arg.Limit, arg.Offset, arg.AttendanceIds)
+func (q *Queries) GetPluralAttendanceWithMember(ctx context.Context, attendanceIds []uuid.UUID) ([]GetPluralAttendanceWithMemberRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithMember, attendanceIds)
 	if err != nil {
 		return nil, err
 	}
@@ -2990,20 +3219,90 @@ func (q *Queries) GetPluralAttendanceWithMember(ctx context.Context, arg GetPlur
 	return items, nil
 }
 
-const getPluralAttendanceWithSendOrganization = `-- name: GetPluralAttendanceWithSendOrganization :many
-SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM t_attendances
-LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+const getPluralAttendanceWithMemberUseNumberedPaginate = `-- name: GetPluralAttendanceWithMemberUseNumberedPaginate :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_attendances
+LEFT JOIN m_members ON t_attendances.member_id = m_members.member_id
+LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
+LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralAttendanceWithSendOrganizationParams struct {
+type GetPluralAttendanceWithMemberUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	AttendanceIds []uuid.UUID `json:"attendance_ids"`
 }
+
+type GetPluralAttendanceWithMemberUseNumberedPaginateRow struct {
+	TAttendancesPkey   pgtype.Int8 `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID   `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID   `json:"attendance_type_id"`
+	MemberID           uuid.UUID   `json:"member_id"`
+	Description        string      `json:"description"`
+	Date               pgtype.Date `json:"date"`
+	MailSendFlag       bool        `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID `json:"send_organization_id"`
+	PostedAt           time.Time   `json:"posted_at"`
+	LastEditedAt       time.Time   `json:"last_edited_at"`
+	Member             Member      `json:"member"`
+}
+
+func (q *Queries) GetPluralAttendanceWithMemberUseNumberedPaginate(ctx context.Context, arg GetPluralAttendanceWithMemberUseNumberedPaginateParams) ([]GetPluralAttendanceWithMemberUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithMemberUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendanceIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralAttendanceWithMemberUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralAttendanceWithMemberUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAttendanceWithSendOrganization = `-- name: GetPluralAttendanceWithSendOrganization :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM t_attendances
+LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+WHERE attendance_id = ANY($1::uuid[])
+ORDER BY
+	t_attendances_pkey ASC
+`
 
 type GetPluralAttendanceWithSendOrganizationRow struct {
 	TAttendancesPkey   pgtype.Int8  `json:"t_attendances_pkey"`
@@ -3019,8 +3318,8 @@ type GetPluralAttendanceWithSendOrganizationRow struct {
 	Organization       Organization `json:"organization"`
 }
 
-func (q *Queries) GetPluralAttendanceWithSendOrganization(ctx context.Context, arg GetPluralAttendanceWithSendOrganizationParams) ([]GetPluralAttendanceWithSendOrganizationRow, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceWithSendOrganization, arg.Limit, arg.Offset, arg.AttendanceIds)
+func (q *Queries) GetPluralAttendanceWithSendOrganization(ctx context.Context, attendanceIds []uuid.UUID) ([]GetPluralAttendanceWithSendOrganizationRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithSendOrganization, attendanceIds)
 	if err != nil {
 		return nil, err
 	}
@@ -3060,7 +3359,115 @@ func (q *Queries) GetPluralAttendanceWithSendOrganization(ctx context.Context, a
 	return items, nil
 }
 
+const getPluralAttendanceWithSendOrganizationUseNumberedPaginate = `-- name: GetPluralAttendanceWithSendOrganizationUseNumberedPaginate :many
+SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendances.attendance_type_id, t_attendances.member_id, t_attendances.description, t_attendances.date, t_attendances.mail_send_flag, t_attendances.send_organization_id, t_attendances.posted_at, t_attendances.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM t_attendances
+LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
+WHERE attendance_id = ANY($3::uuid[])
+ORDER BY
+	t_attendances_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralAttendanceWithSendOrganizationUseNumberedPaginateParams struct {
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+}
+
+type GetPluralAttendanceWithSendOrganizationUseNumberedPaginateRow struct {
+	TAttendancesPkey   pgtype.Int8  `json:"t_attendances_pkey"`
+	AttendanceID       uuid.UUID    `json:"attendance_id"`
+	AttendanceTypeID   uuid.UUID    `json:"attendance_type_id"`
+	MemberID           uuid.UUID    `json:"member_id"`
+	Description        string       `json:"description"`
+	Date               pgtype.Date  `json:"date"`
+	MailSendFlag       bool         `json:"mail_send_flag"`
+	SendOrganizationID pgtype.UUID  `json:"send_organization_id"`
+	PostedAt           time.Time    `json:"posted_at"`
+	LastEditedAt       time.Time    `json:"last_edited_at"`
+	Organization       Organization `json:"organization"`
+}
+
+func (q *Queries) GetPluralAttendanceWithSendOrganizationUseNumberedPaginate(ctx context.Context, arg GetPluralAttendanceWithSendOrganizationUseNumberedPaginateParams) ([]GetPluralAttendanceWithSendOrganizationUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithSendOrganizationUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendanceIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralAttendanceWithSendOrganizationUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralAttendanceWithSendOrganizationUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.Color,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPluralAttendances = `-- name: GetPluralAttendances :many
+SELECT t_attendances_pkey, attendance_id, attendance_type_id, member_id, description, date, mail_send_flag, send_organization_id, posted_at, last_edited_at FROM t_attendances
+WHERE attendance_id = ANY($1::uuid[])
+ORDER BY
+	t_attendances_pkey ASC
+`
+
+func (q *Queries) GetPluralAttendances(ctx context.Context, attendanceIds []uuid.UUID) ([]Attendance, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendances, attendanceIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Attendance{}
+	for rows.Next() {
+		var i Attendance
+		if err := rows.Scan(
+			&i.TAttendancesPkey,
+			&i.AttendanceID,
+			&i.AttendanceTypeID,
+			&i.MemberID,
+			&i.Description,
+			&i.Date,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedAt,
+			&i.LastEditedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAttendancesUseNumberedPaginate = `-- name: GetPluralAttendancesUseNumberedPaginate :many
 SELECT t_attendances_pkey, attendance_id, attendance_type_id, member_id, description, date, mail_send_flag, send_organization_id, posted_at, last_edited_at FROM t_attendances
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
@@ -3068,14 +3475,14 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralAttendancesParams struct {
+type GetPluralAttendancesUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	AttendanceIds []uuid.UUID `json:"attendance_ids"`
 }
 
-func (q *Queries) GetPluralAttendances(ctx context.Context, arg GetPluralAttendancesParams) ([]Attendance, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendances, arg.Limit, arg.Offset, arg.AttendanceIds)
+func (q *Queries) GetPluralAttendancesUseNumberedPaginate(ctx context.Context, arg GetPluralAttendancesUseNumberedPaginateParams) ([]Attendance, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendancesUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendanceIds)
 	if err != nil {
 		return nil, err
 	}

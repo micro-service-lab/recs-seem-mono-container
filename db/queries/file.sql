@@ -48,6 +48,12 @@ LIMIT $1;
 SELECT * FROM t_files
 WHERE attachable_item_id = ANY(@attachable_item_ids::uuid[])
 ORDER BY
+	t_files_pkey ASC;
+
+-- name: GetPluralFilesUseNumberedPaginate :many
+SELECT * FROM t_files
+WHERE attachable_item_id = ANY(@attachable_item_ids::uuid[])
+ORDER BY
 	t_files_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -83,6 +89,14 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralFilesWithAttachableItem :many
+SELECT sqlc.embed(t_files), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_files
+LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+WHERE attachable_item_id = ANY(@attachable_item_ids::uuid[])
+ORDER BY
+	t_files_pkey ASC;
+
+-- name: GetPluralFilesWithAttachableItemUseNumberedPaginate :many
 SELECT sqlc.embed(t_files), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id

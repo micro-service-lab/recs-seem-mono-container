@@ -424,12 +424,18 @@ func (a *PgAdapter) GetRecordTypesWithSd(
 func getPluralRecordTypes(
 	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.RecordType], error) {
-	p := query.GetPluralRecordTypesParams{
-		RecordTypeIds: ids,
-		Offset:        int32(np.Offset.Int64),
-		Limit:         int32(np.Limit.Int64),
+	var e []query.RecordType
+	var err error
+	if !np.Valid {
+		e, err = qtx.GetPluralRecordTypes(ctx, ids)
+	} else {
+		p := query.GetPluralRecordTypesUseNumberedPaginateParams{
+			RecordTypeIds: ids,
+			Offset:        int32(np.Offset.Int64),
+			Limit:         int32(np.Limit.Int64),
+		}
+		e, err = qtx.GetPluralRecordTypesUseNumberedPaginate(ctx, p)
 	}
-	e, err := qtx.GetPluralRecordTypes(ctx, p)
 	if err != nil {
 		return store.ListResult[entity.RecordType]{}, fmt.Errorf("failed to get plural record types: %w", err)
 	}

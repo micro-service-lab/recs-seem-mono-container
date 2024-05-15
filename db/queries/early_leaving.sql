@@ -42,6 +42,12 @@ LIMIT $1;
 SELECT * FROM t_early_leavings
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
+	t_early_leavings_pkey ASC;
+
+-- name: GetPluralEarlyLeavingsUseNumberedPaginate :many
+SELECT * FROM t_early_leavings
+WHERE attendance_id = ANY(@attendance_ids::uuid[])
+ORDER BY
 	t_early_leavings_pkey ASC
 LIMIT $1 OFFSET $2;
 

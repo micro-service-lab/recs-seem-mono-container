@@ -351,25 +351,18 @@ func (q *Queries) GetPermissionsOnWorkPositionUseNumberedPaginate(ctx context.Co
 const getPluralPermissionsOnWorkPosition = `-- name: GetPluralPermissionsOnWorkPosition :many
 SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id FROM m_permission_associations
 LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
-WHERE work_position_id = ANY($3::uuid[])
+WHERE work_position_id = ANY($1::uuid[])
 ORDER BY
 	m_permission_associations_pkey ASC
-LIMIT $1 OFFSET $2
 `
-
-type GetPluralPermissionsOnWorkPositionParams struct {
-	Limit           int32       `json:"limit"`
-	Offset          int32       `json:"offset"`
-	WorkPositionIds []uuid.UUID `json:"work_position_ids"`
-}
 
 type GetPluralPermissionsOnWorkPositionRow struct {
 	PermissionAssociation PermissionAssociation `json:"permission_association"`
 	Permission            Permission            `json:"permission"`
 }
 
-func (q *Queries) GetPluralPermissionsOnWorkPosition(ctx context.Context, arg GetPluralPermissionsOnWorkPositionParams) ([]GetPluralPermissionsOnWorkPositionRow, error) {
-	rows, err := q.db.Query(ctx, getPluralPermissionsOnWorkPosition, arg.Limit, arg.Offset, arg.WorkPositionIds)
+func (q *Queries) GetPluralPermissionsOnWorkPosition(ctx context.Context, workPositionIds []uuid.UUID) ([]GetPluralPermissionsOnWorkPositionRow, error) {
+	rows, err := q.db.Query(ctx, getPluralPermissionsOnWorkPosition, workPositionIds)
 	if err != nil {
 		return nil, err
 	}
@@ -398,7 +391,101 @@ func (q *Queries) GetPluralPermissionsOnWorkPosition(ctx context.Context, arg Ge
 	return items, nil
 }
 
+const getPluralPermissionsOnWorkPositionUseNumberedPaginate = `-- name: GetPluralPermissionsOnWorkPositionUseNumberedPaginate :many
+SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id FROM m_permission_associations
+LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
+WHERE work_position_id = ANY($3::uuid[])
+ORDER BY
+	m_permission_associations_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralPermissionsOnWorkPositionUseNumberedPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	Offset          int32       `json:"offset"`
+	WorkPositionIds []uuid.UUID `json:"work_position_ids"`
+}
+
+type GetPluralPermissionsOnWorkPositionUseNumberedPaginateRow struct {
+	PermissionAssociation PermissionAssociation `json:"permission_association"`
+	Permission            Permission            `json:"permission"`
+}
+
+func (q *Queries) GetPluralPermissionsOnWorkPositionUseNumberedPaginate(ctx context.Context, arg GetPluralPermissionsOnWorkPositionUseNumberedPaginateParams) ([]GetPluralPermissionsOnWorkPositionUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralPermissionsOnWorkPositionUseNumberedPaginate, arg.Limit, arg.Offset, arg.WorkPositionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralPermissionsOnWorkPositionUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralPermissionsOnWorkPositionUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.PermissionAssociation.MPermissionAssociationsPkey,
+			&i.PermissionAssociation.PermissionID,
+			&i.PermissionAssociation.WorkPositionID,
+			&i.Permission.MPermissionsPkey,
+			&i.Permission.PermissionID,
+			&i.Permission.Name,
+			&i.Permission.Description,
+			&i.Permission.Key,
+			&i.Permission.PermissionCategoryID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPluralWorkPositionsOnPermission = `-- name: GetPluralWorkPositionsOnPermission :many
+SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_work_positions.m_work_positions_pkey, m_work_positions.work_position_id, m_work_positions.organization_id, m_work_positions.name, m_work_positions.description, m_work_positions.created_at, m_work_positions.updated_at FROM m_permission_associations
+LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
+WHERE permission_id = ANY($1::uuid[])
+ORDER BY
+	m_permission_associations_pkey ASC
+`
+
+type GetPluralWorkPositionsOnPermissionRow struct {
+	PermissionAssociation PermissionAssociation `json:"permission_association"`
+	WorkPosition          WorkPosition          `json:"work_position"`
+}
+
+func (q *Queries) GetPluralWorkPositionsOnPermission(ctx context.Context, permissionIds []uuid.UUID) ([]GetPluralWorkPositionsOnPermissionRow, error) {
+	rows, err := q.db.Query(ctx, getPluralWorkPositionsOnPermission, permissionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralWorkPositionsOnPermissionRow{}
+	for rows.Next() {
+		var i GetPluralWorkPositionsOnPermissionRow
+		if err := rows.Scan(
+			&i.PermissionAssociation.MPermissionAssociationsPkey,
+			&i.PermissionAssociation.PermissionID,
+			&i.PermissionAssociation.WorkPositionID,
+			&i.WorkPosition.MWorkPositionsPkey,
+			&i.WorkPosition.WorkPositionID,
+			&i.WorkPosition.OrganizationID,
+			&i.WorkPosition.Name,
+			&i.WorkPosition.Description,
+			&i.WorkPosition.CreatedAt,
+			&i.WorkPosition.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralWorkPositionsOnPermissionUseNumberedPaginate = `-- name: GetPluralWorkPositionsOnPermissionUseNumberedPaginate :many
 SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_work_positions.m_work_positions_pkey, m_work_positions.work_position_id, m_work_positions.organization_id, m_work_positions.name, m_work_positions.description, m_work_positions.created_at, m_work_positions.updated_at FROM m_permission_associations
 LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
 WHERE permission_id = ANY($3::uuid[])
@@ -407,26 +494,26 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralWorkPositionsOnPermissionParams struct {
+type GetPluralWorkPositionsOnPermissionUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	PermissionIds []uuid.UUID `json:"permission_ids"`
 }
 
-type GetPluralWorkPositionsOnPermissionRow struct {
+type GetPluralWorkPositionsOnPermissionUseNumberedPaginateRow struct {
 	PermissionAssociation PermissionAssociation `json:"permission_association"`
 	WorkPosition          WorkPosition          `json:"work_position"`
 }
 
-func (q *Queries) GetPluralWorkPositionsOnPermission(ctx context.Context, arg GetPluralWorkPositionsOnPermissionParams) ([]GetPluralWorkPositionsOnPermissionRow, error) {
-	rows, err := q.db.Query(ctx, getPluralWorkPositionsOnPermission, arg.Limit, arg.Offset, arg.PermissionIds)
+func (q *Queries) GetPluralWorkPositionsOnPermissionUseNumberedPaginate(ctx context.Context, arg GetPluralWorkPositionsOnPermissionUseNumberedPaginateParams) ([]GetPluralWorkPositionsOnPermissionUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralWorkPositionsOnPermissionUseNumberedPaginate, arg.Limit, arg.Offset, arg.PermissionIds)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluralWorkPositionsOnPermissionRow{}
+	items := []GetPluralWorkPositionsOnPermissionUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetPluralWorkPositionsOnPermissionRow
+		var i GetPluralWorkPositionsOnPermissionUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.PermissionAssociation.MPermissionAssociationsPkey,
 			&i.PermissionAssociation.PermissionID,

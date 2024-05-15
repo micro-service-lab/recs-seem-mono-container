@@ -14,7 +14,7 @@ import (
 
 // GetAttendStatuses is a handler for getting attend statuses.
 type GetAttendStatuses struct {
-	Service service.AttendStatusManager
+	Service service.ManagerInterface
 }
 
 // GetAttendStatusesParam is a parameter for GetAttendStatuses.

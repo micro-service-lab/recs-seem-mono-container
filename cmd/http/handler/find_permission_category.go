@@ -14,7 +14,7 @@ import (
 
 // FindPermissionCategory is a handler for finding permission category.
 type FindPermissionCategory struct {
-	Service service.PermissionCategoryManager
+	Service service.ManagerInterface
 }
 
 func (h *FindPermissionCategory) ServeHTTP(w http.ResponseWriter, r *http.Request) {

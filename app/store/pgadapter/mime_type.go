@@ -31,11 +31,7 @@ func countMimeTypes(
 
 // CountMimeTypes マイムタイプ数を取得する。
 func (a *PgAdapter) CountMimeTypes(ctx context.Context, where parameter.WhereMimeTypeParam) (int64, error) {
-	c, err := countMimeTypes(ctx, a.query, where)
-	if err != nil {
-		return 0, fmt.Errorf("failed to count mime type: %w", err)
-	}
-	return c, nil
+	return countMimeTypes(ctx, a.query, where)
 }
 
 // CountMimeTypesWithSd SD付きでマイムタイプ数を取得する。
@@ -48,11 +44,7 @@ func (a *PgAdapter) CountMimeTypesWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := countMimeTypes(ctx, qtx, where)
-	if err != nil {
-		return 0, fmt.Errorf("failed to count mime type: %w", err)
-	}
-	return c, nil
+	return countMimeTypes(ctx, qtx, where)
 }
 
 func createMimeType(
@@ -80,11 +72,7 @@ func createMimeType(
 func (a *PgAdapter) CreateMimeType(
 	ctx context.Context, param parameter.CreateMimeTypeParam,
 ) (entity.MimeType, error) {
-	e, err := createMimeType(ctx, a.query, param)
-	if err != nil {
-		return entity.MimeType{}, fmt.Errorf("failed to create mime type: %w", err)
-	}
-	return e, nil
+	return createMimeType(ctx, a.query, param)
 }
 
 // CreateMimeTypeWithSd SD付きでマイムタイプを作成する。
@@ -97,11 +85,7 @@ func (a *PgAdapter) CreateMimeTypeWithSd(
 	if !ok {
 		return entity.MimeType{}, store.ErrNotFoundDescriptor
 	}
-	e, err := createMimeType(ctx, qtx, param)
-	if err != nil {
-		return entity.MimeType{}, fmt.Errorf("failed to create mime type: %w", err)
-	}
-	return e, nil
+	return createMimeType(ctx, qtx, param)
 }
 
 func createMimeTypes(
@@ -126,11 +110,7 @@ func createMimeTypes(
 func (a *PgAdapter) CreateMimeTypes(
 	ctx context.Context, params []parameter.CreateMimeTypeParam,
 ) (int64, error) {
-	c, err := createMimeTypes(ctx, a.query, params)
-	if err != nil {
-		return 0, fmt.Errorf("failed to create mime types: %w", err)
-	}
-	return c, nil
+	return createMimeTypes(ctx, a.query, params)
 }
 
 // CreateMimeTypesWithSd SD付きでマイムタイプを作成する。
@@ -143,11 +123,7 @@ func (a *PgAdapter) CreateMimeTypesWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := createMimeTypes(ctx, qtx, params)
-	if err != nil {
-		return 0, fmt.Errorf("failed to create mime types: %w", err)
-	}
-	return c, nil
+	return createMimeTypes(ctx, qtx, params)
 }
 
 func deleteMimeType(ctx context.Context, qtx *query.Queries, mimeTypeID uuid.UUID) (int64, error) {
@@ -160,11 +136,7 @@ func deleteMimeType(ctx context.Context, qtx *query.Queries, mimeTypeID uuid.UUI
 
 // DeleteMimeType マイムタイプを削除する。
 func (a *PgAdapter) DeleteMimeType(ctx context.Context, mimeTypeID uuid.UUID) (int64, error) {
-	c, err := deleteMimeType(ctx, a.query, mimeTypeID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete mime type: %w", err)
-	}
-	return c, nil
+	return deleteMimeType(ctx, a.query, mimeTypeID)
 }
 
 // DeleteMimeTypeWithSd SD付きでマイムタイプを削除する。
@@ -177,11 +149,7 @@ func (a *PgAdapter) DeleteMimeTypeWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := deleteMimeType(ctx, qtx, mimeTypeID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete mime type: %w", err)
-	}
-	return c, nil
+	return deleteMimeType(ctx, qtx, mimeTypeID)
 }
 
 func deleteMimeTypeByKey(ctx context.Context, qtx *query.Queries, key string) (int64, error) {
@@ -194,11 +162,7 @@ func deleteMimeTypeByKey(ctx context.Context, qtx *query.Queries, key string) (i
 
 // DeleteMimeTypeByKey マイムタイプを削除する。
 func (a *PgAdapter) DeleteMimeTypeByKey(ctx context.Context, key string) (int64, error) {
-	c, err := deleteMimeTypeByKey(ctx, a.query, key)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete mime type: %w", err)
-	}
-	return c, nil
+	return deleteMimeTypeByKey(ctx, a.query, key)
 }
 
 // DeleteMimeTypeByKeyWithSd SD付きでマイムタイプを削除する。
@@ -211,11 +175,7 @@ func (a *PgAdapter) DeleteMimeTypeByKeyWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := deleteMimeTypeByKey(ctx, qtx, key)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete mime type: %w", err)
-	}
-	return c, nil
+	return deleteMimeTypeByKey(ctx, qtx, key)
 }
 
 func pluralDeleteMimeTypes(ctx context.Context, qtx *query.Queries, mimeTypeIDs []uuid.UUID) (int64, error) {
@@ -228,11 +188,7 @@ func pluralDeleteMimeTypes(ctx context.Context, qtx *query.Queries, mimeTypeIDs 
 
 // PluralDeleteMimeTypes マイムタイプを複数削除する。
 func (a *PgAdapter) PluralDeleteMimeTypes(ctx context.Context, mimeTypeIDs []uuid.UUID) (int64, error) {
-	c, err := pluralDeleteMimeTypes(ctx, a.query, mimeTypeIDs)
-	if err != nil {
-		return 0, fmt.Errorf("failed to plural delete mime types: %w", err)
-	}
-	return c, nil
+	return pluralDeleteMimeTypes(ctx, a.query, mimeTypeIDs)
 }
 
 // PluralDeleteMimeTypesWithSd SD付きでマイムタイプを複数削除する。
@@ -245,11 +201,7 @@ func (a *PgAdapter) PluralDeleteMimeTypesWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := pluralDeleteMimeTypes(ctx, qtx, mimeTypeIDs)
-	if err != nil {
-		return 0, fmt.Errorf("failed to plural delete mime types: %w", err)
-	}
-	return c, nil
+	return pluralDeleteMimeTypes(ctx, qtx, mimeTypeIDs)
 }
 
 func findMimeTypeByID(
@@ -275,11 +227,7 @@ func findMimeTypeByID(
 func (a *PgAdapter) FindMimeTypeByID(
 	ctx context.Context, mimeTypeID uuid.UUID,
 ) (entity.MimeType, error) {
-	e, err := findMimeTypeByID(ctx, a.query, mimeTypeID)
-	if err != nil {
-		return entity.MimeType{}, fmt.Errorf("failed to find mime type: %w", err)
-	}
-	return e, nil
+	return findMimeTypeByID(ctx, a.query, mimeTypeID)
 }
 
 // FindMimeTypeByIDWithSd SD付きでマイムタイプを取得する。
@@ -292,11 +240,7 @@ func (a *PgAdapter) FindMimeTypeByIDWithSd(
 	if !ok {
 		return entity.MimeType{}, store.ErrNotFoundDescriptor
 	}
-	e, err := findMimeTypeByID(ctx, qtx, mimeTypeID)
-	if err != nil {
-		return entity.MimeType{}, fmt.Errorf("failed to find mime type: %w", err)
-	}
-	return e, nil
+	return findMimeTypeByID(ctx, qtx, mimeTypeID)
 }
 
 func findMimeTypeByKey(ctx context.Context, qtx *query.Queries, key string) (entity.MimeType, error) {
@@ -318,11 +262,7 @@ func findMimeTypeByKey(ctx context.Context, qtx *query.Queries, key string) (ent
 
 // FindMimeTypeByKey マイムタイプを取得する。
 func (a *PgAdapter) FindMimeTypeByKey(ctx context.Context, key string) (entity.MimeType, error) {
-	e, err := findMimeTypeByKey(ctx, a.query, key)
-	if err != nil {
-		return entity.MimeType{}, fmt.Errorf("failed to find mime type: %w", err)
-	}
-	return e, nil
+	return findMimeTypeByKey(ctx, a.query, key)
 }
 
 // FindMimeTypeByKeyWithSd SD付きでマイムタイプを取得する。
@@ -335,11 +275,7 @@ func (a *PgAdapter) FindMimeTypeByKeyWithSd(
 	if !ok {
 		return entity.MimeType{}, store.ErrNotFoundDescriptor
 	}
-	e, err := findMimeTypeByKey(ctx, qtx, key)
-	if err != nil {
-		return entity.MimeType{}, fmt.Errorf("failed to find mime type: %w", err)
-	}
-	return e, nil
+	return findMimeTypeByKey(ctx, qtx, key)
 }
 
 // MimeTypeCursor is a cursor for MimeType.
@@ -469,11 +405,7 @@ func (a *PgAdapter) GetMimeTypes(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.MimeType], error) {
-	r, err := getMimeTypes(ctx, a.query, where, order, np, cp, wc)
-	if err != nil {
-		return store.ListResult[entity.MimeType]{}, fmt.Errorf("failed to get mime types: %w", err)
-	}
-	return r, nil
+	return getMimeTypes(ctx, a.query, where, order, np, cp, wc)
 }
 
 // GetMimeTypesWithSd SD付きでマイムタイプを取得する。
@@ -492,11 +424,7 @@ func (a *PgAdapter) GetMimeTypesWithSd(
 	if !ok {
 		return store.ListResult[entity.MimeType]{}, store.ErrNotFoundDescriptor
 	}
-	r, err := getMimeTypes(ctx, qtx, where, order, np, cp, wc)
-	if err != nil {
-		return store.ListResult[entity.MimeType]{}, fmt.Errorf("failed to get mime types: %w", err)
-	}
-	return r, nil
+	return getMimeTypes(ctx, qtx, where, order, np, cp, wc)
 }
 
 func getPluralMimeTypes(
@@ -527,11 +455,7 @@ func getPluralMimeTypes(
 func (a *PgAdapter) GetPluralMimeTypes(
 	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.MimeType], error) {
-	r, err := getPluralMimeTypes(ctx, a.query, ids, np)
-	if err != nil {
-		return store.ListResult[entity.MimeType]{}, fmt.Errorf("failed to get plural mime types: %w", err)
-	}
-	return r, nil
+	return getPluralMimeTypes(ctx, a.query, ids, np)
 }
 
 // GetPluralMimeTypesWithSd SD付きでマイムタイプを取得する。
@@ -544,11 +468,7 @@ func (a *PgAdapter) GetPluralMimeTypesWithSd(
 	if !ok {
 		return store.ListResult[entity.MimeType]{}, store.ErrNotFoundDescriptor
 	}
-	r, err := getPluralMimeTypes(ctx, qtx, ids, np)
-	if err != nil {
-		return store.ListResult[entity.MimeType]{}, fmt.Errorf("failed to get plural mime types: %w", err)
-	}
-	return r, nil
+	return getPluralMimeTypes(ctx, qtx, ids, np)
 }
 
 func updateMimeType(
@@ -580,11 +500,7 @@ func updateMimeType(
 func (a *PgAdapter) UpdateMimeType(
 	ctx context.Context, mimeTypeID uuid.UUID, param parameter.UpdateMimeTypeParams,
 ) (entity.MimeType, error) {
-	e, err := updateMimeType(ctx, a.query, mimeTypeID, param)
-	if err != nil {
-		return entity.MimeType{}, fmt.Errorf("failed to update mime type: %w", err)
-	}
-	return e, nil
+	return updateMimeType(ctx, a.query, mimeTypeID, param)
 }
 
 // UpdateMimeTypeWithSd SD付きでマイムタイプを更新する。
@@ -597,11 +513,7 @@ func (a *PgAdapter) UpdateMimeTypeWithSd(
 	if !ok {
 		return entity.MimeType{}, store.ErrNotFoundDescriptor
 	}
-	e, err := updateMimeType(ctx, qtx, mimeTypeID, param)
-	if err != nil {
-		return entity.MimeType{}, fmt.Errorf("failed to update mime type: %w", err)
-	}
-	return e, nil
+	return updateMimeType(ctx, qtx, mimeTypeID, param)
 }
 
 func updateMimeTypeByKey(
@@ -632,11 +544,7 @@ func updateMimeTypeByKey(
 func (a *PgAdapter) UpdateMimeTypeByKey(
 	ctx context.Context, key string, param parameter.UpdateMimeTypeByKeyParams,
 ) (entity.MimeType, error) {
-	e, err := updateMimeTypeByKey(ctx, a.query, key, param)
-	if err != nil {
-		return entity.MimeType{}, fmt.Errorf("failed to update mime type: %w", err)
-	}
-	return e, nil
+	return updateMimeTypeByKey(ctx, a.query, key, param)
 }
 
 // UpdateMimeTypeByKeyWithSd SD付きでマイムタイプを更新する。
@@ -649,9 +557,5 @@ func (a *PgAdapter) UpdateMimeTypeByKeyWithSd(
 	if !ok {
 		return entity.MimeType{}, store.ErrNotFoundDescriptor
 	}
-	e, err := updateMimeTypeByKey(ctx, qtx, key, param)
-	if err != nil {
-		return entity.MimeType{}, fmt.Errorf("failed to update mime type: %w", err)
-	}
-	return e, nil
+	return updateMimeTypeByKey(ctx, qtx, key, param)
 }

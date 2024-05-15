@@ -14,7 +14,7 @@ import (
 
 // FindEventType is a handler for finding event type.
 type FindEventType struct {
-	Service service.EventTypeManager
+	Service service.ManagerInterface
 }
 
 func (h *FindEventType) ServeHTTP(w http.ResponseWriter, r *http.Request) {

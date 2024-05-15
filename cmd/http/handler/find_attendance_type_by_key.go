@@ -13,7 +13,7 @@ import (
 
 // FindAttendanceTypeByKey is a handler for finding attendance type.
 type FindAttendanceTypeByKey struct {
-	Service service.AttendanceTypeManager
+	Service service.ManagerInterface
 }
 
 func (h *FindAttendanceTypeByKey) ServeHTTP(w http.ResponseWriter, r *http.Request) {

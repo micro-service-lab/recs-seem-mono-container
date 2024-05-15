@@ -24,6 +24,7 @@ type Manager struct {
 	ManagePermission
 	ManagePolicy
 	ManageRole
+	ManageRoleAssociation
 }
 
 // NewManager creates a new Manager.
@@ -40,6 +41,7 @@ func NewManager(db store.Store) *Manager {
 		ManagePermission:         ManagePermission{DB: db},
 		ManagePolicy:             ManagePolicy{DB: db},
 		ManageRole:               ManageRole{DB: db},
+		ManageRoleAssociation:    ManageRoleAssociation{DB: db},
 	}
 }
 
@@ -57,6 +59,7 @@ type ManagerInterface interface {
 	PermissionManager
 	PolicyManager
 	RoleManager
+	RoleAssociationManager
 }
 
 // AttendStatusManager is a interface for attend status service.
@@ -318,6 +321,65 @@ type RoleManager interface {
 		withCount parameter.WithCount,
 	) (store.ListResult[entity.Role], error)
 	GetRolesCount(ctx context.Context, whereSearchName string) (int64, error)
+}
+
+// RoleAssociationManager is a interface for role association service.
+type RoleAssociationManager interface {
+	AssociateRole(
+		ctx context.Context, roleID, policyID uuid.UUID,
+	) (entity.RoleAssociation, error)
+	AssociateRoles(
+		ctx context.Context, params []parameter.AssociationRoleParam,
+	) (int64, error)
+	DisassociateRole(
+		ctx context.Context, roleID, policyID uuid.UUID,
+	) (int64, error)
+	DisassociateRoleOnPolicy(
+		ctx context.Context, policyID uuid.UUID,
+	) (int64, error)
+	DisassociateRoleOnPolicies(
+		ctx context.Context, policyIDs []uuid.UUID,
+	) (int64, error)
+	PluralDisassociateRoleOnPolicy(
+		ctx context.Context, policyID uuid.UUID, roleIDs []uuid.UUID,
+	) (int64, error)
+	DisassociatePolicyOnRole(
+		ctx context.Context, roleID uuid.UUID,
+	) (int64, error)
+	DisassociatePolicyOnRoles(
+		ctx context.Context, roleIDs []uuid.UUID,
+	) (int64, error)
+	PluralDisassociatePolicyOnRole(
+		ctx context.Context, roleID uuid.UUID, policyIDs []uuid.UUID,
+	) (int64, error)
+	GetRolesOnPolicy(
+		ctx context.Context, policyID uuid.UUID,
+		whereSearchName string,
+		order parameter.RoleOnPolicyOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.RoleOnPolicy], error)
+	GetPoliciesOnRole(
+		ctx context.Context, roleID uuid.UUID,
+		whereSearchName string,
+		order parameter.PolicyOnRoleOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.PolicyOnRole], error)
+	GetRolesOnPolicyCount(
+		ctx context.Context, policyID uuid.UUID,
+		whereSearchName string,
+	) (int64, error)
+	GetPoliciesOnRoleCount(
+		ctx context.Context, roleID uuid.UUID,
+		whereSearchName string,
+	) (int64, error)
 }
 
 var _ ManagerInterface = (*Manager)(nil)

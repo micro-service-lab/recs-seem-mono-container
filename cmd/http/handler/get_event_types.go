@@ -14,7 +14,7 @@ import (
 
 // GetEventTypes is a handler for getting event types.
 type GetEventTypes struct {
-	Service service.EventTypeManager
+	Service service.ManagerInterface
 }
 
 // GetEventTypesParam is a parameter for GetEventTypes.

@@ -17,7 +17,7 @@ import (
 
 // FindPolicy is a handler for finding policy.
 type FindPolicy struct {
-	Service service.PolicyManager
+	Service service.ManagerInterface
 }
 
 // FindPoliciesParam is a parameter for FindPolicies.

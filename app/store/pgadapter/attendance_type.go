@@ -31,11 +31,7 @@ func countAttendanceTypes(
 
 // CountAttendanceTypes 出欠状況タイプ数を取得する。
 func (a *PgAdapter) CountAttendanceTypes(ctx context.Context, where parameter.WhereAttendanceTypeParam) (int64, error) {
-	c, err := countAttendanceTypes(ctx, a.query, where)
-	if err != nil {
-		return 0, fmt.Errorf("failed to count attendance type: %w", err)
-	}
-	return c, nil
+	return countAttendanceTypes(ctx, a.query, where)
 }
 
 // CountAttendanceTypesWithSd SD付きで出欠状況タイプ数を取得する。
@@ -48,11 +44,7 @@ func (a *PgAdapter) CountAttendanceTypesWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := countAttendanceTypes(ctx, qtx, where)
-	if err != nil {
-		return 0, fmt.Errorf("failed to count attendance type: %w", err)
-	}
-	return c, nil
+	return countAttendanceTypes(ctx, qtx, where)
 }
 
 func createAttendanceType(
@@ -80,11 +72,7 @@ func createAttendanceType(
 func (a *PgAdapter) CreateAttendanceType(
 	ctx context.Context, param parameter.CreateAttendanceTypeParam,
 ) (entity.AttendanceType, error) {
-	e, err := createAttendanceType(ctx, a.query, param)
-	if err != nil {
-		return entity.AttendanceType{}, fmt.Errorf("failed to create attendance type: %w", err)
-	}
-	return e, nil
+	return createAttendanceType(ctx, a.query, param)
 }
 
 // CreateAttendanceTypeWithSd SD付きで出欠状況タイプを作成する。
@@ -97,11 +85,7 @@ func (a *PgAdapter) CreateAttendanceTypeWithSd(
 	if !ok {
 		return entity.AttendanceType{}, store.ErrNotFoundDescriptor
 	}
-	e, err := createAttendanceType(ctx, qtx, param)
-	if err != nil {
-		return entity.AttendanceType{}, fmt.Errorf("failed to create attendance type: %w", err)
-	}
-	return e, nil
+	return createAttendanceType(ctx, qtx, param)
 }
 
 func createAttendanceTypes(
@@ -126,11 +110,7 @@ func createAttendanceTypes(
 func (a *PgAdapter) CreateAttendanceTypes(
 	ctx context.Context, params []parameter.CreateAttendanceTypeParam,
 ) (int64, error) {
-	c, err := createAttendanceTypes(ctx, a.query, params)
-	if err != nil {
-		return 0, fmt.Errorf("failed to create attendance types: %w", err)
-	}
-	return c, nil
+	return createAttendanceTypes(ctx, a.query, params)
 }
 
 // CreateAttendanceTypesWithSd SD付きで出欠状況タイプを作成する。
@@ -143,11 +123,7 @@ func (a *PgAdapter) CreateAttendanceTypesWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := createAttendanceTypes(ctx, qtx, params)
-	if err != nil {
-		return 0, fmt.Errorf("failed to create attendance types: %w", err)
-	}
-	return c, nil
+	return createAttendanceTypes(ctx, qtx, params)
 }
 
 func deleteAttendanceType(ctx context.Context, qtx *query.Queries, attendanceTypeID uuid.UUID) (int64, error) {
@@ -160,11 +136,7 @@ func deleteAttendanceType(ctx context.Context, qtx *query.Queries, attendanceTyp
 
 // DeleteAttendanceType 出欠状況タイプを削除する。
 func (a *PgAdapter) DeleteAttendanceType(ctx context.Context, attendanceTypeID uuid.UUID) (int64, error) {
-	c, err := deleteAttendanceType(ctx, a.query, attendanceTypeID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete attendance type: %w", err)
-	}
-	return c, nil
+	return deleteAttendanceType(ctx, a.query, attendanceTypeID)
 }
 
 // DeleteAttendanceTypeWithSd SD付きで出欠状況タイプを削除する。
@@ -177,11 +149,7 @@ func (a *PgAdapter) DeleteAttendanceTypeWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := deleteAttendanceType(ctx, qtx, attendanceTypeID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete attendance type: %w", err)
-	}
-	return c, nil
+	return deleteAttendanceType(ctx, qtx, attendanceTypeID)
 }
 
 func deleteAttendanceTypeByKey(ctx context.Context, qtx *query.Queries, key string) (int64, error) {
@@ -194,11 +162,7 @@ func deleteAttendanceTypeByKey(ctx context.Context, qtx *query.Queries, key stri
 
 // DeleteAttendanceTypeByKey 出欠状況タイプを削除する。
 func (a *PgAdapter) DeleteAttendanceTypeByKey(ctx context.Context, key string) (int64, error) {
-	c, err := deleteAttendanceTypeByKey(ctx, a.query, key)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete attendance type: %w", err)
-	}
-	return c, nil
+	return deleteAttendanceTypeByKey(ctx, a.query, key)
 }
 
 // DeleteAttendanceTypeByKeyWithSd SD付きで出欠状況タイプを削除する。
@@ -211,11 +175,7 @@ func (a *PgAdapter) DeleteAttendanceTypeByKeyWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := deleteAttendanceTypeByKey(ctx, qtx, key)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete attendance type: %w", err)
-	}
-	return c, nil
+	return deleteAttendanceTypeByKey(ctx, qtx, key)
 }
 
 func pluralDeleteAttendanceTypes(
@@ -230,11 +190,7 @@ func pluralDeleteAttendanceTypes(
 
 // PluralDeleteAttendanceTypes 出欠状況タイプを複数削除する。
 func (a *PgAdapter) PluralDeleteAttendanceTypes(ctx context.Context, attendanceTypeIDs []uuid.UUID) (int64, error) {
-	c, err := pluralDeleteAttendanceTypes(ctx, a.query, attendanceTypeIDs)
-	if err != nil {
-		return 0, fmt.Errorf("failed to plural delete attendance types: %w", err)
-	}
-	return c, nil
+	return pluralDeleteAttendanceTypes(ctx, a.query, attendanceTypeIDs)
 }
 
 // PluralDeleteAttendanceTypesWithSd SD付きで出欠状況タイプを複数削除する。
@@ -247,11 +203,7 @@ func (a *PgAdapter) PluralDeleteAttendanceTypesWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := pluralDeleteAttendanceTypes(ctx, qtx, attendanceTypeIDs)
-	if err != nil {
-		return 0, fmt.Errorf("failed to plural delete attendance types: %w", err)
-	}
-	return c, nil
+	return pluralDeleteAttendanceTypes(ctx, qtx, attendanceTypeIDs)
 }
 
 func findAttendanceTypeByID(
@@ -277,11 +229,7 @@ func findAttendanceTypeByID(
 func (a *PgAdapter) FindAttendanceTypeByID(
 	ctx context.Context, attendanceTypeID uuid.UUID,
 ) (entity.AttendanceType, error) {
-	e, err := findAttendanceTypeByID(ctx, a.query, attendanceTypeID)
-	if err != nil {
-		return entity.AttendanceType{}, fmt.Errorf("failed to find attendance type: %w", err)
-	}
-	return e, nil
+	return findAttendanceTypeByID(ctx, a.query, attendanceTypeID)
 }
 
 // FindAttendanceTypeByIDWithSd SD付きで出欠状況タイプを取得する。
@@ -294,11 +242,7 @@ func (a *PgAdapter) FindAttendanceTypeByIDWithSd(
 	if !ok {
 		return entity.AttendanceType{}, store.ErrNotFoundDescriptor
 	}
-	e, err := findAttendanceTypeByID(ctx, qtx, attendanceTypeID)
-	if err != nil {
-		return entity.AttendanceType{}, fmt.Errorf("failed to find attendance type: %w", err)
-	}
-	return e, nil
+	return findAttendanceTypeByID(ctx, qtx, attendanceTypeID)
 }
 
 func findAttendanceTypeByKey(ctx context.Context, qtx *query.Queries, key string) (entity.AttendanceType, error) {
@@ -320,11 +264,7 @@ func findAttendanceTypeByKey(ctx context.Context, qtx *query.Queries, key string
 
 // FindAttendanceTypeByKey 出欠状況タイプを取得する。
 func (a *PgAdapter) FindAttendanceTypeByKey(ctx context.Context, key string) (entity.AttendanceType, error) {
-	e, err := findAttendanceTypeByKey(ctx, a.query, key)
-	if err != nil {
-		return entity.AttendanceType{}, fmt.Errorf("failed to find attendance type: %w", err)
-	}
-	return e, nil
+	return findAttendanceTypeByKey(ctx, a.query, key)
 }
 
 // FindAttendanceTypeByKeyWithSd SD付きで出欠状況タイプを取得する。
@@ -337,11 +277,7 @@ func (a *PgAdapter) FindAttendanceTypeByKeyWithSd(
 	if !ok {
 		return entity.AttendanceType{}, store.ErrNotFoundDescriptor
 	}
-	e, err := findAttendanceTypeByKey(ctx, qtx, key)
-	if err != nil {
-		return entity.AttendanceType{}, fmt.Errorf("failed to find attendance type: %w", err)
-	}
-	return e, nil
+	return findAttendanceTypeByKey(ctx, qtx, key)
 }
 
 // AttendanceTypeCursor is a cursor for AttendanceType.
@@ -471,11 +407,7 @@ func (a *PgAdapter) GetAttendanceTypes(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.AttendanceType], error) {
-	r, err := getAttendanceTypes(ctx, a.query, where, order, np, cp, wc)
-	if err != nil {
-		return store.ListResult[entity.AttendanceType]{}, fmt.Errorf("failed to get attendance types: %w", err)
-	}
-	return r, nil
+	return getAttendanceTypes(ctx, a.query, where, order, np, cp, wc)
 }
 
 // GetAttendanceTypesWithSd SD付きで出欠状況タイプを取得する。
@@ -494,11 +426,7 @@ func (a *PgAdapter) GetAttendanceTypesWithSd(
 	if !ok {
 		return store.ListResult[entity.AttendanceType]{}, store.ErrNotFoundDescriptor
 	}
-	r, err := getAttendanceTypes(ctx, qtx, where, order, np, cp, wc)
-	if err != nil {
-		return store.ListResult[entity.AttendanceType]{}, fmt.Errorf("failed to get attendance types: %w", err)
-	}
-	return r, nil
+	return getAttendanceTypes(ctx, qtx, where, order, np, cp, wc)
 }
 
 func getPluralAttendanceTypes(
@@ -529,11 +457,7 @@ func getPluralAttendanceTypes(
 func (a *PgAdapter) GetPluralAttendanceTypes(
 	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttendanceType], error) {
-	r, err := getPluralAttendanceTypes(ctx, a.query, ids, np)
-	if err != nil {
-		return store.ListResult[entity.AttendanceType]{}, fmt.Errorf("failed to get plural attendance types: %w", err)
-	}
-	return r, nil
+	return getPluralAttendanceTypes(ctx, a.query, ids, np)
 }
 
 // GetPluralAttendanceTypesWithSd SD付きで出欠状況タイプを取得する。
@@ -546,11 +470,7 @@ func (a *PgAdapter) GetPluralAttendanceTypesWithSd(
 	if !ok {
 		return store.ListResult[entity.AttendanceType]{}, store.ErrNotFoundDescriptor
 	}
-	r, err := getPluralAttendanceTypes(ctx, qtx, ids, np)
-	if err != nil {
-		return store.ListResult[entity.AttendanceType]{}, fmt.Errorf("failed to get plural attendance types: %w", err)
-	}
-	return r, nil
+	return getPluralAttendanceTypes(ctx, qtx, ids, np)
 }
 
 func updateAttendanceType(
@@ -582,11 +502,7 @@ func updateAttendanceType(
 func (a *PgAdapter) UpdateAttendanceType(
 	ctx context.Context, attendanceTypeID uuid.UUID, param parameter.UpdateAttendanceTypeParams,
 ) (entity.AttendanceType, error) {
-	e, err := updateAttendanceType(ctx, a.query, attendanceTypeID, param)
-	if err != nil {
-		return entity.AttendanceType{}, fmt.Errorf("failed to update attendance type: %w", err)
-	}
-	return e, nil
+	return updateAttendanceType(ctx, a.query, attendanceTypeID, param)
 }
 
 // UpdateAttendanceTypeWithSd SD付きで出欠状況タイプを更新する。
@@ -599,11 +515,7 @@ func (a *PgAdapter) UpdateAttendanceTypeWithSd(
 	if !ok {
 		return entity.AttendanceType{}, store.ErrNotFoundDescriptor
 	}
-	e, err := updateAttendanceType(ctx, qtx, attendanceTypeID, param)
-	if err != nil {
-		return entity.AttendanceType{}, fmt.Errorf("failed to update attendance type: %w", err)
-	}
-	return e, nil
+	return updateAttendanceType(ctx, qtx, attendanceTypeID, param)
 }
 
 func updateAttendanceTypeByKey(
@@ -634,11 +546,7 @@ func updateAttendanceTypeByKey(
 func (a *PgAdapter) UpdateAttendanceTypeByKey(
 	ctx context.Context, key string, param parameter.UpdateAttendanceTypeByKeyParams,
 ) (entity.AttendanceType, error) {
-	e, err := updateAttendanceTypeByKey(ctx, a.query, key, param)
-	if err != nil {
-		return entity.AttendanceType{}, fmt.Errorf("failed to update attendance type: %w", err)
-	}
-	return e, nil
+	return updateAttendanceTypeByKey(ctx, a.query, key, param)
 }
 
 // UpdateAttendanceTypeByKeyWithSd SD付きで出欠状況タイプを更新する。
@@ -651,9 +559,5 @@ func (a *PgAdapter) UpdateAttendanceTypeByKeyWithSd(
 	if !ok {
 		return entity.AttendanceType{}, store.ErrNotFoundDescriptor
 	}
-	e, err := updateAttendanceTypeByKey(ctx, qtx, key, param)
-	if err != nil {
-		return entity.AttendanceType{}, fmt.Errorf("failed to update attendance type: %w", err)
-	}
-	return e, nil
+	return updateAttendanceTypeByKey(ctx, qtx, key, param)
 }

@@ -15,7 +15,7 @@ import (
 
 // FindPermissionByKey is a handler for finding permission.
 type FindPermissionByKey struct {
-	Service service.PermissionManager
+	Service service.ManagerInterface
 }
 
 func (h *FindPermissionByKey) ServeHTTP(w http.ResponseWriter, r *http.Request) {

@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/stoewer/go-strcase"
+	"github.com/iancoleman/strcase"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/agerror"
 )
@@ -388,7 +388,7 @@ func setField(refField reflect.Value, refTypeField reflect.StructField, opts Opt
 
 // フィールド名からキー(タグの名前)を生成する
 func toParamName(input string) string {
-	return strcase.SnakeCase(input)
+	return strcase.ToSnake(input)
 }
 
 // FieldParams contains information about parsed field tags.

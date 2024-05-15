@@ -15,7 +15,7 @@ import (
 
 // FindPolicyByKey is a handler for finding policy.
 type FindPolicyByKey struct {
-	Service service.PolicyManager
+	Service service.ManagerInterface
 }
 
 func (h *FindPolicyByKey) ServeHTTP(w http.ResponseWriter, r *http.Request) {

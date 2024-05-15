@@ -5,7 +5,6 @@ import (
 	"context"
 	"errors"
 	"reflect"
-	"strings"
 	"sync"
 
 	"github.com/go-playground/locales/en"
@@ -14,6 +13,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	en_translations "github.com/go-playground/validator/v10/translations/en"
 	ja_translations "github.com/go-playground/validator/v10/translations/ja"
+	"github.com/iancoleman/strcase"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/lang"
@@ -114,7 +114,7 @@ func (v *RequestValidator) ValidateWithLocale(ctx context.Context, req any, loca
 		// translate all error at once
 		if ok := errors.As(err, &errs); ok {
 			for _, err := range errs {
-				fieldName := strings.ToLower(err.StructField())
+				fieldName := strcase.ToSnake(err.StructField())
 				errAttr[fieldName] = append(errAttr[fieldName], err.Translate(*et))
 			}
 		}

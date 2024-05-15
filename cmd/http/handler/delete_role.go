@@ -14,7 +14,7 @@ import (
 
 // DeleteRole is a handler for creating role.
 type DeleteRole struct {
-	Service service.RoleManager
+	Service service.ManagerInterface
 }
 
 func (h *DeleteRole) ServeHTTP(w http.ResponseWriter, r *http.Request) {

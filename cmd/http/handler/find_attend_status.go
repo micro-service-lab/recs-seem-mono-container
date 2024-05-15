@@ -14,7 +14,7 @@ import (
 
 // FindAttendStatus is a handler for finding attend status.
 type FindAttendStatus struct {
-	Service service.AttendStatusManager
+	Service service.ManagerInterface
 }
 
 func (h *FindAttendStatus) ServeHTTP(w http.ResponseWriter, r *http.Request) {

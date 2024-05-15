@@ -11,7 +11,7 @@ import (
 	"github.com/google/uuid"
 )
 
-const countPoliciesByRoleID = `-- name: CountPoliciesByRoleID :one
+const countPoliciesOnRole = `-- name: CountPoliciesOnRole :one
 SELECT COUNT(*) FROM m_role_associations
 LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE role_id = $1
@@ -19,20 +19,20 @@ AND
 	CASE WHEN $2::boolean = true THEN m_policies.name LIKE '%' || $3::text || '%' ELSE TRUE END
 `
 
-type CountPoliciesByRoleIDParams struct {
+type CountPoliciesOnRoleParams struct {
 	RoleID        uuid.UUID `json:"role_id"`
 	WhereLikeName bool      `json:"where_like_name"`
 	SearchName    string    `json:"search_name"`
 }
 
-func (q *Queries) CountPoliciesByRoleID(ctx context.Context, arg CountPoliciesByRoleIDParams) (int64, error) {
-	row := q.db.QueryRow(ctx, countPoliciesByRoleID, arg.RoleID, arg.WhereLikeName, arg.SearchName)
+func (q *Queries) CountPoliciesOnRole(ctx context.Context, arg CountPoliciesOnRoleParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countPoliciesOnRole, arg.RoleID, arg.WhereLikeName, arg.SearchName)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
 }
 
-const countRolesByPolicyID = `-- name: CountRolesByPolicyID :one
+const countRolesOnPolicy = `-- name: CountRolesOnPolicy :one
 SELECT COUNT(*) FROM m_role_associations
 LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE policy_id = $1
@@ -40,14 +40,14 @@ AND
 	CASE WHEN $2::boolean = true THEN m_roles.name LIKE '%' || $3::text || '%' ELSE TRUE END
 `
 
-type CountRolesByPolicyIDParams struct {
+type CountRolesOnPolicyParams struct {
 	PolicyID      uuid.UUID `json:"policy_id"`
 	WhereLikeName bool      `json:"where_like_name"`
 	SearchName    string    `json:"search_name"`
 }
 
-func (q *Queries) CountRolesByPolicyID(ctx context.Context, arg CountRolesByPolicyIDParams) (int64, error) {
-	row := q.db.QueryRow(ctx, countRolesByPolicyID, arg.PolicyID, arg.WhereLikeName, arg.SearchName)
+func (q *Queries) CountRolesOnPolicy(ctx context.Context, arg CountRolesOnPolicyParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countRolesOnPolicy, arg.PolicyID, arg.WhereLikeName, arg.SearchName)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -95,8 +95,8 @@ const deleteRoleAssociationsOnPolicies = `-- name: DeleteRoleAssociationsOnPolic
 DELETE FROM m_role_associations WHERE policy_id = ANY($1::uuid[])
 `
 
-func (q *Queries) DeleteRoleAssociationsOnPolicies(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, deleteRoleAssociationsOnPolicies, dollar_1)
+func (q *Queries) DeleteRoleAssociationsOnPolicies(ctx context.Context, policyIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteRoleAssociationsOnPolicies, policyIds)
 	if err != nil {
 		return 0, err
 	}
@@ -131,8 +131,8 @@ const deleteRoleAssociationsOnRoles = `-- name: DeleteRoleAssociationsOnRoles :e
 DELETE FROM m_role_associations WHERE role_id = ANY($1::uuid[])
 `
 
-func (q *Queries) DeleteRoleAssociationsOnRoles(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, deleteRoleAssociationsOnRoles, dollar_1)
+func (q *Queries) DeleteRoleAssociationsOnRoles(ctx context.Context, roleIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteRoleAssociationsOnRoles, roleIds)
 	if err != nil {
 		return 0, err
 	}
@@ -665,11 +665,11 @@ DELETE FROM m_role_associations WHERE policy_id = $1 AND role_id = ANY($2::uuid[
 
 type PluralDeleteRoleAssociationsOnPolicyParams struct {
 	PolicyID uuid.UUID   `json:"policy_id"`
-	Column2  []uuid.UUID `json:"column_2"`
+	RoleIds  []uuid.UUID `json:"role_ids"`
 }
 
 func (q *Queries) PluralDeleteRoleAssociationsOnPolicy(ctx context.Context, arg PluralDeleteRoleAssociationsOnPolicyParams) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeleteRoleAssociationsOnPolicy, arg.PolicyID, arg.Column2)
+	result, err := q.db.Exec(ctx, pluralDeleteRoleAssociationsOnPolicy, arg.PolicyID, arg.RoleIds)
 	if err != nil {
 		return 0, err
 	}
@@ -681,12 +681,12 @@ DELETE FROM m_role_associations WHERE role_id = $1 AND policy_id = ANY($2::uuid[
 `
 
 type PluralDeleteRoleAssociationsOnRoleParams struct {
-	RoleID  uuid.UUID   `json:"role_id"`
-	Column2 []uuid.UUID `json:"column_2"`
+	RoleID    uuid.UUID   `json:"role_id"`
+	PolicyIds []uuid.UUID `json:"policy_ids"`
 }
 
 func (q *Queries) PluralDeleteRoleAssociationsOnRole(ctx context.Context, arg PluralDeleteRoleAssociationsOnRoleParams) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeleteRoleAssociationsOnRole, arg.RoleID, arg.Column2)
+	result, err := q.db.Exec(ctx, pluralDeleteRoleAssociationsOnRole, arg.RoleID, arg.PolicyIds)
 	if err != nil {
 		return 0, err
 	}

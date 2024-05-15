@@ -13,7 +13,7 @@ import (
 
 // FindPolicyCategoryByKey is a handler for finding policy category.
 type FindPolicyCategoryByKey struct {
-	Service service.PolicyCategoryManager
+	Service service.ManagerInterface
 }
 
 func (h *FindPolicyCategoryByKey) ServeHTTP(w http.ResponseWriter, r *http.Request) {

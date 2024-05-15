@@ -14,7 +14,7 @@ import (
 
 // FindMimeType is a handler for finding mime type.
 type FindMimeType struct {
-	Service service.MimeTypeManager
+	Service service.ManagerInterface
 }
 
 func (h *FindMimeType) ServeHTTP(w http.ResponseWriter, r *http.Request) {

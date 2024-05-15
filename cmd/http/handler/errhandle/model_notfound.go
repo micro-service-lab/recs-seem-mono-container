@@ -33,6 +33,17 @@ func (e ModelNotFoundError) As(target any) bool {
 	return ok
 }
 
+// Target returns the target.
+func (e ModelNotFoundError) Target() string {
+	return e.target
+}
+
+// SetTarget sets the target.
+func (e *ModelNotFoundError) SetTarget(target string) ModelNotFoundError {
+	e.target = target
+	return *e
+}
+
 // ResolveCodeAndAttribute resolves code and attribute.
 func (e ModelNotFoundError) ResolveCodeAndAttribute() (response.APIResponseType, response.ApplicationErrorAttributes) {
 	return response.NotFoundModel, map[string]any{

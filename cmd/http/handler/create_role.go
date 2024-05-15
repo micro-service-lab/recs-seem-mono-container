@@ -17,7 +17,7 @@ import (
 
 // CreateRole is a handler for creating role.
 type CreateRole struct {
-	Service   service.RoleManager
+	Service   service.ManagerInterface
 	Validator validation.Validator
 }
 
@@ -36,6 +36,8 @@ func (h *CreateRole) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			roleReq = CreateRoleRequest{}
 		}
 		err = h.Validator.ValidateWithLocale(ctx, &roleReq, lang.GetLocale(r.Context()))
+	} else {
+		err = errhandle.NewJSONFormatError()
 	}
 	if err != nil {
 		handled, err := errhandle.ErrorHandle(ctx, w, err)

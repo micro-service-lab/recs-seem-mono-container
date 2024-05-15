@@ -25,11 +25,7 @@ func countAbsences(ctx context.Context, qtx *query.Queries) (int64, error) {
 
 // CountAbsences 欠席数を取得する。
 func (a *PgAdapter) CountAbsences(ctx context.Context) (int64, error) {
-	c, err := countAbsences(ctx, a.query)
-	if err != nil {
-		return 0, fmt.Errorf("failed to count absences: %w", err)
-	}
-	return c, nil
+	return countAbsences(ctx, a.query)
 }
 
 // CountAbsencesWithSd SD付きで欠席数を取得する。
@@ -40,11 +36,7 @@ func (a *PgAdapter) CountAbsencesWithSd(ctx context.Context, sd store.Sd) (int64
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := countAbsences(ctx, qtx)
-	if err != nil {
-		return 0, fmt.Errorf("failed to count absences: %w", err)
-	}
-	return c, nil
+	return countAbsences(ctx, qtx)
 }
 
 func createAbsence(
@@ -63,11 +55,7 @@ func createAbsence(
 
 // CreateAbsence 欠席を作成する。
 func (a *PgAdapter) CreateAbsence(ctx context.Context, param parameter.CreateAbsenceParam) (entity.Absence, error) {
-	e, err := createAbsence(ctx, a.query, param)
-	if err != nil {
-		return entity.Absence{}, fmt.Errorf("failed to create absence: %w", err)
-	}
-	return e, nil
+	return createAbsence(ctx, a.query, param)
 }
 
 // CreateAbsenceWithSd SD付きで欠席を作成する。
@@ -80,11 +68,7 @@ func (a *PgAdapter) CreateAbsenceWithSd(
 	if !ok {
 		return entity.Absence{}, store.ErrNotFoundDescriptor
 	}
-	e, err := createAbsence(ctx, qtx, param)
-	if err != nil {
-		return entity.Absence{}, fmt.Errorf("failed to create absence: %w", err)
-	}
-	return e, nil
+	return createAbsence(ctx, qtx, param)
 }
 
 func createAbsences(ctx context.Context, qtx *query.Queries, params []parameter.CreateAbsenceParam) (int64, error) {
@@ -101,11 +85,7 @@ func createAbsences(ctx context.Context, qtx *query.Queries, params []parameter.
 
 // CreateAbsences 欠席を作成する。
 func (a *PgAdapter) CreateAbsences(ctx context.Context, params []parameter.CreateAbsenceParam) (int64, error) {
-	e, err := createAbsences(ctx, a.query, params)
-	if err != nil {
-		return 0, fmt.Errorf("failed to create absences: %w", err)
-	}
-	return e, nil
+	return createAbsences(ctx, a.query, params)
 }
 
 // CreateAbsencesWithSd SD付きで欠席を作成する。
@@ -118,11 +98,7 @@ func (a *PgAdapter) CreateAbsencesWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	e, err := createAbsences(ctx, qtx, params)
-	if err != nil {
-		return 0, fmt.Errorf("failed to create absences: %w", err)
-	}
-	return e, nil
+	return createAbsences(ctx, qtx, params)
 }
 
 func deleteAbsence(ctx context.Context, qtx *query.Queries, absenceID uuid.UUID) (int64, error) {
@@ -135,11 +111,7 @@ func deleteAbsence(ctx context.Context, qtx *query.Queries, absenceID uuid.UUID)
 
 // DeleteAbsence 欠席を削除する。
 func (a *PgAdapter) DeleteAbsence(ctx context.Context, absenceID uuid.UUID) (int64, error) {
-	c, err := deleteAbsence(ctx, a.query, absenceID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete absence: %w", err)
-	}
-	return c, nil
+	return deleteAbsence(ctx, a.query, absenceID)
 }
 
 // DeleteAbsenceWithSd SD付きで欠席を削除する。
@@ -150,11 +122,7 @@ func (a *PgAdapter) DeleteAbsenceWithSd(ctx context.Context, sd store.Sd, absenc
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := deleteAbsence(ctx, qtx, absenceID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete absence: %w", err)
-	}
-	return c, nil
+	return deleteAbsence(ctx, qtx, absenceID)
 }
 
 func pluralDeleteAbsences(ctx context.Context, qtx *query.Queries, absenceIDs []uuid.UUID) (int64, error) {
@@ -167,11 +135,7 @@ func pluralDeleteAbsences(ctx context.Context, qtx *query.Queries, absenceIDs []
 
 // PluralDeleteAbsences 欠席を複数削除する。
 func (a *PgAdapter) PluralDeleteAbsences(ctx context.Context, absenceIDs []uuid.UUID) (int64, error) {
-	c, err := pluralDeleteAbsences(ctx, a.query, absenceIDs)
-	if err != nil {
-		return 0, fmt.Errorf("failed to plural delete absences: %w", err)
-	}
-	return c, nil
+	return pluralDeleteAbsences(ctx, a.query, absenceIDs)
 }
 
 // PluralDeleteAbsencesWithSd SD付きで欠席を複数削除する。
@@ -184,11 +148,7 @@ func (a *PgAdapter) PluralDeleteAbsencesWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := pluralDeleteAbsences(ctx, qtx, absenceIDs)
-	if err != nil {
-		return 0, fmt.Errorf("failed to plural delete absences: %w", err)
-	}
-	return c, nil
+	return pluralDeleteAbsences(ctx, qtx, absenceIDs)
 }
 
 func findAbsenceByID(ctx context.Context, qtx *query.Queries, absenceID uuid.UUID) (entity.Absence, error) {
@@ -208,11 +168,7 @@ func findAbsenceByID(ctx context.Context, qtx *query.Queries, absenceID uuid.UUI
 
 // FindAbsenceByID 欠席を取得する。
 func (a *PgAdapter) FindAbsenceByID(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error) {
-	e, err := findAbsenceByID(ctx, a.query, absenceID)
-	if err != nil {
-		return entity.Absence{}, fmt.Errorf("failed to find absence: %w", err)
-	}
-	return e, nil
+	return findAbsenceByID(ctx, a.query, absenceID)
 }
 
 // FindAbsenceByIDWithSd SD付きで欠席を取得する。
@@ -225,11 +181,7 @@ func (a *PgAdapter) FindAbsenceByIDWithSd(
 	if !ok {
 		return entity.Absence{}, store.ErrNotFoundDescriptor
 	}
-	e, err := findAbsenceByID(ctx, qtx, absenceID)
-	if err != nil {
-		return entity.Absence{}, fmt.Errorf("failed to find absence: %w", err)
-	}
-	return e, nil
+	return findAbsenceByID(ctx, qtx, absenceID)
 }
 
 func getAbsencesList(

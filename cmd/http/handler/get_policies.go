@@ -16,7 +16,7 @@ import (
 
 // GetPolicies is a handler for getting policy.
 type GetPolicies struct {
-	Service service.PolicyManager
+	Service service.ManagerInterface
 }
 
 // GetPoliciesParam is a parameter for GetPolicies.

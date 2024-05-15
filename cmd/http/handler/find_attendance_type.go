@@ -14,7 +14,7 @@ import (
 
 // FindAttendanceType is a handler for finding attendance type.
 type FindAttendanceType struct {
-	Service service.AttendanceTypeManager
+	Service service.ManagerInterface
 }
 
 func (h *FindAttendanceType) ServeHTTP(w http.ResponseWriter, r *http.Request) {

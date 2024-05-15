@@ -11,19 +11,19 @@ DELETE FROM m_role_associations WHERE role_id = $1 AND policy_id = $2;
 DELETE FROM m_role_associations WHERE role_id = $1;
 
 -- name: DeleteRoleAssociationsOnRoles :execrows
-DELETE FROM m_role_associations WHERE role_id = ANY($1::uuid[]);
+DELETE FROM m_role_associations WHERE role_id = ANY(@role_ids::uuid[]);
 
 -- name: PluralDeleteRoleAssociationsOnRole :execrows
-DELETE FROM m_role_associations WHERE role_id = $1 AND policy_id = ANY($2::uuid[]);
+DELETE FROM m_role_associations WHERE role_id = $1 AND policy_id = ANY(@policy_ids::uuid[]);
 
 -- name: DeleteRoleAssociationsOnPolicy :execrows
-DELETE FROM m_role_associations WHERE policy_id = $1;
+DELETE FROM m_role_associations WHERE policy_id = sqlc.arg(policy_id);
 
 -- name: DeleteRoleAssociationsOnPolicies :execrows
-DELETE FROM m_role_associations WHERE policy_id = ANY($1::uuid[]);
+DELETE FROM m_role_associations WHERE policy_id = ANY(@policy_ids::uuid[]);
 
 -- name: PluralDeleteRoleAssociationsOnPolicy :execrows
-DELETE FROM m_role_associations WHERE policy_id = $1 AND role_id = ANY($2::uuid[]);
+DELETE FROM m_role_associations WHERE policy_id = sqlc.arg(policy_id) AND role_id = ANY(@role_ids::uuid[]);
 
 -- name: GetPoliciesOnRole :many
 SELECT sqlc.embed(m_role_associations), sqlc.embed(m_policies) FROM m_role_associations
@@ -87,7 +87,7 @@ ORDER BY
 	m_role_associations_pkey ASC
 LIMIT $1 OFFSET $2;
 
--- name: CountPoliciesByRoleID :one
+-- name: CountPoliciesOnRole :one
 SELECT COUNT(*) FROM m_role_associations
 LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE role_id = $1
@@ -156,7 +156,7 @@ ORDER BY
 	m_role_associations_pkey ASC
 LIMIT $1 OFFSET $2;
 
--- name: CountRolesByPolicyID :one
+-- name: CountRolesOnPolicy :one
 SELECT COUNT(*) FROM m_role_associations
 LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE policy_id = $1

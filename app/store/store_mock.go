@@ -21,6 +21,18 @@ var _ Store = &StoreMock{}
 //
 //		// make and configure a mocked Store
 //		mockedStore := &StoreMock{
+//			AssociateRoleFunc: func(ctx context.Context, param parameter.AssociationRoleParam) (entity.RoleAssociation, error) {
+//				panic("mock out the AssociateRole method")
+//			},
+//			AssociateRoleWithSdFunc: func(ctx context.Context, sd Sd, param parameter.AssociationRoleParam) (entity.RoleAssociation, error) {
+//				panic("mock out the AssociateRoleWithSd method")
+//			},
+//			AssociateRolesFunc: func(ctx context.Context, params []parameter.AssociationRoleParam) (int64, error) {
+//				panic("mock out the AssociateRoles method")
+//			},
+//			AssociateRolesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.AssociationRoleParam) (int64, error) {
+//				panic("mock out the AssociateRolesWithSd method")
+//			},
 //			BeginFunc: func(contextMoqParam context.Context) (Sd, error) {
 //				panic("mock out the Begin method")
 //			},
@@ -75,6 +87,12 @@ var _ Store = &StoreMock{}
 //			CountPoliciesFunc: func(ctx context.Context, where parameter.WherePolicyParam) (int64, error) {
 //				panic("mock out the CountPolicies method")
 //			},
+//			CountPoliciesOnRoleFunc: func(ctx context.Context, roleID uuid.UUID, where parameter.WherePolicyOnRoleParam) (int64, error) {
+//				panic("mock out the CountPoliciesOnRole method")
+//			},
+//			CountPoliciesOnRoleWithSdFunc: func(ctx context.Context, sd Sd, roleID uuid.UUID, where parameter.WherePolicyOnRoleParam) (int64, error) {
+//				panic("mock out the CountPoliciesOnRoleWithSd method")
+//			},
 //			CountPoliciesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WherePolicyParam) (int64, error) {
 //				panic("mock out the CountPoliciesWithSd method")
 //			},
@@ -92,6 +110,12 @@ var _ Store = &StoreMock{}
 //			},
 //			CountRolesFunc: func(ctx context.Context, where parameter.WhereRoleParam) (int64, error) {
 //				panic("mock out the CountRoles method")
+//			},
+//			CountRolesOnPolicyFunc: func(ctx context.Context, policyID uuid.UUID, where parameter.WhereRoleOnPolicyParam) (int64, error) {
+//				panic("mock out the CountRolesOnPolicy method")
+//			},
+//			CountRolesOnPolicyWithSdFunc: func(ctx context.Context, sd Sd, policyID uuid.UUID, where parameter.WhereRoleOnPolicyParam) (int64, error) {
+//				panic("mock out the CountRolesOnPolicyWithSd method")
 //			},
 //			CountRolesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereRoleParam) (int64, error) {
 //				panic("mock out the CountRolesWithSd method")
@@ -348,6 +372,36 @@ var _ Store = &StoreMock{}
 //			DeleteRoleWithSdFunc: func(ctx context.Context, sd Sd, roleID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteRoleWithSd method")
 //			},
+//			DisassociatePolicyOnRoleFunc: func(ctx context.Context, roleID uuid.UUID) (int64, error) {
+//				panic("mock out the DisassociatePolicyOnRole method")
+//			},
+//			DisassociatePolicyOnRoleWithSdFunc: func(ctx context.Context, sd Sd, roleID uuid.UUID) (int64, error) {
+//				panic("mock out the DisassociatePolicyOnRoleWithSd method")
+//			},
+//			DisassociatePolicyOnRolesFunc: func(ctx context.Context, roleIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisassociatePolicyOnRoles method")
+//			},
+//			DisassociatePolicyOnRolesWithSdFunc: func(ctx context.Context, sd Sd, roleIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisassociatePolicyOnRolesWithSd method")
+//			},
+//			DisassociateRoleFunc: func(ctx context.Context, roleID uuid.UUID, policyID uuid.UUID) (int64, error) {
+//				panic("mock out the DisassociateRole method")
+//			},
+//			DisassociateRoleOnPoliciesFunc: func(ctx context.Context, policyIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisassociateRoleOnPolicies method")
+//			},
+//			DisassociateRoleOnPoliciesWithSdFunc: func(ctx context.Context, sd Sd, policyIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisassociateRoleOnPoliciesWithSd method")
+//			},
+//			DisassociateRoleOnPolicyFunc: func(ctx context.Context, policyID uuid.UUID) (int64, error) {
+//				panic("mock out the DisassociateRoleOnPolicy method")
+//			},
+//			DisassociateRoleOnPolicyWithSdFunc: func(ctx context.Context, sd Sd, policyID uuid.UUID) (int64, error) {
+//				panic("mock out the DisassociateRoleOnPolicyWithSd method")
+//			},
+//			DisassociateRoleWithSdFunc: func(ctx context.Context, sd Sd, roleID uuid.UUID, policyID uuid.UUID) (int64, error) {
+//				panic("mock out the DisassociateRoleWithSd method")
+//			},
 //			FindAbsenceByIDFunc: func(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error) {
 //				panic("mock out the FindAbsenceByID method")
 //			},
@@ -546,40 +600,40 @@ var _ Store = &StoreMock{}
 //			GetPluralAbsencesWithSdFunc: func(ctx context.Context, sd Sd, ids []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Absence], error) {
 //				panic("mock out the GetPluralAbsencesWithSd method")
 //			},
-//			GetPluralAttendStatusesFunc: func(ctx context.Context, AttendStatusIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error) {
+//			GetPluralAttendStatusesFunc: func(ctx context.Context, attendStatusIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error) {
 //				panic("mock out the GetPluralAttendStatuses method")
 //			},
-//			GetPluralAttendStatusesWithSdFunc: func(ctx context.Context, sd Sd, AttendStatusIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error) {
+//			GetPluralAttendStatusesWithSdFunc: func(ctx context.Context, sd Sd, attendStatusIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error) {
 //				panic("mock out the GetPluralAttendStatusesWithSd method")
 //			},
-//			GetPluralAttendanceTypesFunc: func(ctx context.Context, AttendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error) {
+//			GetPluralAttendanceTypesFunc: func(ctx context.Context, attendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error) {
 //				panic("mock out the GetPluralAttendanceTypes method")
 //			},
-//			GetPluralAttendanceTypesWithSdFunc: func(ctx context.Context, sd Sd, AttendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error) {
+//			GetPluralAttendanceTypesWithSdFunc: func(ctx context.Context, sd Sd, attendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error) {
 //				panic("mock out the GetPluralAttendanceTypesWithSd method")
 //			},
-//			GetPluralEventTypesFunc: func(ctx context.Context, EventTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.EventType], error) {
+//			GetPluralEventTypesFunc: func(ctx context.Context, eventTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.EventType], error) {
 //				panic("mock out the GetPluralEventTypes method")
 //			},
-//			GetPluralEventTypesWithSdFunc: func(ctx context.Context, sd Sd, EventTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.EventType], error) {
+//			GetPluralEventTypesWithSdFunc: func(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.EventType], error) {
 //				panic("mock out the GetPluralEventTypesWithSd method")
 //			},
-//			GetPluralMimeTypesFunc: func(ctx context.Context, MimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error) {
+//			GetPluralMimeTypesFunc: func(ctx context.Context, mimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error) {
 //				panic("mock out the GetPluralMimeTypes method")
 //			},
-//			GetPluralMimeTypesWithSdFunc: func(ctx context.Context, sd Sd, MimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error) {
+//			GetPluralMimeTypesWithSdFunc: func(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error) {
 //				panic("mock out the GetPluralMimeTypesWithSd method")
 //			},
-//			GetPluralPermissionCategoriesFunc: func(ctx context.Context, PermissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error) {
+//			GetPluralPermissionCategoriesFunc: func(ctx context.Context, permissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error) {
 //				panic("mock out the GetPluralPermissionCategories method")
 //			},
-//			GetPluralPermissionCategoriesWithSdFunc: func(ctx context.Context, sd Sd, PermissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error) {
+//			GetPluralPermissionCategoriesWithSdFunc: func(ctx context.Context, sd Sd, permissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error) {
 //				panic("mock out the GetPluralPermissionCategoriesWithSd method")
 //			},
-//			GetPluralPermissionsFunc: func(ctx context.Context, PermissionIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Permission], error) {
+//			GetPluralPermissionsFunc: func(ctx context.Context, permissionIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Permission], error) {
 //				panic("mock out the GetPluralPermissions method")
 //			},
-//			GetPluralPermissionsWithSdFunc: func(ctx context.Context, sd Sd, PermissionIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Permission], error) {
+//			GetPluralPermissionsWithSdFunc: func(ctx context.Context, sd Sd, permissionIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Permission], error) {
 //				panic("mock out the GetPluralPermissionsWithSd method")
 //			},
 //			GetPluralPoliciesFunc: func(ctx context.Context, policyIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Policy], error) {
@@ -594,20 +648,26 @@ var _ Store = &StoreMock{}
 //			GetPluralPolicyCategoriesWithSdFunc: func(ctx context.Context, sd Sd, policyCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PolicyCategory], error) {
 //				panic("mock out the GetPluralPolicyCategoriesWithSd method")
 //			},
-//			GetPluralRecordTypesFunc: func(ctx context.Context, RecordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error) {
+//			GetPluralRecordTypesFunc: func(ctx context.Context, recordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error) {
 //				panic("mock out the GetPluralRecordTypes method")
 //			},
-//			GetPluralRecordTypesWithSdFunc: func(ctx context.Context, sd Sd, RecordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error) {
+//			GetPluralRecordTypesWithSdFunc: func(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error) {
 //				panic("mock out the GetPluralRecordTypesWithSd method")
 //			},
-//			GetPluralRolesFunc: func(ctx context.Context, RoleIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Role], error) {
+//			GetPluralRolesFunc: func(ctx context.Context, roleIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Role], error) {
 //				panic("mock out the GetPluralRoles method")
 //			},
-//			GetPluralRolesWithSdFunc: func(ctx context.Context, sd Sd, RoleIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Role], error) {
+//			GetPluralRolesWithSdFunc: func(ctx context.Context, sd Sd, roleIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Role], error) {
 //				panic("mock out the GetPluralRolesWithSd method")
 //			},
 //			GetPoliciesFunc: func(ctx context.Context, where parameter.WherePolicyParam, order parameter.PolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Policy], error) {
 //				panic("mock out the GetPolicies method")
+//			},
+//			GetPoliciesOnRoleFunc: func(ctx context.Context, roleID uuid.UUID, where parameter.WherePolicyOnRoleParam, order parameter.PolicyOnRoleOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyOnRole], error) {
+//				panic("mock out the GetPoliciesOnRole method")
+//			},
+//			GetPoliciesOnRoleWithSdFunc: func(ctx context.Context, sd Sd, roleID uuid.UUID, where parameter.WherePolicyOnRoleParam, order parameter.PolicyOnRoleOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyOnRole], error) {
+//				panic("mock out the GetPoliciesOnRoleWithSd method")
 //			},
 //			GetPoliciesWithCategoryFunc: func(ctx context.Context, where parameter.WherePolicyParam, order parameter.PolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyWithCategory], error) {
 //				panic("mock out the GetPoliciesWithCategory method")
@@ -632,6 +692,12 @@ var _ Store = &StoreMock{}
 //			},
 //			GetRolesFunc: func(ctx context.Context, where parameter.WhereRoleParam, order parameter.RoleOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Role], error) {
 //				panic("mock out the GetRoles method")
+//			},
+//			GetRolesOnPolicyFunc: func(ctx context.Context, policyID uuid.UUID, where parameter.WhereRoleOnPolicyParam, order parameter.RoleOnPolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.RoleOnPolicy], error) {
+//				panic("mock out the GetRolesOnPolicy method")
+//			},
+//			GetRolesOnPolicyWithSdFunc: func(ctx context.Context, sd Sd, policyID uuid.UUID, where parameter.WhereRoleOnPolicyParam, order parameter.RoleOnPolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.RoleOnPolicy], error) {
+//				panic("mock out the GetRolesOnPolicyWithSd method")
 //			},
 //			GetRolesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereRoleParam, order parameter.RoleOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Role], error) {
 //				panic("mock out the GetRolesWithSd method")
@@ -701,6 +767,15 @@ var _ Store = &StoreMock{}
 //			},
 //			PluralDeleteRolesWithSdFunc: func(ctx context.Context, sd Sd, roleIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteRolesWithSd method")
+//			},
+//			PluralDisassociatePolicyOnRoleFunc: func(ctx context.Context, roleID uuid.UUID, policyIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDisassociatePolicyOnRole method")
+//			},
+//			PluralDisassociateRoleOnPolicyFunc: func(ctx context.Context, policyID uuid.UUID, roleIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDisassociateRoleOnPolicy method")
+//			},
+//			PluralDisassociateRoleOnPolicyWithSdFunc: func(ctx context.Context, sd Sd, policyID uuid.UUID, roleIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDisassociateRoleOnPolicyWithSd method")
 //			},
 //			RollbackFunc: func(contextMoqParam context.Context, sd Sd) error {
 //				panic("mock out the Rollback method")
@@ -826,6 +901,18 @@ var _ Store = &StoreMock{}
 //
 //	}
 type StoreMock struct {
+	// AssociateRoleFunc mocks the AssociateRole method.
+	AssociateRoleFunc func(ctx context.Context, param parameter.AssociationRoleParam) (entity.RoleAssociation, error)
+
+	// AssociateRoleWithSdFunc mocks the AssociateRoleWithSd method.
+	AssociateRoleWithSdFunc func(ctx context.Context, sd Sd, param parameter.AssociationRoleParam) (entity.RoleAssociation, error)
+
+	// AssociateRolesFunc mocks the AssociateRoles method.
+	AssociateRolesFunc func(ctx context.Context, params []parameter.AssociationRoleParam) (int64, error)
+
+	// AssociateRolesWithSdFunc mocks the AssociateRolesWithSd method.
+	AssociateRolesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.AssociationRoleParam) (int64, error)
+
 	// BeginFunc mocks the Begin method.
 	BeginFunc func(contextMoqParam context.Context) (Sd, error)
 
@@ -880,6 +967,12 @@ type StoreMock struct {
 	// CountPoliciesFunc mocks the CountPolicies method.
 	CountPoliciesFunc func(ctx context.Context, where parameter.WherePolicyParam) (int64, error)
 
+	// CountPoliciesOnRoleFunc mocks the CountPoliciesOnRole method.
+	CountPoliciesOnRoleFunc func(ctx context.Context, roleID uuid.UUID, where parameter.WherePolicyOnRoleParam) (int64, error)
+
+	// CountPoliciesOnRoleWithSdFunc mocks the CountPoliciesOnRoleWithSd method.
+	CountPoliciesOnRoleWithSdFunc func(ctx context.Context, sd Sd, roleID uuid.UUID, where parameter.WherePolicyOnRoleParam) (int64, error)
+
 	// CountPoliciesWithSdFunc mocks the CountPoliciesWithSd method.
 	CountPoliciesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WherePolicyParam) (int64, error)
 
@@ -897,6 +990,12 @@ type StoreMock struct {
 
 	// CountRolesFunc mocks the CountRoles method.
 	CountRolesFunc func(ctx context.Context, where parameter.WhereRoleParam) (int64, error)
+
+	// CountRolesOnPolicyFunc mocks the CountRolesOnPolicy method.
+	CountRolesOnPolicyFunc func(ctx context.Context, policyID uuid.UUID, where parameter.WhereRoleOnPolicyParam) (int64, error)
+
+	// CountRolesOnPolicyWithSdFunc mocks the CountRolesOnPolicyWithSd method.
+	CountRolesOnPolicyWithSdFunc func(ctx context.Context, sd Sd, policyID uuid.UUID, where parameter.WhereRoleOnPolicyParam) (int64, error)
 
 	// CountRolesWithSdFunc mocks the CountRolesWithSd method.
 	CountRolesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereRoleParam) (int64, error)
@@ -1153,6 +1252,36 @@ type StoreMock struct {
 	// DeleteRoleWithSdFunc mocks the DeleteRoleWithSd method.
 	DeleteRoleWithSdFunc func(ctx context.Context, sd Sd, roleID uuid.UUID) (int64, error)
 
+	// DisassociatePolicyOnRoleFunc mocks the DisassociatePolicyOnRole method.
+	DisassociatePolicyOnRoleFunc func(ctx context.Context, roleID uuid.UUID) (int64, error)
+
+	// DisassociatePolicyOnRoleWithSdFunc mocks the DisassociatePolicyOnRoleWithSd method.
+	DisassociatePolicyOnRoleWithSdFunc func(ctx context.Context, sd Sd, roleID uuid.UUID) (int64, error)
+
+	// DisassociatePolicyOnRolesFunc mocks the DisassociatePolicyOnRoles method.
+	DisassociatePolicyOnRolesFunc func(ctx context.Context, roleIDs []uuid.UUID) (int64, error)
+
+	// DisassociatePolicyOnRolesWithSdFunc mocks the DisassociatePolicyOnRolesWithSd method.
+	DisassociatePolicyOnRolesWithSdFunc func(ctx context.Context, sd Sd, roleIDs []uuid.UUID) (int64, error)
+
+	// DisassociateRoleFunc mocks the DisassociateRole method.
+	DisassociateRoleFunc func(ctx context.Context, roleID uuid.UUID, policyID uuid.UUID) (int64, error)
+
+	// DisassociateRoleOnPoliciesFunc mocks the DisassociateRoleOnPolicies method.
+	DisassociateRoleOnPoliciesFunc func(ctx context.Context, policyIDs []uuid.UUID) (int64, error)
+
+	// DisassociateRoleOnPoliciesWithSdFunc mocks the DisassociateRoleOnPoliciesWithSd method.
+	DisassociateRoleOnPoliciesWithSdFunc func(ctx context.Context, sd Sd, policyIDs []uuid.UUID) (int64, error)
+
+	// DisassociateRoleOnPolicyFunc mocks the DisassociateRoleOnPolicy method.
+	DisassociateRoleOnPolicyFunc func(ctx context.Context, policyID uuid.UUID) (int64, error)
+
+	// DisassociateRoleOnPolicyWithSdFunc mocks the DisassociateRoleOnPolicyWithSd method.
+	DisassociateRoleOnPolicyWithSdFunc func(ctx context.Context, sd Sd, policyID uuid.UUID) (int64, error)
+
+	// DisassociateRoleWithSdFunc mocks the DisassociateRoleWithSd method.
+	DisassociateRoleWithSdFunc func(ctx context.Context, sd Sd, roleID uuid.UUID, policyID uuid.UUID) (int64, error)
+
 	// FindAbsenceByIDFunc mocks the FindAbsenceByID method.
 	FindAbsenceByIDFunc func(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error)
 
@@ -1352,40 +1481,40 @@ type StoreMock struct {
 	GetPluralAbsencesWithSdFunc func(ctx context.Context, sd Sd, ids []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Absence], error)
 
 	// GetPluralAttendStatusesFunc mocks the GetPluralAttendStatuses method.
-	GetPluralAttendStatusesFunc func(ctx context.Context, AttendStatusIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error)
+	GetPluralAttendStatusesFunc func(ctx context.Context, attendStatusIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error)
 
 	// GetPluralAttendStatusesWithSdFunc mocks the GetPluralAttendStatusesWithSd method.
-	GetPluralAttendStatusesWithSdFunc func(ctx context.Context, sd Sd, AttendStatusIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error)
+	GetPluralAttendStatusesWithSdFunc func(ctx context.Context, sd Sd, attendStatusIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error)
 
 	// GetPluralAttendanceTypesFunc mocks the GetPluralAttendanceTypes method.
-	GetPluralAttendanceTypesFunc func(ctx context.Context, AttendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error)
+	GetPluralAttendanceTypesFunc func(ctx context.Context, attendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error)
 
 	// GetPluralAttendanceTypesWithSdFunc mocks the GetPluralAttendanceTypesWithSd method.
-	GetPluralAttendanceTypesWithSdFunc func(ctx context.Context, sd Sd, AttendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error)
+	GetPluralAttendanceTypesWithSdFunc func(ctx context.Context, sd Sd, attendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error)
 
 	// GetPluralEventTypesFunc mocks the GetPluralEventTypes method.
-	GetPluralEventTypesFunc func(ctx context.Context, EventTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.EventType], error)
+	GetPluralEventTypesFunc func(ctx context.Context, eventTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.EventType], error)
 
 	// GetPluralEventTypesWithSdFunc mocks the GetPluralEventTypesWithSd method.
-	GetPluralEventTypesWithSdFunc func(ctx context.Context, sd Sd, EventTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.EventType], error)
+	GetPluralEventTypesWithSdFunc func(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.EventType], error)
 
 	// GetPluralMimeTypesFunc mocks the GetPluralMimeTypes method.
-	GetPluralMimeTypesFunc func(ctx context.Context, MimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error)
+	GetPluralMimeTypesFunc func(ctx context.Context, mimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error)
 
 	// GetPluralMimeTypesWithSdFunc mocks the GetPluralMimeTypesWithSd method.
-	GetPluralMimeTypesWithSdFunc func(ctx context.Context, sd Sd, MimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error)
+	GetPluralMimeTypesWithSdFunc func(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error)
 
 	// GetPluralPermissionCategoriesFunc mocks the GetPluralPermissionCategories method.
-	GetPluralPermissionCategoriesFunc func(ctx context.Context, PermissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error)
+	GetPluralPermissionCategoriesFunc func(ctx context.Context, permissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error)
 
 	// GetPluralPermissionCategoriesWithSdFunc mocks the GetPluralPermissionCategoriesWithSd method.
-	GetPluralPermissionCategoriesWithSdFunc func(ctx context.Context, sd Sd, PermissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error)
+	GetPluralPermissionCategoriesWithSdFunc func(ctx context.Context, sd Sd, permissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error)
 
 	// GetPluralPermissionsFunc mocks the GetPluralPermissions method.
-	GetPluralPermissionsFunc func(ctx context.Context, PermissionIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Permission], error)
+	GetPluralPermissionsFunc func(ctx context.Context, permissionIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Permission], error)
 
 	// GetPluralPermissionsWithSdFunc mocks the GetPluralPermissionsWithSd method.
-	GetPluralPermissionsWithSdFunc func(ctx context.Context, sd Sd, PermissionIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Permission], error)
+	GetPluralPermissionsWithSdFunc func(ctx context.Context, sd Sd, permissionIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Permission], error)
 
 	// GetPluralPoliciesFunc mocks the GetPluralPolicies method.
 	GetPluralPoliciesFunc func(ctx context.Context, policyIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Policy], error)
@@ -1400,19 +1529,25 @@ type StoreMock struct {
 	GetPluralPolicyCategoriesWithSdFunc func(ctx context.Context, sd Sd, policyCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PolicyCategory], error)
 
 	// GetPluralRecordTypesFunc mocks the GetPluralRecordTypes method.
-	GetPluralRecordTypesFunc func(ctx context.Context, RecordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error)
+	GetPluralRecordTypesFunc func(ctx context.Context, recordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error)
 
 	// GetPluralRecordTypesWithSdFunc mocks the GetPluralRecordTypesWithSd method.
-	GetPluralRecordTypesWithSdFunc func(ctx context.Context, sd Sd, RecordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error)
+	GetPluralRecordTypesWithSdFunc func(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error)
 
 	// GetPluralRolesFunc mocks the GetPluralRoles method.
-	GetPluralRolesFunc func(ctx context.Context, RoleIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Role], error)
+	GetPluralRolesFunc func(ctx context.Context, roleIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Role], error)
 
 	// GetPluralRolesWithSdFunc mocks the GetPluralRolesWithSd method.
-	GetPluralRolesWithSdFunc func(ctx context.Context, sd Sd, RoleIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Role], error)
+	GetPluralRolesWithSdFunc func(ctx context.Context, sd Sd, roleIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Role], error)
 
 	// GetPoliciesFunc mocks the GetPolicies method.
 	GetPoliciesFunc func(ctx context.Context, where parameter.WherePolicyParam, order parameter.PolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Policy], error)
+
+	// GetPoliciesOnRoleFunc mocks the GetPoliciesOnRole method.
+	GetPoliciesOnRoleFunc func(ctx context.Context, roleID uuid.UUID, where parameter.WherePolicyOnRoleParam, order parameter.PolicyOnRoleOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyOnRole], error)
+
+	// GetPoliciesOnRoleWithSdFunc mocks the GetPoliciesOnRoleWithSd method.
+	GetPoliciesOnRoleWithSdFunc func(ctx context.Context, sd Sd, roleID uuid.UUID, where parameter.WherePolicyOnRoleParam, order parameter.PolicyOnRoleOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyOnRole], error)
 
 	// GetPoliciesWithCategoryFunc mocks the GetPoliciesWithCategory method.
 	GetPoliciesWithCategoryFunc func(ctx context.Context, where parameter.WherePolicyParam, order parameter.PolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyWithCategory], error)
@@ -1437,6 +1572,12 @@ type StoreMock struct {
 
 	// GetRolesFunc mocks the GetRoles method.
 	GetRolesFunc func(ctx context.Context, where parameter.WhereRoleParam, order parameter.RoleOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Role], error)
+
+	// GetRolesOnPolicyFunc mocks the GetRolesOnPolicy method.
+	GetRolesOnPolicyFunc func(ctx context.Context, policyID uuid.UUID, where parameter.WhereRoleOnPolicyParam, order parameter.RoleOnPolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.RoleOnPolicy], error)
+
+	// GetRolesOnPolicyWithSdFunc mocks the GetRolesOnPolicyWithSd method.
+	GetRolesOnPolicyWithSdFunc func(ctx context.Context, sd Sd, policyID uuid.UUID, where parameter.WhereRoleOnPolicyParam, order parameter.RoleOnPolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.RoleOnPolicy], error)
 
 	// GetRolesWithSdFunc mocks the GetRolesWithSd method.
 	GetRolesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereRoleParam, order parameter.RoleOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Role], error)
@@ -1506,6 +1647,15 @@ type StoreMock struct {
 
 	// PluralDeleteRolesWithSdFunc mocks the PluralDeleteRolesWithSd method.
 	PluralDeleteRolesWithSdFunc func(ctx context.Context, sd Sd, roleIDs []uuid.UUID) (int64, error)
+
+	// PluralDisassociatePolicyOnRoleFunc mocks the PluralDisassociatePolicyOnRole method.
+	PluralDisassociatePolicyOnRoleFunc func(ctx context.Context, roleID uuid.UUID, policyIDs []uuid.UUID) (int64, error)
+
+	// PluralDisassociateRoleOnPolicyFunc mocks the PluralDisassociateRoleOnPolicy method.
+	PluralDisassociateRoleOnPolicyFunc func(ctx context.Context, policyID uuid.UUID, roleIDs []uuid.UUID) (int64, error)
+
+	// PluralDisassociateRoleOnPolicyWithSdFunc mocks the PluralDisassociateRoleOnPolicyWithSd method.
+	PluralDisassociateRoleOnPolicyWithSdFunc func(ctx context.Context, sd Sd, policyID uuid.UUID, roleIDs []uuid.UUID) (int64, error)
 
 	// RollbackFunc mocks the Rollback method.
 	RollbackFunc func(contextMoqParam context.Context, sd Sd) error
@@ -1626,6 +1776,38 @@ type StoreMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// AssociateRole holds details about calls to the AssociateRole method.
+		AssociateRole []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Param is the param argument value.
+			Param parameter.AssociationRoleParam
+		}
+		// AssociateRoleWithSd holds details about calls to the AssociateRoleWithSd method.
+		AssociateRoleWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Param is the param argument value.
+			Param parameter.AssociationRoleParam
+		}
+		// AssociateRoles holds details about calls to the AssociateRoles method.
+		AssociateRoles []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.AssociationRoleParam
+		}
+		// AssociateRolesWithSd holds details about calls to the AssociateRolesWithSd method.
+		AssociateRolesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Params is the params argument value.
+			Params []parameter.AssociationRoleParam
+		}
 		// Begin holds details about calls to the Begin method.
 		Begin []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -1758,6 +1940,26 @@ type StoreMock struct {
 			// Where is the where argument value.
 			Where parameter.WherePolicyParam
 		}
+		// CountPoliciesOnRole holds details about calls to the CountPoliciesOnRole method.
+		CountPoliciesOnRole []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RoleID is the roleID argument value.
+			RoleID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WherePolicyOnRoleParam
+		}
+		// CountPoliciesOnRoleWithSd holds details about calls to the CountPoliciesOnRoleWithSd method.
+		CountPoliciesOnRoleWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// RoleID is the roleID argument value.
+			RoleID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WherePolicyOnRoleParam
+		}
 		// CountPoliciesWithSd holds details about calls to the CountPoliciesWithSd method.
 		CountPoliciesWithSd []struct {
 			// Ctx is the ctx argument value.
@@ -1805,6 +2007,26 @@ type StoreMock struct {
 			Ctx context.Context
 			// Where is the where argument value.
 			Where parameter.WhereRoleParam
+		}
+		// CountRolesOnPolicy holds details about calls to the CountRolesOnPolicy method.
+		CountRolesOnPolicy []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereRoleOnPolicyParam
+		}
+		// CountRolesOnPolicyWithSd holds details about calls to the CountRolesOnPolicyWithSd method.
+		CountRolesOnPolicyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereRoleOnPolicyParam
 		}
 		// CountRolesWithSd holds details about calls to the CountRolesWithSd method.
 		CountRolesWithSd []struct {
@@ -2487,6 +2709,90 @@ type StoreMock struct {
 			// RoleID is the roleID argument value.
 			RoleID uuid.UUID
 		}
+		// DisassociatePolicyOnRole holds details about calls to the DisassociatePolicyOnRole method.
+		DisassociatePolicyOnRole []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RoleID is the roleID argument value.
+			RoleID uuid.UUID
+		}
+		// DisassociatePolicyOnRoleWithSd holds details about calls to the DisassociatePolicyOnRoleWithSd method.
+		DisassociatePolicyOnRoleWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// RoleID is the roleID argument value.
+			RoleID uuid.UUID
+		}
+		// DisassociatePolicyOnRoles holds details about calls to the DisassociatePolicyOnRoles method.
+		DisassociatePolicyOnRoles []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RoleIDs is the roleIDs argument value.
+			RoleIDs []uuid.UUID
+		}
+		// DisassociatePolicyOnRolesWithSd holds details about calls to the DisassociatePolicyOnRolesWithSd method.
+		DisassociatePolicyOnRolesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// RoleIDs is the roleIDs argument value.
+			RoleIDs []uuid.UUID
+		}
+		// DisassociateRole holds details about calls to the DisassociateRole method.
+		DisassociateRole []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RoleID is the roleID argument value.
+			RoleID uuid.UUID
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+		}
+		// DisassociateRoleOnPolicies holds details about calls to the DisassociateRoleOnPolicies method.
+		DisassociateRoleOnPolicies []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PolicyIDs is the policyIDs argument value.
+			PolicyIDs []uuid.UUID
+		}
+		// DisassociateRoleOnPoliciesWithSd holds details about calls to the DisassociateRoleOnPoliciesWithSd method.
+		DisassociateRoleOnPoliciesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// PolicyIDs is the policyIDs argument value.
+			PolicyIDs []uuid.UUID
+		}
+		// DisassociateRoleOnPolicy holds details about calls to the DisassociateRoleOnPolicy method.
+		DisassociateRoleOnPolicy []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+		}
+		// DisassociateRoleOnPolicyWithSd holds details about calls to the DisassociateRoleOnPolicyWithSd method.
+		DisassociateRoleOnPolicyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+		}
+		// DisassociateRoleWithSd holds details about calls to the DisassociateRoleWithSd method.
+		DisassociateRoleWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// RoleID is the roleID argument value.
+			RoleID uuid.UUID
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+		}
 		// FindAbsenceByID holds details about calls to the FindAbsenceByID method.
 		FindAbsenceByID []struct {
 			// Ctx is the ctx argument value.
@@ -3147,7 +3453,7 @@ type StoreMock struct {
 		GetPluralAttendStatuses []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// AttendStatusIDs is the AttendStatusIDs argument value.
+			// AttendStatusIDs is the attendStatusIDs argument value.
 			AttendStatusIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
@@ -3158,7 +3464,7 @@ type StoreMock struct {
 			Ctx context.Context
 			// Sd is the sd argument value.
 			Sd Sd
-			// AttendStatusIDs is the AttendStatusIDs argument value.
+			// AttendStatusIDs is the attendStatusIDs argument value.
 			AttendStatusIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
@@ -3167,7 +3473,7 @@ type StoreMock struct {
 		GetPluralAttendanceTypes []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// AttendanceTypeIDs is the AttendanceTypeIDs argument value.
+			// AttendanceTypeIDs is the attendanceTypeIDs argument value.
 			AttendanceTypeIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
@@ -3178,7 +3484,7 @@ type StoreMock struct {
 			Ctx context.Context
 			// Sd is the sd argument value.
 			Sd Sd
-			// AttendanceTypeIDs is the AttendanceTypeIDs argument value.
+			// AttendanceTypeIDs is the attendanceTypeIDs argument value.
 			AttendanceTypeIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
@@ -3187,7 +3493,7 @@ type StoreMock struct {
 		GetPluralEventTypes []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// EventTypeIDs is the EventTypeIDs argument value.
+			// EventTypeIDs is the eventTypeIDs argument value.
 			EventTypeIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
@@ -3198,7 +3504,7 @@ type StoreMock struct {
 			Ctx context.Context
 			// Sd is the sd argument value.
 			Sd Sd
-			// EventTypeIDs is the EventTypeIDs argument value.
+			// EventTypeIDs is the eventTypeIDs argument value.
 			EventTypeIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
@@ -3207,7 +3513,7 @@ type StoreMock struct {
 		GetPluralMimeTypes []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// MimeTypeIDs is the MimeTypeIDs argument value.
+			// MimeTypeIDs is the mimeTypeIDs argument value.
 			MimeTypeIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
@@ -3218,7 +3524,7 @@ type StoreMock struct {
 			Ctx context.Context
 			// Sd is the sd argument value.
 			Sd Sd
-			// MimeTypeIDs is the MimeTypeIDs argument value.
+			// MimeTypeIDs is the mimeTypeIDs argument value.
 			MimeTypeIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
@@ -3227,7 +3533,7 @@ type StoreMock struct {
 		GetPluralPermissionCategories []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// PermissionCategoryIDs is the PermissionCategoryIDs argument value.
+			// PermissionCategoryIDs is the permissionCategoryIDs argument value.
 			PermissionCategoryIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
@@ -3238,7 +3544,7 @@ type StoreMock struct {
 			Ctx context.Context
 			// Sd is the sd argument value.
 			Sd Sd
-			// PermissionCategoryIDs is the PermissionCategoryIDs argument value.
+			// PermissionCategoryIDs is the permissionCategoryIDs argument value.
 			PermissionCategoryIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
@@ -3247,7 +3553,7 @@ type StoreMock struct {
 		GetPluralPermissions []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// PermissionIDs is the PermissionIDs argument value.
+			// PermissionIDs is the permissionIDs argument value.
 			PermissionIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
@@ -3258,7 +3564,7 @@ type StoreMock struct {
 			Ctx context.Context
 			// Sd is the sd argument value.
 			Sd Sd
-			// PermissionIDs is the PermissionIDs argument value.
+			// PermissionIDs is the permissionIDs argument value.
 			PermissionIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
@@ -3307,7 +3613,7 @@ type StoreMock struct {
 		GetPluralRecordTypes []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// RecordTypeIDs is the RecordTypeIDs argument value.
+			// RecordTypeIDs is the recordTypeIDs argument value.
 			RecordTypeIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
@@ -3318,7 +3624,7 @@ type StoreMock struct {
 			Ctx context.Context
 			// Sd is the sd argument value.
 			Sd Sd
-			// RecordTypeIDs is the RecordTypeIDs argument value.
+			// RecordTypeIDs is the recordTypeIDs argument value.
 			RecordTypeIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
@@ -3327,7 +3633,7 @@ type StoreMock struct {
 		GetPluralRoles []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// RoleIDs is the RoleIDs argument value.
+			// RoleIDs is the roleIDs argument value.
 			RoleIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
@@ -3338,7 +3644,7 @@ type StoreMock struct {
 			Ctx context.Context
 			// Sd is the sd argument value.
 			Sd Sd
-			// RoleIDs is the RoleIDs argument value.
+			// RoleIDs is the roleIDs argument value.
 			RoleIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
@@ -3351,6 +3657,42 @@ type StoreMock struct {
 			Where parameter.WherePolicyParam
 			// Order is the order argument value.
 			Order parameter.PolicyOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetPoliciesOnRole holds details about calls to the GetPoliciesOnRole method.
+		GetPoliciesOnRole []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RoleID is the roleID argument value.
+			RoleID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WherePolicyOnRoleParam
+			// Order is the order argument value.
+			Order parameter.PolicyOnRoleOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetPoliciesOnRoleWithSd holds details about calls to the GetPoliciesOnRoleWithSd method.
+		GetPoliciesOnRoleWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// RoleID is the roleID argument value.
+			RoleID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WherePolicyOnRoleParam
+			// Order is the order argument value.
+			Order parameter.PolicyOnRoleOrderMethod
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 			// Cp is the cp argument value.
@@ -3479,6 +3821,42 @@ type StoreMock struct {
 			Where parameter.WhereRoleParam
 			// Order is the order argument value.
 			Order parameter.RoleOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetRolesOnPolicy holds details about calls to the GetRolesOnPolicy method.
+		GetRolesOnPolicy []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereRoleOnPolicyParam
+			// Order is the order argument value.
+			Order parameter.RoleOnPolicyOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetRolesOnPolicyWithSd holds details about calls to the GetRolesOnPolicyWithSd method.
+		GetRolesOnPolicyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereRoleOnPolicyParam
+			// Order is the order argument value.
+			Order parameter.RoleOnPolicyOrderMethod
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 			// Cp is the cp argument value.
@@ -3676,6 +4054,35 @@ type StoreMock struct {
 			Ctx context.Context
 			// Sd is the sd argument value.
 			Sd Sd
+			// RoleIDs is the roleIDs argument value.
+			RoleIDs []uuid.UUID
+		}
+		// PluralDisassociatePolicyOnRole holds details about calls to the PluralDisassociatePolicyOnRole method.
+		PluralDisassociatePolicyOnRole []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RoleID is the roleID argument value.
+			RoleID uuid.UUID
+			// PolicyIDs is the policyIDs argument value.
+			PolicyIDs []uuid.UUID
+		}
+		// PluralDisassociateRoleOnPolicy holds details about calls to the PluralDisassociateRoleOnPolicy method.
+		PluralDisassociateRoleOnPolicy []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+			// RoleIDs is the roleIDs argument value.
+			RoleIDs []uuid.UUID
+		}
+		// PluralDisassociateRoleOnPolicyWithSd holds details about calls to the PluralDisassociateRoleOnPolicyWithSd method.
+		PluralDisassociateRoleOnPolicyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
 			// RoleIDs is the roleIDs argument value.
 			RoleIDs []uuid.UUID
 		}
@@ -4067,6 +4474,10 @@ type StoreMock struct {
 			Param parameter.UpdateRoleParams
 		}
 	}
+	lockAssociateRole                          sync.RWMutex
+	lockAssociateRoleWithSd                    sync.RWMutex
+	lockAssociateRoles                         sync.RWMutex
+	lockAssociateRolesWithSd                   sync.RWMutex
 	lockBegin                                  sync.RWMutex
 	lockCleanup                                sync.RWMutex
 	lockCommit                                 sync.RWMutex
@@ -4085,12 +4496,16 @@ type StoreMock struct {
 	lockCountPermissions                       sync.RWMutex
 	lockCountPermissionsWithSd                 sync.RWMutex
 	lockCountPolicies                          sync.RWMutex
+	lockCountPoliciesOnRole                    sync.RWMutex
+	lockCountPoliciesOnRoleWithSd              sync.RWMutex
 	lockCountPoliciesWithSd                    sync.RWMutex
 	lockCountPolicyCategories                  sync.RWMutex
 	lockCountPolicyCategoriesWithSd            sync.RWMutex
 	lockCountRecordTypes                       sync.RWMutex
 	lockCountRecordTypesWithSd                 sync.RWMutex
 	lockCountRoles                             sync.RWMutex
+	lockCountRolesOnPolicy                     sync.RWMutex
+	lockCountRolesOnPolicyWithSd               sync.RWMutex
 	lockCountRolesWithSd                       sync.RWMutex
 	lockCreateAbsence                          sync.RWMutex
 	lockCreateAbsenceWithSd                    sync.RWMutex
@@ -4176,6 +4591,16 @@ type StoreMock struct {
 	lockDeleteRecordTypeWithSd                 sync.RWMutex
 	lockDeleteRole                             sync.RWMutex
 	lockDeleteRoleWithSd                       sync.RWMutex
+	lockDisassociatePolicyOnRole               sync.RWMutex
+	lockDisassociatePolicyOnRoleWithSd         sync.RWMutex
+	lockDisassociatePolicyOnRoles              sync.RWMutex
+	lockDisassociatePolicyOnRolesWithSd        sync.RWMutex
+	lockDisassociateRole                       sync.RWMutex
+	lockDisassociateRoleOnPolicies             sync.RWMutex
+	lockDisassociateRoleOnPoliciesWithSd       sync.RWMutex
+	lockDisassociateRoleOnPolicy               sync.RWMutex
+	lockDisassociateRoleOnPolicyWithSd         sync.RWMutex
+	lockDisassociateRoleWithSd                 sync.RWMutex
 	lockFindAbsenceByID                        sync.RWMutex
 	lockFindAbsenceByIDWithSd                  sync.RWMutex
 	lockFindAttendStatusByID                   sync.RWMutex
@@ -4263,6 +4688,8 @@ type StoreMock struct {
 	lockGetPluralRoles                         sync.RWMutex
 	lockGetPluralRolesWithSd                   sync.RWMutex
 	lockGetPolicies                            sync.RWMutex
+	lockGetPoliciesOnRole                      sync.RWMutex
+	lockGetPoliciesOnRoleWithSd                sync.RWMutex
 	lockGetPoliciesWithCategory                sync.RWMutex
 	lockGetPoliciesWithCategoryWithSd          sync.RWMutex
 	lockGetPoliciesWithSd                      sync.RWMutex
@@ -4271,6 +4698,8 @@ type StoreMock struct {
 	lockGetRecordTypes                         sync.RWMutex
 	lockGetRecordTypesWithSd                   sync.RWMutex
 	lockGetRoles                               sync.RWMutex
+	lockGetRolesOnPolicy                       sync.RWMutex
+	lockGetRolesOnPolicyWithSd                 sync.RWMutex
 	lockGetRolesWithSd                         sync.RWMutex
 	lockPluralDeleteAbsences                   sync.RWMutex
 	lockPluralDeleteAbsencesWithSd             sync.RWMutex
@@ -4294,6 +4723,9 @@ type StoreMock struct {
 	lockPluralDeleteRecordTypesWithSd          sync.RWMutex
 	lockPluralDeleteRoles                      sync.RWMutex
 	lockPluralDeleteRolesWithSd                sync.RWMutex
+	lockPluralDisassociatePolicyOnRole         sync.RWMutex
+	lockPluralDisassociateRoleOnPolicy         sync.RWMutex
+	lockPluralDisassociateRoleOnPolicyWithSd   sync.RWMutex
 	lockRollback                               sync.RWMutex
 	lockUpdateAttendStatus                     sync.RWMutex
 	lockUpdateAttendStatusByKey                sync.RWMutex
@@ -4333,6 +4765,158 @@ type StoreMock struct {
 	lockUpdateRecordTypeWithSd                 sync.RWMutex
 	lockUpdateRole                             sync.RWMutex
 	lockUpdateRoleWithSd                       sync.RWMutex
+}
+
+// AssociateRole calls AssociateRoleFunc.
+func (mock *StoreMock) AssociateRole(ctx context.Context, param parameter.AssociationRoleParam) (entity.RoleAssociation, error) {
+	if mock.AssociateRoleFunc == nil {
+		panic("StoreMock.AssociateRoleFunc: method is nil but Store.AssociateRole was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Param parameter.AssociationRoleParam
+	}{
+		Ctx:   ctx,
+		Param: param,
+	}
+	mock.lockAssociateRole.Lock()
+	mock.calls.AssociateRole = append(mock.calls.AssociateRole, callInfo)
+	mock.lockAssociateRole.Unlock()
+	return mock.AssociateRoleFunc(ctx, param)
+}
+
+// AssociateRoleCalls gets all the calls that were made to AssociateRole.
+// Check the length with:
+//
+//	len(mockedStore.AssociateRoleCalls())
+func (mock *StoreMock) AssociateRoleCalls() []struct {
+	Ctx   context.Context
+	Param parameter.AssociationRoleParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Param parameter.AssociationRoleParam
+	}
+	mock.lockAssociateRole.RLock()
+	calls = mock.calls.AssociateRole
+	mock.lockAssociateRole.RUnlock()
+	return calls
+}
+
+// AssociateRoleWithSd calls AssociateRoleWithSdFunc.
+func (mock *StoreMock) AssociateRoleWithSd(ctx context.Context, sd Sd, param parameter.AssociationRoleParam) (entity.RoleAssociation, error) {
+	if mock.AssociateRoleWithSdFunc == nil {
+		panic("StoreMock.AssociateRoleWithSdFunc: method is nil but Store.AssociateRoleWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.AssociationRoleParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Param: param,
+	}
+	mock.lockAssociateRoleWithSd.Lock()
+	mock.calls.AssociateRoleWithSd = append(mock.calls.AssociateRoleWithSd, callInfo)
+	mock.lockAssociateRoleWithSd.Unlock()
+	return mock.AssociateRoleWithSdFunc(ctx, sd, param)
+}
+
+// AssociateRoleWithSdCalls gets all the calls that were made to AssociateRoleWithSd.
+// Check the length with:
+//
+//	len(mockedStore.AssociateRoleWithSdCalls())
+func (mock *StoreMock) AssociateRoleWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Param parameter.AssociationRoleParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.AssociationRoleParam
+	}
+	mock.lockAssociateRoleWithSd.RLock()
+	calls = mock.calls.AssociateRoleWithSd
+	mock.lockAssociateRoleWithSd.RUnlock()
+	return calls
+}
+
+// AssociateRoles calls AssociateRolesFunc.
+func (mock *StoreMock) AssociateRoles(ctx context.Context, params []parameter.AssociationRoleParam) (int64, error) {
+	if mock.AssociateRolesFunc == nil {
+		panic("StoreMock.AssociateRolesFunc: method is nil but Store.AssociateRoles was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.AssociationRoleParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockAssociateRoles.Lock()
+	mock.calls.AssociateRoles = append(mock.calls.AssociateRoles, callInfo)
+	mock.lockAssociateRoles.Unlock()
+	return mock.AssociateRolesFunc(ctx, params)
+}
+
+// AssociateRolesCalls gets all the calls that were made to AssociateRoles.
+// Check the length with:
+//
+//	len(mockedStore.AssociateRolesCalls())
+func (mock *StoreMock) AssociateRolesCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.AssociationRoleParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.AssociationRoleParam
+	}
+	mock.lockAssociateRoles.RLock()
+	calls = mock.calls.AssociateRoles
+	mock.lockAssociateRoles.RUnlock()
+	return calls
+}
+
+// AssociateRolesWithSd calls AssociateRolesWithSdFunc.
+func (mock *StoreMock) AssociateRolesWithSd(ctx context.Context, sd Sd, params []parameter.AssociationRoleParam) (int64, error) {
+	if mock.AssociateRolesWithSdFunc == nil {
+		panic("StoreMock.AssociateRolesWithSdFunc: method is nil but Store.AssociateRolesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.AssociationRoleParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		Params: params,
+	}
+	mock.lockAssociateRolesWithSd.Lock()
+	mock.calls.AssociateRolesWithSd = append(mock.calls.AssociateRolesWithSd, callInfo)
+	mock.lockAssociateRolesWithSd.Unlock()
+	return mock.AssociateRolesWithSdFunc(ctx, sd, params)
+}
+
+// AssociateRolesWithSdCalls gets all the calls that were made to AssociateRolesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.AssociateRolesWithSdCalls())
+func (mock *StoreMock) AssociateRolesWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	Params []parameter.AssociationRoleParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.AssociationRoleParam
+	}
+	mock.lockAssociateRolesWithSd.RLock()
+	calls = mock.calls.AssociateRolesWithSd
+	mock.lockAssociateRolesWithSd.RUnlock()
+	return calls
 }
 
 // Begin calls BeginFunc.
@@ -4995,6 +5579,90 @@ func (mock *StoreMock) CountPoliciesCalls() []struct {
 	return calls
 }
 
+// CountPoliciesOnRole calls CountPoliciesOnRoleFunc.
+func (mock *StoreMock) CountPoliciesOnRole(ctx context.Context, roleID uuid.UUID, where parameter.WherePolicyOnRoleParam) (int64, error) {
+	if mock.CountPoliciesOnRoleFunc == nil {
+		panic("StoreMock.CountPoliciesOnRoleFunc: method is nil but Store.CountPoliciesOnRole was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		RoleID uuid.UUID
+		Where  parameter.WherePolicyOnRoleParam
+	}{
+		Ctx:    ctx,
+		RoleID: roleID,
+		Where:  where,
+	}
+	mock.lockCountPoliciesOnRole.Lock()
+	mock.calls.CountPoliciesOnRole = append(mock.calls.CountPoliciesOnRole, callInfo)
+	mock.lockCountPoliciesOnRole.Unlock()
+	return mock.CountPoliciesOnRoleFunc(ctx, roleID, where)
+}
+
+// CountPoliciesOnRoleCalls gets all the calls that were made to CountPoliciesOnRole.
+// Check the length with:
+//
+//	len(mockedStore.CountPoliciesOnRoleCalls())
+func (mock *StoreMock) CountPoliciesOnRoleCalls() []struct {
+	Ctx    context.Context
+	RoleID uuid.UUID
+	Where  parameter.WherePolicyOnRoleParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		RoleID uuid.UUID
+		Where  parameter.WherePolicyOnRoleParam
+	}
+	mock.lockCountPoliciesOnRole.RLock()
+	calls = mock.calls.CountPoliciesOnRole
+	mock.lockCountPoliciesOnRole.RUnlock()
+	return calls
+}
+
+// CountPoliciesOnRoleWithSd calls CountPoliciesOnRoleWithSdFunc.
+func (mock *StoreMock) CountPoliciesOnRoleWithSd(ctx context.Context, sd Sd, roleID uuid.UUID, where parameter.WherePolicyOnRoleParam) (int64, error) {
+	if mock.CountPoliciesOnRoleWithSdFunc == nil {
+		panic("StoreMock.CountPoliciesOnRoleWithSdFunc: method is nil but Store.CountPoliciesOnRoleWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		RoleID uuid.UUID
+		Where  parameter.WherePolicyOnRoleParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		RoleID: roleID,
+		Where:  where,
+	}
+	mock.lockCountPoliciesOnRoleWithSd.Lock()
+	mock.calls.CountPoliciesOnRoleWithSd = append(mock.calls.CountPoliciesOnRoleWithSd, callInfo)
+	mock.lockCountPoliciesOnRoleWithSd.Unlock()
+	return mock.CountPoliciesOnRoleWithSdFunc(ctx, sd, roleID, where)
+}
+
+// CountPoliciesOnRoleWithSdCalls gets all the calls that were made to CountPoliciesOnRoleWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountPoliciesOnRoleWithSdCalls())
+func (mock *StoreMock) CountPoliciesOnRoleWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	RoleID uuid.UUID
+	Where  parameter.WherePolicyOnRoleParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		RoleID uuid.UUID
+		Where  parameter.WherePolicyOnRoleParam
+	}
+	mock.lockCountPoliciesOnRoleWithSd.RLock()
+	calls = mock.calls.CountPoliciesOnRoleWithSd
+	mock.lockCountPoliciesOnRoleWithSd.RUnlock()
+	return calls
+}
+
 // CountPoliciesWithSd calls CountPoliciesWithSdFunc.
 func (mock *StoreMock) CountPoliciesWithSd(ctx context.Context, sd Sd, where parameter.WherePolicyParam) (int64, error) {
 	if mock.CountPoliciesWithSdFunc == nil {
@@ -5220,6 +5888,90 @@ func (mock *StoreMock) CountRolesCalls() []struct {
 	mock.lockCountRoles.RLock()
 	calls = mock.calls.CountRoles
 	mock.lockCountRoles.RUnlock()
+	return calls
+}
+
+// CountRolesOnPolicy calls CountRolesOnPolicyFunc.
+func (mock *StoreMock) CountRolesOnPolicy(ctx context.Context, policyID uuid.UUID, where parameter.WhereRoleOnPolicyParam) (int64, error) {
+	if mock.CountRolesOnPolicyFunc == nil {
+		panic("StoreMock.CountRolesOnPolicyFunc: method is nil but Store.CountRolesOnPolicy was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+		Where    parameter.WhereRoleOnPolicyParam
+	}{
+		Ctx:      ctx,
+		PolicyID: policyID,
+		Where:    where,
+	}
+	mock.lockCountRolesOnPolicy.Lock()
+	mock.calls.CountRolesOnPolicy = append(mock.calls.CountRolesOnPolicy, callInfo)
+	mock.lockCountRolesOnPolicy.Unlock()
+	return mock.CountRolesOnPolicyFunc(ctx, policyID, where)
+}
+
+// CountRolesOnPolicyCalls gets all the calls that were made to CountRolesOnPolicy.
+// Check the length with:
+//
+//	len(mockedStore.CountRolesOnPolicyCalls())
+func (mock *StoreMock) CountRolesOnPolicyCalls() []struct {
+	Ctx      context.Context
+	PolicyID uuid.UUID
+	Where    parameter.WhereRoleOnPolicyParam
+} {
+	var calls []struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+		Where    parameter.WhereRoleOnPolicyParam
+	}
+	mock.lockCountRolesOnPolicy.RLock()
+	calls = mock.calls.CountRolesOnPolicy
+	mock.lockCountRolesOnPolicy.RUnlock()
+	return calls
+}
+
+// CountRolesOnPolicyWithSd calls CountRolesOnPolicyWithSdFunc.
+func (mock *StoreMock) CountRolesOnPolicyWithSd(ctx context.Context, sd Sd, policyID uuid.UUID, where parameter.WhereRoleOnPolicyParam) (int64, error) {
+	if mock.CountRolesOnPolicyWithSdFunc == nil {
+		panic("StoreMock.CountRolesOnPolicyWithSdFunc: method is nil but Store.CountRolesOnPolicyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		PolicyID uuid.UUID
+		Where    parameter.WhereRoleOnPolicyParam
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		PolicyID: policyID,
+		Where:    where,
+	}
+	mock.lockCountRolesOnPolicyWithSd.Lock()
+	mock.calls.CountRolesOnPolicyWithSd = append(mock.calls.CountRolesOnPolicyWithSd, callInfo)
+	mock.lockCountRolesOnPolicyWithSd.Unlock()
+	return mock.CountRolesOnPolicyWithSdFunc(ctx, sd, policyID, where)
+}
+
+// CountRolesOnPolicyWithSdCalls gets all the calls that were made to CountRolesOnPolicyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountRolesOnPolicyWithSdCalls())
+func (mock *StoreMock) CountRolesOnPolicyWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	PolicyID uuid.UUID
+	Where    parameter.WhereRoleOnPolicyParam
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		PolicyID uuid.UUID
+		Where    parameter.WhereRoleOnPolicyParam
+	}
+	mock.lockCountRolesOnPolicyWithSd.RLock()
+	calls = mock.calls.CountRolesOnPolicyWithSd
+	mock.lockCountRolesOnPolicyWithSd.RUnlock()
 	return calls
 }
 
@@ -8455,6 +9207,394 @@ func (mock *StoreMock) DeleteRoleWithSdCalls() []struct {
 	return calls
 }
 
+// DisassociatePolicyOnRole calls DisassociatePolicyOnRoleFunc.
+func (mock *StoreMock) DisassociatePolicyOnRole(ctx context.Context, roleID uuid.UUID) (int64, error) {
+	if mock.DisassociatePolicyOnRoleFunc == nil {
+		panic("StoreMock.DisassociatePolicyOnRoleFunc: method is nil but Store.DisassociatePolicyOnRole was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		RoleID uuid.UUID
+	}{
+		Ctx:    ctx,
+		RoleID: roleID,
+	}
+	mock.lockDisassociatePolicyOnRole.Lock()
+	mock.calls.DisassociatePolicyOnRole = append(mock.calls.DisassociatePolicyOnRole, callInfo)
+	mock.lockDisassociatePolicyOnRole.Unlock()
+	return mock.DisassociatePolicyOnRoleFunc(ctx, roleID)
+}
+
+// DisassociatePolicyOnRoleCalls gets all the calls that were made to DisassociatePolicyOnRole.
+// Check the length with:
+//
+//	len(mockedStore.DisassociatePolicyOnRoleCalls())
+func (mock *StoreMock) DisassociatePolicyOnRoleCalls() []struct {
+	Ctx    context.Context
+	RoleID uuid.UUID
+} {
+	var calls []struct {
+		Ctx    context.Context
+		RoleID uuid.UUID
+	}
+	mock.lockDisassociatePolicyOnRole.RLock()
+	calls = mock.calls.DisassociatePolicyOnRole
+	mock.lockDisassociatePolicyOnRole.RUnlock()
+	return calls
+}
+
+// DisassociatePolicyOnRoleWithSd calls DisassociatePolicyOnRoleWithSdFunc.
+func (mock *StoreMock) DisassociatePolicyOnRoleWithSd(ctx context.Context, sd Sd, roleID uuid.UUID) (int64, error) {
+	if mock.DisassociatePolicyOnRoleWithSdFunc == nil {
+		panic("StoreMock.DisassociatePolicyOnRoleWithSdFunc: method is nil but Store.DisassociatePolicyOnRoleWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		RoleID uuid.UUID
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		RoleID: roleID,
+	}
+	mock.lockDisassociatePolicyOnRoleWithSd.Lock()
+	mock.calls.DisassociatePolicyOnRoleWithSd = append(mock.calls.DisassociatePolicyOnRoleWithSd, callInfo)
+	mock.lockDisassociatePolicyOnRoleWithSd.Unlock()
+	return mock.DisassociatePolicyOnRoleWithSdFunc(ctx, sd, roleID)
+}
+
+// DisassociatePolicyOnRoleWithSdCalls gets all the calls that were made to DisassociatePolicyOnRoleWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DisassociatePolicyOnRoleWithSdCalls())
+func (mock *StoreMock) DisassociatePolicyOnRoleWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	RoleID uuid.UUID
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		RoleID uuid.UUID
+	}
+	mock.lockDisassociatePolicyOnRoleWithSd.RLock()
+	calls = mock.calls.DisassociatePolicyOnRoleWithSd
+	mock.lockDisassociatePolicyOnRoleWithSd.RUnlock()
+	return calls
+}
+
+// DisassociatePolicyOnRoles calls DisassociatePolicyOnRolesFunc.
+func (mock *StoreMock) DisassociatePolicyOnRoles(ctx context.Context, roleIDs []uuid.UUID) (int64, error) {
+	if mock.DisassociatePolicyOnRolesFunc == nil {
+		panic("StoreMock.DisassociatePolicyOnRolesFunc: method is nil but Store.DisassociatePolicyOnRoles was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		RoleIDs []uuid.UUID
+	}{
+		Ctx:     ctx,
+		RoleIDs: roleIDs,
+	}
+	mock.lockDisassociatePolicyOnRoles.Lock()
+	mock.calls.DisassociatePolicyOnRoles = append(mock.calls.DisassociatePolicyOnRoles, callInfo)
+	mock.lockDisassociatePolicyOnRoles.Unlock()
+	return mock.DisassociatePolicyOnRolesFunc(ctx, roleIDs)
+}
+
+// DisassociatePolicyOnRolesCalls gets all the calls that were made to DisassociatePolicyOnRoles.
+// Check the length with:
+//
+//	len(mockedStore.DisassociatePolicyOnRolesCalls())
+func (mock *StoreMock) DisassociatePolicyOnRolesCalls() []struct {
+	Ctx     context.Context
+	RoleIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		RoleIDs []uuid.UUID
+	}
+	mock.lockDisassociatePolicyOnRoles.RLock()
+	calls = mock.calls.DisassociatePolicyOnRoles
+	mock.lockDisassociatePolicyOnRoles.RUnlock()
+	return calls
+}
+
+// DisassociatePolicyOnRolesWithSd calls DisassociatePolicyOnRolesWithSdFunc.
+func (mock *StoreMock) DisassociatePolicyOnRolesWithSd(ctx context.Context, sd Sd, roleIDs []uuid.UUID) (int64, error) {
+	if mock.DisassociatePolicyOnRolesWithSdFunc == nil {
+		panic("StoreMock.DisassociatePolicyOnRolesWithSdFunc: method is nil but Store.DisassociatePolicyOnRolesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		Sd      Sd
+		RoleIDs []uuid.UUID
+	}{
+		Ctx:     ctx,
+		Sd:      sd,
+		RoleIDs: roleIDs,
+	}
+	mock.lockDisassociatePolicyOnRolesWithSd.Lock()
+	mock.calls.DisassociatePolicyOnRolesWithSd = append(mock.calls.DisassociatePolicyOnRolesWithSd, callInfo)
+	mock.lockDisassociatePolicyOnRolesWithSd.Unlock()
+	return mock.DisassociatePolicyOnRolesWithSdFunc(ctx, sd, roleIDs)
+}
+
+// DisassociatePolicyOnRolesWithSdCalls gets all the calls that were made to DisassociatePolicyOnRolesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DisassociatePolicyOnRolesWithSdCalls())
+func (mock *StoreMock) DisassociatePolicyOnRolesWithSdCalls() []struct {
+	Ctx     context.Context
+	Sd      Sd
+	RoleIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		Sd      Sd
+		RoleIDs []uuid.UUID
+	}
+	mock.lockDisassociatePolicyOnRolesWithSd.RLock()
+	calls = mock.calls.DisassociatePolicyOnRolesWithSd
+	mock.lockDisassociatePolicyOnRolesWithSd.RUnlock()
+	return calls
+}
+
+// DisassociateRole calls DisassociateRoleFunc.
+func (mock *StoreMock) DisassociateRole(ctx context.Context, roleID uuid.UUID, policyID uuid.UUID) (int64, error) {
+	if mock.DisassociateRoleFunc == nil {
+		panic("StoreMock.DisassociateRoleFunc: method is nil but Store.DisassociateRole was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		RoleID   uuid.UUID
+		PolicyID uuid.UUID
+	}{
+		Ctx:      ctx,
+		RoleID:   roleID,
+		PolicyID: policyID,
+	}
+	mock.lockDisassociateRole.Lock()
+	mock.calls.DisassociateRole = append(mock.calls.DisassociateRole, callInfo)
+	mock.lockDisassociateRole.Unlock()
+	return mock.DisassociateRoleFunc(ctx, roleID, policyID)
+}
+
+// DisassociateRoleCalls gets all the calls that were made to DisassociateRole.
+// Check the length with:
+//
+//	len(mockedStore.DisassociateRoleCalls())
+func (mock *StoreMock) DisassociateRoleCalls() []struct {
+	Ctx      context.Context
+	RoleID   uuid.UUID
+	PolicyID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		RoleID   uuid.UUID
+		PolicyID uuid.UUID
+	}
+	mock.lockDisassociateRole.RLock()
+	calls = mock.calls.DisassociateRole
+	mock.lockDisassociateRole.RUnlock()
+	return calls
+}
+
+// DisassociateRoleOnPolicies calls DisassociateRoleOnPoliciesFunc.
+func (mock *StoreMock) DisassociateRoleOnPolicies(ctx context.Context, policyIDs []uuid.UUID) (int64, error) {
+	if mock.DisassociateRoleOnPoliciesFunc == nil {
+		panic("StoreMock.DisassociateRoleOnPoliciesFunc: method is nil but Store.DisassociateRoleOnPolicies was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		PolicyIDs []uuid.UUID
+	}{
+		Ctx:       ctx,
+		PolicyIDs: policyIDs,
+	}
+	mock.lockDisassociateRoleOnPolicies.Lock()
+	mock.calls.DisassociateRoleOnPolicies = append(mock.calls.DisassociateRoleOnPolicies, callInfo)
+	mock.lockDisassociateRoleOnPolicies.Unlock()
+	return mock.DisassociateRoleOnPoliciesFunc(ctx, policyIDs)
+}
+
+// DisassociateRoleOnPoliciesCalls gets all the calls that were made to DisassociateRoleOnPolicies.
+// Check the length with:
+//
+//	len(mockedStore.DisassociateRoleOnPoliciesCalls())
+func (mock *StoreMock) DisassociateRoleOnPoliciesCalls() []struct {
+	Ctx       context.Context
+	PolicyIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		PolicyIDs []uuid.UUID
+	}
+	mock.lockDisassociateRoleOnPolicies.RLock()
+	calls = mock.calls.DisassociateRoleOnPolicies
+	mock.lockDisassociateRoleOnPolicies.RUnlock()
+	return calls
+}
+
+// DisassociateRoleOnPoliciesWithSd calls DisassociateRoleOnPoliciesWithSdFunc.
+func (mock *StoreMock) DisassociateRoleOnPoliciesWithSd(ctx context.Context, sd Sd, policyIDs []uuid.UUID) (int64, error) {
+	if mock.DisassociateRoleOnPoliciesWithSdFunc == nil {
+		panic("StoreMock.DisassociateRoleOnPoliciesWithSdFunc: method is nil but Store.DisassociateRoleOnPoliciesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Sd        Sd
+		PolicyIDs []uuid.UUID
+	}{
+		Ctx:       ctx,
+		Sd:        sd,
+		PolicyIDs: policyIDs,
+	}
+	mock.lockDisassociateRoleOnPoliciesWithSd.Lock()
+	mock.calls.DisassociateRoleOnPoliciesWithSd = append(mock.calls.DisassociateRoleOnPoliciesWithSd, callInfo)
+	mock.lockDisassociateRoleOnPoliciesWithSd.Unlock()
+	return mock.DisassociateRoleOnPoliciesWithSdFunc(ctx, sd, policyIDs)
+}
+
+// DisassociateRoleOnPoliciesWithSdCalls gets all the calls that were made to DisassociateRoleOnPoliciesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DisassociateRoleOnPoliciesWithSdCalls())
+func (mock *StoreMock) DisassociateRoleOnPoliciesWithSdCalls() []struct {
+	Ctx       context.Context
+	Sd        Sd
+	PolicyIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Sd        Sd
+		PolicyIDs []uuid.UUID
+	}
+	mock.lockDisassociateRoleOnPoliciesWithSd.RLock()
+	calls = mock.calls.DisassociateRoleOnPoliciesWithSd
+	mock.lockDisassociateRoleOnPoliciesWithSd.RUnlock()
+	return calls
+}
+
+// DisassociateRoleOnPolicy calls DisassociateRoleOnPolicyFunc.
+func (mock *StoreMock) DisassociateRoleOnPolicy(ctx context.Context, policyID uuid.UUID) (int64, error) {
+	if mock.DisassociateRoleOnPolicyFunc == nil {
+		panic("StoreMock.DisassociateRoleOnPolicyFunc: method is nil but Store.DisassociateRoleOnPolicy was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+	}{
+		Ctx:      ctx,
+		PolicyID: policyID,
+	}
+	mock.lockDisassociateRoleOnPolicy.Lock()
+	mock.calls.DisassociateRoleOnPolicy = append(mock.calls.DisassociateRoleOnPolicy, callInfo)
+	mock.lockDisassociateRoleOnPolicy.Unlock()
+	return mock.DisassociateRoleOnPolicyFunc(ctx, policyID)
+}
+
+// DisassociateRoleOnPolicyCalls gets all the calls that were made to DisassociateRoleOnPolicy.
+// Check the length with:
+//
+//	len(mockedStore.DisassociateRoleOnPolicyCalls())
+func (mock *StoreMock) DisassociateRoleOnPolicyCalls() []struct {
+	Ctx      context.Context
+	PolicyID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+	}
+	mock.lockDisassociateRoleOnPolicy.RLock()
+	calls = mock.calls.DisassociateRoleOnPolicy
+	mock.lockDisassociateRoleOnPolicy.RUnlock()
+	return calls
+}
+
+// DisassociateRoleOnPolicyWithSd calls DisassociateRoleOnPolicyWithSdFunc.
+func (mock *StoreMock) DisassociateRoleOnPolicyWithSd(ctx context.Context, sd Sd, policyID uuid.UUID) (int64, error) {
+	if mock.DisassociateRoleOnPolicyWithSdFunc == nil {
+		panic("StoreMock.DisassociateRoleOnPolicyWithSdFunc: method is nil but Store.DisassociateRoleOnPolicyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		PolicyID uuid.UUID
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		PolicyID: policyID,
+	}
+	mock.lockDisassociateRoleOnPolicyWithSd.Lock()
+	mock.calls.DisassociateRoleOnPolicyWithSd = append(mock.calls.DisassociateRoleOnPolicyWithSd, callInfo)
+	mock.lockDisassociateRoleOnPolicyWithSd.Unlock()
+	return mock.DisassociateRoleOnPolicyWithSdFunc(ctx, sd, policyID)
+}
+
+// DisassociateRoleOnPolicyWithSdCalls gets all the calls that were made to DisassociateRoleOnPolicyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DisassociateRoleOnPolicyWithSdCalls())
+func (mock *StoreMock) DisassociateRoleOnPolicyWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	PolicyID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		PolicyID uuid.UUID
+	}
+	mock.lockDisassociateRoleOnPolicyWithSd.RLock()
+	calls = mock.calls.DisassociateRoleOnPolicyWithSd
+	mock.lockDisassociateRoleOnPolicyWithSd.RUnlock()
+	return calls
+}
+
+// DisassociateRoleWithSd calls DisassociateRoleWithSdFunc.
+func (mock *StoreMock) DisassociateRoleWithSd(ctx context.Context, sd Sd, roleID uuid.UUID, policyID uuid.UUID) (int64, error) {
+	if mock.DisassociateRoleWithSdFunc == nil {
+		panic("StoreMock.DisassociateRoleWithSdFunc: method is nil but Store.DisassociateRoleWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		RoleID   uuid.UUID
+		PolicyID uuid.UUID
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		RoleID:   roleID,
+		PolicyID: policyID,
+	}
+	mock.lockDisassociateRoleWithSd.Lock()
+	mock.calls.DisassociateRoleWithSd = append(mock.calls.DisassociateRoleWithSd, callInfo)
+	mock.lockDisassociateRoleWithSd.Unlock()
+	return mock.DisassociateRoleWithSdFunc(ctx, sd, roleID, policyID)
+}
+
+// DisassociateRoleWithSdCalls gets all the calls that were made to DisassociateRoleWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DisassociateRoleWithSdCalls())
+func (mock *StoreMock) DisassociateRoleWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	RoleID   uuid.UUID
+	PolicyID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		RoleID   uuid.UUID
+		PolicyID uuid.UUID
+	}
+	mock.lockDisassociateRoleWithSd.RLock()
+	calls = mock.calls.DisassociateRoleWithSd
+	mock.lockDisassociateRoleWithSd.RUnlock()
+	return calls
+}
+
 // FindAbsenceByID calls FindAbsenceByIDFunc.
 func (mock *StoreMock) FindAbsenceByID(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error) {
 	if mock.FindAbsenceByIDFunc == nil {
@@ -11220,7 +12360,7 @@ func (mock *StoreMock) GetPluralAbsencesWithSdCalls() []struct {
 }
 
 // GetPluralAttendStatuses calls GetPluralAttendStatusesFunc.
-func (mock *StoreMock) GetPluralAttendStatuses(ctx context.Context, AttendStatusIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error) {
+func (mock *StoreMock) GetPluralAttendStatuses(ctx context.Context, attendStatusIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error) {
 	if mock.GetPluralAttendStatusesFunc == nil {
 		panic("StoreMock.GetPluralAttendStatusesFunc: method is nil but Store.GetPluralAttendStatuses was just called")
 	}
@@ -11230,13 +12370,13 @@ func (mock *StoreMock) GetPluralAttendStatuses(ctx context.Context, AttendStatus
 		Np              NumberedPaginationParam
 	}{
 		Ctx:             ctx,
-		AttendStatusIDs: AttendStatusIDs,
+		AttendStatusIDs: attendStatusIDs,
 		Np:              np,
 	}
 	mock.lockGetPluralAttendStatuses.Lock()
 	mock.calls.GetPluralAttendStatuses = append(mock.calls.GetPluralAttendStatuses, callInfo)
 	mock.lockGetPluralAttendStatuses.Unlock()
-	return mock.GetPluralAttendStatusesFunc(ctx, AttendStatusIDs, np)
+	return mock.GetPluralAttendStatusesFunc(ctx, attendStatusIDs, np)
 }
 
 // GetPluralAttendStatusesCalls gets all the calls that were made to GetPluralAttendStatuses.
@@ -11260,7 +12400,7 @@ func (mock *StoreMock) GetPluralAttendStatusesCalls() []struct {
 }
 
 // GetPluralAttendStatusesWithSd calls GetPluralAttendStatusesWithSdFunc.
-func (mock *StoreMock) GetPluralAttendStatusesWithSd(ctx context.Context, sd Sd, AttendStatusIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error) {
+func (mock *StoreMock) GetPluralAttendStatusesWithSd(ctx context.Context, sd Sd, attendStatusIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error) {
 	if mock.GetPluralAttendStatusesWithSdFunc == nil {
 		panic("StoreMock.GetPluralAttendStatusesWithSdFunc: method is nil but Store.GetPluralAttendStatusesWithSd was just called")
 	}
@@ -11272,13 +12412,13 @@ func (mock *StoreMock) GetPluralAttendStatusesWithSd(ctx context.Context, sd Sd,
 	}{
 		Ctx:             ctx,
 		Sd:              sd,
-		AttendStatusIDs: AttendStatusIDs,
+		AttendStatusIDs: attendStatusIDs,
 		Np:              np,
 	}
 	mock.lockGetPluralAttendStatusesWithSd.Lock()
 	mock.calls.GetPluralAttendStatusesWithSd = append(mock.calls.GetPluralAttendStatusesWithSd, callInfo)
 	mock.lockGetPluralAttendStatusesWithSd.Unlock()
-	return mock.GetPluralAttendStatusesWithSdFunc(ctx, sd, AttendStatusIDs, np)
+	return mock.GetPluralAttendStatusesWithSdFunc(ctx, sd, attendStatusIDs, np)
 }
 
 // GetPluralAttendStatusesWithSdCalls gets all the calls that were made to GetPluralAttendStatusesWithSd.
@@ -11304,7 +12444,7 @@ func (mock *StoreMock) GetPluralAttendStatusesWithSdCalls() []struct {
 }
 
 // GetPluralAttendanceTypes calls GetPluralAttendanceTypesFunc.
-func (mock *StoreMock) GetPluralAttendanceTypes(ctx context.Context, AttendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error) {
+func (mock *StoreMock) GetPluralAttendanceTypes(ctx context.Context, attendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error) {
 	if mock.GetPluralAttendanceTypesFunc == nil {
 		panic("StoreMock.GetPluralAttendanceTypesFunc: method is nil but Store.GetPluralAttendanceTypes was just called")
 	}
@@ -11314,13 +12454,13 @@ func (mock *StoreMock) GetPluralAttendanceTypes(ctx context.Context, AttendanceT
 		Np                NumberedPaginationParam
 	}{
 		Ctx:               ctx,
-		AttendanceTypeIDs: AttendanceTypeIDs,
+		AttendanceTypeIDs: attendanceTypeIDs,
 		Np:                np,
 	}
 	mock.lockGetPluralAttendanceTypes.Lock()
 	mock.calls.GetPluralAttendanceTypes = append(mock.calls.GetPluralAttendanceTypes, callInfo)
 	mock.lockGetPluralAttendanceTypes.Unlock()
-	return mock.GetPluralAttendanceTypesFunc(ctx, AttendanceTypeIDs, np)
+	return mock.GetPluralAttendanceTypesFunc(ctx, attendanceTypeIDs, np)
 }
 
 // GetPluralAttendanceTypesCalls gets all the calls that were made to GetPluralAttendanceTypes.
@@ -11344,7 +12484,7 @@ func (mock *StoreMock) GetPluralAttendanceTypesCalls() []struct {
 }
 
 // GetPluralAttendanceTypesWithSd calls GetPluralAttendanceTypesWithSdFunc.
-func (mock *StoreMock) GetPluralAttendanceTypesWithSd(ctx context.Context, sd Sd, AttendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error) {
+func (mock *StoreMock) GetPluralAttendanceTypesWithSd(ctx context.Context, sd Sd, attendanceTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendanceType], error) {
 	if mock.GetPluralAttendanceTypesWithSdFunc == nil {
 		panic("StoreMock.GetPluralAttendanceTypesWithSdFunc: method is nil but Store.GetPluralAttendanceTypesWithSd was just called")
 	}
@@ -11356,13 +12496,13 @@ func (mock *StoreMock) GetPluralAttendanceTypesWithSd(ctx context.Context, sd Sd
 	}{
 		Ctx:               ctx,
 		Sd:                sd,
-		AttendanceTypeIDs: AttendanceTypeIDs,
+		AttendanceTypeIDs: attendanceTypeIDs,
 		Np:                np,
 	}
 	mock.lockGetPluralAttendanceTypesWithSd.Lock()
 	mock.calls.GetPluralAttendanceTypesWithSd = append(mock.calls.GetPluralAttendanceTypesWithSd, callInfo)
 	mock.lockGetPluralAttendanceTypesWithSd.Unlock()
-	return mock.GetPluralAttendanceTypesWithSdFunc(ctx, sd, AttendanceTypeIDs, np)
+	return mock.GetPluralAttendanceTypesWithSdFunc(ctx, sd, attendanceTypeIDs, np)
 }
 
 // GetPluralAttendanceTypesWithSdCalls gets all the calls that were made to GetPluralAttendanceTypesWithSd.
@@ -11388,7 +12528,7 @@ func (mock *StoreMock) GetPluralAttendanceTypesWithSdCalls() []struct {
 }
 
 // GetPluralEventTypes calls GetPluralEventTypesFunc.
-func (mock *StoreMock) GetPluralEventTypes(ctx context.Context, EventTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.EventType], error) {
+func (mock *StoreMock) GetPluralEventTypes(ctx context.Context, eventTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.EventType], error) {
 	if mock.GetPluralEventTypesFunc == nil {
 		panic("StoreMock.GetPluralEventTypesFunc: method is nil but Store.GetPluralEventTypes was just called")
 	}
@@ -11398,13 +12538,13 @@ func (mock *StoreMock) GetPluralEventTypes(ctx context.Context, EventTypeIDs []u
 		Np           NumberedPaginationParam
 	}{
 		Ctx:          ctx,
-		EventTypeIDs: EventTypeIDs,
+		EventTypeIDs: eventTypeIDs,
 		Np:           np,
 	}
 	mock.lockGetPluralEventTypes.Lock()
 	mock.calls.GetPluralEventTypes = append(mock.calls.GetPluralEventTypes, callInfo)
 	mock.lockGetPluralEventTypes.Unlock()
-	return mock.GetPluralEventTypesFunc(ctx, EventTypeIDs, np)
+	return mock.GetPluralEventTypesFunc(ctx, eventTypeIDs, np)
 }
 
 // GetPluralEventTypesCalls gets all the calls that were made to GetPluralEventTypes.
@@ -11428,7 +12568,7 @@ func (mock *StoreMock) GetPluralEventTypesCalls() []struct {
 }
 
 // GetPluralEventTypesWithSd calls GetPluralEventTypesWithSdFunc.
-func (mock *StoreMock) GetPluralEventTypesWithSd(ctx context.Context, sd Sd, EventTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.EventType], error) {
+func (mock *StoreMock) GetPluralEventTypesWithSd(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.EventType], error) {
 	if mock.GetPluralEventTypesWithSdFunc == nil {
 		panic("StoreMock.GetPluralEventTypesWithSdFunc: method is nil but Store.GetPluralEventTypesWithSd was just called")
 	}
@@ -11440,13 +12580,13 @@ func (mock *StoreMock) GetPluralEventTypesWithSd(ctx context.Context, sd Sd, Eve
 	}{
 		Ctx:          ctx,
 		Sd:           sd,
-		EventTypeIDs: EventTypeIDs,
+		EventTypeIDs: eventTypeIDs,
 		Np:           np,
 	}
 	mock.lockGetPluralEventTypesWithSd.Lock()
 	mock.calls.GetPluralEventTypesWithSd = append(mock.calls.GetPluralEventTypesWithSd, callInfo)
 	mock.lockGetPluralEventTypesWithSd.Unlock()
-	return mock.GetPluralEventTypesWithSdFunc(ctx, sd, EventTypeIDs, np)
+	return mock.GetPluralEventTypesWithSdFunc(ctx, sd, eventTypeIDs, np)
 }
 
 // GetPluralEventTypesWithSdCalls gets all the calls that were made to GetPluralEventTypesWithSd.
@@ -11472,7 +12612,7 @@ func (mock *StoreMock) GetPluralEventTypesWithSdCalls() []struct {
 }
 
 // GetPluralMimeTypes calls GetPluralMimeTypesFunc.
-func (mock *StoreMock) GetPluralMimeTypes(ctx context.Context, MimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error) {
+func (mock *StoreMock) GetPluralMimeTypes(ctx context.Context, mimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error) {
 	if mock.GetPluralMimeTypesFunc == nil {
 		panic("StoreMock.GetPluralMimeTypesFunc: method is nil but Store.GetPluralMimeTypes was just called")
 	}
@@ -11482,13 +12622,13 @@ func (mock *StoreMock) GetPluralMimeTypes(ctx context.Context, MimeTypeIDs []uui
 		Np          NumberedPaginationParam
 	}{
 		Ctx:         ctx,
-		MimeTypeIDs: MimeTypeIDs,
+		MimeTypeIDs: mimeTypeIDs,
 		Np:          np,
 	}
 	mock.lockGetPluralMimeTypes.Lock()
 	mock.calls.GetPluralMimeTypes = append(mock.calls.GetPluralMimeTypes, callInfo)
 	mock.lockGetPluralMimeTypes.Unlock()
-	return mock.GetPluralMimeTypesFunc(ctx, MimeTypeIDs, np)
+	return mock.GetPluralMimeTypesFunc(ctx, mimeTypeIDs, np)
 }
 
 // GetPluralMimeTypesCalls gets all the calls that were made to GetPluralMimeTypes.
@@ -11512,7 +12652,7 @@ func (mock *StoreMock) GetPluralMimeTypesCalls() []struct {
 }
 
 // GetPluralMimeTypesWithSd calls GetPluralMimeTypesWithSdFunc.
-func (mock *StoreMock) GetPluralMimeTypesWithSd(ctx context.Context, sd Sd, MimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error) {
+func (mock *StoreMock) GetPluralMimeTypesWithSd(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.MimeType], error) {
 	if mock.GetPluralMimeTypesWithSdFunc == nil {
 		panic("StoreMock.GetPluralMimeTypesWithSdFunc: method is nil but Store.GetPluralMimeTypesWithSd was just called")
 	}
@@ -11524,13 +12664,13 @@ func (mock *StoreMock) GetPluralMimeTypesWithSd(ctx context.Context, sd Sd, Mime
 	}{
 		Ctx:         ctx,
 		Sd:          sd,
-		MimeTypeIDs: MimeTypeIDs,
+		MimeTypeIDs: mimeTypeIDs,
 		Np:          np,
 	}
 	mock.lockGetPluralMimeTypesWithSd.Lock()
 	mock.calls.GetPluralMimeTypesWithSd = append(mock.calls.GetPluralMimeTypesWithSd, callInfo)
 	mock.lockGetPluralMimeTypesWithSd.Unlock()
-	return mock.GetPluralMimeTypesWithSdFunc(ctx, sd, MimeTypeIDs, np)
+	return mock.GetPluralMimeTypesWithSdFunc(ctx, sd, mimeTypeIDs, np)
 }
 
 // GetPluralMimeTypesWithSdCalls gets all the calls that were made to GetPluralMimeTypesWithSd.
@@ -11556,7 +12696,7 @@ func (mock *StoreMock) GetPluralMimeTypesWithSdCalls() []struct {
 }
 
 // GetPluralPermissionCategories calls GetPluralPermissionCategoriesFunc.
-func (mock *StoreMock) GetPluralPermissionCategories(ctx context.Context, PermissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error) {
+func (mock *StoreMock) GetPluralPermissionCategories(ctx context.Context, permissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error) {
 	if mock.GetPluralPermissionCategoriesFunc == nil {
 		panic("StoreMock.GetPluralPermissionCategoriesFunc: method is nil but Store.GetPluralPermissionCategories was just called")
 	}
@@ -11566,13 +12706,13 @@ func (mock *StoreMock) GetPluralPermissionCategories(ctx context.Context, Permis
 		Np                    NumberedPaginationParam
 	}{
 		Ctx:                   ctx,
-		PermissionCategoryIDs: PermissionCategoryIDs,
+		PermissionCategoryIDs: permissionCategoryIDs,
 		Np:                    np,
 	}
 	mock.lockGetPluralPermissionCategories.Lock()
 	mock.calls.GetPluralPermissionCategories = append(mock.calls.GetPluralPermissionCategories, callInfo)
 	mock.lockGetPluralPermissionCategories.Unlock()
-	return mock.GetPluralPermissionCategoriesFunc(ctx, PermissionCategoryIDs, np)
+	return mock.GetPluralPermissionCategoriesFunc(ctx, permissionCategoryIDs, np)
 }
 
 // GetPluralPermissionCategoriesCalls gets all the calls that were made to GetPluralPermissionCategories.
@@ -11596,7 +12736,7 @@ func (mock *StoreMock) GetPluralPermissionCategoriesCalls() []struct {
 }
 
 // GetPluralPermissionCategoriesWithSd calls GetPluralPermissionCategoriesWithSdFunc.
-func (mock *StoreMock) GetPluralPermissionCategoriesWithSd(ctx context.Context, sd Sd, PermissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error) {
+func (mock *StoreMock) GetPluralPermissionCategoriesWithSd(ctx context.Context, sd Sd, permissionCategoryIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error) {
 	if mock.GetPluralPermissionCategoriesWithSdFunc == nil {
 		panic("StoreMock.GetPluralPermissionCategoriesWithSdFunc: method is nil but Store.GetPluralPermissionCategoriesWithSd was just called")
 	}
@@ -11608,13 +12748,13 @@ func (mock *StoreMock) GetPluralPermissionCategoriesWithSd(ctx context.Context, 
 	}{
 		Ctx:                   ctx,
 		Sd:                    sd,
-		PermissionCategoryIDs: PermissionCategoryIDs,
+		PermissionCategoryIDs: permissionCategoryIDs,
 		Np:                    np,
 	}
 	mock.lockGetPluralPermissionCategoriesWithSd.Lock()
 	mock.calls.GetPluralPermissionCategoriesWithSd = append(mock.calls.GetPluralPermissionCategoriesWithSd, callInfo)
 	mock.lockGetPluralPermissionCategoriesWithSd.Unlock()
-	return mock.GetPluralPermissionCategoriesWithSdFunc(ctx, sd, PermissionCategoryIDs, np)
+	return mock.GetPluralPermissionCategoriesWithSdFunc(ctx, sd, permissionCategoryIDs, np)
 }
 
 // GetPluralPermissionCategoriesWithSdCalls gets all the calls that were made to GetPluralPermissionCategoriesWithSd.
@@ -11640,7 +12780,7 @@ func (mock *StoreMock) GetPluralPermissionCategoriesWithSdCalls() []struct {
 }
 
 // GetPluralPermissions calls GetPluralPermissionsFunc.
-func (mock *StoreMock) GetPluralPermissions(ctx context.Context, PermissionIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Permission], error) {
+func (mock *StoreMock) GetPluralPermissions(ctx context.Context, permissionIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Permission], error) {
 	if mock.GetPluralPermissionsFunc == nil {
 		panic("StoreMock.GetPluralPermissionsFunc: method is nil but Store.GetPluralPermissions was just called")
 	}
@@ -11650,13 +12790,13 @@ func (mock *StoreMock) GetPluralPermissions(ctx context.Context, PermissionIDs [
 		Np            NumberedPaginationParam
 	}{
 		Ctx:           ctx,
-		PermissionIDs: PermissionIDs,
+		PermissionIDs: permissionIDs,
 		Np:            np,
 	}
 	mock.lockGetPluralPermissions.Lock()
 	mock.calls.GetPluralPermissions = append(mock.calls.GetPluralPermissions, callInfo)
 	mock.lockGetPluralPermissions.Unlock()
-	return mock.GetPluralPermissionsFunc(ctx, PermissionIDs, np)
+	return mock.GetPluralPermissionsFunc(ctx, permissionIDs, np)
 }
 
 // GetPluralPermissionsCalls gets all the calls that were made to GetPluralPermissions.
@@ -11680,7 +12820,7 @@ func (mock *StoreMock) GetPluralPermissionsCalls() []struct {
 }
 
 // GetPluralPermissionsWithSd calls GetPluralPermissionsWithSdFunc.
-func (mock *StoreMock) GetPluralPermissionsWithSd(ctx context.Context, sd Sd, PermissionIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Permission], error) {
+func (mock *StoreMock) GetPluralPermissionsWithSd(ctx context.Context, sd Sd, permissionIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Permission], error) {
 	if mock.GetPluralPermissionsWithSdFunc == nil {
 		panic("StoreMock.GetPluralPermissionsWithSdFunc: method is nil but Store.GetPluralPermissionsWithSd was just called")
 	}
@@ -11692,13 +12832,13 @@ func (mock *StoreMock) GetPluralPermissionsWithSd(ctx context.Context, sd Sd, Pe
 	}{
 		Ctx:           ctx,
 		Sd:            sd,
-		PermissionIDs: PermissionIDs,
+		PermissionIDs: permissionIDs,
 		Np:            np,
 	}
 	mock.lockGetPluralPermissionsWithSd.Lock()
 	mock.calls.GetPluralPermissionsWithSd = append(mock.calls.GetPluralPermissionsWithSd, callInfo)
 	mock.lockGetPluralPermissionsWithSd.Unlock()
-	return mock.GetPluralPermissionsWithSdFunc(ctx, sd, PermissionIDs, np)
+	return mock.GetPluralPermissionsWithSdFunc(ctx, sd, permissionIDs, np)
 }
 
 // GetPluralPermissionsWithSdCalls gets all the calls that were made to GetPluralPermissionsWithSd.
@@ -11892,7 +13032,7 @@ func (mock *StoreMock) GetPluralPolicyCategoriesWithSdCalls() []struct {
 }
 
 // GetPluralRecordTypes calls GetPluralRecordTypesFunc.
-func (mock *StoreMock) GetPluralRecordTypes(ctx context.Context, RecordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error) {
+func (mock *StoreMock) GetPluralRecordTypes(ctx context.Context, recordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error) {
 	if mock.GetPluralRecordTypesFunc == nil {
 		panic("StoreMock.GetPluralRecordTypesFunc: method is nil but Store.GetPluralRecordTypes was just called")
 	}
@@ -11902,13 +13042,13 @@ func (mock *StoreMock) GetPluralRecordTypes(ctx context.Context, RecordTypeIDs [
 		Np            NumberedPaginationParam
 	}{
 		Ctx:           ctx,
-		RecordTypeIDs: RecordTypeIDs,
+		RecordTypeIDs: recordTypeIDs,
 		Np:            np,
 	}
 	mock.lockGetPluralRecordTypes.Lock()
 	mock.calls.GetPluralRecordTypes = append(mock.calls.GetPluralRecordTypes, callInfo)
 	mock.lockGetPluralRecordTypes.Unlock()
-	return mock.GetPluralRecordTypesFunc(ctx, RecordTypeIDs, np)
+	return mock.GetPluralRecordTypesFunc(ctx, recordTypeIDs, np)
 }
 
 // GetPluralRecordTypesCalls gets all the calls that were made to GetPluralRecordTypes.
@@ -11932,7 +13072,7 @@ func (mock *StoreMock) GetPluralRecordTypesCalls() []struct {
 }
 
 // GetPluralRecordTypesWithSd calls GetPluralRecordTypesWithSdFunc.
-func (mock *StoreMock) GetPluralRecordTypesWithSd(ctx context.Context, sd Sd, RecordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error) {
+func (mock *StoreMock) GetPluralRecordTypesWithSd(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.RecordType], error) {
 	if mock.GetPluralRecordTypesWithSdFunc == nil {
 		panic("StoreMock.GetPluralRecordTypesWithSdFunc: method is nil but Store.GetPluralRecordTypesWithSd was just called")
 	}
@@ -11944,13 +13084,13 @@ func (mock *StoreMock) GetPluralRecordTypesWithSd(ctx context.Context, sd Sd, Re
 	}{
 		Ctx:           ctx,
 		Sd:            sd,
-		RecordTypeIDs: RecordTypeIDs,
+		RecordTypeIDs: recordTypeIDs,
 		Np:            np,
 	}
 	mock.lockGetPluralRecordTypesWithSd.Lock()
 	mock.calls.GetPluralRecordTypesWithSd = append(mock.calls.GetPluralRecordTypesWithSd, callInfo)
 	mock.lockGetPluralRecordTypesWithSd.Unlock()
-	return mock.GetPluralRecordTypesWithSdFunc(ctx, sd, RecordTypeIDs, np)
+	return mock.GetPluralRecordTypesWithSdFunc(ctx, sd, recordTypeIDs, np)
 }
 
 // GetPluralRecordTypesWithSdCalls gets all the calls that were made to GetPluralRecordTypesWithSd.
@@ -11976,7 +13116,7 @@ func (mock *StoreMock) GetPluralRecordTypesWithSdCalls() []struct {
 }
 
 // GetPluralRoles calls GetPluralRolesFunc.
-func (mock *StoreMock) GetPluralRoles(ctx context.Context, RoleIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Role], error) {
+func (mock *StoreMock) GetPluralRoles(ctx context.Context, roleIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Role], error) {
 	if mock.GetPluralRolesFunc == nil {
 		panic("StoreMock.GetPluralRolesFunc: method is nil but Store.GetPluralRoles was just called")
 	}
@@ -11986,13 +13126,13 @@ func (mock *StoreMock) GetPluralRoles(ctx context.Context, RoleIDs []uuid.UUID, 
 		Np      NumberedPaginationParam
 	}{
 		Ctx:     ctx,
-		RoleIDs: RoleIDs,
+		RoleIDs: roleIDs,
 		Np:      np,
 	}
 	mock.lockGetPluralRoles.Lock()
 	mock.calls.GetPluralRoles = append(mock.calls.GetPluralRoles, callInfo)
 	mock.lockGetPluralRoles.Unlock()
-	return mock.GetPluralRolesFunc(ctx, RoleIDs, np)
+	return mock.GetPluralRolesFunc(ctx, roleIDs, np)
 }
 
 // GetPluralRolesCalls gets all the calls that were made to GetPluralRoles.
@@ -12016,7 +13156,7 @@ func (mock *StoreMock) GetPluralRolesCalls() []struct {
 }
 
 // GetPluralRolesWithSd calls GetPluralRolesWithSdFunc.
-func (mock *StoreMock) GetPluralRolesWithSd(ctx context.Context, sd Sd, RoleIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Role], error) {
+func (mock *StoreMock) GetPluralRolesWithSd(ctx context.Context, sd Sd, roleIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Role], error) {
 	if mock.GetPluralRolesWithSdFunc == nil {
 		panic("StoreMock.GetPluralRolesWithSdFunc: method is nil but Store.GetPluralRolesWithSd was just called")
 	}
@@ -12028,13 +13168,13 @@ func (mock *StoreMock) GetPluralRolesWithSd(ctx context.Context, sd Sd, RoleIDs 
 	}{
 		Ctx:     ctx,
 		Sd:      sd,
-		RoleIDs: RoleIDs,
+		RoleIDs: roleIDs,
 		Np:      np,
 	}
 	mock.lockGetPluralRolesWithSd.Lock()
 	mock.calls.GetPluralRolesWithSd = append(mock.calls.GetPluralRolesWithSd, callInfo)
 	mock.lockGetPluralRolesWithSd.Unlock()
-	return mock.GetPluralRolesWithSdFunc(ctx, sd, RoleIDs, np)
+	return mock.GetPluralRolesWithSdFunc(ctx, sd, roleIDs, np)
 }
 
 // GetPluralRolesWithSdCalls gets all the calls that were made to GetPluralRolesWithSd.
@@ -12108,6 +13248,122 @@ func (mock *StoreMock) GetPoliciesCalls() []struct {
 	mock.lockGetPolicies.RLock()
 	calls = mock.calls.GetPolicies
 	mock.lockGetPolicies.RUnlock()
+	return calls
+}
+
+// GetPoliciesOnRole calls GetPoliciesOnRoleFunc.
+func (mock *StoreMock) GetPoliciesOnRole(ctx context.Context, roleID uuid.UUID, where parameter.WherePolicyOnRoleParam, order parameter.PolicyOnRoleOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyOnRole], error) {
+	if mock.GetPoliciesOnRoleFunc == nil {
+		panic("StoreMock.GetPoliciesOnRoleFunc: method is nil but Store.GetPoliciesOnRole was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		RoleID uuid.UUID
+		Where  parameter.WherePolicyOnRoleParam
+		Order  parameter.PolicyOnRoleOrderMethod
+		Np     NumberedPaginationParam
+		Cp     CursorPaginationParam
+		Wc     WithCountParam
+	}{
+		Ctx:    ctx,
+		RoleID: roleID,
+		Where:  where,
+		Order:  order,
+		Np:     np,
+		Cp:     cp,
+		Wc:     wc,
+	}
+	mock.lockGetPoliciesOnRole.Lock()
+	mock.calls.GetPoliciesOnRole = append(mock.calls.GetPoliciesOnRole, callInfo)
+	mock.lockGetPoliciesOnRole.Unlock()
+	return mock.GetPoliciesOnRoleFunc(ctx, roleID, where, order, np, cp, wc)
+}
+
+// GetPoliciesOnRoleCalls gets all the calls that were made to GetPoliciesOnRole.
+// Check the length with:
+//
+//	len(mockedStore.GetPoliciesOnRoleCalls())
+func (mock *StoreMock) GetPoliciesOnRoleCalls() []struct {
+	Ctx    context.Context
+	RoleID uuid.UUID
+	Where  parameter.WherePolicyOnRoleParam
+	Order  parameter.PolicyOnRoleOrderMethod
+	Np     NumberedPaginationParam
+	Cp     CursorPaginationParam
+	Wc     WithCountParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		RoleID uuid.UUID
+		Where  parameter.WherePolicyOnRoleParam
+		Order  parameter.PolicyOnRoleOrderMethod
+		Np     NumberedPaginationParam
+		Cp     CursorPaginationParam
+		Wc     WithCountParam
+	}
+	mock.lockGetPoliciesOnRole.RLock()
+	calls = mock.calls.GetPoliciesOnRole
+	mock.lockGetPoliciesOnRole.RUnlock()
+	return calls
+}
+
+// GetPoliciesOnRoleWithSd calls GetPoliciesOnRoleWithSdFunc.
+func (mock *StoreMock) GetPoliciesOnRoleWithSd(ctx context.Context, sd Sd, roleID uuid.UUID, where parameter.WherePolicyOnRoleParam, order parameter.PolicyOnRoleOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PolicyOnRole], error) {
+	if mock.GetPoliciesOnRoleWithSdFunc == nil {
+		panic("StoreMock.GetPoliciesOnRoleWithSdFunc: method is nil but Store.GetPoliciesOnRoleWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		RoleID uuid.UUID
+		Where  parameter.WherePolicyOnRoleParam
+		Order  parameter.PolicyOnRoleOrderMethod
+		Np     NumberedPaginationParam
+		Cp     CursorPaginationParam
+		Wc     WithCountParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		RoleID: roleID,
+		Where:  where,
+		Order:  order,
+		Np:     np,
+		Cp:     cp,
+		Wc:     wc,
+	}
+	mock.lockGetPoliciesOnRoleWithSd.Lock()
+	mock.calls.GetPoliciesOnRoleWithSd = append(mock.calls.GetPoliciesOnRoleWithSd, callInfo)
+	mock.lockGetPoliciesOnRoleWithSd.Unlock()
+	return mock.GetPoliciesOnRoleWithSdFunc(ctx, sd, roleID, where, order, np, cp, wc)
+}
+
+// GetPoliciesOnRoleWithSdCalls gets all the calls that were made to GetPoliciesOnRoleWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPoliciesOnRoleWithSdCalls())
+func (mock *StoreMock) GetPoliciesOnRoleWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	RoleID uuid.UUID
+	Where  parameter.WherePolicyOnRoleParam
+	Order  parameter.PolicyOnRoleOrderMethod
+	Np     NumberedPaginationParam
+	Cp     CursorPaginationParam
+	Wc     WithCountParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		RoleID uuid.UUID
+		Where  parameter.WherePolicyOnRoleParam
+		Order  parameter.PolicyOnRoleOrderMethod
+		Np     NumberedPaginationParam
+		Cp     CursorPaginationParam
+		Wc     WithCountParam
+	}
+	mock.lockGetPoliciesOnRoleWithSd.RLock()
+	calls = mock.calls.GetPoliciesOnRoleWithSd
+	mock.lockGetPoliciesOnRoleWithSd.RUnlock()
 	return calls
 }
 
@@ -12540,6 +13796,122 @@ func (mock *StoreMock) GetRolesCalls() []struct {
 	mock.lockGetRoles.RLock()
 	calls = mock.calls.GetRoles
 	mock.lockGetRoles.RUnlock()
+	return calls
+}
+
+// GetRolesOnPolicy calls GetRolesOnPolicyFunc.
+func (mock *StoreMock) GetRolesOnPolicy(ctx context.Context, policyID uuid.UUID, where parameter.WhereRoleOnPolicyParam, order parameter.RoleOnPolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.RoleOnPolicy], error) {
+	if mock.GetRolesOnPolicyFunc == nil {
+		panic("StoreMock.GetRolesOnPolicyFunc: method is nil but Store.GetRolesOnPolicy was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+		Where    parameter.WhereRoleOnPolicyParam
+		Order    parameter.RoleOnPolicyOrderMethod
+		Np       NumberedPaginationParam
+		Cp       CursorPaginationParam
+		Wc       WithCountParam
+	}{
+		Ctx:      ctx,
+		PolicyID: policyID,
+		Where:    where,
+		Order:    order,
+		Np:       np,
+		Cp:       cp,
+		Wc:       wc,
+	}
+	mock.lockGetRolesOnPolicy.Lock()
+	mock.calls.GetRolesOnPolicy = append(mock.calls.GetRolesOnPolicy, callInfo)
+	mock.lockGetRolesOnPolicy.Unlock()
+	return mock.GetRolesOnPolicyFunc(ctx, policyID, where, order, np, cp, wc)
+}
+
+// GetRolesOnPolicyCalls gets all the calls that were made to GetRolesOnPolicy.
+// Check the length with:
+//
+//	len(mockedStore.GetRolesOnPolicyCalls())
+func (mock *StoreMock) GetRolesOnPolicyCalls() []struct {
+	Ctx      context.Context
+	PolicyID uuid.UUID
+	Where    parameter.WhereRoleOnPolicyParam
+	Order    parameter.RoleOnPolicyOrderMethod
+	Np       NumberedPaginationParam
+	Cp       CursorPaginationParam
+	Wc       WithCountParam
+} {
+	var calls []struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+		Where    parameter.WhereRoleOnPolicyParam
+		Order    parameter.RoleOnPolicyOrderMethod
+		Np       NumberedPaginationParam
+		Cp       CursorPaginationParam
+		Wc       WithCountParam
+	}
+	mock.lockGetRolesOnPolicy.RLock()
+	calls = mock.calls.GetRolesOnPolicy
+	mock.lockGetRolesOnPolicy.RUnlock()
+	return calls
+}
+
+// GetRolesOnPolicyWithSd calls GetRolesOnPolicyWithSdFunc.
+func (mock *StoreMock) GetRolesOnPolicyWithSd(ctx context.Context, sd Sd, policyID uuid.UUID, where parameter.WhereRoleOnPolicyParam, order parameter.RoleOnPolicyOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.RoleOnPolicy], error) {
+	if mock.GetRolesOnPolicyWithSdFunc == nil {
+		panic("StoreMock.GetRolesOnPolicyWithSdFunc: method is nil but Store.GetRolesOnPolicyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		PolicyID uuid.UUID
+		Where    parameter.WhereRoleOnPolicyParam
+		Order    parameter.RoleOnPolicyOrderMethod
+		Np       NumberedPaginationParam
+		Cp       CursorPaginationParam
+		Wc       WithCountParam
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		PolicyID: policyID,
+		Where:    where,
+		Order:    order,
+		Np:       np,
+		Cp:       cp,
+		Wc:       wc,
+	}
+	mock.lockGetRolesOnPolicyWithSd.Lock()
+	mock.calls.GetRolesOnPolicyWithSd = append(mock.calls.GetRolesOnPolicyWithSd, callInfo)
+	mock.lockGetRolesOnPolicyWithSd.Unlock()
+	return mock.GetRolesOnPolicyWithSdFunc(ctx, sd, policyID, where, order, np, cp, wc)
+}
+
+// GetRolesOnPolicyWithSdCalls gets all the calls that were made to GetRolesOnPolicyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetRolesOnPolicyWithSdCalls())
+func (mock *StoreMock) GetRolesOnPolicyWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	PolicyID uuid.UUID
+	Where    parameter.WhereRoleOnPolicyParam
+	Order    parameter.RoleOnPolicyOrderMethod
+	Np       NumberedPaginationParam
+	Cp       CursorPaginationParam
+	Wc       WithCountParam
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		PolicyID uuid.UUID
+		Where    parameter.WhereRoleOnPolicyParam
+		Order    parameter.RoleOnPolicyOrderMethod
+		Np       NumberedPaginationParam
+		Cp       CursorPaginationParam
+		Wc       WithCountParam
+	}
+	mock.lockGetRolesOnPolicyWithSd.RLock()
+	calls = mock.calls.GetRolesOnPolicyWithSd
+	mock.lockGetRolesOnPolicyWithSd.RUnlock()
 	return calls
 }
 
@@ -13432,6 +14804,130 @@ func (mock *StoreMock) PluralDeleteRolesWithSdCalls() []struct {
 	mock.lockPluralDeleteRolesWithSd.RLock()
 	calls = mock.calls.PluralDeleteRolesWithSd
 	mock.lockPluralDeleteRolesWithSd.RUnlock()
+	return calls
+}
+
+// PluralDisassociatePolicyOnRole calls PluralDisassociatePolicyOnRoleFunc.
+func (mock *StoreMock) PluralDisassociatePolicyOnRole(ctx context.Context, roleID uuid.UUID, policyIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDisassociatePolicyOnRoleFunc == nil {
+		panic("StoreMock.PluralDisassociatePolicyOnRoleFunc: method is nil but Store.PluralDisassociatePolicyOnRole was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		RoleID    uuid.UUID
+		PolicyIDs []uuid.UUID
+	}{
+		Ctx:       ctx,
+		RoleID:    roleID,
+		PolicyIDs: policyIDs,
+	}
+	mock.lockPluralDisassociatePolicyOnRole.Lock()
+	mock.calls.PluralDisassociatePolicyOnRole = append(mock.calls.PluralDisassociatePolicyOnRole, callInfo)
+	mock.lockPluralDisassociatePolicyOnRole.Unlock()
+	return mock.PluralDisassociatePolicyOnRoleFunc(ctx, roleID, policyIDs)
+}
+
+// PluralDisassociatePolicyOnRoleCalls gets all the calls that were made to PluralDisassociatePolicyOnRole.
+// Check the length with:
+//
+//	len(mockedStore.PluralDisassociatePolicyOnRoleCalls())
+func (mock *StoreMock) PluralDisassociatePolicyOnRoleCalls() []struct {
+	Ctx       context.Context
+	RoleID    uuid.UUID
+	PolicyIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		RoleID    uuid.UUID
+		PolicyIDs []uuid.UUID
+	}
+	mock.lockPluralDisassociatePolicyOnRole.RLock()
+	calls = mock.calls.PluralDisassociatePolicyOnRole
+	mock.lockPluralDisassociatePolicyOnRole.RUnlock()
+	return calls
+}
+
+// PluralDisassociateRoleOnPolicy calls PluralDisassociateRoleOnPolicyFunc.
+func (mock *StoreMock) PluralDisassociateRoleOnPolicy(ctx context.Context, policyID uuid.UUID, roleIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDisassociateRoleOnPolicyFunc == nil {
+		panic("StoreMock.PluralDisassociateRoleOnPolicyFunc: method is nil but Store.PluralDisassociateRoleOnPolicy was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+		RoleIDs  []uuid.UUID
+	}{
+		Ctx:      ctx,
+		PolicyID: policyID,
+		RoleIDs:  roleIDs,
+	}
+	mock.lockPluralDisassociateRoleOnPolicy.Lock()
+	mock.calls.PluralDisassociateRoleOnPolicy = append(mock.calls.PluralDisassociateRoleOnPolicy, callInfo)
+	mock.lockPluralDisassociateRoleOnPolicy.Unlock()
+	return mock.PluralDisassociateRoleOnPolicyFunc(ctx, policyID, roleIDs)
+}
+
+// PluralDisassociateRoleOnPolicyCalls gets all the calls that were made to PluralDisassociateRoleOnPolicy.
+// Check the length with:
+//
+//	len(mockedStore.PluralDisassociateRoleOnPolicyCalls())
+func (mock *StoreMock) PluralDisassociateRoleOnPolicyCalls() []struct {
+	Ctx      context.Context
+	PolicyID uuid.UUID
+	RoleIDs  []uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+		RoleIDs  []uuid.UUID
+	}
+	mock.lockPluralDisassociateRoleOnPolicy.RLock()
+	calls = mock.calls.PluralDisassociateRoleOnPolicy
+	mock.lockPluralDisassociateRoleOnPolicy.RUnlock()
+	return calls
+}
+
+// PluralDisassociateRoleOnPolicyWithSd calls PluralDisassociateRoleOnPolicyWithSdFunc.
+func (mock *StoreMock) PluralDisassociateRoleOnPolicyWithSd(ctx context.Context, sd Sd, policyID uuid.UUID, roleIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDisassociateRoleOnPolicyWithSdFunc == nil {
+		panic("StoreMock.PluralDisassociateRoleOnPolicyWithSdFunc: method is nil but Store.PluralDisassociateRoleOnPolicyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		PolicyID uuid.UUID
+		RoleIDs  []uuid.UUID
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		PolicyID: policyID,
+		RoleIDs:  roleIDs,
+	}
+	mock.lockPluralDisassociateRoleOnPolicyWithSd.Lock()
+	mock.calls.PluralDisassociateRoleOnPolicyWithSd = append(mock.calls.PluralDisassociateRoleOnPolicyWithSd, callInfo)
+	mock.lockPluralDisassociateRoleOnPolicyWithSd.Unlock()
+	return mock.PluralDisassociateRoleOnPolicyWithSdFunc(ctx, sd, policyID, roleIDs)
+}
+
+// PluralDisassociateRoleOnPolicyWithSdCalls gets all the calls that were made to PluralDisassociateRoleOnPolicyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.PluralDisassociateRoleOnPolicyWithSdCalls())
+func (mock *StoreMock) PluralDisassociateRoleOnPolicyWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	PolicyID uuid.UUID
+	RoleIDs  []uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		PolicyID uuid.UUID
+		RoleIDs  []uuid.UUID
+	}
+	mock.lockPluralDisassociateRoleOnPolicyWithSd.RLock()
+	calls = mock.calls.PluralDisassociateRoleOnPolicyWithSd
+	mock.lockPluralDisassociateRoleOnPolicyWithSd.RUnlock()
 	return calls
 }
 

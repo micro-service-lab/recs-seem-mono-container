@@ -210,4 +210,11 @@ var (
 		Message:    "unsupported media type error",
 		StatusCode: http.StatusUnsupportedMediaType,
 	}
+
+	// RequestFormatError リクエストフォーマットエラー
+	RequestFormatError = APIResponseType{
+		Code:       "225",
+		Message:    "request format error",
+		StatusCode: http.StatusBadRequest,
+	}
 )

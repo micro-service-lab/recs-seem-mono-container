@@ -14,7 +14,7 @@ import (
 
 // FindRole is a handler for finding role.
 type FindRole struct {
-	Service service.RoleManager
+	Service service.ManagerInterface
 }
 
 func (h *FindRole) ServeHTTP(w http.ResponseWriter, r *http.Request) {

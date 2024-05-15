@@ -14,7 +14,7 @@ import (
 
 // GetPolicyCategories is a handler for getting policy categories.
 type GetPolicyCategories struct {
-	Service service.PolicyCategoryManager
+	Service service.ManagerInterface
 }
 
 // GetPolicyCategoriesParam is a parameter for GetPolicyCategories.

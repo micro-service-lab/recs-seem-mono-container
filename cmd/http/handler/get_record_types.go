@@ -14,7 +14,7 @@ import (
 
 // GetRecordTypes is a handler for getting record types.
 type GetRecordTypes struct {
-	Service service.RecordTypeManager
+	Service service.ManagerInterface
 }
 
 // GetRecordTypesParam is a parameter for GetRecordTypes.

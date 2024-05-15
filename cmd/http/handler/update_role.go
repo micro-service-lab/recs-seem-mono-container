@@ -20,7 +20,7 @@ import (
 
 // UpdateRole is a handler for creating role.
 type UpdateRole struct {
-	Service   service.RoleManager
+	Service   service.ManagerInterface
 	Validator validation.Validator
 }
 
@@ -40,6 +40,8 @@ func (h *UpdateRole) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			roleReq = UpdateRoleRequest{}
 		}
 		err = h.Validator.ValidateWithLocale(ctx, &roleReq, lang.GetLocale(r.Context()))
+	} else {
+		err = errhandle.NewJSONFormatError()
 	}
 	if err != nil {
 		handled, err := errhandle.ErrorHandle(ctx, w, err)

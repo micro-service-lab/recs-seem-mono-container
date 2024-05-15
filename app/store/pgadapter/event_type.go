@@ -31,11 +31,7 @@ func countEventTypes(
 
 // CountEventTypes イベントタイプ数を取得する。
 func (a *PgAdapter) CountEventTypes(ctx context.Context, where parameter.WhereEventTypeParam) (int64, error) {
-	c, err := countEventTypes(ctx, a.query, where)
-	if err != nil {
-		return 0, fmt.Errorf("failed to count event type: %w", err)
-	}
-	return c, nil
+	return countEventTypes(ctx, a.query, where)
 }
 
 // CountEventTypesWithSd SD付きでイベントタイプ数を取得する。
@@ -48,11 +44,7 @@ func (a *PgAdapter) CountEventTypesWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := countEventTypes(ctx, qtx, where)
-	if err != nil {
-		return 0, fmt.Errorf("failed to count event type: %w", err)
-	}
-	return c, nil
+	return countEventTypes(ctx, qtx, where)
 }
 
 func createEventType(
@@ -80,11 +72,7 @@ func createEventType(
 func (a *PgAdapter) CreateEventType(
 	ctx context.Context, param parameter.CreateEventTypeParam,
 ) (entity.EventType, error) {
-	e, err := createEventType(ctx, a.query, param)
-	if err != nil {
-		return entity.EventType{}, fmt.Errorf("failed to create event type: %w", err)
-	}
-	return e, nil
+	return createEventType(ctx, a.query, param)
 }
 
 // CreateEventTypeWithSd SD付きでイベントタイプを作成する。
@@ -97,11 +85,7 @@ func (a *PgAdapter) CreateEventTypeWithSd(
 	if !ok {
 		return entity.EventType{}, store.ErrNotFoundDescriptor
 	}
-	e, err := createEventType(ctx, qtx, param)
-	if err != nil {
-		return entity.EventType{}, fmt.Errorf("failed to create event type: %w", err)
-	}
-	return e, nil
+	return createEventType(ctx, qtx, param)
 }
 
 func createEventTypes(
@@ -126,11 +110,7 @@ func createEventTypes(
 func (a *PgAdapter) CreateEventTypes(
 	ctx context.Context, params []parameter.CreateEventTypeParam,
 ) (int64, error) {
-	c, err := createEventTypes(ctx, a.query, params)
-	if err != nil {
-		return 0, fmt.Errorf("failed to create event types: %w", err)
-	}
-	return c, nil
+	return createEventTypes(ctx, a.query, params)
 }
 
 // CreateEventTypesWithSd SD付きでイベントタイプを作成する。
@@ -143,11 +123,7 @@ func (a *PgAdapter) CreateEventTypesWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := createEventTypes(ctx, qtx, params)
-	if err != nil {
-		return 0, fmt.Errorf("failed to create event types: %w", err)
-	}
-	return c, nil
+	return createEventTypes(ctx, qtx, params)
 }
 
 func deleteEventType(ctx context.Context, qtx *query.Queries, eventTypeID uuid.UUID) (int64, error) {
@@ -160,11 +136,7 @@ func deleteEventType(ctx context.Context, qtx *query.Queries, eventTypeID uuid.U
 
 // DeleteEventType イベントタイプを削除する。
 func (a *PgAdapter) DeleteEventType(ctx context.Context, eventTypeID uuid.UUID) (int64, error) {
-	c, err := deleteEventType(ctx, a.query, eventTypeID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete event type: %w", err)
-	}
-	return c, nil
+	return deleteEventType(ctx, a.query, eventTypeID)
 }
 
 // DeleteEventTypeWithSd SD付きでイベントタイプを削除する。
@@ -177,11 +149,7 @@ func (a *PgAdapter) DeleteEventTypeWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := deleteEventType(ctx, qtx, eventTypeID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete event type: %w", err)
-	}
-	return c, nil
+	return deleteEventType(ctx, qtx, eventTypeID)
 }
 
 func deleteEventTypeByKey(ctx context.Context, qtx *query.Queries, key string) (int64, error) {
@@ -194,11 +162,7 @@ func deleteEventTypeByKey(ctx context.Context, qtx *query.Queries, key string) (
 
 // DeleteEventTypeByKey イベントタイプを削除する。
 func (a *PgAdapter) DeleteEventTypeByKey(ctx context.Context, key string) (int64, error) {
-	c, err := deleteEventTypeByKey(ctx, a.query, key)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete event type: %w", err)
-	}
-	return c, nil
+	return deleteEventTypeByKey(ctx, a.query, key)
 }
 
 // DeleteEventTypeByKeyWithSd SD付きでイベントタイプを削除する。
@@ -211,11 +175,7 @@ func (a *PgAdapter) DeleteEventTypeByKeyWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := deleteEventTypeByKey(ctx, qtx, key)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete event type: %w", err)
-	}
-	return c, nil
+	return deleteEventTypeByKey(ctx, qtx, key)
 }
 
 func pluralDeleteEventTypes(ctx context.Context, qtx *query.Queries, eventTypeIDs []uuid.UUID) (int64, error) {
@@ -228,11 +188,7 @@ func pluralDeleteEventTypes(ctx context.Context, qtx *query.Queries, eventTypeID
 
 // PluralDeleteEventTypes イベントタイプを複数削除する。
 func (a *PgAdapter) PluralDeleteEventTypes(ctx context.Context, eventTypeIDs []uuid.UUID) (int64, error) {
-	c, err := pluralDeleteEventTypes(ctx, a.query, eventTypeIDs)
-	if err != nil {
-		return 0, fmt.Errorf("failed to plural delete event types: %w", err)
-	}
-	return c, nil
+	return pluralDeleteEventTypes(ctx, a.query, eventTypeIDs)
 }
 
 // PluralDeleteEventTypesWithSd SD付きでイベントタイプを複数削除する。
@@ -245,11 +201,7 @@ func (a *PgAdapter) PluralDeleteEventTypesWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := pluralDeleteEventTypes(ctx, qtx, eventTypeIDs)
-	if err != nil {
-		return 0, fmt.Errorf("failed to plural delete event types: %w", err)
-	}
-	return c, nil
+	return pluralDeleteEventTypes(ctx, qtx, eventTypeIDs)
 }
 
 func findEventTypeByID(
@@ -275,11 +227,7 @@ func findEventTypeByID(
 func (a *PgAdapter) FindEventTypeByID(
 	ctx context.Context, eventTypeID uuid.UUID,
 ) (entity.EventType, error) {
-	e, err := findEventTypeByID(ctx, a.query, eventTypeID)
-	if err != nil {
-		return entity.EventType{}, fmt.Errorf("failed to find event type: %w", err)
-	}
-	return e, nil
+	return findEventTypeByID(ctx, a.query, eventTypeID)
 }
 
 // FindEventTypeByIDWithSd SD付きでイベントタイプを取得する。
@@ -292,11 +240,7 @@ func (a *PgAdapter) FindEventTypeByIDWithSd(
 	if !ok {
 		return entity.EventType{}, store.ErrNotFoundDescriptor
 	}
-	e, err := findEventTypeByID(ctx, qtx, eventTypeID)
-	if err != nil {
-		return entity.EventType{}, fmt.Errorf("failed to find event type: %w", err)
-	}
-	return e, nil
+	return findEventTypeByID(ctx, qtx, eventTypeID)
 }
 
 func findEventTypeByKey(ctx context.Context, qtx *query.Queries, key string) (entity.EventType, error) {
@@ -318,11 +262,7 @@ func findEventTypeByKey(ctx context.Context, qtx *query.Queries, key string) (en
 
 // FindEventTypeByKey イベントタイプを取得する。
 func (a *PgAdapter) FindEventTypeByKey(ctx context.Context, key string) (entity.EventType, error) {
-	e, err := findEventTypeByKey(ctx, a.query, key)
-	if err != nil {
-		return entity.EventType{}, fmt.Errorf("failed to find event type: %w", err)
-	}
-	return e, nil
+	return findEventTypeByKey(ctx, a.query, key)
 }
 
 // FindEventTypeByKeyWithSd SD付きでイベントタイプを取得する。
@@ -335,11 +275,7 @@ func (a *PgAdapter) FindEventTypeByKeyWithSd(
 	if !ok {
 		return entity.EventType{}, store.ErrNotFoundDescriptor
 	}
-	e, err := findEventTypeByKey(ctx, qtx, key)
-	if err != nil {
-		return entity.EventType{}, fmt.Errorf("failed to find event type: %w", err)
-	}
-	return e, nil
+	return findEventTypeByKey(ctx, qtx, key)
 }
 
 // EventTypeCursor is a cursor for EventType.
@@ -469,11 +405,7 @@ func (a *PgAdapter) GetEventTypes(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.EventType], error) {
-	r, err := getEventTypes(ctx, a.query, where, order, np, cp, wc)
-	if err != nil {
-		return store.ListResult[entity.EventType]{}, fmt.Errorf("failed to get event types: %w", err)
-	}
-	return r, nil
+	return getEventTypes(ctx, a.query, where, order, np, cp, wc)
 }
 
 // GetEventTypesWithSd SD付きでイベントタイプを取得する。
@@ -492,11 +424,7 @@ func (a *PgAdapter) GetEventTypesWithSd(
 	if !ok {
 		return store.ListResult[entity.EventType]{}, store.ErrNotFoundDescriptor
 	}
-	r, err := getEventTypes(ctx, qtx, where, order, np, cp, wc)
-	if err != nil {
-		return store.ListResult[entity.EventType]{}, fmt.Errorf("failed to get event types: %w", err)
-	}
-	return r, nil
+	return getEventTypes(ctx, qtx, where, order, np, cp, wc)
 }
 
 func getPluralEventTypes(
@@ -527,11 +455,7 @@ func getPluralEventTypes(
 func (a *PgAdapter) GetPluralEventTypes(
 	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.EventType], error) {
-	r, err := getPluralEventTypes(ctx, a.query, ids, np)
-	if err != nil {
-		return store.ListResult[entity.EventType]{}, fmt.Errorf("failed to get plural event types: %w", err)
-	}
-	return r, nil
+	return getPluralEventTypes(ctx, a.query, ids, np)
 }
 
 // GetPluralEventTypesWithSd SD付きでイベントタイプを取得する。
@@ -544,11 +468,7 @@ func (a *PgAdapter) GetPluralEventTypesWithSd(
 	if !ok {
 		return store.ListResult[entity.EventType]{}, store.ErrNotFoundDescriptor
 	}
-	r, err := getPluralEventTypes(ctx, qtx, ids, np)
-	if err != nil {
-		return store.ListResult[entity.EventType]{}, fmt.Errorf("failed to get plural event types: %w", err)
-	}
-	return r, nil
+	return getPluralEventTypes(ctx, qtx, ids, np)
 }
 
 func updateEventType(
@@ -580,11 +500,7 @@ func updateEventType(
 func (a *PgAdapter) UpdateEventType(
 	ctx context.Context, eventTypeID uuid.UUID, param parameter.UpdateEventTypeParams,
 ) (entity.EventType, error) {
-	e, err := updateEventType(ctx, a.query, eventTypeID, param)
-	if err != nil {
-		return entity.EventType{}, fmt.Errorf("failed to update event type: %w", err)
-	}
-	return e, nil
+	return updateEventType(ctx, a.query, eventTypeID, param)
 }
 
 // UpdateEventTypeWithSd SD付きでイベントタイプを更新する。
@@ -597,11 +513,7 @@ func (a *PgAdapter) UpdateEventTypeWithSd(
 	if !ok {
 		return entity.EventType{}, store.ErrNotFoundDescriptor
 	}
-	e, err := updateEventType(ctx, qtx, eventTypeID, param)
-	if err != nil {
-		return entity.EventType{}, fmt.Errorf("failed to update event type: %w", err)
-	}
-	return e, nil
+	return updateEventType(ctx, qtx, eventTypeID, param)
 }
 
 func updateEventTypeByKey(
@@ -632,11 +544,7 @@ func updateEventTypeByKey(
 func (a *PgAdapter) UpdateEventTypeByKey(
 	ctx context.Context, key string, param parameter.UpdateEventTypeByKeyParams,
 ) (entity.EventType, error) {
-	e, err := updateEventTypeByKey(ctx, a.query, key, param)
-	if err != nil {
-		return entity.EventType{}, fmt.Errorf("failed to update event type: %w", err)
-	}
-	return e, nil
+	return updateEventTypeByKey(ctx, a.query, key, param)
 }
 
 // UpdateEventTypeByKeyWithSd SD付きでイベントタイプを更新する。
@@ -649,9 +557,5 @@ func (a *PgAdapter) UpdateEventTypeByKeyWithSd(
 	if !ok {
 		return entity.EventType{}, store.ErrNotFoundDescriptor
 	}
-	e, err := updateEventTypeByKey(ctx, qtx, key, param)
-	if err != nil {
-		return entity.EventType{}, fmt.Errorf("failed to update event type: %w", err)
-	}
-	return e, nil
+	return updateEventTypeByKey(ctx, qtx, key, param)
 }

@@ -14,7 +14,7 @@ import (
 
 // FindPolicyCategory is a handler for finding policy category.
 type FindPolicyCategory struct {
-	Service service.PolicyCategoryManager
+	Service service.ManagerInterface
 }
 
 func (h *FindPolicyCategory) ServeHTTP(w http.ResponseWriter, r *http.Request) {

@@ -13,7 +13,7 @@ import (
 
 // FindMimeTypeByKey is a handler for finding mime type.
 type FindMimeTypeByKey struct {
-	Service service.MimeTypeManager
+	Service service.ManagerInterface
 }
 
 func (h *FindMimeTypeByKey) ServeHTTP(w http.ResponseWriter, r *http.Request) {

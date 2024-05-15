@@ -14,7 +14,7 @@ import (
 
 // GetPermissionCategories is a handler for getting permission categories.
 type GetPermissionCategories struct {
-	Service service.PermissionCategoryManager
+	Service service.ManagerInterface
 }
 
 // GetPermissionCategoriesParam is a parameter for GetPermissionCategories.

@@ -42,6 +42,12 @@ LIMIT $1;
 SELECT * FROM t_absences
 WHERE absence_id = ANY(@absence_ids::uuid[])
 ORDER BY
+	t_absences_pkey ASC;
+
+-- name: GetPluralAbsencesUseNumberedPaginate :many
+SELECT * FROM t_absences
+WHERE absence_id = ANY(@absence_ids::uuid[])
+ORDER BY
 	t_absences_pkey ASC
 LIMIT $1 OFFSET $2;
 

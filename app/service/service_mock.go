@@ -22,6 +22,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //
 //		// make and configure a mocked ManagerInterface
 //		mockedManagerInterface := &ManagerInterfaceMock{
+//			AssociateRoleFunc: func(ctx context.Context, roleID uuid.UUID, policyID uuid.UUID) (entity.RoleAssociation, error) {
+//				panic("mock out the AssociateRole method")
+//			},
+//			AssociateRolesFunc: func(ctx context.Context, params []parameter.AssociationRoleParam) (int64, error) {
+//				panic("mock out the AssociateRoles method")
+//			},
 //			CreateAttendStatusFunc: func(ctx context.Context, name string, key string) (entity.AttendStatus, error) {
 //				panic("mock out the CreateAttendStatus method")
 //			},
@@ -111,6 +117,21 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			DeleteRoleFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteRole method")
+//			},
+//			DisassociatePolicyOnRoleFunc: func(ctx context.Context, roleID uuid.UUID) (int64, error) {
+//				panic("mock out the DisassociatePolicyOnRole method")
+//			},
+//			DisassociatePolicyOnRolesFunc: func(ctx context.Context, roleIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisassociatePolicyOnRoles method")
+//			},
+//			DisassociateRoleFunc: func(ctx context.Context, roleID uuid.UUID, policyID uuid.UUID) (int64, error) {
+//				panic("mock out the DisassociateRole method")
+//			},
+//			DisassociateRoleOnPoliciesFunc: func(ctx context.Context, policyIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisassociateRoleOnPolicies method")
+//			},
+//			DisassociateRoleOnPolicyFunc: func(ctx context.Context, policyID uuid.UUID) (int64, error) {
+//				panic("mock out the DisassociateRoleOnPolicy method")
 //			},
 //			FindAttendStatusByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error) {
 //				panic("mock out the FindAttendStatusByID method")
@@ -226,6 +247,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			GetPoliciesCountFunc: func(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID) (int64, error) {
 //				panic("mock out the GetPoliciesCount method")
 //			},
+//			GetPoliciesOnRoleFunc: func(ctx context.Context, roleID uuid.UUID, whereSearchName string, order parameter.PolicyOnRoleOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PolicyOnRole], error) {
+//				panic("mock out the GetPoliciesOnRole method")
+//			},
+//			GetPoliciesOnRoleCountFunc: func(ctx context.Context, roleID uuid.UUID, whereSearchName string) (int64, error) {
+//				panic("mock out the GetPoliciesOnRoleCount method")
+//			},
 //			GetPoliciesWithCategoryFunc: func(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID, order parameter.PolicyOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PolicyWithCategory], error) {
 //				panic("mock out the GetPoliciesWithCategory method")
 //			},
@@ -246,6 +273,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			GetRolesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
 //				panic("mock out the GetRolesCount method")
+//			},
+//			GetRolesOnPolicyFunc: func(ctx context.Context, policyID uuid.UUID, whereSearchName string, order parameter.RoleOnPolicyOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.RoleOnPolicy], error) {
+//				panic("mock out the GetRolesOnPolicy method")
+//			},
+//			GetRolesOnPolicyCountFunc: func(ctx context.Context, policyID uuid.UUID, whereSearchName string) (int64, error) {
+//				panic("mock out the GetRolesOnPolicyCount method")
 //			},
 //			PluralDeleteAttendStatusesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteAttendStatuses method")
@@ -276,6 +309,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			PluralDeleteRolesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteRoles method")
+//			},
+//			PluralDisassociatePolicyOnRoleFunc: func(ctx context.Context, roleID uuid.UUID, policyIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDisassociatePolicyOnRole method")
+//			},
+//			PluralDisassociateRoleOnPolicyFunc: func(ctx context.Context, policyID uuid.UUID, roleIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDisassociateRoleOnPolicy method")
 //			},
 //			UpdateAttendStatusFunc: func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error) {
 //				panic("mock out the UpdateAttendStatus method")
@@ -314,6 +353,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //
 //	}
 type ManagerInterfaceMock struct {
+	// AssociateRoleFunc mocks the AssociateRole method.
+	AssociateRoleFunc func(ctx context.Context, roleID uuid.UUID, policyID uuid.UUID) (entity.RoleAssociation, error)
+
+	// AssociateRolesFunc mocks the AssociateRoles method.
+	AssociateRolesFunc func(ctx context.Context, params []parameter.AssociationRoleParam) (int64, error)
+
 	// CreateAttendStatusFunc mocks the CreateAttendStatus method.
 	CreateAttendStatusFunc func(ctx context.Context, name string, key string) (entity.AttendStatus, error)
 
@@ -403,6 +448,21 @@ type ManagerInterfaceMock struct {
 
 	// DeleteRoleFunc mocks the DeleteRole method.
 	DeleteRoleFunc func(ctx context.Context, id uuid.UUID) (int64, error)
+
+	// DisassociatePolicyOnRoleFunc mocks the DisassociatePolicyOnRole method.
+	DisassociatePolicyOnRoleFunc func(ctx context.Context, roleID uuid.UUID) (int64, error)
+
+	// DisassociatePolicyOnRolesFunc mocks the DisassociatePolicyOnRoles method.
+	DisassociatePolicyOnRolesFunc func(ctx context.Context, roleIDs []uuid.UUID) (int64, error)
+
+	// DisassociateRoleFunc mocks the DisassociateRole method.
+	DisassociateRoleFunc func(ctx context.Context, roleID uuid.UUID, policyID uuid.UUID) (int64, error)
+
+	// DisassociateRoleOnPoliciesFunc mocks the DisassociateRoleOnPolicies method.
+	DisassociateRoleOnPoliciesFunc func(ctx context.Context, policyIDs []uuid.UUID) (int64, error)
+
+	// DisassociateRoleOnPolicyFunc mocks the DisassociateRoleOnPolicy method.
+	DisassociateRoleOnPolicyFunc func(ctx context.Context, policyID uuid.UUID) (int64, error)
 
 	// FindAttendStatusByIDFunc mocks the FindAttendStatusByID method.
 	FindAttendStatusByIDFunc func(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error)
@@ -518,6 +578,12 @@ type ManagerInterfaceMock struct {
 	// GetPoliciesCountFunc mocks the GetPoliciesCount method.
 	GetPoliciesCountFunc func(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID) (int64, error)
 
+	// GetPoliciesOnRoleFunc mocks the GetPoliciesOnRole method.
+	GetPoliciesOnRoleFunc func(ctx context.Context, roleID uuid.UUID, whereSearchName string, order parameter.PolicyOnRoleOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PolicyOnRole], error)
+
+	// GetPoliciesOnRoleCountFunc mocks the GetPoliciesOnRoleCount method.
+	GetPoliciesOnRoleCountFunc func(ctx context.Context, roleID uuid.UUID, whereSearchName string) (int64, error)
+
 	// GetPoliciesWithCategoryFunc mocks the GetPoliciesWithCategory method.
 	GetPoliciesWithCategoryFunc func(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID, order parameter.PolicyOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PolicyWithCategory], error)
 
@@ -538,6 +604,12 @@ type ManagerInterfaceMock struct {
 
 	// GetRolesCountFunc mocks the GetRolesCount method.
 	GetRolesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
+
+	// GetRolesOnPolicyFunc mocks the GetRolesOnPolicy method.
+	GetRolesOnPolicyFunc func(ctx context.Context, policyID uuid.UUID, whereSearchName string, order parameter.RoleOnPolicyOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.RoleOnPolicy], error)
+
+	// GetRolesOnPolicyCountFunc mocks the GetRolesOnPolicyCount method.
+	GetRolesOnPolicyCountFunc func(ctx context.Context, policyID uuid.UUID, whereSearchName string) (int64, error)
 
 	// PluralDeleteAttendStatusesFunc mocks the PluralDeleteAttendStatuses method.
 	PluralDeleteAttendStatusesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
@@ -568,6 +640,12 @@ type ManagerInterfaceMock struct {
 
 	// PluralDeleteRolesFunc mocks the PluralDeleteRoles method.
 	PluralDeleteRolesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
+
+	// PluralDisassociatePolicyOnRoleFunc mocks the PluralDisassociatePolicyOnRole method.
+	PluralDisassociatePolicyOnRoleFunc func(ctx context.Context, roleID uuid.UUID, policyIDs []uuid.UUID) (int64, error)
+
+	// PluralDisassociateRoleOnPolicyFunc mocks the PluralDisassociateRoleOnPolicy method.
+	PluralDisassociateRoleOnPolicyFunc func(ctx context.Context, policyID uuid.UUID, roleIDs []uuid.UUID) (int64, error)
 
 	// UpdateAttendStatusFunc mocks the UpdateAttendStatus method.
 	UpdateAttendStatusFunc func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error)
@@ -601,6 +679,22 @@ type ManagerInterfaceMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// AssociateRole holds details about calls to the AssociateRole method.
+		AssociateRole []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RoleID is the roleID argument value.
+			RoleID uuid.UUID
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+		}
+		// AssociateRoles holds details about calls to the AssociateRoles method.
+		AssociateRoles []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.AssociationRoleParam
+		}
 		// CreateAttendStatus holds details about calls to the CreateAttendStatus method.
 		CreateAttendStatus []struct {
 			// Ctx is the ctx argument value.
@@ -848,6 +942,43 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// ID is the id argument value.
 			ID uuid.UUID
+		}
+		// DisassociatePolicyOnRole holds details about calls to the DisassociatePolicyOnRole method.
+		DisassociatePolicyOnRole []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RoleID is the roleID argument value.
+			RoleID uuid.UUID
+		}
+		// DisassociatePolicyOnRoles holds details about calls to the DisassociatePolicyOnRoles method.
+		DisassociatePolicyOnRoles []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RoleIDs is the roleIDs argument value.
+			RoleIDs []uuid.UUID
+		}
+		// DisassociateRole holds details about calls to the DisassociateRole method.
+		DisassociateRole []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RoleID is the roleID argument value.
+			RoleID uuid.UUID
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+		}
+		// DisassociateRoleOnPolicies holds details about calls to the DisassociateRoleOnPolicies method.
+		DisassociateRoleOnPolicies []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PolicyIDs is the policyIDs argument value.
+			PolicyIDs []uuid.UUID
+		}
+		// DisassociateRoleOnPolicy holds details about calls to the DisassociateRoleOnPolicy method.
+		DisassociateRoleOnPolicy []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
 		}
 		// FindAttendStatusByID holds details about calls to the FindAttendStatusByID method.
 		FindAttendStatusByID []struct {
@@ -1221,6 +1352,36 @@ type ManagerInterfaceMock struct {
 			// WhereInCategories is the whereInCategories argument value.
 			WhereInCategories []uuid.UUID
 		}
+		// GetPoliciesOnRole holds details about calls to the GetPoliciesOnRole method.
+		GetPoliciesOnRole []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RoleID is the roleID argument value.
+			RoleID uuid.UUID
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// Order is the order argument value.
+			Order parameter.PolicyOnRoleOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetPoliciesOnRoleCount holds details about calls to the GetPoliciesOnRoleCount method.
+		GetPoliciesOnRoleCount []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RoleID is the roleID argument value.
+			RoleID uuid.UUID
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+		}
 		// GetPoliciesWithCategory holds details about calls to the GetPoliciesWithCategory method.
 		GetPoliciesWithCategory []struct {
 			// Ctx is the ctx argument value.
@@ -1320,6 +1481,36 @@ type ManagerInterfaceMock struct {
 			// WhereSearchName is the whereSearchName argument value.
 			WhereSearchName string
 		}
+		// GetRolesOnPolicy holds details about calls to the GetRolesOnPolicy method.
+		GetRolesOnPolicy []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// Order is the order argument value.
+			Order parameter.RoleOnPolicyOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetRolesOnPolicyCount holds details about calls to the GetRolesOnPolicyCount method.
+		GetRolesOnPolicyCount []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+		}
 		// PluralDeleteAttendStatuses holds details about calls to the PluralDeleteAttendStatuses method.
 		PluralDeleteAttendStatuses []struct {
 			// Ctx is the ctx argument value.
@@ -1389,6 +1580,24 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// Ids is the ids argument value.
 			Ids []uuid.UUID
+		}
+		// PluralDisassociatePolicyOnRole holds details about calls to the PluralDisassociatePolicyOnRole method.
+		PluralDisassociatePolicyOnRole []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RoleID is the roleID argument value.
+			RoleID uuid.UUID
+			// PolicyIDs is the policyIDs argument value.
+			PolicyIDs []uuid.UUID
+		}
+		// PluralDisassociateRoleOnPolicy holds details about calls to the PluralDisassociateRoleOnPolicy method.
+		PluralDisassociateRoleOnPolicy []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// PolicyID is the policyID argument value.
+			PolicyID uuid.UUID
+			// RoleIDs is the roleIDs argument value.
+			RoleIDs []uuid.UUID
 		}
 		// UpdateAttendStatus holds details about calls to the UpdateAttendStatus method.
 		UpdateAttendStatus []struct {
@@ -1519,6 +1728,8 @@ type ManagerInterfaceMock struct {
 			Description string
 		}
 	}
+	lockAssociateRole                    sync.RWMutex
+	lockAssociateRoles                   sync.RWMutex
 	lockCreateAttendStatus               sync.RWMutex
 	lockCreateAttendStatuses             sync.RWMutex
 	lockCreateAttendanceType             sync.RWMutex
@@ -1549,6 +1760,11 @@ type ManagerInterfaceMock struct {
 	lockDeletePolicyCategory             sync.RWMutex
 	lockDeleteRecordType                 sync.RWMutex
 	lockDeleteRole                       sync.RWMutex
+	lockDisassociatePolicyOnRole         sync.RWMutex
+	lockDisassociatePolicyOnRoles        sync.RWMutex
+	lockDisassociateRole                 sync.RWMutex
+	lockDisassociateRoleOnPolicies       sync.RWMutex
+	lockDisassociateRoleOnPolicy         sync.RWMutex
 	lockFindAttendStatusByID             sync.RWMutex
 	lockFindAttendStatusByKey            sync.RWMutex
 	lockFindAttendanceTypeByID           sync.RWMutex
@@ -1587,6 +1803,8 @@ type ManagerInterfaceMock struct {
 	lockGetPermissionsWithCategory       sync.RWMutex
 	lockGetPolicies                      sync.RWMutex
 	lockGetPoliciesCount                 sync.RWMutex
+	lockGetPoliciesOnRole                sync.RWMutex
+	lockGetPoliciesOnRoleCount           sync.RWMutex
 	lockGetPoliciesWithCategory          sync.RWMutex
 	lockGetPolicyCategories              sync.RWMutex
 	lockGetPolicyCategoriesCount         sync.RWMutex
@@ -1594,6 +1812,8 @@ type ManagerInterfaceMock struct {
 	lockGetRecordTypesCount              sync.RWMutex
 	lockGetRoles                         sync.RWMutex
 	lockGetRolesCount                    sync.RWMutex
+	lockGetRolesOnPolicy                 sync.RWMutex
+	lockGetRolesOnPolicyCount            sync.RWMutex
 	lockPluralDeleteAttendStatuses       sync.RWMutex
 	lockPluralDeleteAttendanceTypes      sync.RWMutex
 	lockPluralDeleteEventTypes           sync.RWMutex
@@ -1604,6 +1824,8 @@ type ManagerInterfaceMock struct {
 	lockPluralDeletePolicyCategories     sync.RWMutex
 	lockPluralDeleteRecordTypes          sync.RWMutex
 	lockPluralDeleteRoles                sync.RWMutex
+	lockPluralDisassociatePolicyOnRole   sync.RWMutex
+	lockPluralDisassociateRoleOnPolicy   sync.RWMutex
 	lockUpdateAttendStatus               sync.RWMutex
 	lockUpdateAttendanceType             sync.RWMutex
 	lockUpdateEventType                  sync.RWMutex
@@ -1614,6 +1836,82 @@ type ManagerInterfaceMock struct {
 	lockUpdatePolicyCategory             sync.RWMutex
 	lockUpdateRecordType                 sync.RWMutex
 	lockUpdateRole                       sync.RWMutex
+}
+
+// AssociateRole calls AssociateRoleFunc.
+func (mock *ManagerInterfaceMock) AssociateRole(ctx context.Context, roleID uuid.UUID, policyID uuid.UUID) (entity.RoleAssociation, error) {
+	if mock.AssociateRoleFunc == nil {
+		panic("ManagerInterfaceMock.AssociateRoleFunc: method is nil but ManagerInterface.AssociateRole was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		RoleID   uuid.UUID
+		PolicyID uuid.UUID
+	}{
+		Ctx:      ctx,
+		RoleID:   roleID,
+		PolicyID: policyID,
+	}
+	mock.lockAssociateRole.Lock()
+	mock.calls.AssociateRole = append(mock.calls.AssociateRole, callInfo)
+	mock.lockAssociateRole.Unlock()
+	return mock.AssociateRoleFunc(ctx, roleID, policyID)
+}
+
+// AssociateRoleCalls gets all the calls that were made to AssociateRole.
+// Check the length with:
+//
+//	len(mockedManagerInterface.AssociateRoleCalls())
+func (mock *ManagerInterfaceMock) AssociateRoleCalls() []struct {
+	Ctx      context.Context
+	RoleID   uuid.UUID
+	PolicyID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		RoleID   uuid.UUID
+		PolicyID uuid.UUID
+	}
+	mock.lockAssociateRole.RLock()
+	calls = mock.calls.AssociateRole
+	mock.lockAssociateRole.RUnlock()
+	return calls
+}
+
+// AssociateRoles calls AssociateRolesFunc.
+func (mock *ManagerInterfaceMock) AssociateRoles(ctx context.Context, params []parameter.AssociationRoleParam) (int64, error) {
+	if mock.AssociateRolesFunc == nil {
+		panic("ManagerInterfaceMock.AssociateRolesFunc: method is nil but ManagerInterface.AssociateRoles was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.AssociationRoleParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockAssociateRoles.Lock()
+	mock.calls.AssociateRoles = append(mock.calls.AssociateRoles, callInfo)
+	mock.lockAssociateRoles.Unlock()
+	return mock.AssociateRolesFunc(ctx, params)
+}
+
+// AssociateRolesCalls gets all the calls that were made to AssociateRoles.
+// Check the length with:
+//
+//	len(mockedManagerInterface.AssociateRolesCalls())
+func (mock *ManagerInterfaceMock) AssociateRolesCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.AssociationRoleParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.AssociationRoleParam
+	}
+	mock.lockAssociateRoles.RLock()
+	calls = mock.calls.AssociateRoles
+	mock.lockAssociateRoles.RUnlock()
+	return calls
 }
 
 // CreateAttendStatus calls CreateAttendStatusFunc.
@@ -2769,6 +3067,190 @@ func (mock *ManagerInterfaceMock) DeleteRoleCalls() []struct {
 	mock.lockDeleteRole.RLock()
 	calls = mock.calls.DeleteRole
 	mock.lockDeleteRole.RUnlock()
+	return calls
+}
+
+// DisassociatePolicyOnRole calls DisassociatePolicyOnRoleFunc.
+func (mock *ManagerInterfaceMock) DisassociatePolicyOnRole(ctx context.Context, roleID uuid.UUID) (int64, error) {
+	if mock.DisassociatePolicyOnRoleFunc == nil {
+		panic("ManagerInterfaceMock.DisassociatePolicyOnRoleFunc: method is nil but ManagerInterface.DisassociatePolicyOnRole was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		RoleID uuid.UUID
+	}{
+		Ctx:    ctx,
+		RoleID: roleID,
+	}
+	mock.lockDisassociatePolicyOnRole.Lock()
+	mock.calls.DisassociatePolicyOnRole = append(mock.calls.DisassociatePolicyOnRole, callInfo)
+	mock.lockDisassociatePolicyOnRole.Unlock()
+	return mock.DisassociatePolicyOnRoleFunc(ctx, roleID)
+}
+
+// DisassociatePolicyOnRoleCalls gets all the calls that were made to DisassociatePolicyOnRole.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DisassociatePolicyOnRoleCalls())
+func (mock *ManagerInterfaceMock) DisassociatePolicyOnRoleCalls() []struct {
+	Ctx    context.Context
+	RoleID uuid.UUID
+} {
+	var calls []struct {
+		Ctx    context.Context
+		RoleID uuid.UUID
+	}
+	mock.lockDisassociatePolicyOnRole.RLock()
+	calls = mock.calls.DisassociatePolicyOnRole
+	mock.lockDisassociatePolicyOnRole.RUnlock()
+	return calls
+}
+
+// DisassociatePolicyOnRoles calls DisassociatePolicyOnRolesFunc.
+func (mock *ManagerInterfaceMock) DisassociatePolicyOnRoles(ctx context.Context, roleIDs []uuid.UUID) (int64, error) {
+	if mock.DisassociatePolicyOnRolesFunc == nil {
+		panic("ManagerInterfaceMock.DisassociatePolicyOnRolesFunc: method is nil but ManagerInterface.DisassociatePolicyOnRoles was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		RoleIDs []uuid.UUID
+	}{
+		Ctx:     ctx,
+		RoleIDs: roleIDs,
+	}
+	mock.lockDisassociatePolicyOnRoles.Lock()
+	mock.calls.DisassociatePolicyOnRoles = append(mock.calls.DisassociatePolicyOnRoles, callInfo)
+	mock.lockDisassociatePolicyOnRoles.Unlock()
+	return mock.DisassociatePolicyOnRolesFunc(ctx, roleIDs)
+}
+
+// DisassociatePolicyOnRolesCalls gets all the calls that were made to DisassociatePolicyOnRoles.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DisassociatePolicyOnRolesCalls())
+func (mock *ManagerInterfaceMock) DisassociatePolicyOnRolesCalls() []struct {
+	Ctx     context.Context
+	RoleIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		RoleIDs []uuid.UUID
+	}
+	mock.lockDisassociatePolicyOnRoles.RLock()
+	calls = mock.calls.DisassociatePolicyOnRoles
+	mock.lockDisassociatePolicyOnRoles.RUnlock()
+	return calls
+}
+
+// DisassociateRole calls DisassociateRoleFunc.
+func (mock *ManagerInterfaceMock) DisassociateRole(ctx context.Context, roleID uuid.UUID, policyID uuid.UUID) (int64, error) {
+	if mock.DisassociateRoleFunc == nil {
+		panic("ManagerInterfaceMock.DisassociateRoleFunc: method is nil but ManagerInterface.DisassociateRole was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		RoleID   uuid.UUID
+		PolicyID uuid.UUID
+	}{
+		Ctx:      ctx,
+		RoleID:   roleID,
+		PolicyID: policyID,
+	}
+	mock.lockDisassociateRole.Lock()
+	mock.calls.DisassociateRole = append(mock.calls.DisassociateRole, callInfo)
+	mock.lockDisassociateRole.Unlock()
+	return mock.DisassociateRoleFunc(ctx, roleID, policyID)
+}
+
+// DisassociateRoleCalls gets all the calls that were made to DisassociateRole.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DisassociateRoleCalls())
+func (mock *ManagerInterfaceMock) DisassociateRoleCalls() []struct {
+	Ctx      context.Context
+	RoleID   uuid.UUID
+	PolicyID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		RoleID   uuid.UUID
+		PolicyID uuid.UUID
+	}
+	mock.lockDisassociateRole.RLock()
+	calls = mock.calls.DisassociateRole
+	mock.lockDisassociateRole.RUnlock()
+	return calls
+}
+
+// DisassociateRoleOnPolicies calls DisassociateRoleOnPoliciesFunc.
+func (mock *ManagerInterfaceMock) DisassociateRoleOnPolicies(ctx context.Context, policyIDs []uuid.UUID) (int64, error) {
+	if mock.DisassociateRoleOnPoliciesFunc == nil {
+		panic("ManagerInterfaceMock.DisassociateRoleOnPoliciesFunc: method is nil but ManagerInterface.DisassociateRoleOnPolicies was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		PolicyIDs []uuid.UUID
+	}{
+		Ctx:       ctx,
+		PolicyIDs: policyIDs,
+	}
+	mock.lockDisassociateRoleOnPolicies.Lock()
+	mock.calls.DisassociateRoleOnPolicies = append(mock.calls.DisassociateRoleOnPolicies, callInfo)
+	mock.lockDisassociateRoleOnPolicies.Unlock()
+	return mock.DisassociateRoleOnPoliciesFunc(ctx, policyIDs)
+}
+
+// DisassociateRoleOnPoliciesCalls gets all the calls that were made to DisassociateRoleOnPolicies.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DisassociateRoleOnPoliciesCalls())
+func (mock *ManagerInterfaceMock) DisassociateRoleOnPoliciesCalls() []struct {
+	Ctx       context.Context
+	PolicyIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		PolicyIDs []uuid.UUID
+	}
+	mock.lockDisassociateRoleOnPolicies.RLock()
+	calls = mock.calls.DisassociateRoleOnPolicies
+	mock.lockDisassociateRoleOnPolicies.RUnlock()
+	return calls
+}
+
+// DisassociateRoleOnPolicy calls DisassociateRoleOnPolicyFunc.
+func (mock *ManagerInterfaceMock) DisassociateRoleOnPolicy(ctx context.Context, policyID uuid.UUID) (int64, error) {
+	if mock.DisassociateRoleOnPolicyFunc == nil {
+		panic("ManagerInterfaceMock.DisassociateRoleOnPolicyFunc: method is nil but ManagerInterface.DisassociateRoleOnPolicy was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+	}{
+		Ctx:      ctx,
+		PolicyID: policyID,
+	}
+	mock.lockDisassociateRoleOnPolicy.Lock()
+	mock.calls.DisassociateRoleOnPolicy = append(mock.calls.DisassociateRoleOnPolicy, callInfo)
+	mock.lockDisassociateRoleOnPolicy.Unlock()
+	return mock.DisassociateRoleOnPolicyFunc(ctx, policyID)
+}
+
+// DisassociateRoleOnPolicyCalls gets all the calls that were made to DisassociateRoleOnPolicy.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DisassociateRoleOnPolicyCalls())
+func (mock *ManagerInterfaceMock) DisassociateRoleOnPolicyCalls() []struct {
+	Ctx      context.Context
+	PolicyID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+	}
+	mock.lockDisassociateRoleOnPolicy.RLock()
+	calls = mock.calls.DisassociateRoleOnPolicy
+	mock.lockDisassociateRoleOnPolicy.RUnlock()
 	return calls
 }
 
@@ -4352,6 +4834,110 @@ func (mock *ManagerInterfaceMock) GetPoliciesCountCalls() []struct {
 	return calls
 }
 
+// GetPoliciesOnRole calls GetPoliciesOnRoleFunc.
+func (mock *ManagerInterfaceMock) GetPoliciesOnRole(ctx context.Context, roleID uuid.UUID, whereSearchName string, order parameter.PolicyOnRoleOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PolicyOnRole], error) {
+	if mock.GetPoliciesOnRoleFunc == nil {
+		panic("ManagerInterfaceMock.GetPoliciesOnRoleFunc: method is nil but ManagerInterface.GetPoliciesOnRole was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		RoleID          uuid.UUID
+		WhereSearchName string
+		Order           parameter.PolicyOnRoleOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}{
+		Ctx:             ctx,
+		RoleID:          roleID,
+		WhereSearchName: whereSearchName,
+		Order:           order,
+		Pg:              pg,
+		Limit:           limit,
+		Cursor:          cursor,
+		Offset:          offset,
+		WithCount:       withCount,
+	}
+	mock.lockGetPoliciesOnRole.Lock()
+	mock.calls.GetPoliciesOnRole = append(mock.calls.GetPoliciesOnRole, callInfo)
+	mock.lockGetPoliciesOnRole.Unlock()
+	return mock.GetPoliciesOnRoleFunc(ctx, roleID, whereSearchName, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetPoliciesOnRoleCalls gets all the calls that were made to GetPoliciesOnRole.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetPoliciesOnRoleCalls())
+func (mock *ManagerInterfaceMock) GetPoliciesOnRoleCalls() []struct {
+	Ctx             context.Context
+	RoleID          uuid.UUID
+	WhereSearchName string
+	Order           parameter.PolicyOnRoleOrderMethod
+	Pg              parameter.Pagination
+	Limit           parameter.Limit
+	Cursor          parameter.Cursor
+	Offset          parameter.Offset
+	WithCount       parameter.WithCount
+} {
+	var calls []struct {
+		Ctx             context.Context
+		RoleID          uuid.UUID
+		WhereSearchName string
+		Order           parameter.PolicyOnRoleOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}
+	mock.lockGetPoliciesOnRole.RLock()
+	calls = mock.calls.GetPoliciesOnRole
+	mock.lockGetPoliciesOnRole.RUnlock()
+	return calls
+}
+
+// GetPoliciesOnRoleCount calls GetPoliciesOnRoleCountFunc.
+func (mock *ManagerInterfaceMock) GetPoliciesOnRoleCount(ctx context.Context, roleID uuid.UUID, whereSearchName string) (int64, error) {
+	if mock.GetPoliciesOnRoleCountFunc == nil {
+		panic("ManagerInterfaceMock.GetPoliciesOnRoleCountFunc: method is nil but ManagerInterface.GetPoliciesOnRoleCount was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		RoleID          uuid.UUID
+		WhereSearchName string
+	}{
+		Ctx:             ctx,
+		RoleID:          roleID,
+		WhereSearchName: whereSearchName,
+	}
+	mock.lockGetPoliciesOnRoleCount.Lock()
+	mock.calls.GetPoliciesOnRoleCount = append(mock.calls.GetPoliciesOnRoleCount, callInfo)
+	mock.lockGetPoliciesOnRoleCount.Unlock()
+	return mock.GetPoliciesOnRoleCountFunc(ctx, roleID, whereSearchName)
+}
+
+// GetPoliciesOnRoleCountCalls gets all the calls that were made to GetPoliciesOnRoleCount.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetPoliciesOnRoleCountCalls())
+func (mock *ManagerInterfaceMock) GetPoliciesOnRoleCountCalls() []struct {
+	Ctx             context.Context
+	RoleID          uuid.UUID
+	WhereSearchName string
+} {
+	var calls []struct {
+		Ctx             context.Context
+		RoleID          uuid.UUID
+		WhereSearchName string
+	}
+	mock.lockGetPoliciesOnRoleCount.RLock()
+	calls = mock.calls.GetPoliciesOnRoleCount
+	mock.lockGetPoliciesOnRoleCount.RUnlock()
+	return calls
+}
+
 // GetPoliciesWithCategory calls GetPoliciesWithCategoryFunc.
 func (mock *ManagerInterfaceMock) GetPoliciesWithCategory(ctx context.Context, whereSearchName string, whereInCategories []uuid.UUID, order parameter.PolicyOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PolicyWithCategory], error) {
 	if mock.GetPoliciesWithCategoryFunc == nil {
@@ -4701,6 +5287,110 @@ func (mock *ManagerInterfaceMock) GetRolesCountCalls() []struct {
 	mock.lockGetRolesCount.RLock()
 	calls = mock.calls.GetRolesCount
 	mock.lockGetRolesCount.RUnlock()
+	return calls
+}
+
+// GetRolesOnPolicy calls GetRolesOnPolicyFunc.
+func (mock *ManagerInterfaceMock) GetRolesOnPolicy(ctx context.Context, policyID uuid.UUID, whereSearchName string, order parameter.RoleOnPolicyOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.RoleOnPolicy], error) {
+	if mock.GetRolesOnPolicyFunc == nil {
+		panic("ManagerInterfaceMock.GetRolesOnPolicyFunc: method is nil but ManagerInterface.GetRolesOnPolicy was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		PolicyID        uuid.UUID
+		WhereSearchName string
+		Order           parameter.RoleOnPolicyOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}{
+		Ctx:             ctx,
+		PolicyID:        policyID,
+		WhereSearchName: whereSearchName,
+		Order:           order,
+		Pg:              pg,
+		Limit:           limit,
+		Cursor:          cursor,
+		Offset:          offset,
+		WithCount:       withCount,
+	}
+	mock.lockGetRolesOnPolicy.Lock()
+	mock.calls.GetRolesOnPolicy = append(mock.calls.GetRolesOnPolicy, callInfo)
+	mock.lockGetRolesOnPolicy.Unlock()
+	return mock.GetRolesOnPolicyFunc(ctx, policyID, whereSearchName, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetRolesOnPolicyCalls gets all the calls that were made to GetRolesOnPolicy.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetRolesOnPolicyCalls())
+func (mock *ManagerInterfaceMock) GetRolesOnPolicyCalls() []struct {
+	Ctx             context.Context
+	PolicyID        uuid.UUID
+	WhereSearchName string
+	Order           parameter.RoleOnPolicyOrderMethod
+	Pg              parameter.Pagination
+	Limit           parameter.Limit
+	Cursor          parameter.Cursor
+	Offset          parameter.Offset
+	WithCount       parameter.WithCount
+} {
+	var calls []struct {
+		Ctx             context.Context
+		PolicyID        uuid.UUID
+		WhereSearchName string
+		Order           parameter.RoleOnPolicyOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}
+	mock.lockGetRolesOnPolicy.RLock()
+	calls = mock.calls.GetRolesOnPolicy
+	mock.lockGetRolesOnPolicy.RUnlock()
+	return calls
+}
+
+// GetRolesOnPolicyCount calls GetRolesOnPolicyCountFunc.
+func (mock *ManagerInterfaceMock) GetRolesOnPolicyCount(ctx context.Context, policyID uuid.UUID, whereSearchName string) (int64, error) {
+	if mock.GetRolesOnPolicyCountFunc == nil {
+		panic("ManagerInterfaceMock.GetRolesOnPolicyCountFunc: method is nil but ManagerInterface.GetRolesOnPolicyCount was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		PolicyID        uuid.UUID
+		WhereSearchName string
+	}{
+		Ctx:             ctx,
+		PolicyID:        policyID,
+		WhereSearchName: whereSearchName,
+	}
+	mock.lockGetRolesOnPolicyCount.Lock()
+	mock.calls.GetRolesOnPolicyCount = append(mock.calls.GetRolesOnPolicyCount, callInfo)
+	mock.lockGetRolesOnPolicyCount.Unlock()
+	return mock.GetRolesOnPolicyCountFunc(ctx, policyID, whereSearchName)
+}
+
+// GetRolesOnPolicyCountCalls gets all the calls that were made to GetRolesOnPolicyCount.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetRolesOnPolicyCountCalls())
+func (mock *ManagerInterfaceMock) GetRolesOnPolicyCountCalls() []struct {
+	Ctx             context.Context
+	PolicyID        uuid.UUID
+	WhereSearchName string
+} {
+	var calls []struct {
+		Ctx             context.Context
+		PolicyID        uuid.UUID
+		WhereSearchName string
+	}
+	mock.lockGetRolesOnPolicyCount.RLock()
+	calls = mock.calls.GetRolesOnPolicyCount
+	mock.lockGetRolesOnPolicyCount.RUnlock()
 	return calls
 }
 
@@ -5061,6 +5751,86 @@ func (mock *ManagerInterfaceMock) PluralDeleteRolesCalls() []struct {
 	mock.lockPluralDeleteRoles.RLock()
 	calls = mock.calls.PluralDeleteRoles
 	mock.lockPluralDeleteRoles.RUnlock()
+	return calls
+}
+
+// PluralDisassociatePolicyOnRole calls PluralDisassociatePolicyOnRoleFunc.
+func (mock *ManagerInterfaceMock) PluralDisassociatePolicyOnRole(ctx context.Context, roleID uuid.UUID, policyIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDisassociatePolicyOnRoleFunc == nil {
+		panic("ManagerInterfaceMock.PluralDisassociatePolicyOnRoleFunc: method is nil but ManagerInterface.PluralDisassociatePolicyOnRole was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		RoleID    uuid.UUID
+		PolicyIDs []uuid.UUID
+	}{
+		Ctx:       ctx,
+		RoleID:    roleID,
+		PolicyIDs: policyIDs,
+	}
+	mock.lockPluralDisassociatePolicyOnRole.Lock()
+	mock.calls.PluralDisassociatePolicyOnRole = append(mock.calls.PluralDisassociatePolicyOnRole, callInfo)
+	mock.lockPluralDisassociatePolicyOnRole.Unlock()
+	return mock.PluralDisassociatePolicyOnRoleFunc(ctx, roleID, policyIDs)
+}
+
+// PluralDisassociatePolicyOnRoleCalls gets all the calls that were made to PluralDisassociatePolicyOnRole.
+// Check the length with:
+//
+//	len(mockedManagerInterface.PluralDisassociatePolicyOnRoleCalls())
+func (mock *ManagerInterfaceMock) PluralDisassociatePolicyOnRoleCalls() []struct {
+	Ctx       context.Context
+	RoleID    uuid.UUID
+	PolicyIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		RoleID    uuid.UUID
+		PolicyIDs []uuid.UUID
+	}
+	mock.lockPluralDisassociatePolicyOnRole.RLock()
+	calls = mock.calls.PluralDisassociatePolicyOnRole
+	mock.lockPluralDisassociatePolicyOnRole.RUnlock()
+	return calls
+}
+
+// PluralDisassociateRoleOnPolicy calls PluralDisassociateRoleOnPolicyFunc.
+func (mock *ManagerInterfaceMock) PluralDisassociateRoleOnPolicy(ctx context.Context, policyID uuid.UUID, roleIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDisassociateRoleOnPolicyFunc == nil {
+		panic("ManagerInterfaceMock.PluralDisassociateRoleOnPolicyFunc: method is nil but ManagerInterface.PluralDisassociateRoleOnPolicy was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+		RoleIDs  []uuid.UUID
+	}{
+		Ctx:      ctx,
+		PolicyID: policyID,
+		RoleIDs:  roleIDs,
+	}
+	mock.lockPluralDisassociateRoleOnPolicy.Lock()
+	mock.calls.PluralDisassociateRoleOnPolicy = append(mock.calls.PluralDisassociateRoleOnPolicy, callInfo)
+	mock.lockPluralDisassociateRoleOnPolicy.Unlock()
+	return mock.PluralDisassociateRoleOnPolicyFunc(ctx, policyID, roleIDs)
+}
+
+// PluralDisassociateRoleOnPolicyCalls gets all the calls that were made to PluralDisassociateRoleOnPolicy.
+// Check the length with:
+//
+//	len(mockedManagerInterface.PluralDisassociateRoleOnPolicyCalls())
+func (mock *ManagerInterfaceMock) PluralDisassociateRoleOnPolicyCalls() []struct {
+	Ctx      context.Context
+	PolicyID uuid.UUID
+	RoleIDs  []uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		PolicyID uuid.UUID
+		RoleIDs  []uuid.UUID
+	}
+	mock.lockPluralDisassociateRoleOnPolicy.RLock()
+	calls = mock.calls.PluralDisassociateRoleOnPolicy
+	mock.lockPluralDisassociateRoleOnPolicy.RUnlock()
 	return calls
 }
 

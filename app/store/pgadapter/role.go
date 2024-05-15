@@ -32,11 +32,7 @@ func countRoles(
 
 // CountRoles ロール数を取得する。
 func (a *PgAdapter) CountRoles(ctx context.Context, where parameter.WhereRoleParam) (int64, error) {
-	c, err := countRoles(ctx, a.query, where)
-	if err != nil {
-		return 0, fmt.Errorf("failed to count role: %w", err)
-	}
-	return c, nil
+	return countRoles(ctx, a.query, where)
 }
 
 // CountRolesWithSd SD付きでロール数を取得する。
@@ -49,11 +45,7 @@ func (a *PgAdapter) CountRolesWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := countRoles(ctx, qtx, where)
-	if err != nil {
-		return 0, fmt.Errorf("failed to count role: %w", err)
-	}
-	return c, nil
+	return countRoles(ctx, qtx, where)
 }
 
 func createRole(
@@ -81,11 +73,7 @@ func createRole(
 func (a *PgAdapter) CreateRole(
 	ctx context.Context, param parameter.CreateRoleParam,
 ) (entity.Role, error) {
-	e, err := createRole(ctx, a.query, param, a.clocker.Now())
-	if err != nil {
-		return entity.Role{}, fmt.Errorf("failed to create role: %w", err)
-	}
-	return e, nil
+	return createRole(ctx, a.query, param, a.clocker.Now())
 }
 
 // CreateRoleWithSd SD付きでロールを作成する。
@@ -98,11 +86,7 @@ func (a *PgAdapter) CreateRoleWithSd(
 	if !ok {
 		return entity.Role{}, store.ErrNotFoundDescriptor
 	}
-	e, err := createRole(ctx, qtx, param, a.clocker.Now())
-	if err != nil {
-		return entity.Role{}, fmt.Errorf("failed to create role: %w", err)
-	}
-	return e, nil
+	return createRole(ctx, qtx, param, a.clocker.Now())
 }
 
 func createRoles(
@@ -128,11 +112,7 @@ func createRoles(
 func (a *PgAdapter) CreateRoles(
 	ctx context.Context, params []parameter.CreateRoleParam,
 ) (int64, error) {
-	c, err := createRoles(ctx, a.query, params, a.clocker.Now())
-	if err != nil {
-		return 0, fmt.Errorf("failed to create roles: %w", err)
-	}
-	return c, nil
+	return createRoles(ctx, a.query, params, a.clocker.Now())
 }
 
 // CreateRolesWithSd SD付きでロールを作成する。
@@ -145,11 +125,7 @@ func (a *PgAdapter) CreateRolesWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := createRoles(ctx, qtx, params, a.clocker.Now())
-	if err != nil {
-		return 0, fmt.Errorf("failed to create roles: %w", err)
-	}
-	return c, nil
+	return createRoles(ctx, qtx, params, a.clocker.Now())
 }
 
 func deleteRole(ctx context.Context, qtx *query.Queries, roleID uuid.UUID) (int64, error) {
@@ -162,11 +138,7 @@ func deleteRole(ctx context.Context, qtx *query.Queries, roleID uuid.UUID) (int6
 
 // DeleteRole ロールを削除する。
 func (a *PgAdapter) DeleteRole(ctx context.Context, roleID uuid.UUID) (int64, error) {
-	c, err := deleteRole(ctx, a.query, roleID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete role: %w", err)
-	}
-	return c, nil
+	return deleteRole(ctx, a.query, roleID)
 }
 
 // DeleteRoleWithSd SD付きでロールを削除する。
@@ -179,11 +151,7 @@ func (a *PgAdapter) DeleteRoleWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := deleteRole(ctx, qtx, roleID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete role: %w", err)
-	}
-	return c, nil
+	return deleteRole(ctx, qtx, roleID)
 }
 
 func pluralDeleteRoles(ctx context.Context, qtx *query.Queries, roleIDs []uuid.UUID) (int64, error) {
@@ -196,11 +164,7 @@ func pluralDeleteRoles(ctx context.Context, qtx *query.Queries, roleIDs []uuid.U
 
 // PluralDeleteRoles ロールを複数削除する。
 func (a *PgAdapter) PluralDeleteRoles(ctx context.Context, roleIDs []uuid.UUID) (int64, error) {
-	c, err := pluralDeleteRoles(ctx, a.query, roleIDs)
-	if err != nil {
-		return 0, fmt.Errorf("failed to plural delete roles: %w", err)
-	}
-	return c, nil
+	return pluralDeleteRoles(ctx, a.query, roleIDs)
 }
 
 // PluralDeleteRolesWithSd SD付きでロールを複数削除する。
@@ -213,11 +177,7 @@ func (a *PgAdapter) PluralDeleteRolesWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := pluralDeleteRoles(ctx, qtx, roleIDs)
-	if err != nil {
-		return 0, fmt.Errorf("failed to plural delete roles: %w", err)
-	}
-	return c, nil
+	return pluralDeleteRoles(ctx, qtx, roleIDs)
 }
 
 func findRoleByID(
@@ -242,11 +202,7 @@ func findRoleByID(
 func (a *PgAdapter) FindRoleByID(
 	ctx context.Context, roleID uuid.UUID,
 ) (entity.Role, error) {
-	e, err := findRoleByID(ctx, a.query, roleID)
-	if err != nil {
-		return entity.Role{}, fmt.Errorf("failed to find role: %w", err)
-	}
-	return e, nil
+	return findRoleByID(ctx, a.query, roleID)
 }
 
 // FindRoleByIDWithSd SD付きでロールを取得する。
@@ -259,11 +215,7 @@ func (a *PgAdapter) FindRoleByIDWithSd(
 	if !ok {
 		return entity.Role{}, store.ErrNotFoundDescriptor
 	}
-	e, err := findRoleByID(ctx, qtx, roleID)
-	if err != nil {
-		return entity.Role{}, fmt.Errorf("failed to find role: %w", err)
-	}
-	return e, nil
+	return findRoleByID(ctx, qtx, roleID)
 }
 
 // RoleCursor is a cursor for Role.
@@ -392,11 +344,7 @@ func (a *PgAdapter) GetRoles(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.Role], error) {
-	r, err := getRoles(ctx, a.query, where, order, np, cp, wc)
-	if err != nil {
-		return store.ListResult[entity.Role]{}, fmt.Errorf("failed to get roles: %w", err)
-	}
-	return r, nil
+	return getRoles(ctx, a.query, where, order, np, cp, wc)
 }
 
 // GetRolesWithSd SD付きでロールを取得する。
@@ -415,11 +363,7 @@ func (a *PgAdapter) GetRolesWithSd(
 	if !ok {
 		return store.ListResult[entity.Role]{}, store.ErrNotFoundDescriptor
 	}
-	r, err := getRoles(ctx, qtx, where, order, np, cp, wc)
-	if err != nil {
-		return store.ListResult[entity.Role]{}, fmt.Errorf("failed to get roles: %w", err)
-	}
-	return r, nil
+	return getRoles(ctx, qtx, where, order, np, cp, wc)
 }
 
 func getPluralRoles(
@@ -449,11 +393,7 @@ func getPluralRoles(
 func (a *PgAdapter) GetPluralRoles(
 	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Role], error) {
-	r, err := getPluralRoles(ctx, a.query, ids, np)
-	if err != nil {
-		return store.ListResult[entity.Role]{}, fmt.Errorf("failed to get plural roles: %w", err)
-	}
-	return r, nil
+	return getPluralRoles(ctx, a.query, ids, np)
 }
 
 // GetPluralRolesWithSd SD付きでロールを取得する。
@@ -466,11 +406,7 @@ func (a *PgAdapter) GetPluralRolesWithSd(
 	if !ok {
 		return store.ListResult[entity.Role]{}, store.ErrNotFoundDescriptor
 	}
-	r, err := getPluralRoles(ctx, qtx, ids, np)
-	if err != nil {
-		return store.ListResult[entity.Role]{}, fmt.Errorf("failed to get plural roles: %w", err)
-	}
-	return r, nil
+	return getPluralRoles(ctx, qtx, ids, np)
 }
 
 func updateRole(
@@ -501,11 +437,7 @@ func updateRole(
 func (a *PgAdapter) UpdateRole(
 	ctx context.Context, roleID uuid.UUID, param parameter.UpdateRoleParams,
 ) (entity.Role, error) {
-	e, err := updateRole(ctx, a.query, roleID, param, a.clocker.Now())
-	if err != nil {
-		return entity.Role{}, fmt.Errorf("failed to update role: %w", err)
-	}
-	return e, nil
+	return updateRole(ctx, a.query, roleID, param, a.clocker.Now())
 }
 
 // UpdateRoleWithSd SD付きでロールを更新する。
@@ -518,9 +450,5 @@ func (a *PgAdapter) UpdateRoleWithSd(
 	if !ok {
 		return entity.Role{}, store.ErrNotFoundDescriptor
 	}
-	e, err := updateRole(ctx, qtx, roleID, param, a.clocker.Now())
-	if err != nil {
-		return entity.Role{}, fmt.Errorf("failed to update role: %w", err)
-	}
-	return e, nil
+	return updateRole(ctx, qtx, roleID, param, a.clocker.Now())
 }

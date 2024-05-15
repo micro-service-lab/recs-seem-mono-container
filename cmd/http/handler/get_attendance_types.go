@@ -14,7 +14,7 @@ import (
 
 // GetAttendanceTypes is a handler for getting attendance types.
 type GetAttendanceTypes struct {
-	Service service.AttendanceTypeManager
+	Service service.ManagerInterface
 }
 
 // GetAttendanceTypesParam is a parameter for GetAttendanceTypes.

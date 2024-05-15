@@ -17,7 +17,7 @@ import (
 
 // FindPermission is a handler for finding permission.
 type FindPermission struct {
-	Service service.PermissionManager
+	Service service.ManagerInterface
 }
 
 // FindPermissionsParam is a parameter for FindPermissions.

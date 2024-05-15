@@ -29,12 +29,20 @@ func RoleHandler(svc service.ManagerInterface, vd validation.Validator) http.Han
 	deleteHandler := handler.DeleteRole{
 		Service: svc,
 	}
+
+	associatePolicies := handler.AssociatePoliciesOnRole{
+		Service:   svc,
+		Validator: vd,
+	}
 	r := chi.NewRouter()
 	r.Get("/", getHandler.ServeHTTP)
 	r.Put(uuidPath("/{role_id:uuid}"), updateHandler.ServeHTTP)
 	r.Delete(uuidPath("/{role_id:uuid}"), deleteHandler.ServeHTTP)
 	r.Post("/", createHandler.ServeHTTP)
 	r.Get(uuidPath("/{role_id:uuid}"), findHandler.ServeHTTP)
+	r.Route(uuidPath("/{role_id:uuid}/policies"), func(r chi.Router) {
+		r.Post("/", associatePolicies.ServeHTTP)
+	})
 
 	return r
 }

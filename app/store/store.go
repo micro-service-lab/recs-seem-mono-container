@@ -38,4 +38,5 @@ type Store interface {
 	MimeType
 	Policy
 	Role
+	RoleAssociation
 }

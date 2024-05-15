@@ -13,7 +13,7 @@ import (
 
 // FindRecordTypeByKey is a handler for finding record type.
 type FindRecordTypeByKey struct {
-	Service service.RecordTypeManager
+	Service service.ManagerInterface
 }
 
 func (h *FindRecordTypeByKey) ServeHTTP(w http.ResponseWriter, r *http.Request) {

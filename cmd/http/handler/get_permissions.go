@@ -16,7 +16,7 @@ import (
 
 // GetPermissions is a handler for getting permission.
 type GetPermissions struct {
-	Service service.PermissionManager
+	Service service.ManagerInterface
 }
 
 // GetPermissionsParam is a parameter for GetPermissions.

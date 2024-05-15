@@ -14,7 +14,7 @@ import (
 
 // GetMimeTypes is a handler for getting mime types.
 type GetMimeTypes struct {
-	Service service.MimeTypeManager
+	Service service.ManagerInterface
 }
 
 // GetMimeTypesParam is a parameter for GetMimeTypes.

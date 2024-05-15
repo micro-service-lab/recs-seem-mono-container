@@ -13,7 +13,7 @@ import (
 
 // FindEventTypeByKey is a handler for finding event type.
 type FindEventTypeByKey struct {
-	Service service.EventTypeManager
+	Service service.ManagerInterface
 }
 
 func (h *FindEventTypeByKey) ServeHTTP(w http.ResponseWriter, r *http.Request) {

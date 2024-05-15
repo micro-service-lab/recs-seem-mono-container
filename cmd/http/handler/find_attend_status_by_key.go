@@ -13,7 +13,7 @@ import (
 
 // FindAttendStatusByKey is a handler for finding attend status.
 type FindAttendStatusByKey struct {
-	Service service.AttendStatusManager
+	Service service.ManagerInterface
 }
 
 func (h *FindAttendStatusByKey) ServeHTTP(w http.ResponseWriter, r *http.Request) {

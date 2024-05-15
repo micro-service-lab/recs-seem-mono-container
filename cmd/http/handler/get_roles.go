@@ -14,7 +14,7 @@ import (
 
 // GetRoles is a handler for getting roles.
 type GetRoles struct {
-	Service service.RoleManager
+	Service service.ManagerInterface
 }
 
 // GetRolesParam is a parameter for GetRoles.

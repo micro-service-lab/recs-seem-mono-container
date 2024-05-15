@@ -14,7 +14,7 @@ import (
 
 // FindRecordType is a handler for finding record type.
 type FindRecordType struct {
-	Service service.RecordTypeManager
+	Service service.ManagerInterface
 }
 
 func (h *FindRecordType) ServeHTTP(w http.ResponseWriter, r *http.Request) {

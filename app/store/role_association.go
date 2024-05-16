@@ -56,6 +56,9 @@ type RoleAssociation interface {
 	DisassociatePolicyOnRolesWithSd(ctx context.Context, sd Sd, roleIDs []uuid.UUID) (int64, error)
 	// PluralDisassociatePolicyOnRole ロールに関連付けられたポリシーを複数解除する。
 	PluralDisassociatePolicyOnRole(ctx context.Context, roleID uuid.UUID, policyIDs []uuid.UUID) (int64, error)
+	// PluralDisassociatePolicyOnRoleWithSd SD付きでロールに関連付けられたポリシーを複数解除する。
+	PluralDisassociatePolicyOnRoleWithSd(
+		ctx context.Context, sd Sd, roleID uuid.UUID, policyIDs []uuid.UUID) (int64, error)
 	// GetRolesOnPolicy ポリシーに関連付けられたロールを取得する。
 	GetRolesOnPolicy(
 		ctx context.Context,

@@ -21,7 +21,7 @@ type PingResponse struct {
 	// Message 受信した文字列
 	Message string `json:"message"`
 	// ReceivedTime サーバー受信時刻
-	ReceivedTime time.Time `json:"receivedTime"`
+	ReceivedTime time.Time `json:"received_time"`
 }
 
 // PingHandler 疎通確認 API の HTTP ハンドラ。

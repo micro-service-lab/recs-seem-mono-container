@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
+
 	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
@@ -12,15 +15,15 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 )
 
-// GetAttendStatuses is a handler for getting attend statuses.
-type GetAttendStatuses struct {
+// GetRoleOnPolicy is a handler for getting role on policy.
+type GetRoleOnPolicy struct {
 	Service service.ManagerInterface
 }
 
-// GetAttendStatusesParam is a parameter for GetAttendStatuses.
-type GetAttendStatusesParam struct {
+// GetRoleOnPolicyParam is a parameter for GetRoleOnPolicy.
+type GetRoleOnPolicyParam struct {
 	SearchName string                            `queryParam:"search_name"`
-	Order      parameter.AttendStatusOrderMethod `queryParam:"order"`
+	Order      parameter.RoleOnPolicyOrderMethod `queryParam:"order"`
 	Limit      parameter.Limit                   `queryParam:"limit"`
 	Offset     parameter.Offset                  `queryParam:"offset"`
 	Cursor     parameter.Cursor                  `queryParam:"cursor"`
@@ -28,22 +31,23 @@ type GetAttendStatusesParam struct {
 	WithCount  parameter.WithCount               `queryParam:"with_count"`
 }
 
-var getAttendStatusesParseFuncMap = map[reflect.Type]queryparam.ParserFunc{
-	reflect.TypeOf(parameter.AttendStatusOrderMethodName): parameter.ParseAttendStatusOrderMethod,
-	reflect.TypeOf(parameter.Limit(0)):                    parameter.ParseLimitParam,
-	reflect.TypeOf(parameter.Offset(0)):                   parameter.ParseOffsetParam,
-	reflect.TypeOf(parameter.Cursor("")):                  parameter.ParseCursorParam,
-	reflect.TypeOf(parameter.NonePagination):              parameter.ParsePaginationParam,
-	reflect.TypeOf(parameter.WithCount(false)):            parameter.ParseWithCountParam,
+var getRoleOnPolicyParseFuncMap = map[reflect.Type]queryparam.ParserFunc{
+	reflect.TypeOf(parameter.PolicyOrderMethodName): parameter.ParsePolicyOrderMethod,
+	reflect.TypeOf(parameter.Limit(0)):              parameter.ParseLimitParam,
+	reflect.TypeOf(parameter.Offset(0)):             parameter.ParseOffsetParam,
+	reflect.TypeOf(parameter.Cursor("")):            parameter.ParseCursorParam,
+	reflect.TypeOf(parameter.NonePagination):        parameter.ParsePaginationParam,
+	reflect.TypeOf(parameter.WithCount(false)):      parameter.ParseWithCountParam,
 }
 
-func (h *GetAttendStatuses) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetRoleOnPolicy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
+	id := uuid.MustParse(chi.URLParam(r, "policy_id"))
 	parse := queryparam.NewParser(r.URL.Query())
-	var param GetAttendStatusesParam
+	var param GetRoleOnPolicyParam
 	err := parse.ParseWithOptions(&param, queryparam.Options{
 		TagName: "queryParam",
-		FuncMap: getAttendStatusesParseFuncMap,
+		FuncMap: getRoleOnPolicyParseFuncMap,
 	})
 	if err != nil {
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
@@ -52,8 +56,7 @@ func (h *GetAttendStatuses) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	attendStatuses, err := h.Service.GetAttendStatuses(
-		ctx,
+	roles, err := h.Service.GetRolesOnPolicy(ctx, id,
 		param.SearchName,
 		param.Order,
 		param.Pagination,
@@ -69,7 +72,7 @@ func (h *GetAttendStatuses) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	err = response.JSONResponseWriter(ctx, w, response.Success, attendStatuses, nil)
+	err = response.JSONResponseWriter(ctx, w, response.Success, roles, nil)
 	if err != nil {
 		log.Printf("failed to write response: %v", err)
 	}

@@ -7,12 +7,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
-	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countPolicies(
@@ -62,6 +63,10 @@ func createPolicy(
 	}
 	e, err := qtx.CreatePolicy(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.Policy{}, errhandle.NewModelDuplicatedError("policy")
+		}
 		return entity.Policy{}, fmt.Errorf("failed to create policy: %w", err)
 	}
 	entity := entity.Policy{
@@ -108,6 +113,10 @@ func createPolicies(
 	}
 	c, err := qtx.CreatePolicies(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return 0, errhandle.NewModelDuplicatedError("policy")
+		}
 		return 0, fmt.Errorf("failed to create policy: %w", err)
 	}
 	return c, nil
@@ -138,6 +147,9 @@ func deletePolicy(ctx context.Context, qtx *query.Queries, policyID uuid.UUID) (
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete policy: %w", err)
 	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("policy")
+	}
 	return c, nil
 }
 
@@ -163,6 +175,9 @@ func deletePolicyByKey(ctx context.Context, qtx *query.Queries, key string) (int
 	c, err := qtx.DeletePolicyByKey(ctx, key)
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete policy: %w", err)
+	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("policy")
 	}
 	return c, nil
 }
@@ -191,6 +206,9 @@ func pluralDeletePolicies(
 	c, err := qtx.PluralDeletePolicies(ctx, policyIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to plural delete policy: %w", err)
+	}
+	if c != int64(len(policyIDs)) {
+		return 0, errhandle.NewModelNotFoundError("policy")
 	}
 	return c, nil
 }
@@ -830,6 +848,10 @@ func updatePolicy(
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.Policy{}, errhandle.NewModelNotFoundError("policy")
+		}
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.Policy{}, errhandle.NewModelDuplicatedError("policy")
 		}
 		return entity.Policy{}, fmt.Errorf("failed to update policy: %w", err)
 	}

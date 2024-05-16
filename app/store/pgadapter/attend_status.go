@@ -7,12 +7,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
-	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countAttendStatuses(
@@ -56,6 +57,10 @@ func createAttendStatus(
 	}
 	e, err := qtx.CreateAttendStatus(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.AttendStatus{}, errhandle.NewModelDuplicatedError("attend status")
+		}
 		return entity.AttendStatus{}, fmt.Errorf("failed to create attend status: %w", err)
 	}
 	entity := entity.AttendStatus{
@@ -98,6 +103,10 @@ func createAttendStatuses(
 	}
 	c, err := qtx.CreateAttendStatuses(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return 0, errhandle.NewModelDuplicatedError("attend status")
+		}
 		return 0, fmt.Errorf("failed to create attend statuses: %w", err)
 	}
 	return c, nil
@@ -128,6 +137,9 @@ func deleteAttendStatus(ctx context.Context, qtx *query.Queries, attendStatusID 
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete attend status: %w", err)
 	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("attend status")
+	}
 	return c, nil
 }
 
@@ -154,6 +166,9 @@ func deleteAttendStatusByKey(ctx context.Context, qtx *query.Queries, key string
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete attend status: %w", err)
 	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("attend status")
+	}
 	return c, nil
 }
 
@@ -179,6 +194,9 @@ func pluralDeleteAttendStatuses(ctx context.Context, qtx *query.Queries, attendS
 	c, err := qtx.PluralDeleteAttendStatuses(ctx, attendStatusIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete attend statuses: %w", err)
+	}
+	if c != int64(len(attendStatusIDs)) {
+		return 0, errhandle.NewModelNotFoundError("attend status")
 	}
 	return c, nil
 }
@@ -478,6 +496,10 @@ func updateAttendStatus(
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.AttendStatus{}, errhandle.NewModelNotFoundError("attend status")
+		}
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.AttendStatus{}, errhandle.NewModelDuplicatedError("attend status")
 		}
 		return entity.AttendStatus{}, fmt.Errorf("failed to update attend status: %w", err)
 	}

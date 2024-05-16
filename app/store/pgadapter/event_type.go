@@ -7,12 +7,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
-	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countEventTypes(
@@ -57,6 +58,10 @@ func createEventType(
 	}
 	e, err := qtx.CreateEventType(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.EventType{}, errhandle.NewModelDuplicatedError("event type")
+		}
 		return entity.EventType{}, fmt.Errorf("failed to create event type: %w", err)
 	}
 	entity := entity.EventType{
@@ -101,6 +106,10 @@ func createEventTypes(
 	}
 	c, err := qtx.CreateEventTypes(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return 0, errhandle.NewModelDuplicatedError("event type")
+		}
 		return 0, fmt.Errorf("failed to create event types: %w", err)
 	}
 	return c, nil
@@ -131,6 +140,9 @@ func deleteEventType(ctx context.Context, qtx *query.Queries, eventTypeID uuid.U
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete event type: %w", err)
 	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("event type")
+	}
 	return c, nil
 }
 
@@ -157,6 +169,9 @@ func deleteEventTypeByKey(ctx context.Context, qtx *query.Queries, key string) (
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete event type: %w", err)
 	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("event type")
+	}
 	return c, nil
 }
 
@@ -182,6 +197,9 @@ func pluralDeleteEventTypes(ctx context.Context, qtx *query.Queries, eventTypeID
 	c, err := qtx.PluralDeleteEventTypes(ctx, eventTypeIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to plural delete event types: %w", err)
+	}
+	if c != int64(len(eventTypeIDs)) {
+		return 0, errhandle.NewModelNotFoundError("event type")
 	}
 	return c, nil
 }
@@ -490,6 +508,10 @@ func updateEventType(
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.EventType{}, errhandle.NewModelNotFoundError("event type")
+		}
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.EventType{}, errhandle.NewModelDuplicatedError("event type")
 		}
 		return entity.EventType{}, fmt.Errorf("failed to update event type: %w", err)
 	}

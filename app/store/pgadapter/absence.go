@@ -7,12 +7,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
-	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countAbsences(ctx context.Context, qtx *query.Queries) (int64, error) {
@@ -44,6 +45,10 @@ func createAbsence(
 ) (entity.Absence, error) {
 	e, err := qtx.CreateAbsence(ctx, param.AttendanceID)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.Absence{}, errhandle.NewModelDuplicatedError("absence")
+		}
 		return entity.Absence{}, fmt.Errorf("failed to create absence: %w", err)
 	}
 	entity := entity.Absence{
@@ -78,6 +83,10 @@ func createAbsences(ctx context.Context, qtx *query.Queries, params []parameter.
 	}
 	e, err := qtx.CreateAbsences(ctx, aIDs)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return 0, errhandle.NewModelDuplicatedError("absences")
+		}
 		return 0, fmt.Errorf("failed to create absences: %w", err)
 	}
 	return e, nil
@@ -106,6 +115,9 @@ func deleteAbsence(ctx context.Context, qtx *query.Queries, absenceID uuid.UUID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete absence: %w", err)
 	}
+	if c != 1 {
+		return c, errhandle.NewModelNotFoundError("absence")
+	}
 	return c, nil
 }
 
@@ -129,6 +141,9 @@ func pluralDeleteAbsences(ctx context.Context, qtx *query.Queries, absenceIDs []
 	c, err := qtx.PluralDeleteAbsences(ctx, absenceIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to plural delete absences: %w", err)
+	}
+	if c != int64(len(absenceIDs)) {
+		return c, errhandle.NewModelNotFoundError("absence")
 	}
 	return c, nil
 }

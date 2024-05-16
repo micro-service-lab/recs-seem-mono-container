@@ -11,8 +11,8 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
-	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/lang"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"

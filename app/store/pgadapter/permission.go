@@ -7,12 +7,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
-	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countPermissions(
@@ -62,6 +63,10 @@ func createPermission(
 	}
 	e, err := qtx.CreatePermission(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.Permission{}, errhandle.NewModelDuplicatedError("permission")
+		}
 		return entity.Permission{}, fmt.Errorf("failed to create permission: %w", err)
 	}
 	entity := entity.Permission{
@@ -108,6 +113,10 @@ func createPermissions(
 	}
 	c, err := qtx.CreatePermissions(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return 0, errhandle.NewModelDuplicatedError("permission")
+		}
 		return 0, fmt.Errorf("failed to create permission: %w", err)
 	}
 	return c, nil
@@ -138,6 +147,9 @@ func deletePermission(ctx context.Context, qtx *query.Queries, permissionID uuid
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete permission: %w", err)
 	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("permission")
+	}
 	return c, nil
 }
 
@@ -163,6 +175,9 @@ func deletePermissionByKey(ctx context.Context, qtx *query.Queries, key string) 
 	c, err := qtx.DeletePermissionByKey(ctx, key)
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete permission: %w", err)
+	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("permission")
 	}
 	return c, nil
 }
@@ -191,6 +206,9 @@ func pluralDeletePermissions(
 	c, err := qtx.PluralDeletePermissions(ctx, permissionIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to plural delete permission: %w", err)
+	}
+	if c != int64(len(permissionIDs)) {
+		return 0, errhandle.NewModelNotFoundError("permission")
 	}
 	return c, nil
 }
@@ -830,6 +848,10 @@ func updatePermission(
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.Permission{}, errhandle.NewModelNotFoundError("permission")
+		}
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.Permission{}, errhandle.NewModelDuplicatedError("permission")
 		}
 		return entity.Permission{}, fmt.Errorf("failed to update permission: %w", err)
 	}

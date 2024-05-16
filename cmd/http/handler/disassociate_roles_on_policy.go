@@ -12,34 +12,33 @@ import (
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/i18n"
-	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/lang"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"
 )
 
-// AssociatePoliciesOnRole is a handler for associating policies on role.
-type AssociatePoliciesOnRole struct {
+// DisassociateRolesOnPolicy is a handler for disassociating roles on policy.
+type DisassociateRolesOnPolicy struct {
 	Service    service.ManagerInterface
 	Validator  validation.Validator
 	Translator i18n.Translation
 }
 
-// AssociatePoliciesOnRoleRequest is a request for AssociatePoliciesOnRole.
-type AssociatePoliciesOnRoleRequest struct {
+// DisassociateRolesOnPolicyRequest is a request for DisassociateRolesOnPolicy.
+type DisassociateRolesOnPolicyRequest struct {
 	//nolint:revive
-	PolicyIDS []uuid.UUID `json:"policy_ids" validate:"required,unique" ja:"ポリシーID" en:"PolicyIDs"`
+	RoleIDS []uuid.UUID `json:"role_ids" validate:"required,unique" ja:"ロールID" en:"RoleIDs"`
 }
 
-func (h *AssociatePoliciesOnRole) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *DisassociateRolesOnPolicy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	id := uuid.MustParse(chi.URLParam(r, "role_id"))
+	id := uuid.MustParse(chi.URLParam(r, "policy_id"))
 	var err error
-	var req AssociatePoliciesOnRoleRequest
+	var req DisassociateRolesOnPolicyRequest
 	if err = json.NewDecoder(r.Body).Decode(&req); err == nil || errors.Is(err, io.EOF) {
 		if errors.Is(err, io.EOF) {
-			req = AssociatePoliciesOnRoleRequest{}
+			req = DisassociateRolesOnPolicyRequest{}
 		}
 		err = h.Validator.ValidateWithLocale(ctx, &req, lang.GetLocale(r.Context()))
 	} else {
@@ -52,24 +51,18 @@ func (h *AssociatePoliciesOnRole) ServeHTTP(w http.ResponseWriter, r *http.Reque
 		}
 		return
 	}
-	policies := make([]parameter.AssociationRoleParam, len(req.PolicyIDS))
-	for i, pID := range req.PolicyIDS {
-		policies[i] = parameter.AssociationRoleParam{
-			RoleID:   id,
-			PolicyID: pID,
-		}
-	}
-	if _, err = h.Service.AssociateRoles(ctx, policies); err != nil {
+
+	if _, err = h.Service.PluralDisassociateRoleOnPolicy(ctx, id, req.RoleIDS); err != nil {
 		var e errhandle.ModelNotFoundError
 		if errors.As(err, &e) {
-			if e.Target() == service.AssociateRoleTargetRoles {
-				e.SetTarget("role")
+			if e.Target() == service.AssociateRoleTargetPolicies {
+				e.SetTarget("policy")
 				err = e
-			} else if e.Target() == service.AssociateRoleTargetPolicies {
-				policyStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "PolicyIDs", i18n.Options{
+			} else if e.Target() == service.AssociateRoleTargetRoles {
+				roleStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "RoleIDs", i18n.Options{
 					DefaultMessage: &i18n.Message{
-						ID:    "PolicyIDs",
-						Other: "Policy not found",
+						ID:    "RoleIDs",
+						Other: "Role not found",
 					},
 				})
 				msgStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "ModelNotExists", i18n.Options{
@@ -78,11 +71,11 @@ func (h *AssociatePoliciesOnRole) ServeHTTP(w http.ResponseWriter, r *http.Reque
 						Other: "{{.ID}} not found",
 					},
 					TemplateData: map[string]any{
-						"ID": policyStr,
+						"ID": roleStr,
 					},
 				})
 				ve := errhandle.NewValidationError(nil)
-				ve.Add("policy_ids", msgStr)
+				ve.Add("role_ids", msgStr)
 				err = ve
 			}
 		}

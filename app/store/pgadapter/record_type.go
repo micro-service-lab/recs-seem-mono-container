@@ -7,12 +7,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
-	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countRecordTypes(
@@ -56,6 +57,10 @@ func createRecordType(
 	}
 	e, err := qtx.CreateRecordType(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.RecordType{}, errhandle.NewModelDuplicatedError("record type")
+		}
 		return entity.RecordType{}, fmt.Errorf("failed to create record type: %w", err)
 	}
 	entity := entity.RecordType{
@@ -98,6 +103,10 @@ func createRecordTypes(
 	}
 	c, err := qtx.CreateRecordTypes(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return 0, errhandle.NewModelDuplicatedError("record type")
+		}
 		return 0, fmt.Errorf("failed to create record types: %w", err)
 	}
 	return c, nil
@@ -128,6 +137,9 @@ func deleteRecordType(ctx context.Context, qtx *query.Queries, recordTypeID uuid
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete record type: %w", err)
 	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("record type")
+	}
 	return c, nil
 }
 
@@ -154,6 +166,9 @@ func deleteRecordTypeByKey(ctx context.Context, qtx *query.Queries, key string) 
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete record type: %w", err)
 	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("record type")
+	}
 	return c, nil
 }
 
@@ -179,6 +194,9 @@ func pluralDeleteRecordTypes(ctx context.Context, qtx *query.Queries, recordType
 	c, err := qtx.PluralDeleteRecordTypes(ctx, recordTypeIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to plural delete record types: %w", err)
+	}
+	if c != int64(len(recordTypeIDs)) {
+		return 0, errhandle.NewModelNotFoundError("record type")
 	}
 	return c, nil
 }
@@ -482,6 +500,10 @@ func updateRecordType(
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.RecordType{}, errhandle.NewModelNotFoundError("record type")
+		}
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.RecordType{}, errhandle.NewModelDuplicatedError("record type")
 		}
 		return entity.RecordType{}, fmt.Errorf("failed to update record type: %w", err)
 	}

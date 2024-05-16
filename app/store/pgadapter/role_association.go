@@ -7,8 +7,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
@@ -93,6 +95,10 @@ func associateRole(
 	}
 	e, err := qtx.CreateRoleAssociation(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.RoleAssociation{}, errhandle.NewModelDuplicatedError("role association")
+		}
 		return entity.RoleAssociation{}, fmt.Errorf("failed to associate role: %w", err)
 	}
 	entity := entity.RoleAssociation{
@@ -134,6 +140,10 @@ func associateRoles(
 	}
 	c, err := qtx.CreateRoleAssociations(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return 0, errhandle.NewModelDuplicatedError("role association")
+		}
 		return 0, fmt.Errorf("failed to associate roles: %w", err)
 	}
 	return c, nil
@@ -167,6 +177,9 @@ func disassociateRole(
 	c, err := qtx.DeleteRoleAssociation(ctx, p)
 	if err != nil {
 		return 0, fmt.Errorf("failed to disassociate role: %w", err)
+	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("role association")
 	}
 	return c, nil
 }
@@ -262,6 +275,9 @@ func pluralDisassociateRoleOnPolicy(
 	if err != nil {
 		return 0, fmt.Errorf("failed to disassociate role on policy: %w", err)
 	}
+	if c != int64(len(roleIDs)) {
+		return 0, errhandle.NewModelNotFoundError("role association")
+	}
 	return c, nil
 }
 
@@ -350,6 +366,9 @@ func pluralDisassociatePolicyOnRole(
 	if err != nil {
 		return 0, fmt.Errorf("failed to disassociate role on role: %w", err)
 	}
+	if c != int64(len(policyIDs)) {
+		return 0, errhandle.NewModelNotFoundError("role association")
+	}
 	return c, nil
 }
 
@@ -358,6 +377,19 @@ func (a *PgAdapter) PluralDisassociatePolicyOnRole(
 	ctx context.Context, roleID uuid.UUID, policyIDs []uuid.UUID,
 ) (int64, error) {
 	return pluralDisassociatePolicyOnRole(ctx, a.query, roleID, policyIDs)
+}
+
+// PluralDisassociatePolicyOnRoleWithSd SD付きでロールに関連付けられたポリシーを複数解除する。
+func (a *PgAdapter) PluralDisassociatePolicyOnRoleWithSd(
+	ctx context.Context, sd store.Sd, roleID uuid.UUID, policyIDs []uuid.UUID,
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return 0, store.ErrNotFoundDescriptor
+	}
+	return pluralDisassociatePolicyOnRole(ctx, qtx, roleID, policyIDs)
 }
 
 func getRolesOnPolicy(
@@ -584,9 +616,11 @@ func getPoliciesOnRole(
 				Pkey: entity.Int(e.Policy.MPoliciesPkey),
 				PolicyOnRole: entity.PolicyOnRole{
 					Policy: entity.Policy{
-						PolicyID:    e.Policy.PolicyID,
-						Name:        e.Policy.Name,
-						Description: e.Policy.Description,
+						PolicyID:         e.Policy.PolicyID,
+						Name:             e.Policy.Name,
+						Description:      e.Policy.Description,
+						Key:              e.Policy.Key,
+						PolicyCategoryID: e.Policy.PolicyCategoryID,
 					},
 				},
 			}
@@ -625,9 +659,11 @@ func getPoliciesOnRole(
 				Pkey: entity.Int(e.Policy.MPoliciesPkey),
 				PolicyOnRole: entity.PolicyOnRole{
 					Policy: entity.Policy{
-						PolicyID:    e.Policy.PolicyID,
-						Name:        e.Policy.Name,
-						Description: e.Policy.Description,
+						PolicyID:         e.Policy.PolicyID,
+						Name:             e.Policy.Name,
+						Description:      e.Policy.Description,
+						Key:              e.Policy.Key,
+						PolicyCategoryID: e.Policy.PolicyCategoryID,
 					},
 				},
 			}
@@ -653,9 +689,11 @@ func getPoliciesOnRole(
 				Pkey: entity.Int(e.Policy.MPoliciesPkey),
 				PolicyOnRole: entity.PolicyOnRole{
 					Policy: entity.Policy{
-						PolicyID:    e.Policy.PolicyID,
-						Name:        e.Policy.Name,
-						Description: e.Policy.Description,
+						PolicyID:         e.Policy.PolicyID,
+						Name:             e.Policy.Name,
+						Description:      e.Policy.Description,
+						Key:              e.Policy.Key,
+						PolicyCategoryID: e.Policy.PolicyCategoryID,
 					},
 				},
 			}

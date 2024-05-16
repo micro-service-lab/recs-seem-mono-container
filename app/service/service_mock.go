@@ -22,9 +22,6 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //
 //		// make and configure a mocked ManagerInterface
 //		mockedManagerInterface := &ManagerInterfaceMock{
-//			AssociateRoleFunc: func(ctx context.Context, roleID uuid.UUID, policyID uuid.UUID) (entity.RoleAssociation, error) {
-//				panic("mock out the AssociateRole method")
-//			},
 //			AssociateRolesFunc: func(ctx context.Context, params []parameter.AssociationRoleParam) (int64, error) {
 //				panic("mock out the AssociateRoles method")
 //			},
@@ -123,9 +120,6 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			DisassociatePolicyOnRolesFunc: func(ctx context.Context, roleIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the DisassociatePolicyOnRoles method")
-//			},
-//			DisassociateRoleFunc: func(ctx context.Context, roleID uuid.UUID, policyID uuid.UUID) (int64, error) {
-//				panic("mock out the DisassociateRole method")
 //			},
 //			DisassociateRoleOnPoliciesFunc: func(ctx context.Context, policyIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the DisassociateRoleOnPolicies method")
@@ -353,9 +347,6 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //
 //	}
 type ManagerInterfaceMock struct {
-	// AssociateRoleFunc mocks the AssociateRole method.
-	AssociateRoleFunc func(ctx context.Context, roleID uuid.UUID, policyID uuid.UUID) (entity.RoleAssociation, error)
-
 	// AssociateRolesFunc mocks the AssociateRoles method.
 	AssociateRolesFunc func(ctx context.Context, params []parameter.AssociationRoleParam) (int64, error)
 
@@ -454,9 +445,6 @@ type ManagerInterfaceMock struct {
 
 	// DisassociatePolicyOnRolesFunc mocks the DisassociatePolicyOnRoles method.
 	DisassociatePolicyOnRolesFunc func(ctx context.Context, roleIDs []uuid.UUID) (int64, error)
-
-	// DisassociateRoleFunc mocks the DisassociateRole method.
-	DisassociateRoleFunc func(ctx context.Context, roleID uuid.UUID, policyID uuid.UUID) (int64, error)
 
 	// DisassociateRoleOnPoliciesFunc mocks the DisassociateRoleOnPolicies method.
 	DisassociateRoleOnPoliciesFunc func(ctx context.Context, policyIDs []uuid.UUID) (int64, error)
@@ -679,15 +667,6 @@ type ManagerInterfaceMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
-		// AssociateRole holds details about calls to the AssociateRole method.
-		AssociateRole []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
-			// RoleID is the roleID argument value.
-			RoleID uuid.UUID
-			// PolicyID is the policyID argument value.
-			PolicyID uuid.UUID
-		}
 		// AssociateRoles holds details about calls to the AssociateRoles method.
 		AssociateRoles []struct {
 			// Ctx is the ctx argument value.
@@ -956,15 +935,6 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// RoleIDs is the roleIDs argument value.
 			RoleIDs []uuid.UUID
-		}
-		// DisassociateRole holds details about calls to the DisassociateRole method.
-		DisassociateRole []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
-			// RoleID is the roleID argument value.
-			RoleID uuid.UUID
-			// PolicyID is the policyID argument value.
-			PolicyID uuid.UUID
 		}
 		// DisassociateRoleOnPolicies holds details about calls to the DisassociateRoleOnPolicies method.
 		DisassociateRoleOnPolicies []struct {
@@ -1728,7 +1698,6 @@ type ManagerInterfaceMock struct {
 			Description string
 		}
 	}
-	lockAssociateRole                    sync.RWMutex
 	lockAssociateRoles                   sync.RWMutex
 	lockCreateAttendStatus               sync.RWMutex
 	lockCreateAttendStatuses             sync.RWMutex
@@ -1762,7 +1731,6 @@ type ManagerInterfaceMock struct {
 	lockDeleteRole                       sync.RWMutex
 	lockDisassociatePolicyOnRole         sync.RWMutex
 	lockDisassociatePolicyOnRoles        sync.RWMutex
-	lockDisassociateRole                 sync.RWMutex
 	lockDisassociateRoleOnPolicies       sync.RWMutex
 	lockDisassociateRoleOnPolicy         sync.RWMutex
 	lockFindAttendStatusByID             sync.RWMutex
@@ -1836,46 +1804,6 @@ type ManagerInterfaceMock struct {
 	lockUpdatePolicyCategory             sync.RWMutex
 	lockUpdateRecordType                 sync.RWMutex
 	lockUpdateRole                       sync.RWMutex
-}
-
-// AssociateRole calls AssociateRoleFunc.
-func (mock *ManagerInterfaceMock) AssociateRole(ctx context.Context, roleID uuid.UUID, policyID uuid.UUID) (entity.RoleAssociation, error) {
-	if mock.AssociateRoleFunc == nil {
-		panic("ManagerInterfaceMock.AssociateRoleFunc: method is nil but ManagerInterface.AssociateRole was just called")
-	}
-	callInfo := struct {
-		Ctx      context.Context
-		RoleID   uuid.UUID
-		PolicyID uuid.UUID
-	}{
-		Ctx:      ctx,
-		RoleID:   roleID,
-		PolicyID: policyID,
-	}
-	mock.lockAssociateRole.Lock()
-	mock.calls.AssociateRole = append(mock.calls.AssociateRole, callInfo)
-	mock.lockAssociateRole.Unlock()
-	return mock.AssociateRoleFunc(ctx, roleID, policyID)
-}
-
-// AssociateRoleCalls gets all the calls that were made to AssociateRole.
-// Check the length with:
-//
-//	len(mockedManagerInterface.AssociateRoleCalls())
-func (mock *ManagerInterfaceMock) AssociateRoleCalls() []struct {
-	Ctx      context.Context
-	RoleID   uuid.UUID
-	PolicyID uuid.UUID
-} {
-	var calls []struct {
-		Ctx      context.Context
-		RoleID   uuid.UUID
-		PolicyID uuid.UUID
-	}
-	mock.lockAssociateRole.RLock()
-	calls = mock.calls.AssociateRole
-	mock.lockAssociateRole.RUnlock()
-	return calls
 }
 
 // AssociateRoles calls AssociateRolesFunc.
@@ -3139,46 +3067,6 @@ func (mock *ManagerInterfaceMock) DisassociatePolicyOnRolesCalls() []struct {
 	mock.lockDisassociatePolicyOnRoles.RLock()
 	calls = mock.calls.DisassociatePolicyOnRoles
 	mock.lockDisassociatePolicyOnRoles.RUnlock()
-	return calls
-}
-
-// DisassociateRole calls DisassociateRoleFunc.
-func (mock *ManagerInterfaceMock) DisassociateRole(ctx context.Context, roleID uuid.UUID, policyID uuid.UUID) (int64, error) {
-	if mock.DisassociateRoleFunc == nil {
-		panic("ManagerInterfaceMock.DisassociateRoleFunc: method is nil but ManagerInterface.DisassociateRole was just called")
-	}
-	callInfo := struct {
-		Ctx      context.Context
-		RoleID   uuid.UUID
-		PolicyID uuid.UUID
-	}{
-		Ctx:      ctx,
-		RoleID:   roleID,
-		PolicyID: policyID,
-	}
-	mock.lockDisassociateRole.Lock()
-	mock.calls.DisassociateRole = append(mock.calls.DisassociateRole, callInfo)
-	mock.lockDisassociateRole.Unlock()
-	return mock.DisassociateRoleFunc(ctx, roleID, policyID)
-}
-
-// DisassociateRoleCalls gets all the calls that were made to DisassociateRole.
-// Check the length with:
-//
-//	len(mockedManagerInterface.DisassociateRoleCalls())
-func (mock *ManagerInterfaceMock) DisassociateRoleCalls() []struct {
-	Ctx      context.Context
-	RoleID   uuid.UUID
-	PolicyID uuid.UUID
-} {
-	var calls []struct {
-		Ctx      context.Context
-		RoleID   uuid.UUID
-		PolicyID uuid.UUID
-	}
-	mock.lockDisassociateRole.RLock()
-	calls = mock.calls.DisassociateRole
-	mock.lockDisassociateRole.RUnlock()
 	return calls
 }
 

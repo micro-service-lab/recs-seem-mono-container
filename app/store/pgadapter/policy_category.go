@@ -7,12 +7,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
-	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countPolicyCategories(
@@ -59,6 +60,10 @@ func createPolicyCategory(
 	}
 	e, err := qtx.CreatePolicyCategory(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.PolicyCategory{}, errhandle.NewModelDuplicatedError("policy category")
+		}
 		return entity.PolicyCategory{}, fmt.Errorf("failed to create policy category: %w", err)
 	}
 	entity := entity.PolicyCategory{
@@ -103,6 +108,10 @@ func createPolicyCategories(
 	}
 	c, err := qtx.CreatePolicyCategories(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return 0, errhandle.NewModelDuplicatedError("policy category")
+		}
 		return 0, fmt.Errorf("failed to create policy categories: %w", err)
 	}
 	return c, nil
@@ -133,6 +142,9 @@ func deletePolicyCategory(ctx context.Context, qtx *query.Queries, policyCategor
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete policy category: %w", err)
 	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("policy category")
+	}
 	return c, nil
 }
 
@@ -158,6 +170,9 @@ func deletePolicyCategoryByKey(ctx context.Context, qtx *query.Queries, key stri
 	c, err := qtx.DeletePolicyCategoryByKey(ctx, key)
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete policy category: %w", err)
+	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("policy category")
 	}
 	return c, nil
 }
@@ -186,6 +201,9 @@ func pluralDeletePolicyCategories(
 	c, err := qtx.PluralDeletePolicyCategories(ctx, policyCategoryIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to plural delete policy categories: %w", err)
+	}
+	if c != int64(len(policyCategoryIDs)) {
+		return 0, errhandle.NewModelNotFoundError("policy category")
 	}
 	return c, nil
 }
@@ -443,11 +461,12 @@ func getPluralPolicyCategories(
 	if !np.Valid {
 		e, err = qtx.GetPluralPolicyCategories(ctx, ids)
 	} else {
-		e, err = qtx.GetPluralPolicyCategoriesUseNumberedPaginate(ctx, query.GetPluralPolicyCategoriesUseNumberedPaginateParams{
-			PolicyCategoryIds: ids,
-			Offset:            int32(np.Offset.Int64),
-			Limit:             int32(np.Limit.Int64),
-		})
+		e, err = qtx.GetPluralPolicyCategoriesUseNumberedPaginate(
+			ctx, query.GetPluralPolicyCategoriesUseNumberedPaginateParams{
+				PolicyCategoryIds: ids,
+				Offset:            int32(np.Offset.Int64),
+				Limit:             int32(np.Limit.Int64),
+			})
 	}
 	if err != nil {
 		return store.ListResult[entity.PolicyCategory]{},
@@ -499,6 +518,10 @@ func updatePolicyCategory(
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.PolicyCategory{}, errhandle.NewModelNotFoundError("policy category")
+		}
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.PolicyCategory{}, errhandle.NewModelDuplicatedError("policy category")
 		}
 		return entity.PolicyCategory{}, fmt.Errorf("failed to update policy category: %w", err)
 	}

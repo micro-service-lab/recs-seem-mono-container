@@ -1,0 +1,8 @@
+[PolicyIDs]
+other = "ポリシーID"
+[RoleIDs]
+other = "ロールID"
+
+
+[ModelNotExists]
+other = "指定された{{.ID}}が存在しません"

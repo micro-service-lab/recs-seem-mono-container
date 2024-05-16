@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/micro-service-lab/recs-seem-mono-container/app/i18n"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
@@ -29,16 +30,23 @@ type API struct {
 
 	// middlewares API で使用する HTTP ミドルウェア
 	middlewares []func(http.Handler) http.Handler
+
+	// translator 翻訳サービス
+	translator i18n.Translation
 }
 
 // NewAPI API を生成して返す。
-func NewAPI(clk clock.Clock, auth auth.Auth, validator validation.Validator, svc service.ManagerInterface) *API {
+func NewAPI(
+	clk clock.Clock, auth auth.Auth,
+	validator validation.Validator, svc service.ManagerInterface, translator i18n.Translation,
+) *API {
 	return &API{
 		clk:         clk,
 		auth:        auth,
 		validator:   validator,
 		svc:         svc,
 		middlewares: make([]func(http.Handler) http.Handler, 0),
+		translator:  translator,
 	}
 }
 
@@ -68,8 +76,8 @@ func (s *API) Handler() http.Handler {
 	r.Mount("/record_types", RecordTypeHandler(s.svc))
 	r.Mount("/mime_types", MimeTypeHandler(s.svc))
 	r.Mount("/permissions", PermissionHandler(s.svc))
-	r.Mount("/policies", PolicyHandler(s.svc))
-	r.Mount("/roles", RoleHandler(s.svc, s.validator))
+	r.Mount("/policies", PolicyHandler(s.svc, s.validator, s.translator))
+	r.Mount("/roles", RoleHandler(s.svc, s.validator, s.translator))
 
 	r.NotFound(s.notFound)
 	r.MethodNotAllowed(s.methodNotAllowed)

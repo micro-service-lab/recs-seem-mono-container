@@ -7,12 +7,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
-	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countMimeTypes(
@@ -57,6 +58,10 @@ func createMimeType(
 	}
 	e, err := qtx.CreateMimeType(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.MimeType{}, errhandle.NewModelDuplicatedError("mime type")
+		}
 		return entity.MimeType{}, fmt.Errorf("failed to create mime type: %w", err)
 	}
 	entity := entity.MimeType{
@@ -101,6 +106,10 @@ func createMimeTypes(
 	}
 	c, err := qtx.CreateMimeTypes(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return 0, errhandle.NewModelDuplicatedError("mime type")
+		}
 		return 0, fmt.Errorf("failed to create mime types: %w", err)
 	}
 	return c, nil
@@ -131,6 +140,9 @@ func deleteMimeType(ctx context.Context, qtx *query.Queries, mimeTypeID uuid.UUI
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete mime type: %w", err)
 	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("mime type")
+	}
 	return c, nil
 }
 
@@ -157,6 +169,9 @@ func deleteMimeTypeByKey(ctx context.Context, qtx *query.Queries, key string) (i
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete mime type: %w", err)
 	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("mime type")
+	}
 	return c, nil
 }
 
@@ -182,6 +197,9 @@ func pluralDeleteMimeTypes(ctx context.Context, qtx *query.Queries, mimeTypeIDs 
 	c, err := qtx.PluralDeleteMimeTypes(ctx, mimeTypeIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to plural delete mime types: %w", err)
+	}
+	if c != int64(len(mimeTypeIDs)) {
+		return 0, errhandle.NewModelNotFoundError("mime type")
 	}
 	return c, nil
 }
@@ -490,6 +508,10 @@ func updateMimeType(
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.MimeType{}, errhandle.NewModelNotFoundError("mime type")
+		}
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.MimeType{}, errhandle.NewModelDuplicatedError("mime type")
 		}
 		return entity.MimeType{}, fmt.Errorf("failed to update mime type: %w", err)
 	}

@@ -7,12 +7,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
-	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countAttendanceTypes(
@@ -57,6 +58,10 @@ func createAttendanceType(
 	}
 	e, err := qtx.CreateAttendanceType(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.AttendanceType{}, errhandle.NewModelDuplicatedError("attendance type")
+		}
 		return entity.AttendanceType{}, fmt.Errorf("failed to create attendance type: %w", err)
 	}
 	entity := entity.AttendanceType{
@@ -101,6 +106,10 @@ func createAttendanceTypes(
 	}
 	c, err := qtx.CreateAttendanceTypes(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return 0, errhandle.NewModelDuplicatedError("attendance type")
+		}
 		return 0, fmt.Errorf("failed to create attendance types: %w", err)
 	}
 	return c, nil
@@ -131,6 +140,9 @@ func deleteAttendanceType(ctx context.Context, qtx *query.Queries, attendanceTyp
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete attendance type: %w", err)
 	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("attendance type")
+	}
 	return c, nil
 }
 
@@ -156,6 +168,9 @@ func deleteAttendanceTypeByKey(ctx context.Context, qtx *query.Queries, key stri
 	c, err := qtx.DeleteAttendanceTypeByKey(ctx, key)
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete attendance type: %w", err)
+	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("attendance type")
 	}
 	return c, nil
 }
@@ -184,6 +199,9 @@ func pluralDeleteAttendanceTypes(
 	c, err := qtx.PluralDeleteAttendanceTypes(ctx, attendanceTypeIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to plural delete attendance types: %w", err)
+	}
+	if c != int64(len(attendanceTypeIDs)) {
+		return 0, errhandle.NewModelNotFoundError("attendance type")
 	}
 	return c, nil
 }
@@ -491,6 +509,10 @@ func updateAttendanceType(
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.AttendanceType{}, errhandle.NewModelNotFoundError("attendance type")
+		}
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.AttendanceType{}, errhandle.NewModelDuplicatedError("attendance type")
 		}
 		return entity.AttendanceType{}, fmt.Errorf("failed to update attendance type: %w", err)
 	}

@@ -12,34 +12,33 @@ import (
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/i18n"
-	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/lang"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"
 )
 
-// AssociatePoliciesOnRole is a handler for associating policies on role.
-type AssociatePoliciesOnRole struct {
+// DisassociatePoliciesOnRole is a handler for disassociating policies on role.
+type DisassociatePoliciesOnRole struct {
 	Service    service.ManagerInterface
 	Validator  validation.Validator
 	Translator i18n.Translation
 }
 
-// AssociatePoliciesOnRoleRequest is a request for AssociatePoliciesOnRole.
-type AssociatePoliciesOnRoleRequest struct {
+// DisassociatePoliciesOnRoleRequest is a request for DisassociatePoliciesOnRole.
+type DisassociatePoliciesOnRoleRequest struct {
 	//nolint:revive
 	PolicyIDS []uuid.UUID `json:"policy_ids" validate:"required,unique" ja:"ポリシーID" en:"PolicyIDs"`
 }
 
-func (h *AssociatePoliciesOnRole) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *DisassociatePoliciesOnRole) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	id := uuid.MustParse(chi.URLParam(r, "role_id"))
 	var err error
-	var req AssociatePoliciesOnRoleRequest
+	var req DisassociatePoliciesOnRoleRequest
 	if err = json.NewDecoder(r.Body).Decode(&req); err == nil || errors.Is(err, io.EOF) {
 		if errors.Is(err, io.EOF) {
-			req = AssociatePoliciesOnRoleRequest{}
+			req = DisassociatePoliciesOnRoleRequest{}
 		}
 		err = h.Validator.ValidateWithLocale(ctx, &req, lang.GetLocale(r.Context()))
 	} else {
@@ -52,14 +51,8 @@ func (h *AssociatePoliciesOnRole) ServeHTTP(w http.ResponseWriter, r *http.Reque
 		}
 		return
 	}
-	policies := make([]parameter.AssociationRoleParam, len(req.PolicyIDS))
-	for i, pID := range req.PolicyIDS {
-		policies[i] = parameter.AssociationRoleParam{
-			RoleID:   id,
-			PolicyID: pID,
-		}
-	}
-	if _, err = h.Service.AssociateRoles(ctx, policies); err != nil {
+
+	if _, err = h.Service.PluralDisassociatePolicyOnRole(ctx, id, req.PolicyIDS); err != nil {
 		var e errhandle.ModelNotFoundError
 		if errors.As(err, &e) {
 			if e.Target() == service.AssociateRoleTargetRoles {

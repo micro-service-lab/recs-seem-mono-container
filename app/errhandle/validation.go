@@ -18,6 +18,7 @@ func NewValidationError(e map[string][]string) ValidationError {
 		e = make(map[string][]string)
 	}
 	return ValidationError{
+		mu:          &sync.RWMutex{},
 		fieldsError: e,
 	}
 }

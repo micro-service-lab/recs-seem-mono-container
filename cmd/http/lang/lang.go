@@ -4,6 +4,8 @@ package lang
 import (
 	"context"
 	"net/http"
+
+	"github.com/micro-service-lab/recs-seem-mono-container/app/i18n"
 )
 
 type localeKey struct{}
@@ -48,4 +50,17 @@ func GetLocale(ctx context.Context) string {
 		return DefaultLang
 	}
 	return locale
+}
+
+// GetLocaleForTranslation gets the locale for translation from the context.
+func GetLocaleForTranslation(ctx context.Context) i18n.Locale {
+	locale := GetLocale(ctx)
+	switch locale {
+	case LangJa:
+		return i18n.Japanese
+	case LangEn:
+		return i18n.English
+	}
+
+	return i18n.Default
 }

@@ -69,7 +69,7 @@ func run(ctx context.Context) error {
 		return fmt.Errorf("failed to create request validator: %w", err)
 	}
 
-	apiI := api.NewAPI(ctr.Clocker, auth, vd, ctr.ServiceManager)
+	apiI := api.NewAPI(ctr.Clocker, auth, vd, ctr.ServiceManager, ctr.Translator)
 
 	middlewares := make([]func(http.Handler) http.Handler, 0, 3) //nolint:gomnd
 	// CORS ミドルウェアを追加

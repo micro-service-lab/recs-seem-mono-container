@@ -325,14 +325,8 @@ type RoleManager interface {
 
 // RoleAssociationManager is a interface for role association service.
 type RoleAssociationManager interface {
-	AssociateRole(
-		ctx context.Context, roleID, policyID uuid.UUID,
-	) (entity.RoleAssociation, error)
 	AssociateRoles(
 		ctx context.Context, params []parameter.AssociationRoleParam,
-	) (int64, error)
-	DisassociateRole(
-		ctx context.Context, roleID, policyID uuid.UUID,
 	) (int64, error)
 	DisassociateRoleOnPolicy(
 		ctx context.Context, policyID uuid.UUID,

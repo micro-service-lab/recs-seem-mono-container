@@ -771,6 +771,9 @@ var _ Store = &StoreMock{}
 //			PluralDisassociatePolicyOnRoleFunc: func(ctx context.Context, roleID uuid.UUID, policyIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDisassociatePolicyOnRole method")
 //			},
+//			PluralDisassociatePolicyOnRoleWithSdFunc: func(ctx context.Context, sd Sd, roleID uuid.UUID, policyIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDisassociatePolicyOnRoleWithSd method")
+//			},
 //			PluralDisassociateRoleOnPolicyFunc: func(ctx context.Context, policyID uuid.UUID, roleIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDisassociateRoleOnPolicy method")
 //			},
@@ -1650,6 +1653,9 @@ type StoreMock struct {
 
 	// PluralDisassociatePolicyOnRoleFunc mocks the PluralDisassociatePolicyOnRole method.
 	PluralDisassociatePolicyOnRoleFunc func(ctx context.Context, roleID uuid.UUID, policyIDs []uuid.UUID) (int64, error)
+
+	// PluralDisassociatePolicyOnRoleWithSdFunc mocks the PluralDisassociatePolicyOnRoleWithSd method.
+	PluralDisassociatePolicyOnRoleWithSdFunc func(ctx context.Context, sd Sd, roleID uuid.UUID, policyIDs []uuid.UUID) (int64, error)
 
 	// PluralDisassociateRoleOnPolicyFunc mocks the PluralDisassociateRoleOnPolicy method.
 	PluralDisassociateRoleOnPolicyFunc func(ctx context.Context, policyID uuid.UUID, roleIDs []uuid.UUID) (int64, error)
@@ -4066,6 +4072,17 @@ type StoreMock struct {
 			// PolicyIDs is the policyIDs argument value.
 			PolicyIDs []uuid.UUID
 		}
+		// PluralDisassociatePolicyOnRoleWithSd holds details about calls to the PluralDisassociatePolicyOnRoleWithSd method.
+		PluralDisassociatePolicyOnRoleWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// RoleID is the roleID argument value.
+			RoleID uuid.UUID
+			// PolicyIDs is the policyIDs argument value.
+			PolicyIDs []uuid.UUID
+		}
 		// PluralDisassociateRoleOnPolicy holds details about calls to the PluralDisassociateRoleOnPolicy method.
 		PluralDisassociateRoleOnPolicy []struct {
 			// Ctx is the ctx argument value.
@@ -4724,6 +4741,7 @@ type StoreMock struct {
 	lockPluralDeleteRoles                      sync.RWMutex
 	lockPluralDeleteRolesWithSd                sync.RWMutex
 	lockPluralDisassociatePolicyOnRole         sync.RWMutex
+	lockPluralDisassociatePolicyOnRoleWithSd   sync.RWMutex
 	lockPluralDisassociateRoleOnPolicy         sync.RWMutex
 	lockPluralDisassociateRoleOnPolicyWithSd   sync.RWMutex
 	lockRollback                               sync.RWMutex
@@ -14844,6 +14862,50 @@ func (mock *StoreMock) PluralDisassociatePolicyOnRoleCalls() []struct {
 	mock.lockPluralDisassociatePolicyOnRole.RLock()
 	calls = mock.calls.PluralDisassociatePolicyOnRole
 	mock.lockPluralDisassociatePolicyOnRole.RUnlock()
+	return calls
+}
+
+// PluralDisassociatePolicyOnRoleWithSd calls PluralDisassociatePolicyOnRoleWithSdFunc.
+func (mock *StoreMock) PluralDisassociatePolicyOnRoleWithSd(ctx context.Context, sd Sd, roleID uuid.UUID, policyIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDisassociatePolicyOnRoleWithSdFunc == nil {
+		panic("StoreMock.PluralDisassociatePolicyOnRoleWithSdFunc: method is nil but Store.PluralDisassociatePolicyOnRoleWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Sd        Sd
+		RoleID    uuid.UUID
+		PolicyIDs []uuid.UUID
+	}{
+		Ctx:       ctx,
+		Sd:        sd,
+		RoleID:    roleID,
+		PolicyIDs: policyIDs,
+	}
+	mock.lockPluralDisassociatePolicyOnRoleWithSd.Lock()
+	mock.calls.PluralDisassociatePolicyOnRoleWithSd = append(mock.calls.PluralDisassociatePolicyOnRoleWithSd, callInfo)
+	mock.lockPluralDisassociatePolicyOnRoleWithSd.Unlock()
+	return mock.PluralDisassociatePolicyOnRoleWithSdFunc(ctx, sd, roleID, policyIDs)
+}
+
+// PluralDisassociatePolicyOnRoleWithSdCalls gets all the calls that were made to PluralDisassociatePolicyOnRoleWithSd.
+// Check the length with:
+//
+//	len(mockedStore.PluralDisassociatePolicyOnRoleWithSdCalls())
+func (mock *StoreMock) PluralDisassociatePolicyOnRoleWithSdCalls() []struct {
+	Ctx       context.Context
+	Sd        Sd
+	RoleID    uuid.UUID
+	PolicyIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Sd        Sd
+		RoleID    uuid.UUID
+		PolicyIDs []uuid.UUID
+	}
+	mock.lockPluralDisassociatePolicyOnRoleWithSd.RLock()
+	calls = mock.calls.PluralDisassociatePolicyOnRoleWithSd
+	mock.lockPluralDisassociatePolicyOnRoleWithSd.RUnlock()
 	return calls
 }
 

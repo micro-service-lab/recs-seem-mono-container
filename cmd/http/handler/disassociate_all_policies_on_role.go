@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"log"
 	"net/http"
 
@@ -12,24 +13,33 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 )
 
-// FindRole is a handler for finding role.
-type FindRole struct {
+// DisassociateAllPoliciesOnRole is a handler for disassociating all policies on role.
+type DisassociateAllPoliciesOnRole struct {
 	Service service.ManagerInterface
 }
 
-func (h *FindRole) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *DisassociateAllPoliciesOnRole) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	id := uuid.MustParse(chi.URLParam(r, "role_id"))
-	eventType, err := h.Service.FindRoleByID(ctx, id)
+	var err error
+
+	if _, err = h.Service.DisassociatePolicyOnRole(ctx, id); err != nil {
+		var e errhandle.ModelNotFoundError
+		if errors.As(err, &e) {
+			if e.Target() == service.AssociateRoleTargetRoles {
+				e.SetTarget("role")
+				err = e
+			}
+		}
+	} else {
+		err = response.JSONResponseWriter(ctx, w, response.Success, nil, nil)
+	}
+
 	if err != nil {
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
 		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
 		}
 		return
-	}
-	err = response.JSONResponseWriter(ctx, w, response.Success, eventType, nil)
-	if err != nil {
-		log.Printf("failed to write response: %v", err)
 	}
 }

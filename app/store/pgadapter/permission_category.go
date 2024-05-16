@@ -7,12 +7,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
-	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countPermissionCategories(
@@ -59,6 +60,10 @@ func createPermissionCategory(
 	}
 	e, err := qtx.CreatePermissionCategory(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.PermissionCategory{}, errhandle.NewModelDuplicatedError("permission category")
+		}
 		return entity.PermissionCategory{}, fmt.Errorf("failed to create permission category: %w", err)
 	}
 	entity := entity.PermissionCategory{
@@ -103,6 +108,10 @@ func createPermissionCategories(
 	}
 	c, err := qtx.CreatePermissionCategories(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return 0, errhandle.NewModelDuplicatedError("permission category")
+		}
 		return 0, fmt.Errorf("failed to create permission categories: %w", err)
 	}
 	return c, nil
@@ -133,6 +142,9 @@ func deletePermissionCategory(ctx context.Context, qtx *query.Queries, permissio
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete permission category: %w", err)
 	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("permission category")
+	}
 	return c, nil
 }
 
@@ -158,6 +170,9 @@ func deletePermissionCategoryByKey(ctx context.Context, qtx *query.Queries, key 
 	c, err := qtx.DeletePermissionCategoryByKey(ctx, key)
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete permission category: %w", err)
+	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("permission category")
 	}
 	return c, nil
 }
@@ -186,6 +201,9 @@ func pluralDeletePermissionCategories(
 	c, err := qtx.PluralDeletePermissionCategories(ctx, permissionCategoryIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to plural delete permission categories: %w", err)
+	}
+	if c != int64(len(permissionCategoryIDs)) {
+		return 0, errhandle.NewModelNotFoundError("permission category")
 	}
 	return c, nil
 }
@@ -443,11 +461,12 @@ func getPluralPermissionCategories(
 	if !np.Valid {
 		e, err = qtx.GetPluralPermissionCategories(ctx, ids)
 	} else {
-		e, err = qtx.GetPluralPermissionCategoriesUseNumberedPaginate(ctx, query.GetPluralPermissionCategoriesUseNumberedPaginateParams{
-			PermissionCategoryIds: ids,
-			Offset:                int32(np.Offset.Int64),
-			Limit:                 int32(np.Limit.Int64),
-		})
+		e, err = qtx.GetPluralPermissionCategoriesUseNumberedPaginate(
+			ctx, query.GetPluralPermissionCategoriesUseNumberedPaginateParams{
+				PermissionCategoryIds: ids,
+				Offset:                int32(np.Offset.Int64),
+				Limit:                 int32(np.Limit.Int64),
+			})
 	}
 	if err != nil {
 		return store.ListResult[entity.PermissionCategory]{},
@@ -499,6 +518,10 @@ func updatePermissionCategory(
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.PermissionCategory{}, errhandle.NewModelNotFoundError("permission category")
+		}
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.PermissionCategory{}, errhandle.NewModelDuplicatedError("permission category")
 		}
 		return entity.PermissionCategory{}, fmt.Errorf("failed to update permission category: %w", err)
 	}

@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/micro-service-lab/recs-seem-mono-container/app/i18n"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store/pgadapter"
@@ -19,6 +20,7 @@ type Container struct {
 	Store          store.Store
 	Clocker        clock.Clock
 	Config         *config.Config
+	Translator     i18n.Translation
 }
 
 // NewContainer creates a new Container.
@@ -56,6 +58,11 @@ func (c *Container) Init(ctx context.Context) error {
 	svc := service.NewManager(str)
 
 	c.ServiceManager = svc
+
+	c.Translator, err = i18n.NewTranslator()
+	if err != nil {
+		return fmt.Errorf("failed to create translator: %w", err)
+	}
 
 	return nil
 }

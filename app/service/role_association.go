@@ -7,59 +7,14 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
-	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 // ManageRoleAssociation ロール紐付け管理サービス。
 type ManageRoleAssociation struct {
 	DB store.Store
-}
-
-// AssociateRole ロールを関連付ける。
-func (m *ManageRoleAssociation) AssociateRole(
-	ctx context.Context, roleID, policyID uuid.UUID,
-) (e entity.RoleAssociation, err error) {
-	sd, err := m.DB.Begin(ctx)
-	if err != nil {
-		return entity.RoleAssociation{}, fmt.Errorf("failed to begin transaction: %w", err)
-	}
-	defer func() {
-		if err != nil {
-			if rerr := m.DB.Rollback(ctx, sd); rerr != nil {
-				err = fmt.Errorf("failed to rollback transaction: %w", rerr)
-			}
-		} else {
-			if rerr := m.DB.Commit(ctx, sd); rerr != nil {
-				err = fmt.Errorf("failed to commit transaction: %w", rerr)
-			}
-		}
-	}()
-	np := store.NumberedPaginationParam{}
-	var ro store.ListResult[entity.Role]
-	if ro, err = m.DB.GetPluralRolesWithSd(ctx, sd, []uuid.UUID{roleID}, np); err != nil {
-		return entity.RoleAssociation{}, fmt.Errorf("failed to get plural roles: %w", err)
-	}
-	if len(ro.Data) != 1 {
-		return entity.RoleAssociation{}, errhandle.NewModelNotFoundError(AssociateRoleTargetRoles)
-	}
-	var po store.ListResult[entity.Policy]
-	if po, err = m.DB.GetPluralPoliciesWithSd(ctx, sd, []uuid.UUID{policyID}, np); err != nil {
-		return entity.RoleAssociation{}, fmt.Errorf("failed to get plural policies: %w", err)
-	}
-	if len(po.Data) != 1 {
-		return entity.RoleAssociation{}, errhandle.NewModelNotFoundError(AssociateRoleTargetPolicies)
-	}
-	p := parameter.AssociationRoleParam{
-		RoleID:   roleID,
-		PolicyID: policyID,
-	}
-	e, err = m.DB.AssociateRoleWithSd(ctx, sd, p)
-	if err != nil {
-		return entity.RoleAssociation{}, fmt.Errorf("failed to associate role: %w", err)
-	}
-	return e, nil
 }
 
 // AssociateRoles ロールを複数関連付ける。
@@ -81,42 +36,42 @@ func (m *ManageRoleAssociation) AssociateRoles(
 			}
 		}
 	}()
-	roleIDs := make([]uuid.UUID, len(params))
-	policyIDs := make([]uuid.UUID, len(params))
-	for i, p := range params {
-		roleIDs[i] = p.RoleID
-		policyIDs[i] = p.PolicyID
+	roleIDs := make([]uuid.UUID, 0, len(params))
+	policyIDs := make([]uuid.UUID, 0, len(params))
+	search := func(uidStr []uuid.UUID, uid uuid.UUID) bool {
+		for _, u := range uidStr {
+			if u == uid {
+				return true
+			}
+		}
+		return false
+	}
+	for _, p := range params {
+		if !search(roleIDs, p.RoleID) {
+			roleIDs = append(roleIDs, p.RoleID)
+		}
+		if !search(policyIDs, p.PolicyID) {
+			policyIDs = append(policyIDs, p.PolicyID)
+		}
 	}
 	np := store.NumberedPaginationParam{}
 	var ro store.ListResult[entity.Role]
 	if ro, err = m.DB.GetPluralRolesWithSd(ctx, sd, roleIDs, np); err != nil {
 		return 0, fmt.Errorf("failed to get plural roles: %w", err)
 	}
-	fmt.Println(roleIDs, policyIDs)
-	if len(ro.Data) != 1 {
+	if len(ro.Data) != len(roleIDs) {
 		return 0, errhandle.NewModelNotFoundError(AssociateRoleTargetRoles)
 	}
 	var po store.ListResult[entity.Policy]
 	if po, err = m.DB.GetPluralPoliciesWithSd(ctx, sd, policyIDs, np); err != nil {
 		return 0, fmt.Errorf("failed to get plural policies: %w", err)
 	}
-	if len(po.Data) != 1 {
+	if len(po.Data) != len(policyIDs) {
 		return 0, errhandle.NewModelNotFoundError(AssociateRoleTargetPolicies)
 	}
-	es, err := m.DB.AssociateRoles(ctx, params)
+	es, err := m.DB.AssociateRolesWithSd(ctx, sd, params)
 	if err != nil {
 		return 0, fmt.Errorf("failed to associate roles: %w", err)
-	}
-	return es, nil
-}
-
-// DisassociateRole ロールの関連付けを解除する。
-func (m *ManageRoleAssociation) DisassociateRole(
-	ctx context.Context, roleID, policyID uuid.UUID,
-) (int64, error) {
-	es, err := m.DB.DisassociateRole(ctx, roleID, policyID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to disassociate role: %w", err)
 	}
 	return es, nil
 }
@@ -125,7 +80,30 @@ func (m *ManageRoleAssociation) DisassociateRole(
 func (m *ManageRoleAssociation) DisassociateRoleOnPolicy(
 	ctx context.Context, policyID uuid.UUID,
 ) (int64, error) {
-	es, err := m.DB.DisassociateRoleOnPolicy(ctx, policyID)
+	sd, err := m.DB.Begin(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			if rerr := m.DB.Rollback(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to rollback transaction: %w", rerr)
+			}
+		} else {
+			if rerr := m.DB.Commit(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to commit transaction: %w", rerr)
+			}
+		}
+	}()
+	np := store.NumberedPaginationParam{}
+	var po store.ListResult[entity.Policy]
+	if po, err = m.DB.GetPluralPoliciesWithSd(ctx, sd, []uuid.UUID{policyID}, np); err != nil {
+		return 0, fmt.Errorf("failed to get plural policies: %w", err)
+	}
+	if len(po.Data) != 1 {
+		return 0, errhandle.NewModelNotFoundError("policy")
+	}
+	es, err := m.DB.DisassociateRoleOnPolicyWithSd(ctx, sd, policyID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to disassociate role on policy: %w", err)
 	}
@@ -136,7 +114,30 @@ func (m *ManageRoleAssociation) DisassociateRoleOnPolicy(
 func (m *ManageRoleAssociation) DisassociateRoleOnPolicies(
 	ctx context.Context, policyIDs []uuid.UUID,
 ) (int64, error) {
-	es, err := m.DB.DisassociateRoleOnPolicies(ctx, policyIDs)
+	sd, err := m.DB.Begin(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			if rerr := m.DB.Rollback(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to rollback transaction: %w", rerr)
+			}
+		} else {
+			if rerr := m.DB.Commit(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to commit transaction: %w", rerr)
+			}
+		}
+	}()
+	np := store.NumberedPaginationParam{}
+	var po store.ListResult[entity.Policy]
+	if po, err = m.DB.GetPluralPoliciesWithSd(ctx, sd, policyIDs, np); err != nil {
+		return 0, fmt.Errorf("failed to get plural policies: %w", err)
+	}
+	if len(po.Data) != len(policyIDs) {
+		return 0, errhandle.NewModelNotFoundError("policy")
+	}
+	es, err := m.DB.DisassociateRoleOnPoliciesWithSd(ctx, sd, policyIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to disassociate role on policies: %w", err)
 	}
@@ -147,7 +148,37 @@ func (m *ManageRoleAssociation) DisassociateRoleOnPolicies(
 func (m *ManageRoleAssociation) PluralDisassociateRoleOnPolicy(
 	ctx context.Context, policyID uuid.UUID, roleIDs []uuid.UUID,
 ) (int64, error) {
-	es, err := m.DB.PluralDisassociateRoleOnPolicy(ctx, policyID, roleIDs)
+	sd, err := m.DB.Begin(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			if rerr := m.DB.Rollback(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to rollback transaction: %w", rerr)
+			}
+		} else {
+			if rerr := m.DB.Commit(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to commit transaction: %w", rerr)
+			}
+		}
+	}()
+	np := store.NumberedPaginationParam{}
+	var ro store.ListResult[entity.Role]
+	if ro, err = m.DB.GetPluralRolesWithSd(ctx, sd, roleIDs, np); err != nil {
+		return 0, fmt.Errorf("failed to get plural roles: %w", err)
+	}
+	if len(ro.Data) != len(roleIDs) {
+		return 0, errhandle.NewModelNotFoundError(AssociateRoleTargetRoles)
+	}
+	var po store.ListResult[entity.Policy]
+	if po, err = m.DB.GetPluralPoliciesWithSd(ctx, sd, []uuid.UUID{policyID}, np); err != nil {
+		return 0, fmt.Errorf("failed to get plural policies: %w", err)
+	}
+	if len(po.Data) != 1 {
+		return 0, errhandle.NewModelNotFoundError(AssociateRoleTargetPolicies)
+	}
+	es, err := m.DB.PluralDisassociateRoleOnPolicyWithSd(ctx, sd, policyID, roleIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to plural disassociate role on policy: %w", err)
 	}
@@ -158,7 +189,30 @@ func (m *ManageRoleAssociation) PluralDisassociateRoleOnPolicy(
 func (m *ManageRoleAssociation) DisassociatePolicyOnRole(
 	ctx context.Context, roleID uuid.UUID,
 ) (int64, error) {
-	es, err := m.DB.DisassociatePolicyOnRole(ctx, roleID)
+	sd, err := m.DB.Begin(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			if rerr := m.DB.Rollback(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to rollback transaction: %w", rerr)
+			}
+		} else {
+			if rerr := m.DB.Commit(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to commit transaction: %w", rerr)
+			}
+		}
+	}()
+	np := store.NumberedPaginationParam{}
+	var ro store.ListResult[entity.Role]
+	if ro, err = m.DB.GetPluralRolesWithSd(ctx, sd, []uuid.UUID{roleID}, np); err != nil {
+		return 0, fmt.Errorf("failed to get plural roles: %w", err)
+	}
+	if len(ro.Data) != 1 {
+		return 0, errhandle.NewModelNotFoundError(AssociateRoleTargetRoles)
+	}
+	es, err := m.DB.DisassociatePolicyOnRoleWithSd(ctx, sd, roleID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to disassociate policy on role: %w", err)
 	}
@@ -169,7 +223,30 @@ func (m *ManageRoleAssociation) DisassociatePolicyOnRole(
 func (m *ManageRoleAssociation) DisassociatePolicyOnRoles(
 	ctx context.Context, roleIDs []uuid.UUID,
 ) (int64, error) {
-	es, err := m.DB.DisassociatePolicyOnRoles(ctx, roleIDs)
+	sd, err := m.DB.Begin(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			if rerr := m.DB.Rollback(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to rollback transaction: %w", rerr)
+			}
+		} else {
+			if rerr := m.DB.Commit(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to commit transaction: %w", rerr)
+			}
+		}
+	}()
+	np := store.NumberedPaginationParam{}
+	var ro store.ListResult[entity.Role]
+	if ro, err = m.DB.GetPluralRolesWithSd(ctx, sd, roleIDs, np); err != nil {
+		return 0, fmt.Errorf("failed to get plural roles: %w", err)
+	}
+	if len(ro.Data) != len(roleIDs) {
+		return 0, errhandle.NewModelNotFoundError(AssociateRoleTargetRoles)
+	}
+	es, err := m.DB.DisassociatePolicyOnRolesWithSd(ctx, sd, roleIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to disassociate policy on roles: %w", err)
 	}
@@ -180,7 +257,37 @@ func (m *ManageRoleAssociation) DisassociatePolicyOnRoles(
 func (m *ManageRoleAssociation) PluralDisassociatePolicyOnRole(
 	ctx context.Context, roleID uuid.UUID, policyIDs []uuid.UUID,
 ) (int64, error) {
-	es, err := m.DB.PluralDisassociatePolicyOnRole(ctx, roleID, policyIDs)
+	sd, err := m.DB.Begin(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			if rerr := m.DB.Rollback(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to rollback transaction: %w", rerr)
+			}
+		} else {
+			if rerr := m.DB.Commit(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to commit transaction: %w", rerr)
+			}
+		}
+	}()
+	np := store.NumberedPaginationParam{}
+	var ro store.ListResult[entity.Role]
+	if ro, err = m.DB.GetPluralRolesWithSd(ctx, sd, []uuid.UUID{roleID}, np); err != nil {
+		return 0, fmt.Errorf("failed to get plural roles: %w", err)
+	}
+	if len(ro.Data) != 1 {
+		return 0, errhandle.NewModelNotFoundError(AssociateRoleTargetRoles)
+	}
+	var po store.ListResult[entity.Policy]
+	if po, err = m.DB.GetPluralPoliciesWithSd(ctx, sd, policyIDs, np); err != nil {
+		return 0, fmt.Errorf("failed to get plural policies: %w", err)
+	}
+	if len(po.Data) != len(policyIDs) {
+		return 0, errhandle.NewModelNotFoundError(AssociateRoleTargetPolicies)
+	}
+	es, err := m.DB.PluralDisassociatePolicyOnRoleWithSd(ctx, sd, roleID, policyIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to plural disassociate policy on role: %w", err)
 	}

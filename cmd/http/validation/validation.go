@@ -15,7 +15,7 @@ import (
 	ja_translations "github.com/go-playground/validator/v10/translations/ja"
 	"github.com/iancoleman/strcase"
 
-	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/lang"
 )
 

@@ -8,12 +8,13 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
-	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 )
 
 func countRoles(
@@ -59,6 +60,10 @@ func createRole(
 	}
 	e, err := qtx.CreateRole(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.Role{}, errhandle.NewModelDuplicatedError("role")
+		}
 		return entity.Role{}, fmt.Errorf("failed to create role: %w", err)
 	}
 	entity := entity.Role{
@@ -103,6 +108,10 @@ func createRoles(
 	}
 	c, err := qtx.CreateRoles(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return 0, errhandle.NewModelDuplicatedError("role")
+		}
 		return 0, fmt.Errorf("failed to create roles: %w", err)
 	}
 	return c, nil
@@ -133,6 +142,9 @@ func deleteRole(ctx context.Context, qtx *query.Queries, roleID uuid.UUID) (int6
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete role: %w", err)
 	}
+	if c != 1 {
+		return c, errhandle.NewModelNotFoundError("role")
+	}
 	return c, nil
 }
 
@@ -158,6 +170,9 @@ func pluralDeleteRoles(ctx context.Context, qtx *query.Queries, roleIDs []uuid.U
 	c, err := qtx.PluralDeleteRoles(ctx, roleIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to plural delete roles: %w", err)
+	}
+	if c != int64(len(roleIDs)) {
+		return c, errhandle.NewModelNotFoundError("role")
 	}
 	return c, nil
 }
@@ -428,6 +443,10 @@ func updateRole(
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.Role{}, errhandle.NewModelNotFoundError("role")
+		}
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.Role{}, errhandle.NewModelDuplicatedError("role")
 		}
 		return entity.Role{}, fmt.Errorf("failed to update role: %w", err)
 	}

@@ -26,7 +26,8 @@ DELETE FROM m_role_associations WHERE policy_id = ANY(@policy_ids::uuid[]);
 DELETE FROM m_role_associations WHERE policy_id = sqlc.arg(policy_id) AND role_id = ANY(@role_ids::uuid[]);
 
 -- name: GetPoliciesOnRole :many
-SELECT sqlc.embed(m_role_associations), sqlc.embed(m_policies) FROM m_role_associations
+SELECT m_role_associations.*, m_policies.name policy_name, m_policies.key policy_key,
+m_policies.description policy_description, m_policies.policy_category_id FROM m_role_associations
 LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE role_id = $1
 AND
@@ -37,7 +38,8 @@ ORDER BY
 	m_role_associations_pkey ASC;
 
 -- name: GetPoliciesOnRoleUseNumberedPaginate :many
-SELECT sqlc.embed(m_role_associations), sqlc.embed(m_policies) FROM m_role_associations
+SELECT m_role_associations.*, m_policies.name policy_name, m_policies.key policy_key,
+m_policies.description policy_description, m_policies.policy_category_id FROM m_role_associations
 LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE role_id = $1
 AND
@@ -49,7 +51,8 @@ ORDER BY
 LIMIT $2 OFFSET $3;
 
 -- name: GetPoliciesOnRoleUseKeysetPaginate :many
-SELECT sqlc.embed(m_role_associations), sqlc.embed(m_policies) FROM m_role_associations
+SELECT m_role_associations.*, m_policies.name policy_name, m_policies.key policy_key,
+m_policies.description policy_description, m_policies.policy_category_id FROM m_role_associations
 LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE role_id = $1
 AND
@@ -79,7 +82,8 @@ ORDER BY
 LIMIT $2;
 
 -- name: GetPluralPoliciesOnRole :many
-SELECT sqlc.embed(m_role_associations), sqlc.embed(m_policies) FROM m_role_associations
+SELECT m_role_associations.*, m_policies.name policy_name, m_policies.key policy_key,
+m_policies.description policy_description, m_policies.policy_category_id FROM m_role_associations
 LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE
 	role_id = ANY(@role_ids::uuid[])
@@ -87,7 +91,8 @@ ORDER BY
 	m_role_associations_pkey ASC;
 
 -- name: GetPluralPoliciesOnRoleUseNumberedPaginate :many
-SELECT sqlc.embed(m_role_associations), sqlc.embed(m_policies) FROM m_role_associations
+SELECT m_role_associations.*, m_policies.name policy_name, m_policies.key policy_key,
+m_policies.description policy_description, m_policies.policy_category_id FROM m_role_associations
 LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE
 	role_id = ANY(@role_ids::uuid[])
@@ -103,7 +108,7 @@ AND
 	CASE WHEN @where_like_name::boolean = true THEN m_policies.name LIKE '%' || @search_name::text || '%' ELSE TRUE END;
 
 -- name: GetRolesOnPolicy :many
-SELECT sqlc.embed(m_role_associations), sqlc.embed(m_roles) FROM m_role_associations
+SELECT m_role_associations.*, m_roles.name role_name, m_roles.description role_description FROM m_role_associations
 LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE policy_id = $1
 AND
@@ -114,7 +119,7 @@ ORDER BY
 	m_role_associations_pkey ASC;
 
 -- name: GetRolesOnPolicyUseNumberedPaginate :many
-SELECT sqlc.embed(m_role_associations), sqlc.embed(m_roles) FROM m_role_associations
+SELECT m_role_associations.*, m_roles.name role_name, m_roles.description role_description FROM m_role_associations
 LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE policy_id = $1
 AND
@@ -126,7 +131,7 @@ ORDER BY
 LIMIT $2 OFFSET $3;
 
 -- name: GetRolesOnPolicyUseKeysetPaginate :many
-SELECT sqlc.embed(m_role_associations), sqlc.embed(m_roles) FROM m_role_associations
+SELECT m_role_associations.*, m_roles.name role_name, m_roles.description role_description FROM m_role_associations
 LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE policy_id = $1
 AND
@@ -156,7 +161,7 @@ ORDER BY
 LIMIT $2;
 
 -- name: GetPluralRolesOnPolicy :many
-SELECT sqlc.embed(m_role_associations), sqlc.embed(m_roles) FROM m_role_associations
+SELECT m_role_associations.*, m_roles.name role_name, m_roles.description role_description FROM m_role_associations
 LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE
 	policy_id = ANY(@policy_ids::uuid[])
@@ -164,7 +169,7 @@ ORDER BY
 	m_role_associations_pkey ASC;
 
 -- name: GetPluralRolesOnPolicyUseNumberedPaginate :many
-SELECT sqlc.embed(m_role_associations), sqlc.embed(m_roles) FROM m_role_associations
+SELECT m_role_associations.*, m_roles.name role_name, m_roles.description role_description FROM m_role_associations
 LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE
 	policy_id = ANY(@policy_ids::uuid[])

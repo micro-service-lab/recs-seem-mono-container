@@ -431,12 +431,12 @@ func getRolesOnPolicy(
 		fq := make([]entity.RoleOnPolicyForQuery, len(r))
 		for i, e := range r {
 			fq[i] = entity.RoleOnPolicyForQuery{
-				Pkey: entity.Int(e.Role.MRolesPkey),
+				Pkey: entity.Int(e.MRoleAssociationsPkey),
 				RoleOnPolicy: entity.RoleOnPolicy{
 					Role: entity.Role{
-						RoleID:      e.Role.RoleID,
-						Name:        e.Role.Name,
-						Description: e.Role.Description,
+						RoleID:      e.RoleID,
+						Name:        e.RoleName.String,
+						Description: e.RoleDescription.String,
 					},
 				},
 			}
@@ -472,12 +472,12 @@ func getRolesOnPolicy(
 		fq := make([]entity.RoleOnPolicyForQuery, len(r))
 		for i, e := range r {
 			fq[i] = entity.RoleOnPolicyForQuery{
-				Pkey: entity.Int(e.Role.MRolesPkey),
+				Pkey: entity.Int(e.MRoleAssociationsPkey),
 				RoleOnPolicy: entity.RoleOnPolicy{
 					Role: entity.Role{
-						RoleID:      e.Role.RoleID,
-						Name:        e.Role.Name,
-						Description: e.Role.Description,
+						RoleID:      e.RoleID,
+						Name:        e.RoleName.String,
+						Description: e.RoleDescription.String,
 					},
 				},
 			}
@@ -500,12 +500,12 @@ func getRolesOnPolicy(
 		fq := make([]entity.RoleOnPolicyForQuery, len(r))
 		for i, e := range r {
 			fq[i] = entity.RoleOnPolicyForQuery{
-				Pkey: entity.Int(e.Role.MRolesPkey),
+				Pkey: entity.Int(e.MRoleAssociationsPkey),
 				RoleOnPolicy: entity.RoleOnPolicy{
 					Role: entity.Role{
-						RoleID:      e.Role.RoleID,
-						Name:        e.Role.Name,
-						Description: e.Role.Description,
+						RoleID:      e.RoleID,
+						Name:        e.RoleName.String,
+						Description: e.RoleDescription.String,
 					},
 				},
 			}
@@ -613,14 +613,14 @@ func getPoliciesOnRole(
 		fq := make([]entity.PolicyOnRoleForQuery, len(r))
 		for i, e := range r {
 			fq[i] = entity.PolicyOnRoleForQuery{
-				Pkey: entity.Int(e.Policy.MPoliciesPkey),
+				Pkey: entity.Int(e.MRoleAssociationsPkey),
 				PolicyOnRole: entity.PolicyOnRole{
 					Policy: entity.Policy{
-						PolicyID:         e.Policy.PolicyID,
-						Name:             e.Policy.Name,
-						Description:      e.Policy.Description,
-						Key:              e.Policy.Key,
-						PolicyCategoryID: e.Policy.PolicyCategoryID,
+						PolicyID:         e.PolicyID,
+						Name:             e.PolicyName.String,
+						Description:      e.PolicyDescription.String,
+						Key:              e.PolicyKey.String,
+						PolicyCategoryID: e.PolicyCategoryID.Bytes,
 					},
 				},
 			}
@@ -656,14 +656,14 @@ func getPoliciesOnRole(
 		fq := make([]entity.PolicyOnRoleForQuery, len(r))
 		for i, e := range r {
 			fq[i] = entity.PolicyOnRoleForQuery{
-				Pkey: entity.Int(e.Policy.MPoliciesPkey),
+				Pkey: entity.Int(e.MRoleAssociationsPkey),
 				PolicyOnRole: entity.PolicyOnRole{
 					Policy: entity.Policy{
-						PolicyID:         e.Policy.PolicyID,
-						Name:             e.Policy.Name,
-						Description:      e.Policy.Description,
-						Key:              e.Policy.Key,
-						PolicyCategoryID: e.Policy.PolicyCategoryID,
+						PolicyID:         e.PolicyID,
+						Name:             e.PolicyName.String,
+						Description:      e.PolicyDescription.String,
+						Key:              e.PolicyKey.String,
+						PolicyCategoryID: e.PolicyCategoryID.Bytes,
 					},
 				},
 			}
@@ -686,14 +686,14 @@ func getPoliciesOnRole(
 		fq := make([]entity.PolicyOnRoleForQuery, len(r))
 		for i, e := range r {
 			fq[i] = entity.PolicyOnRoleForQuery{
-				Pkey: entity.Int(e.Policy.MPoliciesPkey),
+				Pkey: entity.Int(e.MRoleAssociationsPkey),
 				PolicyOnRole: entity.PolicyOnRole{
 					Policy: entity.Policy{
-						PolicyID:         e.Policy.PolicyID,
-						Name:             e.Policy.Name,
-						Description:      e.Policy.Description,
-						Key:              e.Policy.Key,
-						PolicyCategoryID: e.Policy.PolicyCategoryID,
+						PolicyID:         e.PolicyID,
+						Name:             e.PolicyName.String,
+						Description:      e.PolicyDescription.String,
+						Key:              e.PolicyKey.String,
+						PolicyCategoryID: e.PolicyCategoryID.Bytes,
 					},
 				},
 			}

@@ -12,26 +12,26 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const countFilesOnChatRoom = `-- name: CountFilesOnChatRoom :one
+const countAttachedItemsOnChatRoom = `-- name: CountAttachedItemsOnChatRoom :one
 SELECT COUNT(*) FROM t_attached_messages
 WHERE message_id IN (
 	SELECT message_id FROM t_messages WHERE chat_room_id = $1
 )
 `
 
-func (q *Queries) CountFilesOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) (int64, error) {
-	row := q.db.QueryRow(ctx, countFilesOnChatRoom, chatRoomID)
+func (q *Queries) CountAttachedItemsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) (int64, error) {
+	row := q.db.QueryRow(ctx, countAttachedItemsOnChatRoom, chatRoomID)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
 }
 
-const countFilesOnMessage = `-- name: CountFilesOnMessage :one
+const countAttachedItemsOnMessage = `-- name: CountAttachedItemsOnMessage :one
 SELECT COUNT(*) FROM t_attached_messages WHERE message_id = $1
 `
 
-func (q *Queries) CountFilesOnMessage(ctx context.Context, messageID uuid.UUID) (int64, error) {
-	row := q.db.QueryRow(ctx, countFilesOnMessage, messageID)
+func (q *Queries) CountAttachedItemsOnMessage(ctx context.Context, messageID uuid.UUID) (int64, error) {
+	row := q.db.QueryRow(ctx, countAttachedItemsOnMessage, messageID)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -99,8 +99,12 @@ func (q *Queries) DeleteAttachedMessagesOnMessages(ctx context.Context, dollar_1
 	return result.RowsAffected(), nil
 }
 
-const getFilesOnChatRoom = `-- name: GetFilesOnChatRoom :many
-SELECT  FROM t_attached_messages
+const getAttachedItemsOnChatRoom = `-- name: GetAttachedItemsOnChatRoom :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id IN (
 	SELECT message_id FROM t_messages WHERE chat_room_id = $1
 )
@@ -108,19 +112,38 @@ ORDER BY
 	t_attached_messages_pkey ASC
 `
 
-type GetFilesOnChatRoomRow struct {
+type GetAttachedItemsOnChatRoomRow struct {
+	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
+	MessageID              uuid.UUID     `json:"message_id"`
+	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
 }
 
-func (q *Queries) GetFilesOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) ([]GetFilesOnChatRoomRow, error) {
-	rows, err := q.db.Query(ctx, getFilesOnChatRoom, chatRoomID)
+func (q *Queries) GetAttachedItemsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) ([]GetAttachedItemsOnChatRoomRow, error) {
+	rows, err := q.db.Query(ctx, getAttachedItemsOnChatRoom, chatRoomID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetFilesOnChatRoomRow{}
+	items := []GetAttachedItemsOnChatRoomRow{}
 	for rows.Next() {
-		var i GetFilesOnChatRoomRow
-		if err := rows.Scan(); err != nil {
+		var i GetAttachedItemsOnChatRoomRow
+		if err := rows.Scan(
+			&i.TAttachedMessagesPkey,
+			&i.AttachedMessageID,
+			&i.MessageID,
+			&i.AttachableItemID,
+			&i.AttachedItemUrl,
+			&i.AttachedItemSize,
+			&i.AttachedItemMimeTypeID,
+			&i.AttachedItemOwnerID,
+			&i.AttachedItemFromOuter,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -131,8 +154,12 @@ func (q *Queries) GetFilesOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) 
 	return items, nil
 }
 
-const getFilesOnChatRoomUseKeysetPaginate = `-- name: GetFilesOnChatRoomUseKeysetPaginate :many
-SELECT  FROM t_attached_messages
+const getAttachedItemsOnChatRoomUseKeysetPaginate = `-- name: GetAttachedItemsOnChatRoomUseKeysetPaginate :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id IN (
 	SELECT message_id FROM t_messages WHERE chat_room_id = $1
 )
@@ -149,18 +176,27 @@ ORDER BY
 LIMIT $2
 `
 
-type GetFilesOnChatRoomUseKeysetPaginateParams struct {
+type GetAttachedItemsOnChatRoomUseKeysetPaginateParams struct {
 	ChatRoomID      uuid.UUID `json:"chat_room_id"`
 	Limit           int32     `json:"limit"`
 	CursorDirection string    `json:"cursor_direction"`
 	Cursor          int32     `json:"cursor"`
 }
 
-type GetFilesOnChatRoomUseKeysetPaginateRow struct {
+type GetAttachedItemsOnChatRoomUseKeysetPaginateRow struct {
+	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
+	MessageID              uuid.UUID     `json:"message_id"`
+	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
 }
 
-func (q *Queries) GetFilesOnChatRoomUseKeysetPaginate(ctx context.Context, arg GetFilesOnChatRoomUseKeysetPaginateParams) ([]GetFilesOnChatRoomUseKeysetPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getFilesOnChatRoomUseKeysetPaginate,
+func (q *Queries) GetAttachedItemsOnChatRoomUseKeysetPaginate(ctx context.Context, arg GetAttachedItemsOnChatRoomUseKeysetPaginateParams) ([]GetAttachedItemsOnChatRoomUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttachedItemsOnChatRoomUseKeysetPaginate,
 		arg.ChatRoomID,
 		arg.Limit,
 		arg.CursorDirection,
@@ -170,10 +206,20 @@ func (q *Queries) GetFilesOnChatRoomUseKeysetPaginate(ctx context.Context, arg G
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetFilesOnChatRoomUseKeysetPaginateRow{}
+	items := []GetAttachedItemsOnChatRoomUseKeysetPaginateRow{}
 	for rows.Next() {
-		var i GetFilesOnChatRoomUseKeysetPaginateRow
-		if err := rows.Scan(); err != nil {
+		var i GetAttachedItemsOnChatRoomUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.TAttachedMessagesPkey,
+			&i.AttachedMessageID,
+			&i.MessageID,
+			&i.AttachableItemID,
+			&i.AttachedItemUrl,
+			&i.AttachedItemSize,
+			&i.AttachedItemMimeTypeID,
+			&i.AttachedItemOwnerID,
+			&i.AttachedItemFromOuter,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -184,8 +230,12 @@ func (q *Queries) GetFilesOnChatRoomUseKeysetPaginate(ctx context.Context, arg G
 	return items, nil
 }
 
-const getFilesOnChatRoomUseNumberedPaginate = `-- name: GetFilesOnChatRoomUseNumberedPaginate :many
-SELECT  FROM t_attached_messages
+const getAttachedItemsOnChatRoomUseNumberedPaginate = `-- name: GetAttachedItemsOnChatRoomUseNumberedPaginate :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id IN (
 	SELECT message_id FROM t_messages WHERE chat_room_id = $1
 )
@@ -194,25 +244,44 @@ ORDER BY
 LIMIT $2 OFFSET $3
 `
 
-type GetFilesOnChatRoomUseNumberedPaginateParams struct {
+type GetAttachedItemsOnChatRoomUseNumberedPaginateParams struct {
 	ChatRoomID uuid.UUID `json:"chat_room_id"`
 	Limit      int32     `json:"limit"`
 	Offset     int32     `json:"offset"`
 }
 
-type GetFilesOnChatRoomUseNumberedPaginateRow struct {
+type GetAttachedItemsOnChatRoomUseNumberedPaginateRow struct {
+	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
+	MessageID              uuid.UUID     `json:"message_id"`
+	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
 }
 
-func (q *Queries) GetFilesOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetFilesOnChatRoomUseNumberedPaginateParams) ([]GetFilesOnChatRoomUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getFilesOnChatRoomUseNumberedPaginate, arg.ChatRoomID, arg.Limit, arg.Offset)
+func (q *Queries) GetAttachedItemsOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetAttachedItemsOnChatRoomUseNumberedPaginateParams) ([]GetAttachedItemsOnChatRoomUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttachedItemsOnChatRoomUseNumberedPaginate, arg.ChatRoomID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetFilesOnChatRoomUseNumberedPaginateRow{}
+	items := []GetAttachedItemsOnChatRoomUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetFilesOnChatRoomUseNumberedPaginateRow
-		if err := rows.Scan(); err != nil {
+		var i GetAttachedItemsOnChatRoomUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.TAttachedMessagesPkey,
+			&i.AttachedMessageID,
+			&i.MessageID,
+			&i.AttachableItemID,
+			&i.AttachedItemUrl,
+			&i.AttachedItemSize,
+			&i.AttachedItemMimeTypeID,
+			&i.AttachedItemOwnerID,
+			&i.AttachedItemFromOuter,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -223,26 +292,49 @@ func (q *Queries) GetFilesOnChatRoomUseNumberedPaginate(ctx context.Context, arg
 	return items, nil
 }
 
-const getFilesOnMessage = `-- name: GetFilesOnMessage :many
-SELECT  FROM t_attached_messages
+const getAttachedItemsOnMessage = `-- name: GetAttachedItemsOnMessage :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = $1
 ORDER BY
 	t_attached_messages_pkey ASC
 `
 
-type GetFilesOnMessageRow struct {
+type GetAttachedItemsOnMessageRow struct {
+	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
+	MessageID              uuid.UUID     `json:"message_id"`
+	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
 }
 
-func (q *Queries) GetFilesOnMessage(ctx context.Context, messageID uuid.UUID) ([]GetFilesOnMessageRow, error) {
-	rows, err := q.db.Query(ctx, getFilesOnMessage, messageID)
+func (q *Queries) GetAttachedItemsOnMessage(ctx context.Context, messageID uuid.UUID) ([]GetAttachedItemsOnMessageRow, error) {
+	rows, err := q.db.Query(ctx, getAttachedItemsOnMessage, messageID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetFilesOnMessageRow{}
+	items := []GetAttachedItemsOnMessageRow{}
 	for rows.Next() {
-		var i GetFilesOnMessageRow
-		if err := rows.Scan(); err != nil {
+		var i GetAttachedItemsOnMessageRow
+		if err := rows.Scan(
+			&i.TAttachedMessagesPkey,
+			&i.AttachedMessageID,
+			&i.MessageID,
+			&i.AttachableItemID,
+			&i.AttachedItemUrl,
+			&i.AttachedItemSize,
+			&i.AttachedItemMimeTypeID,
+			&i.AttachedItemOwnerID,
+			&i.AttachedItemFromOuter,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -253,8 +345,12 @@ func (q *Queries) GetFilesOnMessage(ctx context.Context, messageID uuid.UUID) ([
 	return items, nil
 }
 
-const getFilesOnMessageUseKeysetPaginate = `-- name: GetFilesOnMessageUseKeysetPaginate :many
-SELECT  FROM t_attached_messages
+const getAttachedItemsOnMessageUseKeysetPaginate = `-- name: GetAttachedItemsOnMessageUseKeysetPaginate :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = $1
 AND
 	CASE $3::text
@@ -269,18 +365,27 @@ ORDER BY
 LIMIT $2
 `
 
-type GetFilesOnMessageUseKeysetPaginateParams struct {
+type GetAttachedItemsOnMessageUseKeysetPaginateParams struct {
 	MessageID       uuid.UUID `json:"message_id"`
 	Limit           int32     `json:"limit"`
 	CursorDirection string    `json:"cursor_direction"`
 	Cursor          int32     `json:"cursor"`
 }
 
-type GetFilesOnMessageUseKeysetPaginateRow struct {
+type GetAttachedItemsOnMessageUseKeysetPaginateRow struct {
+	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
+	MessageID              uuid.UUID     `json:"message_id"`
+	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
 }
 
-func (q *Queries) GetFilesOnMessageUseKeysetPaginate(ctx context.Context, arg GetFilesOnMessageUseKeysetPaginateParams) ([]GetFilesOnMessageUseKeysetPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getFilesOnMessageUseKeysetPaginate,
+func (q *Queries) GetAttachedItemsOnMessageUseKeysetPaginate(ctx context.Context, arg GetAttachedItemsOnMessageUseKeysetPaginateParams) ([]GetAttachedItemsOnMessageUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttachedItemsOnMessageUseKeysetPaginate,
 		arg.MessageID,
 		arg.Limit,
 		arg.CursorDirection,
@@ -290,10 +395,20 @@ func (q *Queries) GetFilesOnMessageUseKeysetPaginate(ctx context.Context, arg Ge
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetFilesOnMessageUseKeysetPaginateRow{}
+	items := []GetAttachedItemsOnMessageUseKeysetPaginateRow{}
 	for rows.Next() {
-		var i GetFilesOnMessageUseKeysetPaginateRow
-		if err := rows.Scan(); err != nil {
+		var i GetAttachedItemsOnMessageUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.TAttachedMessagesPkey,
+			&i.AttachedMessageID,
+			&i.MessageID,
+			&i.AttachableItemID,
+			&i.AttachedItemUrl,
+			&i.AttachedItemSize,
+			&i.AttachedItemMimeTypeID,
+			&i.AttachedItemOwnerID,
+			&i.AttachedItemFromOuter,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -304,33 +419,56 @@ func (q *Queries) GetFilesOnMessageUseKeysetPaginate(ctx context.Context, arg Ge
 	return items, nil
 }
 
-const getFilesOnMessageUseNumberedPaginate = `-- name: GetFilesOnMessageUseNumberedPaginate :many
-SELECT  FROM t_attached_messages
+const getAttachedItemsOnMessageUseNumberedPaginate = `-- name: GetAttachedItemsOnMessageUseNumberedPaginate :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = $1
 ORDER BY
 	t_attached_messages_pkey ASC
 LIMIT $2 OFFSET $3
 `
 
-type GetFilesOnMessageUseNumberedPaginateParams struct {
+type GetAttachedItemsOnMessageUseNumberedPaginateParams struct {
 	MessageID uuid.UUID `json:"message_id"`
 	Limit     int32     `json:"limit"`
 	Offset    int32     `json:"offset"`
 }
 
-type GetFilesOnMessageUseNumberedPaginateRow struct {
+type GetAttachedItemsOnMessageUseNumberedPaginateRow struct {
+	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
+	MessageID              uuid.UUID     `json:"message_id"`
+	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
 }
 
-func (q *Queries) GetFilesOnMessageUseNumberedPaginate(ctx context.Context, arg GetFilesOnMessageUseNumberedPaginateParams) ([]GetFilesOnMessageUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getFilesOnMessageUseNumberedPaginate, arg.MessageID, arg.Limit, arg.Offset)
+func (q *Queries) GetAttachedItemsOnMessageUseNumberedPaginate(ctx context.Context, arg GetAttachedItemsOnMessageUseNumberedPaginateParams) ([]GetAttachedItemsOnMessageUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttachedItemsOnMessageUseNumberedPaginate, arg.MessageID, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetFilesOnMessageUseNumberedPaginateRow{}
+	items := []GetAttachedItemsOnMessageUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetFilesOnMessageUseNumberedPaginateRow
-		if err := rows.Scan(); err != nil {
+		var i GetAttachedItemsOnMessageUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.TAttachedMessagesPkey,
+			&i.AttachedMessageID,
+			&i.MessageID,
+			&i.AttachableItemID,
+			&i.AttachedItemUrl,
+			&i.AttachedItemSize,
+			&i.AttachedItemMimeTypeID,
+			&i.AttachedItemOwnerID,
+			&i.AttachedItemFromOuter,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -341,8 +479,223 @@ func (q *Queries) GetFilesOnMessageUseNumberedPaginate(ctx context.Context, arg 
 	return items, nil
 }
 
-const getPluralFilesOnChatRoom = `-- name: GetPluralFilesOnChatRoom :many
-SELECT  FROM t_attached_messages
+const getAttachedItemsOnMessageWithMimeType = `-- name: GetAttachedItemsOnMessageWithMimeType :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+m_mime_types.name mime_type_name, m_mime_types.key mime_type_key, m_mime_types.kind mime_type_kind
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+WHERE message_id = $1
+ORDER BY
+	t_attached_messages_pkey ASC
+`
+
+type GetAttachedItemsOnMessageWithMimeTypeRow struct {
+	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
+	MessageID              uuid.UUID     `json:"message_id"`
+	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+	MimeTypeName           pgtype.Text   `json:"mime_type_name"`
+	MimeTypeKey            pgtype.Text   `json:"mime_type_key"`
+	MimeTypeKind           pgtype.Text   `json:"mime_type_kind"`
+}
+
+func (q *Queries) GetAttachedItemsOnMessageWithMimeType(ctx context.Context, messageID uuid.UUID) ([]GetAttachedItemsOnMessageWithMimeTypeRow, error) {
+	rows, err := q.db.Query(ctx, getAttachedItemsOnMessageWithMimeType, messageID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttachedItemsOnMessageWithMimeTypeRow{}
+	for rows.Next() {
+		var i GetAttachedItemsOnMessageWithMimeTypeRow
+		if err := rows.Scan(
+			&i.TAttachedMessagesPkey,
+			&i.AttachedMessageID,
+			&i.MessageID,
+			&i.AttachableItemID,
+			&i.AttachedItemUrl,
+			&i.AttachedItemSize,
+			&i.AttachedItemMimeTypeID,
+			&i.AttachedItemOwnerID,
+			&i.AttachedItemFromOuter,
+			&i.MimeTypeName,
+			&i.MimeTypeKey,
+			&i.MimeTypeKind,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttachedItemsOnMessageWithMimeTypeUseKeysetPaginate = `-- name: GetAttachedItemsOnMessageWithMimeTypeUseKeysetPaginate :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+m_mime_types.name mime_type_name, m_mime_types.key mime_type_key, m_mime_types.kind mime_type_kind
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+WHERE message_id = $1
+AND
+	CASE $3::text
+		WHEN 'next' THEN
+			t_attached_messages_pkey > $4::int
+		WHEN 'prev' THEN
+			t_attached_messages_pkey < $4::int
+	END
+ORDER BY
+	CASE WHEN $3::text = 'next' THEN t_attached_messages_pkey END ASC,
+	CASE WHEN $3::text = 'prev' THEN t_attached_messages_pkey END DESC
+LIMIT $2
+`
+
+type GetAttachedItemsOnMessageWithMimeTypeUseKeysetPaginateParams struct {
+	MessageID       uuid.UUID `json:"message_id"`
+	Limit           int32     `json:"limit"`
+	CursorDirection string    `json:"cursor_direction"`
+	Cursor          int32     `json:"cursor"`
+}
+
+type GetAttachedItemsOnMessageWithMimeTypeUseKeysetPaginateRow struct {
+	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
+	MessageID              uuid.UUID     `json:"message_id"`
+	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+	MimeTypeName           pgtype.Text   `json:"mime_type_name"`
+	MimeTypeKey            pgtype.Text   `json:"mime_type_key"`
+	MimeTypeKind           pgtype.Text   `json:"mime_type_kind"`
+}
+
+func (q *Queries) GetAttachedItemsOnMessageWithMimeTypeUseKeysetPaginate(ctx context.Context, arg GetAttachedItemsOnMessageWithMimeTypeUseKeysetPaginateParams) ([]GetAttachedItemsOnMessageWithMimeTypeUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttachedItemsOnMessageWithMimeTypeUseKeysetPaginate,
+		arg.MessageID,
+		arg.Limit,
+		arg.CursorDirection,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttachedItemsOnMessageWithMimeTypeUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetAttachedItemsOnMessageWithMimeTypeUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.TAttachedMessagesPkey,
+			&i.AttachedMessageID,
+			&i.MessageID,
+			&i.AttachableItemID,
+			&i.AttachedItemUrl,
+			&i.AttachedItemSize,
+			&i.AttachedItemMimeTypeID,
+			&i.AttachedItemOwnerID,
+			&i.AttachedItemFromOuter,
+			&i.MimeTypeName,
+			&i.MimeTypeKey,
+			&i.MimeTypeKind,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate = `-- name: GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+m_mime_types.name mime_type_name, m_mime_types.key mime_type_key, m_mime_types.kind mime_type_kind
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+WHERE message_id = $1
+ORDER BY
+	t_attached_messages_pkey ASC
+LIMIT $2 OFFSET $3
+`
+
+type GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateParams struct {
+	MessageID uuid.UUID `json:"message_id"`
+	Limit     int32     `json:"limit"`
+	Offset    int32     `json:"offset"`
+}
+
+type GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateRow struct {
+	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
+	MessageID              uuid.UUID     `json:"message_id"`
+	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+	MimeTypeName           pgtype.Text   `json:"mime_type_name"`
+	MimeTypeKey            pgtype.Text   `json:"mime_type_key"`
+	MimeTypeKind           pgtype.Text   `json:"mime_type_kind"`
+}
+
+func (q *Queries) GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate(ctx context.Context, arg GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateParams) ([]GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate, arg.MessageID, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.TAttachedMessagesPkey,
+			&i.AttachedMessageID,
+			&i.MessageID,
+			&i.AttachableItemID,
+			&i.AttachedItemUrl,
+			&i.AttachedItemSize,
+			&i.AttachedItemMimeTypeID,
+			&i.AttachedItemOwnerID,
+			&i.AttachedItemFromOuter,
+			&i.MimeTypeName,
+			&i.MimeTypeKey,
+			&i.MimeTypeKind,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAttachedItemsOnChatRoom = `-- name: GetPluralAttachedItemsOnChatRoom :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id IN (
 	SELECT message_id FROM t_messages WHERE chat_room_id = ANY($1::uuid[])
 )
@@ -350,19 +703,38 @@ ORDER BY
 	t_attached_messages_pkey ASC
 `
 
-type GetPluralFilesOnChatRoomRow struct {
+type GetPluralAttachedItemsOnChatRoomRow struct {
+	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
+	MessageID              uuid.UUID     `json:"message_id"`
+	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
 }
 
-func (q *Queries) GetPluralFilesOnChatRoom(ctx context.Context, chatRoomIds []uuid.UUID) ([]GetPluralFilesOnChatRoomRow, error) {
-	rows, err := q.db.Query(ctx, getPluralFilesOnChatRoom, chatRoomIds)
+func (q *Queries) GetPluralAttachedItemsOnChatRoom(ctx context.Context, chatRoomIds []uuid.UUID) ([]GetPluralAttachedItemsOnChatRoomRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttachedItemsOnChatRoom, chatRoomIds)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluralFilesOnChatRoomRow{}
+	items := []GetPluralAttachedItemsOnChatRoomRow{}
 	for rows.Next() {
-		var i GetPluralFilesOnChatRoomRow
-		if err := rows.Scan(); err != nil {
+		var i GetPluralAttachedItemsOnChatRoomRow
+		if err := rows.Scan(
+			&i.TAttachedMessagesPkey,
+			&i.AttachedMessageID,
+			&i.MessageID,
+			&i.AttachableItemID,
+			&i.AttachedItemUrl,
+			&i.AttachedItemSize,
+			&i.AttachedItemMimeTypeID,
+			&i.AttachedItemOwnerID,
+			&i.AttachedItemFromOuter,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -373,8 +745,12 @@ func (q *Queries) GetPluralFilesOnChatRoom(ctx context.Context, chatRoomIds []uu
 	return items, nil
 }
 
-const getPluralFilesOnChatRoomUseNumberedPaginate = `-- name: GetPluralFilesOnChatRoomUseNumberedPaginate :many
-SELECT  FROM t_attached_messages
+const getPluralAttachedItemsOnChatRoomUseNumberedPaginate = `-- name: GetPluralAttachedItemsOnChatRoomUseNumberedPaginate :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id IN (
 	SELECT message_id FROM t_messages WHERE chat_room_id = ANY($3::uuid[])
 )
@@ -383,25 +759,44 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralFilesOnChatRoomUseNumberedPaginateParams struct {
+type GetPluralAttachedItemsOnChatRoomUseNumberedPaginateParams struct {
 	Limit       int32       `json:"limit"`
 	Offset      int32       `json:"offset"`
 	ChatRoomIds []uuid.UUID `json:"chat_room_ids"`
 }
 
-type GetPluralFilesOnChatRoomUseNumberedPaginateRow struct {
+type GetPluralAttachedItemsOnChatRoomUseNumberedPaginateRow struct {
+	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
+	MessageID              uuid.UUID     `json:"message_id"`
+	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
 }
 
-func (q *Queries) GetPluralFilesOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetPluralFilesOnChatRoomUseNumberedPaginateParams) ([]GetPluralFilesOnChatRoomUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralFilesOnChatRoomUseNumberedPaginate, arg.Limit, arg.Offset, arg.ChatRoomIds)
+func (q *Queries) GetPluralAttachedItemsOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetPluralAttachedItemsOnChatRoomUseNumberedPaginateParams) ([]GetPluralAttachedItemsOnChatRoomUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttachedItemsOnChatRoomUseNumberedPaginate, arg.Limit, arg.Offset, arg.ChatRoomIds)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluralFilesOnChatRoomUseNumberedPaginateRow{}
+	items := []GetPluralAttachedItemsOnChatRoomUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetPluralFilesOnChatRoomUseNumberedPaginateRow
-		if err := rows.Scan(); err != nil {
+		var i GetPluralAttachedItemsOnChatRoomUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.TAttachedMessagesPkey,
+			&i.AttachedMessageID,
+			&i.MessageID,
+			&i.AttachableItemID,
+			&i.AttachedItemUrl,
+			&i.AttachedItemSize,
+			&i.AttachedItemMimeTypeID,
+			&i.AttachedItemOwnerID,
+			&i.AttachedItemFromOuter,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -412,26 +807,49 @@ func (q *Queries) GetPluralFilesOnChatRoomUseNumberedPaginate(ctx context.Contex
 	return items, nil
 }
 
-const getPluralFilesOnMessage = `-- name: GetPluralFilesOnMessage :many
-SELECT  FROM t_attached_messages
+const getPluralAttachedItemsOnMessage = `-- name: GetPluralAttachedItemsOnMessage :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = ANY($1::uuid[])
 ORDER BY
 	t_attached_messages_pkey ASC
 `
 
-type GetPluralFilesOnMessageRow struct {
+type GetPluralAttachedItemsOnMessageRow struct {
+	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
+	MessageID              uuid.UUID     `json:"message_id"`
+	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
 }
 
-func (q *Queries) GetPluralFilesOnMessage(ctx context.Context, messageIds []uuid.UUID) ([]GetPluralFilesOnMessageRow, error) {
-	rows, err := q.db.Query(ctx, getPluralFilesOnMessage, messageIds)
+func (q *Queries) GetPluralAttachedItemsOnMessage(ctx context.Context, messageIds []uuid.UUID) ([]GetPluralAttachedItemsOnMessageRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttachedItemsOnMessage, messageIds)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluralFilesOnMessageRow{}
+	items := []GetPluralAttachedItemsOnMessageRow{}
 	for rows.Next() {
-		var i GetPluralFilesOnMessageRow
-		if err := rows.Scan(); err != nil {
+		var i GetPluralAttachedItemsOnMessageRow
+		if err := rows.Scan(
+			&i.TAttachedMessagesPkey,
+			&i.AttachedMessageID,
+			&i.MessageID,
+			&i.AttachableItemID,
+			&i.AttachedItemUrl,
+			&i.AttachedItemSize,
+			&i.AttachedItemMimeTypeID,
+			&i.AttachedItemOwnerID,
+			&i.AttachedItemFromOuter,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -442,33 +860,185 @@ func (q *Queries) GetPluralFilesOnMessage(ctx context.Context, messageIds []uuid
 	return items, nil
 }
 
-const getPluralFilesOnMessageUseNumberedPaginate = `-- name: GetPluralFilesOnMessageUseNumberedPaginate :many
-SELECT  FROM t_attached_messages
+const getPluralAttachedItemsOnMessageUseNumberedPaginate = `-- name: GetPluralAttachedItemsOnMessageUseNumberedPaginate :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = ANY($3::uuid[])
 ORDER BY
 	t_attached_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralFilesOnMessageUseNumberedPaginateParams struct {
+type GetPluralAttachedItemsOnMessageUseNumberedPaginateParams struct {
 	Limit      int32       `json:"limit"`
 	Offset     int32       `json:"offset"`
 	MessageIds []uuid.UUID `json:"message_ids"`
 }
 
-type GetPluralFilesOnMessageUseNumberedPaginateRow struct {
+type GetPluralAttachedItemsOnMessageUseNumberedPaginateRow struct {
+	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
+	MessageID              uuid.UUID     `json:"message_id"`
+	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
 }
 
-func (q *Queries) GetPluralFilesOnMessageUseNumberedPaginate(ctx context.Context, arg GetPluralFilesOnMessageUseNumberedPaginateParams) ([]GetPluralFilesOnMessageUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralFilesOnMessageUseNumberedPaginate, arg.Limit, arg.Offset, arg.MessageIds)
+func (q *Queries) GetPluralAttachedItemsOnMessageUseNumberedPaginate(ctx context.Context, arg GetPluralAttachedItemsOnMessageUseNumberedPaginateParams) ([]GetPluralAttachedItemsOnMessageUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttachedItemsOnMessageUseNumberedPaginate, arg.Limit, arg.Offset, arg.MessageIds)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluralFilesOnMessageUseNumberedPaginateRow{}
+	items := []GetPluralAttachedItemsOnMessageUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetPluralFilesOnMessageUseNumberedPaginateRow
-		if err := rows.Scan(); err != nil {
+		var i GetPluralAttachedItemsOnMessageUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.TAttachedMessagesPkey,
+			&i.AttachedMessageID,
+			&i.MessageID,
+			&i.AttachableItemID,
+			&i.AttachedItemUrl,
+			&i.AttachedItemSize,
+			&i.AttachedItemMimeTypeID,
+			&i.AttachedItemOwnerID,
+			&i.AttachedItemFromOuter,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAttachedItemsOnMessageWithMimeType = `-- name: GetPluralAttachedItemsOnMessageWithMimeType :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+m_mime_types.name mime_type_name, m_mime_types.key mime_type_key, m_mime_types.kind mime_type_kind
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+WHERE message_id = ANY($1::uuid[])
+ORDER BY
+	t_attached_messages_pkey ASC
+`
+
+type GetPluralAttachedItemsOnMessageWithMimeTypeRow struct {
+	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
+	MessageID              uuid.UUID     `json:"message_id"`
+	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+	MimeTypeName           pgtype.Text   `json:"mime_type_name"`
+	MimeTypeKey            pgtype.Text   `json:"mime_type_key"`
+	MimeTypeKind           pgtype.Text   `json:"mime_type_kind"`
+}
+
+func (q *Queries) GetPluralAttachedItemsOnMessageWithMimeType(ctx context.Context, messageIds []uuid.UUID) ([]GetPluralAttachedItemsOnMessageWithMimeTypeRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttachedItemsOnMessageWithMimeType, messageIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralAttachedItemsOnMessageWithMimeTypeRow{}
+	for rows.Next() {
+		var i GetPluralAttachedItemsOnMessageWithMimeTypeRow
+		if err := rows.Scan(
+			&i.TAttachedMessagesPkey,
+			&i.AttachedMessageID,
+			&i.MessageID,
+			&i.AttachableItemID,
+			&i.AttachedItemUrl,
+			&i.AttachedItemSize,
+			&i.AttachedItemMimeTypeID,
+			&i.AttachedItemOwnerID,
+			&i.AttachedItemFromOuter,
+			&i.MimeTypeName,
+			&i.MimeTypeKey,
+			&i.MimeTypeKind,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate = `-- name: GetPluralAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate :many
+SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+m_mime_types.name mime_type_name, m_mime_types.key mime_type_key, m_mime_types.kind mime_type_kind
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+WHERE message_id = ANY($3::uuid[])
+ORDER BY
+	t_attached_messages_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateParams struct {
+	Limit      int32       `json:"limit"`
+	Offset     int32       `json:"offset"`
+	MessageIds []uuid.UUID `json:"message_ids"`
+}
+
+type GetPluralAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateRow struct {
+	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
+	MessageID              uuid.UUID     `json:"message_id"`
+	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+	MimeTypeName           pgtype.Text   `json:"mime_type_name"`
+	MimeTypeKey            pgtype.Text   `json:"mime_type_key"`
+	MimeTypeKind           pgtype.Text   `json:"mime_type_kind"`
+}
+
+func (q *Queries) GetPluralAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate(ctx context.Context, arg GetPluralAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateParams) ([]GetPluralAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate, arg.Limit, arg.Offset, arg.MessageIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.TAttachedMessagesPkey,
+			&i.AttachedMessageID,
+			&i.MessageID,
+			&i.AttachableItemID,
+			&i.AttachedItemUrl,
+			&i.AttachedItemSize,
+			&i.AttachedItemMimeTypeID,
+			&i.AttachedItemOwnerID,
+			&i.AttachedItemFromOuter,
+			&i.MimeTypeName,
+			&i.MimeTypeKey,
+			&i.MimeTypeKind,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

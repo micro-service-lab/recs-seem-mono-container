@@ -17,10 +17,30 @@ SELECT COUNT(*) FROM t_attached_messages
 WHERE message_id IN (
 	SELECT message_id FROM t_messages WHERE chat_room_id = $1
 )
+AND
+	CASE WHEN $2::boolean = true THEN t_attachable_items.mime_type_id = ANY($3::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
 `
 
-func (q *Queries) CountAttachedItemsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) (int64, error) {
-	row := q.db.QueryRow(ctx, countAttachedItemsOnChatRoom, chatRoomID)
+type CountAttachedItemsOnChatRoomParams struct {
+	ChatRoomID      uuid.UUID   `json:"chat_room_id"`
+	WhereInMimeType bool        `json:"where_in_mime_type"`
+	InMimeTypes     []uuid.UUID `json:"in_mime_types"`
+	WhereIsImage    bool        `json:"where_is_image"`
+	WhereIsFile     bool        `json:"where_is_file"`
+}
+
+func (q *Queries) CountAttachedItemsOnChatRoom(ctx context.Context, arg CountAttachedItemsOnChatRoomParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countAttachedItemsOnChatRoom,
+		arg.ChatRoomID,
+		arg.WhereInMimeType,
+		arg.InMimeTypes,
+		arg.WhereIsImage,
+		arg.WhereIsFile,
+	)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -28,10 +48,30 @@ func (q *Queries) CountAttachedItemsOnChatRoom(ctx context.Context, chatRoomID u
 
 const countAttachedItemsOnMessage = `-- name: CountAttachedItemsOnMessage :one
 SELECT COUNT(*) FROM t_attached_messages WHERE message_id = $1
+AND
+	CASE WHEN $2::boolean = true THEN t_attachable_items.mime_type_id = ANY($3::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
 `
 
-func (q *Queries) CountAttachedItemsOnMessage(ctx context.Context, messageID uuid.UUID) (int64, error) {
-	row := q.db.QueryRow(ctx, countAttachedItemsOnMessage, messageID)
+type CountAttachedItemsOnMessageParams struct {
+	MessageID       uuid.UUID   `json:"message_id"`
+	WhereInMimeType bool        `json:"where_in_mime_type"`
+	InMimeTypes     []uuid.UUID `json:"in_mime_types"`
+	WhereIsImage    bool        `json:"where_is_image"`
+	WhereIsFile     bool        `json:"where_is_file"`
+}
+
+func (q *Queries) CountAttachedItemsOnMessage(ctx context.Context, arg CountAttachedItemsOnMessageParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countAttachedItemsOnMessage,
+		arg.MessageID,
+		arg.WhereInMimeType,
+		arg.InMimeTypes,
+		arg.WhereIsImage,
+		arg.WhereIsFile,
+	)
 	var count int64
 	err := row.Scan(&count)
 	return count, err
@@ -102,30 +142,56 @@ func (q *Queries) DeleteAttachedMessagesOnMessages(ctx context.Context, dollar_1
 const getAttachedItemsOnChatRoom = `-- name: GetAttachedItemsOnChatRoom :many
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
-t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_messages.sender_id message_sender_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
 FROM t_attached_messages
+LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id IN (
-	SELECT message_id FROM t_messages WHERE chat_room_id = $1
+	SELECT message_id FROM t_messages m WHERE m.chat_room_id = $1
 )
+AND
+	CASE WHEN $2::boolean = true THEN t_attachable_items.mime_type_id = ANY($3::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
 ORDER BY
 	t_attached_messages_pkey ASC
 `
 
-type GetAttachedItemsOnChatRoomRow struct {
-	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
-	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
-	MessageID              uuid.UUID     `json:"message_id"`
-	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
-	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
-	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
-	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
-	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
-	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+type GetAttachedItemsOnChatRoomParams struct {
+	ChatRoomID      uuid.UUID   `json:"chat_room_id"`
+	WhereInMimeType bool        `json:"where_in_mime_type"`
+	InMimeTypes     []uuid.UUID `json:"in_mime_types"`
+	WhereIsImage    bool        `json:"where_is_image"`
+	WhereIsFile     bool        `json:"where_is_file"`
 }
 
-func (q *Queries) GetAttachedItemsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) ([]GetAttachedItemsOnChatRoomRow, error) {
-	rows, err := q.db.Query(ctx, getAttachedItemsOnChatRoom, chatRoomID)
+type GetAttachedItemsOnChatRoomRow struct {
+	TAttachedMessagesPkey  pgtype.Int8        `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID          `json:"attached_message_id"`
+	MessageID              uuid.UUID          `json:"message_id"`
+	AttachableItemID       pgtype.UUID        `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text        `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8      `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID        `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID        `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool        `json:"attached_item_from_outer"`
+	MessageSenderID        pgtype.UUID        `json:"message_sender_id"`
+	MessageBody            pgtype.Text        `json:"message_body"`
+	MessagePostedAt        pgtype.Timestamptz `json:"message_posted_at"`
+	MessageLastEditedAt    pgtype.Timestamptz `json:"message_last_edited_at"`
+}
+
+func (q *Queries) GetAttachedItemsOnChatRoom(ctx context.Context, arg GetAttachedItemsOnChatRoomParams) ([]GetAttachedItemsOnChatRoomRow, error) {
+	rows, err := q.db.Query(ctx, getAttachedItemsOnChatRoom,
+		arg.ChatRoomID,
+		arg.WhereInMimeType,
+		arg.InMimeTypes,
+		arg.WhereIsImage,
+		arg.WhereIsFile,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -143,6 +209,10 @@ func (q *Queries) GetAttachedItemsOnChatRoom(ctx context.Context, chatRoomID uui
 			&i.AttachedItemMimeTypeID,
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
+			&i.MessageSenderID,
+			&i.MessageBody,
+			&i.MessagePostedAt,
+			&i.MessageLastEditedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -157,48 +227,68 @@ func (q *Queries) GetAttachedItemsOnChatRoom(ctx context.Context, chatRoomID uui
 const getAttachedItemsOnChatRoomUseKeysetPaginate = `-- name: GetAttachedItemsOnChatRoomUseKeysetPaginate :many
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
-t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_messages.sender_id message_sender_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
 FROM t_attached_messages
+LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id IN (
-	SELECT message_id FROM t_messages WHERE chat_room_id = $1
+	SELECT message_id FROM t_messages m WHERE m.chat_room_id = $1
 )
 AND
-	CASE $3::text
+	CASE WHEN $3::boolean = true THEN t_attachable_items.mime_type_id = ANY($4::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE $7::text
 		WHEN 'next' THEN
-			t_attached_messages_pkey > $4::int
+			t_attached_messages_pkey > $8::int
 		WHEN 'prev' THEN
-			t_attached_messages_pkey < $4::int
+			t_attached_messages_pkey < $8::int
 	END
 ORDER BY
-	CASE WHEN $3::text = 'next' THEN t_attached_messages_pkey END ASC,
-	CASE WHEN $3::text = 'prev' THEN t_attached_messages_pkey END DESC
+	CASE WHEN $7::text = 'next' THEN t_attached_messages_pkey END ASC,
+	CASE WHEN $7::text = 'prev' THEN t_attached_messages_pkey END DESC
 LIMIT $2
 `
 
 type GetAttachedItemsOnChatRoomUseKeysetPaginateParams struct {
-	ChatRoomID      uuid.UUID `json:"chat_room_id"`
-	Limit           int32     `json:"limit"`
-	CursorDirection string    `json:"cursor_direction"`
-	Cursor          int32     `json:"cursor"`
+	ChatRoomID      uuid.UUID   `json:"chat_room_id"`
+	Limit           int32       `json:"limit"`
+	WhereInMimeType bool        `json:"where_in_mime_type"`
+	InMimeTypes     []uuid.UUID `json:"in_mime_types"`
+	WhereIsImage    bool        `json:"where_is_image"`
+	WhereIsFile     bool        `json:"where_is_file"`
+	CursorDirection string      `json:"cursor_direction"`
+	Cursor          int32       `json:"cursor"`
 }
 
 type GetAttachedItemsOnChatRoomUseKeysetPaginateRow struct {
-	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
-	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
-	MessageID              uuid.UUID     `json:"message_id"`
-	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
-	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
-	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
-	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
-	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
-	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+	TAttachedMessagesPkey  pgtype.Int8        `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID          `json:"attached_message_id"`
+	MessageID              uuid.UUID          `json:"message_id"`
+	AttachableItemID       pgtype.UUID        `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text        `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8      `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID        `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID        `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool        `json:"attached_item_from_outer"`
+	MessageSenderID        pgtype.UUID        `json:"message_sender_id"`
+	MessageBody            pgtype.Text        `json:"message_body"`
+	MessagePostedAt        pgtype.Timestamptz `json:"message_posted_at"`
+	MessageLastEditedAt    pgtype.Timestamptz `json:"message_last_edited_at"`
 }
 
 func (q *Queries) GetAttachedItemsOnChatRoomUseKeysetPaginate(ctx context.Context, arg GetAttachedItemsOnChatRoomUseKeysetPaginateParams) ([]GetAttachedItemsOnChatRoomUseKeysetPaginateRow, error) {
 	rows, err := q.db.Query(ctx, getAttachedItemsOnChatRoomUseKeysetPaginate,
 		arg.ChatRoomID,
 		arg.Limit,
+		arg.WhereInMimeType,
+		arg.InMimeTypes,
+		arg.WhereIsImage,
+		arg.WhereIsFile,
 		arg.CursorDirection,
 		arg.Cursor,
 	)
@@ -219,6 +309,10 @@ func (q *Queries) GetAttachedItemsOnChatRoomUseKeysetPaginate(ctx context.Contex
 			&i.AttachedItemMimeTypeID,
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
+			&i.MessageSenderID,
+			&i.MessageBody,
+			&i.MessagePostedAt,
+			&i.MessageLastEditedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -233,37 +327,61 @@ func (q *Queries) GetAttachedItemsOnChatRoomUseKeysetPaginate(ctx context.Contex
 const getAttachedItemsOnChatRoomUseNumberedPaginate = `-- name: GetAttachedItemsOnChatRoomUseNumberedPaginate :many
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
-t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_messages.sender_id message_sender_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
 FROM t_attached_messages
+LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id IN (
-	SELECT message_id FROM t_messages WHERE chat_room_id = $1
+	SELECT message_id FROM t_messages m WHERE m.chat_room_id = $1
 )
+AND
+	CASE WHEN $4::boolean = true THEN t_attachable_items.mime_type_id = ANY($5::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
 ORDER BY
 	t_attached_messages_pkey ASC
 LIMIT $2 OFFSET $3
 `
 
 type GetAttachedItemsOnChatRoomUseNumberedPaginateParams struct {
-	ChatRoomID uuid.UUID `json:"chat_room_id"`
-	Limit      int32     `json:"limit"`
-	Offset     int32     `json:"offset"`
+	ChatRoomID      uuid.UUID   `json:"chat_room_id"`
+	Limit           int32       `json:"limit"`
+	Offset          int32       `json:"offset"`
+	WhereInMimeType bool        `json:"where_in_mime_type"`
+	InMimeTypes     []uuid.UUID `json:"in_mime_types"`
+	WhereIsImage    bool        `json:"where_is_image"`
+	WhereIsFile     bool        `json:"where_is_file"`
 }
 
 type GetAttachedItemsOnChatRoomUseNumberedPaginateRow struct {
-	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
-	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
-	MessageID              uuid.UUID     `json:"message_id"`
-	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
-	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
-	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
-	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
-	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
-	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+	TAttachedMessagesPkey  pgtype.Int8        `json:"t_attached_messages_pkey"`
+	AttachedMessageID      uuid.UUID          `json:"attached_message_id"`
+	MessageID              uuid.UUID          `json:"message_id"`
+	AttachableItemID       pgtype.UUID        `json:"attachable_item_id"`
+	AttachedItemUrl        pgtype.Text        `json:"attached_item_url"`
+	AttachedItemSize       pgtype.Float8      `json:"attached_item_size"`
+	AttachedItemMimeTypeID pgtype.UUID        `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID    pgtype.UUID        `json:"attached_item_owner_id"`
+	AttachedItemFromOuter  pgtype.Bool        `json:"attached_item_from_outer"`
+	MessageSenderID        pgtype.UUID        `json:"message_sender_id"`
+	MessageBody            pgtype.Text        `json:"message_body"`
+	MessagePostedAt        pgtype.Timestamptz `json:"message_posted_at"`
+	MessageLastEditedAt    pgtype.Timestamptz `json:"message_last_edited_at"`
 }
 
 func (q *Queries) GetAttachedItemsOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetAttachedItemsOnChatRoomUseNumberedPaginateParams) ([]GetAttachedItemsOnChatRoomUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getAttachedItemsOnChatRoomUseNumberedPaginate, arg.ChatRoomID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, getAttachedItemsOnChatRoomUseNumberedPaginate,
+		arg.ChatRoomID,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInMimeType,
+		arg.InMimeTypes,
+		arg.WhereIsImage,
+		arg.WhereIsFile,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -281,6 +399,10 @@ func (q *Queries) GetAttachedItemsOnChatRoomUseNumberedPaginate(ctx context.Cont
 			&i.AttachedItemMimeTypeID,
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
+			&i.MessageSenderID,
+			&i.MessageBody,
+			&i.MessagePostedAt,
+			&i.MessageLastEditedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -299,9 +421,23 @@ t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_oute
 FROM t_attached_messages
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = $1
+AND
+	CASE WHEN $2::boolean = true THEN t_attachable_items.mime_type_id = ANY($3::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
 ORDER BY
 	t_attached_messages_pkey ASC
 `
+
+type GetAttachedItemsOnMessageParams struct {
+	MessageID       uuid.UUID   `json:"message_id"`
+	WhereInMimeType bool        `json:"where_in_mime_type"`
+	InMimeTypes     []uuid.UUID `json:"in_mime_types"`
+	WhereIsImage    bool        `json:"where_is_image"`
+	WhereIsFile     bool        `json:"where_is_file"`
+}
 
 type GetAttachedItemsOnMessageRow struct {
 	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
@@ -315,8 +451,14 @@ type GetAttachedItemsOnMessageRow struct {
 	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
 }
 
-func (q *Queries) GetAttachedItemsOnMessage(ctx context.Context, messageID uuid.UUID) ([]GetAttachedItemsOnMessageRow, error) {
-	rows, err := q.db.Query(ctx, getAttachedItemsOnMessage, messageID)
+func (q *Queries) GetAttachedItemsOnMessage(ctx context.Context, arg GetAttachedItemsOnMessageParams) ([]GetAttachedItemsOnMessageRow, error) {
+	rows, err := q.db.Query(ctx, getAttachedItemsOnMessage,
+		arg.MessageID,
+		arg.WhereInMimeType,
+		arg.InMimeTypes,
+		arg.WhereIsImage,
+		arg.WhereIsFile,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -353,23 +495,33 @@ FROM t_attached_messages
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = $1
 AND
-	CASE $3::text
+	CASE WHEN $3::boolean = true THEN t_attachable_items.mime_type_id = ANY($4::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE $7::text
 		WHEN 'next' THEN
-			t_attached_messages_pkey > $4::int
+			t_attached_messages_pkey > $8::int
 		WHEN 'prev' THEN
-			t_attached_messages_pkey < $4::int
+			t_attached_messages_pkey < $8::int
 	END
 ORDER BY
-	CASE WHEN $3::text = 'next' THEN t_attached_messages_pkey END ASC,
-	CASE WHEN $3::text = 'prev' THEN t_attached_messages_pkey END DESC
+	CASE WHEN $7::text = 'next' THEN t_attached_messages_pkey END ASC,
+	CASE WHEN $7::text = 'prev' THEN t_attached_messages_pkey END DESC
 LIMIT $2
 `
 
 type GetAttachedItemsOnMessageUseKeysetPaginateParams struct {
-	MessageID       uuid.UUID `json:"message_id"`
-	Limit           int32     `json:"limit"`
-	CursorDirection string    `json:"cursor_direction"`
-	Cursor          int32     `json:"cursor"`
+	MessageID       uuid.UUID   `json:"message_id"`
+	Limit           int32       `json:"limit"`
+	WhereInMimeType bool        `json:"where_in_mime_type"`
+	InMimeTypes     []uuid.UUID `json:"in_mime_types"`
+	WhereIsImage    bool        `json:"where_is_image"`
+	WhereIsFile     bool        `json:"where_is_file"`
+	CursorDirection string      `json:"cursor_direction"`
+	Cursor          int32       `json:"cursor"`
 }
 
 type GetAttachedItemsOnMessageUseKeysetPaginateRow struct {
@@ -388,6 +540,10 @@ func (q *Queries) GetAttachedItemsOnMessageUseKeysetPaginate(ctx context.Context
 	rows, err := q.db.Query(ctx, getAttachedItemsOnMessageUseKeysetPaginate,
 		arg.MessageID,
 		arg.Limit,
+		arg.WhereInMimeType,
+		arg.InMimeTypes,
+		arg.WhereIsImage,
+		arg.WhereIsFile,
 		arg.CursorDirection,
 		arg.Cursor,
 	)
@@ -426,15 +582,25 @@ t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_oute
 FROM t_attached_messages
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = $1
+AND
+	CASE WHEN $4::boolean = true THEN t_attachable_items.mime_type_id = ANY($5::uuid[]) ELSE TRUE END
+	AND
+	CASE WHEN $6::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
 ORDER BY
 	t_attached_messages_pkey ASC
 LIMIT $2 OFFSET $3
 `
 
 type GetAttachedItemsOnMessageUseNumberedPaginateParams struct {
-	MessageID uuid.UUID `json:"message_id"`
-	Limit     int32     `json:"limit"`
-	Offset    int32     `json:"offset"`
+	MessageID       uuid.UUID   `json:"message_id"`
+	Limit           int32       `json:"limit"`
+	Offset          int32       `json:"offset"`
+	WhereInMimeType bool        `json:"where_in_mime_type"`
+	InMimeTypes     []uuid.UUID `json:"in_mime_types"`
+	WhereIsImage    bool        `json:"where_is_image"`
+	WhereIsFile     bool        `json:"where_is_file"`
 }
 
 type GetAttachedItemsOnMessageUseNumberedPaginateRow struct {
@@ -450,7 +616,15 @@ type GetAttachedItemsOnMessageUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetAttachedItemsOnMessageUseNumberedPaginate(ctx context.Context, arg GetAttachedItemsOnMessageUseNumberedPaginateParams) ([]GetAttachedItemsOnMessageUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getAttachedItemsOnMessageUseNumberedPaginate, arg.MessageID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, getAttachedItemsOnMessageUseNumberedPaginate,
+		arg.MessageID,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInMimeType,
+		arg.InMimeTypes,
+		arg.WhereIsImage,
+		arg.WhereIsFile,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -488,9 +662,23 @@ FROM t_attached_messages
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE message_id = $1
+AND
+	CASE WHEN $2::boolean = true THEN t_attachable_items.mime_type_id = ANY($3::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
 ORDER BY
 	t_attached_messages_pkey ASC
 `
+
+type GetAttachedItemsOnMessageWithMimeTypeParams struct {
+	MessageID       uuid.UUID   `json:"message_id"`
+	WhereInMimeType bool        `json:"where_in_mime_type"`
+	InMimeTypes     []uuid.UUID `json:"in_mime_types"`
+	WhereIsImage    bool        `json:"where_is_image"`
+	WhereIsFile     bool        `json:"where_is_file"`
+}
 
 type GetAttachedItemsOnMessageWithMimeTypeRow struct {
 	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
@@ -507,8 +695,14 @@ type GetAttachedItemsOnMessageWithMimeTypeRow struct {
 	MimeTypeKind           pgtype.Text   `json:"mime_type_kind"`
 }
 
-func (q *Queries) GetAttachedItemsOnMessageWithMimeType(ctx context.Context, messageID uuid.UUID) ([]GetAttachedItemsOnMessageWithMimeTypeRow, error) {
-	rows, err := q.db.Query(ctx, getAttachedItemsOnMessageWithMimeType, messageID)
+func (q *Queries) GetAttachedItemsOnMessageWithMimeType(ctx context.Context, arg GetAttachedItemsOnMessageWithMimeTypeParams) ([]GetAttachedItemsOnMessageWithMimeTypeRow, error) {
+	rows, err := q.db.Query(ctx, getAttachedItemsOnMessageWithMimeType,
+		arg.MessageID,
+		arg.WhereInMimeType,
+		arg.InMimeTypes,
+		arg.WhereIsImage,
+		arg.WhereIsFile,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -550,23 +744,33 @@ LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attac
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE message_id = $1
 AND
-	CASE $3::text
+	CASE WHEN $3::boolean = true THEN t_attachable_items.mime_type_id = ANY($4::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE $7::text
 		WHEN 'next' THEN
-			t_attached_messages_pkey > $4::int
+			t_attached_messages_pkey > $8::int
 		WHEN 'prev' THEN
-			t_attached_messages_pkey < $4::int
+			t_attached_messages_pkey < $8::int
 	END
 ORDER BY
-	CASE WHEN $3::text = 'next' THEN t_attached_messages_pkey END ASC,
-	CASE WHEN $3::text = 'prev' THEN t_attached_messages_pkey END DESC
+	CASE WHEN $7::text = 'next' THEN t_attached_messages_pkey END ASC,
+	CASE WHEN $7::text = 'prev' THEN t_attached_messages_pkey END DESC
 LIMIT $2
 `
 
 type GetAttachedItemsOnMessageWithMimeTypeUseKeysetPaginateParams struct {
-	MessageID       uuid.UUID `json:"message_id"`
-	Limit           int32     `json:"limit"`
-	CursorDirection string    `json:"cursor_direction"`
-	Cursor          int32     `json:"cursor"`
+	MessageID       uuid.UUID   `json:"message_id"`
+	Limit           int32       `json:"limit"`
+	WhereInMimeType bool        `json:"where_in_mime_type"`
+	InMimeTypes     []uuid.UUID `json:"in_mime_types"`
+	WhereIsImage    bool        `json:"where_is_image"`
+	WhereIsFile     bool        `json:"where_is_file"`
+	CursorDirection string      `json:"cursor_direction"`
+	Cursor          int32       `json:"cursor"`
 }
 
 type GetAttachedItemsOnMessageWithMimeTypeUseKeysetPaginateRow struct {
@@ -588,6 +792,10 @@ func (q *Queries) GetAttachedItemsOnMessageWithMimeTypeUseKeysetPaginate(ctx con
 	rows, err := q.db.Query(ctx, getAttachedItemsOnMessageWithMimeTypeUseKeysetPaginate,
 		arg.MessageID,
 		arg.Limit,
+		arg.WhereInMimeType,
+		arg.InMimeTypes,
+		arg.WhereIsImage,
+		arg.WhereIsFile,
 		arg.CursorDirection,
 		arg.Cursor,
 	)
@@ -631,15 +839,25 @@ FROM t_attached_messages
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE message_id = $1
+AND
+	CASE WHEN $4::boolean = true THEN t_attachable_items.mime_type_id = ANY($5::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
 ORDER BY
 	t_attached_messages_pkey ASC
 LIMIT $2 OFFSET $3
 `
 
 type GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateParams struct {
-	MessageID uuid.UUID `json:"message_id"`
-	Limit     int32     `json:"limit"`
-	Offset    int32     `json:"offset"`
+	MessageID       uuid.UUID   `json:"message_id"`
+	Limit           int32       `json:"limit"`
+	Offset          int32       `json:"offset"`
+	WhereInMimeType bool        `json:"where_in_mime_type"`
+	InMimeTypes     []uuid.UUID `json:"in_mime_types"`
+	WhereIsImage    bool        `json:"where_is_image"`
+	WhereIsFile     bool        `json:"where_is_file"`
 }
 
 type GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateRow struct {
@@ -658,7 +876,15 @@ type GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate(ctx context.Context, arg GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateParams) ([]GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate, arg.MessageID, arg.Limit, arg.Offset)
+	rows, err := q.db.Query(ctx, getAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate,
+		arg.MessageID,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInMimeType,
+		arg.InMimeTypes,
+		arg.WhereIsImage,
+		arg.WhereIsFile,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -679,123 +905,6 @@ func (q *Queries) GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate(ctx c
 			&i.MimeTypeName,
 			&i.MimeTypeKey,
 			&i.MimeTypeKind,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getPluralAttachedItemsOnChatRoom = `-- name: GetPluralAttachedItemsOnChatRoom :many
-SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
-t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
-t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
-FROM t_attached_messages
-LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
-WHERE message_id IN (
-	SELECT message_id FROM t_messages WHERE chat_room_id = ANY($1::uuid[])
-)
-ORDER BY
-	t_attached_messages_pkey ASC
-`
-
-type GetPluralAttachedItemsOnChatRoomRow struct {
-	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
-	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
-	MessageID              uuid.UUID     `json:"message_id"`
-	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
-	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
-	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
-	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
-	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
-	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
-}
-
-func (q *Queries) GetPluralAttachedItemsOnChatRoom(ctx context.Context, chatRoomIds []uuid.UUID) ([]GetPluralAttachedItemsOnChatRoomRow, error) {
-	rows, err := q.db.Query(ctx, getPluralAttachedItemsOnChatRoom, chatRoomIds)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []GetPluralAttachedItemsOnChatRoomRow{}
-	for rows.Next() {
-		var i GetPluralAttachedItemsOnChatRoomRow
-		if err := rows.Scan(
-			&i.TAttachedMessagesPkey,
-			&i.AttachedMessageID,
-			&i.MessageID,
-			&i.AttachableItemID,
-			&i.AttachedItemUrl,
-			&i.AttachedItemSize,
-			&i.AttachedItemMimeTypeID,
-			&i.AttachedItemOwnerID,
-			&i.AttachedItemFromOuter,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getPluralAttachedItemsOnChatRoomUseNumberedPaginate = `-- name: GetPluralAttachedItemsOnChatRoomUseNumberedPaginate :many
-SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url,
-t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
-t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
-FROM t_attached_messages
-LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
-WHERE message_id IN (
-	SELECT message_id FROM t_messages WHERE chat_room_id = ANY($3::uuid[])
-)
-ORDER BY
-	t_attached_messages_pkey ASC
-LIMIT $1 OFFSET $2
-`
-
-type GetPluralAttachedItemsOnChatRoomUseNumberedPaginateParams struct {
-	Limit       int32       `json:"limit"`
-	Offset      int32       `json:"offset"`
-	ChatRoomIds []uuid.UUID `json:"chat_room_ids"`
-}
-
-type GetPluralAttachedItemsOnChatRoomUseNumberedPaginateRow struct {
-	TAttachedMessagesPkey  pgtype.Int8   `json:"t_attached_messages_pkey"`
-	AttachedMessageID      uuid.UUID     `json:"attached_message_id"`
-	MessageID              uuid.UUID     `json:"message_id"`
-	AttachableItemID       pgtype.UUID   `json:"attachable_item_id"`
-	AttachedItemUrl        pgtype.Text   `json:"attached_item_url"`
-	AttachedItemSize       pgtype.Float8 `json:"attached_item_size"`
-	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
-	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
-	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
-}
-
-func (q *Queries) GetPluralAttachedItemsOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetPluralAttachedItemsOnChatRoomUseNumberedPaginateParams) ([]GetPluralAttachedItemsOnChatRoomUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralAttachedItemsOnChatRoomUseNumberedPaginate, arg.Limit, arg.Offset, arg.ChatRoomIds)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []GetPluralAttachedItemsOnChatRoomUseNumberedPaginateRow{}
-	for rows.Next() {
-		var i GetPluralAttachedItemsOnChatRoomUseNumberedPaginateRow
-		if err := rows.Scan(
-			&i.TAttachedMessagesPkey,
-			&i.AttachedMessageID,
-			&i.MessageID,
-			&i.AttachableItemID,
-			&i.AttachedItemUrl,
-			&i.AttachedItemSize,
-			&i.AttachedItemMimeTypeID,
-			&i.AttachedItemOwnerID,
-			&i.AttachedItemFromOuter,
 		); err != nil {
 			return nil, err
 		}

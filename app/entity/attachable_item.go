@@ -12,8 +12,8 @@ type AttachableItem struct {
 	URL              string    `json:"url"`
 	Size             Float     `json:"size"`
 	MimeTypeID       uuid.UUID `json:"mime_type_id"`
-	ImageID          UUID      `json:"image_id"`
-	FileID           UUID      `json:"file_id"`
+	ImageID          UUID      `json:"image_id,omitempty"`
+	FileID           UUID      `json:"file_id,omitempty"`
 }
 
 // AttachableItemWithContent 添付アイテムを表す構造体。

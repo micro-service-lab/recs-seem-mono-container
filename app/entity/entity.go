@@ -51,13 +51,13 @@ type String struct {
 // Float 浮動小数点数型。
 type Float struct {
 	Float64 float64
-	Status  Status
+	Valid   bool
 }
 
 // UUID UUID型。
 type UUID struct {
-	Bytes  [16]byte
-	Status Status
+	Bytes [16]byte
+	Valid bool
 }
 
 // UUIDs UUIDのスライス型。
@@ -76,8 +76,8 @@ type Date struct {
 // Timestamptz タイムスタンプ型。
 type Timestamptz struct {
 	Time             time.Time
-	Status           Status
 	InfinityModifier InfinityModifier
+	Valid            bool
 }
 
 // OID オブジェクトID型。

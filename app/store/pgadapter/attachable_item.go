@@ -20,25 +20,13 @@ import (
 func attachableItemConv(
 	attachableItem query.FindAttachableItemByIDRow,
 ) entity.AttachableItemWithContent {
-	var ownerIDStatus entity.Status
-	if attachableItem.OwnerID.Valid {
-		ownerIDStatus = entity.Present
-	}
-	var imgHeightStatus entity.Status
-	if attachableItem.ImageHeight.Valid {
-		imgHeightStatus = entity.Present
-	}
-	var imgWidthStatus entity.Status
-	if attachableItem.ImageWidth.Valid {
-		imgWidthStatus = entity.Present
-	}
 	var image entity.NullableEntity[entity.Image]
 	if attachableItem.ImageID.Valid {
 		image = entity.NullableEntity[entity.Image]{
 			Entity: entity.Image{
 				ImageID:          attachableItem.ImageID.Bytes,
-				Height:           entity.Float{Float64: attachableItem.ImageHeight.Float64, Status: imgHeightStatus},
-				Width:            entity.Float{Float64: attachableItem.ImageWidth.Float64, Status: imgWidthStatus},
+				Height:           entity.Float(attachableItem.ImageHeight),
+				Width:            entity.Float(attachableItem.ImageWidth),
 				AttachableItemID: attachableItem.AttachableItemID,
 			},
 			Valid: true,
@@ -56,10 +44,10 @@ func attachableItemConv(
 	}
 	entity := entity.AttachableItemWithContent{
 		AttachableItemID: attachableItem.AttachableItemID,
-		OwnerID:          entity.UUID{Bytes: attachableItem.OwnerID.Bytes, Status: ownerIDStatus},
+		OwnerID:          entity.UUID(attachableItem.OwnerID),
 		FromOuter:        attachableItem.FromOuter,
 		URL:              attachableItem.Url,
-		Size:             entity.Float{Float64: attachableItem.Size.Float64, Status: entity.Present},
+		Size:             entity.Float(attachableItem.Size),
 		MimeTypeID:       attachableItem.MimeTypeID,
 		Image:            image,
 		File:             file,
@@ -70,25 +58,13 @@ func attachableItemConv(
 func attachableItemConvWithMimeType(
 	attachableItem query.FindAttachableItemByIDWithMimeTypeRow,
 ) entity.AttachableItemWithMimeType {
-	var ownerIDStatus entity.Status
-	if attachableItem.OwnerID.Valid {
-		ownerIDStatus = entity.Present
-	}
-	var imgHeightStatus entity.Status
-	if attachableItem.ImageHeight.Valid {
-		imgHeightStatus = entity.Present
-	}
-	var imgWidthStatus entity.Status
-	if attachableItem.ImageWidth.Valid {
-		imgWidthStatus = entity.Present
-	}
 	var image entity.NullableEntity[entity.Image]
 	if attachableItem.ImageID.Valid {
 		image = entity.NullableEntity[entity.Image]{
 			Entity: entity.Image{
 				ImageID:          attachableItem.ImageID.Bytes,
-				Height:           entity.Float{Float64: attachableItem.ImageHeight.Float64, Status: imgHeightStatus},
-				Width:            entity.Float{Float64: attachableItem.ImageWidth.Float64, Status: imgWidthStatus},
+				Height:           entity.Float(attachableItem.ImageHeight),
+				Width:            entity.Float(attachableItem.ImageWidth),
 				AttachableItemID: attachableItem.AttachableItemID,
 			},
 			Valid: true,
@@ -115,10 +91,10 @@ func attachableItemConvWithMimeType(
 	}
 	entity := entity.AttachableItemWithMimeType{
 		AttachableItemID: attachableItem.AttachableItemID,
-		OwnerID:          entity.UUID{Bytes: attachableItem.OwnerID.Bytes, Status: ownerIDStatus},
+		OwnerID:          entity.UUID(attachableItem.OwnerID),
 		FromOuter:        attachableItem.FromOuter,
 		URL:              attachableItem.Url,
-		Size:             entity.Float{Float64: attachableItem.Size.Float64, Status: entity.Present},
+		Size:             entity.Float(attachableItem.Size),
 		MimeType:         mimeType,
 		Image:            image,
 		File:             file,
@@ -167,7 +143,7 @@ func createAttachableItem(
 ) (entity.AttachableItem, error) {
 	p := query.CreateAttachableItemParams{
 		Url:        param.URL,
-		Size:       pgtype.Float8{Float64: param.Size.Float64, Valid: param.Size.Status == entity.Present},
+		Size:       pgtype.Float8(param.Size),
 		OwnerID:    pgtype.UUID{Bytes: param.OwnerID, Valid: true},
 		FromOuter:  param.FromOuter,
 		MimeTypeID: param.MimeTypeID,
@@ -180,16 +156,12 @@ func createAttachableItem(
 		}
 		return entity.AttachableItem{}, fmt.Errorf("failed to create attachable item: %w", err)
 	}
-	var ownerIDStatus entity.Status
-	if attachableItem.OwnerID.Valid {
-		ownerIDStatus = entity.Present
-	}
 	entity := entity.AttachableItem{
 		AttachableItemID: attachableItem.AttachableItemID,
-		OwnerID:          entity.UUID{Bytes: attachableItem.OwnerID.Bytes, Status: ownerIDStatus},
+		OwnerID:          entity.UUID(attachableItem.OwnerID),
 		FromOuter:        attachableItem.FromOuter,
 		URL:              attachableItem.Url,
-		Size:             entity.Float{Float64: attachableItem.Size.Float64, Status: entity.Present},
+		Size:             entity.Float(attachableItem.Size),
 		MimeTypeID:       attachableItem.MimeTypeID,
 	}
 	return entity, nil
@@ -222,7 +194,7 @@ func createAttachableItems(
 	for _, param := range params {
 		p = append(p, query.CreateAttachableItemsParams{
 			Url:        param.URL,
-			Size:       pgtype.Float8{Float64: param.Size.Float64, Valid: param.Size.Status == entity.Present},
+			Size:       pgtype.Float8(param.Size),
 			OwnerID:    pgtype.UUID{Bytes: param.OwnerID, Valid: true},
 			FromOuter:  param.FromOuter,
 			MimeTypeID: param.MimeTypeID,
@@ -782,7 +754,7 @@ func updateAttachableItem(
 	p := query.UpdateAttachableItemParams{
 		AttachableItemID: attachableItemID,
 		Url:              param.URL,
-		Size:             pgtype.Float8{Float64: param.Size.Float64, Valid: param.Size.Status == entity.Present},
+		Size:             pgtype.Float8(param.Size),
 		MimeTypeID:       param.MimeTypeID,
 	}
 	attachableItem, err := qtx.UpdateAttachableItem(ctx, p)
@@ -792,16 +764,12 @@ func updateAttachableItem(
 		}
 		return entity.AttachableItem{}, fmt.Errorf("failed to update attachable item: %w", err)
 	}
-	var ownerIDStatus entity.Status
-	if attachableItem.OwnerID.Valid {
-		ownerIDStatus = entity.Present
-	}
 	entity := entity.AttachableItem{
 		AttachableItemID: attachableItem.AttachableItemID,
-		OwnerID:          entity.UUID{Bytes: attachableItem.OwnerID.Bytes, Status: ownerIDStatus},
+		OwnerID:          entity.UUID(attachableItem.OwnerID),
 		FromOuter:        attachableItem.FromOuter,
 		URL:              attachableItem.Url,
-		Size:             entity.Float{Float64: attachableItem.Size.Float64, Status: entity.Present},
+		Size:             entity.Float(attachableItem.Size),
 		MimeTypeID:       attachableItem.MimeTypeID,
 	}
 	return entity, nil

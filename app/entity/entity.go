@@ -6,6 +6,12 @@ import "time"
 // Entity エンティティのインターフェース。
 type Entity any
 
+// NullableEntity NULL許容エンティティ。
+type NullableEntity[T Entity] struct {
+	Entity T
+	Valid  bool
+}
+
 // Status ステータスを表す型。
 type Status byte
 

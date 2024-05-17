@@ -48,6 +48,12 @@ var _ Store = &StoreMock{}
 //			CountAbsencesWithSdFunc: func(ctx context.Context, sd Sd) (int64, error) {
 //				panic("mock out the CountAbsencesWithSd method")
 //			},
+//			CountAttachableItemsFunc: func(ctx context.Context, where parameter.WhereAttachableItemParam) (int64, error) {
+//				panic("mock out the CountAttachableItems method")
+//			},
+//			CountAttachableItemsWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereAttachableItemParam) (int64, error) {
+//				panic("mock out the CountAttachableItemsWithSd method")
+//			},
 //			CountAttendStatusesFunc: func(ctx context.Context, where parameter.WhereAttendStatusParam) (int64, error) {
 //				panic("mock out the CountAttendStatuses method")
 //			},
@@ -131,6 +137,18 @@ var _ Store = &StoreMock{}
 //			},
 //			CreateAbsencesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateAbsenceParam) (int64, error) {
 //				panic("mock out the CreateAbsencesWithSd method")
+//			},
+//			CreateAttachableItemFunc: func(ctx context.Context, param parameter.CreateAttachableItemParam) (entity.AttachableItem, error) {
+//				panic("mock out the CreateAttachableItem method")
+//			},
+//			CreateAttachableItemWithSdFunc: func(ctx context.Context, sd Sd, param parameter.CreateAttachableItemParam) (entity.AttachableItem, error) {
+//				panic("mock out the CreateAttachableItemWithSd method")
+//			},
+//			CreateAttachableItemsFunc: func(ctx context.Context, params []parameter.CreateAttachableItemParam) (int64, error) {
+//				panic("mock out the CreateAttachableItems method")
+//			},
+//			CreateAttachableItemsWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateAttachableItemParam) (int64, error) {
+//				panic("mock out the CreateAttachableItemsWithSd method")
 //			},
 //			CreateAttendStatusFunc: func(ctx context.Context, param parameter.CreateAttendStatusParam) (entity.AttendStatus, error) {
 //				panic("mock out the CreateAttendStatus method")
@@ -257,6 +275,12 @@ var _ Store = &StoreMock{}
 //			},
 //			DeleteAbsenceWithSdFunc: func(ctx context.Context, sd Sd, absenceID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteAbsenceWithSd method")
+//			},
+//			DeleteAttachableItemFunc: func(ctx context.Context, attachableItemID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteAttachableItem method")
+//			},
+//			DeleteAttachableItemWithSdFunc: func(ctx context.Context, sd Sd, attachableItemID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteAttachableItemWithSd method")
 //			},
 //			DeleteAttendStatusFunc: func(ctx context.Context, attendStatusID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteAttendStatus method")
@@ -408,6 +432,18 @@ var _ Store = &StoreMock{}
 //			FindAbsenceByIDWithSdFunc: func(ctx context.Context, sd Sd, absenceID uuid.UUID) (entity.Absence, error) {
 //				panic("mock out the FindAbsenceByIDWithSd method")
 //			},
+//			FindAttachableItemByIDFunc: func(ctx context.Context, attachableItemID uuid.UUID) (entity.AttachableItemWithContent, error) {
+//				panic("mock out the FindAttachableItemByID method")
+//			},
+//			FindAttachableItemByIDWithMimeTypeFunc: func(ctx context.Context, attachableItemID uuid.UUID) (entity.AttachableItemWithMimeType, error) {
+//				panic("mock out the FindAttachableItemByIDWithMimeType method")
+//			},
+//			FindAttachableItemByIDWithMimeTypeWithSdFunc: func(ctx context.Context, sd Sd, attachableItemID uuid.UUID) (entity.AttachableItemWithMimeType, error) {
+//				panic("mock out the FindAttachableItemByIDWithMimeTypeWithSd method")
+//			},
+//			FindAttachableItemByIDWithSdFunc: func(ctx context.Context, sd Sd, attachableItemID uuid.UUID) (entity.AttachableItemWithContent, error) {
+//				panic("mock out the FindAttachableItemByIDWithSd method")
+//			},
 //			FindAttendStatusByIDFunc: func(ctx context.Context, attendStatusID uuid.UUID) (entity.AttendStatus, error) {
 //				panic("mock out the FindAttendStatusByID method")
 //			},
@@ -552,6 +588,18 @@ var _ Store = &StoreMock{}
 //			GetAbsencesWithSdFunc: func(ctx context.Context, sd Sd, order parameter.AbsenceOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Absence], error) {
 //				panic("mock out the GetAbsencesWithSd method")
 //			},
+//			GetAttachableItemsFunc: func(ctx context.Context, where parameter.WhereAttachableItemParam, order parameter.AttachableItemOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachableItemWithContent], error) {
+//				panic("mock out the GetAttachableItems method")
+//			},
+//			GetAttachableItemsWithMimeTypeFunc: func(ctx context.Context, where parameter.WhereAttachableItemParam, order parameter.AttachableItemOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachableItemWithMimeType], error) {
+//				panic("mock out the GetAttachableItemsWithMimeType method")
+//			},
+//			GetAttachableItemsWithMimeTypeWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereAttachableItemParam, order parameter.AttachableItemOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachableItemWithMimeType], error) {
+//				panic("mock out the GetAttachableItemsWithMimeTypeWithSd method")
+//			},
+//			GetAttachableItemsWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereAttachableItemParam, order parameter.AttachableItemOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachableItemWithContent], error) {
+//				panic("mock out the GetAttachableItemsWithSd method")
+//			},
 //			GetAttendStatusesFunc: func(ctx context.Context, where parameter.WhereAttendStatusParam, order parameter.AttendStatusOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttendStatus], error) {
 //				panic("mock out the GetAttendStatuses method")
 //			},
@@ -599,6 +647,18 @@ var _ Store = &StoreMock{}
 //			},
 //			GetPluralAbsencesWithSdFunc: func(ctx context.Context, sd Sd, ids []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Absence], error) {
 //				panic("mock out the GetPluralAbsencesWithSd method")
+//			},
+//			GetPluralAttachableItemsFunc: func(ctx context.Context, attachableItemIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttachableItemWithContent], error) {
+//				panic("mock out the GetPluralAttachableItems method")
+//			},
+//			GetPluralAttachableItemsWithMimeTypeFunc: func(ctx context.Context, attachableItemIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttachableItemWithMimeType], error) {
+//				panic("mock out the GetPluralAttachableItemsWithMimeType method")
+//			},
+//			GetPluralAttachableItemsWithMimeTypeWithSdFunc: func(ctx context.Context, sd Sd, attachableItemIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttachableItemWithMimeType], error) {
+//				panic("mock out the GetPluralAttachableItemsWithMimeTypeWithSd method")
+//			},
+//			GetPluralAttachableItemsWithSdFunc: func(ctx context.Context, sd Sd, attachableItemIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttachableItemWithContent], error) {
+//				panic("mock out the GetPluralAttachableItemsWithSd method")
 //			},
 //			GetPluralAttendStatusesFunc: func(ctx context.Context, attendStatusIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error) {
 //				panic("mock out the GetPluralAttendStatuses method")
@@ -708,6 +768,12 @@ var _ Store = &StoreMock{}
 //			PluralDeleteAbsencesWithSdFunc: func(ctx context.Context, sd Sd, absenceIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteAbsencesWithSd method")
 //			},
+//			PluralDeleteAttachableItemsFunc: func(ctx context.Context, attachableItemIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteAttachableItems method")
+//			},
+//			PluralDeleteAttachableItemsWithSdFunc: func(ctx context.Context, sd Sd, attachableItemIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteAttachableItemsWithSd method")
+//			},
 //			PluralDeleteAttendStatusesFunc: func(ctx context.Context, attendStatusIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteAttendStatuses method")
 //			},
@@ -782,6 +848,12 @@ var _ Store = &StoreMock{}
 //			},
 //			RollbackFunc: func(contextMoqParam context.Context, sd Sd) error {
 //				panic("mock out the Rollback method")
+//			},
+//			UpdateAttachableItemFunc: func(ctx context.Context, attachableItemID uuid.UUID, param parameter.UpdateAttachableItemParams) (entity.AttachableItem, error) {
+//				panic("mock out the UpdateAttachableItem method")
+//			},
+//			UpdateAttachableItemWithSdFunc: func(ctx context.Context, sd Sd, attachableItemID uuid.UUID, param parameter.UpdateAttachableItemParams) (entity.AttachableItem, error) {
+//				panic("mock out the UpdateAttachableItemWithSd method")
 //			},
 //			UpdateAttendStatusFunc: func(ctx context.Context, attendStatusID uuid.UUID, param parameter.UpdateAttendStatusParams) (entity.AttendStatus, error) {
 //				panic("mock out the UpdateAttendStatus method")
@@ -931,6 +1003,12 @@ type StoreMock struct {
 	// CountAbsencesWithSdFunc mocks the CountAbsencesWithSd method.
 	CountAbsencesWithSdFunc func(ctx context.Context, sd Sd) (int64, error)
 
+	// CountAttachableItemsFunc mocks the CountAttachableItems method.
+	CountAttachableItemsFunc func(ctx context.Context, where parameter.WhereAttachableItemParam) (int64, error)
+
+	// CountAttachableItemsWithSdFunc mocks the CountAttachableItemsWithSd method.
+	CountAttachableItemsWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereAttachableItemParam) (int64, error)
+
 	// CountAttendStatusesFunc mocks the CountAttendStatuses method.
 	CountAttendStatusesFunc func(ctx context.Context, where parameter.WhereAttendStatusParam) (int64, error)
 
@@ -1014,6 +1092,18 @@ type StoreMock struct {
 
 	// CreateAbsencesWithSdFunc mocks the CreateAbsencesWithSd method.
 	CreateAbsencesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateAbsenceParam) (int64, error)
+
+	// CreateAttachableItemFunc mocks the CreateAttachableItem method.
+	CreateAttachableItemFunc func(ctx context.Context, param parameter.CreateAttachableItemParam) (entity.AttachableItem, error)
+
+	// CreateAttachableItemWithSdFunc mocks the CreateAttachableItemWithSd method.
+	CreateAttachableItemWithSdFunc func(ctx context.Context, sd Sd, param parameter.CreateAttachableItemParam) (entity.AttachableItem, error)
+
+	// CreateAttachableItemsFunc mocks the CreateAttachableItems method.
+	CreateAttachableItemsFunc func(ctx context.Context, params []parameter.CreateAttachableItemParam) (int64, error)
+
+	// CreateAttachableItemsWithSdFunc mocks the CreateAttachableItemsWithSd method.
+	CreateAttachableItemsWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateAttachableItemParam) (int64, error)
 
 	// CreateAttendStatusFunc mocks the CreateAttendStatus method.
 	CreateAttendStatusFunc func(ctx context.Context, param parameter.CreateAttendStatusParam) (entity.AttendStatus, error)
@@ -1140,6 +1230,12 @@ type StoreMock struct {
 
 	// DeleteAbsenceWithSdFunc mocks the DeleteAbsenceWithSd method.
 	DeleteAbsenceWithSdFunc func(ctx context.Context, sd Sd, absenceID uuid.UUID) (int64, error)
+
+	// DeleteAttachableItemFunc mocks the DeleteAttachableItem method.
+	DeleteAttachableItemFunc func(ctx context.Context, attachableItemID uuid.UUID) (int64, error)
+
+	// DeleteAttachableItemWithSdFunc mocks the DeleteAttachableItemWithSd method.
+	DeleteAttachableItemWithSdFunc func(ctx context.Context, sd Sd, attachableItemID uuid.UUID) (int64, error)
 
 	// DeleteAttendStatusFunc mocks the DeleteAttendStatus method.
 	DeleteAttendStatusFunc func(ctx context.Context, attendStatusID uuid.UUID) (int64, error)
@@ -1291,6 +1387,18 @@ type StoreMock struct {
 	// FindAbsenceByIDWithSdFunc mocks the FindAbsenceByIDWithSd method.
 	FindAbsenceByIDWithSdFunc func(ctx context.Context, sd Sd, absenceID uuid.UUID) (entity.Absence, error)
 
+	// FindAttachableItemByIDFunc mocks the FindAttachableItemByID method.
+	FindAttachableItemByIDFunc func(ctx context.Context, attachableItemID uuid.UUID) (entity.AttachableItemWithContent, error)
+
+	// FindAttachableItemByIDWithMimeTypeFunc mocks the FindAttachableItemByIDWithMimeType method.
+	FindAttachableItemByIDWithMimeTypeFunc func(ctx context.Context, attachableItemID uuid.UUID) (entity.AttachableItemWithMimeType, error)
+
+	// FindAttachableItemByIDWithMimeTypeWithSdFunc mocks the FindAttachableItemByIDWithMimeTypeWithSd method.
+	FindAttachableItemByIDWithMimeTypeWithSdFunc func(ctx context.Context, sd Sd, attachableItemID uuid.UUID) (entity.AttachableItemWithMimeType, error)
+
+	// FindAttachableItemByIDWithSdFunc mocks the FindAttachableItemByIDWithSd method.
+	FindAttachableItemByIDWithSdFunc func(ctx context.Context, sd Sd, attachableItemID uuid.UUID) (entity.AttachableItemWithContent, error)
+
 	// FindAttendStatusByIDFunc mocks the FindAttendStatusByID method.
 	FindAttendStatusByIDFunc func(ctx context.Context, attendStatusID uuid.UUID) (entity.AttendStatus, error)
 
@@ -1435,6 +1543,18 @@ type StoreMock struct {
 	// GetAbsencesWithSdFunc mocks the GetAbsencesWithSd method.
 	GetAbsencesWithSdFunc func(ctx context.Context, sd Sd, order parameter.AbsenceOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Absence], error)
 
+	// GetAttachableItemsFunc mocks the GetAttachableItems method.
+	GetAttachableItemsFunc func(ctx context.Context, where parameter.WhereAttachableItemParam, order parameter.AttachableItemOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachableItemWithContent], error)
+
+	// GetAttachableItemsWithMimeTypeFunc mocks the GetAttachableItemsWithMimeType method.
+	GetAttachableItemsWithMimeTypeFunc func(ctx context.Context, where parameter.WhereAttachableItemParam, order parameter.AttachableItemOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachableItemWithMimeType], error)
+
+	// GetAttachableItemsWithMimeTypeWithSdFunc mocks the GetAttachableItemsWithMimeTypeWithSd method.
+	GetAttachableItemsWithMimeTypeWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereAttachableItemParam, order parameter.AttachableItemOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachableItemWithMimeType], error)
+
+	// GetAttachableItemsWithSdFunc mocks the GetAttachableItemsWithSd method.
+	GetAttachableItemsWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereAttachableItemParam, order parameter.AttachableItemOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachableItemWithContent], error)
+
 	// GetAttendStatusesFunc mocks the GetAttendStatuses method.
 	GetAttendStatusesFunc func(ctx context.Context, where parameter.WhereAttendStatusParam, order parameter.AttendStatusOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttendStatus], error)
 
@@ -1482,6 +1602,18 @@ type StoreMock struct {
 
 	// GetPluralAbsencesWithSdFunc mocks the GetPluralAbsencesWithSd method.
 	GetPluralAbsencesWithSdFunc func(ctx context.Context, sd Sd, ids []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Absence], error)
+
+	// GetPluralAttachableItemsFunc mocks the GetPluralAttachableItems method.
+	GetPluralAttachableItemsFunc func(ctx context.Context, attachableItemIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttachableItemWithContent], error)
+
+	// GetPluralAttachableItemsWithMimeTypeFunc mocks the GetPluralAttachableItemsWithMimeType method.
+	GetPluralAttachableItemsWithMimeTypeFunc func(ctx context.Context, attachableItemIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttachableItemWithMimeType], error)
+
+	// GetPluralAttachableItemsWithMimeTypeWithSdFunc mocks the GetPluralAttachableItemsWithMimeTypeWithSd method.
+	GetPluralAttachableItemsWithMimeTypeWithSdFunc func(ctx context.Context, sd Sd, attachableItemIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttachableItemWithMimeType], error)
+
+	// GetPluralAttachableItemsWithSdFunc mocks the GetPluralAttachableItemsWithSd method.
+	GetPluralAttachableItemsWithSdFunc func(ctx context.Context, sd Sd, attachableItemIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttachableItemWithContent], error)
 
 	// GetPluralAttendStatusesFunc mocks the GetPluralAttendStatuses method.
 	GetPluralAttendStatusesFunc func(ctx context.Context, attendStatusIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error)
@@ -1591,6 +1723,12 @@ type StoreMock struct {
 	// PluralDeleteAbsencesWithSdFunc mocks the PluralDeleteAbsencesWithSd method.
 	PluralDeleteAbsencesWithSdFunc func(ctx context.Context, sd Sd, absenceIDs []uuid.UUID) (int64, error)
 
+	// PluralDeleteAttachableItemsFunc mocks the PluralDeleteAttachableItems method.
+	PluralDeleteAttachableItemsFunc func(ctx context.Context, attachableItemIDs []uuid.UUID) (int64, error)
+
+	// PluralDeleteAttachableItemsWithSdFunc mocks the PluralDeleteAttachableItemsWithSd method.
+	PluralDeleteAttachableItemsWithSdFunc func(ctx context.Context, sd Sd, attachableItemIDs []uuid.UUID) (int64, error)
+
 	// PluralDeleteAttendStatusesFunc mocks the PluralDeleteAttendStatuses method.
 	PluralDeleteAttendStatusesFunc func(ctx context.Context, attendStatusIDs []uuid.UUID) (int64, error)
 
@@ -1665,6 +1803,12 @@ type StoreMock struct {
 
 	// RollbackFunc mocks the Rollback method.
 	RollbackFunc func(contextMoqParam context.Context, sd Sd) error
+
+	// UpdateAttachableItemFunc mocks the UpdateAttachableItem method.
+	UpdateAttachableItemFunc func(ctx context.Context, attachableItemID uuid.UUID, param parameter.UpdateAttachableItemParams) (entity.AttachableItem, error)
+
+	// UpdateAttachableItemWithSdFunc mocks the UpdateAttachableItemWithSd method.
+	UpdateAttachableItemWithSdFunc func(ctx context.Context, sd Sd, attachableItemID uuid.UUID, param parameter.UpdateAttachableItemParams) (entity.AttachableItem, error)
 
 	// UpdateAttendStatusFunc mocks the UpdateAttendStatus method.
 	UpdateAttendStatusFunc func(ctx context.Context, attendStatusID uuid.UUID, param parameter.UpdateAttendStatusParams) (entity.AttendStatus, error)
@@ -1842,6 +1986,22 @@ type StoreMock struct {
 			Ctx context.Context
 			// Sd is the sd argument value.
 			Sd Sd
+		}
+		// CountAttachableItems holds details about calls to the CountAttachableItems method.
+		CountAttachableItems []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereAttachableItemParam
+		}
+		// CountAttachableItemsWithSd holds details about calls to the CountAttachableItemsWithSd method.
+		CountAttachableItemsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereAttachableItemParam
 		}
 		// CountAttendStatuses holds details about calls to the CountAttendStatuses method.
 		CountAttendStatuses []struct {
@@ -2074,6 +2234,38 @@ type StoreMock struct {
 			Sd Sd
 			// Params is the params argument value.
 			Params []parameter.CreateAbsenceParam
+		}
+		// CreateAttachableItem holds details about calls to the CreateAttachableItem method.
+		CreateAttachableItem []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Param is the param argument value.
+			Param parameter.CreateAttachableItemParam
+		}
+		// CreateAttachableItemWithSd holds details about calls to the CreateAttachableItemWithSd method.
+		CreateAttachableItemWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Param is the param argument value.
+			Param parameter.CreateAttachableItemParam
+		}
+		// CreateAttachableItems holds details about calls to the CreateAttachableItems method.
+		CreateAttachableItems []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.CreateAttachableItemParam
+		}
+		// CreateAttachableItemsWithSd holds details about calls to the CreateAttachableItemsWithSd method.
+		CreateAttachableItemsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Params is the params argument value.
+			Params []parameter.CreateAttachableItemParam
 		}
 		// CreateAttendStatus holds details about calls to the CreateAttendStatus method.
 		CreateAttendStatus []struct {
@@ -2410,6 +2602,22 @@ type StoreMock struct {
 			Sd Sd
 			// AbsenceID is the absenceID argument value.
 			AbsenceID uuid.UUID
+		}
+		// DeleteAttachableItem holds details about calls to the DeleteAttachableItem method.
+		DeleteAttachableItem []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AttachableItemID is the attachableItemID argument value.
+			AttachableItemID uuid.UUID
+		}
+		// DeleteAttachableItemWithSd holds details about calls to the DeleteAttachableItemWithSd method.
+		DeleteAttachableItemWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// AttachableItemID is the attachableItemID argument value.
+			AttachableItemID uuid.UUID
 		}
 		// DeleteAttendStatus holds details about calls to the DeleteAttendStatus method.
 		DeleteAttendStatus []struct {
@@ -2815,6 +3023,38 @@ type StoreMock struct {
 			// AbsenceID is the absenceID argument value.
 			AbsenceID uuid.UUID
 		}
+		// FindAttachableItemByID holds details about calls to the FindAttachableItemByID method.
+		FindAttachableItemByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AttachableItemID is the attachableItemID argument value.
+			AttachableItemID uuid.UUID
+		}
+		// FindAttachableItemByIDWithMimeType holds details about calls to the FindAttachableItemByIDWithMimeType method.
+		FindAttachableItemByIDWithMimeType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AttachableItemID is the attachableItemID argument value.
+			AttachableItemID uuid.UUID
+		}
+		// FindAttachableItemByIDWithMimeTypeWithSd holds details about calls to the FindAttachableItemByIDWithMimeTypeWithSd method.
+		FindAttachableItemByIDWithMimeTypeWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// AttachableItemID is the attachableItemID argument value.
+			AttachableItemID uuid.UUID
+		}
+		// FindAttachableItemByIDWithSd holds details about calls to the FindAttachableItemByIDWithSd method.
+		FindAttachableItemByIDWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// AttachableItemID is the attachableItemID argument value.
+			AttachableItemID uuid.UUID
+		}
 		// FindAttendStatusByID holds details about calls to the FindAttendStatusByID method.
 		FindAttendStatusByID []struct {
 			// Ctx is the ctx argument value.
@@ -3211,6 +3451,70 @@ type StoreMock struct {
 			// Wc is the wc argument value.
 			Wc WithCountParam
 		}
+		// GetAttachableItems holds details about calls to the GetAttachableItems method.
+		GetAttachableItems []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereAttachableItemParam
+			// Order is the order argument value.
+			Order parameter.AttachableItemOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetAttachableItemsWithMimeType holds details about calls to the GetAttachableItemsWithMimeType method.
+		GetAttachableItemsWithMimeType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereAttachableItemParam
+			// Order is the order argument value.
+			Order parameter.AttachableItemOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetAttachableItemsWithMimeTypeWithSd holds details about calls to the GetAttachableItemsWithMimeTypeWithSd method.
+		GetAttachableItemsWithMimeTypeWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereAttachableItemParam
+			// Order is the order argument value.
+			Order parameter.AttachableItemOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetAttachableItemsWithSd holds details about calls to the GetAttachableItemsWithSd method.
+		GetAttachableItemsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereAttachableItemParam
+			// Order is the order argument value.
+			Order parameter.AttachableItemOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
 		// GetAttendStatuses holds details about calls to the GetAttendStatuses method.
 		GetAttendStatuses []struct {
 			// Ctx is the ctx argument value.
@@ -3452,6 +3756,46 @@ type StoreMock struct {
 			Sd Sd
 			// Ids is the ids argument value.
 			Ids []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralAttachableItems holds details about calls to the GetPluralAttachableItems method.
+		GetPluralAttachableItems []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AttachableItemIDs is the attachableItemIDs argument value.
+			AttachableItemIDs []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralAttachableItemsWithMimeType holds details about calls to the GetPluralAttachableItemsWithMimeType method.
+		GetPluralAttachableItemsWithMimeType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AttachableItemIDs is the attachableItemIDs argument value.
+			AttachableItemIDs []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralAttachableItemsWithMimeTypeWithSd holds details about calls to the GetPluralAttachableItemsWithMimeTypeWithSd method.
+		GetPluralAttachableItemsWithMimeTypeWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// AttachableItemIDs is the attachableItemIDs argument value.
+			AttachableItemIDs []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralAttachableItemsWithSd holds details about calls to the GetPluralAttachableItemsWithSd method.
+		GetPluralAttachableItemsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// AttachableItemIDs is the attachableItemIDs argument value.
+			AttachableItemIDs []uuid.UUID
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 		}
@@ -3903,6 +4247,22 @@ type StoreMock struct {
 			// AbsenceIDs is the absenceIDs argument value.
 			AbsenceIDs []uuid.UUID
 		}
+		// PluralDeleteAttachableItems holds details about calls to the PluralDeleteAttachableItems method.
+		PluralDeleteAttachableItems []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AttachableItemIDs is the attachableItemIDs argument value.
+			AttachableItemIDs []uuid.UUID
+		}
+		// PluralDeleteAttachableItemsWithSd holds details about calls to the PluralDeleteAttachableItemsWithSd method.
+		PluralDeleteAttachableItemsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// AttachableItemIDs is the attachableItemIDs argument value.
+			AttachableItemIDs []uuid.UUID
+		}
 		// PluralDeleteAttendStatuses holds details about calls to the PluralDeleteAttendStatuses method.
 		PluralDeleteAttendStatuses []struct {
 			// Ctx is the ctx argument value.
@@ -4109,6 +4469,26 @@ type StoreMock struct {
 			ContextMoqParam context.Context
 			// Sd is the sd argument value.
 			Sd Sd
+		}
+		// UpdateAttachableItem holds details about calls to the UpdateAttachableItem method.
+		UpdateAttachableItem []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AttachableItemID is the attachableItemID argument value.
+			AttachableItemID uuid.UUID
+			// Param is the param argument value.
+			Param parameter.UpdateAttachableItemParams
+		}
+		// UpdateAttachableItemWithSd holds details about calls to the UpdateAttachableItemWithSd method.
+		UpdateAttachableItemWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// AttachableItemID is the attachableItemID argument value.
+			AttachableItemID uuid.UUID
+			// Param is the param argument value.
+			Param parameter.UpdateAttachableItemParams
 		}
 		// UpdateAttendStatus holds details about calls to the UpdateAttendStatus method.
 		UpdateAttendStatus []struct {
@@ -4491,298 +4871,322 @@ type StoreMock struct {
 			Param parameter.UpdateRoleParams
 		}
 	}
-	lockAssociateRole                          sync.RWMutex
-	lockAssociateRoleWithSd                    sync.RWMutex
-	lockAssociateRoles                         sync.RWMutex
-	lockAssociateRolesWithSd                   sync.RWMutex
-	lockBegin                                  sync.RWMutex
-	lockCleanup                                sync.RWMutex
-	lockCommit                                 sync.RWMutex
-	lockCountAbsences                          sync.RWMutex
-	lockCountAbsencesWithSd                    sync.RWMutex
-	lockCountAttendStatuses                    sync.RWMutex
-	lockCountAttendStatusesWithSd              sync.RWMutex
-	lockCountAttendanceTypes                   sync.RWMutex
-	lockCountAttendanceTypesWithSd             sync.RWMutex
-	lockCountEventTypes                        sync.RWMutex
-	lockCountEventTypesWithSd                  sync.RWMutex
-	lockCountMimeTypes                         sync.RWMutex
-	lockCountMimeTypesWithSd                   sync.RWMutex
-	lockCountPermissionCategories              sync.RWMutex
-	lockCountPermissionCategoriesWithSd        sync.RWMutex
-	lockCountPermissions                       sync.RWMutex
-	lockCountPermissionsWithSd                 sync.RWMutex
-	lockCountPolicies                          sync.RWMutex
-	lockCountPoliciesOnRole                    sync.RWMutex
-	lockCountPoliciesOnRoleWithSd              sync.RWMutex
-	lockCountPoliciesWithSd                    sync.RWMutex
-	lockCountPolicyCategories                  sync.RWMutex
-	lockCountPolicyCategoriesWithSd            sync.RWMutex
-	lockCountRecordTypes                       sync.RWMutex
-	lockCountRecordTypesWithSd                 sync.RWMutex
-	lockCountRoles                             sync.RWMutex
-	lockCountRolesOnPolicy                     sync.RWMutex
-	lockCountRolesOnPolicyWithSd               sync.RWMutex
-	lockCountRolesWithSd                       sync.RWMutex
-	lockCreateAbsence                          sync.RWMutex
-	lockCreateAbsenceWithSd                    sync.RWMutex
-	lockCreateAbsences                         sync.RWMutex
-	lockCreateAbsencesWithSd                   sync.RWMutex
-	lockCreateAttendStatus                     sync.RWMutex
-	lockCreateAttendStatusWithSd               sync.RWMutex
-	lockCreateAttendStatuses                   sync.RWMutex
-	lockCreateAttendStatusesWithSd             sync.RWMutex
-	lockCreateAttendanceType                   sync.RWMutex
-	lockCreateAttendanceTypeWithSd             sync.RWMutex
-	lockCreateAttendanceTypes                  sync.RWMutex
-	lockCreateAttendanceTypesWithSd            sync.RWMutex
-	lockCreateEventType                        sync.RWMutex
-	lockCreateEventTypeWithSd                  sync.RWMutex
-	lockCreateEventTypes                       sync.RWMutex
-	lockCreateEventTypesWithSd                 sync.RWMutex
-	lockCreateMimeType                         sync.RWMutex
-	lockCreateMimeTypeWithSd                   sync.RWMutex
-	lockCreateMimeTypes                        sync.RWMutex
-	lockCreateMimeTypesWithSd                  sync.RWMutex
-	lockCreatePermission                       sync.RWMutex
-	lockCreatePermissionCategories             sync.RWMutex
-	lockCreatePermissionCategoriesWithSd       sync.RWMutex
-	lockCreatePermissionCategory               sync.RWMutex
-	lockCreatePermissionCategoryWithSd         sync.RWMutex
-	lockCreatePermissionWithSd                 sync.RWMutex
-	lockCreatePermissions                      sync.RWMutex
-	lockCreatePermissionsWithSd                sync.RWMutex
-	lockCreatePolicies                         sync.RWMutex
-	lockCreatePoliciesWithSd                   sync.RWMutex
-	lockCreatePolicy                           sync.RWMutex
-	lockCreatePolicyCategories                 sync.RWMutex
-	lockCreatePolicyCategoriesWithSd           sync.RWMutex
-	lockCreatePolicyCategory                   sync.RWMutex
-	lockCreatePolicyCategoryWithSd             sync.RWMutex
-	lockCreatePolicyWithSd                     sync.RWMutex
-	lockCreateRecordType                       sync.RWMutex
-	lockCreateRecordTypeWithSd                 sync.RWMutex
-	lockCreateRecordTypes                      sync.RWMutex
-	lockCreateRecordTypesWithSd                sync.RWMutex
-	lockCreateRole                             sync.RWMutex
-	lockCreateRoleWithSd                       sync.RWMutex
-	lockCreateRoles                            sync.RWMutex
-	lockCreateRolesWithSd                      sync.RWMutex
-	lockDeleteAbsence                          sync.RWMutex
-	lockDeleteAbsenceWithSd                    sync.RWMutex
-	lockDeleteAttendStatus                     sync.RWMutex
-	lockDeleteAttendStatusByKey                sync.RWMutex
-	lockDeleteAttendStatusByKeyWithSd          sync.RWMutex
-	lockDeleteAttendStatusWithSd               sync.RWMutex
-	lockDeleteAttendanceType                   sync.RWMutex
-	lockDeleteAttendanceTypeByKey              sync.RWMutex
-	lockDeleteAttendanceTypeByKeyWithSd        sync.RWMutex
-	lockDeleteAttendanceTypeWithSd             sync.RWMutex
-	lockDeleteEventType                        sync.RWMutex
-	lockDeleteEventTypeByKey                   sync.RWMutex
-	lockDeleteEventTypeByKeyWithSd             sync.RWMutex
-	lockDeleteEventTypeWithSd                  sync.RWMutex
-	lockDeleteMimeType                         sync.RWMutex
-	lockDeleteMimeTypeByKey                    sync.RWMutex
-	lockDeleteMimeTypeByKeyWithSd              sync.RWMutex
-	lockDeleteMimeTypeWithSd                   sync.RWMutex
-	lockDeletePermission                       sync.RWMutex
-	lockDeletePermissionByKey                  sync.RWMutex
-	lockDeletePermissionByKeyWithSd            sync.RWMutex
-	lockDeletePermissionCategory               sync.RWMutex
-	lockDeletePermissionCategoryByKey          sync.RWMutex
-	lockDeletePermissionCategoryByKeyWithSd    sync.RWMutex
-	lockDeletePermissionCategoryWithSd         sync.RWMutex
-	lockDeletePermissionWithSd                 sync.RWMutex
-	lockDeletePolicy                           sync.RWMutex
-	lockDeletePolicyByKey                      sync.RWMutex
-	lockDeletePolicyByKeyWithSd                sync.RWMutex
-	lockDeletePolicyCategory                   sync.RWMutex
-	lockDeletePolicyCategoryByKey              sync.RWMutex
-	lockDeletePolicyCategoryByKeyWithSd        sync.RWMutex
-	lockDeletePolicyCategoryWithSd             sync.RWMutex
-	lockDeletePolicyWithSd                     sync.RWMutex
-	lockDeleteRecordType                       sync.RWMutex
-	lockDeleteRecordTypeByKey                  sync.RWMutex
-	lockDeleteRecordTypeByKeyWithSd            sync.RWMutex
-	lockDeleteRecordTypeWithSd                 sync.RWMutex
-	lockDeleteRole                             sync.RWMutex
-	lockDeleteRoleWithSd                       sync.RWMutex
-	lockDisassociatePolicyOnRole               sync.RWMutex
-	lockDisassociatePolicyOnRoleWithSd         sync.RWMutex
-	lockDisassociatePolicyOnRoles              sync.RWMutex
-	lockDisassociatePolicyOnRolesWithSd        sync.RWMutex
-	lockDisassociateRole                       sync.RWMutex
-	lockDisassociateRoleOnPolicies             sync.RWMutex
-	lockDisassociateRoleOnPoliciesWithSd       sync.RWMutex
-	lockDisassociateRoleOnPolicy               sync.RWMutex
-	lockDisassociateRoleOnPolicyWithSd         sync.RWMutex
-	lockDisassociateRoleWithSd                 sync.RWMutex
-	lockFindAbsenceByID                        sync.RWMutex
-	lockFindAbsenceByIDWithSd                  sync.RWMutex
-	lockFindAttendStatusByID                   sync.RWMutex
-	lockFindAttendStatusByIDWithSd             sync.RWMutex
-	lockFindAttendStatusByKey                  sync.RWMutex
-	lockFindAttendStatusByKeyWithSd            sync.RWMutex
-	lockFindAttendanceTypeByID                 sync.RWMutex
-	lockFindAttendanceTypeByIDWithSd           sync.RWMutex
-	lockFindAttendanceTypeByKey                sync.RWMutex
-	lockFindAttendanceTypeByKeyWithSd          sync.RWMutex
-	lockFindEventTypeByID                      sync.RWMutex
-	lockFindEventTypeByIDWithSd                sync.RWMutex
-	lockFindEventTypeByKey                     sync.RWMutex
-	lockFindEventTypeByKeyWithSd               sync.RWMutex
-	lockFindMimeTypeByID                       sync.RWMutex
-	lockFindMimeTypeByIDWithSd                 sync.RWMutex
-	lockFindMimeTypeByKey                      sync.RWMutex
-	lockFindMimeTypeByKeyWithSd                sync.RWMutex
-	lockFindPermissionByID                     sync.RWMutex
-	lockFindPermissionByIDWithCategory         sync.RWMutex
-	lockFindPermissionByIDWithCategoryWithSd   sync.RWMutex
-	lockFindPermissionByIDWithSd               sync.RWMutex
-	lockFindPermissionByKey                    sync.RWMutex
-	lockFindPermissionByKeyWithCategory        sync.RWMutex
-	lockFindPermissionByKeyWithCategoryWithSd  sync.RWMutex
-	lockFindPermissionByKeyWithSd              sync.RWMutex
-	lockFindPermissionCategoryByID             sync.RWMutex
-	lockFindPermissionCategoryByIDWithSd       sync.RWMutex
-	lockFindPermissionCategoryByKey            sync.RWMutex
-	lockFindPermissionCategoryByKeyWithSd      sync.RWMutex
-	lockFindPolicyByID                         sync.RWMutex
-	lockFindPolicyByIDWithCategory             sync.RWMutex
-	lockFindPolicyByIDWithCategoryWithSd       sync.RWMutex
-	lockFindPolicyByIDWithSd                   sync.RWMutex
-	lockFindPolicyByKey                        sync.RWMutex
-	lockFindPolicyByKeyWithCategory            sync.RWMutex
-	lockFindPolicyByKeyWithCategoryWithSd      sync.RWMutex
-	lockFindPolicyByKeyWithSd                  sync.RWMutex
-	lockFindPolicyCategoryByID                 sync.RWMutex
-	lockFindPolicyCategoryByIDWithSd           sync.RWMutex
-	lockFindPolicyCategoryByKey                sync.RWMutex
-	lockFindPolicyCategoryByKeyWithSd          sync.RWMutex
-	lockFindRecordTypeByID                     sync.RWMutex
-	lockFindRecordTypeByIDWithSd               sync.RWMutex
-	lockFindRecordTypeByKey                    sync.RWMutex
-	lockFindRecordTypeByKeyWithSd              sync.RWMutex
-	lockFindRoleByID                           sync.RWMutex
-	lockFindRoleByIDWithSd                     sync.RWMutex
-	lockGetAbsences                            sync.RWMutex
-	lockGetAbsencesWithSd                      sync.RWMutex
-	lockGetAttendStatuses                      sync.RWMutex
-	lockGetAttendStatusesWithSd                sync.RWMutex
-	lockGetAttendanceTypes                     sync.RWMutex
-	lockGetAttendanceTypesWithSd               sync.RWMutex
-	lockGetEventTypes                          sync.RWMutex
-	lockGetEventTypesWithSd                    sync.RWMutex
-	lockGetMimeTypes                           sync.RWMutex
-	lockGetMimeTypesWithSd                     sync.RWMutex
-	lockGetPermissionCategories                sync.RWMutex
-	lockGetPermissionCategoriesWithSd          sync.RWMutex
-	lockGetPermissions                         sync.RWMutex
-	lockGetPermissionsWithCategory             sync.RWMutex
-	lockGetPermissionsWithCategoryWithSd       sync.RWMutex
-	lockGetPermissionsWithSd                   sync.RWMutex
-	lockGetPluralAbsences                      sync.RWMutex
-	lockGetPluralAbsencesWithSd                sync.RWMutex
-	lockGetPluralAttendStatuses                sync.RWMutex
-	lockGetPluralAttendStatusesWithSd          sync.RWMutex
-	lockGetPluralAttendanceTypes               sync.RWMutex
-	lockGetPluralAttendanceTypesWithSd         sync.RWMutex
-	lockGetPluralEventTypes                    sync.RWMutex
-	lockGetPluralEventTypesWithSd              sync.RWMutex
-	lockGetPluralMimeTypes                     sync.RWMutex
-	lockGetPluralMimeTypesWithSd               sync.RWMutex
-	lockGetPluralPermissionCategories          sync.RWMutex
-	lockGetPluralPermissionCategoriesWithSd    sync.RWMutex
-	lockGetPluralPermissions                   sync.RWMutex
-	lockGetPluralPermissionsWithSd             sync.RWMutex
-	lockGetPluralPolicies                      sync.RWMutex
-	lockGetPluralPoliciesWithSd                sync.RWMutex
-	lockGetPluralPolicyCategories              sync.RWMutex
-	lockGetPluralPolicyCategoriesWithSd        sync.RWMutex
-	lockGetPluralRecordTypes                   sync.RWMutex
-	lockGetPluralRecordTypesWithSd             sync.RWMutex
-	lockGetPluralRoles                         sync.RWMutex
-	lockGetPluralRolesWithSd                   sync.RWMutex
-	lockGetPolicies                            sync.RWMutex
-	lockGetPoliciesOnRole                      sync.RWMutex
-	lockGetPoliciesOnRoleWithSd                sync.RWMutex
-	lockGetPoliciesWithCategory                sync.RWMutex
-	lockGetPoliciesWithCategoryWithSd          sync.RWMutex
-	lockGetPoliciesWithSd                      sync.RWMutex
-	lockGetPolicyCategories                    sync.RWMutex
-	lockGetPolicyCategoriesWithSd              sync.RWMutex
-	lockGetRecordTypes                         sync.RWMutex
-	lockGetRecordTypesWithSd                   sync.RWMutex
-	lockGetRoles                               sync.RWMutex
-	lockGetRolesOnPolicy                       sync.RWMutex
-	lockGetRolesOnPolicyWithSd                 sync.RWMutex
-	lockGetRolesWithSd                         sync.RWMutex
-	lockPluralDeleteAbsences                   sync.RWMutex
-	lockPluralDeleteAbsencesWithSd             sync.RWMutex
-	lockPluralDeleteAttendStatuses             sync.RWMutex
-	lockPluralDeleteAttendStatusesWithSd       sync.RWMutex
-	lockPluralDeleteAttendanceTypes            sync.RWMutex
-	lockPluralDeleteAttendanceTypesWithSd      sync.RWMutex
-	lockPluralDeleteEventTypes                 sync.RWMutex
-	lockPluralDeleteEventTypesWithSd           sync.RWMutex
-	lockPluralDeleteMimeTypes                  sync.RWMutex
-	lockPluralDeleteMimeTypesWithSd            sync.RWMutex
-	lockPluralDeletePermissionCategories       sync.RWMutex
-	lockPluralDeletePermissionCategoriesWithSd sync.RWMutex
-	lockPluralDeletePermissions                sync.RWMutex
-	lockPluralDeletePermissionsWithSd          sync.RWMutex
-	lockPluralDeletePolicies                   sync.RWMutex
-	lockPluralDeletePoliciesWithSd             sync.RWMutex
-	lockPluralDeletePolicyCategories           sync.RWMutex
-	lockPluralDeletePolicyCategoriesWithSd     sync.RWMutex
-	lockPluralDeleteRecordTypes                sync.RWMutex
-	lockPluralDeleteRecordTypesWithSd          sync.RWMutex
-	lockPluralDeleteRoles                      sync.RWMutex
-	lockPluralDeleteRolesWithSd                sync.RWMutex
-	lockPluralDisassociatePolicyOnRole         sync.RWMutex
-	lockPluralDisassociatePolicyOnRoleWithSd   sync.RWMutex
-	lockPluralDisassociateRoleOnPolicy         sync.RWMutex
-	lockPluralDisassociateRoleOnPolicyWithSd   sync.RWMutex
-	lockRollback                               sync.RWMutex
-	lockUpdateAttendStatus                     sync.RWMutex
-	lockUpdateAttendStatusByKey                sync.RWMutex
-	lockUpdateAttendStatusByKeyWithSd          sync.RWMutex
-	lockUpdateAttendStatusWithSd               sync.RWMutex
-	lockUpdateAttendanceType                   sync.RWMutex
-	lockUpdateAttendanceTypeByKey              sync.RWMutex
-	lockUpdateAttendanceTypeByKeyWithSd        sync.RWMutex
-	lockUpdateAttendanceTypeWithSd             sync.RWMutex
-	lockUpdateEventType                        sync.RWMutex
-	lockUpdateEventTypeByKey                   sync.RWMutex
-	lockUpdateEventTypeByKeyWithSd             sync.RWMutex
-	lockUpdateEventTypeWithSd                  sync.RWMutex
-	lockUpdateMimeType                         sync.RWMutex
-	lockUpdateMimeTypeByKey                    sync.RWMutex
-	lockUpdateMimeTypeByKeyWithSd              sync.RWMutex
-	lockUpdateMimeTypeWithSd                   sync.RWMutex
-	lockUpdatePermission                       sync.RWMutex
-	lockUpdatePermissionByKey                  sync.RWMutex
-	lockUpdatePermissionByKeyWithSd            sync.RWMutex
-	lockUpdatePermissionCategory               sync.RWMutex
-	lockUpdatePermissionCategoryByKey          sync.RWMutex
-	lockUpdatePermissionCategoryByKeyWithSd    sync.RWMutex
-	lockUpdatePermissionCategoryWithSd         sync.RWMutex
-	lockUpdatePermissionWithSd                 sync.RWMutex
-	lockUpdatePolicy                           sync.RWMutex
-	lockUpdatePolicyByKey                      sync.RWMutex
-	lockUpdatePolicyByKeyWithSd                sync.RWMutex
-	lockUpdatePolicyCategory                   sync.RWMutex
-	lockUpdatePolicyCategoryByKey              sync.RWMutex
-	lockUpdatePolicyCategoryByKeyWithSd        sync.RWMutex
-	lockUpdatePolicyCategoryWithSd             sync.RWMutex
-	lockUpdatePolicyWithSd                     sync.RWMutex
-	lockUpdateRecordType                       sync.RWMutex
-	lockUpdateRecordTypeByKey                  sync.RWMutex
-	lockUpdateRecordTypeByKeyWithSd            sync.RWMutex
-	lockUpdateRecordTypeWithSd                 sync.RWMutex
-	lockUpdateRole                             sync.RWMutex
-	lockUpdateRoleWithSd                       sync.RWMutex
+	lockAssociateRole                              sync.RWMutex
+	lockAssociateRoleWithSd                        sync.RWMutex
+	lockAssociateRoles                             sync.RWMutex
+	lockAssociateRolesWithSd                       sync.RWMutex
+	lockBegin                                      sync.RWMutex
+	lockCleanup                                    sync.RWMutex
+	lockCommit                                     sync.RWMutex
+	lockCountAbsences                              sync.RWMutex
+	lockCountAbsencesWithSd                        sync.RWMutex
+	lockCountAttachableItems                       sync.RWMutex
+	lockCountAttachableItemsWithSd                 sync.RWMutex
+	lockCountAttendStatuses                        sync.RWMutex
+	lockCountAttendStatusesWithSd                  sync.RWMutex
+	lockCountAttendanceTypes                       sync.RWMutex
+	lockCountAttendanceTypesWithSd                 sync.RWMutex
+	lockCountEventTypes                            sync.RWMutex
+	lockCountEventTypesWithSd                      sync.RWMutex
+	lockCountMimeTypes                             sync.RWMutex
+	lockCountMimeTypesWithSd                       sync.RWMutex
+	lockCountPermissionCategories                  sync.RWMutex
+	lockCountPermissionCategoriesWithSd            sync.RWMutex
+	lockCountPermissions                           sync.RWMutex
+	lockCountPermissionsWithSd                     sync.RWMutex
+	lockCountPolicies                              sync.RWMutex
+	lockCountPoliciesOnRole                        sync.RWMutex
+	lockCountPoliciesOnRoleWithSd                  sync.RWMutex
+	lockCountPoliciesWithSd                        sync.RWMutex
+	lockCountPolicyCategories                      sync.RWMutex
+	lockCountPolicyCategoriesWithSd                sync.RWMutex
+	lockCountRecordTypes                           sync.RWMutex
+	lockCountRecordTypesWithSd                     sync.RWMutex
+	lockCountRoles                                 sync.RWMutex
+	lockCountRolesOnPolicy                         sync.RWMutex
+	lockCountRolesOnPolicyWithSd                   sync.RWMutex
+	lockCountRolesWithSd                           sync.RWMutex
+	lockCreateAbsence                              sync.RWMutex
+	lockCreateAbsenceWithSd                        sync.RWMutex
+	lockCreateAbsences                             sync.RWMutex
+	lockCreateAbsencesWithSd                       sync.RWMutex
+	lockCreateAttachableItem                       sync.RWMutex
+	lockCreateAttachableItemWithSd                 sync.RWMutex
+	lockCreateAttachableItems                      sync.RWMutex
+	lockCreateAttachableItemsWithSd                sync.RWMutex
+	lockCreateAttendStatus                         sync.RWMutex
+	lockCreateAttendStatusWithSd                   sync.RWMutex
+	lockCreateAttendStatuses                       sync.RWMutex
+	lockCreateAttendStatusesWithSd                 sync.RWMutex
+	lockCreateAttendanceType                       sync.RWMutex
+	lockCreateAttendanceTypeWithSd                 sync.RWMutex
+	lockCreateAttendanceTypes                      sync.RWMutex
+	lockCreateAttendanceTypesWithSd                sync.RWMutex
+	lockCreateEventType                            sync.RWMutex
+	lockCreateEventTypeWithSd                      sync.RWMutex
+	lockCreateEventTypes                           sync.RWMutex
+	lockCreateEventTypesWithSd                     sync.RWMutex
+	lockCreateMimeType                             sync.RWMutex
+	lockCreateMimeTypeWithSd                       sync.RWMutex
+	lockCreateMimeTypes                            sync.RWMutex
+	lockCreateMimeTypesWithSd                      sync.RWMutex
+	lockCreatePermission                           sync.RWMutex
+	lockCreatePermissionCategories                 sync.RWMutex
+	lockCreatePermissionCategoriesWithSd           sync.RWMutex
+	lockCreatePermissionCategory                   sync.RWMutex
+	lockCreatePermissionCategoryWithSd             sync.RWMutex
+	lockCreatePermissionWithSd                     sync.RWMutex
+	lockCreatePermissions                          sync.RWMutex
+	lockCreatePermissionsWithSd                    sync.RWMutex
+	lockCreatePolicies                             sync.RWMutex
+	lockCreatePoliciesWithSd                       sync.RWMutex
+	lockCreatePolicy                               sync.RWMutex
+	lockCreatePolicyCategories                     sync.RWMutex
+	lockCreatePolicyCategoriesWithSd               sync.RWMutex
+	lockCreatePolicyCategory                       sync.RWMutex
+	lockCreatePolicyCategoryWithSd                 sync.RWMutex
+	lockCreatePolicyWithSd                         sync.RWMutex
+	lockCreateRecordType                           sync.RWMutex
+	lockCreateRecordTypeWithSd                     sync.RWMutex
+	lockCreateRecordTypes                          sync.RWMutex
+	lockCreateRecordTypesWithSd                    sync.RWMutex
+	lockCreateRole                                 sync.RWMutex
+	lockCreateRoleWithSd                           sync.RWMutex
+	lockCreateRoles                                sync.RWMutex
+	lockCreateRolesWithSd                          sync.RWMutex
+	lockDeleteAbsence                              sync.RWMutex
+	lockDeleteAbsenceWithSd                        sync.RWMutex
+	lockDeleteAttachableItem                       sync.RWMutex
+	lockDeleteAttachableItemWithSd                 sync.RWMutex
+	lockDeleteAttendStatus                         sync.RWMutex
+	lockDeleteAttendStatusByKey                    sync.RWMutex
+	lockDeleteAttendStatusByKeyWithSd              sync.RWMutex
+	lockDeleteAttendStatusWithSd                   sync.RWMutex
+	lockDeleteAttendanceType                       sync.RWMutex
+	lockDeleteAttendanceTypeByKey                  sync.RWMutex
+	lockDeleteAttendanceTypeByKeyWithSd            sync.RWMutex
+	lockDeleteAttendanceTypeWithSd                 sync.RWMutex
+	lockDeleteEventType                            sync.RWMutex
+	lockDeleteEventTypeByKey                       sync.RWMutex
+	lockDeleteEventTypeByKeyWithSd                 sync.RWMutex
+	lockDeleteEventTypeWithSd                      sync.RWMutex
+	lockDeleteMimeType                             sync.RWMutex
+	lockDeleteMimeTypeByKey                        sync.RWMutex
+	lockDeleteMimeTypeByKeyWithSd                  sync.RWMutex
+	lockDeleteMimeTypeWithSd                       sync.RWMutex
+	lockDeletePermission                           sync.RWMutex
+	lockDeletePermissionByKey                      sync.RWMutex
+	lockDeletePermissionByKeyWithSd                sync.RWMutex
+	lockDeletePermissionCategory                   sync.RWMutex
+	lockDeletePermissionCategoryByKey              sync.RWMutex
+	lockDeletePermissionCategoryByKeyWithSd        sync.RWMutex
+	lockDeletePermissionCategoryWithSd             sync.RWMutex
+	lockDeletePermissionWithSd                     sync.RWMutex
+	lockDeletePolicy                               sync.RWMutex
+	lockDeletePolicyByKey                          sync.RWMutex
+	lockDeletePolicyByKeyWithSd                    sync.RWMutex
+	lockDeletePolicyCategory                       sync.RWMutex
+	lockDeletePolicyCategoryByKey                  sync.RWMutex
+	lockDeletePolicyCategoryByKeyWithSd            sync.RWMutex
+	lockDeletePolicyCategoryWithSd                 sync.RWMutex
+	lockDeletePolicyWithSd                         sync.RWMutex
+	lockDeleteRecordType                           sync.RWMutex
+	lockDeleteRecordTypeByKey                      sync.RWMutex
+	lockDeleteRecordTypeByKeyWithSd                sync.RWMutex
+	lockDeleteRecordTypeWithSd                     sync.RWMutex
+	lockDeleteRole                                 sync.RWMutex
+	lockDeleteRoleWithSd                           sync.RWMutex
+	lockDisassociatePolicyOnRole                   sync.RWMutex
+	lockDisassociatePolicyOnRoleWithSd             sync.RWMutex
+	lockDisassociatePolicyOnRoles                  sync.RWMutex
+	lockDisassociatePolicyOnRolesWithSd            sync.RWMutex
+	lockDisassociateRole                           sync.RWMutex
+	lockDisassociateRoleOnPolicies                 sync.RWMutex
+	lockDisassociateRoleOnPoliciesWithSd           sync.RWMutex
+	lockDisassociateRoleOnPolicy                   sync.RWMutex
+	lockDisassociateRoleOnPolicyWithSd             sync.RWMutex
+	lockDisassociateRoleWithSd                     sync.RWMutex
+	lockFindAbsenceByID                            sync.RWMutex
+	lockFindAbsenceByIDWithSd                      sync.RWMutex
+	lockFindAttachableItemByID                     sync.RWMutex
+	lockFindAttachableItemByIDWithMimeType         sync.RWMutex
+	lockFindAttachableItemByIDWithMimeTypeWithSd   sync.RWMutex
+	lockFindAttachableItemByIDWithSd               sync.RWMutex
+	lockFindAttendStatusByID                       sync.RWMutex
+	lockFindAttendStatusByIDWithSd                 sync.RWMutex
+	lockFindAttendStatusByKey                      sync.RWMutex
+	lockFindAttendStatusByKeyWithSd                sync.RWMutex
+	lockFindAttendanceTypeByID                     sync.RWMutex
+	lockFindAttendanceTypeByIDWithSd               sync.RWMutex
+	lockFindAttendanceTypeByKey                    sync.RWMutex
+	lockFindAttendanceTypeByKeyWithSd              sync.RWMutex
+	lockFindEventTypeByID                          sync.RWMutex
+	lockFindEventTypeByIDWithSd                    sync.RWMutex
+	lockFindEventTypeByKey                         sync.RWMutex
+	lockFindEventTypeByKeyWithSd                   sync.RWMutex
+	lockFindMimeTypeByID                           sync.RWMutex
+	lockFindMimeTypeByIDWithSd                     sync.RWMutex
+	lockFindMimeTypeByKey                          sync.RWMutex
+	lockFindMimeTypeByKeyWithSd                    sync.RWMutex
+	lockFindPermissionByID                         sync.RWMutex
+	lockFindPermissionByIDWithCategory             sync.RWMutex
+	lockFindPermissionByIDWithCategoryWithSd       sync.RWMutex
+	lockFindPermissionByIDWithSd                   sync.RWMutex
+	lockFindPermissionByKey                        sync.RWMutex
+	lockFindPermissionByKeyWithCategory            sync.RWMutex
+	lockFindPermissionByKeyWithCategoryWithSd      sync.RWMutex
+	lockFindPermissionByKeyWithSd                  sync.RWMutex
+	lockFindPermissionCategoryByID                 sync.RWMutex
+	lockFindPermissionCategoryByIDWithSd           sync.RWMutex
+	lockFindPermissionCategoryByKey                sync.RWMutex
+	lockFindPermissionCategoryByKeyWithSd          sync.RWMutex
+	lockFindPolicyByID                             sync.RWMutex
+	lockFindPolicyByIDWithCategory                 sync.RWMutex
+	lockFindPolicyByIDWithCategoryWithSd           sync.RWMutex
+	lockFindPolicyByIDWithSd                       sync.RWMutex
+	lockFindPolicyByKey                            sync.RWMutex
+	lockFindPolicyByKeyWithCategory                sync.RWMutex
+	lockFindPolicyByKeyWithCategoryWithSd          sync.RWMutex
+	lockFindPolicyByKeyWithSd                      sync.RWMutex
+	lockFindPolicyCategoryByID                     sync.RWMutex
+	lockFindPolicyCategoryByIDWithSd               sync.RWMutex
+	lockFindPolicyCategoryByKey                    sync.RWMutex
+	lockFindPolicyCategoryByKeyWithSd              sync.RWMutex
+	lockFindRecordTypeByID                         sync.RWMutex
+	lockFindRecordTypeByIDWithSd                   sync.RWMutex
+	lockFindRecordTypeByKey                        sync.RWMutex
+	lockFindRecordTypeByKeyWithSd                  sync.RWMutex
+	lockFindRoleByID                               sync.RWMutex
+	lockFindRoleByIDWithSd                         sync.RWMutex
+	lockGetAbsences                                sync.RWMutex
+	lockGetAbsencesWithSd                          sync.RWMutex
+	lockGetAttachableItems                         sync.RWMutex
+	lockGetAttachableItemsWithMimeType             sync.RWMutex
+	lockGetAttachableItemsWithMimeTypeWithSd       sync.RWMutex
+	lockGetAttachableItemsWithSd                   sync.RWMutex
+	lockGetAttendStatuses                          sync.RWMutex
+	lockGetAttendStatusesWithSd                    sync.RWMutex
+	lockGetAttendanceTypes                         sync.RWMutex
+	lockGetAttendanceTypesWithSd                   sync.RWMutex
+	lockGetEventTypes                              sync.RWMutex
+	lockGetEventTypesWithSd                        sync.RWMutex
+	lockGetMimeTypes                               sync.RWMutex
+	lockGetMimeTypesWithSd                         sync.RWMutex
+	lockGetPermissionCategories                    sync.RWMutex
+	lockGetPermissionCategoriesWithSd              sync.RWMutex
+	lockGetPermissions                             sync.RWMutex
+	lockGetPermissionsWithCategory                 sync.RWMutex
+	lockGetPermissionsWithCategoryWithSd           sync.RWMutex
+	lockGetPermissionsWithSd                       sync.RWMutex
+	lockGetPluralAbsences                          sync.RWMutex
+	lockGetPluralAbsencesWithSd                    sync.RWMutex
+	lockGetPluralAttachableItems                   sync.RWMutex
+	lockGetPluralAttachableItemsWithMimeType       sync.RWMutex
+	lockGetPluralAttachableItemsWithMimeTypeWithSd sync.RWMutex
+	lockGetPluralAttachableItemsWithSd             sync.RWMutex
+	lockGetPluralAttendStatuses                    sync.RWMutex
+	lockGetPluralAttendStatusesWithSd              sync.RWMutex
+	lockGetPluralAttendanceTypes                   sync.RWMutex
+	lockGetPluralAttendanceTypesWithSd             sync.RWMutex
+	lockGetPluralEventTypes                        sync.RWMutex
+	lockGetPluralEventTypesWithSd                  sync.RWMutex
+	lockGetPluralMimeTypes                         sync.RWMutex
+	lockGetPluralMimeTypesWithSd                   sync.RWMutex
+	lockGetPluralPermissionCategories              sync.RWMutex
+	lockGetPluralPermissionCategoriesWithSd        sync.RWMutex
+	lockGetPluralPermissions                       sync.RWMutex
+	lockGetPluralPermissionsWithSd                 sync.RWMutex
+	lockGetPluralPolicies                          sync.RWMutex
+	lockGetPluralPoliciesWithSd                    sync.RWMutex
+	lockGetPluralPolicyCategories                  sync.RWMutex
+	lockGetPluralPolicyCategoriesWithSd            sync.RWMutex
+	lockGetPluralRecordTypes                       sync.RWMutex
+	lockGetPluralRecordTypesWithSd                 sync.RWMutex
+	lockGetPluralRoles                             sync.RWMutex
+	lockGetPluralRolesWithSd                       sync.RWMutex
+	lockGetPolicies                                sync.RWMutex
+	lockGetPoliciesOnRole                          sync.RWMutex
+	lockGetPoliciesOnRoleWithSd                    sync.RWMutex
+	lockGetPoliciesWithCategory                    sync.RWMutex
+	lockGetPoliciesWithCategoryWithSd              sync.RWMutex
+	lockGetPoliciesWithSd                          sync.RWMutex
+	lockGetPolicyCategories                        sync.RWMutex
+	lockGetPolicyCategoriesWithSd                  sync.RWMutex
+	lockGetRecordTypes                             sync.RWMutex
+	lockGetRecordTypesWithSd                       sync.RWMutex
+	lockGetRoles                                   sync.RWMutex
+	lockGetRolesOnPolicy                           sync.RWMutex
+	lockGetRolesOnPolicyWithSd                     sync.RWMutex
+	lockGetRolesWithSd                             sync.RWMutex
+	lockPluralDeleteAbsences                       sync.RWMutex
+	lockPluralDeleteAbsencesWithSd                 sync.RWMutex
+	lockPluralDeleteAttachableItems                sync.RWMutex
+	lockPluralDeleteAttachableItemsWithSd          sync.RWMutex
+	lockPluralDeleteAttendStatuses                 sync.RWMutex
+	lockPluralDeleteAttendStatusesWithSd           sync.RWMutex
+	lockPluralDeleteAttendanceTypes                sync.RWMutex
+	lockPluralDeleteAttendanceTypesWithSd          sync.RWMutex
+	lockPluralDeleteEventTypes                     sync.RWMutex
+	lockPluralDeleteEventTypesWithSd               sync.RWMutex
+	lockPluralDeleteMimeTypes                      sync.RWMutex
+	lockPluralDeleteMimeTypesWithSd                sync.RWMutex
+	lockPluralDeletePermissionCategories           sync.RWMutex
+	lockPluralDeletePermissionCategoriesWithSd     sync.RWMutex
+	lockPluralDeletePermissions                    sync.RWMutex
+	lockPluralDeletePermissionsWithSd              sync.RWMutex
+	lockPluralDeletePolicies                       sync.RWMutex
+	lockPluralDeletePoliciesWithSd                 sync.RWMutex
+	lockPluralDeletePolicyCategories               sync.RWMutex
+	lockPluralDeletePolicyCategoriesWithSd         sync.RWMutex
+	lockPluralDeleteRecordTypes                    sync.RWMutex
+	lockPluralDeleteRecordTypesWithSd              sync.RWMutex
+	lockPluralDeleteRoles                          sync.RWMutex
+	lockPluralDeleteRolesWithSd                    sync.RWMutex
+	lockPluralDisassociatePolicyOnRole             sync.RWMutex
+	lockPluralDisassociatePolicyOnRoleWithSd       sync.RWMutex
+	lockPluralDisassociateRoleOnPolicy             sync.RWMutex
+	lockPluralDisassociateRoleOnPolicyWithSd       sync.RWMutex
+	lockRollback                                   sync.RWMutex
+	lockUpdateAttachableItem                       sync.RWMutex
+	lockUpdateAttachableItemWithSd                 sync.RWMutex
+	lockUpdateAttendStatus                         sync.RWMutex
+	lockUpdateAttendStatusByKey                    sync.RWMutex
+	lockUpdateAttendStatusByKeyWithSd              sync.RWMutex
+	lockUpdateAttendStatusWithSd                   sync.RWMutex
+	lockUpdateAttendanceType                       sync.RWMutex
+	lockUpdateAttendanceTypeByKey                  sync.RWMutex
+	lockUpdateAttendanceTypeByKeyWithSd            sync.RWMutex
+	lockUpdateAttendanceTypeWithSd                 sync.RWMutex
+	lockUpdateEventType                            sync.RWMutex
+	lockUpdateEventTypeByKey                       sync.RWMutex
+	lockUpdateEventTypeByKeyWithSd                 sync.RWMutex
+	lockUpdateEventTypeWithSd                      sync.RWMutex
+	lockUpdateMimeType                             sync.RWMutex
+	lockUpdateMimeTypeByKey                        sync.RWMutex
+	lockUpdateMimeTypeByKeyWithSd                  sync.RWMutex
+	lockUpdateMimeTypeWithSd                       sync.RWMutex
+	lockUpdatePermission                           sync.RWMutex
+	lockUpdatePermissionByKey                      sync.RWMutex
+	lockUpdatePermissionByKeyWithSd                sync.RWMutex
+	lockUpdatePermissionCategory                   sync.RWMutex
+	lockUpdatePermissionCategoryByKey              sync.RWMutex
+	lockUpdatePermissionCategoryByKeyWithSd        sync.RWMutex
+	lockUpdatePermissionCategoryWithSd             sync.RWMutex
+	lockUpdatePermissionWithSd                     sync.RWMutex
+	lockUpdatePolicy                               sync.RWMutex
+	lockUpdatePolicyByKey                          sync.RWMutex
+	lockUpdatePolicyByKeyWithSd                    sync.RWMutex
+	lockUpdatePolicyCategory                       sync.RWMutex
+	lockUpdatePolicyCategoryByKey                  sync.RWMutex
+	lockUpdatePolicyCategoryByKeyWithSd            sync.RWMutex
+	lockUpdatePolicyCategoryWithSd                 sync.RWMutex
+	lockUpdatePolicyWithSd                         sync.RWMutex
+	lockUpdateRecordType                           sync.RWMutex
+	lockUpdateRecordTypeByKey                      sync.RWMutex
+	lockUpdateRecordTypeByKeyWithSd                sync.RWMutex
+	lockUpdateRecordTypeWithSd                     sync.RWMutex
+	lockUpdateRole                                 sync.RWMutex
+	lockUpdateRoleWithSd                           sync.RWMutex
 }
 
 // AssociateRole calls AssociateRoleFunc.
@@ -5102,6 +5506,82 @@ func (mock *StoreMock) CountAbsencesWithSdCalls() []struct {
 	mock.lockCountAbsencesWithSd.RLock()
 	calls = mock.calls.CountAbsencesWithSd
 	mock.lockCountAbsencesWithSd.RUnlock()
+	return calls
+}
+
+// CountAttachableItems calls CountAttachableItemsFunc.
+func (mock *StoreMock) CountAttachableItems(ctx context.Context, where parameter.WhereAttachableItemParam) (int64, error) {
+	if mock.CountAttachableItemsFunc == nil {
+		panic("StoreMock.CountAttachableItemsFunc: method is nil but Store.CountAttachableItems was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereAttachableItemParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+	}
+	mock.lockCountAttachableItems.Lock()
+	mock.calls.CountAttachableItems = append(mock.calls.CountAttachableItems, callInfo)
+	mock.lockCountAttachableItems.Unlock()
+	return mock.CountAttachableItemsFunc(ctx, where)
+}
+
+// CountAttachableItemsCalls gets all the calls that were made to CountAttachableItems.
+// Check the length with:
+//
+//	len(mockedStore.CountAttachableItemsCalls())
+func (mock *StoreMock) CountAttachableItemsCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereAttachableItemParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereAttachableItemParam
+	}
+	mock.lockCountAttachableItems.RLock()
+	calls = mock.calls.CountAttachableItems
+	mock.lockCountAttachableItems.RUnlock()
+	return calls
+}
+
+// CountAttachableItemsWithSd calls CountAttachableItemsWithSdFunc.
+func (mock *StoreMock) CountAttachableItemsWithSd(ctx context.Context, sd Sd, where parameter.WhereAttachableItemParam) (int64, error) {
+	if mock.CountAttachableItemsWithSdFunc == nil {
+		panic("StoreMock.CountAttachableItemsWithSdFunc: method is nil but Store.CountAttachableItemsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereAttachableItemParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+	}
+	mock.lockCountAttachableItemsWithSd.Lock()
+	mock.calls.CountAttachableItemsWithSd = append(mock.calls.CountAttachableItemsWithSd, callInfo)
+	mock.lockCountAttachableItemsWithSd.Unlock()
+	return mock.CountAttachableItemsWithSdFunc(ctx, sd, where)
+}
+
+// CountAttachableItemsWithSdCalls gets all the calls that were made to CountAttachableItemsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountAttachableItemsWithSdCalls())
+func (mock *StoreMock) CountAttachableItemsWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereAttachableItemParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereAttachableItemParam
+	}
+	mock.lockCountAttachableItemsWithSd.RLock()
+	calls = mock.calls.CountAttachableItemsWithSd
+	mock.lockCountAttachableItemsWithSd.RUnlock()
 	return calls
 }
 
@@ -6182,6 +6662,158 @@ func (mock *StoreMock) CreateAbsencesWithSdCalls() []struct {
 	mock.lockCreateAbsencesWithSd.RLock()
 	calls = mock.calls.CreateAbsencesWithSd
 	mock.lockCreateAbsencesWithSd.RUnlock()
+	return calls
+}
+
+// CreateAttachableItem calls CreateAttachableItemFunc.
+func (mock *StoreMock) CreateAttachableItem(ctx context.Context, param parameter.CreateAttachableItemParam) (entity.AttachableItem, error) {
+	if mock.CreateAttachableItemFunc == nil {
+		panic("StoreMock.CreateAttachableItemFunc: method is nil but Store.CreateAttachableItem was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Param parameter.CreateAttachableItemParam
+	}{
+		Ctx:   ctx,
+		Param: param,
+	}
+	mock.lockCreateAttachableItem.Lock()
+	mock.calls.CreateAttachableItem = append(mock.calls.CreateAttachableItem, callInfo)
+	mock.lockCreateAttachableItem.Unlock()
+	return mock.CreateAttachableItemFunc(ctx, param)
+}
+
+// CreateAttachableItemCalls gets all the calls that were made to CreateAttachableItem.
+// Check the length with:
+//
+//	len(mockedStore.CreateAttachableItemCalls())
+func (mock *StoreMock) CreateAttachableItemCalls() []struct {
+	Ctx   context.Context
+	Param parameter.CreateAttachableItemParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Param parameter.CreateAttachableItemParam
+	}
+	mock.lockCreateAttachableItem.RLock()
+	calls = mock.calls.CreateAttachableItem
+	mock.lockCreateAttachableItem.RUnlock()
+	return calls
+}
+
+// CreateAttachableItemWithSd calls CreateAttachableItemWithSdFunc.
+func (mock *StoreMock) CreateAttachableItemWithSd(ctx context.Context, sd Sd, param parameter.CreateAttachableItemParam) (entity.AttachableItem, error) {
+	if mock.CreateAttachableItemWithSdFunc == nil {
+		panic("StoreMock.CreateAttachableItemWithSdFunc: method is nil but Store.CreateAttachableItemWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateAttachableItemParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Param: param,
+	}
+	mock.lockCreateAttachableItemWithSd.Lock()
+	mock.calls.CreateAttachableItemWithSd = append(mock.calls.CreateAttachableItemWithSd, callInfo)
+	mock.lockCreateAttachableItemWithSd.Unlock()
+	return mock.CreateAttachableItemWithSdFunc(ctx, sd, param)
+}
+
+// CreateAttachableItemWithSdCalls gets all the calls that were made to CreateAttachableItemWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateAttachableItemWithSdCalls())
+func (mock *StoreMock) CreateAttachableItemWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Param parameter.CreateAttachableItemParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateAttachableItemParam
+	}
+	mock.lockCreateAttachableItemWithSd.RLock()
+	calls = mock.calls.CreateAttachableItemWithSd
+	mock.lockCreateAttachableItemWithSd.RUnlock()
+	return calls
+}
+
+// CreateAttachableItems calls CreateAttachableItemsFunc.
+func (mock *StoreMock) CreateAttachableItems(ctx context.Context, params []parameter.CreateAttachableItemParam) (int64, error) {
+	if mock.CreateAttachableItemsFunc == nil {
+		panic("StoreMock.CreateAttachableItemsFunc: method is nil but Store.CreateAttachableItems was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.CreateAttachableItemParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockCreateAttachableItems.Lock()
+	mock.calls.CreateAttachableItems = append(mock.calls.CreateAttachableItems, callInfo)
+	mock.lockCreateAttachableItems.Unlock()
+	return mock.CreateAttachableItemsFunc(ctx, params)
+}
+
+// CreateAttachableItemsCalls gets all the calls that were made to CreateAttachableItems.
+// Check the length with:
+//
+//	len(mockedStore.CreateAttachableItemsCalls())
+func (mock *StoreMock) CreateAttachableItemsCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.CreateAttachableItemParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.CreateAttachableItemParam
+	}
+	mock.lockCreateAttachableItems.RLock()
+	calls = mock.calls.CreateAttachableItems
+	mock.lockCreateAttachableItems.RUnlock()
+	return calls
+}
+
+// CreateAttachableItemsWithSd calls CreateAttachableItemsWithSdFunc.
+func (mock *StoreMock) CreateAttachableItemsWithSd(ctx context.Context, sd Sd, params []parameter.CreateAttachableItemParam) (int64, error) {
+	if mock.CreateAttachableItemsWithSdFunc == nil {
+		panic("StoreMock.CreateAttachableItemsWithSdFunc: method is nil but Store.CreateAttachableItemsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateAttachableItemParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		Params: params,
+	}
+	mock.lockCreateAttachableItemsWithSd.Lock()
+	mock.calls.CreateAttachableItemsWithSd = append(mock.calls.CreateAttachableItemsWithSd, callInfo)
+	mock.lockCreateAttachableItemsWithSd.Unlock()
+	return mock.CreateAttachableItemsWithSdFunc(ctx, sd, params)
+}
+
+// CreateAttachableItemsWithSdCalls gets all the calls that were made to CreateAttachableItemsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateAttachableItemsWithSdCalls())
+func (mock *StoreMock) CreateAttachableItemsWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	Params []parameter.CreateAttachableItemParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateAttachableItemParam
+	}
+	mock.lockCreateAttachableItemsWithSd.RLock()
+	calls = mock.calls.CreateAttachableItemsWithSd
+	mock.lockCreateAttachableItemsWithSd.RUnlock()
 	return calls
 }
 
@@ -7778,6 +8410,82 @@ func (mock *StoreMock) DeleteAbsenceWithSdCalls() []struct {
 	mock.lockDeleteAbsenceWithSd.RLock()
 	calls = mock.calls.DeleteAbsenceWithSd
 	mock.lockDeleteAbsenceWithSd.RUnlock()
+	return calls
+}
+
+// DeleteAttachableItem calls DeleteAttachableItemFunc.
+func (mock *StoreMock) DeleteAttachableItem(ctx context.Context, attachableItemID uuid.UUID) (int64, error) {
+	if mock.DeleteAttachableItemFunc == nil {
+		panic("StoreMock.DeleteAttachableItemFunc: method is nil but Store.DeleteAttachableItem was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		AttachableItemID uuid.UUID
+	}{
+		Ctx:              ctx,
+		AttachableItemID: attachableItemID,
+	}
+	mock.lockDeleteAttachableItem.Lock()
+	mock.calls.DeleteAttachableItem = append(mock.calls.DeleteAttachableItem, callInfo)
+	mock.lockDeleteAttachableItem.Unlock()
+	return mock.DeleteAttachableItemFunc(ctx, attachableItemID)
+}
+
+// DeleteAttachableItemCalls gets all the calls that were made to DeleteAttachableItem.
+// Check the length with:
+//
+//	len(mockedStore.DeleteAttachableItemCalls())
+func (mock *StoreMock) DeleteAttachableItemCalls() []struct {
+	Ctx              context.Context
+	AttachableItemID uuid.UUID
+} {
+	var calls []struct {
+		Ctx              context.Context
+		AttachableItemID uuid.UUID
+	}
+	mock.lockDeleteAttachableItem.RLock()
+	calls = mock.calls.DeleteAttachableItem
+	mock.lockDeleteAttachableItem.RUnlock()
+	return calls
+}
+
+// DeleteAttachableItemWithSd calls DeleteAttachableItemWithSdFunc.
+func (mock *StoreMock) DeleteAttachableItemWithSd(ctx context.Context, sd Sd, attachableItemID uuid.UUID) (int64, error) {
+	if mock.DeleteAttachableItemWithSdFunc == nil {
+		panic("StoreMock.DeleteAttachableItemWithSdFunc: method is nil but Store.DeleteAttachableItemWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		Sd               Sd
+		AttachableItemID uuid.UUID
+	}{
+		Ctx:              ctx,
+		Sd:               sd,
+		AttachableItemID: attachableItemID,
+	}
+	mock.lockDeleteAttachableItemWithSd.Lock()
+	mock.calls.DeleteAttachableItemWithSd = append(mock.calls.DeleteAttachableItemWithSd, callInfo)
+	mock.lockDeleteAttachableItemWithSd.Unlock()
+	return mock.DeleteAttachableItemWithSdFunc(ctx, sd, attachableItemID)
+}
+
+// DeleteAttachableItemWithSdCalls gets all the calls that were made to DeleteAttachableItemWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteAttachableItemWithSdCalls())
+func (mock *StoreMock) DeleteAttachableItemWithSdCalls() []struct {
+	Ctx              context.Context
+	Sd               Sd
+	AttachableItemID uuid.UUID
+} {
+	var calls []struct {
+		Ctx              context.Context
+		Sd               Sd
+		AttachableItemID uuid.UUID
+	}
+	mock.lockDeleteAttachableItemWithSd.RLock()
+	calls = mock.calls.DeleteAttachableItemWithSd
+	mock.lockDeleteAttachableItemWithSd.RUnlock()
 	return calls
 }
 
@@ -9689,6 +10397,158 @@ func (mock *StoreMock) FindAbsenceByIDWithSdCalls() []struct {
 	return calls
 }
 
+// FindAttachableItemByID calls FindAttachableItemByIDFunc.
+func (mock *StoreMock) FindAttachableItemByID(ctx context.Context, attachableItemID uuid.UUID) (entity.AttachableItemWithContent, error) {
+	if mock.FindAttachableItemByIDFunc == nil {
+		panic("StoreMock.FindAttachableItemByIDFunc: method is nil but Store.FindAttachableItemByID was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		AttachableItemID uuid.UUID
+	}{
+		Ctx:              ctx,
+		AttachableItemID: attachableItemID,
+	}
+	mock.lockFindAttachableItemByID.Lock()
+	mock.calls.FindAttachableItemByID = append(mock.calls.FindAttachableItemByID, callInfo)
+	mock.lockFindAttachableItemByID.Unlock()
+	return mock.FindAttachableItemByIDFunc(ctx, attachableItemID)
+}
+
+// FindAttachableItemByIDCalls gets all the calls that were made to FindAttachableItemByID.
+// Check the length with:
+//
+//	len(mockedStore.FindAttachableItemByIDCalls())
+func (mock *StoreMock) FindAttachableItemByIDCalls() []struct {
+	Ctx              context.Context
+	AttachableItemID uuid.UUID
+} {
+	var calls []struct {
+		Ctx              context.Context
+		AttachableItemID uuid.UUID
+	}
+	mock.lockFindAttachableItemByID.RLock()
+	calls = mock.calls.FindAttachableItemByID
+	mock.lockFindAttachableItemByID.RUnlock()
+	return calls
+}
+
+// FindAttachableItemByIDWithMimeType calls FindAttachableItemByIDWithMimeTypeFunc.
+func (mock *StoreMock) FindAttachableItemByIDWithMimeType(ctx context.Context, attachableItemID uuid.UUID) (entity.AttachableItemWithMimeType, error) {
+	if mock.FindAttachableItemByIDWithMimeTypeFunc == nil {
+		panic("StoreMock.FindAttachableItemByIDWithMimeTypeFunc: method is nil but Store.FindAttachableItemByIDWithMimeType was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		AttachableItemID uuid.UUID
+	}{
+		Ctx:              ctx,
+		AttachableItemID: attachableItemID,
+	}
+	mock.lockFindAttachableItemByIDWithMimeType.Lock()
+	mock.calls.FindAttachableItemByIDWithMimeType = append(mock.calls.FindAttachableItemByIDWithMimeType, callInfo)
+	mock.lockFindAttachableItemByIDWithMimeType.Unlock()
+	return mock.FindAttachableItemByIDWithMimeTypeFunc(ctx, attachableItemID)
+}
+
+// FindAttachableItemByIDWithMimeTypeCalls gets all the calls that were made to FindAttachableItemByIDWithMimeType.
+// Check the length with:
+//
+//	len(mockedStore.FindAttachableItemByIDWithMimeTypeCalls())
+func (mock *StoreMock) FindAttachableItemByIDWithMimeTypeCalls() []struct {
+	Ctx              context.Context
+	AttachableItemID uuid.UUID
+} {
+	var calls []struct {
+		Ctx              context.Context
+		AttachableItemID uuid.UUID
+	}
+	mock.lockFindAttachableItemByIDWithMimeType.RLock()
+	calls = mock.calls.FindAttachableItemByIDWithMimeType
+	mock.lockFindAttachableItemByIDWithMimeType.RUnlock()
+	return calls
+}
+
+// FindAttachableItemByIDWithMimeTypeWithSd calls FindAttachableItemByIDWithMimeTypeWithSdFunc.
+func (mock *StoreMock) FindAttachableItemByIDWithMimeTypeWithSd(ctx context.Context, sd Sd, attachableItemID uuid.UUID) (entity.AttachableItemWithMimeType, error) {
+	if mock.FindAttachableItemByIDWithMimeTypeWithSdFunc == nil {
+		panic("StoreMock.FindAttachableItemByIDWithMimeTypeWithSdFunc: method is nil but Store.FindAttachableItemByIDWithMimeTypeWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		Sd               Sd
+		AttachableItemID uuid.UUID
+	}{
+		Ctx:              ctx,
+		Sd:               sd,
+		AttachableItemID: attachableItemID,
+	}
+	mock.lockFindAttachableItemByIDWithMimeTypeWithSd.Lock()
+	mock.calls.FindAttachableItemByIDWithMimeTypeWithSd = append(mock.calls.FindAttachableItemByIDWithMimeTypeWithSd, callInfo)
+	mock.lockFindAttachableItemByIDWithMimeTypeWithSd.Unlock()
+	return mock.FindAttachableItemByIDWithMimeTypeWithSdFunc(ctx, sd, attachableItemID)
+}
+
+// FindAttachableItemByIDWithMimeTypeWithSdCalls gets all the calls that were made to FindAttachableItemByIDWithMimeTypeWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindAttachableItemByIDWithMimeTypeWithSdCalls())
+func (mock *StoreMock) FindAttachableItemByIDWithMimeTypeWithSdCalls() []struct {
+	Ctx              context.Context
+	Sd               Sd
+	AttachableItemID uuid.UUID
+} {
+	var calls []struct {
+		Ctx              context.Context
+		Sd               Sd
+		AttachableItemID uuid.UUID
+	}
+	mock.lockFindAttachableItemByIDWithMimeTypeWithSd.RLock()
+	calls = mock.calls.FindAttachableItemByIDWithMimeTypeWithSd
+	mock.lockFindAttachableItemByIDWithMimeTypeWithSd.RUnlock()
+	return calls
+}
+
+// FindAttachableItemByIDWithSd calls FindAttachableItemByIDWithSdFunc.
+func (mock *StoreMock) FindAttachableItemByIDWithSd(ctx context.Context, sd Sd, attachableItemID uuid.UUID) (entity.AttachableItemWithContent, error) {
+	if mock.FindAttachableItemByIDWithSdFunc == nil {
+		panic("StoreMock.FindAttachableItemByIDWithSdFunc: method is nil but Store.FindAttachableItemByIDWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		Sd               Sd
+		AttachableItemID uuid.UUID
+	}{
+		Ctx:              ctx,
+		Sd:               sd,
+		AttachableItemID: attachableItemID,
+	}
+	mock.lockFindAttachableItemByIDWithSd.Lock()
+	mock.calls.FindAttachableItemByIDWithSd = append(mock.calls.FindAttachableItemByIDWithSd, callInfo)
+	mock.lockFindAttachableItemByIDWithSd.Unlock()
+	return mock.FindAttachableItemByIDWithSdFunc(ctx, sd, attachableItemID)
+}
+
+// FindAttachableItemByIDWithSdCalls gets all the calls that were made to FindAttachableItemByIDWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindAttachableItemByIDWithSdCalls())
+func (mock *StoreMock) FindAttachableItemByIDWithSdCalls() []struct {
+	Ctx              context.Context
+	Sd               Sd
+	AttachableItemID uuid.UUID
+} {
+	var calls []struct {
+		Ctx              context.Context
+		Sd               Sd
+		AttachableItemID uuid.UUID
+	}
+	mock.lockFindAttachableItemByIDWithSd.RLock()
+	calls = mock.calls.FindAttachableItemByIDWithSd
+	mock.lockFindAttachableItemByIDWithSd.RUnlock()
+	return calls
+}
+
 // FindAttendStatusByID calls FindAttendStatusByIDFunc.
 func (mock *StoreMock) FindAttendStatusByID(ctx context.Context, attendStatusID uuid.UUID) (entity.AttendStatus, error) {
 	if mock.FindAttendStatusByIDFunc == nil {
@@ -11537,6 +12397,222 @@ func (mock *StoreMock) GetAbsencesWithSdCalls() []struct {
 	return calls
 }
 
+// GetAttachableItems calls GetAttachableItemsFunc.
+func (mock *StoreMock) GetAttachableItems(ctx context.Context, where parameter.WhereAttachableItemParam, order parameter.AttachableItemOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachableItemWithContent], error) {
+	if mock.GetAttachableItemsFunc == nil {
+		panic("StoreMock.GetAttachableItemsFunc: method is nil but Store.GetAttachableItems was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereAttachableItemParam
+		Order parameter.AttachableItemOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetAttachableItems.Lock()
+	mock.calls.GetAttachableItems = append(mock.calls.GetAttachableItems, callInfo)
+	mock.lockGetAttachableItems.Unlock()
+	return mock.GetAttachableItemsFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetAttachableItemsCalls gets all the calls that were made to GetAttachableItems.
+// Check the length with:
+//
+//	len(mockedStore.GetAttachableItemsCalls())
+func (mock *StoreMock) GetAttachableItemsCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereAttachableItemParam
+	Order parameter.AttachableItemOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereAttachableItemParam
+		Order parameter.AttachableItemOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetAttachableItems.RLock()
+	calls = mock.calls.GetAttachableItems
+	mock.lockGetAttachableItems.RUnlock()
+	return calls
+}
+
+// GetAttachableItemsWithMimeType calls GetAttachableItemsWithMimeTypeFunc.
+func (mock *StoreMock) GetAttachableItemsWithMimeType(ctx context.Context, where parameter.WhereAttachableItemParam, order parameter.AttachableItemOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachableItemWithMimeType], error) {
+	if mock.GetAttachableItemsWithMimeTypeFunc == nil {
+		panic("StoreMock.GetAttachableItemsWithMimeTypeFunc: method is nil but Store.GetAttachableItemsWithMimeType was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereAttachableItemParam
+		Order parameter.AttachableItemOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetAttachableItemsWithMimeType.Lock()
+	mock.calls.GetAttachableItemsWithMimeType = append(mock.calls.GetAttachableItemsWithMimeType, callInfo)
+	mock.lockGetAttachableItemsWithMimeType.Unlock()
+	return mock.GetAttachableItemsWithMimeTypeFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetAttachableItemsWithMimeTypeCalls gets all the calls that were made to GetAttachableItemsWithMimeType.
+// Check the length with:
+//
+//	len(mockedStore.GetAttachableItemsWithMimeTypeCalls())
+func (mock *StoreMock) GetAttachableItemsWithMimeTypeCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereAttachableItemParam
+	Order parameter.AttachableItemOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereAttachableItemParam
+		Order parameter.AttachableItemOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetAttachableItemsWithMimeType.RLock()
+	calls = mock.calls.GetAttachableItemsWithMimeType
+	mock.lockGetAttachableItemsWithMimeType.RUnlock()
+	return calls
+}
+
+// GetAttachableItemsWithMimeTypeWithSd calls GetAttachableItemsWithMimeTypeWithSdFunc.
+func (mock *StoreMock) GetAttachableItemsWithMimeTypeWithSd(ctx context.Context, sd Sd, where parameter.WhereAttachableItemParam, order parameter.AttachableItemOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachableItemWithMimeType], error) {
+	if mock.GetAttachableItemsWithMimeTypeWithSdFunc == nil {
+		panic("StoreMock.GetAttachableItemsWithMimeTypeWithSdFunc: method is nil but Store.GetAttachableItemsWithMimeTypeWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereAttachableItemParam
+		Order parameter.AttachableItemOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetAttachableItemsWithMimeTypeWithSd.Lock()
+	mock.calls.GetAttachableItemsWithMimeTypeWithSd = append(mock.calls.GetAttachableItemsWithMimeTypeWithSd, callInfo)
+	mock.lockGetAttachableItemsWithMimeTypeWithSd.Unlock()
+	return mock.GetAttachableItemsWithMimeTypeWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetAttachableItemsWithMimeTypeWithSdCalls gets all the calls that were made to GetAttachableItemsWithMimeTypeWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetAttachableItemsWithMimeTypeWithSdCalls())
+func (mock *StoreMock) GetAttachableItemsWithMimeTypeWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereAttachableItemParam
+	Order parameter.AttachableItemOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereAttachableItemParam
+		Order parameter.AttachableItemOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetAttachableItemsWithMimeTypeWithSd.RLock()
+	calls = mock.calls.GetAttachableItemsWithMimeTypeWithSd
+	mock.lockGetAttachableItemsWithMimeTypeWithSd.RUnlock()
+	return calls
+}
+
+// GetAttachableItemsWithSd calls GetAttachableItemsWithSdFunc.
+func (mock *StoreMock) GetAttachableItemsWithSd(ctx context.Context, sd Sd, where parameter.WhereAttachableItemParam, order parameter.AttachableItemOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachableItemWithContent], error) {
+	if mock.GetAttachableItemsWithSdFunc == nil {
+		panic("StoreMock.GetAttachableItemsWithSdFunc: method is nil but Store.GetAttachableItemsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereAttachableItemParam
+		Order parameter.AttachableItemOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetAttachableItemsWithSd.Lock()
+	mock.calls.GetAttachableItemsWithSd = append(mock.calls.GetAttachableItemsWithSd, callInfo)
+	mock.lockGetAttachableItemsWithSd.Unlock()
+	return mock.GetAttachableItemsWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetAttachableItemsWithSdCalls gets all the calls that were made to GetAttachableItemsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetAttachableItemsWithSdCalls())
+func (mock *StoreMock) GetAttachableItemsWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereAttachableItemParam
+	Order parameter.AttachableItemOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereAttachableItemParam
+		Order parameter.AttachableItemOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetAttachableItemsWithSd.RLock()
+	calls = mock.calls.GetAttachableItemsWithSd
+	mock.lockGetAttachableItemsWithSd.RUnlock()
+	return calls
+}
+
 // GetAttendStatuses calls GetAttendStatusesFunc.
 func (mock *StoreMock) GetAttendStatuses(ctx context.Context, where parameter.WhereAttendStatusParam, order parameter.AttendStatusOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttendStatus], error) {
 	if mock.GetAttendStatusesFunc == nil {
@@ -12374,6 +13450,174 @@ func (mock *StoreMock) GetPluralAbsencesWithSdCalls() []struct {
 	mock.lockGetPluralAbsencesWithSd.RLock()
 	calls = mock.calls.GetPluralAbsencesWithSd
 	mock.lockGetPluralAbsencesWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralAttachableItems calls GetPluralAttachableItemsFunc.
+func (mock *StoreMock) GetPluralAttachableItems(ctx context.Context, attachableItemIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttachableItemWithContent], error) {
+	if mock.GetPluralAttachableItemsFunc == nil {
+		panic("StoreMock.GetPluralAttachableItemsFunc: method is nil but Store.GetPluralAttachableItems was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		AttachableItemIDs []uuid.UUID
+		Np                NumberedPaginationParam
+	}{
+		Ctx:               ctx,
+		AttachableItemIDs: attachableItemIDs,
+		Np:                np,
+	}
+	mock.lockGetPluralAttachableItems.Lock()
+	mock.calls.GetPluralAttachableItems = append(mock.calls.GetPluralAttachableItems, callInfo)
+	mock.lockGetPluralAttachableItems.Unlock()
+	return mock.GetPluralAttachableItemsFunc(ctx, attachableItemIDs, np)
+}
+
+// GetPluralAttachableItemsCalls gets all the calls that were made to GetPluralAttachableItems.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralAttachableItemsCalls())
+func (mock *StoreMock) GetPluralAttachableItemsCalls() []struct {
+	Ctx               context.Context
+	AttachableItemIDs []uuid.UUID
+	Np                NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx               context.Context
+		AttachableItemIDs []uuid.UUID
+		Np                NumberedPaginationParam
+	}
+	mock.lockGetPluralAttachableItems.RLock()
+	calls = mock.calls.GetPluralAttachableItems
+	mock.lockGetPluralAttachableItems.RUnlock()
+	return calls
+}
+
+// GetPluralAttachableItemsWithMimeType calls GetPluralAttachableItemsWithMimeTypeFunc.
+func (mock *StoreMock) GetPluralAttachableItemsWithMimeType(ctx context.Context, attachableItemIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttachableItemWithMimeType], error) {
+	if mock.GetPluralAttachableItemsWithMimeTypeFunc == nil {
+		panic("StoreMock.GetPluralAttachableItemsWithMimeTypeFunc: method is nil but Store.GetPluralAttachableItemsWithMimeType was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		AttachableItemIDs []uuid.UUID
+		Np                NumberedPaginationParam
+	}{
+		Ctx:               ctx,
+		AttachableItemIDs: attachableItemIDs,
+		Np:                np,
+	}
+	mock.lockGetPluralAttachableItemsWithMimeType.Lock()
+	mock.calls.GetPluralAttachableItemsWithMimeType = append(mock.calls.GetPluralAttachableItemsWithMimeType, callInfo)
+	mock.lockGetPluralAttachableItemsWithMimeType.Unlock()
+	return mock.GetPluralAttachableItemsWithMimeTypeFunc(ctx, attachableItemIDs, np)
+}
+
+// GetPluralAttachableItemsWithMimeTypeCalls gets all the calls that were made to GetPluralAttachableItemsWithMimeType.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralAttachableItemsWithMimeTypeCalls())
+func (mock *StoreMock) GetPluralAttachableItemsWithMimeTypeCalls() []struct {
+	Ctx               context.Context
+	AttachableItemIDs []uuid.UUID
+	Np                NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx               context.Context
+		AttachableItemIDs []uuid.UUID
+		Np                NumberedPaginationParam
+	}
+	mock.lockGetPluralAttachableItemsWithMimeType.RLock()
+	calls = mock.calls.GetPluralAttachableItemsWithMimeType
+	mock.lockGetPluralAttachableItemsWithMimeType.RUnlock()
+	return calls
+}
+
+// GetPluralAttachableItemsWithMimeTypeWithSd calls GetPluralAttachableItemsWithMimeTypeWithSdFunc.
+func (mock *StoreMock) GetPluralAttachableItemsWithMimeTypeWithSd(ctx context.Context, sd Sd, attachableItemIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttachableItemWithMimeType], error) {
+	if mock.GetPluralAttachableItemsWithMimeTypeWithSdFunc == nil {
+		panic("StoreMock.GetPluralAttachableItemsWithMimeTypeWithSdFunc: method is nil but Store.GetPluralAttachableItemsWithMimeTypeWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		Sd                Sd
+		AttachableItemIDs []uuid.UUID
+		Np                NumberedPaginationParam
+	}{
+		Ctx:               ctx,
+		Sd:                sd,
+		AttachableItemIDs: attachableItemIDs,
+		Np:                np,
+	}
+	mock.lockGetPluralAttachableItemsWithMimeTypeWithSd.Lock()
+	mock.calls.GetPluralAttachableItemsWithMimeTypeWithSd = append(mock.calls.GetPluralAttachableItemsWithMimeTypeWithSd, callInfo)
+	mock.lockGetPluralAttachableItemsWithMimeTypeWithSd.Unlock()
+	return mock.GetPluralAttachableItemsWithMimeTypeWithSdFunc(ctx, sd, attachableItemIDs, np)
+}
+
+// GetPluralAttachableItemsWithMimeTypeWithSdCalls gets all the calls that were made to GetPluralAttachableItemsWithMimeTypeWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralAttachableItemsWithMimeTypeWithSdCalls())
+func (mock *StoreMock) GetPluralAttachableItemsWithMimeTypeWithSdCalls() []struct {
+	Ctx               context.Context
+	Sd                Sd
+	AttachableItemIDs []uuid.UUID
+	Np                NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx               context.Context
+		Sd                Sd
+		AttachableItemIDs []uuid.UUID
+		Np                NumberedPaginationParam
+	}
+	mock.lockGetPluralAttachableItemsWithMimeTypeWithSd.RLock()
+	calls = mock.calls.GetPluralAttachableItemsWithMimeTypeWithSd
+	mock.lockGetPluralAttachableItemsWithMimeTypeWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralAttachableItemsWithSd calls GetPluralAttachableItemsWithSdFunc.
+func (mock *StoreMock) GetPluralAttachableItemsWithSd(ctx context.Context, sd Sd, attachableItemIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttachableItemWithContent], error) {
+	if mock.GetPluralAttachableItemsWithSdFunc == nil {
+		panic("StoreMock.GetPluralAttachableItemsWithSdFunc: method is nil but Store.GetPluralAttachableItemsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		Sd                Sd
+		AttachableItemIDs []uuid.UUID
+		Np                NumberedPaginationParam
+	}{
+		Ctx:               ctx,
+		Sd:                sd,
+		AttachableItemIDs: attachableItemIDs,
+		Np:                np,
+	}
+	mock.lockGetPluralAttachableItemsWithSd.Lock()
+	mock.calls.GetPluralAttachableItemsWithSd = append(mock.calls.GetPluralAttachableItemsWithSd, callInfo)
+	mock.lockGetPluralAttachableItemsWithSd.Unlock()
+	return mock.GetPluralAttachableItemsWithSdFunc(ctx, sd, attachableItemIDs, np)
+}
+
+// GetPluralAttachableItemsWithSdCalls gets all the calls that were made to GetPluralAttachableItemsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralAttachableItemsWithSdCalls())
+func (mock *StoreMock) GetPluralAttachableItemsWithSdCalls() []struct {
+	Ctx               context.Context
+	Sd                Sd
+	AttachableItemIDs []uuid.UUID
+	Np                NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx               context.Context
+		Sd                Sd
+		AttachableItemIDs []uuid.UUID
+		Np                NumberedPaginationParam
+	}
+	mock.lockGetPluralAttachableItemsWithSd.RLock()
+	calls = mock.calls.GetPluralAttachableItemsWithSd
+	mock.lockGetPluralAttachableItemsWithSd.RUnlock()
 	return calls
 }
 
@@ -14065,6 +15309,82 @@ func (mock *StoreMock) PluralDeleteAbsencesWithSdCalls() []struct {
 	return calls
 }
 
+// PluralDeleteAttachableItems calls PluralDeleteAttachableItemsFunc.
+func (mock *StoreMock) PluralDeleteAttachableItems(ctx context.Context, attachableItemIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteAttachableItemsFunc == nil {
+		panic("StoreMock.PluralDeleteAttachableItemsFunc: method is nil but Store.PluralDeleteAttachableItems was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		AttachableItemIDs []uuid.UUID
+	}{
+		Ctx:               ctx,
+		AttachableItemIDs: attachableItemIDs,
+	}
+	mock.lockPluralDeleteAttachableItems.Lock()
+	mock.calls.PluralDeleteAttachableItems = append(mock.calls.PluralDeleteAttachableItems, callInfo)
+	mock.lockPluralDeleteAttachableItems.Unlock()
+	return mock.PluralDeleteAttachableItemsFunc(ctx, attachableItemIDs)
+}
+
+// PluralDeleteAttachableItemsCalls gets all the calls that were made to PluralDeleteAttachableItems.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteAttachableItemsCalls())
+func (mock *StoreMock) PluralDeleteAttachableItemsCalls() []struct {
+	Ctx               context.Context
+	AttachableItemIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx               context.Context
+		AttachableItemIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteAttachableItems.RLock()
+	calls = mock.calls.PluralDeleteAttachableItems
+	mock.lockPluralDeleteAttachableItems.RUnlock()
+	return calls
+}
+
+// PluralDeleteAttachableItemsWithSd calls PluralDeleteAttachableItemsWithSdFunc.
+func (mock *StoreMock) PluralDeleteAttachableItemsWithSd(ctx context.Context, sd Sd, attachableItemIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteAttachableItemsWithSdFunc == nil {
+		panic("StoreMock.PluralDeleteAttachableItemsWithSdFunc: method is nil but Store.PluralDeleteAttachableItemsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		Sd                Sd
+		AttachableItemIDs []uuid.UUID
+	}{
+		Ctx:               ctx,
+		Sd:                sd,
+		AttachableItemIDs: attachableItemIDs,
+	}
+	mock.lockPluralDeleteAttachableItemsWithSd.Lock()
+	mock.calls.PluralDeleteAttachableItemsWithSd = append(mock.calls.PluralDeleteAttachableItemsWithSd, callInfo)
+	mock.lockPluralDeleteAttachableItemsWithSd.Unlock()
+	return mock.PluralDeleteAttachableItemsWithSdFunc(ctx, sd, attachableItemIDs)
+}
+
+// PluralDeleteAttachableItemsWithSdCalls gets all the calls that were made to PluralDeleteAttachableItemsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteAttachableItemsWithSdCalls())
+func (mock *StoreMock) PluralDeleteAttachableItemsWithSdCalls() []struct {
+	Ctx               context.Context
+	Sd                Sd
+	AttachableItemIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx               context.Context
+		Sd                Sd
+		AttachableItemIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteAttachableItemsWithSd.RLock()
+	calls = mock.calls.PluralDeleteAttachableItemsWithSd
+	mock.lockPluralDeleteAttachableItemsWithSd.RUnlock()
+	return calls
+}
+
 // PluralDeleteAttendStatuses calls PluralDeleteAttendStatusesFunc.
 func (mock *StoreMock) PluralDeleteAttendStatuses(ctx context.Context, attendStatusIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteAttendStatusesFunc == nil {
@@ -15026,6 +16346,90 @@ func (mock *StoreMock) RollbackCalls() []struct {
 	mock.lockRollback.RLock()
 	calls = mock.calls.Rollback
 	mock.lockRollback.RUnlock()
+	return calls
+}
+
+// UpdateAttachableItem calls UpdateAttachableItemFunc.
+func (mock *StoreMock) UpdateAttachableItem(ctx context.Context, attachableItemID uuid.UUID, param parameter.UpdateAttachableItemParams) (entity.AttachableItem, error) {
+	if mock.UpdateAttachableItemFunc == nil {
+		panic("StoreMock.UpdateAttachableItemFunc: method is nil but Store.UpdateAttachableItem was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		AttachableItemID uuid.UUID
+		Param            parameter.UpdateAttachableItemParams
+	}{
+		Ctx:              ctx,
+		AttachableItemID: attachableItemID,
+		Param:            param,
+	}
+	mock.lockUpdateAttachableItem.Lock()
+	mock.calls.UpdateAttachableItem = append(mock.calls.UpdateAttachableItem, callInfo)
+	mock.lockUpdateAttachableItem.Unlock()
+	return mock.UpdateAttachableItemFunc(ctx, attachableItemID, param)
+}
+
+// UpdateAttachableItemCalls gets all the calls that were made to UpdateAttachableItem.
+// Check the length with:
+//
+//	len(mockedStore.UpdateAttachableItemCalls())
+func (mock *StoreMock) UpdateAttachableItemCalls() []struct {
+	Ctx              context.Context
+	AttachableItemID uuid.UUID
+	Param            parameter.UpdateAttachableItemParams
+} {
+	var calls []struct {
+		Ctx              context.Context
+		AttachableItemID uuid.UUID
+		Param            parameter.UpdateAttachableItemParams
+	}
+	mock.lockUpdateAttachableItem.RLock()
+	calls = mock.calls.UpdateAttachableItem
+	mock.lockUpdateAttachableItem.RUnlock()
+	return calls
+}
+
+// UpdateAttachableItemWithSd calls UpdateAttachableItemWithSdFunc.
+func (mock *StoreMock) UpdateAttachableItemWithSd(ctx context.Context, sd Sd, attachableItemID uuid.UUID, param parameter.UpdateAttachableItemParams) (entity.AttachableItem, error) {
+	if mock.UpdateAttachableItemWithSdFunc == nil {
+		panic("StoreMock.UpdateAttachableItemWithSdFunc: method is nil but Store.UpdateAttachableItemWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		Sd               Sd
+		AttachableItemID uuid.UUID
+		Param            parameter.UpdateAttachableItemParams
+	}{
+		Ctx:              ctx,
+		Sd:               sd,
+		AttachableItemID: attachableItemID,
+		Param:            param,
+	}
+	mock.lockUpdateAttachableItemWithSd.Lock()
+	mock.calls.UpdateAttachableItemWithSd = append(mock.calls.UpdateAttachableItemWithSd, callInfo)
+	mock.lockUpdateAttachableItemWithSd.Unlock()
+	return mock.UpdateAttachableItemWithSdFunc(ctx, sd, attachableItemID, param)
+}
+
+// UpdateAttachableItemWithSdCalls gets all the calls that were made to UpdateAttachableItemWithSd.
+// Check the length with:
+//
+//	len(mockedStore.UpdateAttachableItemWithSdCalls())
+func (mock *StoreMock) UpdateAttachableItemWithSdCalls() []struct {
+	Ctx              context.Context
+	Sd               Sd
+	AttachableItemID uuid.UUID
+	Param            parameter.UpdateAttachableItemParams
+} {
+	var calls []struct {
+		Ctx              context.Context
+		Sd               Sd
+		AttachableItemID uuid.UUID
+		Param            parameter.UpdateAttachableItemParams
+	}
+	mock.lockUpdateAttachableItemWithSd.RLock()
+	calls = mock.calls.UpdateAttachableItemWithSd
+	mock.lockUpdateAttachableItemWithSd.RUnlock()
 	return calls
 }
 

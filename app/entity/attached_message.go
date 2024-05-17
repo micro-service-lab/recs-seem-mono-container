@@ -1,6 +1,15 @@
 package entity
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
+
+// AttachedMessage ロールの関連付けを表すインターフェース。
+type AttachedMessage struct {
+	AttachedMessageID uuid.UUID `json:"attached_message_id"`
+	MessageID         uuid.UUID `json:"message_id"`
+	AttachableItemID  UUID      `json:"attachable_item_id"`
+}
 
 // AttachedMessageOnMessage メッセージに添付された添付を表す構造体。
 type AttachedMessageOnMessage struct {

@@ -648,9 +648,6 @@ var _ Store = &StoreMock{}
 //			GetPluralAbsencesWithSdFunc: func(ctx context.Context, sd Sd, ids []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Absence], error) {
 //				panic("mock out the GetPluralAbsencesWithSd method")
 //			},
-<<<<<<< HEAD
-//			GetPluralAttendStatusesFunc: func(ctx context.Context, attendStatusIDs []uuid.UUID, order parameter.AttendStatusOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error) {
-=======
 //			GetPluralAttachableItemsFunc: func(ctx context.Context, attachableItemIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttachableItemWithContent], error) {
 //				panic("mock out the GetPluralAttachableItems method")
 //			},
@@ -663,8 +660,7 @@ var _ Store = &StoreMock{}
 //			GetPluralAttachableItemsWithSdFunc: func(ctx context.Context, sd Sd, attachableItemIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttachableItemWithContent], error) {
 //				panic("mock out the GetPluralAttachableItemsWithSd method")
 //			},
-//			GetPluralAttendStatusesFunc: func(ctx context.Context, attendStatusIDs []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error) {
->>>>>>> origin/feat/create_base_#1
+//			GetPluralAttendStatusesFunc: func(ctx context.Context, attendStatusIDs []uuid.UUID, order parameter.AttendStatusOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error) {
 //				panic("mock out the GetPluralAttendStatuses method")
 //			},
 //			GetPluralAttendStatusesWithSdFunc: func(ctx context.Context, sd Sd, attendStatusIDs []uuid.UUID, order parameter.AttendStatusOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error) {

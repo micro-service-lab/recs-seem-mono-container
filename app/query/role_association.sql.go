@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countPoliciesOnRole = `-- name: CountPoliciesOnRole :one
@@ -140,7 +141,8 @@ func (q *Queries) DeleteRoleAssociationsOnRoles(ctx context.Context, roleIds []u
 }
 
 const getPluralPoliciesOnRole = `-- name: GetPluralPoliciesOnRole :many
-SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id FROM m_role_associations
+SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.name policy_name, m_policies.key policy_key,
+m_policies.description policy_description, m_policies.policy_category_id FROM m_role_associations
 LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE
 	role_id = ANY($1::uuid[])
@@ -156,8 +158,13 @@ type GetPluralPoliciesOnRoleParams struct {
 }
 
 type GetPluralPoliciesOnRoleRow struct {
-	RoleAssociation RoleAssociation `json:"role_association"`
-	Policy          Policy          `json:"policy"`
+	MRoleAssociationsPkey pgtype.Int8 `json:"m_role_associations_pkey"`
+	RoleID                uuid.UUID   `json:"role_id"`
+	PolicyID              uuid.UUID   `json:"policy_id"`
+	PolicyName            pgtype.Text `json:"policy_name"`
+	PolicyKey             pgtype.Text `json:"policy_key"`
+	PolicyDescription     pgtype.Text `json:"policy_description"`
+	PolicyCategoryID      pgtype.UUID `json:"policy_category_id"`
 }
 
 func (q *Queries) GetPluralPoliciesOnRole(ctx context.Context, arg GetPluralPoliciesOnRoleParams) ([]GetPluralPoliciesOnRoleRow, error) {
@@ -170,15 +177,13 @@ func (q *Queries) GetPluralPoliciesOnRole(ctx context.Context, arg GetPluralPoli
 	for rows.Next() {
 		var i GetPluralPoliciesOnRoleRow
 		if err := rows.Scan(
-			&i.RoleAssociation.MRoleAssociationsPkey,
-			&i.RoleAssociation.RoleID,
-			&i.RoleAssociation.PolicyID,
-			&i.Policy.MPoliciesPkey,
-			&i.Policy.PolicyID,
-			&i.Policy.Name,
-			&i.Policy.Description,
-			&i.Policy.Key,
-			&i.Policy.PolicyCategoryID,
+			&i.MRoleAssociationsPkey,
+			&i.RoleID,
+			&i.PolicyID,
+			&i.PolicyName,
+			&i.PolicyKey,
+			&i.PolicyDescription,
+			&i.PolicyCategoryID,
 		); err != nil {
 			return nil, err
 		}
@@ -191,7 +196,8 @@ func (q *Queries) GetPluralPoliciesOnRole(ctx context.Context, arg GetPluralPoli
 }
 
 const getPluralPoliciesOnRoleUseNumberedPaginate = `-- name: GetPluralPoliciesOnRoleUseNumberedPaginate :many
-SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id FROM m_role_associations
+SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.name policy_name, m_policies.key policy_key,
+m_policies.description policy_description, m_policies.policy_category_id FROM m_role_associations
 LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE
 	role_id = ANY($3::uuid[])
@@ -210,8 +216,13 @@ type GetPluralPoliciesOnRoleUseNumberedPaginateParams struct {
 }
 
 type GetPluralPoliciesOnRoleUseNumberedPaginateRow struct {
-	RoleAssociation RoleAssociation `json:"role_association"`
-	Policy          Policy          `json:"policy"`
+	MRoleAssociationsPkey pgtype.Int8 `json:"m_role_associations_pkey"`
+	RoleID                uuid.UUID   `json:"role_id"`
+	PolicyID              uuid.UUID   `json:"policy_id"`
+	PolicyName            pgtype.Text `json:"policy_name"`
+	PolicyKey             pgtype.Text `json:"policy_key"`
+	PolicyDescription     pgtype.Text `json:"policy_description"`
+	PolicyCategoryID      pgtype.UUID `json:"policy_category_id"`
 }
 
 func (q *Queries) GetPluralPoliciesOnRoleUseNumberedPaginate(ctx context.Context, arg GetPluralPoliciesOnRoleUseNumberedPaginateParams) ([]GetPluralPoliciesOnRoleUseNumberedPaginateRow, error) {
@@ -229,15 +240,13 @@ func (q *Queries) GetPluralPoliciesOnRoleUseNumberedPaginate(ctx context.Context
 	for rows.Next() {
 		var i GetPluralPoliciesOnRoleUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.RoleAssociation.MRoleAssociationsPkey,
-			&i.RoleAssociation.RoleID,
-			&i.RoleAssociation.PolicyID,
-			&i.Policy.MPoliciesPkey,
-			&i.Policy.PolicyID,
-			&i.Policy.Name,
-			&i.Policy.Description,
-			&i.Policy.Key,
-			&i.Policy.PolicyCategoryID,
+			&i.MRoleAssociationsPkey,
+			&i.RoleID,
+			&i.PolicyID,
+			&i.PolicyName,
+			&i.PolicyKey,
+			&i.PolicyDescription,
+			&i.PolicyCategoryID,
 		); err != nil {
 			return nil, err
 		}
@@ -250,7 +259,7 @@ func (q *Queries) GetPluralPoliciesOnRoleUseNumberedPaginate(ctx context.Context
 }
 
 const getPluralRolesOnPolicy = `-- name: GetPluralRolesOnPolicy :many
-SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_role_associations
+SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_roles.name role_name, m_roles.description role_description FROM m_role_associations
 LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE
 	policy_id = ANY($1::uuid[])
@@ -266,8 +275,11 @@ type GetPluralRolesOnPolicyParams struct {
 }
 
 type GetPluralRolesOnPolicyRow struct {
-	RoleAssociation RoleAssociation `json:"role_association"`
-	Role            Role            `json:"role"`
+	MRoleAssociationsPkey pgtype.Int8 `json:"m_role_associations_pkey"`
+	RoleID                uuid.UUID   `json:"role_id"`
+	PolicyID              uuid.UUID   `json:"policy_id"`
+	RoleName              pgtype.Text `json:"role_name"`
+	RoleDescription       pgtype.Text `json:"role_description"`
 }
 
 func (q *Queries) GetPluralRolesOnPolicy(ctx context.Context, arg GetPluralRolesOnPolicyParams) ([]GetPluralRolesOnPolicyRow, error) {
@@ -280,15 +292,11 @@ func (q *Queries) GetPluralRolesOnPolicy(ctx context.Context, arg GetPluralRoles
 	for rows.Next() {
 		var i GetPluralRolesOnPolicyRow
 		if err := rows.Scan(
-			&i.RoleAssociation.MRoleAssociationsPkey,
-			&i.RoleAssociation.RoleID,
-			&i.RoleAssociation.PolicyID,
-			&i.Role.MRolesPkey,
-			&i.Role.RoleID,
-			&i.Role.Name,
-			&i.Role.Description,
-			&i.Role.CreatedAt,
-			&i.Role.UpdatedAt,
+			&i.MRoleAssociationsPkey,
+			&i.RoleID,
+			&i.PolicyID,
+			&i.RoleName,
+			&i.RoleDescription,
 		); err != nil {
 			return nil, err
 		}
@@ -301,7 +309,7 @@ func (q *Queries) GetPluralRolesOnPolicy(ctx context.Context, arg GetPluralRoles
 }
 
 const getPluralRolesOnPolicyUseNumberedPaginate = `-- name: GetPluralRolesOnPolicyUseNumberedPaginate :many
-SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_role_associations
+SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_roles.name role_name, m_roles.description role_description FROM m_role_associations
 LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE
 	policy_id = ANY($3::uuid[])
@@ -320,8 +328,11 @@ type GetPluralRolesOnPolicyUseNumberedPaginateParams struct {
 }
 
 type GetPluralRolesOnPolicyUseNumberedPaginateRow struct {
-	RoleAssociation RoleAssociation `json:"role_association"`
-	Role            Role            `json:"role"`
+	MRoleAssociationsPkey pgtype.Int8 `json:"m_role_associations_pkey"`
+	RoleID                uuid.UUID   `json:"role_id"`
+	PolicyID              uuid.UUID   `json:"policy_id"`
+	RoleName              pgtype.Text `json:"role_name"`
+	RoleDescription       pgtype.Text `json:"role_description"`
 }
 
 func (q *Queries) GetPluralRolesOnPolicyUseNumberedPaginate(ctx context.Context, arg GetPluralRolesOnPolicyUseNumberedPaginateParams) ([]GetPluralRolesOnPolicyUseNumberedPaginateRow, error) {
@@ -339,15 +350,11 @@ func (q *Queries) GetPluralRolesOnPolicyUseNumberedPaginate(ctx context.Context,
 	for rows.Next() {
 		var i GetPluralRolesOnPolicyUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.RoleAssociation.MRoleAssociationsPkey,
-			&i.RoleAssociation.RoleID,
-			&i.RoleAssociation.PolicyID,
-			&i.Role.MRolesPkey,
-			&i.Role.RoleID,
-			&i.Role.Name,
-			&i.Role.Description,
-			&i.Role.CreatedAt,
-			&i.Role.UpdatedAt,
+			&i.MRoleAssociationsPkey,
+			&i.RoleID,
+			&i.PolicyID,
+			&i.RoleName,
+			&i.RoleDescription,
 		); err != nil {
 			return nil, err
 		}
@@ -360,7 +367,8 @@ func (q *Queries) GetPluralRolesOnPolicyUseNumberedPaginate(ctx context.Context,
 }
 
 const getPoliciesOnRole = `-- name: GetPoliciesOnRole :many
-SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id FROM m_role_associations
+SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.name policy_name, m_policies.key policy_key,
+m_policies.description policy_description, m_policies.policy_category_id FROM m_role_associations
 LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE role_id = $1
 AND
@@ -379,8 +387,13 @@ type GetPoliciesOnRoleParams struct {
 }
 
 type GetPoliciesOnRoleRow struct {
-	RoleAssociation RoleAssociation `json:"role_association"`
-	Policy          Policy          `json:"policy"`
+	MRoleAssociationsPkey pgtype.Int8 `json:"m_role_associations_pkey"`
+	RoleID                uuid.UUID   `json:"role_id"`
+	PolicyID              uuid.UUID   `json:"policy_id"`
+	PolicyName            pgtype.Text `json:"policy_name"`
+	PolicyKey             pgtype.Text `json:"policy_key"`
+	PolicyDescription     pgtype.Text `json:"policy_description"`
+	PolicyCategoryID      pgtype.UUID `json:"policy_category_id"`
 }
 
 func (q *Queries) GetPoliciesOnRole(ctx context.Context, arg GetPoliciesOnRoleParams) ([]GetPoliciesOnRoleRow, error) {
@@ -398,15 +411,13 @@ func (q *Queries) GetPoliciesOnRole(ctx context.Context, arg GetPoliciesOnRolePa
 	for rows.Next() {
 		var i GetPoliciesOnRoleRow
 		if err := rows.Scan(
-			&i.RoleAssociation.MRoleAssociationsPkey,
-			&i.RoleAssociation.RoleID,
-			&i.RoleAssociation.PolicyID,
-			&i.Policy.MPoliciesPkey,
-			&i.Policy.PolicyID,
-			&i.Policy.Name,
-			&i.Policy.Description,
-			&i.Policy.Key,
-			&i.Policy.PolicyCategoryID,
+			&i.MRoleAssociationsPkey,
+			&i.RoleID,
+			&i.PolicyID,
+			&i.PolicyName,
+			&i.PolicyKey,
+			&i.PolicyDescription,
+			&i.PolicyCategoryID,
 		); err != nil {
 			return nil, err
 		}
@@ -419,7 +430,8 @@ func (q *Queries) GetPoliciesOnRole(ctx context.Context, arg GetPoliciesOnRolePa
 }
 
 const getPoliciesOnRoleUseKeysetPaginate = `-- name: GetPoliciesOnRoleUseKeysetPaginate :many
-SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id FROM m_role_associations
+SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.name policy_name, m_policies.key policy_key,
+m_policies.description policy_description, m_policies.policy_category_id FROM m_role_associations
 LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE role_id = $1
 AND
@@ -461,8 +473,13 @@ type GetPoliciesOnRoleUseKeysetPaginateParams struct {
 }
 
 type GetPoliciesOnRoleUseKeysetPaginateRow struct {
-	RoleAssociation RoleAssociation `json:"role_association"`
-	Policy          Policy          `json:"policy"`
+	MRoleAssociationsPkey pgtype.Int8 `json:"m_role_associations_pkey"`
+	RoleID                uuid.UUID   `json:"role_id"`
+	PolicyID              uuid.UUID   `json:"policy_id"`
+	PolicyName            pgtype.Text `json:"policy_name"`
+	PolicyKey             pgtype.Text `json:"policy_key"`
+	PolicyDescription     pgtype.Text `json:"policy_description"`
+	PolicyCategoryID      pgtype.UUID `json:"policy_category_id"`
 }
 
 func (q *Queries) GetPoliciesOnRoleUseKeysetPaginate(ctx context.Context, arg GetPoliciesOnRoleUseKeysetPaginateParams) ([]GetPoliciesOnRoleUseKeysetPaginateRow, error) {
@@ -484,15 +501,13 @@ func (q *Queries) GetPoliciesOnRoleUseKeysetPaginate(ctx context.Context, arg Ge
 	for rows.Next() {
 		var i GetPoliciesOnRoleUseKeysetPaginateRow
 		if err := rows.Scan(
-			&i.RoleAssociation.MRoleAssociationsPkey,
-			&i.RoleAssociation.RoleID,
-			&i.RoleAssociation.PolicyID,
-			&i.Policy.MPoliciesPkey,
-			&i.Policy.PolicyID,
-			&i.Policy.Name,
-			&i.Policy.Description,
-			&i.Policy.Key,
-			&i.Policy.PolicyCategoryID,
+			&i.MRoleAssociationsPkey,
+			&i.RoleID,
+			&i.PolicyID,
+			&i.PolicyName,
+			&i.PolicyKey,
+			&i.PolicyDescription,
+			&i.PolicyCategoryID,
 		); err != nil {
 			return nil, err
 		}
@@ -505,7 +520,8 @@ func (q *Queries) GetPoliciesOnRoleUseKeysetPaginate(ctx context.Context, arg Ge
 }
 
 const getPoliciesOnRoleUseNumberedPaginate = `-- name: GetPoliciesOnRoleUseNumberedPaginate :many
-SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_policies.description, m_policies.key, m_policies.policy_category_id FROM m_role_associations
+SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_policies.name policy_name, m_policies.key policy_key,
+m_policies.description policy_description, m_policies.policy_category_id FROM m_role_associations
 LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE role_id = $1
 AND
@@ -527,8 +543,13 @@ type GetPoliciesOnRoleUseNumberedPaginateParams struct {
 }
 
 type GetPoliciesOnRoleUseNumberedPaginateRow struct {
-	RoleAssociation RoleAssociation `json:"role_association"`
-	Policy          Policy          `json:"policy"`
+	MRoleAssociationsPkey pgtype.Int8 `json:"m_role_associations_pkey"`
+	RoleID                uuid.UUID   `json:"role_id"`
+	PolicyID              uuid.UUID   `json:"policy_id"`
+	PolicyName            pgtype.Text `json:"policy_name"`
+	PolicyKey             pgtype.Text `json:"policy_key"`
+	PolicyDescription     pgtype.Text `json:"policy_description"`
+	PolicyCategoryID      pgtype.UUID `json:"policy_category_id"`
 }
 
 func (q *Queries) GetPoliciesOnRoleUseNumberedPaginate(ctx context.Context, arg GetPoliciesOnRoleUseNumberedPaginateParams) ([]GetPoliciesOnRoleUseNumberedPaginateRow, error) {
@@ -548,15 +569,13 @@ func (q *Queries) GetPoliciesOnRoleUseNumberedPaginate(ctx context.Context, arg 
 	for rows.Next() {
 		var i GetPoliciesOnRoleUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.RoleAssociation.MRoleAssociationsPkey,
-			&i.RoleAssociation.RoleID,
-			&i.RoleAssociation.PolicyID,
-			&i.Policy.MPoliciesPkey,
-			&i.Policy.PolicyID,
-			&i.Policy.Name,
-			&i.Policy.Description,
-			&i.Policy.Key,
-			&i.Policy.PolicyCategoryID,
+			&i.MRoleAssociationsPkey,
+			&i.RoleID,
+			&i.PolicyID,
+			&i.PolicyName,
+			&i.PolicyKey,
+			&i.PolicyDescription,
+			&i.PolicyCategoryID,
 		); err != nil {
 			return nil, err
 		}
@@ -569,7 +588,7 @@ func (q *Queries) GetPoliciesOnRoleUseNumberedPaginate(ctx context.Context, arg 
 }
 
 const getRolesOnPolicy = `-- name: GetRolesOnPolicy :many
-SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_role_associations
+SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_roles.name role_name, m_roles.description role_description FROM m_role_associations
 LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE policy_id = $1
 AND
@@ -588,8 +607,11 @@ type GetRolesOnPolicyParams struct {
 }
 
 type GetRolesOnPolicyRow struct {
-	RoleAssociation RoleAssociation `json:"role_association"`
-	Role            Role            `json:"role"`
+	MRoleAssociationsPkey pgtype.Int8 `json:"m_role_associations_pkey"`
+	RoleID                uuid.UUID   `json:"role_id"`
+	PolicyID              uuid.UUID   `json:"policy_id"`
+	RoleName              pgtype.Text `json:"role_name"`
+	RoleDescription       pgtype.Text `json:"role_description"`
 }
 
 func (q *Queries) GetRolesOnPolicy(ctx context.Context, arg GetRolesOnPolicyParams) ([]GetRolesOnPolicyRow, error) {
@@ -607,15 +629,11 @@ func (q *Queries) GetRolesOnPolicy(ctx context.Context, arg GetRolesOnPolicyPara
 	for rows.Next() {
 		var i GetRolesOnPolicyRow
 		if err := rows.Scan(
-			&i.RoleAssociation.MRoleAssociationsPkey,
-			&i.RoleAssociation.RoleID,
-			&i.RoleAssociation.PolicyID,
-			&i.Role.MRolesPkey,
-			&i.Role.RoleID,
-			&i.Role.Name,
-			&i.Role.Description,
-			&i.Role.CreatedAt,
-			&i.Role.UpdatedAt,
+			&i.MRoleAssociationsPkey,
+			&i.RoleID,
+			&i.PolicyID,
+			&i.RoleName,
+			&i.RoleDescription,
 		); err != nil {
 			return nil, err
 		}
@@ -628,7 +646,7 @@ func (q *Queries) GetRolesOnPolicy(ctx context.Context, arg GetRolesOnPolicyPara
 }
 
 const getRolesOnPolicyUseKeysetPaginate = `-- name: GetRolesOnPolicyUseKeysetPaginate :many
-SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_role_associations
+SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_roles.name role_name, m_roles.description role_description FROM m_role_associations
 LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE policy_id = $1
 AND
@@ -670,8 +688,11 @@ type GetRolesOnPolicyUseKeysetPaginateParams struct {
 }
 
 type GetRolesOnPolicyUseKeysetPaginateRow struct {
-	RoleAssociation RoleAssociation `json:"role_association"`
-	Role            Role            `json:"role"`
+	MRoleAssociationsPkey pgtype.Int8 `json:"m_role_associations_pkey"`
+	RoleID                uuid.UUID   `json:"role_id"`
+	PolicyID              uuid.UUID   `json:"policy_id"`
+	RoleName              pgtype.Text `json:"role_name"`
+	RoleDescription       pgtype.Text `json:"role_description"`
 }
 
 func (q *Queries) GetRolesOnPolicyUseKeysetPaginate(ctx context.Context, arg GetRolesOnPolicyUseKeysetPaginateParams) ([]GetRolesOnPolicyUseKeysetPaginateRow, error) {
@@ -693,15 +714,11 @@ func (q *Queries) GetRolesOnPolicyUseKeysetPaginate(ctx context.Context, arg Get
 	for rows.Next() {
 		var i GetRolesOnPolicyUseKeysetPaginateRow
 		if err := rows.Scan(
-			&i.RoleAssociation.MRoleAssociationsPkey,
-			&i.RoleAssociation.RoleID,
-			&i.RoleAssociation.PolicyID,
-			&i.Role.MRolesPkey,
-			&i.Role.RoleID,
-			&i.Role.Name,
-			&i.Role.Description,
-			&i.Role.CreatedAt,
-			&i.Role.UpdatedAt,
+			&i.MRoleAssociationsPkey,
+			&i.RoleID,
+			&i.PolicyID,
+			&i.RoleName,
+			&i.RoleDescription,
 		); err != nil {
 			return nil, err
 		}
@@ -714,7 +731,7 @@ func (q *Queries) GetRolesOnPolicyUseKeysetPaginate(ctx context.Context, arg Get
 }
 
 const getRolesOnPolicyUseNumberedPaginate = `-- name: GetRolesOnPolicyUseNumberedPaginate :many
-SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_role_associations
+SELECT m_role_associations.m_role_associations_pkey, m_role_associations.role_id, m_role_associations.policy_id, m_roles.name role_name, m_roles.description role_description FROM m_role_associations
 LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE policy_id = $1
 AND
@@ -736,8 +753,11 @@ type GetRolesOnPolicyUseNumberedPaginateParams struct {
 }
 
 type GetRolesOnPolicyUseNumberedPaginateRow struct {
-	RoleAssociation RoleAssociation `json:"role_association"`
-	Role            Role            `json:"role"`
+	MRoleAssociationsPkey pgtype.Int8 `json:"m_role_associations_pkey"`
+	RoleID                uuid.UUID   `json:"role_id"`
+	PolicyID              uuid.UUID   `json:"policy_id"`
+	RoleName              pgtype.Text `json:"role_name"`
+	RoleDescription       pgtype.Text `json:"role_description"`
 }
 
 func (q *Queries) GetRolesOnPolicyUseNumberedPaginate(ctx context.Context, arg GetRolesOnPolicyUseNumberedPaginateParams) ([]GetRolesOnPolicyUseNumberedPaginateRow, error) {
@@ -757,15 +777,11 @@ func (q *Queries) GetRolesOnPolicyUseNumberedPaginate(ctx context.Context, arg G
 	for rows.Next() {
 		var i GetRolesOnPolicyUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.RoleAssociation.MRoleAssociationsPkey,
-			&i.RoleAssociation.RoleID,
-			&i.RoleAssociation.PolicyID,
-			&i.Role.MRolesPkey,
-			&i.Role.RoleID,
-			&i.Role.Name,
-			&i.Role.Description,
-			&i.Role.CreatedAt,
-			&i.Role.UpdatedAt,
+			&i.MRoleAssociationsPkey,
+			&i.RoleID,
+			&i.PolicyID,
+			&i.RoleName,
+			&i.RoleDescription,
 		); err != nil {
 			return nil, err
 		}

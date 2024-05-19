@@ -39,4 +39,5 @@ type Store interface {
 	Policy
 	Role
 	RoleAssociation
+	AttachableItem
 }

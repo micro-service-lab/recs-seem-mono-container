@@ -13,22 +13,52 @@ DELETE FROM t_attached_messages WHERE message_id = $1;
 -- name: DeleteAttachedMessagesOnMessages :execrows
 DELETE FROM t_attached_messages WHERE message_id = ANY($1::uuid[]);
 
--- name: GetFilesOnMessage :many
-SELECT t_attachable_items.* FROM t_attached_messages
+-- name: GetAttachedItemsOnMessage :many
+SELECT t_attached_messages.*, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = $1
+AND
+	CASE WHEN @where_in_mime_type::boolean = true THEN t_attachable_items.mime_type_id = ANY(@in_mime_types::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_is_image::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN @where_is_file::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
 ORDER BY
 	t_attached_messages_pkey ASC;
 
--- name: GetFilesOnMessageUseNumberedPaginate :many
-SELECT t_attachable_items.* FROM t_attached_messages
+-- name: GetAttachedItemsOnMessageUseNumberedPaginate :many
+SELECT t_attached_messages.*, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = $1
+AND
+	CASE WHEN @where_in_mime_type::boolean = true THEN t_attachable_items.mime_type_id = ANY(@in_mime_types::uuid[]) ELSE TRUE END
+	AND
+	CASE WHEN @where_is_image::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN @where_is_file::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
 ORDER BY
 	t_attached_messages_pkey ASC
 LIMIT $2 OFFSET $3;
 
--- name: GetFilesOnMessageUseKeysetPaginate :many
-SELECT t_attachable_items.* FROM t_attached_messages
+-- name: GetAttachedItemsOnMessageUseKeysetPaginate :many
+SELECT t_attached_messages.*, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = $1
+AND
+	CASE WHEN @where_in_mime_type::boolean = true THEN t_attachable_items.mime_type_id = ANY(@in_mime_types::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_is_image::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN @where_is_file::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
@@ -41,44 +71,79 @@ ORDER BY
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_attached_messages_pkey END DESC
 LIMIT $2;
 
--- name: GetPluralFilesOnMessage :many
-SELECT t_attachable_items.* FROM t_attached_messages
+-- name: GetPluralAttachedItemsOnMessage :many
+SELECT t_attached_messages.*, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
 	t_attached_messages_pkey ASC;
 
--- name: GetPluralFilesOnMessageUseNumberedPaginate :many
-SELECT t_attachable_items.* FROM t_attached_messages
+-- name: GetPluralAttachedItemsOnMessageUseNumberedPaginate :many
+SELECT t_attached_messages.*, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
 	t_attached_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
--- name: CountFilesOnMessage :one
-SELECT COUNT(*) FROM t_attached_messages WHERE message_id = $1;
-
--- name: GetFilesOnChatRoom :many
-SELECT t_attachable_items.* FROM t_attached_messages
-WHERE message_id IN (
-	SELECT message_id FROM t_messages WHERE chat_room_id = $1
-)
+-- name: GetAttachedItemsOnMessageWithMimeType :many
+SELECT t_attached_messages.*, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+m_mime_types.name mime_type_name, m_mime_types.key mime_type_key, m_mime_types.kind mime_type_kind
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+WHERE message_id = $1
+AND
+	CASE WHEN @where_in_mime_type::boolean = true THEN t_attachable_items.mime_type_id = ANY(@in_mime_types::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_is_image::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN @where_is_file::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
 ORDER BY
 	t_attached_messages_pkey ASC;
 
--- name: GetFilesOnChatRoomUseNumberedPaginate :many
-SELECT t_attachable_items.* FROM t_attached_messages
-WHERE message_id IN (
-	SELECT message_id FROM t_messages WHERE chat_room_id = $1
-)
+-- name: GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate :many
+SELECT t_attached_messages.*, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+m_mime_types.name mime_type_name, m_mime_types.key mime_type_key, m_mime_types.kind mime_type_kind
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+WHERE message_id = $1
+AND
+	CASE WHEN @where_in_mime_type::boolean = true THEN t_attachable_items.mime_type_id = ANY(@in_mime_types::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_is_image::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN @where_is_file::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
 ORDER BY
 	t_attached_messages_pkey ASC
 LIMIT $2 OFFSET $3;
 
--- name: GetFilesOnChatRoomUseKeysetPaginate :many
-SELECT t_attachable_items.* FROM t_attached_messages
-WHERE message_id IN (
-	SELECT message_id FROM t_messages WHERE chat_room_id = $1
-)
+-- name: GetAttachedItemsOnMessageWithMimeTypeUseKeysetPaginate :many
+SELECT t_attached_messages.*, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+m_mime_types.name mime_type_name, m_mime_types.key mime_type_key, m_mime_types.kind mime_type_kind
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+WHERE message_id = $1
+AND
+	CASE WHEN @where_in_mime_type::boolean = true THEN t_attachable_items.mime_type_id = ANY(@in_mime_types::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_is_image::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN @where_is_file::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
@@ -91,27 +156,119 @@ ORDER BY
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_attached_messages_pkey END DESC
 LIMIT $2;
 
--- name: GetPluralFilesOnChatRoom :many
-SELECT t_attachable_items.* FROM t_attached_messages
-WHERE message_id IN (
-	SELECT message_id FROM t_messages WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
-)
+-- name: GetPluralAttachedItemsOnMessageWithMimeType :many
+SELECT t_attached_messages.*, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+m_mime_types.name mime_type_name, m_mime_types.key mime_type_key, m_mime_types.kind mime_type_kind
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
 	t_attached_messages_pkey ASC;
 
--- name: GetPluralFilesOnChatRoomUseNumberedPaginate :many
-SELECT t_attachable_items.* FROM t_attached_messages
-WHERE message_id IN (
-	SELECT message_id FROM t_messages WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
-)
+-- name: GetPluralAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate :many
+SELECT t_attached_messages.*, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+m_mime_types.name mime_type_name, m_mime_types.key mime_type_key, m_mime_types.kind mime_type_kind
+FROM t_attached_messages
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
+WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
 	t_attached_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
+-- name: CountAttachedItemsOnMessage :one
+SELECT COUNT(*) FROM t_attached_messages WHERE message_id = $1
+AND
+	CASE WHEN @where_in_mime_type::boolean = true THEN t_attachable_items.mime_type_id = ANY(@in_mime_types::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_is_image::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN @where_is_file::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END;
 
--- name: CountFilesOnChatRoom :one
+-- name: GetAttachedItemsOnChatRoom :many
+SELECT t_attached_messages.*, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_messages.sender_id message_sender_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
+FROM t_attached_messages
+LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE message_id IN (
+	SELECT message_id FROM t_messages m WHERE m.chat_room_id = $1
+)
+AND
+	CASE WHEN @where_in_mime_type::boolean = true THEN t_attachable_items.mime_type_id = ANY(@in_mime_types::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_is_image::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN @where_is_file::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+ORDER BY
+	t_attached_messages_pkey ASC;
+
+-- name: GetAttachedItemsOnChatRoomUseNumberedPaginate :many
+SELECT t_attached_messages.*, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_messages.sender_id message_sender_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
+FROM t_attached_messages
+LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE message_id IN (
+	SELECT message_id FROM t_messages m WHERE m.chat_room_id = $1
+)
+AND
+	CASE WHEN @where_in_mime_type::boolean = true THEN t_attachable_items.mime_type_id = ANY(@in_mime_types::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_is_image::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN @where_is_file::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+ORDER BY
+	t_attached_messages_pkey ASC
+LIMIT $2 OFFSET $3;
+
+-- name: GetAttachedItemsOnChatRoomUseKeysetPaginate :many
+SELECT t_attached_messages.*, t_attachable_items.url attached_item_url,
+t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_messages.sender_id message_sender_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
+FROM t_attached_messages
+LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
+LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE message_id IN (
+	SELECT message_id FROM t_messages m WHERE m.chat_room_id = $1
+)
+AND
+	CASE WHEN @where_in_mime_type::boolean = true THEN t_attachable_items.mime_type_id = ANY(@in_mime_types::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_is_image::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN @where_is_file::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE @cursor_direction::text
+		WHEN 'next' THEN
+			t_attached_messages_pkey > @cursor::int
+		WHEN 'prev' THEN
+			t_attached_messages_pkey < @cursor::int
+	END
+ORDER BY
+	CASE WHEN @cursor_direction::text = 'next' THEN t_attached_messages_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_attached_messages_pkey END DESC
+LIMIT $2;
+
+-- name: CountAttachedItemsOnChatRoom :one
 SELECT COUNT(*) FROM t_attached_messages
 WHERE message_id IN (
 	SELECT message_id FROM t_messages WHERE chat_room_id = $1
-);
+)
+AND
+	CASE WHEN @where_in_mime_type::boolean = true THEN t_attachable_items.mime_type_id = ANY(@in_mime_types::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_is_image::boolean = true THEN EXISTS (SELECT 1 FROM t_images WHERE t_images.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END
+AND
+	CASE WHEN @where_is_file::boolean = true THEN EXISTS (SELECT 1 FROM t_files WHERE t_files.attachable_item_id = t_attachable_items.attachable_item_id) ELSE TRUE END;
 

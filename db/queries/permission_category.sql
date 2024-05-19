@@ -76,12 +76,16 @@ LIMIT $1;
 SELECT * FROM m_permission_categories
 WHERE permission_category_id = ANY(@permission_category_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_permission_categories.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permission_categories.name END DESC,
 	m_permission_categories_pkey ASC;
 
 -- name: GetPluralPermissionCategoriesUseNumberedPaginate :many
 SELECT * FROM m_permission_categories
 WHERE permission_category_id = ANY(@permission_category_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_permission_categories.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permission_categories.name END DESC,
 	m_permission_categories_pkey ASC
 LIMIT $1 OFFSET $2;
 

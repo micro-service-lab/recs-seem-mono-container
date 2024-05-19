@@ -437,12 +437,16 @@ func (a *PgAdapter) GetAttendStatusesWithSd(
 }
 
 func getPluralAttendStatuses(
-	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, qtx *query.Queries, ids []uuid.UUID,
+	order parameter.AttendStatusOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttendStatus], error) {
 	var e []query.AttendStatus
 	var err error
 	if !np.Valid {
-		e, err = qtx.GetPluralAttendStatuses(ctx, ids)
+		e, err = qtx.GetPluralAttendStatuses(ctx, query.GetPluralAttendStatusesParams{
+			AttendStatusIds: ids,
+			OrderMethod:     order.GetStringValue(),
+		})
 	} else {
 		e, err = qtx.GetPluralAttendStatusesUseNumberedPaginate(ctx, query.GetPluralAttendStatusesUseNumberedPaginateParams{
 			AttendStatusIds: ids,
@@ -466,14 +470,15 @@ func getPluralAttendStatuses(
 
 // GetPluralAttendStatuses 出席ステータスを取得する。
 func (a *PgAdapter) GetPluralAttendStatuses(
-	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, ids []uuid.UUID, order parameter.AttendStatusOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttendStatus], error) {
-	return getPluralAttendStatuses(ctx, a.query, ids, np)
+	return getPluralAttendStatuses(ctx, a.query, ids, order, np)
 }
 
 // GetPluralAttendStatusesWithSd SD付きで出席ステータスを取得する。
 func (a *PgAdapter) GetPluralAttendStatusesWithSd(
-	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, sd store.Sd, ids []uuid.UUID,
+	order parameter.AttendStatusOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttendStatus], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -481,7 +486,7 @@ func (a *PgAdapter) GetPluralAttendStatusesWithSd(
 	if !ok {
 		return store.ListResult[entity.AttendStatus]{}, store.ErrNotFoundDescriptor
 	}
-	return getPluralAttendStatuses(ctx, qtx, ids, np)
+	return getPluralAttendStatuses(ctx, qtx, ids, order, np)
 }
 
 func updateAttendStatus(

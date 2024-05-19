@@ -783,12 +783,16 @@ func (a *PgAdapter) GetPoliciesWithCategoryWithSd(
 }
 
 func getPluralPolicies(
-	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, qtx *query.Queries, ids []uuid.UUID,
+	order parameter.PolicyOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Policy], error) {
 	var e []query.Policy
 	var err error
 	if !np.Valid {
-		e, err = qtx.GetPluralPolicies(ctx, ids)
+		e, err = qtx.GetPluralPolicies(ctx, query.GetPluralPoliciesParams{
+			PolicyIds:   ids,
+			OrderMethod: order.GetStringValue(),
+		})
 	} else {
 		e, err = qtx.GetPluralPoliciesUseNumberedPaginate(ctx, query.GetPluralPoliciesUseNumberedPaginateParams{
 			PolicyIds: ids,
@@ -815,14 +819,14 @@ func getPluralPolicies(
 
 // GetPluralPolicies ポリシーカテゴリーを取得する。
 func (a *PgAdapter) GetPluralPolicies(
-	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, ids []uuid.UUID, order parameter.PolicyOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Policy], error) {
-	return getPluralPolicies(ctx, a.query, ids, np)
+	return getPluralPolicies(ctx, a.query, ids, order, np)
 }
 
 // GetPluralPoliciesWithSd SD付きでポリシーカテゴリーを取得する。
 func (a *PgAdapter) GetPluralPoliciesWithSd(
-	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, sd store.Sd, ids []uuid.UUID, order parameter.PolicyOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Policy], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -830,7 +834,7 @@ func (a *PgAdapter) GetPluralPoliciesWithSd(
 	if !ok {
 		return store.ListResult[entity.Policy]{}, store.ErrNotFoundDescriptor
 	}
-	return getPluralPolicies(ctx, qtx, ids, np)
+	return getPluralPolicies(ctx, qtx, ids, order, np)
 }
 
 func updatePolicy(

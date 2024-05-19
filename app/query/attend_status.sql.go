@@ -278,11 +278,18 @@ const getPluralAttendStatuses = `-- name: GetPluralAttendStatuses :many
 SELECT m_attend_statuses_pkey, attend_status_id, name, key FROM m_attend_statuses
 WHERE attend_status_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_attend_statuses.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_attend_statuses.name END DESC,
 	m_attend_statuses_pkey ASC
 `
 
-func (q *Queries) GetPluralAttendStatuses(ctx context.Context, attendStatusIds []uuid.UUID) ([]AttendStatus, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendStatuses, attendStatusIds)
+type GetPluralAttendStatusesParams struct {
+	AttendStatusIds []uuid.UUID `json:"attend_status_ids"`
+	OrderMethod     string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralAttendStatuses(ctx context.Context, arg GetPluralAttendStatusesParams) ([]AttendStatus, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendStatuses, arg.AttendStatusIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -310,6 +317,8 @@ const getPluralAttendStatusesUseNumberedPaginate = `-- name: GetPluralAttendStat
 SELECT m_attend_statuses_pkey, attend_status_id, name, key FROM m_attend_statuses
 WHERE attend_status_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_attend_statuses.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_attend_statuses.name END DESC,
 	m_attend_statuses_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -318,10 +327,16 @@ type GetPluralAttendStatusesUseNumberedPaginateParams struct {
 	Limit           int32       `json:"limit"`
 	Offset          int32       `json:"offset"`
 	AttendStatusIds []uuid.UUID `json:"attend_status_ids"`
+	OrderMethod     string      `json:"order_method"`
 }
 
 func (q *Queries) GetPluralAttendStatusesUseNumberedPaginate(ctx context.Context, arg GetPluralAttendStatusesUseNumberedPaginateParams) ([]AttendStatus, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendStatusesUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendStatusIds)
+	rows, err := q.db.Query(ctx, getPluralAttendStatusesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.AttendStatusIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

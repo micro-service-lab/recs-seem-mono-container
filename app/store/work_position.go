@@ -59,6 +59,7 @@ type WorkPosition interface {
 	GetPluralWorkPositions(
 		ctx context.Context,
 		workPositionIDs []uuid.UUID,
+		order parameter.WorkPositionOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.WorkPosition], error)
 	// GetPluralWorkPositionsWithSd SD付きでワークポジションを取得する。
@@ -66,6 +67,7 @@ type WorkPosition interface {
 		ctx context.Context,
 		sd Sd,
 		workPositionIDs []uuid.UUID,
+		order parameter.WorkPositionOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.WorkPosition], error)
 	// UpdateWorkPosition ワークポジションを更新する。

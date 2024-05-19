@@ -2688,11 +2688,18 @@ func (q *Queries) GetMembersWithRoleUseNumberedPaginate(ctx context.Context, arg
 const getPluralMembers = `-- name: GetPluralMembers :many
 SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE member_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey ASC
 `
 
-func (q *Queries) GetPluralMembers(ctx context.Context, memberIds []uuid.UUID) ([]Member, error) {
-	rows, err := q.db.Query(ctx, getPluralMembers, memberIds)
+type GetPluralMembersParams struct {
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralMembers(ctx context.Context, arg GetPluralMembersParams) ([]Member, error) {
+	rows, err := q.db.Query(ctx, getPluralMembers, arg.MemberIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -2729,18 +2736,26 @@ func (q *Queries) GetPluralMembers(ctx context.Context, memberIds []uuid.UUID) (
 const getPluralMembersUseNumberedPaginate = `-- name: GetPluralMembersUseNumberedPaginate :many
 SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE member_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralMembersUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	MemberIds []uuid.UUID `json:"member_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 func (q *Queries) GetPluralMembersUseNumberedPaginate(ctx context.Context, arg GetPluralMembersUseNumberedPaginateParams) ([]Member, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersUseNumberedPaginate, arg.Limit, arg.Offset, arg.MemberIds)
+	rows, err := q.db.Query(ctx, getPluralMembersUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.MemberIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -2783,8 +2798,15 @@ LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organization
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey ASC
 `
+
+type GetPluralMembersWithAllParams struct {
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralMembersWithAllRow struct {
 	Member       Member       `json:"member"`
@@ -2795,8 +2817,8 @@ type GetPluralMembersWithAllRow struct {
 	Role         Role         `json:"role"`
 }
 
-func (q *Queries) GetPluralMembersWithAll(ctx context.Context, memberIds []uuid.UUID) ([]GetPluralMembersWithAllRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithAll, memberIds)
+func (q *Queries) GetPluralMembersWithAll(ctx context.Context, arg GetPluralMembersWithAllParams) ([]GetPluralMembersWithAllRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithAll, arg.MemberIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -2867,14 +2889,17 @@ LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organization
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralMembersWithAllUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	MemberIds []uuid.UUID `json:"member_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralMembersWithAllUseNumberedPaginateRow struct {
@@ -2887,7 +2912,12 @@ type GetPluralMembersWithAllUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralMembersWithAllUseNumberedPaginate(ctx context.Context, arg GetPluralMembersWithAllUseNumberedPaginateParams) ([]GetPluralMembersWithAllUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithAllUseNumberedPaginate, arg.Limit, arg.Offset, arg.MemberIds)
+	rows, err := q.db.Query(ctx, getPluralMembersWithAllUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.MemberIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -2954,16 +2984,23 @@ SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_memb
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey ASC
 `
+
+type GetPluralMembersWithAttendStatusParams struct {
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralMembersWithAttendStatusRow struct {
 	Member       Member       `json:"member"`
 	AttendStatus AttendStatus `json:"attend_status"`
 }
 
-func (q *Queries) GetPluralMembersWithAttendStatus(ctx context.Context, memberIds []uuid.UUID) ([]GetPluralMembersWithAttendStatusRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithAttendStatus, memberIds)
+func (q *Queries) GetPluralMembersWithAttendStatus(ctx context.Context, arg GetPluralMembersWithAttendStatusParams) ([]GetPluralMembersWithAttendStatusRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithAttendStatus, arg.MemberIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3006,14 +3043,17 @@ SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_memb
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralMembersWithAttendStatusUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	MemberIds []uuid.UUID `json:"member_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralMembersWithAttendStatusUseNumberedPaginateRow struct {
@@ -3022,7 +3062,12 @@ type GetPluralMembersWithAttendStatusUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralMembersWithAttendStatusUseNumberedPaginate(ctx context.Context, arg GetPluralMembersWithAttendStatusUseNumberedPaginateParams) ([]GetPluralMembersWithAttendStatusUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithAttendStatusUseNumberedPaginate, arg.Limit, arg.Offset, arg.MemberIds)
+	rows, err := q.db.Query(ctx, getPluralMembersWithAttendStatusUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.MemberIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -3066,16 +3111,23 @@ LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey ASC
 `
+
+type GetPluralMembersWithGradeParams struct {
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralMembersWithGradeRow struct {
 	Member Member `json:"member"`
 	Grade  Grade  `json:"grade"`
 }
 
-func (q *Queries) GetPluralMembersWithGrade(ctx context.Context, memberIds []uuid.UUID) ([]GetPluralMembersWithGradeRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithGrade, memberIds)
+func (q *Queries) GetPluralMembersWithGrade(ctx context.Context, arg GetPluralMembersWithGradeParams) ([]GetPluralMembersWithGradeRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithGrade, arg.MemberIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3119,14 +3171,17 @@ LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralMembersWithGradeUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	MemberIds []uuid.UUID `json:"member_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralMembersWithGradeUseNumberedPaginateRow struct {
@@ -3135,7 +3190,12 @@ type GetPluralMembersWithGradeUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralMembersWithGradeUseNumberedPaginate(ctx context.Context, arg GetPluralMembersWithGradeUseNumberedPaginateParams) ([]GetPluralMembersWithGradeUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithGradeUseNumberedPaginate, arg.Limit, arg.Offset, arg.MemberIds)
+	rows, err := q.db.Query(ctx, getPluralMembersWithGradeUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.MemberIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -3179,16 +3239,23 @@ LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey ASC
 `
+
+type GetPluralMembersWithGroupParams struct {
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralMembersWithGroupRow struct {
 	Member Member `json:"member"`
 	Group  Group  `json:"group"`
 }
 
-func (q *Queries) GetPluralMembersWithGroup(ctx context.Context, memberIds []uuid.UUID) ([]GetPluralMembersWithGroupRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithGroup, memberIds)
+func (q *Queries) GetPluralMembersWithGroup(ctx context.Context, arg GetPluralMembersWithGroupParams) ([]GetPluralMembersWithGroupRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithGroup, arg.MemberIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3232,14 +3299,17 @@ LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralMembersWithGroupUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	MemberIds []uuid.UUID `json:"member_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralMembersWithGroupUseNumberedPaginateRow struct {
@@ -3248,7 +3318,12 @@ type GetPluralMembersWithGroupUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralMembersWithGroupUseNumberedPaginate(ctx context.Context, arg GetPluralMembersWithGroupUseNumberedPaginateParams) ([]GetPluralMembersWithGroupUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithGroupUseNumberedPaginate, arg.Limit, arg.Offset, arg.MemberIds)
+	rows, err := q.db.Query(ctx, getPluralMembersWithGroupUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.MemberIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -3291,16 +3366,23 @@ SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_memb
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey ASC
 `
+
+type GetPluralMembersWithPersonalOrganizationParams struct {
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralMembersWithPersonalOrganizationRow struct {
 	Member       Member       `json:"member"`
 	Organization Organization `json:"organization"`
 }
 
-func (q *Queries) GetPluralMembersWithPersonalOrganization(ctx context.Context, memberIds []uuid.UUID) ([]GetPluralMembersWithPersonalOrganizationRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithPersonalOrganization, memberIds)
+func (q *Queries) GetPluralMembersWithPersonalOrganization(ctx context.Context, arg GetPluralMembersWithPersonalOrganizationParams) ([]GetPluralMembersWithPersonalOrganizationRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithPersonalOrganization, arg.MemberIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3349,14 +3431,17 @@ SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_memb
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralMembersWithPersonalOrganizationUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	MemberIds []uuid.UUID `json:"member_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralMembersWithPersonalOrganizationUseNumberedPaginateRow struct {
@@ -3365,7 +3450,12 @@ type GetPluralMembersWithPersonalOrganizationUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralMembersWithPersonalOrganizationUseNumberedPaginate(ctx context.Context, arg GetPluralMembersWithPersonalOrganizationUseNumberedPaginateParams) ([]GetPluralMembersWithPersonalOrganizationUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithPersonalOrganizationUseNumberedPaginate, arg.Limit, arg.Offset, arg.MemberIds)
+	rows, err := q.db.Query(ctx, getPluralMembersWithPersonalOrganizationUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.MemberIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -3414,16 +3504,23 @@ SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_memb
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey ASC
 `
+
+type GetPluralMembersWithRoleParams struct {
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralMembersWithRoleRow struct {
 	Member Member `json:"member"`
 	Role   Role   `json:"role"`
 }
 
-func (q *Queries) GetPluralMembersWithRole(ctx context.Context, memberIds []uuid.UUID) ([]GetPluralMembersWithRoleRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithRole, memberIds)
+func (q *Queries) GetPluralMembersWithRole(ctx context.Context, arg GetPluralMembersWithRoleParams) ([]GetPluralMembersWithRoleRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithRole, arg.MemberIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3468,14 +3565,17 @@ SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_memb
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralMembersWithRoleUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	MemberIds []uuid.UUID `json:"member_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralMembersWithRoleUseNumberedPaginateRow struct {
@@ -3484,7 +3584,12 @@ type GetPluralMembersWithRoleUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralMembersWithRoleUseNumberedPaginate(ctx context.Context, arg GetPluralMembersWithRoleUseNumberedPaginateParams) ([]GetPluralMembersWithRoleUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithRoleUseNumberedPaginate, arg.Limit, arg.Offset, arg.MemberIds)
+	rows, err := q.db.Query(ctx, getPluralMembersWithRoleUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.MemberIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

@@ -151,6 +151,7 @@ func TestPgAdapter_EventType(t *testing.T) {
 					ctx,
 					sd,
 					[]uuid.UUID{el.Data[0].EventTypeID, el.Data[1].EventTypeID},
+					parameter.EventTypeOrderMethodDefault,
 					validNp,
 				)
 				assert.NoError(t, err)

@@ -380,11 +380,22 @@ func (q *Queries) FindRecordByIDWithRecordType(ctx context.Context, recordID uui
 const getPluralRecords = `-- name: GetPluralRecords :many
 SELECT t_records_pkey, record_id, record_type_id, title, body, organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_records WHERE record_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'title' THEN title END ASC,
+	CASE WHEN $2::text = 'r_title' THEN title END DESC,
+	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_records_pkey ASC
 `
 
-func (q *Queries) GetPluralRecords(ctx context.Context, recordIds []uuid.UUID) ([]Record, error) {
-	rows, err := q.db.Query(ctx, getPluralRecords, recordIds)
+type GetPluralRecordsParams struct {
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralRecords(ctx context.Context, arg GetPluralRecordsParams) ([]Record, error) {
+	rows, err := q.db.Query(ctx, getPluralRecords, arg.RecordIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -417,18 +428,30 @@ func (q *Queries) GetPluralRecords(ctx context.Context, recordIds []uuid.UUID) (
 const getPluralRecordsUseNumberedPaginate = `-- name: GetPluralRecordsUseNumberedPaginate :many
 SELECT t_records_pkey, record_id, record_type_id, title, body, organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_records WHERE record_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'title' THEN title END ASC,
+	CASE WHEN $4::text = 'r_title' THEN title END DESC,
+	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralRecordsUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	RecordIds []uuid.UUID `json:"record_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 func (q *Queries) GetPluralRecordsUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsUseNumberedPaginateParams) ([]Record, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsUseNumberedPaginate, arg.Limit, arg.Offset, arg.RecordIds)
+	rows, err := q.db.Query(ctx, getPluralRecordsUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.RecordIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -466,8 +489,19 @@ LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 LEFT JOIN m_members AS m_members_2 ON t_records.last_edited_by = m_members_2.member_id
 WHERE record_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'title' THEN title END ASC,
+	CASE WHEN $2::text = 'r_title' THEN title END DESC,
+	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_records_pkey ASC
 `
+
+type GetPluralRecordsWithAllParams struct {
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralRecordsWithAllRow struct {
 	Record       Record       `json:"record"`
@@ -477,8 +511,8 @@ type GetPluralRecordsWithAllRow struct {
 	Member_2     Member       `json:"member_2"`
 }
 
-func (q *Queries) GetPluralRecordsWithAll(ctx context.Context, recordIds []uuid.UUID) ([]GetPluralRecordsWithAllRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithAll, recordIds)
+func (q *Queries) GetPluralRecordsWithAll(ctx context.Context, arg GetPluralRecordsWithAllParams) ([]GetPluralRecordsWithAllRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithAll, arg.RecordIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -558,14 +592,21 @@ LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 LEFT JOIN m_members AS m_members_2 ON t_records.last_edited_by = m_members_2.member_id
 WHERE record_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'title' THEN title END ASC,
+	CASE WHEN $4::text = 'r_title' THEN title END DESC,
+	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralRecordsWithAllUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	RecordIds []uuid.UUID `json:"record_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralRecordsWithAllUseNumberedPaginateRow struct {
@@ -577,7 +618,12 @@ type GetPluralRecordsWithAllUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralRecordsWithAllUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsWithAllUseNumberedPaginateParams) ([]GetPluralRecordsWithAllUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithAllUseNumberedPaginate, arg.Limit, arg.Offset, arg.RecordIds)
+	rows, err := q.db.Query(ctx, getPluralRecordsWithAllUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.RecordIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -654,16 +700,27 @@ SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, 
 LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE record_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'title' THEN title END ASC,
+	CASE WHEN $2::text = 'r_title' THEN title END DESC,
+	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_records_pkey ASC
 `
+
+type GetPluralRecordsWithLastEditedByParams struct {
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralRecordsWithLastEditedByRow struct {
 	Record Record `json:"record"`
 	Member Member `json:"member"`
 }
 
-func (q *Queries) GetPluralRecordsWithLastEditedBy(ctx context.Context, recordIds []uuid.UUID) ([]GetPluralRecordsWithLastEditedByRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithLastEditedBy, recordIds)
+func (q *Queries) GetPluralRecordsWithLastEditedBy(ctx context.Context, arg GetPluralRecordsWithLastEditedByParams) ([]GetPluralRecordsWithLastEditedByRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithLastEditedBy, arg.RecordIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -712,14 +769,21 @@ SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, 
 LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE record_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'title' THEN title END ASC,
+	CASE WHEN $4::text = 'r_title' THEN title END DESC,
+	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralRecordsWithLastEditedByUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	RecordIds []uuid.UUID `json:"record_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralRecordsWithLastEditedByUseNumberedPaginateRow struct {
@@ -728,7 +792,12 @@ type GetPluralRecordsWithLastEditedByUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralRecordsWithLastEditedByUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsWithLastEditedByUseNumberedPaginateParams) ([]GetPluralRecordsWithLastEditedByUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithLastEditedByUseNumberedPaginate, arg.Limit, arg.Offset, arg.RecordIds)
+	rows, err := q.db.Query(ctx, getPluralRecordsWithLastEditedByUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.RecordIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -777,16 +846,27 @@ SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, 
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 WHERE record_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'title' THEN title END ASC,
+	CASE WHEN $2::text = 'r_title' THEN title END DESC,
+	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_records_pkey ASC
 `
+
+type GetPluralRecordsWithOrganizationParams struct {
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralRecordsWithOrganizationRow struct {
 	Record       Record       `json:"record"`
 	Organization Organization `json:"organization"`
 }
 
-func (q *Queries) GetPluralRecordsWithOrganization(ctx context.Context, recordIds []uuid.UUID) ([]GetPluralRecordsWithOrganizationRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithOrganization, recordIds)
+func (q *Queries) GetPluralRecordsWithOrganization(ctx context.Context, arg GetPluralRecordsWithOrganizationParams) ([]GetPluralRecordsWithOrganizationRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithOrganization, arg.RecordIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -831,14 +911,21 @@ SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, 
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 WHERE record_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'title' THEN title END ASC,
+	CASE WHEN $4::text = 'r_title' THEN title END DESC,
+	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralRecordsWithOrganizationUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	RecordIds []uuid.UUID `json:"record_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralRecordsWithOrganizationUseNumberedPaginateRow struct {
@@ -847,7 +934,12 @@ type GetPluralRecordsWithOrganizationUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralRecordsWithOrganizationUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsWithOrganizationUseNumberedPaginateParams) ([]GetPluralRecordsWithOrganizationUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithOrganizationUseNumberedPaginate, arg.Limit, arg.Offset, arg.RecordIds)
+	rows, err := q.db.Query(ctx, getPluralRecordsWithOrganizationUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.RecordIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -892,16 +984,27 @@ SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, 
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 WHERE record_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'title' THEN title END ASC,
+	CASE WHEN $2::text = 'r_title' THEN title END DESC,
+	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_records_pkey ASC
 `
+
+type GetPluralRecordsWithPostedByParams struct {
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralRecordsWithPostedByRow struct {
 	Record Record `json:"record"`
 	Member Member `json:"member"`
 }
 
-func (q *Queries) GetPluralRecordsWithPostedBy(ctx context.Context, recordIds []uuid.UUID) ([]GetPluralRecordsWithPostedByRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithPostedBy, recordIds)
+func (q *Queries) GetPluralRecordsWithPostedBy(ctx context.Context, arg GetPluralRecordsWithPostedByParams) ([]GetPluralRecordsWithPostedByRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithPostedBy, arg.RecordIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -950,14 +1053,21 @@ SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, 
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 WHERE record_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'title' THEN title END ASC,
+	CASE WHEN $4::text = 'r_title' THEN title END DESC,
+	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralRecordsWithPostedByUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	RecordIds []uuid.UUID `json:"record_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralRecordsWithPostedByUseNumberedPaginateRow struct {
@@ -966,7 +1076,12 @@ type GetPluralRecordsWithPostedByUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralRecordsWithPostedByUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsWithPostedByUseNumberedPaginateParams) ([]GetPluralRecordsWithPostedByUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithPostedByUseNumberedPaginate, arg.Limit, arg.Offset, arg.RecordIds)
+	rows, err := q.db.Query(ctx, getPluralRecordsWithPostedByUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.RecordIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -1015,16 +1130,27 @@ SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, 
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 WHERE record_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'title' THEN title END ASC,
+	CASE WHEN $2::text = 'r_title' THEN title END DESC,
+	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_records_pkey ASC
 `
+
+type GetPluralRecordsWithRecordTypeParams struct {
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralRecordsWithRecordTypeRow struct {
 	Record     Record     `json:"record"`
 	RecordType RecordType `json:"record_type"`
 }
 
-func (q *Queries) GetPluralRecordsWithRecordType(ctx context.Context, recordIds []uuid.UUID) ([]GetPluralRecordsWithRecordTypeRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithRecordType, recordIds)
+func (q *Queries) GetPluralRecordsWithRecordType(ctx context.Context, arg GetPluralRecordsWithRecordTypeParams) ([]GetPluralRecordsWithRecordTypeRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithRecordType, arg.RecordIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -1063,14 +1189,21 @@ SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, 
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 WHERE record_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'title' THEN title END ASC,
+	CASE WHEN $4::text = 'r_title' THEN title END DESC,
+	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralRecordsWithRecordTypeUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	RecordIds []uuid.UUID `json:"record_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralRecordsWithRecordTypeUseNumberedPaginateRow struct {
@@ -1079,7 +1212,12 @@ type GetPluralRecordsWithRecordTypeUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralRecordsWithRecordTypeUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsWithRecordTypeUseNumberedPaginateParams) ([]GetPluralRecordsWithRecordTypeUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithRecordTypeUseNumberedPaginate, arg.Limit, arg.Offset, arg.RecordIds)
+	rows, err := q.db.Query(ctx, getPluralRecordsWithRecordTypeUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.RecordIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

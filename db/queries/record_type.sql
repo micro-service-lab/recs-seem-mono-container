@@ -77,6 +77,8 @@ SELECT * FROM m_record_types
 WHERE
 	record_type_id = ANY(@record_type_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
 	m_record_types_pkey ASC;
 
 -- name: GetPluralRecordTypesUseNumberedPaginate :many
@@ -84,6 +86,8 @@ SELECT * FROM m_record_types
 WHERE
 	record_type_id = ANY(@record_type_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
 	m_record_types_pkey ASC
 LIMIT $1 OFFSET $2;
 

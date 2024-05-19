@@ -76,12 +76,16 @@ LIMIT $1;
 SELECT * FROM m_mime_types
 WHERE mime_type_id = ANY(@mime_type_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
 	m_mime_types_pkey ASC;
 
 -- name: GetPluralMimeTypesUseNumberedPaginate :many
 SELECT * FROM m_mime_types
 WHERE mime_type_id = ANY(@mime_type_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
 	m_mime_types_pkey ASC
 LIMIT $1 OFFSET $2;
 

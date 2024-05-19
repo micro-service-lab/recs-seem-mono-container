@@ -76,12 +76,16 @@ LIMIT $1;
 SELECT * FROM m_attend_statuses
 WHERE attend_status_id = ANY(@attend_status_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_attend_statuses.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_attend_statuses.name END DESC,
 	m_attend_statuses_pkey ASC;
 
 -- name: GetPluralAttendStatusesUseNumberedPaginate :many
 SELECT * FROM m_attend_statuses
 WHERE attend_status_id = ANY(@attend_status_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_attend_statuses.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_attend_statuses.name END DESC,
 	m_attend_statuses_pkey ASC
 LIMIT $1 OFFSET $2;
 

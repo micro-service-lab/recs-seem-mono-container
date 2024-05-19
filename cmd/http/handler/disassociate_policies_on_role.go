@@ -27,7 +27,6 @@ type DisassociatePoliciesOnRole struct {
 
 // DisassociatePoliciesOnRoleRequest is a request for DisassociatePoliciesOnRole.
 type DisassociatePoliciesOnRoleRequest struct {
-	//nolint:revive
 	PolicyIDS []uuid.UUID `json:"policy_ids" validate:"required,unique" ja:"ポリシーID" en:"PolicyIDs"`
 }
 

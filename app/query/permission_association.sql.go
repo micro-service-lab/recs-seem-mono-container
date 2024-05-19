@@ -353,16 +353,23 @@ SELECT m_permission_associations.m_permission_associations_pkey, m_permission_as
 LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
 WHERE work_position_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_permissions.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_permissions.name END DESC,
 	m_permission_associations_pkey ASC
 `
+
+type GetPluralPermissionsOnWorkPositionParams struct {
+	WorkPositionIds []uuid.UUID `json:"work_position_ids"`
+	OrderMethod     string      `json:"order_method"`
+}
 
 type GetPluralPermissionsOnWorkPositionRow struct {
 	PermissionAssociation PermissionAssociation `json:"permission_association"`
 	Permission            Permission            `json:"permission"`
 }
 
-func (q *Queries) GetPluralPermissionsOnWorkPosition(ctx context.Context, workPositionIds []uuid.UUID) ([]GetPluralPermissionsOnWorkPositionRow, error) {
-	rows, err := q.db.Query(ctx, getPluralPermissionsOnWorkPosition, workPositionIds)
+func (q *Queries) GetPluralPermissionsOnWorkPosition(ctx context.Context, arg GetPluralPermissionsOnWorkPositionParams) ([]GetPluralPermissionsOnWorkPositionRow, error) {
+	rows, err := q.db.Query(ctx, getPluralPermissionsOnWorkPosition, arg.WorkPositionIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -396,6 +403,8 @@ SELECT m_permission_associations.m_permission_associations_pkey, m_permission_as
 LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
 WHERE work_position_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_permissions.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_permissions.name END DESC,
 	m_permission_associations_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -404,6 +413,7 @@ type GetPluralPermissionsOnWorkPositionUseNumberedPaginateParams struct {
 	Limit           int32       `json:"limit"`
 	Offset          int32       `json:"offset"`
 	WorkPositionIds []uuid.UUID `json:"work_position_ids"`
+	OrderMethod     string      `json:"order_method"`
 }
 
 type GetPluralPermissionsOnWorkPositionUseNumberedPaginateRow struct {
@@ -412,7 +422,12 @@ type GetPluralPermissionsOnWorkPositionUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralPermissionsOnWorkPositionUseNumberedPaginate(ctx context.Context, arg GetPluralPermissionsOnWorkPositionUseNumberedPaginateParams) ([]GetPluralPermissionsOnWorkPositionUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralPermissionsOnWorkPositionUseNumberedPaginate, arg.Limit, arg.Offset, arg.WorkPositionIds)
+	rows, err := q.db.Query(ctx, getPluralPermissionsOnWorkPositionUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WorkPositionIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -446,16 +461,23 @@ SELECT m_permission_associations.m_permission_associations_pkey, m_permission_as
 LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
 WHERE permission_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_work_positions.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_work_positions.name END DESC,
 	m_permission_associations_pkey ASC
 `
+
+type GetPluralWorkPositionsOnPermissionParams struct {
+	PermissionIds []uuid.UUID `json:"permission_ids"`
+	OrderMethod   string      `json:"order_method"`
+}
 
 type GetPluralWorkPositionsOnPermissionRow struct {
 	PermissionAssociation PermissionAssociation `json:"permission_association"`
 	WorkPosition          WorkPosition          `json:"work_position"`
 }
 
-func (q *Queries) GetPluralWorkPositionsOnPermission(ctx context.Context, permissionIds []uuid.UUID) ([]GetPluralWorkPositionsOnPermissionRow, error) {
-	rows, err := q.db.Query(ctx, getPluralWorkPositionsOnPermission, permissionIds)
+func (q *Queries) GetPluralWorkPositionsOnPermission(ctx context.Context, arg GetPluralWorkPositionsOnPermissionParams) ([]GetPluralWorkPositionsOnPermissionRow, error) {
+	rows, err := q.db.Query(ctx, getPluralWorkPositionsOnPermission, arg.PermissionIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -490,6 +512,8 @@ SELECT m_permission_associations.m_permission_associations_pkey, m_permission_as
 LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
 WHERE permission_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_work_positions.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_work_positions.name END DESC,
 	m_permission_associations_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -498,6 +522,7 @@ type GetPluralWorkPositionsOnPermissionUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	PermissionIds []uuid.UUID `json:"permission_ids"`
+	OrderMethod   string      `json:"order_method"`
 }
 
 type GetPluralWorkPositionsOnPermissionUseNumberedPaginateRow struct {
@@ -506,7 +531,12 @@ type GetPluralWorkPositionsOnPermissionUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralWorkPositionsOnPermissionUseNumberedPaginate(ctx context.Context, arg GetPluralWorkPositionsOnPermissionUseNumberedPaginateParams) ([]GetPluralWorkPositionsOnPermissionUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralWorkPositionsOnPermissionUseNumberedPaginate, arg.Limit, arg.Offset, arg.PermissionIds)
+	rows, err := q.db.Query(ctx, getPluralWorkPositionsOnPermissionUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.PermissionIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

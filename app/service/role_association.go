@@ -56,14 +56,14 @@ func (m *ManageRoleAssociation) AssociateRoles(
 	}
 	np := store.NumberedPaginationParam{}
 	var ro store.ListResult[entity.Role]
-	if ro, err = m.DB.GetPluralRolesWithSd(ctx, sd, roleIDs, np); err != nil {
+	if ro, err = m.DB.GetPluralRolesWithSd(ctx, sd, roleIDs, parameter.RoleOrderMethodDefault, np); err != nil {
 		return 0, fmt.Errorf("failed to get plural roles: %w", err)
 	}
 	if len(ro.Data) != len(roleIDs) {
 		return 0, errhandle.NewModelNotFoundError(AssociateRoleTargetRoles)
 	}
 	var po store.ListResult[entity.Policy]
-	if po, err = m.DB.GetPluralPoliciesWithSd(ctx, sd, policyIDs, np); err != nil {
+	if po, err = m.DB.GetPluralPoliciesWithSd(ctx, sd, policyIDs, parameter.PolicyOrderMethodDefault, np); err != nil {
 		return 0, fmt.Errorf("failed to get plural policies: %w", err)
 	}
 	if len(po.Data) != len(policyIDs) {
@@ -97,7 +97,8 @@ func (m *ManageRoleAssociation) DisassociateRoleOnPolicy(
 	}()
 	np := store.NumberedPaginationParam{}
 	var po store.ListResult[entity.Policy]
-	if po, err = m.DB.GetPluralPoliciesWithSd(ctx, sd, []uuid.UUID{policyID}, np); err != nil {
+	if po, err = m.DB.GetPluralPoliciesWithSd(
+		ctx, sd, []uuid.UUID{policyID}, parameter.PolicyOrderMethodDefault, np); err != nil {
 		return 0, fmt.Errorf("failed to get plural policies: %w", err)
 	}
 	if len(po.Data) != 1 {
@@ -131,7 +132,7 @@ func (m *ManageRoleAssociation) DisassociateRoleOnPolicies(
 	}()
 	np := store.NumberedPaginationParam{}
 	var po store.ListResult[entity.Policy]
-	if po, err = m.DB.GetPluralPoliciesWithSd(ctx, sd, policyIDs, np); err != nil {
+	if po, err = m.DB.GetPluralPoliciesWithSd(ctx, sd, policyIDs, parameter.PolicyOrderMethodDefault, np); err != nil {
 		return 0, fmt.Errorf("failed to get plural policies: %w", err)
 	}
 	if len(po.Data) != len(policyIDs) {
@@ -165,14 +166,15 @@ func (m *ManageRoleAssociation) PluralDisassociateRoleOnPolicy(
 	}()
 	np := store.NumberedPaginationParam{}
 	var ro store.ListResult[entity.Role]
-	if ro, err = m.DB.GetPluralRolesWithSd(ctx, sd, roleIDs, np); err != nil {
+	if ro, err = m.DB.GetPluralRolesWithSd(ctx, sd, roleIDs, parameter.RoleOrderMethodDefault, np); err != nil {
 		return 0, fmt.Errorf("failed to get plural roles: %w", err)
 	}
 	if len(ro.Data) != len(roleIDs) {
 		return 0, errhandle.NewModelNotFoundError(AssociateRoleTargetRoles)
 	}
 	var po store.ListResult[entity.Policy]
-	if po, err = m.DB.GetPluralPoliciesWithSd(ctx, sd, []uuid.UUID{policyID}, np); err != nil {
+	if po, err = m.DB.GetPluralPoliciesWithSd(
+		ctx, sd, []uuid.UUID{policyID}, parameter.PolicyOrderMethodDefault, np); err != nil {
 		return 0, fmt.Errorf("failed to get plural policies: %w", err)
 	}
 	if len(po.Data) != 1 {
@@ -206,7 +208,8 @@ func (m *ManageRoleAssociation) DisassociatePolicyOnRole(
 	}()
 	np := store.NumberedPaginationParam{}
 	var ro store.ListResult[entity.Role]
-	if ro, err = m.DB.GetPluralRolesWithSd(ctx, sd, []uuid.UUID{roleID}, np); err != nil {
+	if ro, err = m.DB.GetPluralRolesWithSd(
+		ctx, sd, []uuid.UUID{roleID}, parameter.RoleOrderMethodDefault, np); err != nil {
 		return 0, fmt.Errorf("failed to get plural roles: %w", err)
 	}
 	if len(ro.Data) != 1 {
@@ -240,7 +243,7 @@ func (m *ManageRoleAssociation) DisassociatePolicyOnRoles(
 	}()
 	np := store.NumberedPaginationParam{}
 	var ro store.ListResult[entity.Role]
-	if ro, err = m.DB.GetPluralRolesWithSd(ctx, sd, roleIDs, np); err != nil {
+	if ro, err = m.DB.GetPluralRolesWithSd(ctx, sd, roleIDs, parameter.RoleOrderMethodDefault, np); err != nil {
 		return 0, fmt.Errorf("failed to get plural roles: %w", err)
 	}
 	if len(ro.Data) != len(roleIDs) {
@@ -274,14 +277,15 @@ func (m *ManageRoleAssociation) PluralDisassociatePolicyOnRole(
 	}()
 	np := store.NumberedPaginationParam{}
 	var ro store.ListResult[entity.Role]
-	if ro, err = m.DB.GetPluralRolesWithSd(ctx, sd, []uuid.UUID{roleID}, np); err != nil {
+	if ro, err = m.DB.GetPluralRolesWithSd(
+		ctx, sd, []uuid.UUID{roleID}, parameter.RoleOrderMethodDefault, np); err != nil {
 		return 0, fmt.Errorf("failed to get plural roles: %w", err)
 	}
 	if len(ro.Data) != 1 {
 		return 0, errhandle.NewModelNotFoundError(AssociateRoleTargetRoles)
 	}
 	var po store.ListResult[entity.Policy]
-	if po, err = m.DB.GetPluralPoliciesWithSd(ctx, sd, policyIDs, np); err != nil {
+	if po, err = m.DB.GetPluralPoliciesWithSd(ctx, sd, policyIDs, parameter.PolicyOrderMethodDefault, np); err != nil {
 		return 0, fmt.Errorf("failed to get plural policies: %w", err)
 	}
 	if len(po.Data) != len(policyIDs) {

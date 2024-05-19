@@ -693,8 +693,23 @@ SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belonging
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_chat_rooms.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_chat_rooms.name END DESC,
+	CASE WHEN $2::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN $2::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN $2::text = 'old_chat' THEN
+		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
+	END ASC,
+	CASE WHEN $2::text = 'late_chat' THEN
+		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
+	END DESC,
 	m_chat_room_belongings_pkey ASC
 `
+
+type GetPluralChatRoomsOnMemberParams struct {
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralChatRoomsOnMemberRow struct {
 	MChatRoomBelongingsPkey pgtype.Int8 `json:"m_chat_room_belongings_pkey"`
@@ -704,8 +719,8 @@ type GetPluralChatRoomsOnMemberRow struct {
 	ChatRoom                ChatRoom    `json:"chat_room"`
 }
 
-func (q *Queries) GetPluralChatRoomsOnMember(ctx context.Context, memberIds []uuid.UUID) ([]GetPluralChatRoomsOnMemberRow, error) {
-	rows, err := q.db.Query(ctx, getPluralChatRoomsOnMember, memberIds)
+func (q *Queries) GetPluralChatRoomsOnMember(ctx context.Context, arg GetPluralChatRoomsOnMemberParams) ([]GetPluralChatRoomsOnMemberRow, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomsOnMember, arg.MemberIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -743,14 +758,25 @@ SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belonging
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_chat_rooms.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_chat_rooms.name END DESC,
+	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN $4::text = 'old_chat' THEN
+		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
+	END ASC,
+	CASE WHEN $4::text = 'late_chat' THEN
+		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
+	END DESC,
 	m_chat_room_belongings_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralChatRoomsOnMemberUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	MemberIds []uuid.UUID `json:"member_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralChatRoomsOnMemberUseNumberedPaginateRow struct {
@@ -762,7 +788,12 @@ type GetPluralChatRoomsOnMemberUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralChatRoomsOnMemberUseNumberedPaginate(ctx context.Context, arg GetPluralChatRoomsOnMemberUseNumberedPaginateParams) ([]GetPluralChatRoomsOnMemberUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralChatRoomsOnMemberUseNumberedPaginate, arg.Limit, arg.Offset, arg.MemberIds)
+	rows, err := q.db.Query(ctx, getPluralChatRoomsOnMemberUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.MemberIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -800,8 +831,17 @@ SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belonging
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 WHERE chat_room_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $2::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN $2::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
 	m_chat_room_belongings_pkey ASC
 `
+
+type GetPluralMembersOnChatRoomParams struct {
+	ChatRoomIds []uuid.UUID `json:"chat_room_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralMembersOnChatRoomRow struct {
 	MChatRoomBelongingsPkey pgtype.Int8        `json:"m_chat_room_belongings_pkey"`
@@ -824,8 +864,8 @@ type GetPluralMembersOnChatRoomRow struct {
 	UpdatedAt               pgtype.Timestamptz `json:"updated_at"`
 }
 
-func (q *Queries) GetPluralMembersOnChatRoom(ctx context.Context, chatRoomIds []uuid.UUID) ([]GetPluralMembersOnChatRoomRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersOnChatRoom, chatRoomIds)
+func (q *Queries) GetPluralMembersOnChatRoom(ctx context.Context, arg GetPluralMembersOnChatRoomParams) ([]GetPluralMembersOnChatRoomRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersOnChatRoom, arg.ChatRoomIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -868,6 +908,10 @@ SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belonging
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 WHERE chat_room_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
 	m_chat_room_belongings_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -876,6 +920,7 @@ type GetPluralMembersOnChatRoomUseNumberedPaginateParams struct {
 	Limit       int32       `json:"limit"`
 	Offset      int32       `json:"offset"`
 	ChatRoomIds []uuid.UUID `json:"chat_room_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralMembersOnChatRoomUseNumberedPaginateRow struct {
@@ -900,7 +945,12 @@ type GetPluralMembersOnChatRoomUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralMembersOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetPluralMembersOnChatRoomUseNumberedPaginateParams) ([]GetPluralMembersOnChatRoomUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersOnChatRoomUseNumberedPaginate, arg.Limit, arg.Offset, arg.ChatRoomIds)
+	rows, err := q.db.Query(ctx, getPluralMembersOnChatRoomUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.ChatRoomIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

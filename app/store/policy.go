@@ -99,6 +99,7 @@ type Policy interface {
 	GetPluralPolicies(
 		ctx context.Context,
 		policyIDs []uuid.UUID,
+		order parameter.PolicyOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.Policy], error)
 	// GetPluralPoliciesWithSd SD付きでポリシーを取得する。
@@ -106,6 +107,7 @@ type Policy interface {
 		ctx context.Context,
 		sd Sd,
 		policyIDs []uuid.UUID,
+		order parameter.PolicyOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.Policy], error)
 	// UpdatePolicy ポリシーを更新する。

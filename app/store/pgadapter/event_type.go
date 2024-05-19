@@ -446,12 +446,16 @@ func (a *PgAdapter) GetEventTypesWithSd(
 }
 
 func getPluralEventTypes(
-	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, qtx *query.Queries, ids []uuid.UUID,
+	order parameter.EventTypeOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.EventType], error) {
 	var e []query.EventType
 	var err error
 	if !np.Valid {
-		e, err = qtx.GetPluralEventTypes(ctx, ids)
+		e, err = qtx.GetPluralEventTypes(ctx, query.GetPluralEventTypesParams{
+			EventTypeIds: ids,
+			OrderMethod:  order.GetStringValue(),
+		})
 	} else {
 		p := query.GetPluralEventTypesUseNumberedPaginateParams{
 			EventTypeIds: ids,
@@ -477,14 +481,15 @@ func getPluralEventTypes(
 
 // GetPluralEventTypes イベントタイプを取得する。
 func (a *PgAdapter) GetPluralEventTypes(
-	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, ids []uuid.UUID, order parameter.EventTypeOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.EventType], error) {
-	return getPluralEventTypes(ctx, a.query, ids, np)
+	return getPluralEventTypes(ctx, a.query, ids, order, np)
 }
 
 // GetPluralEventTypesWithSd SD付きでイベントタイプを取得する。
 func (a *PgAdapter) GetPluralEventTypesWithSd(
-	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, sd store.Sd, ids []uuid.UUID,
+	order parameter.EventTypeOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.EventType], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -492,7 +497,7 @@ func (a *PgAdapter) GetPluralEventTypesWithSd(
 	if !ok {
 		return store.ListResult[entity.EventType]{}, store.ErrNotFoundDescriptor
 	}
-	return getPluralEventTypes(ctx, qtx, ids, np)
+	return getPluralEventTypes(ctx, qtx, ids, order, np)
 }
 
 func updateEventType(

@@ -121,11 +121,15 @@ LIMIT $1;
 -- name: GetPluralOrganizations :many
 SELECT * FROM m_organizations WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC;
 
 -- name: GetPluralOrganizationsUseNumberedPaginate :many
 SELECT * FROM m_organizations WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -212,6 +216,8 @@ LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC;
 
 -- name: GetPluralOrganizationsWithDetailUseNumberedPaginate :many
@@ -220,6 +226,8 @@ LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -302,6 +310,8 @@ SELECT m_organizations.*, sqlc.embed(m_chat_rooms) FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC;
 
 -- name: GetPluralOrganizationsWithChatRoomUseNumberedPaginate :many
@@ -309,6 +319,8 @@ SELECT m_organizations.*, sqlc.embed(m_chat_rooms) FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -399,6 +411,8 @@ LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC;
 
 -- name: GetPluralOrganizationsWithAllUseNumberedPaginate :many
@@ -408,6 +422,8 @@ LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2;
 

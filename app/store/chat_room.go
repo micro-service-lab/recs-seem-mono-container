@@ -72,6 +72,7 @@ type ChatRoom interface {
 	GetPluralChatRooms(
 		ctx context.Context,
 		chatRoomIDs []uuid.UUID,
+		order parameter.ChatRoomOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.ChatRoom], error)
 	// GetPluralChatRoomsWithSd SD付きでチャットルームを取得する。
@@ -79,6 +80,7 @@ type ChatRoom interface {
 		ctx context.Context,
 		sd Sd,
 		chatRoomIDs []uuid.UUID,
+		order parameter.ChatRoomOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.ChatRoom], error)
 	// UpdateChatRoom チャットルームを更新する。

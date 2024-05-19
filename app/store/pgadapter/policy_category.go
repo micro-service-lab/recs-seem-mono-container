@@ -454,12 +454,16 @@ func (a *PgAdapter) GetPolicyCategoriesWithSd(
 }
 
 func getPluralPolicyCategories(
-	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, qtx *query.Queries, ids []uuid.UUID,
+	order parameter.PolicyCategoryOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.PolicyCategory], error) {
 	var e []query.PolicyCategory
 	var err error
 	if !np.Valid {
-		e, err = qtx.GetPluralPolicyCategories(ctx, ids)
+		e, err = qtx.GetPluralPolicyCategories(ctx, query.GetPluralPolicyCategoriesParams{
+			PolicyCategoryIds: ids,
+			OrderMethod:       order.GetStringValue(),
+		})
 	} else {
 		e, err = qtx.GetPluralPolicyCategoriesUseNumberedPaginate(
 			ctx, query.GetPluralPolicyCategoriesUseNumberedPaginateParams{
@@ -486,14 +490,15 @@ func getPluralPolicyCategories(
 
 // GetPluralPolicyCategories ポリシーカテゴリーを取得する。
 func (a *PgAdapter) GetPluralPolicyCategories(
-	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, ids []uuid.UUID, order parameter.PolicyCategoryOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.PolicyCategory], error) {
-	return getPluralPolicyCategories(ctx, a.query, ids, np)
+	return getPluralPolicyCategories(ctx, a.query, ids, order, np)
 }
 
 // GetPluralPolicyCategoriesWithSd SD付きでポリシーカテゴリーを取得する。
 func (a *PgAdapter) GetPluralPolicyCategoriesWithSd(
-	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, sd store.Sd, ids []uuid.UUID,
+	order parameter.PolicyCategoryOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.PolicyCategory], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -501,7 +506,7 @@ func (a *PgAdapter) GetPluralPolicyCategoriesWithSd(
 	if !ok {
 		return store.ListResult[entity.PolicyCategory]{}, store.ErrNotFoundDescriptor
 	}
-	return getPluralPolicyCategories(ctx, qtx, ids, np)
+	return getPluralPolicyCategories(ctx, qtx, ids, order, np)
 }
 
 func updatePolicyCategory(

@@ -116,16 +116,23 @@ SELECT work_position_id, name FROM m_work_positions
 WHERE
 	work_position_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_work_positions.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_work_positions.name END DESC,
 	m_work_positions_pkey ASC
 `
+
+type GetPluralWorkPositionsParams struct {
+	WorkPositionIds []uuid.UUID `json:"work_position_ids"`
+	OrderMethod     string      `json:"order_method"`
+}
 
 type GetPluralWorkPositionsRow struct {
 	WorkPositionID uuid.UUID `json:"work_position_id"`
 	Name           string    `json:"name"`
 }
 
-func (q *Queries) GetPluralWorkPositions(ctx context.Context, workPositionIds []uuid.UUID) ([]GetPluralWorkPositionsRow, error) {
-	rows, err := q.db.Query(ctx, getPluralWorkPositions, workPositionIds)
+func (q *Queries) GetPluralWorkPositions(ctx context.Context, arg GetPluralWorkPositionsParams) ([]GetPluralWorkPositionsRow, error) {
+	rows, err := q.db.Query(ctx, getPluralWorkPositions, arg.WorkPositionIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -149,6 +156,8 @@ SELECT work_position_id, name FROM m_work_positions
 WHERE
 	work_position_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_work_positions.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_work_positions.name END DESC,
 	m_work_positions_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -157,6 +166,7 @@ type GetPluralWorkPositionsUseNumberedPaginateParams struct {
 	Limit           int32       `json:"limit"`
 	Offset          int32       `json:"offset"`
 	WorkPositionIds []uuid.UUID `json:"work_position_ids"`
+	OrderMethod     string      `json:"order_method"`
 }
 
 type GetPluralWorkPositionsUseNumberedPaginateRow struct {
@@ -165,7 +175,12 @@ type GetPluralWorkPositionsUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralWorkPositionsUseNumberedPaginate(ctx context.Context, arg GetPluralWorkPositionsUseNumberedPaginateParams) ([]GetPluralWorkPositionsUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralWorkPositionsUseNumberedPaginate, arg.Limit, arg.Offset, arg.WorkPositionIds)
+	rows, err := q.db.Query(ctx, getPluralWorkPositionsUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WorkPositionIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

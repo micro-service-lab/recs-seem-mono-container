@@ -1621,11 +1621,18 @@ func (q *Queries) GetOrganizationsWithDetailUseNumberedPaginate(ctx context.Cont
 const getPluralOrganizations = `-- name: GetPluralOrganizations :many
 SELECT m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations WHERE organization_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC
 `
 
-func (q *Queries) GetPluralOrganizations(ctx context.Context, organizationIds []uuid.UUID) ([]Organization, error) {
-	rows, err := q.db.Query(ctx, getPluralOrganizations, organizationIds)
+type GetPluralOrganizationsParams struct {
+	OrganizationIds []uuid.UUID `json:"organization_ids"`
+	OrderMethod     string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralOrganizations(ctx context.Context, arg GetPluralOrganizationsParams) ([]Organization, error) {
+	rows, err := q.db.Query(ctx, getPluralOrganizations, arg.OrganizationIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -1658,6 +1665,8 @@ func (q *Queries) GetPluralOrganizations(ctx context.Context, organizationIds []
 const getPluralOrganizationsUseNumberedPaginate = `-- name: GetPluralOrganizationsUseNumberedPaginate :many
 SELECT m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations WHERE organization_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1666,10 +1675,16 @@ type GetPluralOrganizationsUseNumberedPaginateParams struct {
 	Limit           int32       `json:"limit"`
 	Offset          int32       `json:"offset"`
 	OrganizationIds []uuid.UUID `json:"organization_ids"`
+	OrderMethod     string      `json:"order_method"`
 }
 
 func (q *Queries) GetPluralOrganizationsUseNumberedPaginate(ctx context.Context, arg GetPluralOrganizationsUseNumberedPaginateParams) ([]Organization, error) {
-	rows, err := q.db.Query(ctx, getPluralOrganizationsUseNumberedPaginate, arg.Limit, arg.Offset, arg.OrganizationIds)
+	rows, err := q.db.Query(ctx, getPluralOrganizationsUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.OrganizationIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -1706,8 +1721,15 @@ LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
 WHERE organization_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC
 `
+
+type GetPluralOrganizationsWithAllParams struct {
+	OrganizationIds []uuid.UUID `json:"organization_ids"`
+	OrderMethod     string      `json:"order_method"`
+}
 
 type GetPluralOrganizationsWithAllRow struct {
 	Organization Organization `json:"organization"`
@@ -1716,8 +1738,8 @@ type GetPluralOrganizationsWithAllRow struct {
 	ChatRoom     ChatRoom     `json:"chat_room"`
 }
 
-func (q *Queries) GetPluralOrganizationsWithAll(ctx context.Context, organizationIds []uuid.UUID) ([]GetPluralOrganizationsWithAllRow, error) {
-	rows, err := q.db.Query(ctx, getPluralOrganizationsWithAll, organizationIds)
+func (q *Queries) GetPluralOrganizationsWithAll(ctx context.Context, arg GetPluralOrganizationsWithAllParams) ([]GetPluralOrganizationsWithAllRow, error) {
+	rows, err := q.db.Query(ctx, getPluralOrganizationsWithAll, arg.OrganizationIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -1771,6 +1793,8 @@ LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
 WHERE organization_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1779,6 +1803,7 @@ type GetPluralOrganizationsWithAllUseNumberedPaginateParams struct {
 	Limit           int32       `json:"limit"`
 	Offset          int32       `json:"offset"`
 	OrganizationIds []uuid.UUID `json:"organization_ids"`
+	OrderMethod     string      `json:"order_method"`
 }
 
 type GetPluralOrganizationsWithAllUseNumberedPaginateRow struct {
@@ -1789,7 +1814,12 @@ type GetPluralOrganizationsWithAllUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralOrganizationsWithAllUseNumberedPaginate(ctx context.Context, arg GetPluralOrganizationsWithAllUseNumberedPaginateParams) ([]GetPluralOrganizationsWithAllUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralOrganizationsWithAllUseNumberedPaginate, arg.Limit, arg.Offset, arg.OrganizationIds)
+	rows, err := q.db.Query(ctx, getPluralOrganizationsWithAllUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.OrganizationIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -1841,8 +1871,15 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
 WHERE organization_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC
 `
+
+type GetPluralOrganizationsWithChatRoomParams struct {
+	OrganizationIds []uuid.UUID `json:"organization_ids"`
+	OrderMethod     string      `json:"order_method"`
+}
 
 type GetPluralOrganizationsWithChatRoomRow struct {
 	MOrganizationsPkey pgtype.Int8 `json:"m_organizations_pkey"`
@@ -1858,8 +1895,8 @@ type GetPluralOrganizationsWithChatRoomRow struct {
 	ChatRoom           ChatRoom    `json:"chat_room"`
 }
 
-func (q *Queries) GetPluralOrganizationsWithChatRoom(ctx context.Context, organizationIds []uuid.UUID) ([]GetPluralOrganizationsWithChatRoomRow, error) {
-	rows, err := q.db.Query(ctx, getPluralOrganizationsWithChatRoom, organizationIds)
+func (q *Queries) GetPluralOrganizationsWithChatRoom(ctx context.Context, arg GetPluralOrganizationsWithChatRoomParams) ([]GetPluralOrganizationsWithChatRoomRow, error) {
+	rows, err := q.db.Query(ctx, getPluralOrganizationsWithChatRoom, arg.OrganizationIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -1903,6 +1940,8 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
 WHERE organization_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1911,6 +1950,7 @@ type GetPluralOrganizationsWithChatRoomUseNumberedPaginateParams struct {
 	Limit           int32       `json:"limit"`
 	Offset          int32       `json:"offset"`
 	OrganizationIds []uuid.UUID `json:"organization_ids"`
+	OrderMethod     string      `json:"order_method"`
 }
 
 type GetPluralOrganizationsWithChatRoomUseNumberedPaginateRow struct {
@@ -1928,7 +1968,12 @@ type GetPluralOrganizationsWithChatRoomUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralOrganizationsWithChatRoomUseNumberedPaginate(ctx context.Context, arg GetPluralOrganizationsWithChatRoomUseNumberedPaginateParams) ([]GetPluralOrganizationsWithChatRoomUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralOrganizationsWithChatRoomUseNumberedPaginate, arg.Limit, arg.Offset, arg.OrganizationIds)
+	rows, err := q.db.Query(ctx, getPluralOrganizationsWithChatRoomUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.OrganizationIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -1973,8 +2018,15 @@ LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE organization_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC
 `
+
+type GetPluralOrganizationsWithDetailParams struct {
+	OrganizationIds []uuid.UUID `json:"organization_ids"`
+	OrderMethod     string      `json:"order_method"`
+}
 
 type GetPluralOrganizationsWithDetailRow struct {
 	Organization Organization `json:"organization"`
@@ -1982,8 +2034,8 @@ type GetPluralOrganizationsWithDetailRow struct {
 	Grade        Grade        `json:"grade"`
 }
 
-func (q *Queries) GetPluralOrganizationsWithDetail(ctx context.Context, organizationIds []uuid.UUID) ([]GetPluralOrganizationsWithDetailRow, error) {
-	rows, err := q.db.Query(ctx, getPluralOrganizationsWithDetail, organizationIds)
+func (q *Queries) GetPluralOrganizationsWithDetail(ctx context.Context, arg GetPluralOrganizationsWithDetailParams) ([]GetPluralOrganizationsWithDetailRow, error) {
+	rows, err := q.db.Query(ctx, getPluralOrganizationsWithDetail, arg.OrganizationIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -2027,6 +2079,8 @@ LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE organization_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2035,6 +2089,7 @@ type GetPluralOrganizationsWithDetailUseNumberedPaginateParams struct {
 	Limit           int32       `json:"limit"`
 	Offset          int32       `json:"offset"`
 	OrganizationIds []uuid.UUID `json:"organization_ids"`
+	OrderMethod     string      `json:"order_method"`
 }
 
 type GetPluralOrganizationsWithDetailUseNumberedPaginateRow struct {
@@ -2044,7 +2099,12 @@ type GetPluralOrganizationsWithDetailUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralOrganizationsWithDetailUseNumberedPaginate(ctx context.Context, arg GetPluralOrganizationsWithDetailUseNumberedPaginateParams) ([]GetPluralOrganizationsWithDetailUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralOrganizationsWithDetailUseNumberedPaginate, arg.Limit, arg.Offset, arg.OrganizationIds)
+	rows, err := q.db.Query(ctx, getPluralOrganizationsWithDetailUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.OrganizationIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

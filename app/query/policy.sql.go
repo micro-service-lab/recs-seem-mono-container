@@ -209,11 +209,18 @@ func (q *Queries) FindPolicyByKeyWithCategory(ctx context.Context, key string) (
 const getPluralPolicies = `-- name: GetPluralPolicies :many
 SELECT m_policies_pkey, policy_id, name, description, key, policy_category_id FROM m_policies WHERE policy_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_policies.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_policies.name END DESC,
 	m_policies_pkey ASC
 `
 
-func (q *Queries) GetPluralPolicies(ctx context.Context, policyIds []uuid.UUID) ([]Policy, error) {
-	rows, err := q.db.Query(ctx, getPluralPolicies, policyIds)
+type GetPluralPoliciesParams struct {
+	PolicyIds   []uuid.UUID `json:"policy_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralPolicies(ctx context.Context, arg GetPluralPoliciesParams) ([]Policy, error) {
+	rows, err := q.db.Query(ctx, getPluralPolicies, arg.PolicyIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -242,18 +249,26 @@ func (q *Queries) GetPluralPolicies(ctx context.Context, policyIds []uuid.UUID) 
 const getPluralPoliciesUseNumberedPaginate = `-- name: GetPluralPoliciesUseNumberedPaginate :many
 SELECT m_policies_pkey, policy_id, name, description, key, policy_category_id FROM m_policies WHERE policy_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_policies.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_policies.name END DESC,
 	m_policies_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralPoliciesUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	PolicyIds []uuid.UUID `json:"policy_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	PolicyIds   []uuid.UUID `json:"policy_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 func (q *Queries) GetPluralPoliciesUseNumberedPaginate(ctx context.Context, arg GetPluralPoliciesUseNumberedPaginateParams) ([]Policy, error) {
-	rows, err := q.db.Query(ctx, getPluralPoliciesUseNumberedPaginate, arg.Limit, arg.Offset, arg.PolicyIds)
+	rows, err := q.db.Query(ctx, getPluralPoliciesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.PolicyIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -284,8 +299,15 @@ SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_poli
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE policy_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_policies.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_policies.name END DESC,
 	m_policies_pkey ASC
 `
+
+type GetPluralPoliciesWithCategoryParams struct {
+	PolicyIds   []uuid.UUID `json:"policy_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralPoliciesWithCategoryRow struct {
 	MPoliciesPkey             pgtype.Int8 `json:"m_policies_pkey"`
@@ -299,8 +321,8 @@ type GetPluralPoliciesWithCategoryRow struct {
 	PolicyCategoryDescription string      `json:"policy_category_description"`
 }
 
-func (q *Queries) GetPluralPoliciesWithCategory(ctx context.Context, policyIds []uuid.UUID) ([]GetPluralPoliciesWithCategoryRow, error) {
-	rows, err := q.db.Query(ctx, getPluralPoliciesWithCategory, policyIds)
+func (q *Queries) GetPluralPoliciesWithCategory(ctx context.Context, arg GetPluralPoliciesWithCategoryParams) ([]GetPluralPoliciesWithCategoryRow, error) {
+	rows, err := q.db.Query(ctx, getPluralPoliciesWithCategory, arg.PolicyIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -334,14 +356,17 @@ SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_poli
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE policy_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_policies.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_policies.name END DESC,
 	m_policies_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralPoliciesWithCategoryUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	PolicyIds []uuid.UUID `json:"policy_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	PolicyIds   []uuid.UUID `json:"policy_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralPoliciesWithCategoryUseNumberedPaginateRow struct {
@@ -357,7 +382,12 @@ type GetPluralPoliciesWithCategoryUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralPoliciesWithCategoryUseNumberedPaginate(ctx context.Context, arg GetPluralPoliciesWithCategoryUseNumberedPaginateParams) ([]GetPluralPoliciesWithCategoryUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralPoliciesWithCategoryUseNumberedPaginate, arg.Limit, arg.Offset, arg.PolicyIds)
+	rows, err := q.db.Query(ctx, getPluralPoliciesWithCategoryUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.PolicyIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

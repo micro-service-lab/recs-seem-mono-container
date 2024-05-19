@@ -82,6 +82,10 @@ SELECT m_chat_room_belongings.*, m_members.* FROM m_chat_room_belongings
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
 	m_chat_room_belongings_pkey ASC;
 
 -- name: GetPluralMembersOnChatRoomUseNumberedPaginate :many
@@ -89,6 +93,10 @@ SELECT m_chat_room_belongings.*, m_members.* FROM m_chat_room_belongings
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
 	m_chat_room_belongings_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -199,6 +207,16 @@ SELECT m_chat_room_belongings.*, sqlc.embed(m_chat_rooms) FROM m_chat_room_belon
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_chat_rooms.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_chat_rooms.name END DESC,
+	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN @order_method::text = 'old_chat' THEN
+		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
+	END ASC,
+	CASE WHEN @order_method::text = 'late_chat' THEN
+		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
+	END DESC,
 	m_chat_room_belongings_pkey ASC;
 
 -- name: GetPluralChatRoomsOnMemberUseNumberedPaginate :many
@@ -206,6 +224,16 @@ SELECT m_chat_room_belongings.*, sqlc.embed(m_chat_rooms) FROM m_chat_room_belon
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_chat_rooms.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_chat_rooms.name END DESC,
+	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN @order_method::text = 'old_chat' THEN
+		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
+	END ASC,
+	CASE WHEN @order_method::text = 'late_chat' THEN
+		(SELECT MAX(created_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
+	END DESC,
 	m_chat_room_belongings_pkey ASC
 LIMIT $1 OFFSET $2;
 

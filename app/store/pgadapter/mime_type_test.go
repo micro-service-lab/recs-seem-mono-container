@@ -151,6 +151,7 @@ func TestPgAdapter_MimeType(t *testing.T) {
 					ctx,
 					sd,
 					[]uuid.UUID{el.Data[0].MimeTypeID, el.Data[1].MimeTypeID},
+					parameter.MimeTypeOrderMethodDefault,
 					validNp,
 				)
 				assert.NoError(t, err)

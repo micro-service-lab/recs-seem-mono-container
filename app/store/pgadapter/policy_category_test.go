@@ -151,6 +151,7 @@ func TestPgAdapter_PolicyCategory(t *testing.T) {
 					ctx,
 					sd,
 					[]uuid.UUID{el.Data[0].PolicyCategoryID, el.Data[1].PolicyCategoryID},
+					parameter.PolicyCategoryOrderMethodDefault,
 					validNp,
 				)
 				assert.NoError(t, err)

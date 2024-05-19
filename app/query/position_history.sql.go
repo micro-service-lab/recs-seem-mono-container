@@ -154,11 +154,18 @@ func (q *Queries) FindPositionHistoryByIDWithMember(ctx context.Context, positio
 const getPluralPositionHistories = `-- name: GetPluralPositionHistories :many
 SELECT t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, sent_at FROM t_position_histories WHERE position_history_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'old_send' THEN sent_at END ASC,
+	CASE WHEN $2::text = 'late_send' THEN sent_at END DESC,
 	t_position_histories_pkey ASC
 `
 
-func (q *Queries) GetPluralPositionHistories(ctx context.Context, positionHistoryIds []uuid.UUID) ([]PositionHistory, error) {
-	rows, err := q.db.Query(ctx, getPluralPositionHistories, positionHistoryIds)
+type GetPluralPositionHistoriesParams struct {
+	PositionHistoryIds []uuid.UUID `json:"position_history_ids"`
+	OrderMethod        string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralPositionHistories(ctx context.Context, arg GetPluralPositionHistoriesParams) ([]PositionHistory, error) {
+	rows, err := q.db.Query(ctx, getPluralPositionHistories, arg.PositionHistoryIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -187,6 +194,8 @@ func (q *Queries) GetPluralPositionHistories(ctx context.Context, positionHistor
 const getPluralPositionHistoriesUseNumberedPaginate = `-- name: GetPluralPositionHistoriesUseNumberedPaginate :many
 SELECT t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, sent_at FROM t_position_histories WHERE position_history_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'old_send' THEN sent_at END ASC,
+	CASE WHEN $4::text = 'late_send' THEN sent_at END DESC,
 	t_position_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -195,10 +204,16 @@ type GetPluralPositionHistoriesUseNumberedPaginateParams struct {
 	Limit              int32       `json:"limit"`
 	Offset             int32       `json:"offset"`
 	PositionHistoryIds []uuid.UUID `json:"position_history_ids"`
+	OrderMethod        string      `json:"order_method"`
 }
 
 func (q *Queries) GetPluralPositionHistoriesUseNumberedPaginate(ctx context.Context, arg GetPluralPositionHistoriesUseNumberedPaginateParams) ([]PositionHistory, error) {
-	rows, err := q.db.Query(ctx, getPluralPositionHistoriesUseNumberedPaginate, arg.Limit, arg.Offset, arg.PositionHistoryIds)
+	rows, err := q.db.Query(ctx, getPluralPositionHistoriesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.PositionHistoryIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -229,16 +244,23 @@ SELECT t_position_histories.t_position_histories_pkey, t_position_histories.posi
 LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE position_history_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'old_send' THEN sent_at END ASC,
+	CASE WHEN $2::text = 'late_send' THEN sent_at END DESC,
 	t_position_histories_pkey ASC
 `
+
+type GetPluralPositionHistoriesWithMemberParams struct {
+	PositionHistoryIds []uuid.UUID `json:"position_history_ids"`
+	OrderMethod        string      `json:"order_method"`
+}
 
 type GetPluralPositionHistoriesWithMemberRow struct {
 	PositionHistory PositionHistory `json:"position_history"`
 	Member          Member          `json:"member"`
 }
 
-func (q *Queries) GetPluralPositionHistoriesWithMember(ctx context.Context, positionHistoryIds []uuid.UUID) ([]GetPluralPositionHistoriesWithMemberRow, error) {
-	rows, err := q.db.Query(ctx, getPluralPositionHistoriesWithMember, positionHistoryIds)
+func (q *Queries) GetPluralPositionHistoriesWithMember(ctx context.Context, arg GetPluralPositionHistoriesWithMemberParams) ([]GetPluralPositionHistoriesWithMemberRow, error) {
+	rows, err := q.db.Query(ctx, getPluralPositionHistoriesWithMember, arg.PositionHistoryIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -283,6 +305,8 @@ SELECT t_position_histories.t_position_histories_pkey, t_position_histories.posi
 LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE position_history_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'old_send' THEN sent_at END ASC,
+	CASE WHEN $4::text = 'late_send' THEN sent_at END DESC,
 	t_position_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -291,6 +315,7 @@ type GetPluralPositionHistoriesWithMemberUseNumberedPaginateParams struct {
 	Limit              int32       `json:"limit"`
 	Offset             int32       `json:"offset"`
 	PositionHistoryIds []uuid.UUID `json:"position_history_ids"`
+	OrderMethod        string      `json:"order_method"`
 }
 
 type GetPluralPositionHistoriesWithMemberUseNumberedPaginateRow struct {
@@ -299,7 +324,12 @@ type GetPluralPositionHistoriesWithMemberUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralPositionHistoriesWithMemberUseNumberedPaginate(ctx context.Context, arg GetPluralPositionHistoriesWithMemberUseNumberedPaginateParams) ([]GetPluralPositionHistoriesWithMemberUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralPositionHistoriesWithMemberUseNumberedPaginate, arg.Limit, arg.Offset, arg.PositionHistoryIds)
+	rows, err := q.db.Query(ctx, getPluralPositionHistoriesWithMemberUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.PositionHistoryIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

@@ -68,6 +68,8 @@ SELECT * FROM m_roles
 WHERE
 	role_id = ANY(@role_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
 	m_roles_pkey ASC;
 
 -- name: GetPluralRolesUseNumberedPaginate :many
@@ -75,6 +77,8 @@ SELECT * FROM m_roles
 WHERE
 	role_id = ANY(@role_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
 	m_roles_pkey ASC
 LIMIT $1 OFFSET $2;
 

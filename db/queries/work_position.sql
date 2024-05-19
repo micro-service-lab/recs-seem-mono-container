@@ -74,6 +74,8 @@ SELECT work_position_id, name FROM m_work_positions
 WHERE
 	work_position_id = ANY(@work_position_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
 	m_work_positions_pkey ASC;
 
 -- name: GetPluralWorkPositionsUseNumberedPaginate :many
@@ -81,6 +83,8 @@ SELECT work_position_id, name FROM m_work_positions
 WHERE
 	work_position_id = ANY(@work_position_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
 	m_work_positions_pkey ASC
 LIMIT $1 OFFSET $2;
 

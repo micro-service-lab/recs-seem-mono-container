@@ -2669,8 +2669,15 @@ LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 `
+
+type GetPluralAttendanceWithAllParams struct {
+	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+	OrderMethod   string      `json:"order_method"`
+}
 
 type GetPluralAttendanceWithAllRow struct {
 	TAttendancesPkey    pgtype.Int8  `json:"t_attendances_pkey"`
@@ -2694,8 +2701,8 @@ type GetPluralAttendanceWithAllRow struct {
 	Absence             Absence      `json:"absence"`
 }
 
-func (q *Queries) GetPluralAttendanceWithAll(ctx context.Context, attendanceIds []uuid.UUID) ([]GetPluralAttendanceWithAllRow, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceWithAll, attendanceIds)
+func (q *Queries) GetPluralAttendanceWithAll(ctx context.Context, arg GetPluralAttendanceWithAllParams) ([]GetPluralAttendanceWithAllRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithAll, arg.AttendanceIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -2777,6 +2784,8 @@ LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2785,6 +2794,7 @@ type GetPluralAttendanceWithAllUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+	OrderMethod   string      `json:"order_method"`
 }
 
 type GetPluralAttendanceWithAllUseNumberedPaginateRow struct {
@@ -2810,7 +2820,12 @@ type GetPluralAttendanceWithAllUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralAttendanceWithAllUseNumberedPaginate(ctx context.Context, arg GetPluralAttendanceWithAllUseNumberedPaginateParams) ([]GetPluralAttendanceWithAllUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceWithAllUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendanceIds)
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithAllUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.AttendanceIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -2884,8 +2899,15 @@ SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendan
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE attendance_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 `
+
+type GetPluralAttendanceWithAttendanceTypeParams struct {
+	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+	OrderMethod   string      `json:"order_method"`
+}
 
 type GetPluralAttendanceWithAttendanceTypeRow struct {
 	TAttendancesPkey    pgtype.Int8 `json:"t_attendances_pkey"`
@@ -2904,8 +2926,8 @@ type GetPluralAttendanceWithAttendanceTypeRow struct {
 	AttendanceTypeColor pgtype.Text `json:"attendance_type_color"`
 }
 
-func (q *Queries) GetPluralAttendanceWithAttendanceType(ctx context.Context, attendanceIds []uuid.UUID) ([]GetPluralAttendanceWithAttendanceTypeRow, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceWithAttendanceType, attendanceIds)
+func (q *Queries) GetPluralAttendanceWithAttendanceType(ctx context.Context, arg GetPluralAttendanceWithAttendanceTypeParams) ([]GetPluralAttendanceWithAttendanceTypeRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithAttendanceType, arg.AttendanceIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -2944,6 +2966,8 @@ SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendan
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2952,6 +2976,7 @@ type GetPluralAttendanceWithAttendanceTypeUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+	OrderMethod   string      `json:"order_method"`
 }
 
 type GetPluralAttendanceWithAttendanceTypeUseNumberedPaginateRow struct {
@@ -2972,7 +2997,12 @@ type GetPluralAttendanceWithAttendanceTypeUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralAttendanceWithAttendanceTypeUseNumberedPaginate(ctx context.Context, arg GetPluralAttendanceWithAttendanceTypeUseNumberedPaginateParams) ([]GetPluralAttendanceWithAttendanceTypeUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceWithAttendanceTypeUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendanceIds)
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithAttendanceTypeUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.AttendanceIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -3013,8 +3043,15 @@ LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.atten
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 WHERE attendance_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 `
+
+type GetPluralAttendanceWithDetailsParams struct {
+	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+	OrderMethod   string      `json:"order_method"`
+}
 
 type GetPluralAttendanceWithDetailsRow struct {
 	TAttendancesPkey   pgtype.Int8  `json:"t_attendances_pkey"`
@@ -3032,8 +3069,8 @@ type GetPluralAttendanceWithDetailsRow struct {
 	Absence            Absence      `json:"absence"`
 }
 
-func (q *Queries) GetPluralAttendanceWithDetails(ctx context.Context, attendanceIds []uuid.UUID) ([]GetPluralAttendanceWithDetailsRow, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceWithDetails, attendanceIds)
+func (q *Queries) GetPluralAttendanceWithDetails(ctx context.Context, arg GetPluralAttendanceWithDetailsParams) ([]GetPluralAttendanceWithDetailsRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithDetails, arg.AttendanceIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3081,6 +3118,8 @@ LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.atten
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3089,6 +3128,7 @@ type GetPluralAttendanceWithDetailsUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+	OrderMethod   string      `json:"order_method"`
 }
 
 type GetPluralAttendanceWithDetailsUseNumberedPaginateRow struct {
@@ -3108,7 +3148,12 @@ type GetPluralAttendanceWithDetailsUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralAttendanceWithDetailsUseNumberedPaginate(ctx context.Context, arg GetPluralAttendanceWithDetailsUseNumberedPaginateParams) ([]GetPluralAttendanceWithDetailsUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceWithDetailsUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendanceIds)
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithDetailsUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.AttendanceIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -3157,8 +3202,15 @@ LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE attendance_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 `
+
+type GetPluralAttendanceWithMemberParams struct {
+	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+	OrderMethod   string      `json:"order_method"`
+}
 
 type GetPluralAttendanceWithMemberRow struct {
 	TAttendancesPkey   pgtype.Int8 `json:"t_attendances_pkey"`
@@ -3174,8 +3226,8 @@ type GetPluralAttendanceWithMemberRow struct {
 	Member             Member      `json:"member"`
 }
 
-func (q *Queries) GetPluralAttendanceWithMember(ctx context.Context, attendanceIds []uuid.UUID) ([]GetPluralAttendanceWithMemberRow, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceWithMember, attendanceIds)
+func (q *Queries) GetPluralAttendanceWithMember(ctx context.Context, arg GetPluralAttendanceWithMemberParams) ([]GetPluralAttendanceWithMemberRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithMember, arg.AttendanceIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3227,6 +3279,8 @@ LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3235,6 +3289,7 @@ type GetPluralAttendanceWithMemberUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+	OrderMethod   string      `json:"order_method"`
 }
 
 type GetPluralAttendanceWithMemberUseNumberedPaginateRow struct {
@@ -3252,7 +3307,12 @@ type GetPluralAttendanceWithMemberUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralAttendanceWithMemberUseNumberedPaginate(ctx context.Context, arg GetPluralAttendanceWithMemberUseNumberedPaginateParams) ([]GetPluralAttendanceWithMemberUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceWithMemberUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendanceIds)
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithMemberUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.AttendanceIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -3301,8 +3361,15 @@ SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendan
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 `
+
+type GetPluralAttendanceWithSendOrganizationParams struct {
+	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+	OrderMethod   string      `json:"order_method"`
+}
 
 type GetPluralAttendanceWithSendOrganizationRow struct {
 	TAttendancesPkey   pgtype.Int8  `json:"t_attendances_pkey"`
@@ -3318,8 +3385,8 @@ type GetPluralAttendanceWithSendOrganizationRow struct {
 	Organization       Organization `json:"organization"`
 }
 
-func (q *Queries) GetPluralAttendanceWithSendOrganization(ctx context.Context, attendanceIds []uuid.UUID) ([]GetPluralAttendanceWithSendOrganizationRow, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceWithSendOrganization, attendanceIds)
+func (q *Queries) GetPluralAttendanceWithSendOrganization(ctx context.Context, arg GetPluralAttendanceWithSendOrganizationParams) ([]GetPluralAttendanceWithSendOrganizationRow, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithSendOrganization, arg.AttendanceIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3364,6 +3431,8 @@ SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendan
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3372,6 +3441,7 @@ type GetPluralAttendanceWithSendOrganizationUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+	OrderMethod   string      `json:"order_method"`
 }
 
 type GetPluralAttendanceWithSendOrganizationUseNumberedPaginateRow struct {
@@ -3389,7 +3459,12 @@ type GetPluralAttendanceWithSendOrganizationUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralAttendanceWithSendOrganizationUseNumberedPaginate(ctx context.Context, arg GetPluralAttendanceWithSendOrganizationUseNumberedPaginateParams) ([]GetPluralAttendanceWithSendOrganizationUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceWithSendOrganizationUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendanceIds)
+	rows, err := q.db.Query(ctx, getPluralAttendanceWithSendOrganizationUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.AttendanceIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -3433,11 +3508,18 @@ const getPluralAttendances = `-- name: GetPluralAttendances :many
 SELECT t_attendances_pkey, attendance_id, attendance_type_id, member_id, description, date, mail_send_flag, send_organization_id, posted_at, last_edited_at FROM t_attendances
 WHERE attendance_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 `
 
-func (q *Queries) GetPluralAttendances(ctx context.Context, attendanceIds []uuid.UUID) ([]Attendance, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendances, attendanceIds)
+type GetPluralAttendancesParams struct {
+	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+	OrderMethod   string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralAttendances(ctx context.Context, arg GetPluralAttendancesParams) ([]Attendance, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendances, arg.AttendanceIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3471,6 +3553,8 @@ const getPluralAttendancesUseNumberedPaginate = `-- name: GetPluralAttendancesUs
 SELECT t_attendances_pkey, attendance_id, attendance_type_id, member_id, description, date, mail_send_flag, send_organization_id, posted_at, last_edited_at FROM t_attendances
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3479,10 +3563,16 @@ type GetPluralAttendancesUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+	OrderMethod   string      `json:"order_method"`
 }
 
 func (q *Queries) GetPluralAttendancesUseNumberedPaginate(ctx context.Context, arg GetPluralAttendancesUseNumberedPaginateParams) ([]Attendance, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendancesUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendanceIds)
+	rows, err := q.db.Query(ctx, getPluralAttendancesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.AttendanceIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

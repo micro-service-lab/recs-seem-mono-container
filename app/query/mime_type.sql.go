@@ -286,11 +286,18 @@ const getPluralMimeTypes = `-- name: GetPluralMimeTypes :many
 SELECT m_mime_types_pkey, mime_type_id, name, kind, key FROM m_mime_types
 WHERE mime_type_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN name END DESC,
 	m_mime_types_pkey ASC
 `
 
-func (q *Queries) GetPluralMimeTypes(ctx context.Context, mimeTypeIds []uuid.UUID) ([]MimeType, error) {
-	rows, err := q.db.Query(ctx, getPluralMimeTypes, mimeTypeIds)
+type GetPluralMimeTypesParams struct {
+	MimeTypeIds []uuid.UUID `json:"mime_type_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralMimeTypes(ctx context.Context, arg GetPluralMimeTypesParams) ([]MimeType, error) {
+	rows, err := q.db.Query(ctx, getPluralMimeTypes, arg.MimeTypeIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -319,6 +326,8 @@ const getPluralMimeTypesUseNumberedPaginate = `-- name: GetPluralMimeTypesUseNum
 SELECT m_mime_types_pkey, mime_type_id, name, kind, key FROM m_mime_types
 WHERE mime_type_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN name END DESC,
 	m_mime_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -327,10 +336,16 @@ type GetPluralMimeTypesUseNumberedPaginateParams struct {
 	Limit       int32       `json:"limit"`
 	Offset      int32       `json:"offset"`
 	MimeTypeIds []uuid.UUID `json:"mime_type_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 func (q *Queries) GetPluralMimeTypesUseNumberedPaginate(ctx context.Context, arg GetPluralMimeTypesUseNumberedPaginateParams) ([]MimeType, error) {
-	rows, err := q.db.Query(ctx, getPluralMimeTypesUseNumberedPaginate, arg.Limit, arg.Offset, arg.MimeTypeIds)
+	rows, err := q.db.Query(ctx, getPluralMimeTypesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.MimeTypeIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

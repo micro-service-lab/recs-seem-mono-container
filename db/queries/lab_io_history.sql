@@ -113,11 +113,19 @@ LIMIT $1;
 -- name: GetPluralLabIOHistories :many
 SELECT * FROM t_lab_io_histories WHERE lab_io_history_id = ANY(@lab_io_history_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC,
+	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
+	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
+	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
 	t_lab_io_histories_pkey ASC;
 
 -- name: GetPluralLabIOHistoriesUseNumberedPaginate :many
 SELECT * FROM t_lab_io_histories WHERE lab_io_history_id = ANY(@lab_io_history_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC,
+	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
+	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
+	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
 	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -212,6 +220,10 @@ SELECT sqlc.embed(t_lab_io_histories), sqlc.embed(m_members) FROM t_lab_io_histo
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE lab_io_history_id = ANY(@lab_io_history_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC,
+	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
+	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
+	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
 	t_lab_io_histories_pkey ASC;
 
 -- name: GetPluralLabIOHistoriesWithMemberUseNumberedPaginate :many
@@ -219,6 +231,10 @@ SELECT sqlc.embed(t_lab_io_histories), sqlc.embed(m_members) FROM t_lab_io_histo
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE lab_io_history_id = ANY(@lab_io_history_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC,
+	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
+	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
+	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
 	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2;
 

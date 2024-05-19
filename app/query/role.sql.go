@@ -102,11 +102,18 @@ SELECT m_roles_pkey, role_id, name, description, created_at, updated_at FROM m_r
 WHERE
 	role_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_roles.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_roles.name END DESC,
 	m_roles_pkey ASC
 `
 
-func (q *Queries) GetPluralRoles(ctx context.Context, roleIds []uuid.UUID) ([]Role, error) {
-	rows, err := q.db.Query(ctx, getPluralRoles, roleIds)
+type GetPluralRolesParams struct {
+	RoleIds     []uuid.UUID `json:"role_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralRoles(ctx context.Context, arg GetPluralRolesParams) ([]Role, error) {
+	rows, err := q.db.Query(ctx, getPluralRoles, arg.RoleIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -137,18 +144,26 @@ SELECT m_roles_pkey, role_id, name, description, created_at, updated_at FROM m_r
 WHERE
 	role_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_roles.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_roles.name END DESC,
 	m_roles_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralRolesUseNumberedPaginateParams struct {
-	Limit   int32       `json:"limit"`
-	Offset  int32       `json:"offset"`
-	RoleIds []uuid.UUID `json:"role_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	RoleIds     []uuid.UUID `json:"role_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 func (q *Queries) GetPluralRolesUseNumberedPaginate(ctx context.Context, arg GetPluralRolesUseNumberedPaginateParams) ([]Role, error) {
-	rows, err := q.db.Query(ctx, getPluralRolesUseNumberedPaginate, arg.Limit, arg.Offset, arg.RoleIds)
+	rows, err := q.db.Query(ctx, getPluralRolesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.RoleIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

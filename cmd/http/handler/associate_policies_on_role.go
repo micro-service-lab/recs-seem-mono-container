@@ -28,7 +28,6 @@ type AssociatePoliciesOnRole struct {
 
 // AssociatePoliciesOnRoleRequest is a request for AssociatePoliciesOnRole.
 type AssociatePoliciesOnRoleRequest struct {
-	//nolint:revive
 	PolicyIDS []uuid.UUID `json:"policy_ids" validate:"required,unique" ja:"ポリシーID" en:"PolicyIDs"`
 }
 

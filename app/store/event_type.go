@@ -67,6 +67,7 @@ type EventType interface {
 	GetPluralEventTypes(
 		ctx context.Context,
 		eventTypeIDs []uuid.UUID,
+		order parameter.EventTypeOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.EventType], error)
 	// GetPluralEventTypesWithSd SD付きでイベントタイプを取得する。
@@ -74,6 +75,7 @@ type EventType interface {
 		ctx context.Context,
 		sd Sd,
 		eventTypeIDs []uuid.UUID,
+		order parameter.EventTypeOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.EventType], error)
 	// UpdateEventType イベントタイプを更新する。

@@ -3214,11 +3214,18 @@ func (q *Queries) GetEventsWithTypeUseNumberedPaginate(ctx context.Context, arg 
 const getPluralEvents = `-- name: GetPluralEvents :many
 SELECT t_events_pkey, event_id, event_type_id, title, description, organization_id, start_time, end_time, mail_send_flag, send_organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_events WHERE event_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey ASC
 `
 
-func (q *Queries) GetPluralEvents(ctx context.Context, eventIds []uuid.UUID) ([]Event, error) {
-	rows, err := q.db.Query(ctx, getPluralEvents, eventIds)
+type GetPluralEventsParams struct {
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralEvents(ctx context.Context, arg GetPluralEventsParams) ([]Event, error) {
+	rows, err := q.db.Query(ctx, getPluralEvents, arg.EventIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3255,18 +3262,26 @@ func (q *Queries) GetPluralEvents(ctx context.Context, eventIds []uuid.UUID) ([]
 const getPluralEventsUseNumberedPaginate = `-- name: GetPluralEventsUseNumberedPaginate :many
 SELECT t_events_pkey, event_id, event_type_id, title, description, organization_id, start_time, end_time, mail_send_flag, send_organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_events WHERE event_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralEventsUseNumberedPaginateParams struct {
-	Limit    int32       `json:"limit"`
-	Offset   int32       `json:"offset"`
-	EventIds []uuid.UUID `json:"event_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 func (q *Queries) GetPluralEventsUseNumberedPaginate(ctx context.Context, arg GetPluralEventsUseNumberedPaginateParams) ([]Event, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsUseNumberedPaginate, arg.Limit, arg.Offset, arg.EventIds)
+	rows, err := q.db.Query(ctx, getPluralEventsUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.EventIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -3309,8 +3324,15 @@ LEFT JOIN m_members l ON t_events.posted_by = l.member_id
 LEFT JOIN m_members l ON t_events.last_edited_by = l.member_id
 WHERE event_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey ASC
 `
+
+type GetPluralEventsWithAllParams struct {
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralEventsWithAllRow struct {
 	Event          Event        `json:"event"`
@@ -3321,8 +3343,8 @@ type GetPluralEventsWithAllRow struct {
 	Member_2       Member       `json:"member_2"`
 }
 
-func (q *Queries) GetPluralEventsWithAll(ctx context.Context, eventIds []uuid.UUID) ([]GetPluralEventsWithAllRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithAll, eventIds)
+func (q *Queries) GetPluralEventsWithAll(ctx context.Context, arg GetPluralEventsWithAllParams) ([]GetPluralEventsWithAllRow, error) {
+	rows, err := q.db.Query(ctx, getPluralEventsWithAll, arg.EventIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3418,14 +3440,17 @@ LEFT JOIN m_members l ON t_events.posted_by = l.member_id
 LEFT JOIN m_members l ON t_events.last_edited_by = l.member_id
 WHERE event_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralEventsWithAllUseNumberedPaginateParams struct {
-	Limit    int32       `json:"limit"`
-	Offset   int32       `json:"offset"`
-	EventIds []uuid.UUID `json:"event_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralEventsWithAllUseNumberedPaginateRow struct {
@@ -3438,7 +3463,12 @@ type GetPluralEventsWithAllUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralEventsWithAllUseNumberedPaginate(ctx context.Context, arg GetPluralEventsWithAllUseNumberedPaginateParams) ([]GetPluralEventsWithAllUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithAllUseNumberedPaginate, arg.Limit, arg.Offset, arg.EventIds)
+	rows, err := q.db.Query(ctx, getPluralEventsWithAllUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.EventIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -3530,16 +3560,23 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
 WHERE event_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey ASC
 `
+
+type GetPluralEventsWithLastEditUserParams struct {
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralEventsWithLastEditUserRow struct {
 	Event  Event  `json:"event"`
 	Member Member `json:"member"`
 }
 
-func (q *Queries) GetPluralEventsWithLastEditUser(ctx context.Context, eventIds []uuid.UUID) ([]GetPluralEventsWithLastEditUserRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithLastEditUser, eventIds)
+func (q *Queries) GetPluralEventsWithLastEditUser(ctx context.Context, arg GetPluralEventsWithLastEditUserParams) ([]GetPluralEventsWithLastEditUserRow, error) {
+	rows, err := q.db.Query(ctx, getPluralEventsWithLastEditUser, arg.EventIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3592,14 +3629,17 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
 WHERE event_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralEventsWithLastEditUserUseNumberedPaginateParams struct {
-	Limit    int32       `json:"limit"`
-	Offset   int32       `json:"offset"`
-	EventIds []uuid.UUID `json:"event_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralEventsWithLastEditUserUseNumberedPaginateRow struct {
@@ -3608,7 +3648,12 @@ type GetPluralEventsWithLastEditUserUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralEventsWithLastEditUserUseNumberedPaginate(ctx context.Context, arg GetPluralEventsWithLastEditUserUseNumberedPaginateParams) ([]GetPluralEventsWithLastEditUserUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithLastEditUserUseNumberedPaginate, arg.Limit, arg.Offset, arg.EventIds)
+	rows, err := q.db.Query(ctx, getPluralEventsWithLastEditUserUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.EventIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -3661,16 +3706,23 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
 WHERE event_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey ASC
 `
+
+type GetPluralEventsWithOrganizationParams struct {
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralEventsWithOrganizationRow struct {
 	Event        Event        `json:"event"`
 	Organization Organization `json:"organization"`
 }
 
-func (q *Queries) GetPluralEventsWithOrganization(ctx context.Context, eventIds []uuid.UUID) ([]GetPluralEventsWithOrganizationRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithOrganization, eventIds)
+func (q *Queries) GetPluralEventsWithOrganization(ctx context.Context, arg GetPluralEventsWithOrganizationParams) ([]GetPluralEventsWithOrganizationRow, error) {
+	rows, err := q.db.Query(ctx, getPluralEventsWithOrganization, arg.EventIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3719,14 +3771,17 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
 WHERE event_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralEventsWithOrganizationUseNumberedPaginateParams struct {
-	Limit    int32       `json:"limit"`
-	Offset   int32       `json:"offset"`
-	EventIds []uuid.UUID `json:"event_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralEventsWithOrganizationUseNumberedPaginateRow struct {
@@ -3735,7 +3790,12 @@ type GetPluralEventsWithOrganizationUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralEventsWithOrganizationUseNumberedPaginate(ctx context.Context, arg GetPluralEventsWithOrganizationUseNumberedPaginateParams) ([]GetPluralEventsWithOrganizationUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithOrganizationUseNumberedPaginate, arg.Limit, arg.Offset, arg.EventIds)
+	rows, err := q.db.Query(ctx, getPluralEventsWithOrganizationUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.EventIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -3784,16 +3844,23 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
 WHERE event_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey ASC
 `
+
+type GetPluralEventsWithPostUserParams struct {
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralEventsWithPostUserRow struct {
 	Event  Event  `json:"event"`
 	Member Member `json:"member"`
 }
 
-func (q *Queries) GetPluralEventsWithPostUser(ctx context.Context, eventIds []uuid.UUID) ([]GetPluralEventsWithPostUserRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithPostUser, eventIds)
+func (q *Queries) GetPluralEventsWithPostUser(ctx context.Context, arg GetPluralEventsWithPostUserParams) ([]GetPluralEventsWithPostUserRow, error) {
+	rows, err := q.db.Query(ctx, getPluralEventsWithPostUser, arg.EventIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3846,14 +3913,17 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
 WHERE event_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralEventsWithPostUserUseNumberedPaginateParams struct {
-	Limit    int32       `json:"limit"`
-	Offset   int32       `json:"offset"`
-	EventIds []uuid.UUID `json:"event_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralEventsWithPostUserUseNumberedPaginateRow struct {
@@ -3862,7 +3932,12 @@ type GetPluralEventsWithPostUserUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralEventsWithPostUserUseNumberedPaginate(ctx context.Context, arg GetPluralEventsWithPostUserUseNumberedPaginateParams) ([]GetPluralEventsWithPostUserUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithPostUserUseNumberedPaginate, arg.Limit, arg.Offset, arg.EventIds)
+	rows, err := q.db.Query(ctx, getPluralEventsWithPostUserUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.EventIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -3915,16 +3990,23 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
 WHERE event_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey ASC
 `
+
+type GetPluralEventsWithSendOrganizationParams struct {
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralEventsWithSendOrganizationRow struct {
 	Event        Event        `json:"event"`
 	Organization Organization `json:"organization"`
 }
 
-func (q *Queries) GetPluralEventsWithSendOrganization(ctx context.Context, eventIds []uuid.UUID) ([]GetPluralEventsWithSendOrganizationRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithSendOrganization, eventIds)
+func (q *Queries) GetPluralEventsWithSendOrganization(ctx context.Context, arg GetPluralEventsWithSendOrganizationParams) ([]GetPluralEventsWithSendOrganizationRow, error) {
+	rows, err := q.db.Query(ctx, getPluralEventsWithSendOrganization, arg.EventIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3973,14 +4055,17 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
 WHERE event_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralEventsWithSendOrganizationUseNumberedPaginateParams struct {
-	Limit    int32       `json:"limit"`
-	Offset   int32       `json:"offset"`
-	EventIds []uuid.UUID `json:"event_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralEventsWithSendOrganizationUseNumberedPaginateRow struct {
@@ -3989,7 +4074,12 @@ type GetPluralEventsWithSendOrganizationUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralEventsWithSendOrganizationUseNumberedPaginate(ctx context.Context, arg GetPluralEventsWithSendOrganizationUseNumberedPaginateParams) ([]GetPluralEventsWithSendOrganizationUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithSendOrganizationUseNumberedPaginate, arg.Limit, arg.Offset, arg.EventIds)
+	rows, err := q.db.Query(ctx, getPluralEventsWithSendOrganizationUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.EventIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -4038,16 +4128,23 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
 WHERE event_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey ASC
 `
+
+type GetPluralEventsWithTypeParams struct {
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralEventsWithTypeRow struct {
 	Event     Event     `json:"event"`
 	EventType EventType `json:"event_type"`
 }
 
-func (q *Queries) GetPluralEventsWithType(ctx context.Context, eventIds []uuid.UUID) ([]GetPluralEventsWithTypeRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithType, eventIds)
+func (q *Queries) GetPluralEventsWithType(ctx context.Context, arg GetPluralEventsWithTypeParams) ([]GetPluralEventsWithTypeRow, error) {
+	rows, err := q.db.Query(ctx, getPluralEventsWithType, arg.EventIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -4091,14 +4188,17 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
 WHERE event_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralEventsWithTypeUseNumberedPaginateParams struct {
-	Limit    int32       `json:"limit"`
-	Offset   int32       `json:"offset"`
-	EventIds []uuid.UUID `json:"event_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralEventsWithTypeUseNumberedPaginateRow struct {
@@ -4107,7 +4207,12 @@ type GetPluralEventsWithTypeUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralEventsWithTypeUseNumberedPaginate(ctx context.Context, arg GetPluralEventsWithTypeUseNumberedPaginateParams) ([]GetPluralEventsWithTypeUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithTypeUseNumberedPaginate, arg.Limit, arg.Offset, arg.EventIds)
+	rows, err := q.db.Query(ctx, getPluralEventsWithTypeUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.EventIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

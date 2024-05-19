@@ -84,6 +84,8 @@ LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE
 	role_id = ANY(@role_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
 	m_role_associations_pkey ASC;
 
 -- name: GetPluralPoliciesOnRoleUseNumberedPaginate :many
@@ -92,6 +94,8 @@ LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE
 	role_id = ANY(@role_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
 	m_role_associations_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -161,6 +165,8 @@ LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE
 	policy_id = ANY(@policy_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
 	m_role_associations_pkey ASC;
 
 -- name: GetPluralRolesOnPolicyUseNumberedPaginate :many
@@ -169,6 +175,8 @@ LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE
 	policy_id = ANY(@policy_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
 	m_role_associations_pkey ASC
 LIMIT $1 OFFSET $2;
 

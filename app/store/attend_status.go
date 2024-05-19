@@ -67,6 +67,7 @@ type AttendStatus interface {
 	GetPluralAttendStatuses(
 		ctx context.Context,
 		attendStatusIDs []uuid.UUID,
+		order parameter.AttendStatusOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.AttendStatus], error)
 	// GetPluralAttendStatusesWithSd SD付きで出席ステータスを取得する。
@@ -74,6 +75,7 @@ type AttendStatus interface {
 		ctx context.Context,
 		sd Sd,
 		attendStatusIDs []uuid.UUID,
+		order parameter.AttendStatusOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.AttendStatus], error)
 	// UpdateAttendStatus 出席ステータスを更新する。

@@ -382,12 +382,16 @@ func (a *PgAdapter) GetRolesWithSd(
 }
 
 func getPluralRoles(
-	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, qtx *query.Queries, ids []uuid.UUID,
+	order parameter.RoleOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Role], error) {
 	var e []query.Role
 	var err error
 	if !np.Valid {
-		e, err = qtx.GetPluralRoles(ctx, ids)
+		e, err = qtx.GetPluralRoles(ctx, query.GetPluralRolesParams{
+			RoleIds:     ids,
+			OrderMethod: order.GetStringValue(),
+		})
 	} else {
 		p := query.GetPluralRolesUseNumberedPaginateParams{
 			RoleIds: ids,
@@ -412,14 +416,14 @@ func getPluralRoles(
 
 // GetPluralRoles ロールを取得する。
 func (a *PgAdapter) GetPluralRoles(
-	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, ids []uuid.UUID, order parameter.RoleOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Role], error) {
-	return getPluralRoles(ctx, a.query, ids, np)
+	return getPluralRoles(ctx, a.query, ids, order, np)
 }
 
 // GetPluralRolesWithSd SD付きでロールを取得する。
 func (a *PgAdapter) GetPluralRolesWithSd(
-	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, sd store.Sd, ids []uuid.UUID, order parameter.RoleOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Role], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -427,7 +431,7 @@ func (a *PgAdapter) GetPluralRolesWithSd(
 	if !ok {
 		return store.ListResult[entity.Role]{}, store.ErrNotFoundDescriptor
 	}
-	return getPluralRoles(ctx, qtx, ids, np)
+	return getPluralRoles(ctx, qtx, ids, order, np)
 }
 
 func updateRole(

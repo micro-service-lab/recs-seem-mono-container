@@ -67,6 +67,7 @@ type AttendanceType interface {
 	GetPluralAttendanceTypes(
 		ctx context.Context,
 		attendanceTypeIDs []uuid.UUID,
+		order parameter.AttendanceTypeOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.AttendanceType], error)
 	// GetPluralAttendanceTypesWithSd SD付きで出欠状況タイプを取得する。
@@ -74,6 +75,7 @@ type AttendanceType interface {
 		ctx context.Context,
 		sd Sd,
 		attendanceTypeIDs []uuid.UUID,
+		order parameter.AttendanceTypeOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.AttendanceType], error)
 	// UpdateAttendanceType 出欠状況タイプを更新する。

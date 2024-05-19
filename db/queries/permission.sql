@@ -91,11 +91,15 @@ LIMIT $1;
 -- name: GetPluralPermissions :many
 SELECT * FROM m_permissions WHERE permission_id = ANY(@permission_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
 	m_permissions_pkey ASC;
 
 -- name: GetPluralPermissionsUseNumberedPaginate :many
 SELECT * FROM m_permissions WHERE permission_id = ANY(@permission_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
 	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -160,6 +164,8 @@ SELECT m_permissions.*,  m_permission_categories.name permission_category_name, 
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE permission_id = ANY(@permission_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
 	m_permissions_pkey ASC;
 
 -- name: GetPluralPermissionsWithCategoryUseNumberedPaginate :many
@@ -167,6 +173,8 @@ SELECT m_permissions.*,  m_permission_categories.name permission_category_name, 
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE permission_id = ANY(@permission_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
 	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2;
 

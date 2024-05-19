@@ -76,12 +76,16 @@ LIMIT $1;
 SELECT * FROM m_policy_categories
 WHERE policy_category_id = ANY(@policy_category_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_policy_categories.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policy_categories.name END DESC,
 	m_policy_categories_pkey ASC;
 
 -- name: GetPluralPolicyCategoriesUseNumberedPaginate :many
 SELECT * FROM m_policy_categories
 WHERE policy_category_id = ANY(@policy_category_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_policy_categories.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policy_categories.name END DESC,
 	m_policy_categories_pkey ASC
 LIMIT $1 OFFSET $2;
 

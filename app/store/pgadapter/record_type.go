@@ -440,12 +440,16 @@ func (a *PgAdapter) GetRecordTypesWithSd(
 }
 
 func getPluralRecordTypes(
-	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, qtx *query.Queries, ids []uuid.UUID,
+	order parameter.RecordTypeOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.RecordType], error) {
 	var e []query.RecordType
 	var err error
 	if !np.Valid {
-		e, err = qtx.GetPluralRecordTypes(ctx, ids)
+		e, err = qtx.GetPluralRecordTypes(ctx, query.GetPluralRecordTypesParams{
+			RecordTypeIds: ids,
+			OrderMethod:   order.GetStringValue(),
+		})
 	} else {
 		p := query.GetPluralRecordTypesUseNumberedPaginateParams{
 			RecordTypeIds: ids,
@@ -470,14 +474,15 @@ func getPluralRecordTypes(
 
 // GetPluralRecordTypes 議事録タイプを取得する。
 func (a *PgAdapter) GetPluralRecordTypes(
-	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, ids []uuid.UUID, order parameter.RecordTypeOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.RecordType], error) {
-	return getPluralRecordTypes(ctx, a.query, ids, np)
+	return getPluralRecordTypes(ctx, a.query, ids, order, np)
 }
 
 // GetPluralRecordTypesWithSd SD付きで議事録タイプを取得する。
 func (a *PgAdapter) GetPluralRecordTypesWithSd(
-	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, sd store.Sd, ids []uuid.UUID,
+	order parameter.RecordTypeOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.RecordType], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -485,7 +490,7 @@ func (a *PgAdapter) GetPluralRecordTypesWithSd(
 	if !ok {
 		return store.ListResult[entity.RecordType]{}, store.ErrNotFoundDescriptor
 	}
-	return getPluralRecordTypes(ctx, qtx, ids, np)
+	return getPluralRecordTypes(ctx, qtx, ids, order, np)
 }
 
 func updateRecordType(

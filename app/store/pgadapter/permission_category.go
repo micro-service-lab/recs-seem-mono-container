@@ -454,12 +454,16 @@ func (a *PgAdapter) GetPermissionCategoriesWithSd(
 }
 
 func getPluralPermissionCategories(
-	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, qtx *query.Queries, ids []uuid.UUID,
+	order parameter.PermissionCategoryOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.PermissionCategory], error) {
 	var e []query.PermissionCategory
 	var err error
 	if !np.Valid {
-		e, err = qtx.GetPluralPermissionCategories(ctx, ids)
+		e, err = qtx.GetPluralPermissionCategories(ctx, query.GetPluralPermissionCategoriesParams{
+			PermissionCategoryIds: ids,
+			OrderMethod:           order.GetStringValue(),
+		})
 	} else {
 		e, err = qtx.GetPluralPermissionCategoriesUseNumberedPaginate(
 			ctx, query.GetPluralPermissionCategoriesUseNumberedPaginateParams{
@@ -486,14 +490,15 @@ func getPluralPermissionCategories(
 
 // GetPluralPermissionCategories 権限カテゴリーを取得する。
 func (a *PgAdapter) GetPluralPermissionCategories(
-	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, ids []uuid.UUID, order parameter.PermissionCategoryOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.PermissionCategory], error) {
-	return getPluralPermissionCategories(ctx, a.query, ids, np)
+	return getPluralPermissionCategories(ctx, a.query, ids, order, np)
 }
 
 // GetPluralPermissionCategoriesWithSd SD付きで権限カテゴリーを取得する。
 func (a *PgAdapter) GetPluralPermissionCategoriesWithSd(
-	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, sd store.Sd, ids []uuid.UUID,
+	order parameter.PermissionCategoryOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.PermissionCategory], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -501,7 +506,7 @@ func (a *PgAdapter) GetPluralPermissionCategoriesWithSd(
 	if !ok {
 		return store.ListResult[entity.PermissionCategory]{}, store.ErrNotFoundDescriptor
 	}
-	return getPluralPermissionCategories(ctx, qtx, ids, np)
+	return getPluralPermissionCategories(ctx, qtx, ids, order, np)
 }
 
 func updatePermissionCategory(

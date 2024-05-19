@@ -67,6 +67,7 @@ type RecordType interface {
 	GetPluralRecordTypes(
 		ctx context.Context,
 		recordTypeIDs []uuid.UUID,
+		order parameter.RecordTypeOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.RecordType], error)
 	// GetPluralRecordTypesWithSd SD付きで議事録タイプを取得する。
@@ -74,6 +75,7 @@ type RecordType interface {
 		ctx context.Context,
 		sd Sd,
 		recordTypeIDs []uuid.UUID,
+		order parameter.RecordTypeOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.RecordType], error)
 	// UpdateRecordType 議事録タイプを更新する。

@@ -71,6 +71,7 @@ type PermissionCategory interface {
 	GetPluralPermissionCategories(
 		ctx context.Context,
 		permissionCategoryIDs []uuid.UUID,
+		order parameter.PermissionCategoryOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.PermissionCategory], error)
 	// GetPluralPermissionCategoriesWithSd SD付きで権限カテゴリーを取得する。
@@ -78,6 +79,7 @@ type PermissionCategory interface {
 		ctx context.Context,
 		sd Sd,
 		permissionCategoryIDs []uuid.UUID,
+		order parameter.PermissionCategoryOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.PermissionCategory], error)
 	// UpdatePermissionCategory 権限カテゴリーを更新する。

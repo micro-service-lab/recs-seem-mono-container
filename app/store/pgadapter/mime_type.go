@@ -446,12 +446,16 @@ func (a *PgAdapter) GetMimeTypesWithSd(
 }
 
 func getPluralMimeTypes(
-	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, qtx *query.Queries, ids []uuid.UUID,
+	order parameter.MimeTypeOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.MimeType], error) {
 	var e []query.MimeType
 	var err error
 	if !np.Valid {
-		e, err = qtx.GetPluralMimeTypes(ctx, ids)
+		e, err = qtx.GetPluralMimeTypes(ctx, query.GetPluralMimeTypesParams{
+			MimeTypeIds: ids,
+			OrderMethod: order.GetStringValue(),
+		})
 	} else {
 		p := query.GetPluralMimeTypesUseNumberedPaginateParams{
 			MimeTypeIds: ids,
@@ -477,14 +481,15 @@ func getPluralMimeTypes(
 
 // GetPluralMimeTypes マイムタイプを取得する。
 func (a *PgAdapter) GetPluralMimeTypes(
-	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, ids []uuid.UUID, order parameter.MimeTypeOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.MimeType], error) {
-	return getPluralMimeTypes(ctx, a.query, ids, np)
+	return getPluralMimeTypes(ctx, a.query, ids, order, np)
 }
 
 // GetPluralMimeTypesWithSd SD付きでマイムタイプを取得する。
 func (a *PgAdapter) GetPluralMimeTypesWithSd(
-	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, sd store.Sd, ids []uuid.UUID,
+	order parameter.MimeTypeOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.MimeType], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -492,7 +497,7 @@ func (a *PgAdapter) GetPluralMimeTypesWithSd(
 	if !ok {
 		return store.ListResult[entity.MimeType]{}, store.ErrNotFoundDescriptor
 	}
-	return getPluralMimeTypes(ctx, qtx, ids, np)
+	return getPluralMimeTypes(ctx, qtx, ids, order, np)
 }
 
 func updateMimeType(

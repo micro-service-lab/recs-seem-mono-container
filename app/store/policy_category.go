@@ -71,6 +71,7 @@ type PolicyCategory interface {
 	GetPluralPolicyCategories(
 		ctx context.Context,
 		policyCategoryIDs []uuid.UUID,
+		order parameter.PolicyCategoryOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.PolicyCategory], error)
 	// GetPluralPolicyCategoriesWithSd SD付きでポリシーカテゴリーを取得する。
@@ -78,6 +79,7 @@ type PolicyCategory interface {
 		ctx context.Context,
 		sd Sd,
 		policyCategoryIDs []uuid.UUID,
+		order parameter.PolicyCategoryOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.PolicyCategory], error)
 	// UpdatePolicyCategory ポリシーカテゴリーを更新する。

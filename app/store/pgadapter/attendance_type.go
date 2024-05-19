@@ -448,12 +448,16 @@ func (a *PgAdapter) GetAttendanceTypesWithSd(
 }
 
 func getPluralAttendanceTypes(
-	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, qtx *query.Queries, ids []uuid.UUID,
+	order parameter.AttendanceTypeOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttendanceType], error) {
 	var e []query.AttendanceType
 	var err error
 	if !np.Valid {
-		e, err = qtx.GetPluralAttendanceTypes(ctx, ids)
+		e, err = qtx.GetPluralAttendanceTypes(ctx, query.GetPluralAttendanceTypesParams{
+			AttendanceTypeIds: ids,
+			OrderMethod:       order.GetStringValue(),
+		})
 	} else {
 		e, err = qtx.GetPluralAttendanceTypesUseNumberedPaginate(ctx, query.GetPluralAttendanceTypesUseNumberedPaginateParams{
 			AttendanceTypeIds: ids,
@@ -478,14 +482,15 @@ func getPluralAttendanceTypes(
 
 // GetPluralAttendanceTypes 出欠状況タイプを取得する。
 func (a *PgAdapter) GetPluralAttendanceTypes(
-	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, ids []uuid.UUID, order parameter.AttendanceTypeOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttendanceType], error) {
-	return getPluralAttendanceTypes(ctx, a.query, ids, np)
+	return getPluralAttendanceTypes(ctx, a.query, ids, order, np)
 }
 
 // GetPluralAttendanceTypesWithSd SD付きで出欠状況タイプを取得する。
 func (a *PgAdapter) GetPluralAttendanceTypesWithSd(
-	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, sd store.Sd, ids []uuid.UUID,
+	order parameter.AttendanceTypeOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttendanceType], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -493,7 +498,7 @@ func (a *PgAdapter) GetPluralAttendanceTypesWithSd(
 	if !ok {
 		return store.ListResult[entity.AttendanceType]{}, store.ErrNotFoundDescriptor
 	}
-	return getPluralAttendanceTypes(ctx, qtx, ids, np)
+	return getPluralAttendanceTypes(ctx, qtx, ids, order, np)
 }
 
 func updateAttendanceType(

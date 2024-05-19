@@ -151,6 +151,7 @@ func TestPgAdapter_PermissionCategory(t *testing.T) {
 					ctx,
 					sd,
 					[]uuid.UUID{el.Data[0].PermissionCategoryID, el.Data[1].PermissionCategoryID},
+					parameter.PermissionCategoryOrderMethodDefault,
 					validNp,
 				)
 				assert.NoError(t, err)

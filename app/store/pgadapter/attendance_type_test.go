@@ -151,6 +151,7 @@ func TestPgAdapter_AttendanceType(t *testing.T) {
 					ctx,
 					sd,
 					[]uuid.UUID{el.Data[0].AttendanceTypeID, el.Data[1].AttendanceTypeID},
+					parameter.AttendanceTypeOrderMethodDefault,
 					validNp,
 				)
 				assert.NoError(t, err)

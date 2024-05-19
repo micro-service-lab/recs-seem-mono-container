@@ -145,16 +145,23 @@ LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE
 	role_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_policies.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_policies.name END DESC,
 	m_role_associations_pkey ASC
 `
+
+type GetPluralPoliciesOnRoleParams struct {
+	RoleIds     []uuid.UUID `json:"role_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralPoliciesOnRoleRow struct {
 	RoleAssociation RoleAssociation `json:"role_association"`
 	Policy          Policy          `json:"policy"`
 }
 
-func (q *Queries) GetPluralPoliciesOnRole(ctx context.Context, roleIds []uuid.UUID) ([]GetPluralPoliciesOnRoleRow, error) {
-	rows, err := q.db.Query(ctx, getPluralPoliciesOnRole, roleIds)
+func (q *Queries) GetPluralPoliciesOnRole(ctx context.Context, arg GetPluralPoliciesOnRoleParams) ([]GetPluralPoliciesOnRoleRow, error) {
+	rows, err := q.db.Query(ctx, getPluralPoliciesOnRole, arg.RoleIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -189,14 +196,17 @@ LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE
 	role_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_policies.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_policies.name END DESC,
 	m_role_associations_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralPoliciesOnRoleUseNumberedPaginateParams struct {
-	Limit   int32       `json:"limit"`
-	Offset  int32       `json:"offset"`
-	RoleIds []uuid.UUID `json:"role_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	RoleIds     []uuid.UUID `json:"role_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralPoliciesOnRoleUseNumberedPaginateRow struct {
@@ -205,7 +215,12 @@ type GetPluralPoliciesOnRoleUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralPoliciesOnRoleUseNumberedPaginate(ctx context.Context, arg GetPluralPoliciesOnRoleUseNumberedPaginateParams) ([]GetPluralPoliciesOnRoleUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralPoliciesOnRoleUseNumberedPaginate, arg.Limit, arg.Offset, arg.RoleIds)
+	rows, err := q.db.Query(ctx, getPluralPoliciesOnRoleUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.RoleIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -240,16 +255,23 @@ LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE
 	policy_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_roles.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_roles.name END DESC,
 	m_role_associations_pkey ASC
 `
+
+type GetPluralRolesOnPolicyParams struct {
+	PolicyIds   []uuid.UUID `json:"policy_ids"`
+	OrderMethod string      `json:"order_method"`
+}
 
 type GetPluralRolesOnPolicyRow struct {
 	RoleAssociation RoleAssociation `json:"role_association"`
 	Role            Role            `json:"role"`
 }
 
-func (q *Queries) GetPluralRolesOnPolicy(ctx context.Context, policyIds []uuid.UUID) ([]GetPluralRolesOnPolicyRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRolesOnPolicy, policyIds)
+func (q *Queries) GetPluralRolesOnPolicy(ctx context.Context, arg GetPluralRolesOnPolicyParams) ([]GetPluralRolesOnPolicyRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRolesOnPolicy, arg.PolicyIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -284,14 +306,17 @@ LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE
 	policy_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_roles.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_roles.name END DESC,
 	m_role_associations_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralRolesOnPolicyUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	PolicyIds []uuid.UUID `json:"policy_ids"`
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	PolicyIds   []uuid.UUID `json:"policy_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralRolesOnPolicyUseNumberedPaginateRow struct {
@@ -300,7 +325,12 @@ type GetPluralRolesOnPolicyUseNumberedPaginateRow struct {
 }
 
 func (q *Queries) GetPluralRolesOnPolicyUseNumberedPaginate(ctx context.Context, arg GetPluralRolesOnPolicyUseNumberedPaginateParams) ([]GetPluralRolesOnPolicyUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRolesOnPolicyUseNumberedPaginate, arg.Limit, arg.Offset, arg.PolicyIds)
+	rows, err := q.db.Query(ctx, getPluralRolesOnPolicyUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.PolicyIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

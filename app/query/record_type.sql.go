@@ -116,11 +116,18 @@ SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
 WHERE
 	record_type_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN name END DESC,
 	m_record_types_pkey ASC
 `
 
-func (q *Queries) GetPluralRecordTypes(ctx context.Context, recordTypeIds []uuid.UUID) ([]RecordType, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordTypes, recordTypeIds)
+type GetPluralRecordTypesParams struct {
+	RecordTypeIds []uuid.UUID `json:"record_type_ids"`
+	OrderMethod   string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralRecordTypes(ctx context.Context, arg GetPluralRecordTypesParams) ([]RecordType, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordTypes, arg.RecordTypeIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -149,6 +156,8 @@ SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
 WHERE
 	record_type_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN name END DESC,
 	m_record_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -157,10 +166,16 @@ type GetPluralRecordTypesUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	RecordTypeIds []uuid.UUID `json:"record_type_ids"`
+	OrderMethod   string      `json:"order_method"`
 }
 
 func (q *Queries) GetPluralRecordTypesUseNumberedPaginate(ctx context.Context, arg GetPluralRecordTypesUseNumberedPaginateParams) ([]RecordType, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordTypesUseNumberedPaginate, arg.Limit, arg.Offset, arg.RecordTypeIds)
+	rows, err := q.db.Query(ctx, getPluralRecordTypesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.RecordTypeIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

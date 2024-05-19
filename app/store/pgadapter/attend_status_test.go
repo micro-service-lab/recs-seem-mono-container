@@ -151,6 +151,7 @@ func TestPgAdapter_AttendStatus(t *testing.T) {
 					ctx,
 					sd,
 					[]uuid.UUID{el.Data[0].AttendStatusID, el.Data[1].AttendStatusID},
+					parameter.AttendStatusOrderMethodDefault,
 					validNp,
 				)
 				assert.NoError(t, err)

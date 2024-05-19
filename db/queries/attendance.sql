@@ -141,12 +141,16 @@ LIMIT $1;
 SELECT * FROM t_attendances
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC;
 
 -- name: GetPluralAttendancesUseNumberedPaginate :many
 SELECT * FROM t_attendances
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -247,6 +251,8 @@ LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC;
 
 -- name: GetPluralAttendanceWithMemberUseNumberedPaginate :many
@@ -257,6 +263,8 @@ LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -345,6 +353,8 @@ SELECT t_attendances.*, m_attendance_types.attendance_type_id, m_attendance_type
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC;
 
 -- name: GetPluralAttendanceWithAttendanceTypeUseNumberedPaginate :many
@@ -352,6 +362,8 @@ SELECT t_attendances.*, m_attendance_types.attendance_type_id, m_attendance_type
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -440,6 +452,8 @@ SELECT t_attendances.*, sqlc.embed(m_organizations) FROM t_attendances
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC;
 
 -- name: GetPluralAttendanceWithSendOrganizationUseNumberedPaginate :many
@@ -447,6 +461,8 @@ SELECT t_attendances.*, sqlc.embed(m_organizations) FROM t_attendances
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -543,6 +559,8 @@ LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.atten
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC;
 
 -- name: GetPluralAttendanceWithDetailsUseNumberedPaginate :many
@@ -552,6 +570,8 @@ LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.atten
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -672,6 +692,8 @@ LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC;
 
 -- name: GetPluralAttendanceWithAllUseNumberedPaginate :many
@@ -687,6 +709,8 @@ LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC,
+	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 

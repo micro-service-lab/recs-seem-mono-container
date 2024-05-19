@@ -783,12 +783,16 @@ func (a *PgAdapter) GetPermissionsWithCategoryWithSd(
 }
 
 func getPluralPermissions(
-	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, qtx *query.Queries, ids []uuid.UUID,
+	order parameter.PermissionOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Permission], error) {
 	var e []query.Permission
 	var err error
 	if !np.Valid {
-		e, err = qtx.GetPluralPermissions(ctx, ids)
+		e, err = qtx.GetPluralPermissions(ctx, query.GetPluralPermissionsParams{
+			PermissionIds: ids,
+			OrderMethod:   order.GetStringValue(),
+		})
 	} else {
 		e, err = qtx.GetPluralPermissionsUseNumberedPaginate(ctx, query.GetPluralPermissionsUseNumberedPaginateParams{
 			PermissionIds: ids,
@@ -815,14 +819,15 @@ func getPluralPermissions(
 
 // GetPluralPermissions 権限カテゴリーを取得する。
 func (a *PgAdapter) GetPluralPermissions(
-	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, ids []uuid.UUID, order parameter.PermissionOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Permission], error) {
-	return getPluralPermissions(ctx, a.query, ids, np)
+	return getPluralPermissions(ctx, a.query, ids, order, np)
 }
 
 // GetPluralPermissionsWithSd SD付きで権限カテゴリーを取得する。
 func (a *PgAdapter) GetPluralPermissionsWithSd(
-	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, sd store.Sd, ids []uuid.UUID,
+	order parameter.PermissionOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Permission], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -830,7 +835,7 @@ func (a *PgAdapter) GetPluralPermissionsWithSd(
 	if !ok {
 		return store.ListResult[entity.Permission]{}, store.ErrNotFoundDescriptor
 	}
-	return getPluralPermissions(ctx, qtx, ids, np)
+	return getPluralPermissions(ctx, qtx, ids, order, np)
 }
 
 func updatePermission(

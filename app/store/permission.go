@@ -99,6 +99,7 @@ type Permission interface {
 	GetPluralPermissions(
 		ctx context.Context,
 		permissionIDs []uuid.UUID,
+		order parameter.PermissionOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.Permission], error)
 	// GetPluralPermissionsWithSd SD付きで権限を取得する。
@@ -106,6 +107,7 @@ type Permission interface {
 		ctx context.Context,
 		sd Sd,
 		permissionIDs []uuid.UUID,
+		order parameter.PermissionOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.Permission], error)
 	// UpdatePermission 権限を更新する。

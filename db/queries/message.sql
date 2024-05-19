@@ -133,11 +133,19 @@ LIMIT $1;
 -- name: GetPluralMessages :many
 SELECT * FROM t_messages WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_messages_pkey ASC;
 
 -- name: GetPluralMessagesUseNumberedPaginate :many
 SELECT * FROM t_messages WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -244,6 +252,10 @@ SELECT sqlc.embed(t_messages), sqlc.embed(m_chat_rooms) FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_messages_pkey ASC;
 
 -- name: GetPluralMessagesWithChatRoomUseNumberedPaginate :many
@@ -251,6 +263,10 @@ SELECT sqlc.embed(t_messages), sqlc.embed(m_chat_rooms) FROM t_messages
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -357,6 +373,10 @@ SELECT sqlc.embed(t_messages), sqlc.embed(m_members) FROM t_messages
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_messages_pkey ASC;
 
 -- name: GetPluralMessagesWithSenderUseNumberedPaginate :many
@@ -364,6 +384,10 @@ SELECT sqlc.embed(t_messages), sqlc.embed(m_members) FROM t_messages
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -474,6 +498,10 @@ LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_messages_pkey ASC;
 
 -- name: GetPluralMessagesWithAllUseNumberedPaginate :many
@@ -482,6 +510,10 @@ LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 

@@ -151,6 +151,7 @@ func TestPgAdapter_RecordType(t *testing.T) {
 					ctx,
 					sd,
 					[]uuid.UUID{el.Data[0].RecordTypeID, el.Data[1].RecordTypeID},
+					parameter.RecordTypeOrderMethodDefault,
 					validNp,
 				)
 				assert.NoError(t, err)

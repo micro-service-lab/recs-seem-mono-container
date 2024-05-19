@@ -91,11 +91,15 @@ LIMIT $1;
 -- name: GetPluralPolicies :many
 SELECT * FROM m_policies WHERE policy_id = ANY(@policy_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
 	m_policies_pkey ASC;
 
 -- name: GetPluralPoliciesUseNumberedPaginate :many
 SELECT * FROM m_policies WHERE policy_id = ANY(@policy_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
 	m_policies_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -160,6 +164,8 @@ SELECT m_policies.*, m_policy_categories.name policy_category_name, m_policy_cat
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE policy_id = ANY(@policy_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
 	m_policies_pkey ASC;
 
 -- name: GetPluralPoliciesWithCategoryUseNumberedPaginate :many
@@ -167,6 +173,8 @@ SELECT m_policies.*, m_policy_categories.name policy_category_name, m_policy_cat
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE policy_id = ANY(@policy_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
 	m_policies_pkey ASC
 LIMIT $1 OFFSET $2;
 

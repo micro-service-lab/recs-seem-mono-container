@@ -285,11 +285,18 @@ func (q *Queries) GetEventTypesUseNumberedPaginate(ctx context.Context, arg GetE
 const getPluralEventTypes = `-- name: GetPluralEventTypes :many
 SELECT m_event_types_pkey, event_type_id, name, key, color FROM m_event_types WHERE event_type_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN name END DESC,
 	m_event_types_pkey ASC
 `
 
-func (q *Queries) GetPluralEventTypes(ctx context.Context, eventTypeIds []uuid.UUID) ([]EventType, error) {
-	rows, err := q.db.Query(ctx, getPluralEventTypes, eventTypeIds)
+type GetPluralEventTypesParams struct {
+	EventTypeIds []uuid.UUID `json:"event_type_ids"`
+	OrderMethod  string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralEventTypes(ctx context.Context, arg GetPluralEventTypesParams) ([]EventType, error) {
+	rows, err := q.db.Query(ctx, getPluralEventTypes, arg.EventTypeIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -317,6 +324,8 @@ func (q *Queries) GetPluralEventTypes(ctx context.Context, eventTypeIds []uuid.U
 const getPluralEventTypesUseNumberedPaginate = `-- name: GetPluralEventTypesUseNumberedPaginate :many
 SELECT m_event_types_pkey, event_type_id, name, key, color FROM m_event_types WHERE event_type_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN name END DESC,
 	m_event_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -325,10 +334,16 @@ type GetPluralEventTypesUseNumberedPaginateParams struct {
 	Limit        int32       `json:"limit"`
 	Offset       int32       `json:"offset"`
 	EventTypeIds []uuid.UUID `json:"event_type_ids"`
+	OrderMethod  string      `json:"order_method"`
 }
 
 func (q *Queries) GetPluralEventTypesUseNumberedPaginate(ctx context.Context, arg GetPluralEventTypesUseNumberedPaginateParams) ([]EventType, error) {
-	rows, err := q.db.Query(ctx, getPluralEventTypesUseNumberedPaginate, arg.Limit, arg.Offset, arg.EventTypeIds)
+	rows, err := q.db.Query(ctx, getPluralEventTypesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.EventTypeIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

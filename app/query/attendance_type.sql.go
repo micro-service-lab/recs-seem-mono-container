@@ -286,11 +286,18 @@ const getPluralAttendanceTypes = `-- name: GetPluralAttendanceTypes :many
 SELECT m_attendance_types_pkey, attendance_type_id, name, key, color FROM m_attendance_types
 WHERE attendance_type_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN name END DESC,
 	m_attendance_types_pkey ASC
 `
 
-func (q *Queries) GetPluralAttendanceTypes(ctx context.Context, attendanceTypeIds []uuid.UUID) ([]AttendanceType, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceTypes, attendanceTypeIds)
+type GetPluralAttendanceTypesParams struct {
+	AttendanceTypeIds []uuid.UUID `json:"attendance_type_ids"`
+	OrderMethod       string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralAttendanceTypes(ctx context.Context, arg GetPluralAttendanceTypesParams) ([]AttendanceType, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceTypes, arg.AttendanceTypeIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -319,6 +326,8 @@ const getPluralAttendanceTypesUseNumberedPaginate = `-- name: GetPluralAttendanc
 SELECT m_attendance_types_pkey, attendance_type_id, name, key, color FROM m_attendance_types
 WHERE attendance_type_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN name END DESC,
 	m_attendance_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -327,10 +336,16 @@ type GetPluralAttendanceTypesUseNumberedPaginateParams struct {
 	Limit             int32       `json:"limit"`
 	Offset            int32       `json:"offset"`
 	AttendanceTypeIds []uuid.UUID `json:"attendance_type_ids"`
+	OrderMethod       string      `json:"order_method"`
 }
 
 func (q *Queries) GetPluralAttendanceTypesUseNumberedPaginate(ctx context.Context, arg GetPluralAttendanceTypesUseNumberedPaginateParams) ([]AttendanceType, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceTypesUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendanceTypeIds)
+	rows, err := q.db.Query(ctx, getPluralAttendanceTypesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.AttendanceTypeIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}

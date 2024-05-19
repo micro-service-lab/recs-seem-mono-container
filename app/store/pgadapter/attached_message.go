@@ -137,14 +137,14 @@ func (a *PgAdapter) AttacheItemOnMessageWithSd(
 func attachItemsOnMessages(
 	ctx context.Context, qtx *query.Queries, params []parameter.AttachItemMessageParam,
 ) (int64, error) {
-	var p []query.CreateAttachedMessagesParams
-	for _, param := range params {
-		p = append(p, query.CreateAttachedMessagesParams{
-			MessageID:        param.MessageID,
-			AttachableItemID: pgtype.UUID(param.AttachableItemID),
-		})
+	param := make([]query.CreateAttachedMessagesParams, len(params))
+	for i, p := range params {
+		param[i] = query.CreateAttachedMessagesParams{
+			MessageID:        p.MessageID,
+			AttachableItemID: pgtype.UUID(p.AttachableItemID),
+		}
 	}
-	attachedMessages, err := qtx.CreateAttachedMessages(ctx, p)
+	attachedMessages, err := qtx.CreateAttachedMessages(ctx, param)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
@@ -726,11 +726,17 @@ func getAttachedItemsOnMessageWithMimeType(
 		return r, nil
 	}
 	conv := func(e query.GetAttachedItemsOnMessageWithMimeTypeRow) entity.AttachedItemOnMessageWithMimeTypeForQuery {
-		mimeType := entity.MimeType{
-			MimeTypeID: e.AttachedItemMimeTypeID.Bytes,
-			Name:       e.MimeTypeName.String,
-			Key:        e.MimeTypeKey.String,
-			Kind:       e.MimeTypeKind.String,
+		var mimeType entity.NullableEntity[entity.MimeType]
+		if e.AttachedItemMimeTypeID.Valid {
+			mimeType = entity.NullableEntity[entity.MimeType]{
+				Entity: entity.MimeType{
+					MimeTypeID: e.AttachedItemMimeTypeID.Bytes,
+					Name:       e.MimeTypeName.String,
+					Key:        e.MimeTypeKey.String,
+					Kind:       e.MimeTypeKind.String,
+				},
+				Valid: true,
+			}
 		}
 		return entity.AttachedItemOnMessageWithMimeTypeForQuery{
 			Pkey: entity.Int(e.TAttachedMessagesPkey),
@@ -742,7 +748,7 @@ func getAttachedItemsOnMessageWithMimeType(
 					FromOuter:        e.AttachedItemFromOuter.Bool,
 					URL:              e.AttachedItemUrl.String,
 					Size:             entity.Float(e.AttachedItemSize),
-					MimeType:         entity.NullableEntity[entity.MimeType]{Entity: mimeType},
+					MimeType:         mimeType,
 				},
 			},
 		}
@@ -892,6 +898,18 @@ func getPluralAttachedItemsOnMessageWithMimeType(
 	}
 	entities := make([]entity.AttachedItemOnMessageWithMimeType, len(e))
 	for i, v := range e {
+		var mimeType entity.NullableEntity[entity.MimeType]
+		if v.AttachedItemMimeTypeID.Valid {
+			mimeType = entity.NullableEntity[entity.MimeType]{
+				Entity: entity.MimeType{
+					MimeTypeID: v.AttachedItemMimeTypeID.Bytes,
+					Name:       v.MimeTypeName.String,
+					Key:        v.MimeTypeKey.String,
+					Kind:       v.MimeTypeKind.String,
+				},
+				Valid: true,
+			}
+		}
 		entities[i] = entity.AttachedItemOnMessageWithMimeType{
 			AttachedMessageID: v.AttachedMessageID,
 			AttachableItem: entity.AttachableItemWithMimeType{
@@ -900,12 +918,7 @@ func getPluralAttachedItemsOnMessageWithMimeType(
 				FromOuter:        v.AttachedItemFromOuter.Bool,
 				URL:              v.AttachedItemUrl.String,
 				Size:             entity.Float(v.AttachedItemSize),
-				MimeType: entity.NullableEntity[entity.MimeType]{Entity: entity.MimeType{
-					MimeTypeID: v.AttachedItemMimeTypeID.Bytes,
-					Name:       v.MimeTypeName.String,
-					Key:        v.MimeTypeKey.String,
-					Kind:       v.MimeTypeKind.String,
-				}},
+				MimeType:         mimeType,
 			},
 		}
 	}

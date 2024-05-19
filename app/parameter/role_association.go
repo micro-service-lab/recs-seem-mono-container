@@ -69,16 +69,16 @@ const (
 	RoleOnPolicyOrderMethodReverseName RoleOnPolicyOrderMethod = "r_name"
 )
 
-// WherePolicyOnRoleParam ポリシー上ロール検索のパラメータ。
+// WherePolicyOnRoleParam ロール上のポリシー検索のパラメータ。
 type WherePolicyOnRoleParam struct {
 	WhereLikeName bool
 	SearchName    string
 }
 
-// PolicyOnRoleOrderMethod ポリシー上ロールの並び替え方法。
+// PolicyOnRoleOrderMethod ロール上のポリシーの並び替え方法。
 type PolicyOnRoleOrderMethod string
 
-// ParsePolicyOnRoleOrderMethod はポリシー上ロールの並び替え方法をパースする。
+// ParsePolicyOnRoleOrderMethod はロール上のポリシーの並び替え方法をパースする。
 func ParsePolicyOnRoleOrderMethod(v string) (any, error) {
 	if v == "" {
 		return PolicyOnRoleOrderMethodDefault, nil

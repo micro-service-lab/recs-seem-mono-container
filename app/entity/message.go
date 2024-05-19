@@ -15,3 +15,10 @@ type Message struct {
 	PostedAt     time.Time `json:"posted_at"`
 	LastEditedAt time.Time `json:"last_edited_at"`
 }
+
+// MessageCard メッセージのカードを表す構造体。
+type MessageCard struct {
+	MessageID uuid.UUID `json:"message_id"`
+	Body      string    `json:"body"`
+	PostedAt  time.Time `json:"posted_at"`
+}

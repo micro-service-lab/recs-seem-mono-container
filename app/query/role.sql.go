@@ -362,8 +362,8 @@ const pluralDeleteRoles = `-- name: PluralDeleteRoles :execrows
 DELETE FROM m_roles WHERE role_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteRoles(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeleteRoles, dollar_1)
+func (q *Queries) PluralDeleteRoles(ctx context.Context, roleIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteRoles, roleIds)
 	if err != nil {
 		return 0, err
 	}

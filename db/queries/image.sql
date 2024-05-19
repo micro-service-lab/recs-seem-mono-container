@@ -8,7 +8,7 @@ INSERT INTO t_images (height, width, attachable_item_id) VALUES ($1, $2, $3) RET
 DELETE FROM t_images WHERE image_id = $1;
 
 -- name: PluralDeleteImages :execrows
-DELETE FROM t_images WHERE image_id = ANY($1::uuid[]);
+DELETE FROM t_images WHERE image_id = ANY(@image_ids::uuid[]);
 
 -- name: FindImageByID :one
 SELECT * FROM t_images WHERE image_id = $1;

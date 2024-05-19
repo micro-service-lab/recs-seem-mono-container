@@ -4255,8 +4255,8 @@ const pluralDeleteEvents = `-- name: PluralDeleteEvents :execrows
 DELETE FROM t_events WHERE event_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteEvents(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeleteEvents, dollar_1)
+func (q *Queries) PluralDeleteEvents(ctx context.Context, eventIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteEvents, eventIds)
 	if err != nil {
 		return 0, err
 	}

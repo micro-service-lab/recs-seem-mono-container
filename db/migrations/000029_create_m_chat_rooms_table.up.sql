@@ -1,7 +1,7 @@
 CREATE TABLE m_chat_rooms (
 	m_chat_rooms_pkey BIGSERIAL,
     chat_room_id UUID NOT NULL DEFAULT uuid_generate_v4(),
-	name VARCHAR(255),
+	name VARCHAR(255) NOT NULL,
 	is_private BOOLEAN NOT NULL,
 	cover_image_id UUID,
 	owner_id UUID,

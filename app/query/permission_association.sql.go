@@ -107,8 +107,8 @@ const deletePermissionOnPermissions = `-- name: DeletePermissionOnPermissions :e
 DELETE FROM m_permission_associations WHERE permission_id = ANY($1::uuid[])
 `
 
-func (q *Queries) DeletePermissionOnPermissions(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, deletePermissionOnPermissions, dollar_1)
+func (q *Queries) DeletePermissionOnPermissions(ctx context.Context, permissionIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermissionOnPermissions, permissionIds)
 	if err != nil {
 		return 0, err
 	}
@@ -131,8 +131,8 @@ const deletePermissionOnWorkPositions = `-- name: DeletePermissionOnWorkPosition
 DELETE FROM m_permission_associations WHERE work_position_id = ANY($1::uuid[])
 `
 
-func (q *Queries) DeletePermissionOnWorkPositions(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, deletePermissionOnWorkPositions, dollar_1)
+func (q *Queries) DeletePermissionOnWorkPositions(ctx context.Context, workPositionIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermissionOnWorkPositions, workPositionIds)
 	if err != nil {
 		return 0, err
 	}

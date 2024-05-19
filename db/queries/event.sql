@@ -14,7 +14,7 @@ DELETE FROM t_events WHERE event_id = $1;
 DELETE FROM t_events WHERE organization_id = $1;
 
 -- name: PluralDeleteEvents :execrows
-DELETE FROM t_events WHERE event_id = ANY($1::uuid[]);
+DELETE FROM t_events WHERE event_id = ANY(@event_ids::uuid[]);
 
 -- name: FindEventByID :one
 SELECT * FROM t_events WHERE event_id = $1;

@@ -266,8 +266,8 @@ const pluralDeleteEarlyLeavings = `-- name: PluralDeleteEarlyLeavings :execrows
 DELETE FROM t_early_leavings WHERE early_leaving_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteEarlyLeavings(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeleteEarlyLeavings, dollar_1)
+func (q *Queries) PluralDeleteEarlyLeavings(ctx context.Context, earlyLeavingIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteEarlyLeavings, earlyLeavingIds)
 	if err != nil {
 		return 0, err
 	}

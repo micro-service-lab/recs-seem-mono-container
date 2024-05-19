@@ -65,7 +65,7 @@ type AttendanceType struct {
 type ChatRoom struct {
 	MChatRoomsPkey   pgtype.Int8 `json:"m_chat_rooms_pkey"`
 	ChatRoomID       uuid.UUID   `json:"chat_room_id"`
-	Name             pgtype.Text `json:"name"`
+	Name             string      `json:"name"`
 	IsPrivate        bool        `json:"is_private"`
 	CoverImageID     pgtype.UUID `json:"cover_image_id"`
 	OwnerID          pgtype.UUID `json:"owner_id"`

@@ -3325,8 +3325,8 @@ const pluralDeleteRecords = `-- name: PluralDeleteRecords :execrows
 DELETE FROM t_records WHERE record_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteRecords(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeleteRecords, dollar_1)
+func (q *Queries) PluralDeleteRecords(ctx context.Context, recordIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteRecords, recordIds)
 	if err != nil {
 		return 0, err
 	}

@@ -11,7 +11,7 @@ UPDATE m_roles SET name = $2, description = $3, updated_at = $4 WHERE role_id = 
 DELETE FROM m_roles WHERE role_id = $1;
 
 -- name: PluralDeleteRoles :execrows
-DELETE FROM m_roles WHERE role_id = ANY($1::uuid[]);
+DELETE FROM m_roles WHERE role_id = ANY(@role_ids::uuid[]);
 
 -- name: FindRoleByID :one
 SELECT * FROM m_roles WHERE role_id = $1;

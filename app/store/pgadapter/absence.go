@@ -311,6 +311,7 @@ func getPluralAbsences(
 	ctx context.Context,
 	qtx *query.Queries,
 	ids []uuid.UUID,
+	_ parameter.AbsenceOrderMethod,
 	np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Absence], error) {
 	var ql []query.Absence
@@ -340,14 +341,16 @@ func getPluralAbsences(
 
 // GetPluralAbsences 複数の欠席を取得する。
 func (a *PgAdapter) GetPluralAbsences(
-	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, ids []uuid.UUID,
+	order parameter.AbsenceOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Absence], error) {
-	return getPluralAbsences(ctx, a.query, ids, np)
+	return getPluralAbsences(ctx, a.query, ids, order, np)
 }
 
 // GetPluralAbsencesWithSd SD付きで複数の欠席を取得する。
 func (a *PgAdapter) GetPluralAbsencesWithSd(
-	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, sd store.Sd, ids []uuid.UUID,
+	order parameter.AbsenceOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.Absence], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -355,5 +358,5 @@ func (a *PgAdapter) GetPluralAbsencesWithSd(
 	if !ok {
 		return store.ListResult[entity.Absence]{}, store.ErrNotFoundDescriptor
 	}
-	return getPluralAbsences(ctx, qtx, ids, np)
+	return getPluralAbsences(ctx, qtx, ids, order, np)
 }

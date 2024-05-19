@@ -220,8 +220,8 @@ const pluralDeleteAbsences = `-- name: PluralDeleteAbsences :execrows
 DELETE FROM t_absences WHERE absence_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteAbsences(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeleteAbsences, dollar_1)
+func (q *Queries) PluralDeleteAbsences(ctx context.Context, absenceIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteAbsences, absenceIds)
 	if err != nil {
 		return 0, err
 	}

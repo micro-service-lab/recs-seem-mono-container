@@ -145,8 +145,8 @@ const deleteAttendancesOnMembers = `-- name: DeleteAttendancesOnMembers :execrow
 DELETE FROM t_attendances WHERE member_id = ANY($1::uuid[])
 `
 
-func (q *Queries) DeleteAttendancesOnMembers(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, deleteAttendancesOnMembers, dollar_1)
+func (q *Queries) DeleteAttendancesOnMembers(ctx context.Context, memberIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAttendancesOnMembers, memberIds)
 	if err != nil {
 		return 0, err
 	}
@@ -3606,8 +3606,8 @@ const pluralDeleteAttendances = `-- name: PluralDeleteAttendances :execrows
 DELETE FROM t_attendances WHERE attendance_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteAttendances(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeleteAttendances, dollar_1)
+func (q *Queries) PluralDeleteAttendances(ctx context.Context, attendanceIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteAttendances, attendanceIds)
 	if err != nil {
 		return 0, err
 	}

@@ -11,7 +11,7 @@ DELETE FROM m_permission_associations WHERE permission_id = $1 AND work_position
 DELETE FROM m_permission_associations WHERE permission_id = $1;
 
 -- name: DeletePermissionOnPermissions :execrows
-DELETE FROM m_permission_associations WHERE permission_id = ANY($1::uuid[]);
+DELETE FROM m_permission_associations WHERE permission_id = ANY(@permission_ids::uuid[]);
 
 -- name: PluralDeletePermissionAssociationsOnPermission :execrows
 DELETE FROM m_permission_associations WHERE permission_id = $1 AND work_position_id = ANY($2::uuid[]);
@@ -20,7 +20,7 @@ DELETE FROM m_permission_associations WHERE permission_id = $1 AND work_position
 DELETE FROM m_permission_associations WHERE work_position_id = $1;
 
 -- name: DeletePermissionOnWorkPositions :execrows
-DELETE FROM m_permission_associations WHERE work_position_id = ANY($1::uuid[]);
+DELETE FROM m_permission_associations WHERE work_position_id = ANY(@work_position_ids::uuid[]);
 
 -- name: PluralDeletePermissionAssociationsOnWorkPosition :execrows
 DELETE FROM m_permission_associations WHERE work_position_id = $1 AND permission_id = ANY($2::uuid[]);

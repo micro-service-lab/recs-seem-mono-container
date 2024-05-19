@@ -46,8 +46,10 @@ type Absence interface {
 		np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam,
 	) (ListResult[entity.Absence], error)
 	// GetPluralAbsences 欠席を取得する。
-	GetPluralAbsences(ctx context.Context, ids []uuid.UUID, np NumberedPaginationParam) (ListResult[entity.Absence], error)
+	GetPluralAbsences(ctx context.Context, ids []uuid.UUID,
+		order parameter.AbsenceOrderMethod, np NumberedPaginationParam) (ListResult[entity.Absence], error)
 	// GetPluralAbsencesWithSd SD付きで欠席を取得する。
 	GetPluralAbsencesWithSd(ctx context.Context, sd Sd, ids []uuid.UUID,
+		order parameter.AbsenceOrderMethod,
 		np NumberedPaginationParam) (ListResult[entity.Absence], error)
 }

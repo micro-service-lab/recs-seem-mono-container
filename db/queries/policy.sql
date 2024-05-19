@@ -17,7 +17,7 @@ DELETE FROM m_policies WHERE policy_id = $1;
 DELETE FROM m_policies WHERE key = $1;
 
 -- name: PluralDeletePolicies :execrows
-DELETE FROM m_policies WHERE policy_id = ANY($1::uuid[]);
+DELETE FROM m_policies WHERE policy_id = ANY(@policy_ids::uuid[]);
 
 -- name: FindPolicyByID :one
 SELECT * FROM m_policies WHERE policy_id = $1;

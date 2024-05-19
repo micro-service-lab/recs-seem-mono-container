@@ -850,8 +850,8 @@ const pluralDeletePermissions = `-- name: PluralDeletePermissions :execrows
 DELETE FROM m_permissions WHERE permission_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeletePermissions(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeletePermissions, dollar_1)
+func (q *Queries) PluralDeletePermissions(ctx context.Context, permissionIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeletePermissions, permissionIds)
 	if err != nil {
 		return 0, err
 	}

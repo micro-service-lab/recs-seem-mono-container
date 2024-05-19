@@ -14,7 +14,7 @@ DELETE FROM t_records WHERE record_id = $1;
 DELETE FROM t_records WHERE organization_id = $1;
 
 -- name: PluralDeleteRecords :execrows
-DELETE FROM t_records WHERE record_id = ANY($1::uuid[]);
+DELETE FROM t_records WHERE record_id = ANY(@record_ids::uuid[]);
 
 -- name: FindRecordByID :one
 SELECT * FROM t_records WHERE record_id = $1;

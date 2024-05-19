@@ -11,7 +11,7 @@ DELETE FROM m_groups WHERE group_id = $1;
 DELETE FROM m_groups WHERE key = $1;
 
 -- name: PluralDeleteGroups :execrows
-DELETE FROM m_groups WHERE group_id = ANY($1::uuid[]);
+DELETE FROM m_groups WHERE group_id = ANY(@group_ids::uuid[]);
 
 -- name: FindGroupByID :one
 SELECT * FROM m_groups WHERE group_id = $1;

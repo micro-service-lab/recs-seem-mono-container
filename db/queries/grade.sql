@@ -11,7 +11,7 @@ DELETE FROM m_grades WHERE grade_id = $1;
 DELETE FROM m_grades WHERE key = $1;
 
 -- name: PluralDeleteGrades :execrows
-DELETE FROM m_grades WHERE grade_id = ANY($1::uuid[]);
+DELETE FROM m_grades WHERE grade_id = ANY(@grade_ids::uuid[]);
 
 -- name: FindGradeByID :one
 SELECT * FROM m_grades WHERE grade_id = $1;

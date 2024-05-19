@@ -14,7 +14,7 @@ DELETE FROM t_messages WHERE message_id = $1;
 DELETE FROM t_messages WHERE chat_room_id = $1;
 
 -- name: PluralDeleteMessages :execrows
-DELETE FROM t_messages WHERE message_id = ANY($1::uuid[]);
+DELETE FROM t_messages WHERE message_id = ANY(@member_ids::uuid[]);
 
 -- name: FindMessageByID :one
 SELECT * FROM t_messages WHERE message_id = $1;

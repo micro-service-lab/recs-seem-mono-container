@@ -986,8 +986,8 @@ const pluralDeleteLabIOHistories = `-- name: PluralDeleteLabIOHistories :execrow
 DELETE FROM t_lab_io_histories WHERE lab_io_history_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteLabIOHistories(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeleteLabIOHistories, dollar_1)
+func (q *Queries) PluralDeleteLabIOHistories(ctx context.Context, labIoHistoryIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteLabIOHistories, labIoHistoryIds)
 	if err != nil {
 		return 0, err
 	}

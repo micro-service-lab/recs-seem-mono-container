@@ -17,7 +17,7 @@ DELETE FROM m_attendance_types WHERE attendance_type_id = $1;
 DELETE FROM m_attendance_types WHERE key = $1;
 
 -- name: PluralDeleteAttendanceTypes :execrows
-DELETE FROM m_attendance_types WHERE attendance_type_id = ANY($1::uuid[]);
+DELETE FROM m_attendance_types WHERE attendance_type_id = ANY(@attendance_type_ids::uuid[]);
 
 -- name: FindAttendanceTypeByID :one
 SELECT * FROM m_attendance_types WHERE attendance_type_id = $1;

@@ -85,6 +85,7 @@ type AttachableItem interface {
 	GetPluralAttachableItems(
 		ctx context.Context,
 		attachableItemIDs []uuid.UUID,
+		order parameter.AttachableItemOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.AttachableItemWithContent], error)
 	// GetPluralAttachableItemsWithSd SD付きで添付可能アイテムを取得する。
@@ -92,12 +93,14 @@ type AttachableItem interface {
 		ctx context.Context,
 		sd Sd,
 		attachableItemIDs []uuid.UUID,
+		order parameter.AttachableItemOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.AttachableItemWithContent], error)
 	// GetPluralAttachableItemsWithMimeType 添付可能アイテムとそのマイムタイプを取得する。
 	GetPluralAttachableItemsWithMimeType(
 		ctx context.Context,
 		attachableItemIDs []uuid.UUID,
+		order parameter.AttachableItemOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.AttachableItemWithMimeType], error)
 	// GetPluralAttachableItemsWithMimeTypeWithSd SD付きで添付可能アイテムとそのマイムタイプを取得する。
@@ -105,6 +108,7 @@ type AttachableItem interface {
 		ctx context.Context,
 		sd Sd,
 		attachableItemIDs []uuid.UUID,
+		order parameter.AttachableItemOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.AttachableItemWithMimeType], error)
 	// UpdateAttachableItem 添付可能アイテムを更新する。

@@ -2188,8 +2188,8 @@ const pluralDeleteMessages = `-- name: PluralDeleteMessages :execrows
 DELETE FROM t_messages WHERE message_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteMessages(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeleteMessages, dollar_1)
+func (q *Queries) PluralDeleteMessages(ctx context.Context, memberIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteMessages, memberIds)
 	if err != nil {
 		return 0, err
 	}

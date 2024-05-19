@@ -131,8 +131,8 @@ const deleteAttachedMessagesOnMessages = `-- name: DeleteAttachedMessagesOnMessa
 DELETE FROM t_attached_messages WHERE message_id = ANY($1::uuid[])
 `
 
-func (q *Queries) DeleteAttachedMessagesOnMessages(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, deleteAttachedMessagesOnMessages, dollar_1)
+func (q *Queries) DeleteAttachedMessagesOnMessages(ctx context.Context, messageIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAttachedMessagesOnMessages, messageIds)
 	if err != nil {
 		return 0, err
 	}

@@ -11,7 +11,7 @@ UPDATE t_attachable_items SET url = $2, size = $3, mime_type_id = $4 WHERE attac
 DELETE FROM t_attachable_items WHERE attachable_item_id = $1;
 
 -- name: PluralDeleteAttachableItems :execrows
-DELETE FROM t_attachable_items WHERE attachable_item_id = ANY($1::uuid[]);
+DELETE FROM t_attachable_items WHERE attachable_item_id = ANY(@attachable_item_ids::uuid[]);
 
 -- name: FindAttachableItemByID :one
 SELECT t_attachable_items.*, t_images.image_id, t_images.height image_height,

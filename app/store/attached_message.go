@@ -91,12 +91,14 @@ type AttachedMessage interface {
 		ctx context.Context,
 		messageIDs []uuid.UUID,
 		np NumberedPaginationParam,
+		order parameter.AttachedItemOnMessageOrderMethod,
 	) (ListResult[entity.AttachedItemOnMessage], error)
 	// GetPluralAttachedItemsOnMessageWithSd SD付きでメッセージに関連付けられた複数の添付アイテムを取得する。
 	GetPluralAttachedItemsOnMessageWithSd(
 		ctx context.Context,
 		sd Sd,
 		messageIDs []uuid.UUID,
+		order parameter.AttachedItemOnMessageOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.AttachedItemOnMessage], error)
 	// GetAttachedItemsOnMessageWithMimeType メッセージに関連付けられた添付アイテムとそのマイムタイプを取得する。
@@ -124,6 +126,7 @@ type AttachedMessage interface {
 	GetPluralAttachedItemsOnMessageWithMimeType(
 		ctx context.Context,
 		messageIDs []uuid.UUID,
+		order parameter.AttachedItemOnMessageOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.AttachedItemOnMessageWithMimeType], error)
 	// GetPluralAttachedItemsOnMessageWithMimeTypeWithSd SD付きでメッセージに関連付けられた複数の添付アイテムとそのマイムタイプを取得する。
@@ -131,6 +134,7 @@ type AttachedMessage interface {
 		ctx context.Context,
 		sd Sd,
 		messageIDs []uuid.UUID,
+		order parameter.AttachedItemOnMessageOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.AttachedItemOnMessageWithMimeType], error)
 }

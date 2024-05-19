@@ -536,8 +536,8 @@ const pluralDeleteFiles = `-- name: PluralDeleteFiles :execrows
 DELETE FROM t_files WHERE file_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteFiles(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeleteFiles, dollar_1)
+func (q *Queries) PluralDeleteFiles(ctx context.Context, fileIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteFiles, fileIds)
 	if err != nil {
 		return 0, err
 	}

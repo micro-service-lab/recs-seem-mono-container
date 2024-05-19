@@ -17,7 +17,7 @@ DELETE FROM t_lab_io_histories WHERE lab_io_history_id = $1;
 DELETE FROM t_lab_io_histories WHERE member_id = $1;
 
 -- name: PluralDeleteLabIOHistories :execrows
-DELETE FROM t_lab_io_histories WHERE lab_io_history_id = ANY($1::uuid[]);
+DELETE FROM t_lab_io_histories WHERE lab_io_history_id = ANY(@lab_io_history_ids::uuid[]);
 
 -- name: FindLabIOHistoryByID :one
 SELECT * FROM t_lab_io_histories WHERE lab_io_history_id = $1;

@@ -11,7 +11,7 @@ DELETE FROM m_chat_room_belongings WHERE member_id = $1 AND chat_room_id = $2;
 DELETE FROM m_chat_room_belongings WHERE member_id = $1;
 
 -- name: DeleteChatRoomBelongingsOnMembers :execrows
-DELETE FROM m_chat_room_belongings WHERE member_id = ANY($1::uuid[]);
+DELETE FROM m_chat_room_belongings WHERE member_id = ANY(@member_ids::uuid[]);
 
 -- name: GetMembersOnChatRoom :many
 SELECT m_chat_room_belongings.*, m_members.* FROM m_chat_room_belongings

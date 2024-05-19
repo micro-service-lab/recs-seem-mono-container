@@ -17,7 +17,7 @@ DELETE FROM m_attend_statuses WHERE attend_status_id = $1;
 DELETE FROM m_attend_statuses WHERE key = $1;
 
 -- name: PluralDeleteAttendStatuses :execrows
-DELETE FROM m_attend_statuses WHERE attend_status_id = ANY($1::uuid[]);
+DELETE FROM m_attend_statuses WHERE attend_status_id = ANY(@attend_status_ids::uuid[]);
 
 -- name: FindAttendStatusByID :one
 SELECT * FROM m_attend_statuses WHERE attend_status_id = $1;

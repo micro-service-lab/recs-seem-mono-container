@@ -372,8 +372,8 @@ const pluralDeleteEventTypes = `-- name: PluralDeleteEventTypes :execrows
 DELETE FROM m_event_types WHERE event_type_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteEventTypes(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeleteEventTypes, dollar_1)
+func (q *Queries) PluralDeleteEventTypes(ctx context.Context, eventTypeIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteEventTypes, eventTypeIds)
 	if err != nil {
 		return 0, err
 	}

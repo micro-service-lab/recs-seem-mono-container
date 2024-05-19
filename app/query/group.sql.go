@@ -649,8 +649,8 @@ const pluralDeleteGroups = `-- name: PluralDeleteGroups :execrows
 DELETE FROM m_groups WHERE group_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteGroups(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeleteGroups, dollar_1)
+func (q *Queries) PluralDeleteGroups(ctx context.Context, groupIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteGroups, groupIds)
 	if err != nil {
 		return 0, err
 	}

@@ -8,7 +8,7 @@ INSERT INTO t_absences (attendance_id) VALUES ($1) RETURNING *;
 DELETE FROM t_absences WHERE absence_id = $1;
 
 -- name: PluralDeleteAbsences :execrows
-DELETE FROM t_absences WHERE absence_id = ANY($1::uuid[]);
+DELETE FROM t_absences WHERE absence_id = ANY(@absence_ids::uuid[]);
 
 -- name: FindAbsenceByID :one
 SELECT * FROM t_absences WHERE absence_id = $1;

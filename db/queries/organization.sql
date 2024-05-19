@@ -11,7 +11,7 @@ UPDATE m_organizations SET name = $2, color = $3, description = $4, updated_at =
 DELETE FROM m_organizations WHERE organization_id = $1;
 
 -- name: PluralDeleteOrganizations :execrows
-DELETE FROM m_organizations WHERE organization_id = ANY($1::uuid[]);
+DELETE FROM m_organizations WHERE organization_id = ANY(@organization_ids::uuid[]);
 
 -- name: FindOrganizationByID :one
 SELECT * FROM m_organizations WHERE organization_id = $1;

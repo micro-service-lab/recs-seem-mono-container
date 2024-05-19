@@ -936,8 +936,8 @@ const pluralDeleteAttachableItems = `-- name: PluralDeleteAttachableItems :execr
 DELETE FROM t_attachable_items WHERE attachable_item_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteAttachableItems(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeleteAttachableItems, dollar_1)
+func (q *Queries) PluralDeleteAttachableItems(ctx context.Context, attachableItemIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteAttachableItems, attachableItemIds)
 	if err != nil {
 		return 0, err
 	}

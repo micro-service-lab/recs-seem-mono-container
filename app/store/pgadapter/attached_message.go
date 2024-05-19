@@ -281,7 +281,7 @@ func getAttachedItemsOnChatRoom(
 		}
 		return r, nil
 	}
-	runQFunc := func(orderMethod string) ([]entity.AttachedItemOnChatRoomForQuery, error) {
+	runQFunc := func(_ string) ([]entity.AttachedItemOnChatRoomForQuery, error) {
 		p := query.GetAttachedItemsOnChatRoomParams{
 			ChatRoomID:      chatRoomID,
 			WhereInMimeType: where.WhereInMimeType,
@@ -323,8 +323,8 @@ func getAttachedItemsOnChatRoom(
 		}
 		return fq, nil
 	}
-	runQCPFunc := func(subCursor, orderMethod string,
-		limit int32, cursorDir string, cursor int32, subCursorValue any,
+	runQCPFunc := func(_, _ string,
+		limit int32, cursorDir string, cursor int32, _ any,
 	) ([]entity.AttachedItemOnChatRoomForQuery, error) {
 		p := query.GetAttachedItemsOnChatRoomUseKeysetPaginateParams{
 			ChatRoomID:      chatRoomID,
@@ -367,7 +367,7 @@ func getAttachedItemsOnChatRoom(
 		}
 		return fq, nil
 	}
-	runQNPFunc := func(orderMethod string, limit, offset int32) ([]entity.AttachedItemOnChatRoomForQuery, error) {
+	runQNPFunc := func(_ string, limit, offset int32) ([]entity.AttachedItemOnChatRoomForQuery, error) {
 		p := query.GetAttachedItemsOnChatRoomUseNumberedPaginateParams{
 			ChatRoomID:      chatRoomID,
 			WhereInMimeType: where.WhereInMimeType,
@@ -482,7 +482,7 @@ func getAttachedItemsOnMessage(
 		}
 		return r, nil
 	}
-	runQFunc := func(orderMethod string) ([]entity.AttachedItemOnMessageForQuery, error) {
+	runQFunc := func(_ string) ([]entity.AttachedItemOnMessageForQuery, error) {
 		p := query.GetAttachedItemsOnMessageParams{
 			MessageID:       messageID,
 			WhereInMimeType: where.WhereInMimeType,
@@ -516,8 +516,8 @@ func getAttachedItemsOnMessage(
 		}
 		return fq, nil
 	}
-	runQCPFunc := func(subCursor, orderMethod string,
-		limit int32, cursorDir string, cursor int32, subCursorValue any,
+	runQCPFunc := func(_, _ string,
+		limit int32, cursorDir string, cursor int32, _ any,
 	) ([]entity.AttachedItemOnMessageForQuery, error) {
 		p := query.GetAttachedItemsOnMessageUseKeysetPaginateParams{
 			MessageID:       messageID,
@@ -552,7 +552,7 @@ func getAttachedItemsOnMessage(
 		}
 		return fq, nil
 	}
-	runQNPFunc := func(orderMethod string, limit, offset int32) ([]entity.AttachedItemOnMessageForQuery, error) {
+	runQNPFunc := func(_ string, limit, offset int32) ([]entity.AttachedItemOnMessageForQuery, error) {
 		p := query.GetAttachedItemsOnMessageUseNumberedPaginateParams{
 			MessageID:       messageID,
 			WhereInMimeType: where.WhereInMimeType,
@@ -638,7 +638,8 @@ func (a *PgAdapter) GetAttachedItemsOnMessageWithSd(
 }
 
 func getPluralAttachedItemsOnMessage(
-	ctx context.Context, qtx *query.Queries, messageIDs []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, qtx *query.Queries, messageIDs []uuid.UUID,
+	_ parameter.AttachedItemOnChatRoomOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttachedItemOnMessage], error) {
 	var e []query.GetPluralAttachedItemsOnMessageRow
 	var err error
@@ -681,14 +682,15 @@ func getPluralAttachedItemsOnMessage(
 // GetPluralAttachedItemsOnMessage メッセージに関連付けられた複数の添付アイテムを取得する。
 func (a *PgAdapter) GetPluralAttachedItemsOnMessage(
 	ctx context.Context, messageIDs []uuid.UUID,
-	np store.NumberedPaginationParam,
+	order parameter.AttachedItemOnChatRoomOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttachedItemOnMessage], error) {
-	return getPluralAttachedItemsOnMessage(ctx, a.query, messageIDs, np)
+	return getPluralAttachedItemsOnMessage(ctx, a.query, messageIDs, order, np)
 }
 
 // GetPluralAttachedItemsOnMessageWithSd SD付きでメッセージに関連付けられた複数の添付アイテムを取得する。
 func (a *PgAdapter) GetPluralAttachedItemsOnMessageWithSd(
-	ctx context.Context, sd store.Sd, messageIDs []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, sd store.Sd, messageIDs []uuid.UUID,
+	order parameter.AttachedItemOnChatRoomOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttachedItemOnMessage], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -696,7 +698,7 @@ func (a *PgAdapter) GetPluralAttachedItemsOnMessageWithSd(
 	if !ok {
 		return store.ListResult[entity.AttachedItemOnMessage]{}, store.ErrNotFoundDescriptor
 	}
-	return getPluralAttachedItemsOnMessage(ctx, qtx, messageIDs, np)
+	return getPluralAttachedItemsOnMessage(ctx, qtx, messageIDs, order, np)
 }
 
 func getAttachedItemsOnMessageWithMimeType(
@@ -745,7 +747,7 @@ func getAttachedItemsOnMessageWithMimeType(
 			},
 		}
 	}
-	runQFunc := func(orderMethod string) ([]entity.AttachedItemOnMessageWithMimeTypeForQuery, error) {
+	runQFunc := func(_ string) ([]entity.AttachedItemOnMessageWithMimeTypeForQuery, error) {
 		p := query.GetAttachedItemsOnMessageWithMimeTypeParams{
 			MessageID:       messageID,
 			WhereInMimeType: where.WhereInMimeType,
@@ -766,8 +768,8 @@ func getAttachedItemsOnMessageWithMimeType(
 		}
 		return fq, nil
 	}
-	runQCPFunc := func(subCursor, orderMethod string,
-		limit int32, cursorDir string, cursor int32, subCursorValue any,
+	runQCPFunc := func(_, _ string,
+		limit int32, cursorDir string, cursor int32, _ any,
 	) ([]entity.AttachedItemOnMessageWithMimeTypeForQuery, error) {
 		p := query.GetAttachedItemsOnMessageWithMimeTypeUseKeysetPaginateParams{
 			MessageID:       messageID,
@@ -790,7 +792,7 @@ func getAttachedItemsOnMessageWithMimeType(
 		return fq, nil
 	}
 	runQNPFunc := func(
-		orderMethod string, limit, offset int32,
+		_ string, limit, offset int32,
 	) ([]entity.AttachedItemOnMessageWithMimeTypeForQuery, error) {
 		p := query.GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateParams{
 			MessageID:       messageID,
@@ -864,7 +866,8 @@ func (a *PgAdapter) GetAttachedItemsOnMessageWithMimeTypeWithSd(
 }
 
 func getPluralAttachedItemsOnMessageWithMimeType(
-	ctx context.Context, qtx *query.Queries, messageIDs []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, qtx *query.Queries, messageIDs []uuid.UUID,
+	_ parameter.AttachedItemOnMessageOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttachedItemOnMessageWithMimeType], error) {
 	var e []query.GetPluralAttachedItemsOnMessageWithMimeTypeRow
 	var err error
@@ -911,14 +914,16 @@ func getPluralAttachedItemsOnMessageWithMimeType(
 
 // GetPluralAttachedItemsOnMessageWithMimeType メッセージに関連付けられた複数の添付アイテムとそのマイムタイプを取得する。
 func (a *PgAdapter) GetPluralAttachedItemsOnMessageWithMimeType(
-	ctx context.Context, messageIDs []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, messageIDs []uuid.UUID,
+	order parameter.AttachedItemOnMessageOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttachedItemOnMessageWithMimeType], error) {
-	return getPluralAttachedItemsOnMessageWithMimeType(ctx, a.query, messageIDs, np)
+	return getPluralAttachedItemsOnMessageWithMimeType(ctx, a.query, messageIDs, order, np)
 }
 
 // GetPluralAttachedItemsOnMessageWithMimeTypeWithSd SD付きでメッセージに関連付けられた複数の添付アイテムとそのマイムタイプを取得する。
 func (a *PgAdapter) GetPluralAttachedItemsOnMessageWithMimeTypeWithSd(
-	ctx context.Context, sd store.Sd, messageIDs []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, sd store.Sd, messageIDs []uuid.UUID,
+	order parameter.AttachedItemOnMessageOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttachedItemOnMessageWithMimeType], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -926,5 +931,5 @@ func (a *PgAdapter) GetPluralAttachedItemsOnMessageWithMimeTypeWithSd(
 	if !ok {
 		return store.ListResult[entity.AttachedItemOnMessageWithMimeType]{}, store.ErrNotFoundDescriptor
 	}
-	return getPluralAttachedItemsOnMessageWithMimeType(ctx, qtx, messageIDs, np)
+	return getPluralAttachedItemsOnMessageWithMimeType(ctx, qtx, messageIDs, order, np)
 }

@@ -17,7 +17,7 @@ DELETE FROM m_permission_categories WHERE permission_category_id = $1;
 DELETE FROM m_permission_categories WHERE key = $1;
 
 -- name: PluralDeletePermissionCategories :execrows
-DELETE FROM m_permission_categories WHERE permission_category_id = ANY($1::uuid[]);
+DELETE FROM m_permission_categories WHERE permission_category_id = ANY(@permission_category_ids::uuid[]);
 
 -- name: FindPermissionCategoryByID :one
 SELECT * FROM m_permission_categories WHERE permission_category_id = $1;

@@ -14,10 +14,10 @@ DELETE FROM t_attendances WHERE attendance_id = $1;
 DELETE FROM t_attendances WHERE member_id = $1;
 
 -- name: DeleteAttendancesOnMembers :execrows
-DELETE FROM t_attendances WHERE member_id = ANY($1::uuid[]);
+DELETE FROM t_attendances WHERE member_id = ANY(@member_ids::uuid[]);
 
 -- name: PluralDeleteAttendances :execrows
-DELETE FROM t_attendances WHERE attendance_id = ANY($1::uuid[]);
+DELETE FROM t_attendances WHERE attendance_id = ANY(@attendance_ids::uuid[]);
 
 -- name: FindAttendanceByID :one
 SELECT * FROM t_attendances WHERE attendance_id = $1;

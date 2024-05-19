@@ -17,7 +17,7 @@ DELETE FROM m_mime_types WHERE mime_type_id = $1;
 DELETE FROM m_mime_types WHERE key = $1;
 
 -- name: PluralDeleteMimeTypes :execrows
-DELETE FROM m_mime_types WHERE mime_type_id = ANY($1::uuid[]);
+DELETE FROM m_mime_types WHERE mime_type_id = ANY(@mime_type_ids::uuid[]);
 
 -- name: FindMimeTypeByID :one
 SELECT * FROM m_mime_types WHERE mime_type_id = $1;

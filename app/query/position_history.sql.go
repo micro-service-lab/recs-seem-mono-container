@@ -851,8 +851,8 @@ const pluralDeletePositionHistories = `-- name: PluralDeletePositionHistories :e
 DELETE FROM t_position_histories WHERE position_history_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeletePositionHistories(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeletePositionHistories, dollar_1)
+func (q *Queries) PluralDeletePositionHistories(ctx context.Context, positionHistoryIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeletePositionHistories, positionHistoryIds)
 	if err != nil {
 		return 0, err
 	}

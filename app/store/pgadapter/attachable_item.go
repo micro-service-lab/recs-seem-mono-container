@@ -382,7 +382,7 @@ func getAttachableItems(
 		}
 		return r, nil
 	}
-	runQFunc := func(orderMethod string) ([]entity.AttachableItemWithContentForQuery, error) {
+	runQFunc := func(_ string) ([]entity.AttachableItemWithContentForQuery, error) {
 		p := query.GetAttachableItemsParams{
 			WhereInMimeTypeIds: where.WhereInMimeType,
 			InMimeTypeIds:      where.InMimeTypes,
@@ -403,8 +403,8 @@ func getAttachableItems(
 		}
 		return enity, nil
 	}
-	runQCPFunc := func(subCursor, orderMethod string,
-		limit int32, cursorDir string, cursor int32, subCursorValue any,
+	runQCPFunc := func(_, _ string,
+		limit int32, cursorDir string, cursor int32, _ any,
 	) ([]entity.AttachableItemWithContentForQuery, error) {
 		p := query.GetAttachableItemsUseKeysetPaginateParams{
 			WhereInMimeTypeIds: where.WhereInMimeType,
@@ -429,7 +429,7 @@ func getAttachableItems(
 		}
 		return enity, nil
 	}
-	runQNPFunc := func(orderMethod string, limit, offset int32) ([]entity.AttachableItemWithContentForQuery, error) {
+	runQNPFunc := func(_ string, limit, offset int32) ([]entity.AttachableItemWithContentForQuery, error) {
 		p := query.GetAttachableItemsUseNumberedPaginateParams{
 			WhereInMimeTypeIds: where.WhereInMimeType,
 			InMimeTypeIds:      where.InMimeTypes,
@@ -524,7 +524,7 @@ func getAttachableItemsWithMimeType(
 		}
 		return r, nil
 	}
-	runQFunc := func(orderMethod string) ([]entity.AttachableItemWithMimeTypeForQuery, error) {
+	runQFunc := func(_ string) ([]entity.AttachableItemWithMimeTypeForQuery, error) {
 		p := query.GetAttachableItemsWithMimeTypeParams{
 			WhereInMimeTypeIds: where.WhereInMimeType,
 			InMimeTypeIds:      where.InMimeTypes,
@@ -545,8 +545,8 @@ func getAttachableItemsWithMimeType(
 		}
 		return enity, nil
 	}
-	runQCPFunc := func(subCursor, orderMethod string,
-		limit int32, cursorDir string, cursor int32, subCursorValue any,
+	runQCPFunc := func(_, _ string,
+		limit int32, cursorDir string, cursor int32, _ any,
 	) ([]entity.AttachableItemWithMimeTypeForQuery, error) {
 		p := query.GetAttachableItemsWithMimeTypeUseKeysetPaginateParams{
 			WhereInMimeTypeIds: where.WhereInMimeType,
@@ -571,7 +571,7 @@ func getAttachableItemsWithMimeType(
 		}
 		return enity, nil
 	}
-	runQNPFunc := func(orderMethod string, limit, offset int32) ([]entity.AttachableItemWithMimeTypeForQuery, error) {
+	runQNPFunc := func(_ string, limit, offset int32) ([]entity.AttachableItemWithMimeTypeForQuery, error) {
 		p := query.GetAttachableItemsWithMimeTypeUseNumberedPaginateParams{
 			WhereInMimeTypeIds: where.WhereInMimeType,
 			InMimeTypeIds:      where.InMimeTypes,
@@ -646,7 +646,8 @@ func (a *PgAdapter) GetAttachableItemsWithMimeTypeWithSd(
 }
 
 func getPluralAttachableItems(
-	ctx context.Context, qtx *query.Queries, attachableItemIDs []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, qtx *query.Queries, attachableItemIDs []uuid.UUID,
+	_ parameter.AttachableItemOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttachableItemWithContent], error) {
 	var e []query.GetPluralAttachableItemsRow
 	var err error
@@ -678,14 +679,15 @@ func getPluralAttachableItems(
 // GetPluralAttachableItems 添付可能アイテムを取得する。
 func (a *PgAdapter) GetPluralAttachableItems(
 	ctx context.Context, attachableItemIDs []uuid.UUID,
-	np store.NumberedPaginationParam,
+	order parameter.AttachableItemOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttachableItemWithContent], error) {
-	return getPluralAttachableItems(ctx, a.query, attachableItemIDs, np)
+	return getPluralAttachableItems(ctx, a.query, attachableItemIDs, order, np)
 }
 
 // GetPluralAttachableItemsWithSd SD付きで添付可能アイテムを取得する。
 func (a *PgAdapter) GetPluralAttachableItemsWithSd(
-	ctx context.Context, sd store.Sd, attachableItemIDs []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, sd store.Sd, attachableItemIDs []uuid.UUID,
+	order parameter.AttachableItemOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttachableItemWithContent], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -693,11 +695,12 @@ func (a *PgAdapter) GetPluralAttachableItemsWithSd(
 	if !ok {
 		return store.ListResult[entity.AttachableItemWithContent]{}, store.ErrNotFoundDescriptor
 	}
-	return getPluralAttachableItems(ctx, qtx, attachableItemIDs, np)
+	return getPluralAttachableItems(ctx, qtx, attachableItemIDs, order, np)
 }
 
 func getPluralAttachableItemsWithMimeType(
-	ctx context.Context, qtx *query.Queries, attachableItemIDs []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, qtx *query.Queries, attachableItemIDs []uuid.UUID,
+	_ parameter.AttachableItemOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttachableItemWithMimeType], error) {
 	var e []query.GetPluralAttachableItemsWithMimeTypeRow
 	var err error
@@ -729,15 +732,15 @@ func getPluralAttachableItemsWithMimeType(
 // GetPluralAttachableItemsWithMimeType 添付可能アイテムとそのマイムタイプを取得する。
 func (a *PgAdapter) GetPluralAttachableItemsWithMimeType(
 	ctx context.Context, attachableItemIDs []uuid.UUID,
-	np store.NumberedPaginationParam,
+	order parameter.AttachableItemOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttachableItemWithMimeType], error) {
-	return getPluralAttachableItemsWithMimeType(ctx, a.query, attachableItemIDs, np)
+	return getPluralAttachableItemsWithMimeType(ctx, a.query, attachableItemIDs, order, np)
 }
 
 // GetPluralAttachableItemsWithMimeTypeWithSd SD付きで添付可能アイテムとそのマイムタイプを取得する。
 func (a *PgAdapter) GetPluralAttachableItemsWithMimeTypeWithSd(
 	ctx context.Context, sd store.Sd, attachableItemIDs []uuid.UUID,
-	np store.NumberedPaginationParam,
+	order parameter.AttachableItemOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttachableItemWithMimeType], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
@@ -745,7 +748,7 @@ func (a *PgAdapter) GetPluralAttachableItemsWithMimeTypeWithSd(
 	if !ok {
 		return store.ListResult[entity.AttachableItemWithMimeType]{}, store.ErrNotFoundDescriptor
 	}
-	return getPluralAttachableItemsWithMimeType(ctx, qtx, attachableItemIDs, np)
+	return getPluralAttachableItemsWithMimeType(ctx, qtx, attachableItemIDs, order, np)
 }
 
 func updateAttachableItem(

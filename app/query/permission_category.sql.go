@@ -374,8 +374,8 @@ const pluralDeletePermissionCategories = `-- name: PluralDeletePermissionCategor
 DELETE FROM m_permission_categories WHERE permission_category_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeletePermissionCategories(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeletePermissionCategories, dollar_1)
+func (q *Queries) PluralDeletePermissionCategories(ctx context.Context, permissionCategoryIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeletePermissionCategories, permissionCategoryIds)
 	if err != nil {
 		return 0, err
 	}

@@ -649,8 +649,8 @@ const pluralDeleteGrades = `-- name: PluralDeleteGrades :execrows
 DELETE FROM m_grades WHERE grade_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteGrades(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeleteGrades, dollar_1)
+func (q *Queries) PluralDeleteGrades(ctx context.Context, gradeIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteGrades, gradeIds)
 	if err != nil {
 		return 0, err
 	}

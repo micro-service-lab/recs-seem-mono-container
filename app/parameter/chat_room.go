@@ -1,32 +1,38 @@
 package parameter
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+
+	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+)
 
 // CreateChatRoomParam チャットルーム作成のパラメータ。
 type CreateChatRoomParam struct {
 	Name             string
 	IsPrivate        bool
-	CoverImageURL    string
-	OwnerID          uuid.UUID
+	CoverImageID     entity.UUID
+	OwnerID          entity.UUID
 	FromOrganization bool
 }
 
 // UpdateChatRoomParams チャットルーム更新のパラメータ。
 type UpdateChatRoomParams struct {
-	Name          string
-	IsPrivate     bool
-	CoverImageURL string
-	OwnerID       uuid.UUID
+	Name         string
+	IsPrivate    bool
+	CoverImageID entity.UUID
+	OwnerID      entity.UUID
 }
 
 // WhereChatRoomParam チャットルーム検索のパラメータ。
 type WhereChatRoomParam struct {
-	WhereInOwner   bool
-	InOwners       []uuid.UUID
-	WhereLikeName  bool
-	SearchName     string
-	WhereIsPrivate bool
-	IsPrivate      bool
+	WhereInOwner            bool
+	InOwner                 []uuid.UUID
+	WhereIsPrivate          bool
+	IsPrivate               bool
+	WhereIsFromOrganization bool
+	IsFromOrganization      bool
+	WhereFromOrganizations  bool
+	FromOrganizations       []uuid.UUID
 }
 
 // ChatRoomOrderMethod チャットルームの並び替え方法。
@@ -40,10 +46,6 @@ func ParseChatRoomOrderMethod(v string) (any, error) {
 	switch v {
 	case string(ChatRoomOrderMethodDefault):
 		return ChatRoomOrderMethodDefault, nil
-	case string(ChatRoomOrderMethodName):
-		return ChatRoomOrderMethodName, nil
-	case string(ChatRoomOrderMethodReverseName):
-		return ChatRoomOrderMethodReverseName, nil
 	default:
 		return ChatRoomOrderMethodDefault, nil
 	}
@@ -52,8 +54,6 @@ func ParseChatRoomOrderMethod(v string) (any, error) {
 const (
 	// ChatRoomDefaultCursorKey はデフォルトカーソルキー。
 	ChatRoomDefaultCursorKey = "default"
-	// ChatRoomNameCursorKey は名前カーソルキー。
-	ChatRoomNameCursorKey = "name"
 )
 
 // GetCursorKeyName はカーソルキー名を取得する。
@@ -61,10 +61,6 @@ func (m ChatRoomOrderMethod) GetCursorKeyName() string {
 	switch m {
 	case ChatRoomOrderMethodDefault:
 		return ChatRoomDefaultCursorKey
-	case ChatRoomOrderMethodName:
-		return ChatRoomNameCursorKey
-	case ChatRoomOrderMethodReverseName:
-		return ChatRoomNameCursorKey
 	default:
 		return ChatRoomDefaultCursorKey
 	}
@@ -78,8 +74,4 @@ func (m ChatRoomOrderMethod) GetStringValue() string {
 const (
 	// ChatRoomOrderMethodDefault はデフォルト。
 	ChatRoomOrderMethodDefault ChatRoomOrderMethod = "default"
-	// ChatRoomOrderMethodName は名前順。
-	ChatRoomOrderMethodName ChatRoomOrderMethod = "name"
-	// ChatRoomOrderMethodReverseName は名前逆順。
-	ChatRoomOrderMethodReverseName ChatRoomOrderMethod = "r_name"
 )

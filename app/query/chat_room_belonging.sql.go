@@ -114,8 +114,8 @@ const deleteChatRoomBelongingsOnMembers = `-- name: DeleteChatRoomBelongingsOnMe
 DELETE FROM m_chat_room_belongings WHERE member_id = ANY($1::uuid[])
 `
 
-func (q *Queries) DeleteChatRoomBelongingsOnMembers(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, deleteChatRoomBelongingsOnMembers, dollar_1)
+func (q *Queries) DeleteChatRoomBelongingsOnMembers(ctx context.Context, memberIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteChatRoomBelongingsOnMembers, memberIds)
 	if err != nil {
 		return 0, err
 	}
@@ -254,14 +254,14 @@ LIMIT $2
 `
 
 type GetChatRoomsOnMemberUseKeysetPaginateParams struct {
-	MemberID        uuid.UUID   `json:"member_id"`
-	Limit           int32       `json:"limit"`
-	CursorDirection string      `json:"cursor_direction"`
-	OrderMethod     string      `json:"order_method"`
-	NameCursor      pgtype.Text `json:"name_cursor"`
-	Cursor          int32       `json:"cursor"`
-	AddCursor       time.Time   `json:"add_cursor"`
-	ChatCursor      time.Time   `json:"chat_cursor"`
+	MemberID        uuid.UUID `json:"member_id"`
+	Limit           int32     `json:"limit"`
+	CursorDirection string    `json:"cursor_direction"`
+	OrderMethod     string    `json:"order_method"`
+	NameCursor      string    `json:"name_cursor"`
+	Cursor          int32     `json:"cursor"`
+	AddCursor       time.Time `json:"add_cursor"`
+	ChatCursor      time.Time `json:"chat_cursor"`
 }
 
 type GetChatRoomsOnMemberUseKeysetPaginateRow struct {

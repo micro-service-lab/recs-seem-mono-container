@@ -16,24 +16,24 @@ import (
 const countChatRooms = `-- name: CountChatRooms :one
 SELECT COUNT(*) FROM m_chat_rooms
 WHERE
-	CASE WHEN $1::boolean = true THEN owner_id = ANY($2) ELSE TRUE END
+	CASE WHEN $1::boolean = true THEN owner_id = ANY($2::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $3::boolean = true THEN is_private = $4 ELSE TRUE END
 AND
 	CASE WHEN $5::boolean = true THEN from_organization = $6 ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY($8)) = chat_room_id ELSE TRUE END
+	CASE WHEN $7::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY($8::uuid[])) = chat_room_id ELSE TRUE END
 `
 
 type CountChatRoomsParams struct {
 	WhereInOwner            bool        `json:"where_in_owner"`
-	InOwner                 pgtype.UUID `json:"in_owner"`
+	InOwner                 []uuid.UUID `json:"in_owner"`
 	WhereIsPrivate          bool        `json:"where_is_private"`
 	IsPrivate               bool        `json:"is_private"`
 	WhereIsFromOrganization bool        `json:"where_is_from_organization"`
 	IsFromOrganization      bool        `json:"is_from_organization"`
 	WhereFromOrganizations  bool        `json:"where_from_organizations"`
-	InOrganizations         uuid.UUID   `json:"in_organizations"`
+	FromOrganizations       []uuid.UUID `json:"from_organizations"`
 }
 
 func (q *Queries) CountChatRooms(ctx context.Context, arg CountChatRoomsParams) (int64, error) {
@@ -45,7 +45,7 @@ func (q *Queries) CountChatRooms(ctx context.Context, arg CountChatRoomsParams) 
 		arg.WhereIsFromOrganization,
 		arg.IsFromOrganization,
 		arg.WhereFromOrganizations,
-		arg.InOrganizations,
+		arg.FromOrganizations,
 	)
 	var count int64
 	err := row.Scan(&count)
@@ -57,7 +57,7 @@ INSERT INTO m_chat_rooms (name, is_private, cover_image_id, owner_id, from_organ
 `
 
 type CreateChatRoomParams struct {
-	Name             pgtype.Text `json:"name"`
+	Name             string      `json:"name"`
 	IsPrivate        bool        `json:"is_private"`
 	CoverImageID     pgtype.UUID `json:"cover_image_id"`
 	OwnerID          pgtype.UUID `json:"owner_id"`
@@ -92,7 +92,7 @@ func (q *Queries) CreateChatRoom(ctx context.Context, arg CreateChatRoomParams) 
 }
 
 type CreateChatRoomsParams struct {
-	Name             pgtype.Text `json:"name"`
+	Name             string      `json:"name"`
 	IsPrivate        bool        `json:"is_private"`
 	CoverImageID     pgtype.UUID `json:"cover_image_id"`
 	OwnerID          pgtype.UUID `json:"owner_id"`
@@ -228,7 +228,7 @@ type FindChatRoomOnPrivateWithMemberParams struct {
 type FindChatRoomOnPrivateWithMemberRow struct {
 	MChatRoomsPkey       pgtype.Int8        `json:"m_chat_rooms_pkey"`
 	ChatRoomID           uuid.UUID          `json:"chat_room_id"`
-	Name                 pgtype.Text        `json:"name"`
+	Name                 string             `json:"name"`
 	IsPrivate            bool               `json:"is_private"`
 	CoverImageID         pgtype.UUID        `json:"cover_image_id"`
 	OwnerID              pgtype.UUID        `json:"owner_id"`
@@ -267,26 +267,26 @@ func (q *Queries) FindChatRoomOnPrivateWithMember(ctx context.Context, arg FindC
 const getChatRooms = `-- name: GetChatRooms :many
 SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms
 WHERE
-	CASE WHEN $1::boolean = true THEN owner_id = ANY($2) ELSE TRUE END
+	CASE WHEN $1::boolean = true THEN owner_id = ANY($2::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $3::boolean = true THEN is_private = $4 ELSE TRUE END
 AND
 	CASE WHEN $5::boolean = true THEN from_organization = $6 ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY($8)) = chat_room_id ELSE TRUE END
+	CASE WHEN $7::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY($8::uuid[])) = chat_room_id ELSE TRUE END
 ORDER BY
 	m_chat_rooms_pkey ASC
 `
 
 type GetChatRoomsParams struct {
 	WhereInOwner            bool        `json:"where_in_owner"`
-	InOwner                 pgtype.UUID `json:"in_owner"`
+	InOwner                 []uuid.UUID `json:"in_owner"`
 	WhereIsPrivate          bool        `json:"where_is_private"`
 	IsPrivate               bool        `json:"is_private"`
 	WhereIsFromOrganization bool        `json:"where_is_from_organization"`
 	IsFromOrganization      bool        `json:"is_from_organization"`
 	WhereFromOrganizations  bool        `json:"where_from_organizations"`
-	InOrganizations         uuid.UUID   `json:"in_organizations"`
+	FromOrganizations       []uuid.UUID `json:"from_organizations"`
 }
 
 func (q *Queries) GetChatRooms(ctx context.Context, arg GetChatRoomsParams) ([]ChatRoom, error) {
@@ -298,7 +298,7 @@ func (q *Queries) GetChatRooms(ctx context.Context, arg GetChatRoomsParams) ([]C
 		arg.WhereIsFromOrganization,
 		arg.IsFromOrganization,
 		arg.WhereFromOrganizations,
-		arg.InOrganizations,
+		arg.FromOrganizations,
 	)
 	if err != nil {
 		return nil, err
@@ -331,13 +331,13 @@ func (q *Queries) GetChatRooms(ctx context.Context, arg GetChatRoomsParams) ([]C
 const getChatRoomsUseKeysetPaginate = `-- name: GetChatRoomsUseKeysetPaginate :many
 SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms
 WHERE
-	CASE WHEN $2::boolean = true THEN owner_id = ANY($3) ELSE TRUE END
+	CASE WHEN $2::boolean = true THEN owner_id = ANY($3::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $4::boolean = true THEN is_private = $5 ELSE TRUE END
 AND
 	CASE WHEN $6::boolean = true THEN from_organization = $7 ELSE TRUE END
 AND
-	CASE WHEN $8::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY($9)) = chat_room_id ELSE TRUE END
+	CASE WHEN $8::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY($9::uuid[])) = chat_room_id ELSE TRUE END
 AND
 	CASE $10::text
 		WHEN 'next' THEN
@@ -354,13 +354,13 @@ LIMIT $1
 type GetChatRoomsUseKeysetPaginateParams struct {
 	Limit                   int32       `json:"limit"`
 	WhereInOwner            bool        `json:"where_in_owner"`
-	InOwner                 pgtype.UUID `json:"in_owner"`
+	InOwner                 []uuid.UUID `json:"in_owner"`
 	WhereIsPrivate          bool        `json:"where_is_private"`
 	IsPrivate               bool        `json:"is_private"`
 	WhereIsFromOrganization bool        `json:"where_is_from_organization"`
 	IsFromOrganization      bool        `json:"is_from_organization"`
 	WhereFromOrganizations  bool        `json:"where_from_organizations"`
-	InOrganizations         uuid.UUID   `json:"in_organizations"`
+	FromOrganizations       []uuid.UUID `json:"from_organizations"`
 	CursorDirection         string      `json:"cursor_direction"`
 	Cursor                  int32       `json:"cursor"`
 }
@@ -375,7 +375,7 @@ func (q *Queries) GetChatRoomsUseKeysetPaginate(ctx context.Context, arg GetChat
 		arg.WhereIsFromOrganization,
 		arg.IsFromOrganization,
 		arg.WhereFromOrganizations,
-		arg.InOrganizations,
+		arg.FromOrganizations,
 		arg.CursorDirection,
 		arg.Cursor,
 	)
@@ -410,13 +410,13 @@ func (q *Queries) GetChatRoomsUseKeysetPaginate(ctx context.Context, arg GetChat
 const getChatRoomsUseNumberedPaginate = `-- name: GetChatRoomsUseNumberedPaginate :many
 SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms
 WHERE
-	CASE WHEN $3::boolean = true THEN owner_id = ANY($4) ELSE TRUE END
+	CASE WHEN $3::boolean = true THEN owner_id = ANY($4::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $5::boolean = true THEN is_private = $6 ELSE TRUE END
 AND
 	CASE WHEN $7::boolean = true THEN from_organization = $8 ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY($10)) = chat_room_id ELSE TRUE END
+	CASE WHEN $9::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY($10::uuid[])) = chat_room_id ELSE TRUE END
 ORDER BY
 	m_chat_rooms_pkey ASC
 LIMIT $1 OFFSET $2
@@ -426,13 +426,13 @@ type GetChatRoomsUseNumberedPaginateParams struct {
 	Limit                   int32       `json:"limit"`
 	Offset                  int32       `json:"offset"`
 	WhereInOwner            bool        `json:"where_in_owner"`
-	InOwner                 pgtype.UUID `json:"in_owner"`
+	InOwner                 []uuid.UUID `json:"in_owner"`
 	WhereIsPrivate          bool        `json:"where_is_private"`
 	IsPrivate               bool        `json:"is_private"`
 	WhereIsFromOrganization bool        `json:"where_is_from_organization"`
 	IsFromOrganization      bool        `json:"is_from_organization"`
 	WhereFromOrganizations  bool        `json:"where_from_organizations"`
-	InOrganizations         uuid.UUID   `json:"in_organizations"`
+	FromOrganizations       []uuid.UUID `json:"from_organizations"`
 }
 
 func (q *Queries) GetChatRoomsUseNumberedPaginate(ctx context.Context, arg GetChatRoomsUseNumberedPaginateParams) ([]ChatRoom, error) {
@@ -446,7 +446,7 @@ func (q *Queries) GetChatRoomsUseNumberedPaginate(ctx context.Context, arg GetCh
 		arg.WhereIsFromOrganization,
 		arg.IsFromOrganization,
 		arg.WhereFromOrganizations,
-		arg.InOrganizations,
+		arg.FromOrganizations,
 	)
 	if err != nil {
 		return nil, err
@@ -480,26 +480,26 @@ const getChatRoomsWithOwner = `-- name: GetChatRoomsWithOwner :many
 SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE
-	CASE WHEN $1::boolean THEN owner_id = ANY($2) ELSE TRUE END
+	CASE WHEN $1::boolean THEN owner_id = ANY($2::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $3::boolean THEN is_private = $4 ELSE TRUE END
 AND
 	CASE WHEN $5::boolean = true THEN from_organization = $6 ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY($8)) = chat_room_id ELSE TRUE END
+	CASE WHEN $7::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY($8::uuid[])) = chat_room_id ELSE TRUE END
 ORDER BY
 	m_chat_rooms_pkey ASC
 `
 
 type GetChatRoomsWithOwnerParams struct {
 	WhereInOwner            bool        `json:"where_in_owner"`
-	InOwner                 pgtype.UUID `json:"in_owner"`
+	InOwner                 []uuid.UUID `json:"in_owner"`
 	WhereIsPrivate          bool        `json:"where_is_private"`
 	IsPrivate               bool        `json:"is_private"`
 	WhereIsFromOrganization bool        `json:"where_is_from_organization"`
 	IsFromOrganization      bool        `json:"is_from_organization"`
 	WhereFromOrganizations  bool        `json:"where_from_organizations"`
-	InOrganizations         uuid.UUID   `json:"in_organizations"`
+	FromOrganizations       []uuid.UUID `json:"from_organizations"`
 }
 
 type GetChatRoomsWithOwnerRow struct {
@@ -516,7 +516,7 @@ func (q *Queries) GetChatRoomsWithOwner(ctx context.Context, arg GetChatRoomsWit
 		arg.WhereIsFromOrganization,
 		arg.IsFromOrganization,
 		arg.WhereFromOrganizations,
-		arg.InOrganizations,
+		arg.FromOrganizations,
 	)
 	if err != nil {
 		return nil, err
@@ -564,13 +564,13 @@ const getChatRoomsWithOwnerUseKeysetPaginate = `-- name: GetChatRoomsWithOwnerUs
 SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE
-	CASE WHEN $2::boolean = true THEN owner_id = ANY($3) ELSE TRUE END
+	CASE WHEN $2::boolean = true THEN owner_id = ANY($3::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $4::boolean = true THEN is_private = $5 ELSE TRUE END
 AND
 	CASE WHEN $6::boolean = true THEN from_organization = $7 ELSE TRUE END
 AND
-	CASE WHEN $8::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY($9)) = chat_room_id ELSE TRUE END
+	CASE WHEN $8::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY($9::uuid[])) = chat_room_id ELSE TRUE END
 AND
 	CASE $10::text
 		WHEN 'next' THEN
@@ -587,13 +587,13 @@ LIMIT $1
 type GetChatRoomsWithOwnerUseKeysetPaginateParams struct {
 	Limit                   int32       `json:"limit"`
 	WhereInOwner            bool        `json:"where_in_owner"`
-	InOwner                 pgtype.UUID `json:"in_owner"`
+	InOwner                 []uuid.UUID `json:"in_owner"`
 	WhereIsPrivate          bool        `json:"where_is_private"`
 	IsPrivate               bool        `json:"is_private"`
 	WhereIsFromOrganization bool        `json:"where_is_from_organization"`
 	IsFromOrganization      bool        `json:"is_from_organization"`
 	WhereFromOrganizations  bool        `json:"where_from_organizations"`
-	InOrganizations         uuid.UUID   `json:"in_organizations"`
+	FromOrganizations       []uuid.UUID `json:"from_organizations"`
 	CursorDirection         string      `json:"cursor_direction"`
 	Cursor                  int32       `json:"cursor"`
 }
@@ -613,7 +613,7 @@ func (q *Queries) GetChatRoomsWithOwnerUseKeysetPaginate(ctx context.Context, ar
 		arg.WhereIsFromOrganization,
 		arg.IsFromOrganization,
 		arg.WhereFromOrganizations,
-		arg.InOrganizations,
+		arg.FromOrganizations,
 		arg.CursorDirection,
 		arg.Cursor,
 	)
@@ -663,13 +663,13 @@ const getChatRoomsWithOwnerUseNumberedPaginate = `-- name: GetChatRoomsWithOwner
 SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE
-	CASE WHEN $3::boolean THEN owner_id = ANY($4) ELSE TRUE END
+	CASE WHEN $3::boolean THEN owner_id = ANY($4::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $5::boolean THEN is_private = $6 ELSE TRUE END
 AND
 	CASE WHEN $7::boolean = true THEN from_organization = $8 ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY($10)) = chat_room_id ELSE TRUE END
+	CASE WHEN $9::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY($10::uuid[])) = chat_room_id ELSE TRUE END
 ORDER BY
 	m_chat_rooms_pkey ASC
 LIMIT $1 OFFSET $2
@@ -679,13 +679,13 @@ type GetChatRoomsWithOwnerUseNumberedPaginateParams struct {
 	Limit                   int32       `json:"limit"`
 	Offset                  int32       `json:"offset"`
 	WhereInOwner            bool        `json:"where_in_owner"`
-	InOwner                 pgtype.UUID `json:"in_owner"`
+	InOwner                 []uuid.UUID `json:"in_owner"`
 	WhereIsPrivate          bool        `json:"where_is_private"`
 	IsPrivate               bool        `json:"is_private"`
 	WhereIsFromOrganization bool        `json:"where_is_from_organization"`
 	IsFromOrganization      bool        `json:"is_from_organization"`
 	WhereFromOrganizations  bool        `json:"where_from_organizations"`
-	InOrganizations         uuid.UUID   `json:"in_organizations"`
+	FromOrganizations       []uuid.UUID `json:"from_organizations"`
 }
 
 type GetChatRoomsWithOwnerUseNumberedPaginateRow struct {
@@ -704,7 +704,7 @@ func (q *Queries) GetChatRoomsWithOwnerUseNumberedPaginate(ctx context.Context, 
 		arg.WhereIsFromOrganization,
 		arg.IsFromOrganization,
 		arg.WhereFromOrganizations,
-		arg.InOrganizations,
+		arg.FromOrganizations,
 	)
 	if err != nil {
 		return nil, err
@@ -954,8 +954,8 @@ const pluralDeleteChatRooms = `-- name: PluralDeleteChatRooms :execrows
 DELETE FROM m_chat_rooms WHERE chat_room_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteChatRooms(ctx context.Context, dollar_1 []uuid.UUID) (int64, error) {
-	result, err := q.db.Exec(ctx, pluralDeleteChatRooms, dollar_1)
+func (q *Queries) PluralDeleteChatRooms(ctx context.Context, chatRoomIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteChatRooms, chatRoomIds)
 	if err != nil {
 		return 0, err
 	}
@@ -968,7 +968,7 @@ UPDATE m_chat_rooms SET name = $2, is_private = $3, cover_image_id = $4, owner_i
 
 type UpdateChatRoomParams struct {
 	ChatRoomID   uuid.UUID   `json:"chat_room_id"`
-	Name         pgtype.Text `json:"name"`
+	Name         string      `json:"name"`
 	IsPrivate    bool        `json:"is_private"`
 	CoverImageID pgtype.UUID `json:"cover_image_id"`
 	OwnerID      pgtype.UUID `json:"owner_id"`

@@ -40,4 +40,5 @@ type Store interface {
 	Role
 	RoleAssociation
 	AttachableItem
+	ChatRoom
 }

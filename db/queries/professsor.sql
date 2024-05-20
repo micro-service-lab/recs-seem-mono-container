@@ -56,5 +56,33 @@ ORDER BY
 	m_professors_pkey ASC
 LIMIT $1 OFFSET $2;
 
+-- name: GetProfessorsWithMember :many
+SELECT m_professors.*, sqlc.embed(m_members) FROM m_professors
+LEFT JOIN m_members ON m_professors.member_id = m_members.member_id
+ORDER BY
+	m_professors_pkey ASC;
+
+-- name: GetProfessorsWithMemberUseNumberedPaginate :many
+SELECT m_professors.*, sqlc.embed(m_members) FROM m_professors
+LEFT JOIN m_members ON m_professors.member_id = m_members.member_id
+ORDER BY
+	m_professors_pkey ASC
+LIMIT $1 OFFSET $2;
+
+-- name: GetProfessorsWithMemberUseKeysetPaginate :many
+SELECT m_professors.*, sqlc.embed(m_members) FROM m_professors
+LEFT JOIN m_members ON m_professors.member_id = m_members.member_id
+WHERE
+	CASE @cursor_direction::text
+		WHEN 'next' THEN
+			m_professors_pkey > @cursor::int
+		WHEN 'prev' THEN
+			m_professors_pkey < @cursor::int
+	END
+ORDER BY
+	CASE WHEN @cursor_direction::text = 'next' THEN m_professors_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_professors_pkey END DESC
+LIMIT $1;
+
 -- name: CountProfessors :one
 SELECT COUNT(*) FROM m_professors;

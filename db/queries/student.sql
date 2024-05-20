@@ -56,6 +56,49 @@ ORDER BY
 	m_students_pkey ASC
 LIMIT $1 OFFSET $2;
 
+-- GetStudentsWithMember :many
+SELECT m_students.*, sqlc.embed(m_members) FROM m_students
+LEFT JOIN m_members ON m_students.member_id = m_members.member_id
+ORDER BY
+	m_students_pkey ASC;
+
+-- name: GetStudentsWithMemberUseNumberedPaginate :many
+SELECT m_students.*, sqlc.embed(m_members) FROM m_students
+LEFT JOIN m_members ON m_students.member_id = m_members.member_id
+ORDER BY
+	m_students_pkey ASC
+LIMIT $1 OFFSET $2;
+
+-- name: GetStudentsWithMemberUseKeysetPaginate :many
+SELECT m_students.*, sqlc.embed(m_members) FROM m_students
+LEFT JOIN m_members ON m_students.member_id = m_members.member_id
+WHERE
+	CASE @cursor_direction::text
+		WHEN 'next' THEN
+			m_students_pkey > @cursor::int
+		WHEN 'prev' THEN
+			m_students_pkey < @cursor::int
+	END
+ORDER BY
+	CASE WHEN @cursor_direction::text = 'next' THEN m_students_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_students_pkey END DESC
+LIMIT $1;
+
+-- name: GetPluralStudentsWithMember :many
+SELECT m_students.*, sqlc.embed(m_members) FROM m_students
+LEFT JOIN m_members ON m_students.member_id = m_members.member_id
+WHERE member_id = ANY(@member_ids::uuid[])
+ORDER BY
+	m_students_pkey ASC;
+
+-- name: GetPluralStudentsWithMemberUseNumberedPaginate :many
+SELECT m_students.*, sqlc.embed(m_members) FROM m_students
+LEFT JOIN m_members ON m_students.member_id = m_members.member_id
+WHERE member_id = ANY(@member_ids::uuid[])
+ORDER BY
+	m_students_pkey ASC
+LIMIT $1 OFFSET $2;
+
 -- name: CountStudents :one
 SELECT COUNT(*) FROM m_students;
 

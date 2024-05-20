@@ -156,6 +156,119 @@ func (q *Queries) GetPluralStudentsUseNumberedPaginate(ctx context.Context, arg 
 	return items, nil
 }
 
+const getPluralStudentsWithMember = `-- name: GetPluralStudentsWithMember :many
+SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
+LEFT JOIN m_members ON m_students.member_id = m_members.member_id
+WHERE member_id = ANY($1::uuid[])
+ORDER BY
+	m_students_pkey ASC
+`
+
+type GetPluralStudentsWithMemberRow struct {
+	MStudentsPkey pgtype.Int8 `json:"m_students_pkey"`
+	StudentID     uuid.UUID   `json:"student_id"`
+	MemberID      uuid.UUID   `json:"member_id"`
+	Member        Member      `json:"member"`
+}
+
+func (q *Queries) GetPluralStudentsWithMember(ctx context.Context, memberIds []uuid.UUID) ([]GetPluralStudentsWithMemberRow, error) {
+	rows, err := q.db.Query(ctx, getPluralStudentsWithMember, memberIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralStudentsWithMemberRow{}
+	for rows.Next() {
+		var i GetPluralStudentsWithMemberRow
+		if err := rows.Scan(
+			&i.MStudentsPkey,
+			&i.StudentID,
+			&i.MemberID,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralStudentsWithMemberUseNumberedPaginate = `-- name: GetPluralStudentsWithMemberUseNumberedPaginate :many
+SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
+LEFT JOIN m_members ON m_students.member_id = m_members.member_id
+WHERE member_id = ANY($3::uuid[])
+ORDER BY
+	m_students_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralStudentsWithMemberUseNumberedPaginateParams struct {
+	Limit     int32       `json:"limit"`
+	Offset    int32       `json:"offset"`
+	MemberIds []uuid.UUID `json:"member_ids"`
+}
+
+type GetPluralStudentsWithMemberUseNumberedPaginateRow struct {
+	MStudentsPkey pgtype.Int8 `json:"m_students_pkey"`
+	StudentID     uuid.UUID   `json:"student_id"`
+	MemberID      uuid.UUID   `json:"member_id"`
+	Member        Member      `json:"member"`
+}
+
+func (q *Queries) GetPluralStudentsWithMemberUseNumberedPaginate(ctx context.Context, arg GetPluralStudentsWithMemberUseNumberedPaginateParams) ([]GetPluralStudentsWithMemberUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralStudentsWithMemberUseNumberedPaginate, arg.Limit, arg.Offset, arg.MemberIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralStudentsWithMemberUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralStudentsWithMemberUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.MStudentsPkey,
+			&i.StudentID,
+			&i.MemberID,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getStudents = `-- name: GetStudents :many
 SELECT m_students_pkey, student_id, member_id FROM m_students
 ORDER BY
@@ -245,6 +358,131 @@ func (q *Queries) GetStudentsUseNumberedPaginate(ctx context.Context, arg GetStu
 	for rows.Next() {
 		var i Student
 		if err := rows.Scan(&i.MStudentsPkey, &i.StudentID, &i.MemberID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getStudentsWithMemberUseKeysetPaginate = `-- name: GetStudentsWithMemberUseKeysetPaginate :many
+SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
+LEFT JOIN m_members ON m_students.member_id = m_members.member_id
+WHERE
+	CASE $2::text
+		WHEN 'next' THEN
+			m_students_pkey > $3::int
+		WHEN 'prev' THEN
+			m_students_pkey < $3::int
+	END
+ORDER BY
+	CASE WHEN $2::text = 'next' THEN m_students_pkey END ASC,
+	CASE WHEN $2::text = 'prev' THEN m_students_pkey END DESC
+LIMIT $1
+`
+
+type GetStudentsWithMemberUseKeysetPaginateParams struct {
+	Limit           int32  `json:"limit"`
+	CursorDirection string `json:"cursor_direction"`
+	Cursor          int32  `json:"cursor"`
+}
+
+type GetStudentsWithMemberUseKeysetPaginateRow struct {
+	MStudentsPkey pgtype.Int8 `json:"m_students_pkey"`
+	StudentID     uuid.UUID   `json:"student_id"`
+	MemberID      uuid.UUID   `json:"member_id"`
+	Member        Member      `json:"member"`
+}
+
+func (q *Queries) GetStudentsWithMemberUseKeysetPaginate(ctx context.Context, arg GetStudentsWithMemberUseKeysetPaginateParams) ([]GetStudentsWithMemberUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getStudentsWithMemberUseKeysetPaginate, arg.Limit, arg.CursorDirection, arg.Cursor)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetStudentsWithMemberUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetStudentsWithMemberUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.MStudentsPkey,
+			&i.StudentID,
+			&i.MemberID,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getStudentsWithMemberUseNumberedPaginate = `-- name: GetStudentsWithMemberUseNumberedPaginate :many
+SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
+LEFT JOIN m_members ON m_students.member_id = m_members.member_id
+ORDER BY
+	m_students_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetStudentsWithMemberUseNumberedPaginateParams struct {
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
+}
+
+type GetStudentsWithMemberUseNumberedPaginateRow struct {
+	MStudentsPkey pgtype.Int8 `json:"m_students_pkey"`
+	StudentID     uuid.UUID   `json:"student_id"`
+	MemberID      uuid.UUID   `json:"member_id"`
+	Member        Member      `json:"member"`
+}
+
+func (q *Queries) GetStudentsWithMemberUseNumberedPaginate(ctx context.Context, arg GetStudentsWithMemberUseNumberedPaginateParams) ([]GetStudentsWithMemberUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getStudentsWithMemberUseNumberedPaginate, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetStudentsWithMemberUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetStudentsWithMemberUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.MStudentsPkey,
+			&i.StudentID,
+			&i.MemberID,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

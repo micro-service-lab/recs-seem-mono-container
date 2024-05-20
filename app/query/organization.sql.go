@@ -144,73 +144,120 @@ func (q *Queries) FindOrganizationByID(ctx context.Context, organizationID uuid.
 }
 
 const findOrganizationByIDWithAll = `-- name: FindOrganizationByIDWithAll :one
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE m_organizations.organization_id = $1
 `
 
 type FindOrganizationByIDWithAllRow struct {
-	Organization Organization `json:"organization"`
-	Group        Group        `json:"group"`
-	Grade        Grade        `json:"grade"`
-	ChatRoom     ChatRoom     `json:"chat_room"`
+	MOrganizationsPkey                 pgtype.Int8   `json:"m_organizations_pkey"`
+	OrganizationID                     uuid.UUID     `json:"organization_id"`
+	Name                               string        `json:"name"`
+	Description                        pgtype.Text   `json:"description"`
+	Color                              pgtype.Text   `json:"color"`
+	IsPersonal                         bool          `json:"is_personal"`
+	IsWhole                            bool          `json:"is_whole"`
+	CreatedAt                          time.Time     `json:"created_at"`
+	UpdatedAt                          time.Time     `json:"updated_at"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
+	GroupKey                           pgtype.Text   `json:"group_key"`
+	GradeKey                           pgtype.Text   `json:"grade_key"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
 }
 
 func (q *Queries) FindOrganizationByIDWithAll(ctx context.Context, organizationID uuid.UUID) (FindOrganizationByIDWithAllRow, error) {
 	row := q.db.QueryRow(ctx, findOrganizationByIDWithAll, organizationID)
 	var i FindOrganizationByIDWithAllRow
 	err := row.Scan(
-		&i.Organization.MOrganizationsPkey,
-		&i.Organization.OrganizationID,
-		&i.Organization.Name,
-		&i.Organization.Description,
-		&i.Organization.Color,
-		&i.Organization.IsPersonal,
-		&i.Organization.IsWhole,
-		&i.Organization.CreatedAt,
-		&i.Organization.UpdatedAt,
-		&i.Organization.ChatRoomID,
-		&i.Group.MGroupsPkey,
-		&i.Group.GroupID,
-		&i.Group.Key,
-		&i.Group.OrganizationID,
-		&i.Grade.MGradesPkey,
-		&i.Grade.GradeID,
-		&i.Grade.Key,
-		&i.Grade.OrganizationID,
-		&i.ChatRoom.MChatRoomsPkey,
-		&i.ChatRoom.ChatRoomID,
-		&i.ChatRoom.Name,
-		&i.ChatRoom.IsPrivate,
-		&i.ChatRoom.CoverImageID,
-		&i.ChatRoom.OwnerID,
-		&i.ChatRoom.FromOrganization,
-		&i.ChatRoom.CreatedAt,
-		&i.ChatRoom.UpdatedAt,
+		&i.MOrganizationsPkey,
+		&i.OrganizationID,
+		&i.Name,
+		&i.Description,
+		&i.Color,
+		&i.IsPersonal,
+		&i.IsWhole,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ChatRoomID,
+		&i.GroupKey,
+		&i.GradeKey,
+		&i.ChatRoomName,
+		&i.ChatRoomIsPrivate,
+		&i.ChatRoomFromOrganization,
+		&i.ChatRoomOwnerID,
+		&i.ChatRoomCoverImageID,
+		&i.ChatRoomCoverImageHeight,
+		&i.ChatRoomCoverImageWidth,
+		&i.ChatRoomCoverImageAttachableItemID,
+		&i.ChatRoomCoverImageOwnerID,
+		&i.ChatRoomCoverImageFromOuter,
+		&i.ChatRoomCoverImageUrl,
+		&i.ChatRoomCoverImageSize,
+		&i.ChatRoomCoverImageMimeTypeID,
 	)
 	return i, err
 }
 
 const findOrganizationByIDWithChatRoom = `-- name: FindOrganizationByIDWithChatRoom :one
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE m_organizations.organization_id = $1
 `
 
 type FindOrganizationByIDWithChatRoomRow struct {
-	MOrganizationsPkey pgtype.Int8 `json:"m_organizations_pkey"`
-	OrganizationID     uuid.UUID   `json:"organization_id"`
-	Name               string      `json:"name"`
-	Description        pgtype.Text `json:"description"`
-	Color              pgtype.Text `json:"color"`
-	IsPersonal         bool        `json:"is_personal"`
-	IsWhole            bool        `json:"is_whole"`
-	CreatedAt          time.Time   `json:"created_at"`
-	UpdatedAt          time.Time   `json:"updated_at"`
-	ChatRoomID         pgtype.UUID `json:"chat_room_id"`
-	ChatRoom           ChatRoom    `json:"chat_room"`
+	MOrganizationsPkey                 pgtype.Int8   `json:"m_organizations_pkey"`
+	OrganizationID                     uuid.UUID     `json:"organization_id"`
+	Name                               string        `json:"name"`
+	Description                        pgtype.Text   `json:"description"`
+	Color                              pgtype.Text   `json:"color"`
+	IsPersonal                         bool          `json:"is_personal"`
+	IsWhole                            bool          `json:"is_whole"`
+	CreatedAt                          time.Time     `json:"created_at"`
+	UpdatedAt                          time.Time     `json:"updated_at"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
 }
 
 func (q *Queries) FindOrganizationByIDWithChatRoom(ctx context.Context, organizationID uuid.UUID) (FindOrganizationByIDWithChatRoomRow, error) {
@@ -227,94 +274,48 @@ func (q *Queries) FindOrganizationByIDWithChatRoom(ctx context.Context, organiza
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ChatRoomID,
-		&i.ChatRoom.MChatRoomsPkey,
-		&i.ChatRoom.ChatRoomID,
-		&i.ChatRoom.Name,
-		&i.ChatRoom.IsPrivate,
-		&i.ChatRoom.CoverImageID,
-		&i.ChatRoom.OwnerID,
-		&i.ChatRoom.FromOrganization,
-		&i.ChatRoom.CreatedAt,
-		&i.ChatRoom.UpdatedAt,
+		&i.ChatRoomName,
+		&i.ChatRoomIsPrivate,
+		&i.ChatRoomFromOrganization,
+		&i.ChatRoomOwnerID,
+		&i.ChatRoomCoverImageID,
+		&i.ChatRoomCoverImageHeight,
+		&i.ChatRoomCoverImageWidth,
+		&i.ChatRoomCoverImageAttachableItemID,
+		&i.ChatRoomCoverImageOwnerID,
+		&i.ChatRoomCoverImageFromOuter,
+		&i.ChatRoomCoverImageUrl,
+		&i.ChatRoomCoverImageSize,
+		&i.ChatRoomCoverImageMimeTypeID,
 	)
 	return i, err
 }
 
 const findOrganizationByIDWithDetail = `-- name: FindOrganizationByIDWithDetail :one
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE m_organizations.organization_id = $1
 `
 
 type FindOrganizationByIDWithDetailRow struct {
-	Organization Organization `json:"organization"`
-	Group        Group        `json:"group"`
-	Grade        Grade        `json:"grade"`
+	MOrganizationsPkey pgtype.Int8 `json:"m_organizations_pkey"`
+	OrganizationID     uuid.UUID   `json:"organization_id"`
+	Name               string      `json:"name"`
+	Description        pgtype.Text `json:"description"`
+	Color              pgtype.Text `json:"color"`
+	IsPersonal         bool        `json:"is_personal"`
+	IsWhole            bool        `json:"is_whole"`
+	CreatedAt          time.Time   `json:"created_at"`
+	UpdatedAt          time.Time   `json:"updated_at"`
+	ChatRoomID         pgtype.UUID `json:"chat_room_id"`
+	GroupKey           pgtype.Text `json:"group_key"`
+	GradeKey           pgtype.Text `json:"grade_key"`
 }
 
 func (q *Queries) FindOrganizationByIDWithDetail(ctx context.Context, organizationID uuid.UUID) (FindOrganizationByIDWithDetailRow, error) {
 	row := q.db.QueryRow(ctx, findOrganizationByIDWithDetail, organizationID)
 	var i FindOrganizationByIDWithDetailRow
-	err := row.Scan(
-		&i.Organization.MOrganizationsPkey,
-		&i.Organization.OrganizationID,
-		&i.Organization.Name,
-		&i.Organization.Description,
-		&i.Organization.Color,
-		&i.Organization.IsPersonal,
-		&i.Organization.IsWhole,
-		&i.Organization.CreatedAt,
-		&i.Organization.UpdatedAt,
-		&i.Organization.ChatRoomID,
-		&i.Group.MGroupsPkey,
-		&i.Group.GroupID,
-		&i.Group.Key,
-		&i.Group.OrganizationID,
-		&i.Grade.MGradesPkey,
-		&i.Grade.GradeID,
-		&i.Grade.Key,
-		&i.Grade.OrganizationID,
-	)
-	return i, err
-}
-
-const findPersonalOrganization = `-- name: FindPersonalOrganization :one
-SELECT m_organizations_pkey, organization_id, m_organizations.name, description, color, is_personal, is_whole, m_organizations.created_at, m_organizations.updated_at, chat_room_id, m_members_pkey, member_id, login_id, password, email, m_members.name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, m_members.created_at, m_members.updated_at FROM m_organizations
-LEFT JOIN m_members ON m_organizations.organization_id = m_members.personal_organization_id
-WHERE m_organizations.is_personal = true AND m_members.member_id = $1
-`
-
-type FindPersonalOrganizationRow struct {
-	MOrganizationsPkey     pgtype.Int8        `json:"m_organizations_pkey"`
-	OrganizationID         uuid.UUID          `json:"organization_id"`
-	Name                   string             `json:"name"`
-	Description            pgtype.Text        `json:"description"`
-	Color                  pgtype.Text        `json:"color"`
-	IsPersonal             bool               `json:"is_personal"`
-	IsWhole                bool               `json:"is_whole"`
-	CreatedAt              time.Time          `json:"created_at"`
-	UpdatedAt              time.Time          `json:"updated_at"`
-	ChatRoomID             pgtype.UUID        `json:"chat_room_id"`
-	MMembersPkey           pgtype.Int8        `json:"m_members_pkey"`
-	MemberID               pgtype.UUID        `json:"member_id"`
-	LoginID                pgtype.Text        `json:"login_id"`
-	Password               pgtype.Text        `json:"password"`
-	Email                  pgtype.Text        `json:"email"`
-	Name_2                 pgtype.Text        `json:"name_2"`
-	AttendStatusID         pgtype.UUID        `json:"attend_status_id"`
-	ProfileImageID         pgtype.UUID        `json:"profile_image_id"`
-	GradeID                pgtype.UUID        `json:"grade_id"`
-	GroupID                pgtype.UUID        `json:"group_id"`
-	PersonalOrganizationID pgtype.UUID        `json:"personal_organization_id"`
-	RoleID                 pgtype.UUID        `json:"role_id"`
-	CreatedAt_2            pgtype.Timestamptz `json:"created_at_2"`
-	UpdatedAt_2            pgtype.Timestamptz `json:"updated_at_2"`
-}
-
-func (q *Queries) FindPersonalOrganization(ctx context.Context, memberID uuid.UUID) (FindPersonalOrganizationRow, error) {
-	row := q.db.QueryRow(ctx, findPersonalOrganization, memberID)
-	var i FindPersonalOrganizationRow
 	err := row.Scan(
 		&i.MOrganizationsPkey,
 		&i.OrganizationID,
@@ -326,20 +327,31 @@ func (q *Queries) FindPersonalOrganization(ctx context.Context, memberID uuid.UU
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ChatRoomID,
-		&i.MMembersPkey,
-		&i.MemberID,
-		&i.LoginID,
-		&i.Password,
-		&i.Email,
-		&i.Name_2,
-		&i.AttendStatusID,
-		&i.ProfileImageID,
-		&i.GradeID,
-		&i.GroupID,
-		&i.PersonalOrganizationID,
-		&i.RoleID,
-		&i.CreatedAt_2,
-		&i.UpdatedAt_2,
+		&i.GroupKey,
+		&i.GradeKey,
+	)
+	return i, err
+}
+
+const findPersonalOrganization = `-- name: FindPersonalOrganization :one
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_organizations
+WHERE m_organizations.is_personal = true AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $1)
+`
+
+func (q *Queries) FindPersonalOrganization(ctx context.Context, memberID uuid.UUID) (Organization, error) {
+	row := q.db.QueryRow(ctx, findPersonalOrganization, memberID)
+	var i Organization
+	err := row.Scan(
+		&i.MOrganizationsPkey,
+		&i.OrganizationID,
+		&i.Name,
+		&i.Description,
+		&i.Color,
+		&i.IsPersonal,
+		&i.IsWhole,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ChatRoomID,
 	)
 	return i, err
 }
@@ -367,23 +379,43 @@ func (q *Queries) FindWholeOrganization(ctx context.Context) (Organization, erro
 }
 
 const findWholeOrganizationWithChatRoom = `-- name: FindWholeOrganizationWithChatRoom :one
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE m_organizations.is_whole = true
 `
 
 type FindWholeOrganizationWithChatRoomRow struct {
-	MOrganizationsPkey pgtype.Int8 `json:"m_organizations_pkey"`
-	OrganizationID     uuid.UUID   `json:"organization_id"`
-	Name               string      `json:"name"`
-	Description        pgtype.Text `json:"description"`
-	Color              pgtype.Text `json:"color"`
-	IsPersonal         bool        `json:"is_personal"`
-	IsWhole            bool        `json:"is_whole"`
-	CreatedAt          time.Time   `json:"created_at"`
-	UpdatedAt          time.Time   `json:"updated_at"`
-	ChatRoomID         pgtype.UUID `json:"chat_room_id"`
-	ChatRoom           ChatRoom    `json:"chat_room"`
+	MOrganizationsPkey                 pgtype.Int8   `json:"m_organizations_pkey"`
+	OrganizationID                     uuid.UUID     `json:"organization_id"`
+	Name                               string        `json:"name"`
+	Description                        pgtype.Text   `json:"description"`
+	Color                              pgtype.Text   `json:"color"`
+	IsPersonal                         bool          `json:"is_personal"`
+	IsWhole                            bool          `json:"is_whole"`
+	CreatedAt                          time.Time     `json:"created_at"`
+	UpdatedAt                          time.Time     `json:"updated_at"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
 }
 
 func (q *Queries) FindWholeOrganizationWithChatRoom(ctx context.Context) (FindWholeOrganizationWithChatRoomRow, error) {
@@ -400,15 +432,19 @@ func (q *Queries) FindWholeOrganizationWithChatRoom(ctx context.Context) (FindWh
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.ChatRoomID,
-		&i.ChatRoom.MChatRoomsPkey,
-		&i.ChatRoom.ChatRoomID,
-		&i.ChatRoom.Name,
-		&i.ChatRoom.IsPrivate,
-		&i.ChatRoom.CoverImageID,
-		&i.ChatRoom.OwnerID,
-		&i.ChatRoom.FromOrganization,
-		&i.ChatRoom.CreatedAt,
-		&i.ChatRoom.UpdatedAt,
+		&i.ChatRoomName,
+		&i.ChatRoomIsPrivate,
+		&i.ChatRoomFromOrganization,
+		&i.ChatRoomOwnerID,
+		&i.ChatRoomCoverImageID,
+		&i.ChatRoomCoverImageHeight,
+		&i.ChatRoomCoverImageWidth,
+		&i.ChatRoomCoverImageAttachableItemID,
+		&i.ChatRoomCoverImageOwnerID,
+		&i.ChatRoomCoverImageFromOuter,
+		&i.ChatRoomCoverImageUrl,
+		&i.ChatRoomCoverImageSize,
+		&i.ChatRoomCoverImageMimeTypeID,
 	)
 	return i, err
 }
@@ -665,10 +701,18 @@ func (q *Queries) GetOrganizationsUseNumberedPaginate(ctx context.Context, arg G
 }
 
 const getOrganizationsWithAll = `-- name: GetOrganizationsWithAll :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
 	CASE WHEN $1::boolean = true THEN m_organizations.name LIKE '%' || $2::text || '%' END
 AND
@@ -699,10 +743,31 @@ type GetOrganizationsWithAllParams struct {
 }
 
 type GetOrganizationsWithAllRow struct {
-	Organization Organization `json:"organization"`
-	Group        Group        `json:"group"`
-	Grade        Grade        `json:"grade"`
-	ChatRoom     ChatRoom     `json:"chat_room"`
+	MOrganizationsPkey                 pgtype.Int8   `json:"m_organizations_pkey"`
+	OrganizationID                     uuid.UUID     `json:"organization_id"`
+	Name                               string        `json:"name"`
+	Description                        pgtype.Text   `json:"description"`
+	Color                              pgtype.Text   `json:"color"`
+	IsPersonal                         bool          `json:"is_personal"`
+	IsWhole                            bool          `json:"is_whole"`
+	CreatedAt                          time.Time     `json:"created_at"`
+	UpdatedAt                          time.Time     `json:"updated_at"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
+	GroupKey                           pgtype.Text   `json:"group_key"`
+	GradeKey                           pgtype.Text   `json:"grade_key"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
 }
 
 func (q *Queries) GetOrganizationsWithAll(ctx context.Context, arg GetOrganizationsWithAllParams) ([]GetOrganizationsWithAllRow, error) {
@@ -726,33 +791,31 @@ func (q *Queries) GetOrganizationsWithAll(ctx context.Context, arg GetOrganizati
 	for rows.Next() {
 		var i GetOrganizationsWithAllRow
 		if err := rows.Scan(
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
-			&i.ChatRoom.MChatRoomsPkey,
-			&i.ChatRoom.ChatRoomID,
-			&i.ChatRoom.Name,
-			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
-			&i.ChatRoom.OwnerID,
-			&i.ChatRoom.FromOrganization,
-			&i.ChatRoom.CreatedAt,
-			&i.ChatRoom.UpdatedAt,
+			&i.MOrganizationsPkey,
+			&i.OrganizationID,
+			&i.Name,
+			&i.Description,
+			&i.Color,
+			&i.IsPersonal,
+			&i.IsWhole,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ChatRoomID,
+			&i.GroupKey,
+			&i.GradeKey,
+			&i.ChatRoomName,
+			&i.ChatRoomIsPrivate,
+			&i.ChatRoomFromOrganization,
+			&i.ChatRoomOwnerID,
+			&i.ChatRoomCoverImageID,
+			&i.ChatRoomCoverImageHeight,
+			&i.ChatRoomCoverImageWidth,
+			&i.ChatRoomCoverImageAttachableItemID,
+			&i.ChatRoomCoverImageOwnerID,
+			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageUrl,
+			&i.ChatRoomCoverImageSize,
+			&i.ChatRoomCoverImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}
@@ -765,10 +828,18 @@ func (q *Queries) GetOrganizationsWithAll(ctx context.Context, arg GetOrganizati
 }
 
 const getOrganizationsWithAllUseKeysetPaginate = `-- name: GetOrganizationsWithAllUseKeysetPaginate :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
 	CASE WHEN $2::boolean = true THEN m_organizations.name LIKE '%' || $3::text || '%' END
 AND
@@ -822,10 +893,31 @@ type GetOrganizationsWithAllUseKeysetPaginateParams struct {
 }
 
 type GetOrganizationsWithAllUseKeysetPaginateRow struct {
-	Organization Organization `json:"organization"`
-	Group        Group        `json:"group"`
-	Grade        Grade        `json:"grade"`
-	ChatRoom     ChatRoom     `json:"chat_room"`
+	MOrganizationsPkey                 pgtype.Int8   `json:"m_organizations_pkey"`
+	OrganizationID                     uuid.UUID     `json:"organization_id"`
+	Name                               string        `json:"name"`
+	Description                        pgtype.Text   `json:"description"`
+	Color                              pgtype.Text   `json:"color"`
+	IsPersonal                         bool          `json:"is_personal"`
+	IsWhole                            bool          `json:"is_whole"`
+	CreatedAt                          time.Time     `json:"created_at"`
+	UpdatedAt                          time.Time     `json:"updated_at"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
+	GroupKey                           pgtype.Text   `json:"group_key"`
+	GradeKey                           pgtype.Text   `json:"grade_key"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
 }
 
 func (q *Queries) GetOrganizationsWithAllUseKeysetPaginate(ctx context.Context, arg GetOrganizationsWithAllUseKeysetPaginateParams) ([]GetOrganizationsWithAllUseKeysetPaginateRow, error) {
@@ -853,33 +945,31 @@ func (q *Queries) GetOrganizationsWithAllUseKeysetPaginate(ctx context.Context, 
 	for rows.Next() {
 		var i GetOrganizationsWithAllUseKeysetPaginateRow
 		if err := rows.Scan(
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
-			&i.ChatRoom.MChatRoomsPkey,
-			&i.ChatRoom.ChatRoomID,
-			&i.ChatRoom.Name,
-			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
-			&i.ChatRoom.OwnerID,
-			&i.ChatRoom.FromOrganization,
-			&i.ChatRoom.CreatedAt,
-			&i.ChatRoom.UpdatedAt,
+			&i.MOrganizationsPkey,
+			&i.OrganizationID,
+			&i.Name,
+			&i.Description,
+			&i.Color,
+			&i.IsPersonal,
+			&i.IsWhole,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ChatRoomID,
+			&i.GroupKey,
+			&i.GradeKey,
+			&i.ChatRoomName,
+			&i.ChatRoomIsPrivate,
+			&i.ChatRoomFromOrganization,
+			&i.ChatRoomOwnerID,
+			&i.ChatRoomCoverImageID,
+			&i.ChatRoomCoverImageHeight,
+			&i.ChatRoomCoverImageWidth,
+			&i.ChatRoomCoverImageAttachableItemID,
+			&i.ChatRoomCoverImageOwnerID,
+			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageUrl,
+			&i.ChatRoomCoverImageSize,
+			&i.ChatRoomCoverImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}
@@ -892,10 +982,18 @@ func (q *Queries) GetOrganizationsWithAllUseKeysetPaginate(ctx context.Context, 
 }
 
 const getOrganizationsWithAllUseNumberedPaginate = `-- name: GetOrganizationsWithAllUseNumberedPaginate :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_organizations.name LIKE '%' || $4::text || '%' END
 AND
@@ -929,10 +1027,31 @@ type GetOrganizationsWithAllUseNumberedPaginateParams struct {
 }
 
 type GetOrganizationsWithAllUseNumberedPaginateRow struct {
-	Organization Organization `json:"organization"`
-	Group        Group        `json:"group"`
-	Grade        Grade        `json:"grade"`
-	ChatRoom     ChatRoom     `json:"chat_room"`
+	MOrganizationsPkey                 pgtype.Int8   `json:"m_organizations_pkey"`
+	OrganizationID                     uuid.UUID     `json:"organization_id"`
+	Name                               string        `json:"name"`
+	Description                        pgtype.Text   `json:"description"`
+	Color                              pgtype.Text   `json:"color"`
+	IsPersonal                         bool          `json:"is_personal"`
+	IsWhole                            bool          `json:"is_whole"`
+	CreatedAt                          time.Time     `json:"created_at"`
+	UpdatedAt                          time.Time     `json:"updated_at"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
+	GroupKey                           pgtype.Text   `json:"group_key"`
+	GradeKey                           pgtype.Text   `json:"grade_key"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
 }
 
 func (q *Queries) GetOrganizationsWithAllUseNumberedPaginate(ctx context.Context, arg GetOrganizationsWithAllUseNumberedPaginateParams) ([]GetOrganizationsWithAllUseNumberedPaginateRow, error) {
@@ -958,33 +1077,31 @@ func (q *Queries) GetOrganizationsWithAllUseNumberedPaginate(ctx context.Context
 	for rows.Next() {
 		var i GetOrganizationsWithAllUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
-			&i.ChatRoom.MChatRoomsPkey,
-			&i.ChatRoom.ChatRoomID,
-			&i.ChatRoom.Name,
-			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
-			&i.ChatRoom.OwnerID,
-			&i.ChatRoom.FromOrganization,
-			&i.ChatRoom.CreatedAt,
-			&i.ChatRoom.UpdatedAt,
+			&i.MOrganizationsPkey,
+			&i.OrganizationID,
+			&i.Name,
+			&i.Description,
+			&i.Color,
+			&i.IsPersonal,
+			&i.IsWhole,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ChatRoomID,
+			&i.GroupKey,
+			&i.GradeKey,
+			&i.ChatRoomName,
+			&i.ChatRoomIsPrivate,
+			&i.ChatRoomFromOrganization,
+			&i.ChatRoomOwnerID,
+			&i.ChatRoomCoverImageID,
+			&i.ChatRoomCoverImageHeight,
+			&i.ChatRoomCoverImageWidth,
+			&i.ChatRoomCoverImageAttachableItemID,
+			&i.ChatRoomCoverImageOwnerID,
+			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageUrl,
+			&i.ChatRoomCoverImageSize,
+			&i.ChatRoomCoverImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}
@@ -997,8 +1114,16 @@ func (q *Queries) GetOrganizationsWithAllUseNumberedPaginate(ctx context.Context
 }
 
 const getOrganizationsWithChatRoom = `-- name: GetOrganizationsWithChatRoom :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
 	CASE WHEN $1::boolean = true THEN m_organizations.name LIKE '%' || $2::text || '%' END
 AND
@@ -1029,17 +1154,29 @@ type GetOrganizationsWithChatRoomParams struct {
 }
 
 type GetOrganizationsWithChatRoomRow struct {
-	MOrganizationsPkey pgtype.Int8 `json:"m_organizations_pkey"`
-	OrganizationID     uuid.UUID   `json:"organization_id"`
-	Name               string      `json:"name"`
-	Description        pgtype.Text `json:"description"`
-	Color              pgtype.Text `json:"color"`
-	IsPersonal         bool        `json:"is_personal"`
-	IsWhole            bool        `json:"is_whole"`
-	CreatedAt          time.Time   `json:"created_at"`
-	UpdatedAt          time.Time   `json:"updated_at"`
-	ChatRoomID         pgtype.UUID `json:"chat_room_id"`
-	ChatRoom           ChatRoom    `json:"chat_room"`
+	MOrganizationsPkey                 pgtype.Int8   `json:"m_organizations_pkey"`
+	OrganizationID                     uuid.UUID     `json:"organization_id"`
+	Name                               string        `json:"name"`
+	Description                        pgtype.Text   `json:"description"`
+	Color                              pgtype.Text   `json:"color"`
+	IsPersonal                         bool          `json:"is_personal"`
+	IsWhole                            bool          `json:"is_whole"`
+	CreatedAt                          time.Time     `json:"created_at"`
+	UpdatedAt                          time.Time     `json:"updated_at"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
 }
 
 func (q *Queries) GetOrganizationsWithChatRoom(ctx context.Context, arg GetOrganizationsWithChatRoomParams) ([]GetOrganizationsWithChatRoomRow, error) {
@@ -1073,15 +1210,19 @@ func (q *Queries) GetOrganizationsWithChatRoom(ctx context.Context, arg GetOrgan
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ChatRoomID,
-			&i.ChatRoom.MChatRoomsPkey,
-			&i.ChatRoom.ChatRoomID,
-			&i.ChatRoom.Name,
-			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
-			&i.ChatRoom.OwnerID,
-			&i.ChatRoom.FromOrganization,
-			&i.ChatRoom.CreatedAt,
-			&i.ChatRoom.UpdatedAt,
+			&i.ChatRoomName,
+			&i.ChatRoomIsPrivate,
+			&i.ChatRoomFromOrganization,
+			&i.ChatRoomOwnerID,
+			&i.ChatRoomCoverImageID,
+			&i.ChatRoomCoverImageHeight,
+			&i.ChatRoomCoverImageWidth,
+			&i.ChatRoomCoverImageAttachableItemID,
+			&i.ChatRoomCoverImageOwnerID,
+			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageUrl,
+			&i.ChatRoomCoverImageSize,
+			&i.ChatRoomCoverImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}
@@ -1094,8 +1235,16 @@ func (q *Queries) GetOrganizationsWithChatRoom(ctx context.Context, arg GetOrgan
 }
 
 const getOrganizationsWithChatRoomUseKeysetPaginate = `-- name: GetOrganizationsWithChatRoomUseKeysetPaginate :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
 	CASE WHEN $2::boolean = true THEN m_organizations.name LIKE '%' || $3::text || '%' END
 AND
@@ -1149,17 +1298,29 @@ type GetOrganizationsWithChatRoomUseKeysetPaginateParams struct {
 }
 
 type GetOrganizationsWithChatRoomUseKeysetPaginateRow struct {
-	MOrganizationsPkey pgtype.Int8 `json:"m_organizations_pkey"`
-	OrganizationID     uuid.UUID   `json:"organization_id"`
-	Name               string      `json:"name"`
-	Description        pgtype.Text `json:"description"`
-	Color              pgtype.Text `json:"color"`
-	IsPersonal         bool        `json:"is_personal"`
-	IsWhole            bool        `json:"is_whole"`
-	CreatedAt          time.Time   `json:"created_at"`
-	UpdatedAt          time.Time   `json:"updated_at"`
-	ChatRoomID         pgtype.UUID `json:"chat_room_id"`
-	ChatRoom           ChatRoom    `json:"chat_room"`
+	MOrganizationsPkey                 pgtype.Int8   `json:"m_organizations_pkey"`
+	OrganizationID                     uuid.UUID     `json:"organization_id"`
+	Name                               string        `json:"name"`
+	Description                        pgtype.Text   `json:"description"`
+	Color                              pgtype.Text   `json:"color"`
+	IsPersonal                         bool          `json:"is_personal"`
+	IsWhole                            bool          `json:"is_whole"`
+	CreatedAt                          time.Time     `json:"created_at"`
+	UpdatedAt                          time.Time     `json:"updated_at"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
 }
 
 func (q *Queries) GetOrganizationsWithChatRoomUseKeysetPaginate(ctx context.Context, arg GetOrganizationsWithChatRoomUseKeysetPaginateParams) ([]GetOrganizationsWithChatRoomUseKeysetPaginateRow, error) {
@@ -1197,15 +1358,19 @@ func (q *Queries) GetOrganizationsWithChatRoomUseKeysetPaginate(ctx context.Cont
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ChatRoomID,
-			&i.ChatRoom.MChatRoomsPkey,
-			&i.ChatRoom.ChatRoomID,
-			&i.ChatRoom.Name,
-			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
-			&i.ChatRoom.OwnerID,
-			&i.ChatRoom.FromOrganization,
-			&i.ChatRoom.CreatedAt,
-			&i.ChatRoom.UpdatedAt,
+			&i.ChatRoomName,
+			&i.ChatRoomIsPrivate,
+			&i.ChatRoomFromOrganization,
+			&i.ChatRoomOwnerID,
+			&i.ChatRoomCoverImageID,
+			&i.ChatRoomCoverImageHeight,
+			&i.ChatRoomCoverImageWidth,
+			&i.ChatRoomCoverImageAttachableItemID,
+			&i.ChatRoomCoverImageOwnerID,
+			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageUrl,
+			&i.ChatRoomCoverImageSize,
+			&i.ChatRoomCoverImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}
@@ -1218,8 +1383,16 @@ func (q *Queries) GetOrganizationsWithChatRoomUseKeysetPaginate(ctx context.Cont
 }
 
 const getOrganizationsWithChatRoomUseNumberedPaginate = `-- name: GetOrganizationsWithChatRoomUseNumberedPaginate :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_organizations.name LIKE '%' || $4::text || '%' END
 AND
@@ -1253,17 +1426,29 @@ type GetOrganizationsWithChatRoomUseNumberedPaginateParams struct {
 }
 
 type GetOrganizationsWithChatRoomUseNumberedPaginateRow struct {
-	MOrganizationsPkey pgtype.Int8 `json:"m_organizations_pkey"`
-	OrganizationID     uuid.UUID   `json:"organization_id"`
-	Name               string      `json:"name"`
-	Description        pgtype.Text `json:"description"`
-	Color              pgtype.Text `json:"color"`
-	IsPersonal         bool        `json:"is_personal"`
-	IsWhole            bool        `json:"is_whole"`
-	CreatedAt          time.Time   `json:"created_at"`
-	UpdatedAt          time.Time   `json:"updated_at"`
-	ChatRoomID         pgtype.UUID `json:"chat_room_id"`
-	ChatRoom           ChatRoom    `json:"chat_room"`
+	MOrganizationsPkey                 pgtype.Int8   `json:"m_organizations_pkey"`
+	OrganizationID                     uuid.UUID     `json:"organization_id"`
+	Name                               string        `json:"name"`
+	Description                        pgtype.Text   `json:"description"`
+	Color                              pgtype.Text   `json:"color"`
+	IsPersonal                         bool          `json:"is_personal"`
+	IsWhole                            bool          `json:"is_whole"`
+	CreatedAt                          time.Time     `json:"created_at"`
+	UpdatedAt                          time.Time     `json:"updated_at"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
 }
 
 func (q *Queries) GetOrganizationsWithChatRoomUseNumberedPaginate(ctx context.Context, arg GetOrganizationsWithChatRoomUseNumberedPaginateParams) ([]GetOrganizationsWithChatRoomUseNumberedPaginateRow, error) {
@@ -1299,15 +1484,19 @@ func (q *Queries) GetOrganizationsWithChatRoomUseNumberedPaginate(ctx context.Co
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ChatRoomID,
-			&i.ChatRoom.MChatRoomsPkey,
-			&i.ChatRoom.ChatRoomID,
-			&i.ChatRoom.Name,
-			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
-			&i.ChatRoom.OwnerID,
-			&i.ChatRoom.FromOrganization,
-			&i.ChatRoom.CreatedAt,
-			&i.ChatRoom.UpdatedAt,
+			&i.ChatRoomName,
+			&i.ChatRoomIsPrivate,
+			&i.ChatRoomFromOrganization,
+			&i.ChatRoomOwnerID,
+			&i.ChatRoomCoverImageID,
+			&i.ChatRoomCoverImageHeight,
+			&i.ChatRoomCoverImageWidth,
+			&i.ChatRoomCoverImageAttachableItemID,
+			&i.ChatRoomCoverImageOwnerID,
+			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageUrl,
+			&i.ChatRoomCoverImageSize,
+			&i.ChatRoomCoverImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}
@@ -1320,7 +1509,7 @@ func (q *Queries) GetOrganizationsWithChatRoomUseNumberedPaginate(ctx context.Co
 }
 
 const getOrganizationsWithDetail = `-- name: GetOrganizationsWithDetail :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
@@ -1353,9 +1542,18 @@ type GetOrganizationsWithDetailParams struct {
 }
 
 type GetOrganizationsWithDetailRow struct {
-	Organization Organization `json:"organization"`
-	Group        Group        `json:"group"`
-	Grade        Grade        `json:"grade"`
+	MOrganizationsPkey pgtype.Int8 `json:"m_organizations_pkey"`
+	OrganizationID     uuid.UUID   `json:"organization_id"`
+	Name               string      `json:"name"`
+	Description        pgtype.Text `json:"description"`
+	Color              pgtype.Text `json:"color"`
+	IsPersonal         bool        `json:"is_personal"`
+	IsWhole            bool        `json:"is_whole"`
+	CreatedAt          time.Time   `json:"created_at"`
+	UpdatedAt          time.Time   `json:"updated_at"`
+	ChatRoomID         pgtype.UUID `json:"chat_room_id"`
+	GroupKey           pgtype.Text `json:"group_key"`
+	GradeKey           pgtype.Text `json:"grade_key"`
 }
 
 func (q *Queries) GetOrganizationsWithDetail(ctx context.Context, arg GetOrganizationsWithDetailParams) ([]GetOrganizationsWithDetailRow, error) {
@@ -1379,24 +1577,18 @@ func (q *Queries) GetOrganizationsWithDetail(ctx context.Context, arg GetOrganiz
 	for rows.Next() {
 		var i GetOrganizationsWithDetailRow
 		if err := rows.Scan(
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
+			&i.MOrganizationsPkey,
+			&i.OrganizationID,
+			&i.Name,
+			&i.Description,
+			&i.Color,
+			&i.IsPersonal,
+			&i.IsWhole,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ChatRoomID,
+			&i.GroupKey,
+			&i.GradeKey,
 		); err != nil {
 			return nil, err
 		}
@@ -1409,7 +1601,7 @@ func (q *Queries) GetOrganizationsWithDetail(ctx context.Context, arg GetOrganiz
 }
 
 const getOrganizationsWithDetailUseKeysetPaginate = `-- name: GetOrganizationsWithDetailUseKeysetPaginate :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
@@ -1465,9 +1657,18 @@ type GetOrganizationsWithDetailUseKeysetPaginateParams struct {
 }
 
 type GetOrganizationsWithDetailUseKeysetPaginateRow struct {
-	Organization Organization `json:"organization"`
-	Group        Group        `json:"group"`
-	Grade        Grade        `json:"grade"`
+	MOrganizationsPkey pgtype.Int8 `json:"m_organizations_pkey"`
+	OrganizationID     uuid.UUID   `json:"organization_id"`
+	Name               string      `json:"name"`
+	Description        pgtype.Text `json:"description"`
+	Color              pgtype.Text `json:"color"`
+	IsPersonal         bool        `json:"is_personal"`
+	IsWhole            bool        `json:"is_whole"`
+	CreatedAt          time.Time   `json:"created_at"`
+	UpdatedAt          time.Time   `json:"updated_at"`
+	ChatRoomID         pgtype.UUID `json:"chat_room_id"`
+	GroupKey           pgtype.Text `json:"group_key"`
+	GradeKey           pgtype.Text `json:"grade_key"`
 }
 
 func (q *Queries) GetOrganizationsWithDetailUseKeysetPaginate(ctx context.Context, arg GetOrganizationsWithDetailUseKeysetPaginateParams) ([]GetOrganizationsWithDetailUseKeysetPaginateRow, error) {
@@ -1495,24 +1696,18 @@ func (q *Queries) GetOrganizationsWithDetailUseKeysetPaginate(ctx context.Contex
 	for rows.Next() {
 		var i GetOrganizationsWithDetailUseKeysetPaginateRow
 		if err := rows.Scan(
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
+			&i.MOrganizationsPkey,
+			&i.OrganizationID,
+			&i.Name,
+			&i.Description,
+			&i.Color,
+			&i.IsPersonal,
+			&i.IsWhole,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ChatRoomID,
+			&i.GroupKey,
+			&i.GradeKey,
 		); err != nil {
 			return nil, err
 		}
@@ -1525,7 +1720,7 @@ func (q *Queries) GetOrganizationsWithDetailUseKeysetPaginate(ctx context.Contex
 }
 
 const getOrganizationsWithDetailUseNumberedPaginate = `-- name: GetOrganizationsWithDetailUseNumberedPaginate :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
@@ -1561,9 +1756,18 @@ type GetOrganizationsWithDetailUseNumberedPaginateParams struct {
 }
 
 type GetOrganizationsWithDetailUseNumberedPaginateRow struct {
-	Organization Organization `json:"organization"`
-	Group        Group        `json:"group"`
-	Grade        Grade        `json:"grade"`
+	MOrganizationsPkey pgtype.Int8 `json:"m_organizations_pkey"`
+	OrganizationID     uuid.UUID   `json:"organization_id"`
+	Name               string      `json:"name"`
+	Description        pgtype.Text `json:"description"`
+	Color              pgtype.Text `json:"color"`
+	IsPersonal         bool        `json:"is_personal"`
+	IsWhole            bool        `json:"is_whole"`
+	CreatedAt          time.Time   `json:"created_at"`
+	UpdatedAt          time.Time   `json:"updated_at"`
+	ChatRoomID         pgtype.UUID `json:"chat_room_id"`
+	GroupKey           pgtype.Text `json:"group_key"`
+	GradeKey           pgtype.Text `json:"grade_key"`
 }
 
 func (q *Queries) GetOrganizationsWithDetailUseNumberedPaginate(ctx context.Context, arg GetOrganizationsWithDetailUseNumberedPaginateParams) ([]GetOrganizationsWithDetailUseNumberedPaginateRow, error) {
@@ -1589,24 +1793,18 @@ func (q *Queries) GetOrganizationsWithDetailUseNumberedPaginate(ctx context.Cont
 	for rows.Next() {
 		var i GetOrganizationsWithDetailUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
+			&i.MOrganizationsPkey,
+			&i.OrganizationID,
+			&i.Name,
+			&i.Description,
+			&i.Color,
+			&i.IsPersonal,
+			&i.IsWhole,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ChatRoomID,
+			&i.GroupKey,
+			&i.GradeKey,
 		); err != nil {
 			return nil, err
 		}
@@ -1715,10 +1913,18 @@ func (q *Queries) GetPluralOrganizationsUseNumberedPaginate(ctx context.Context,
 }
 
 const getPluralOrganizationsWithAll = `-- name: GetPluralOrganizationsWithAll :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY($1::uuid[])
 ORDER BY
 	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC,
@@ -1732,10 +1938,31 @@ type GetPluralOrganizationsWithAllParams struct {
 }
 
 type GetPluralOrganizationsWithAllRow struct {
-	Organization Organization `json:"organization"`
-	Group        Group        `json:"group"`
-	Grade        Grade        `json:"grade"`
-	ChatRoom     ChatRoom     `json:"chat_room"`
+	MOrganizationsPkey                 pgtype.Int8   `json:"m_organizations_pkey"`
+	OrganizationID                     uuid.UUID     `json:"organization_id"`
+	Name                               string        `json:"name"`
+	Description                        pgtype.Text   `json:"description"`
+	Color                              pgtype.Text   `json:"color"`
+	IsPersonal                         bool          `json:"is_personal"`
+	IsWhole                            bool          `json:"is_whole"`
+	CreatedAt                          time.Time     `json:"created_at"`
+	UpdatedAt                          time.Time     `json:"updated_at"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
+	GroupKey                           pgtype.Text   `json:"group_key"`
+	GradeKey                           pgtype.Text   `json:"grade_key"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
 }
 
 func (q *Queries) GetPluralOrganizationsWithAll(ctx context.Context, arg GetPluralOrganizationsWithAllParams) ([]GetPluralOrganizationsWithAllRow, error) {
@@ -1748,33 +1975,31 @@ func (q *Queries) GetPluralOrganizationsWithAll(ctx context.Context, arg GetPlur
 	for rows.Next() {
 		var i GetPluralOrganizationsWithAllRow
 		if err := rows.Scan(
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
-			&i.ChatRoom.MChatRoomsPkey,
-			&i.ChatRoom.ChatRoomID,
-			&i.ChatRoom.Name,
-			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
-			&i.ChatRoom.OwnerID,
-			&i.ChatRoom.FromOrganization,
-			&i.ChatRoom.CreatedAt,
-			&i.ChatRoom.UpdatedAt,
+			&i.MOrganizationsPkey,
+			&i.OrganizationID,
+			&i.Name,
+			&i.Description,
+			&i.Color,
+			&i.IsPersonal,
+			&i.IsWhole,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ChatRoomID,
+			&i.GroupKey,
+			&i.GradeKey,
+			&i.ChatRoomName,
+			&i.ChatRoomIsPrivate,
+			&i.ChatRoomFromOrganization,
+			&i.ChatRoomOwnerID,
+			&i.ChatRoomCoverImageID,
+			&i.ChatRoomCoverImageHeight,
+			&i.ChatRoomCoverImageWidth,
+			&i.ChatRoomCoverImageAttachableItemID,
+			&i.ChatRoomCoverImageOwnerID,
+			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageUrl,
+			&i.ChatRoomCoverImageSize,
+			&i.ChatRoomCoverImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}
@@ -1787,10 +2012,18 @@ func (q *Queries) GetPluralOrganizationsWithAll(ctx context.Context, arg GetPlur
 }
 
 const getPluralOrganizationsWithAllUseNumberedPaginate = `-- name: GetPluralOrganizationsWithAllUseNumberedPaginate :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY($3::uuid[])
 ORDER BY
 	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC,
@@ -1807,10 +2040,31 @@ type GetPluralOrganizationsWithAllUseNumberedPaginateParams struct {
 }
 
 type GetPluralOrganizationsWithAllUseNumberedPaginateRow struct {
-	Organization Organization `json:"organization"`
-	Group        Group        `json:"group"`
-	Grade        Grade        `json:"grade"`
-	ChatRoom     ChatRoom     `json:"chat_room"`
+	MOrganizationsPkey                 pgtype.Int8   `json:"m_organizations_pkey"`
+	OrganizationID                     uuid.UUID     `json:"organization_id"`
+	Name                               string        `json:"name"`
+	Description                        pgtype.Text   `json:"description"`
+	Color                              pgtype.Text   `json:"color"`
+	IsPersonal                         bool          `json:"is_personal"`
+	IsWhole                            bool          `json:"is_whole"`
+	CreatedAt                          time.Time     `json:"created_at"`
+	UpdatedAt                          time.Time     `json:"updated_at"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
+	GroupKey                           pgtype.Text   `json:"group_key"`
+	GradeKey                           pgtype.Text   `json:"grade_key"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
 }
 
 func (q *Queries) GetPluralOrganizationsWithAllUseNumberedPaginate(ctx context.Context, arg GetPluralOrganizationsWithAllUseNumberedPaginateParams) ([]GetPluralOrganizationsWithAllUseNumberedPaginateRow, error) {
@@ -1828,33 +2082,31 @@ func (q *Queries) GetPluralOrganizationsWithAllUseNumberedPaginate(ctx context.C
 	for rows.Next() {
 		var i GetPluralOrganizationsWithAllUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
-			&i.ChatRoom.MChatRoomsPkey,
-			&i.ChatRoom.ChatRoomID,
-			&i.ChatRoom.Name,
-			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
-			&i.ChatRoom.OwnerID,
-			&i.ChatRoom.FromOrganization,
-			&i.ChatRoom.CreatedAt,
-			&i.ChatRoom.UpdatedAt,
+			&i.MOrganizationsPkey,
+			&i.OrganizationID,
+			&i.Name,
+			&i.Description,
+			&i.Color,
+			&i.IsPersonal,
+			&i.IsWhole,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ChatRoomID,
+			&i.GroupKey,
+			&i.GradeKey,
+			&i.ChatRoomName,
+			&i.ChatRoomIsPrivate,
+			&i.ChatRoomFromOrganization,
+			&i.ChatRoomOwnerID,
+			&i.ChatRoomCoverImageID,
+			&i.ChatRoomCoverImageHeight,
+			&i.ChatRoomCoverImageWidth,
+			&i.ChatRoomCoverImageAttachableItemID,
+			&i.ChatRoomCoverImageOwnerID,
+			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageUrl,
+			&i.ChatRoomCoverImageSize,
+			&i.ChatRoomCoverImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}
@@ -1867,8 +2119,16 @@ func (q *Queries) GetPluralOrganizationsWithAllUseNumberedPaginate(ctx context.C
 }
 
 const getPluralOrganizationsWithChatRoom = `-- name: GetPluralOrganizationsWithChatRoom :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY($1::uuid[])
 ORDER BY
 	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC,
@@ -1882,17 +2142,29 @@ type GetPluralOrganizationsWithChatRoomParams struct {
 }
 
 type GetPluralOrganizationsWithChatRoomRow struct {
-	MOrganizationsPkey pgtype.Int8 `json:"m_organizations_pkey"`
-	OrganizationID     uuid.UUID   `json:"organization_id"`
-	Name               string      `json:"name"`
-	Description        pgtype.Text `json:"description"`
-	Color              pgtype.Text `json:"color"`
-	IsPersonal         bool        `json:"is_personal"`
-	IsWhole            bool        `json:"is_whole"`
-	CreatedAt          time.Time   `json:"created_at"`
-	UpdatedAt          time.Time   `json:"updated_at"`
-	ChatRoomID         pgtype.UUID `json:"chat_room_id"`
-	ChatRoom           ChatRoom    `json:"chat_room"`
+	MOrganizationsPkey                 pgtype.Int8   `json:"m_organizations_pkey"`
+	OrganizationID                     uuid.UUID     `json:"organization_id"`
+	Name                               string        `json:"name"`
+	Description                        pgtype.Text   `json:"description"`
+	Color                              pgtype.Text   `json:"color"`
+	IsPersonal                         bool          `json:"is_personal"`
+	IsWhole                            bool          `json:"is_whole"`
+	CreatedAt                          time.Time     `json:"created_at"`
+	UpdatedAt                          time.Time     `json:"updated_at"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
 }
 
 func (q *Queries) GetPluralOrganizationsWithChatRoom(ctx context.Context, arg GetPluralOrganizationsWithChatRoomParams) ([]GetPluralOrganizationsWithChatRoomRow, error) {
@@ -1915,15 +2187,19 @@ func (q *Queries) GetPluralOrganizationsWithChatRoom(ctx context.Context, arg Ge
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ChatRoomID,
-			&i.ChatRoom.MChatRoomsPkey,
-			&i.ChatRoom.ChatRoomID,
-			&i.ChatRoom.Name,
-			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
-			&i.ChatRoom.OwnerID,
-			&i.ChatRoom.FromOrganization,
-			&i.ChatRoom.CreatedAt,
-			&i.ChatRoom.UpdatedAt,
+			&i.ChatRoomName,
+			&i.ChatRoomIsPrivate,
+			&i.ChatRoomFromOrganization,
+			&i.ChatRoomOwnerID,
+			&i.ChatRoomCoverImageID,
+			&i.ChatRoomCoverImageHeight,
+			&i.ChatRoomCoverImageWidth,
+			&i.ChatRoomCoverImageAttachableItemID,
+			&i.ChatRoomCoverImageOwnerID,
+			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageUrl,
+			&i.ChatRoomCoverImageSize,
+			&i.ChatRoomCoverImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}
@@ -1936,8 +2212,16 @@ func (q *Queries) GetPluralOrganizationsWithChatRoom(ctx context.Context, arg Ge
 }
 
 const getPluralOrganizationsWithChatRoomUseNumberedPaginate = `-- name: GetPluralOrganizationsWithChatRoomUseNumberedPaginate :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY($3::uuid[])
 ORDER BY
 	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC,
@@ -1954,17 +2238,29 @@ type GetPluralOrganizationsWithChatRoomUseNumberedPaginateParams struct {
 }
 
 type GetPluralOrganizationsWithChatRoomUseNumberedPaginateRow struct {
-	MOrganizationsPkey pgtype.Int8 `json:"m_organizations_pkey"`
-	OrganizationID     uuid.UUID   `json:"organization_id"`
-	Name               string      `json:"name"`
-	Description        pgtype.Text `json:"description"`
-	Color              pgtype.Text `json:"color"`
-	IsPersonal         bool        `json:"is_personal"`
-	IsWhole            bool        `json:"is_whole"`
-	CreatedAt          time.Time   `json:"created_at"`
-	UpdatedAt          time.Time   `json:"updated_at"`
-	ChatRoomID         pgtype.UUID `json:"chat_room_id"`
-	ChatRoom           ChatRoom    `json:"chat_room"`
+	MOrganizationsPkey                 pgtype.Int8   `json:"m_organizations_pkey"`
+	OrganizationID                     uuid.UUID     `json:"organization_id"`
+	Name                               string        `json:"name"`
+	Description                        pgtype.Text   `json:"description"`
+	Color                              pgtype.Text   `json:"color"`
+	IsPersonal                         bool          `json:"is_personal"`
+	IsWhole                            bool          `json:"is_whole"`
+	CreatedAt                          time.Time     `json:"created_at"`
+	UpdatedAt                          time.Time     `json:"updated_at"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
 }
 
 func (q *Queries) GetPluralOrganizationsWithChatRoomUseNumberedPaginate(ctx context.Context, arg GetPluralOrganizationsWithChatRoomUseNumberedPaginateParams) ([]GetPluralOrganizationsWithChatRoomUseNumberedPaginateRow, error) {
@@ -1992,15 +2288,19 @@ func (q *Queries) GetPluralOrganizationsWithChatRoomUseNumberedPaginate(ctx cont
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.ChatRoomID,
-			&i.ChatRoom.MChatRoomsPkey,
-			&i.ChatRoom.ChatRoomID,
-			&i.ChatRoom.Name,
-			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
-			&i.ChatRoom.OwnerID,
-			&i.ChatRoom.FromOrganization,
-			&i.ChatRoom.CreatedAt,
-			&i.ChatRoom.UpdatedAt,
+			&i.ChatRoomName,
+			&i.ChatRoomIsPrivate,
+			&i.ChatRoomFromOrganization,
+			&i.ChatRoomOwnerID,
+			&i.ChatRoomCoverImageID,
+			&i.ChatRoomCoverImageHeight,
+			&i.ChatRoomCoverImageWidth,
+			&i.ChatRoomCoverImageAttachableItemID,
+			&i.ChatRoomCoverImageOwnerID,
+			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageUrl,
+			&i.ChatRoomCoverImageSize,
+			&i.ChatRoomCoverImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}
@@ -2013,7 +2313,7 @@ func (q *Queries) GetPluralOrganizationsWithChatRoomUseNumberedPaginate(ctx cont
 }
 
 const getPluralOrganizationsWithDetail = `-- name: GetPluralOrganizationsWithDetail :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE organization_id = ANY($1::uuid[])
@@ -2029,9 +2329,18 @@ type GetPluralOrganizationsWithDetailParams struct {
 }
 
 type GetPluralOrganizationsWithDetailRow struct {
-	Organization Organization `json:"organization"`
-	Group        Group        `json:"group"`
-	Grade        Grade        `json:"grade"`
+	MOrganizationsPkey pgtype.Int8 `json:"m_organizations_pkey"`
+	OrganizationID     uuid.UUID   `json:"organization_id"`
+	Name               string      `json:"name"`
+	Description        pgtype.Text `json:"description"`
+	Color              pgtype.Text `json:"color"`
+	IsPersonal         bool        `json:"is_personal"`
+	IsWhole            bool        `json:"is_whole"`
+	CreatedAt          time.Time   `json:"created_at"`
+	UpdatedAt          time.Time   `json:"updated_at"`
+	ChatRoomID         pgtype.UUID `json:"chat_room_id"`
+	GroupKey           pgtype.Text `json:"group_key"`
+	GradeKey           pgtype.Text `json:"grade_key"`
 }
 
 func (q *Queries) GetPluralOrganizationsWithDetail(ctx context.Context, arg GetPluralOrganizationsWithDetailParams) ([]GetPluralOrganizationsWithDetailRow, error) {
@@ -2044,24 +2353,18 @@ func (q *Queries) GetPluralOrganizationsWithDetail(ctx context.Context, arg GetP
 	for rows.Next() {
 		var i GetPluralOrganizationsWithDetailRow
 		if err := rows.Scan(
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
+			&i.MOrganizationsPkey,
+			&i.OrganizationID,
+			&i.Name,
+			&i.Description,
+			&i.Color,
+			&i.IsPersonal,
+			&i.IsWhole,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ChatRoomID,
+			&i.GroupKey,
+			&i.GradeKey,
 		); err != nil {
 			return nil, err
 		}
@@ -2074,7 +2377,7 @@ func (q *Queries) GetPluralOrganizationsWithDetail(ctx context.Context, arg GetP
 }
 
 const getPluralOrganizationsWithDetailUseNumberedPaginate = `-- name: GetPluralOrganizationsWithDetailUseNumberedPaginate :many
-SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_organizations
+SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE organization_id = ANY($3::uuid[])
@@ -2093,9 +2396,18 @@ type GetPluralOrganizationsWithDetailUseNumberedPaginateParams struct {
 }
 
 type GetPluralOrganizationsWithDetailUseNumberedPaginateRow struct {
-	Organization Organization `json:"organization"`
-	Group        Group        `json:"group"`
-	Grade        Grade        `json:"grade"`
+	MOrganizationsPkey pgtype.Int8 `json:"m_organizations_pkey"`
+	OrganizationID     uuid.UUID   `json:"organization_id"`
+	Name               string      `json:"name"`
+	Description        pgtype.Text `json:"description"`
+	Color              pgtype.Text `json:"color"`
+	IsPersonal         bool        `json:"is_personal"`
+	IsWhole            bool        `json:"is_whole"`
+	CreatedAt          time.Time   `json:"created_at"`
+	UpdatedAt          time.Time   `json:"updated_at"`
+	ChatRoomID         pgtype.UUID `json:"chat_room_id"`
+	GroupKey           pgtype.Text `json:"group_key"`
+	GradeKey           pgtype.Text `json:"grade_key"`
 }
 
 func (q *Queries) GetPluralOrganizationsWithDetailUseNumberedPaginate(ctx context.Context, arg GetPluralOrganizationsWithDetailUseNumberedPaginateParams) ([]GetPluralOrganizationsWithDetailUseNumberedPaginateRow, error) {
@@ -2113,24 +2425,18 @@ func (q *Queries) GetPluralOrganizationsWithDetailUseNumberedPaginate(ctx contex
 	for rows.Next() {
 		var i GetPluralOrganizationsWithDetailUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
+			&i.MOrganizationsPkey,
+			&i.OrganizationID,
+			&i.Name,
+			&i.Description,
+			&i.Color,
+			&i.IsPersonal,
+			&i.IsWhole,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ChatRoomID,
+			&i.GroupKey,
+			&i.GradeKey,
 		); err != nil {
 			return nil, err
 		}

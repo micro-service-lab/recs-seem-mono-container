@@ -249,7 +249,7 @@ type Querier interface {
 	FindPermissionByKeyWithCategory(ctx context.Context, key string) (FindPermissionByKeyWithCategoryRow, error)
 	FindPermissionCategoryByID(ctx context.Context, permissionCategoryID uuid.UUID) (PermissionCategory, error)
 	FindPermissionCategoryByKey(ctx context.Context, key string) (PermissionCategory, error)
-	FindPersonalOrganization(ctx context.Context, memberID uuid.UUID) (FindPersonalOrganizationRow, error)
+	FindPersonalOrganization(ctx context.Context, memberID uuid.UUID) (Organization, error)
 	FindPolicyByID(ctx context.Context, policyID uuid.UUID) (Policy, error)
 	FindPolicyByIDWithCategory(ctx context.Context, policyID uuid.UUID) (FindPolicyByIDWithCategoryRow, error)
 	FindPolicyByKey(ctx context.Context, key string) (Policy, error)

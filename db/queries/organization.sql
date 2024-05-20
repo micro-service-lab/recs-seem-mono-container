@@ -17,35 +17,58 @@ DELETE FROM m_organizations WHERE organization_id = ANY(@organization_ids::uuid[
 SELECT * FROM m_organizations WHERE organization_id = $1;
 
 -- name: FindOrganizationByIDWithDetail :one
-SELECT sqlc.embed(m_organizations), sqlc.embed(m_groups), sqlc.embed(m_grades) FROM m_organizations
+SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE m_organizations.organization_id = $1;
 
 -- name: FindOrganizationByIDWithChatRoom :one
-SELECT m_organizations.*, sqlc.embed(m_chat_rooms) FROM m_organizations
+SELECT m_organizations.*, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE m_organizations.organization_id = $1;
 
 -- name: FindOrganizationByIDWithAll :one
-SELECT sqlc.embed(m_organizations), sqlc.embed(m_groups), sqlc.embed(m_grades), sqlc.embed(m_chat_rooms) FROM m_organizations
+SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE m_organizations.organization_id = $1;
 
 -- name: FindWholeOrganization :one
 SELECT * FROM m_organizations WHERE is_whole = true;
 
 -- name: FindWholeOrganizationWithChatRoom :one
-SELECT m_organizations.*, sqlc.embed(m_chat_rooms) FROM m_organizations
+SELECT m_organizations.*, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE m_organizations.is_whole = true;
 
 -- name: FindPersonalOrganization :one
-SELECT * FROM m_organizations
-LEFT JOIN m_members ON m_organizations.organization_id = m_members.personal_organization_id
-WHERE m_organizations.is_personal = true AND m_members.member_id = $1;
+SELECT m_organizations.* FROM m_organizations
+WHERE m_organizations.is_personal = true AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $1);
 
 -- name: GetOrganizations :many
 SELECT * FROM m_organizations
@@ -134,7 +157,7 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetOrganizationsWithDetail :many
-SELECT sqlc.embed(m_organizations), sqlc.embed(m_groups), sqlc.embed(m_grades) FROM m_organizations
+SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
@@ -153,7 +176,7 @@ ORDER BY
 	m_organizations_pkey ASC;
 
 -- name: GetOrganizationsWithDetailUseNumberedPaginate :many
-SELECT sqlc.embed(m_organizations), sqlc.embed(m_groups), sqlc.embed(m_grades) FROM m_organizations
+SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
@@ -173,7 +196,7 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetOrganizationsWithDetailUseKeysetPaginate :many
-SELECT sqlc.embed(m_organizations), sqlc.embed(m_groups), sqlc.embed(m_grades) FROM m_organizations
+SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
@@ -211,7 +234,7 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralOrganizationsWithDetail :many
-SELECT sqlc.embed(m_organizations), sqlc.embed(m_groups), sqlc.embed(m_grades) FROM m_organizations
+SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
@@ -221,7 +244,7 @@ ORDER BY
 	m_organizations_pkey ASC;
 
 -- name: GetPluralOrganizationsWithDetailUseNumberedPaginate :many
-SELECT sqlc.embed(m_organizations), sqlc.embed(m_groups), sqlc.embed(m_grades) FROM m_organizations
+SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
@@ -232,8 +255,16 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetOrganizationsWithChatRoom :many
-SELECT m_organizations.*, sqlc.embed(m_chat_rooms) FROM m_organizations
+SELECT m_organizations.*, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
 AND
@@ -250,8 +281,16 @@ ORDER BY
 	m_organizations_pkey ASC;
 
 -- name: GetOrganizationsWithChatRoomUseNumberedPaginate :many
-SELECT m_organizations.*, sqlc.embed(m_chat_rooms) FROM m_organizations
+SELECT m_organizations.*, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
 AND
@@ -269,8 +308,16 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetOrganizationsWithChatRoomUseKeysetPaginate :many
-SELECT m_organizations.*, sqlc.embed(m_chat_rooms) FROM m_organizations
+SELECT m_organizations.*, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
 AND
@@ -306,8 +353,16 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralOrganizationsWithChatRoom :many
-SELECT m_organizations.*, sqlc.embed(m_chat_rooms) FROM m_organizations
+SELECT m_organizations.*, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
@@ -315,8 +370,16 @@ ORDER BY
 	m_organizations_pkey ASC;
 
 -- name: GetPluralOrganizationsWithChatRoomUseNumberedPaginate :many
-SELECT m_organizations.*, sqlc.embed(m_chat_rooms) FROM m_organizations
+SELECT m_organizations.*, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
@@ -325,10 +388,18 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetOrganizationsWithAll :many
-SELECT sqlc.embed(m_organizations), sqlc.embed(m_groups), sqlc.embed(m_grades), sqlc.embed(m_chat_rooms) FROM m_organizations
+SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
 AND
@@ -345,10 +416,18 @@ ORDER BY
 	m_organizations_pkey ASC;
 
 -- name: GetOrganizationsWithAllUseNumberedPaginate :many
-SELECT sqlc.embed(m_organizations), sqlc.embed(m_groups), sqlc.embed(m_grades), sqlc.embed(m_chat_rooms) FROM m_organizations
+SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
 AND
@@ -366,10 +445,18 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetOrganizationsWithAllUseKeysetPaginate :many
-SELECT sqlc.embed(m_organizations), sqlc.embed(m_groups), sqlc.embed(m_grades), sqlc.embed(m_chat_rooms) FROM m_organizations
+SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
 AND
@@ -405,10 +492,18 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralOrganizationsWithAll :many
-SELECT sqlc.embed(m_organizations), sqlc.embed(m_groups), sqlc.embed(m_grades), sqlc.embed(m_chat_rooms) FROM m_organizations
+SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
@@ -416,10 +511,18 @@ ORDER BY
 	m_organizations_pkey ASC;
 
 -- name: GetPluralOrganizationsWithAllUseNumberedPaginate :many
-SELECT sqlc.embed(m_organizations), sqlc.embed(m_groups), sqlc.embed(m_grades), sqlc.embed(m_chat_rooms) FROM m_organizations
+SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
+m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
+t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
+FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,

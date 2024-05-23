@@ -302,6 +302,13 @@ type Student struct {
 	MemberID      uuid.UUID   `json:"member_id"`
 }
 
+type TReadReceipt struct {
+	TReadReceiptsPkey pgtype.Int8        `json:"t_read_receipts_pkey"`
+	MemberID          uuid.UUID          `json:"member_id"`
+	MessageID         uuid.UUID          `json:"message_id"`
+	ReadAt            pgtype.Timestamptz `json:"read_at"`
+}
+
 type WorkPosition struct {
 	MWorkPositionsPkey pgtype.Int8 `json:"m_work_positions_pkey"`
 	WorkPositionID     uuid.UUID   `json:"work_position_id"`

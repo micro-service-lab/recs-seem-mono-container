@@ -991,6 +991,40 @@ func (q *Queries) CreateProfessors(ctx context.Context, memberID []uuid.UUID) (i
 	return q.db.CopyFrom(ctx, []string{"m_professors"}, []string{"member_id"}, &iteratorForCreateProfessors{rows: memberID})
 }
 
+// iteratorForCreateReadReceipts implements pgx.CopyFromSource.
+type iteratorForCreateReadReceipts struct {
+	rows                 []CreateReadReceiptsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateReadReceipts) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateReadReceipts) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].MemberID,
+		r.rows[0].MessageID,
+		r.rows[0].ReadAt,
+	}, nil
+}
+
+func (r iteratorForCreateReadReceipts) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateReadReceipts(ctx context.Context, arg []CreateReadReceiptsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_read_receipts"}, []string{"member_id", "message_id", "read_at"}, &iteratorForCreateReadReceipts{rows: arg})
+}
+
 // iteratorForCreateRecordTypes implements pgx.CopyFromSource.
 type iteratorForCreateRecordTypes struct {
 	rows                 []CreateRecordTypesParams

@@ -8,9 +8,9 @@
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | m_chat_rooms_pkey | bigint | nextval('m_chat_rooms_m_chat_rooms_pkey_seq'::regclass) | false |  |  |  |
 | chat_room_id | uuid | uuid_generate_v4() | false | [public.m_organizations](public.m_organizations.md) [public.t_messages](public.t_messages.md) [public.m_chat_room_belongings](public.m_chat_room_belongings.md) |  |  |
-| name | varchar(255) |  | true |  |  |  |
+| name | varchar(255) |  | false |  |  |  |
 | is_private | boolean |  | false |  |  |  |
-| cover_image_url | text |  | true |  |  |  |
+| cover_image_id | uuid |  | true |  | [public.t_images](public.t_images.md) |  |
 | owner_id | uuid |  | true |  | [public.m_members](public.m_members.md) |  |
 | from_organization | boolean |  | false |  |  |  |
 | created_at | timestamp with time zone |  | false |  |  |  |
@@ -20,6 +20,7 @@
 
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
+| fk_m_chat_rooms_cover_image_id | FOREIGN KEY | FOREIGN KEY (cover_image_id) REFERENCES t_images(image_id) ON UPDATE SET NULL ON DELETE SET NULL |
 | fk_m_chat_rooms_owner_id | FOREIGN KEY | FOREIGN KEY (owner_id) REFERENCES m_members(member_id) ON UPDATE SET NULL ON DELETE SET NULL |
 | m_chat_rooms_pkey | PRIMARY KEY | PRIMARY KEY (m_chat_rooms_pkey) |
 

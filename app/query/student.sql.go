@@ -58,7 +58,7 @@ func (q *Queries) FindStudentByID(ctx context.Context, studentID uuid.UUID) (Stu
 }
 
 const findStudentByIDWithMember = `-- name: FindStudentByIDWithMember :one
-SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
+SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
 LEFT JOIN m_members ON m_students.member_id = m_members.member_id
 WHERE student_id = $1
 `
@@ -83,6 +83,8 @@ func (q *Queries) FindStudentByIDWithMember(ctx context.Context, studentID uuid.
 		&i.Member.Password,
 		&i.Member.Email,
 		&i.Member.Name,
+		&i.Member.FirstName,
+		&i.Member.LastName,
 		&i.Member.AttendStatusID,
 		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
@@ -157,7 +159,7 @@ func (q *Queries) GetPluralStudentsUseNumberedPaginate(ctx context.Context, arg 
 }
 
 const getPluralStudentsWithMember = `-- name: GetPluralStudentsWithMember :many
-SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
+SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
 LEFT JOIN m_members ON m_students.member_id = m_members.member_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
@@ -190,6 +192,8 @@ func (q *Queries) GetPluralStudentsWithMember(ctx context.Context, memberIds []u
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -210,7 +214,7 @@ func (q *Queries) GetPluralStudentsWithMember(ctx context.Context, memberIds []u
 }
 
 const getPluralStudentsWithMemberUseNumberedPaginate = `-- name: GetPluralStudentsWithMemberUseNumberedPaginate :many
-SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
+SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
 LEFT JOIN m_members ON m_students.member_id = m_members.member_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
@@ -250,6 +254,8 @@ func (q *Queries) GetPluralStudentsWithMemberUseNumberedPaginate(ctx context.Con
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -369,7 +375,7 @@ func (q *Queries) GetStudentsUseNumberedPaginate(ctx context.Context, arg GetStu
 }
 
 const getStudentsWithMemberUseKeysetPaginate = `-- name: GetStudentsWithMemberUseKeysetPaginate :many
-SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
+SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
 LEFT JOIN m_members ON m_students.member_id = m_members.member_id
 WHERE
 	CASE $2::text
@@ -416,6 +422,8 @@ func (q *Queries) GetStudentsWithMemberUseKeysetPaginate(ctx context.Context, ar
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -436,7 +444,7 @@ func (q *Queries) GetStudentsWithMemberUseKeysetPaginate(ctx context.Context, ar
 }
 
 const getStudentsWithMemberUseNumberedPaginate = `-- name: GetStudentsWithMemberUseNumberedPaginate :many
-SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
+SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
 LEFT JOIN m_members ON m_students.member_id = m_members.member_id
 ORDER BY
 	m_students_pkey ASC
@@ -474,6 +482,8 @@ func (q *Queries) GetStudentsWithMemberUseNumberedPaginate(ctx context.Context, 
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,

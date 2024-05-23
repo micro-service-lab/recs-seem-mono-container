@@ -517,7 +517,7 @@ func (q *Queries) GetChatRoomsOnMemberUseNumberedPaginate(ctx context.Context, a
 }
 
 const getMembersOnChatRoom = `-- name: GetMembersOnChatRoom :many
-SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.name member_name, m_members.email member_email,
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
@@ -550,6 +550,8 @@ type GetMembersOnChatRoomRow struct {
 	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
 	AddedAt                            time.Time     `json:"added_at"`
 	MemberName                         pgtype.Text   `json:"member_name"`
+	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
+	MemberLastName                     pgtype.Text   `json:"member_last_name"`
 	MemberEmail                        pgtype.Text   `json:"member_email"`
 	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
 	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
@@ -582,6 +584,8 @@ func (q *Queries) GetMembersOnChatRoom(ctx context.Context, arg GetMembersOnChat
 			&i.ChatRoomID,
 			&i.AddedAt,
 			&i.MemberName,
+			&i.MemberFirstName,
+			&i.MemberLastName,
 			&i.MemberEmail,
 			&i.MemberProfileImageID,
 			&i.MemberProfileImageHeight,
@@ -604,7 +608,7 @@ func (q *Queries) GetMembersOnChatRoom(ctx context.Context, arg GetMembersOnChat
 }
 
 const getMembersOnChatRoomUseKeysetPaginate = `-- name: GetMembersOnChatRoomUseKeysetPaginate :many
-SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.name member_name, m_members.email member_email,
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
@@ -666,6 +670,8 @@ type GetMembersOnChatRoomUseKeysetPaginateRow struct {
 	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
 	AddedAt                            time.Time     `json:"added_at"`
 	MemberName                         pgtype.Text   `json:"member_name"`
+	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
+	MemberLastName                     pgtype.Text   `json:"member_last_name"`
 	MemberEmail                        pgtype.Text   `json:"member_email"`
 	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
 	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
@@ -703,6 +709,8 @@ func (q *Queries) GetMembersOnChatRoomUseKeysetPaginate(ctx context.Context, arg
 			&i.ChatRoomID,
 			&i.AddedAt,
 			&i.MemberName,
+			&i.MemberFirstName,
+			&i.MemberLastName,
 			&i.MemberEmail,
 			&i.MemberProfileImageID,
 			&i.MemberProfileImageHeight,
@@ -725,7 +733,7 @@ func (q *Queries) GetMembersOnChatRoomUseKeysetPaginate(ctx context.Context, arg
 }
 
 const getMembersOnChatRoomUseNumberedPaginate = `-- name: GetMembersOnChatRoomUseNumberedPaginate :many
-SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.name member_name, m_members.email member_email,
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
@@ -761,6 +769,8 @@ type GetMembersOnChatRoomUseNumberedPaginateRow struct {
 	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
 	AddedAt                            time.Time     `json:"added_at"`
 	MemberName                         pgtype.Text   `json:"member_name"`
+	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
+	MemberLastName                     pgtype.Text   `json:"member_last_name"`
 	MemberEmail                        pgtype.Text   `json:"member_email"`
 	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
 	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
@@ -795,6 +805,8 @@ func (q *Queries) GetMembersOnChatRoomUseNumberedPaginate(ctx context.Context, a
 			&i.ChatRoomID,
 			&i.AddedAt,
 			&i.MemberName,
+			&i.MemberFirstName,
+			&i.MemberLastName,
 			&i.MemberEmail,
 			&i.MemberProfileImageID,
 			&i.MemberProfileImageHeight,
@@ -1031,7 +1043,7 @@ func (q *Queries) GetPluralChatRoomsOnMemberUseNumberedPaginate(ctx context.Cont
 }
 
 const getPluralMembersOnChatRoom = `-- name: GetPluralMembersOnChatRoom :many
-SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.name member_name, m_members.email member_email,
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
@@ -1059,6 +1071,8 @@ type GetPluralMembersOnChatRoomRow struct {
 	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
 	AddedAt                            time.Time     `json:"added_at"`
 	MemberName                         pgtype.Text   `json:"member_name"`
+	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
+	MemberLastName                     pgtype.Text   `json:"member_last_name"`
 	MemberEmail                        pgtype.Text   `json:"member_email"`
 	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
 	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
@@ -1086,6 +1100,8 @@ func (q *Queries) GetPluralMembersOnChatRoom(ctx context.Context, arg GetPluralM
 			&i.ChatRoomID,
 			&i.AddedAt,
 			&i.MemberName,
+			&i.MemberFirstName,
+			&i.MemberLastName,
 			&i.MemberEmail,
 			&i.MemberProfileImageID,
 			&i.MemberProfileImageHeight,
@@ -1108,7 +1124,7 @@ func (q *Queries) GetPluralMembersOnChatRoom(ctx context.Context, arg GetPluralM
 }
 
 const getPluralMembersOnChatRoomUseNumberedPaginate = `-- name: GetPluralMembersOnChatRoomUseNumberedPaginate :many
-SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.name member_name, m_members.email member_email,
+SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
@@ -1139,6 +1155,8 @@ type GetPluralMembersOnChatRoomUseNumberedPaginateRow struct {
 	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
 	AddedAt                            time.Time     `json:"added_at"`
 	MemberName                         pgtype.Text   `json:"member_name"`
+	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
+	MemberLastName                     pgtype.Text   `json:"member_last_name"`
 	MemberEmail                        pgtype.Text   `json:"member_email"`
 	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
 	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
@@ -1171,6 +1189,8 @@ func (q *Queries) GetPluralMembersOnChatRoomUseNumberedPaginate(ctx context.Cont
 			&i.ChatRoomID,
 			&i.AddedAt,
 			&i.MemberName,
+			&i.MemberFirstName,
+			&i.MemberLastName,
 			&i.MemberEmail,
 			&i.MemberProfileImageID,
 			&i.MemberProfileImageHeight,

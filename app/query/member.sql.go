@@ -14,17 +14,17 @@ import (
 )
 
 const countMembers = `-- name: CountMembers :one
-SELECT COUNT(*) FROM m_members
+SELECT count(*) FROM m_members
 WHERE
-	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
+	CASE WHEN $1::boolean = true THEN name LIKE '%' || $2::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $3::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($4::uuid[])) > 0 ELSE TRUE END
+	CASE WHEN $3::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = role_id AND m_role_associations.policy_id = ANY($4::uuid[])) > 0 ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN m_members.attend_status_id = ANY($6::uuid[]) ELSE TRUE END
+	CASE WHEN $5::boolean = true THEN attend_status_id = ANY($6::uuid[]) ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
+	CASE WHEN $7::boolean = true THEN grade_id = ANY($8::uuid[]) ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
+	CASE WHEN $9::boolean = true THEN group_id = ANY($10::uuid[]) ELSE TRUE END
 `
 
 type CountMembersParams struct {
@@ -59,7 +59,7 @@ func (q *Queries) CountMembers(ctx context.Context, arg CountMembersParams) (int
 }
 
 const createMember = `-- name: CreateMember :one
-INSERT INTO m_members (login_id, password, email, name, attend_status_id, grade_id, group_id, profile_image_id, role_id, personal_organization_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+INSERT INTO m_members (login_id, password, email, name, first_name, last_name, attend_status_id, grade_id, group_id, profile_image_id, role_id, personal_organization_id, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14) RETURNING m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `
 
 type CreateMemberParams struct {
@@ -67,6 +67,8 @@ type CreateMemberParams struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
 	GroupID                uuid.UUID   `json:"group_id"`
@@ -83,6 +85,8 @@ func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) (Mem
 		arg.Password,
 		arg.Email,
 		arg.Name,
+		arg.FirstName,
+		arg.LastName,
 		arg.AttendStatusID,
 		arg.GradeID,
 		arg.GroupID,
@@ -100,6 +104,8 @@ func (q *Queries) CreateMember(ctx context.Context, arg CreateMemberParams) (Mem
 		&i.Password,
 		&i.Email,
 		&i.Name,
+		&i.FirstName,
+		&i.LastName,
 		&i.AttendStatusID,
 		&i.ProfileImageID,
 		&i.GradeID,
@@ -117,6 +123,8 @@ type CreateMembersParams struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
 	GroupID                uuid.UUID   `json:"group_id"`
@@ -140,7 +148,7 @@ func (q *Queries) DeleteMember(ctx context.Context, memberID uuid.UUID) (int64, 
 }
 
 const findMemberByID = `-- name: FindMemberByID :one
-SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE member_id = $1
+SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE member_id = $1
 `
 
 func (q *Queries) FindMemberByID(ctx context.Context, memberID uuid.UUID) (Member, error) {
@@ -153,6 +161,8 @@ func (q *Queries) FindMemberByID(ctx context.Context, memberID uuid.UUID) (Membe
 		&i.Password,
 		&i.Email,
 		&i.Name,
+		&i.FirstName,
+		&i.LastName,
 		&i.AttendStatusID,
 		&i.ProfileImageID,
 		&i.GradeID,
@@ -166,202 +176,389 @@ func (q *Queries) FindMemberByID(ctx context.Context, memberID uuid.UUID) (Membe
 }
 
 const findMemberByIDWithAttendStatus = `-- name: FindMemberByIDWithAttendStatus :one
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.name attend_status_name, m_attend_statuses.key attend_status_key FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE member_id = $1
 `
 
 type FindMemberByIDWithAttendStatusRow struct {
-	Member       Member       `json:"member"`
-	AttendStatus AttendStatus `json:"attend_status"`
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	AttendStatusName       pgtype.Text `json:"attend_status_name"`
+	AttendStatusKey        pgtype.Text `json:"attend_status_key"`
 }
 
 func (q *Queries) FindMemberByIDWithAttendStatus(ctx context.Context, memberID uuid.UUID) (FindMemberByIDWithAttendStatusRow, error) {
 	row := q.db.QueryRow(ctx, findMemberByIDWithAttendStatus, memberID)
 	var i FindMemberByIDWithAttendStatusRow
 	err := row.Scan(
-		&i.Member.MMembersPkey,
-		&i.Member.MemberID,
-		&i.Member.LoginID,
-		&i.Member.Password,
-		&i.Member.Email,
-		&i.Member.Name,
-		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageID,
-		&i.Member.GradeID,
-		&i.Member.GroupID,
-		&i.Member.PersonalOrganizationID,
-		&i.Member.RoleID,
-		&i.Member.CreatedAt,
-		&i.Member.UpdatedAt,
-		&i.AttendStatus.MAttendStatusesPkey,
-		&i.AttendStatus.AttendStatusID,
-		&i.AttendStatus.Name,
-		&i.AttendStatus.Key,
+		&i.MMembersPkey,
+		&i.MemberID,
+		&i.LoginID,
+		&i.Password,
+		&i.Email,
+		&i.Name,
+		&i.FirstName,
+		&i.LastName,
+		&i.AttendStatusID,
+		&i.ProfileImageID,
+		&i.GradeID,
+		&i.GroupID,
+		&i.PersonalOrganizationID,
+		&i.RoleID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.AttendStatusName,
+		&i.AttendStatusKey,
 	)
 	return i, err
 }
 
-const findMemberByIDWithGrade = `-- name: FindMemberByIDWithGrade :one
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
+const findMemberByIDWithCrew = `-- name: FindMemberByIDWithCrew :one
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.key grade_key, m_grades.organization_id grade_organization_id, grag.name grade_organization_name, grag.description grade_organization_description,
+grag.color grade_organization_color, grag.is_personal grade_organization_is_personal,
+grag.is_whole grade_organization_is_whole, grag.chat_room_id grade_organization_chat_room_id,
+m_groups.key group_key, m_groups.organization_id group_organization_id, grog.name group_organization_name, grog.description group_organization_description,
+grog.color group_organization_color, grog.is_personal group_organization_is_personal,
+grog.is_whole group_organization_is_whole, grog.chat_room_id group_organization_chat_room_id FROM m_members
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
-LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations grag ON m_grades.organization_id = grag.organization_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations grog ON m_groups.organization_id = grog.organization_id
 WHERE member_id = $1
 `
 
-type FindMemberByIDWithGradeRow struct {
-	Member Member `json:"member"`
-	Grade  Grade  `json:"grade"`
+type FindMemberByIDWithCrewRow struct {
+	MMembersPkey                 pgtype.Int8 `json:"m_members_pkey"`
+	MemberID                     uuid.UUID   `json:"member_id"`
+	LoginID                      string      `json:"login_id"`
+	Password                     string      `json:"password"`
+	Email                        string      `json:"email"`
+	Name                         string      `json:"name"`
+	FirstName                    string      `json:"first_name"`
+	LastName                     string      `json:"last_name"`
+	AttendStatusID               uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID               pgtype.UUID `json:"profile_image_id"`
+	GradeID                      uuid.UUID   `json:"grade_id"`
+	GroupID                      uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID       uuid.UUID   `json:"personal_organization_id"`
+	RoleID                       pgtype.UUID `json:"role_id"`
+	CreatedAt                    time.Time   `json:"created_at"`
+	UpdatedAt                    time.Time   `json:"updated_at"`
+	GradeKey                     pgtype.Text `json:"grade_key"`
+	GradeOrganizationID          pgtype.UUID `json:"grade_organization_id"`
+	GradeOrganizationName        pgtype.Text `json:"grade_organization_name"`
+	GradeOrganizationDescription pgtype.Text `json:"grade_organization_description"`
+	GradeOrganizationColor       pgtype.Text `json:"grade_organization_color"`
+	GradeOrganizationIsPersonal  pgtype.Bool `json:"grade_organization_is_personal"`
+	GradeOrganizationIsWhole     pgtype.Bool `json:"grade_organization_is_whole"`
+	GradeOrganizationChatRoomID  pgtype.UUID `json:"grade_organization_chat_room_id"`
+	GroupKey                     pgtype.Text `json:"group_key"`
+	GroupOrganizationID          pgtype.UUID `json:"group_organization_id"`
+	GroupOrganizationName        pgtype.Text `json:"group_organization_name"`
+	GroupOrganizationDescription pgtype.Text `json:"group_organization_description"`
+	GroupOrganizationColor       pgtype.Text `json:"group_organization_color"`
+	GroupOrganizationIsPersonal  pgtype.Bool `json:"group_organization_is_personal"`
+	GroupOrganizationIsWhole     pgtype.Bool `json:"group_organization_is_whole"`
+	GroupOrganizationChatRoomID  pgtype.UUID `json:"group_organization_chat_room_id"`
 }
 
-func (q *Queries) FindMemberByIDWithGrade(ctx context.Context, memberID uuid.UUID) (FindMemberByIDWithGradeRow, error) {
-	row := q.db.QueryRow(ctx, findMemberByIDWithGrade, memberID)
-	var i FindMemberByIDWithGradeRow
+func (q *Queries) FindMemberByIDWithCrew(ctx context.Context, memberID uuid.UUID) (FindMemberByIDWithCrewRow, error) {
+	row := q.db.QueryRow(ctx, findMemberByIDWithCrew, memberID)
+	var i FindMemberByIDWithCrewRow
 	err := row.Scan(
-		&i.Member.MMembersPkey,
-		&i.Member.MemberID,
-		&i.Member.LoginID,
-		&i.Member.Password,
-		&i.Member.Email,
-		&i.Member.Name,
-		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageID,
-		&i.Member.GradeID,
-		&i.Member.GroupID,
-		&i.Member.PersonalOrganizationID,
-		&i.Member.RoleID,
-		&i.Member.CreatedAt,
-		&i.Member.UpdatedAt,
-		&i.Grade.MGradesPkey,
-		&i.Grade.GradeID,
-		&i.Grade.Key,
-		&i.Grade.OrganizationID,
+		&i.MMembersPkey,
+		&i.MemberID,
+		&i.LoginID,
+		&i.Password,
+		&i.Email,
+		&i.Name,
+		&i.FirstName,
+		&i.LastName,
+		&i.AttendStatusID,
+		&i.ProfileImageID,
+		&i.GradeID,
+		&i.GroupID,
+		&i.PersonalOrganizationID,
+		&i.RoleID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.GradeKey,
+		&i.GradeOrganizationID,
+		&i.GradeOrganizationName,
+		&i.GradeOrganizationDescription,
+		&i.GradeOrganizationColor,
+		&i.GradeOrganizationIsPersonal,
+		&i.GradeOrganizationIsWhole,
+		&i.GradeOrganizationChatRoomID,
+		&i.GroupKey,
+		&i.GroupOrganizationID,
+		&i.GroupOrganizationName,
+		&i.GroupOrganizationDescription,
+		&i.GroupOrganizationColor,
+		&i.GroupOrganizationIsPersonal,
+		&i.GroupOrganizationIsWhole,
+		&i.GroupOrganizationChatRoomID,
 	)
 	return i, err
 }
 
-const findMemberByIDWithGroup = `-- name: FindMemberByIDWithGroup :one
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
-LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
-LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
-WHERE member_id = $1
+const findMemberByIDWithDetail = `-- name: FindMemberByIDWithDetail :one
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_students.student_id, m_professors.professor_id FROM m_members
+LEFT JOIN m_students ON m_members.member_id = m_students.member_id
+LEFT JOIN m_professors ON m_members.member_id = m_professor.member_id
+WHERE m_members.member_id = $1
 `
 
-type FindMemberByIDWithGroupRow struct {
-	Member Member `json:"member"`
-	Group  Group  `json:"group"`
+type FindMemberByIDWithDetailRow struct {
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	StudentID              pgtype.UUID `json:"student_id"`
+	ProfessorID            pgtype.UUID `json:"professor_id"`
 }
 
-func (q *Queries) FindMemberByIDWithGroup(ctx context.Context, memberID uuid.UUID) (FindMemberByIDWithGroupRow, error) {
-	row := q.db.QueryRow(ctx, findMemberByIDWithGroup, memberID)
-	var i FindMemberByIDWithGroupRow
+func (q *Queries) FindMemberByIDWithDetail(ctx context.Context, memberID uuid.UUID) (FindMemberByIDWithDetailRow, error) {
+	row := q.db.QueryRow(ctx, findMemberByIDWithDetail, memberID)
+	var i FindMemberByIDWithDetailRow
 	err := row.Scan(
-		&i.Member.MMembersPkey,
-		&i.Member.MemberID,
-		&i.Member.LoginID,
-		&i.Member.Password,
-		&i.Member.Email,
-		&i.Member.Name,
-		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageID,
-		&i.Member.GradeID,
-		&i.Member.GroupID,
-		&i.Member.PersonalOrganizationID,
-		&i.Member.RoleID,
-		&i.Member.CreatedAt,
-		&i.Member.UpdatedAt,
-		&i.Group.MGroupsPkey,
-		&i.Group.GroupID,
-		&i.Group.Key,
-		&i.Group.OrganizationID,
+		&i.MMembersPkey,
+		&i.MemberID,
+		&i.LoginID,
+		&i.Password,
+		&i.Email,
+		&i.Name,
+		&i.FirstName,
+		&i.LastName,
+		&i.AttendStatusID,
+		&i.ProfileImageID,
+		&i.GradeID,
+		&i.GroupID,
+		&i.PersonalOrganizationID,
+		&i.RoleID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.StudentID,
+		&i.ProfessorID,
 	)
 	return i, err
 }
 
 const findMemberByIDWithPersonalOrganization = `-- name: FindMemberByIDWithPersonalOrganization :one
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id FROM m_members
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE member_id = $1
 `
 
 type FindMemberByIDWithPersonalOrganizationRow struct {
-	Member       Member       `json:"member"`
-	Organization Organization `json:"organization"`
+	MMembersPkey            pgtype.Int8 `json:"m_members_pkey"`
+	MemberID                uuid.UUID   `json:"member_id"`
+	LoginID                 string      `json:"login_id"`
+	Password                string      `json:"password"`
+	Email                   string      `json:"email"`
+	Name                    string      `json:"name"`
+	FirstName               string      `json:"first_name"`
+	LastName                string      `json:"last_name"`
+	AttendStatusID          uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID          pgtype.UUID `json:"profile_image_id"`
+	GradeID                 uuid.UUID   `json:"grade_id"`
+	GroupID                 uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID  uuid.UUID   `json:"personal_organization_id"`
+	RoleID                  pgtype.UUID `json:"role_id"`
+	CreatedAt               time.Time   `json:"created_at"`
+	UpdatedAt               time.Time   `json:"updated_at"`
+	OrganizationName        pgtype.Text `json:"organization_name"`
+	OrganizationDescription pgtype.Text `json:"organization_description"`
+	OrganizationColor       pgtype.Text `json:"organization_color"`
+	OrganizationIsPersonal  pgtype.Bool `json:"organization_is_personal"`
+	OrganizationIsWhole     pgtype.Bool `json:"organization_is_whole"`
+	OrganizationChatRoomID  pgtype.UUID `json:"organization_chat_room_id"`
 }
 
 func (q *Queries) FindMemberByIDWithPersonalOrganization(ctx context.Context, memberID uuid.UUID) (FindMemberByIDWithPersonalOrganizationRow, error) {
 	row := q.db.QueryRow(ctx, findMemberByIDWithPersonalOrganization, memberID)
 	var i FindMemberByIDWithPersonalOrganizationRow
 	err := row.Scan(
-		&i.Member.MMembersPkey,
-		&i.Member.MemberID,
-		&i.Member.LoginID,
-		&i.Member.Password,
-		&i.Member.Email,
-		&i.Member.Name,
-		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageID,
-		&i.Member.GradeID,
-		&i.Member.GroupID,
-		&i.Member.PersonalOrganizationID,
-		&i.Member.RoleID,
-		&i.Member.CreatedAt,
-		&i.Member.UpdatedAt,
-		&i.Organization.MOrganizationsPkey,
-		&i.Organization.OrganizationID,
-		&i.Organization.Name,
-		&i.Organization.Description,
-		&i.Organization.Color,
-		&i.Organization.IsPersonal,
-		&i.Organization.IsWhole,
-		&i.Organization.CreatedAt,
-		&i.Organization.UpdatedAt,
-		&i.Organization.ChatRoomID,
+		&i.MMembersPkey,
+		&i.MemberID,
+		&i.LoginID,
+		&i.Password,
+		&i.Email,
+		&i.Name,
+		&i.FirstName,
+		&i.LastName,
+		&i.AttendStatusID,
+		&i.ProfileImageID,
+		&i.GradeID,
+		&i.GroupID,
+		&i.PersonalOrganizationID,
+		&i.RoleID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.OrganizationName,
+		&i.OrganizationDescription,
+		&i.OrganizationColor,
+		&i.OrganizationIsPersonal,
+		&i.OrganizationIsWhole,
+		&i.OrganizationChatRoomID,
+	)
+	return i, err
+}
+
+const findMemberByIDWithProfileImage = `-- name: FindMemberByIDWithProfileImage :one
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, t_images.height profile_image_height,
+t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
+FROM m_members
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE member_id = $1
+`
+
+type FindMemberByIDWithProfileImageRow struct {
+	MMembersPkey                 pgtype.Int8   `json:"m_members_pkey"`
+	MemberID                     uuid.UUID     `json:"member_id"`
+	LoginID                      string        `json:"login_id"`
+	Password                     string        `json:"password"`
+	Email                        string        `json:"email"`
+	Name                         string        `json:"name"`
+	FirstName                    string        `json:"first_name"`
+	LastName                     string        `json:"last_name"`
+	AttendStatusID               uuid.UUID     `json:"attend_status_id"`
+	ProfileImageID               pgtype.UUID   `json:"profile_image_id"`
+	GradeID                      uuid.UUID     `json:"grade_id"`
+	GroupID                      uuid.UUID     `json:"group_id"`
+	PersonalOrganizationID       uuid.UUID     `json:"personal_organization_id"`
+	RoleID                       pgtype.UUID   `json:"role_id"`
+	CreatedAt                    time.Time     `json:"created_at"`
+	UpdatedAt                    time.Time     `json:"updated_at"`
+	ProfileImageHeight           pgtype.Float8 `json:"profile_image_height"`
+	ProfileImageWidth            pgtype.Float8 `json:"profile_image_width"`
+	ProfileImageAttachableItemID pgtype.UUID   `json:"profile_image_attachable_item_id"`
+	ProfileImageOwnerID          pgtype.UUID   `json:"profile_image_owner_id"`
+	ProfileImageFromOuter        pgtype.Bool   `json:"profile_image_from_outer"`
+	ProfileImageUrl              pgtype.Text   `json:"profile_image_url"`
+	ProfileImageSize             pgtype.Float8 `json:"profile_image_size"`
+	ProfileImageMimeTypeID       pgtype.UUID   `json:"profile_image_mime_type_id"`
+}
+
+func (q *Queries) FindMemberByIDWithProfileImage(ctx context.Context, memberID uuid.UUID) (FindMemberByIDWithProfileImageRow, error) {
+	row := q.db.QueryRow(ctx, findMemberByIDWithProfileImage, memberID)
+	var i FindMemberByIDWithProfileImageRow
+	err := row.Scan(
+		&i.MMembersPkey,
+		&i.MemberID,
+		&i.LoginID,
+		&i.Password,
+		&i.Email,
+		&i.Name,
+		&i.FirstName,
+		&i.LastName,
+		&i.AttendStatusID,
+		&i.ProfileImageID,
+		&i.GradeID,
+		&i.GroupID,
+		&i.PersonalOrganizationID,
+		&i.RoleID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ProfileImageHeight,
+		&i.ProfileImageWidth,
+		&i.ProfileImageAttachableItemID,
+		&i.ProfileImageOwnerID,
+		&i.ProfileImageFromOuter,
+		&i.ProfileImageUrl,
+		&i.ProfileImageSize,
+		&i.ProfileImageMimeTypeID,
 	)
 	return i, err
 }
 
 const findMemberByIDWithRole = `-- name: FindMemberByIDWithRole :one
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.name role_name, m_roles.description role_description FROM m_members
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE member_id = $1
 `
 
 type FindMemberByIDWithRoleRow struct {
-	Member Member `json:"member"`
-	Role   Role   `json:"role"`
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	RoleName               pgtype.Text `json:"role_name"`
+	RoleDescription        pgtype.Text `json:"role_description"`
 }
 
 func (q *Queries) FindMemberByIDWithRole(ctx context.Context, memberID uuid.UUID) (FindMemberByIDWithRoleRow, error) {
 	row := q.db.QueryRow(ctx, findMemberByIDWithRole, memberID)
 	var i FindMemberByIDWithRoleRow
 	err := row.Scan(
-		&i.Member.MMembersPkey,
-		&i.Member.MemberID,
-		&i.Member.LoginID,
-		&i.Member.Password,
-		&i.Member.Email,
-		&i.Member.Name,
-		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageID,
-		&i.Member.GradeID,
-		&i.Member.GroupID,
-		&i.Member.PersonalOrganizationID,
-		&i.Member.RoleID,
-		&i.Member.CreatedAt,
-		&i.Member.UpdatedAt,
-		&i.Role.MRolesPkey,
-		&i.Role.RoleID,
-		&i.Role.Name,
-		&i.Role.Description,
-		&i.Role.CreatedAt,
-		&i.Role.UpdatedAt,
+		&i.MMembersPkey,
+		&i.MemberID,
+		&i.LoginID,
+		&i.Password,
+		&i.Email,
+		&i.Name,
+		&i.FirstName,
+		&i.LastName,
+		&i.AttendStatusID,
+		&i.ProfileImageID,
+		&i.GradeID,
+		&i.GroupID,
+		&i.PersonalOrganizationID,
+		&i.RoleID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.RoleName,
+		&i.RoleDescription,
 	)
 	return i, err
 }
 
 const findMemberByLoginID = `-- name: FindMemberByLoginID :one
-SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE login_id = $1
+SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE login_id = $1
 `
 
 func (q *Queries) FindMemberByLoginID(ctx context.Context, loginID string) (Member, error) {
@@ -374,6 +571,8 @@ func (q *Queries) FindMemberByLoginID(ctx context.Context, loginID string) (Memb
 		&i.Password,
 		&i.Email,
 		&i.Name,
+		&i.FirstName,
+		&i.LastName,
 		&i.AttendStatusID,
 		&i.ProfileImageID,
 		&i.GradeID,
@@ -386,118 +585,78 @@ func (q *Queries) FindMemberByLoginID(ctx context.Context, loginID string) (Memb
 	return i, err
 }
 
-const findMemberWithAll = `-- name: FindMemberWithAll :one
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
-LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
-LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
-LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
-LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
-LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
+const findMemberWithProfileImage = `-- name: FindMemberWithProfileImage :one
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, t_images.height profile_image_height,
+t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
+FROM m_members
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE member_id = $1
 `
 
-type FindMemberWithAllRow struct {
-	Member       Member       `json:"member"`
-	AttendStatus AttendStatus `json:"attend_status"`
-	Grade        Grade        `json:"grade"`
-	Group        Group        `json:"group"`
-	Organization Organization `json:"organization"`
-	Role         Role         `json:"role"`
+type FindMemberWithProfileImageRow struct {
+	MMembersPkey                 pgtype.Int8   `json:"m_members_pkey"`
+	MemberID                     uuid.UUID     `json:"member_id"`
+	LoginID                      string        `json:"login_id"`
+	Password                     string        `json:"password"`
+	Email                        string        `json:"email"`
+	Name                         string        `json:"name"`
+	FirstName                    string        `json:"first_name"`
+	LastName                     string        `json:"last_name"`
+	AttendStatusID               uuid.UUID     `json:"attend_status_id"`
+	ProfileImageID               pgtype.UUID   `json:"profile_image_id"`
+	GradeID                      uuid.UUID     `json:"grade_id"`
+	GroupID                      uuid.UUID     `json:"group_id"`
+	PersonalOrganizationID       uuid.UUID     `json:"personal_organization_id"`
+	RoleID                       pgtype.UUID   `json:"role_id"`
+	CreatedAt                    time.Time     `json:"created_at"`
+	UpdatedAt                    time.Time     `json:"updated_at"`
+	ProfileImageHeight           pgtype.Float8 `json:"profile_image_height"`
+	ProfileImageWidth            pgtype.Float8 `json:"profile_image_width"`
+	ProfileImageAttachableItemID pgtype.UUID   `json:"profile_image_attachable_item_id"`
+	ProfileImageOwnerID          pgtype.UUID   `json:"profile_image_owner_id"`
+	ProfileImageFromOuter        pgtype.Bool   `json:"profile_image_from_outer"`
+	ProfileImageUrl              pgtype.Text   `json:"profile_image_url"`
+	ProfileImageSize             pgtype.Float8 `json:"profile_image_size"`
+	ProfileImageMimeTypeID       pgtype.UUID   `json:"profile_image_mime_type_id"`
 }
 
-func (q *Queries) FindMemberWithAll(ctx context.Context, memberID uuid.UUID) (FindMemberWithAllRow, error) {
-	row := q.db.QueryRow(ctx, findMemberWithAll, memberID)
-	var i FindMemberWithAllRow
+func (q *Queries) FindMemberWithProfileImage(ctx context.Context, memberID uuid.UUID) (FindMemberWithProfileImageRow, error) {
+	row := q.db.QueryRow(ctx, findMemberWithProfileImage, memberID)
+	var i FindMemberWithProfileImageRow
 	err := row.Scan(
-		&i.Member.MMembersPkey,
-		&i.Member.MemberID,
-		&i.Member.LoginID,
-		&i.Member.Password,
-		&i.Member.Email,
-		&i.Member.Name,
-		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageID,
-		&i.Member.GradeID,
-		&i.Member.GroupID,
-		&i.Member.PersonalOrganizationID,
-		&i.Member.RoleID,
-		&i.Member.CreatedAt,
-		&i.Member.UpdatedAt,
-		&i.AttendStatus.MAttendStatusesPkey,
-		&i.AttendStatus.AttendStatusID,
-		&i.AttendStatus.Name,
-		&i.AttendStatus.Key,
-		&i.Grade.MGradesPkey,
-		&i.Grade.GradeID,
-		&i.Grade.Key,
-		&i.Grade.OrganizationID,
-		&i.Group.MGroupsPkey,
-		&i.Group.GroupID,
-		&i.Group.Key,
-		&i.Group.OrganizationID,
-		&i.Organization.MOrganizationsPkey,
-		&i.Organization.OrganizationID,
-		&i.Organization.Name,
-		&i.Organization.Description,
-		&i.Organization.Color,
-		&i.Organization.IsPersonal,
-		&i.Organization.IsWhole,
-		&i.Organization.CreatedAt,
-		&i.Organization.UpdatedAt,
-		&i.Organization.ChatRoomID,
-		&i.Role.MRolesPkey,
-		&i.Role.RoleID,
-		&i.Role.Name,
-		&i.Role.Description,
-		&i.Role.CreatedAt,
-		&i.Role.UpdatedAt,
-	)
-	return i, err
-}
-
-const findMemberWithDetail = `-- name: FindMemberWithDetail :one
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id FROM m_members
-LEFT JOIN m_students ON m_members.member_id = m_students.member_id
-LEFT JOIN m_professors ON m_members.member_id = m_professor.member_id
-WHERE m_members.member_id = $1
-`
-
-type FindMemberWithDetailRow struct {
-	Member    Member    `json:"member"`
-	Student   Student   `json:"student"`
-	Professor Professor `json:"professor"`
-}
-
-func (q *Queries) FindMemberWithDetail(ctx context.Context, memberID uuid.UUID) (FindMemberWithDetailRow, error) {
-	row := q.db.QueryRow(ctx, findMemberWithDetail, memberID)
-	var i FindMemberWithDetailRow
-	err := row.Scan(
-		&i.Member.MMembersPkey,
-		&i.Member.MemberID,
-		&i.Member.LoginID,
-		&i.Member.Password,
-		&i.Member.Email,
-		&i.Member.Name,
-		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageID,
-		&i.Member.GradeID,
-		&i.Member.GroupID,
-		&i.Member.PersonalOrganizationID,
-		&i.Member.RoleID,
-		&i.Member.CreatedAt,
-		&i.Member.UpdatedAt,
-		&i.Student.MStudentsPkey,
-		&i.Student.StudentID,
-		&i.Student.MemberID,
-		&i.Professor.MProfessorsPkey,
-		&i.Professor.ProfessorID,
-		&i.Professor.MemberID,
+		&i.MMembersPkey,
+		&i.MemberID,
+		&i.LoginID,
+		&i.Password,
+		&i.Email,
+		&i.Name,
+		&i.FirstName,
+		&i.LastName,
+		&i.AttendStatusID,
+		&i.ProfileImageID,
+		&i.GradeID,
+		&i.GroupID,
+		&i.PersonalOrganizationID,
+		&i.RoleID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ProfileImageHeight,
+		&i.ProfileImageWidth,
+		&i.ProfileImageAttachableItemID,
+		&i.ProfileImageOwnerID,
+		&i.ProfileImageFromOuter,
+		&i.ProfileImageUrl,
+		&i.ProfileImageSize,
+		&i.ProfileImageMimeTypeID,
 	)
 	return i, err
 }
 
 const getMembers = `-- name: GetMembers :many
-SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members
+SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members
 WHERE
 	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
 AND
@@ -556,6 +715,8 @@ func (q *Queries) GetMembers(ctx context.Context, arg GetMembersParams) ([]Membe
 			&i.Password,
 			&i.Email,
 			&i.Name,
+			&i.FirstName,
+			&i.LastName,
 			&i.AttendStatusID,
 			&i.ProfileImageID,
 			&i.GradeID,
@@ -576,7 +737,7 @@ func (q *Queries) GetMembers(ctx context.Context, arg GetMembersParams) ([]Membe
 }
 
 const getMembersUseKeysetPaginate = `-- name: GetMembersUseKeysetPaginate :many
-SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members
+SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members
 WHERE
 	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
 AND
@@ -662,6 +823,8 @@ func (q *Queries) GetMembersUseKeysetPaginate(ctx context.Context, arg GetMember
 			&i.Password,
 			&i.Email,
 			&i.Name,
+			&i.FirstName,
+			&i.LastName,
 			&i.AttendStatusID,
 			&i.ProfileImageID,
 			&i.GradeID,
@@ -682,7 +845,7 @@ func (q *Queries) GetMembersUseKeysetPaginate(ctx context.Context, arg GetMember
 }
 
 const getMembersUseNumberedPaginate = `-- name: GetMembersUseNumberedPaginate :many
-SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members
+SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members
 WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -746,6 +909,8 @@ func (q *Queries) GetMembersUseNumberedPaginate(ctx context.Context, arg GetMemb
 			&i.Password,
 			&i.Email,
 			&i.Name,
+			&i.FirstName,
+			&i.LastName,
 			&i.AttendStatusID,
 			&i.ProfileImageID,
 			&i.GradeID,
@@ -765,403 +930,8 @@ func (q *Queries) GetMembersUseNumberedPaginate(ctx context.Context, arg GetMemb
 	return items, nil
 }
 
-const getMembersWithAll = `-- name: GetMembersWithAll :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
-LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
-LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
-LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
-LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
-LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
-WHERE
-	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
-AND
-	CASE WHEN $3::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($4::uuid[])) > 0 ELSE TRUE END
-AND
-	CASE WHEN $5::boolean = true THEN m_members.attend_status_id = ANY($6::uuid[]) ELSE TRUE END
-AND
-	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
-AND
-	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
-ORDER BY
-	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey ASC
-`
-
-type GetMembersWithAllParams struct {
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	OrderMethod        string      `json:"order_method"`
-}
-
-type GetMembersWithAllRow struct {
-	Member       Member       `json:"member"`
-	AttendStatus AttendStatus `json:"attend_status"`
-	Grade        Grade        `json:"grade"`
-	Group        Group        `json:"group"`
-	Organization Organization `json:"organization"`
-	Role         Role         `json:"role"`
-}
-
-func (q *Queries) GetMembersWithAll(ctx context.Context, arg GetMembersWithAllParams) ([]GetMembersWithAllRow, error) {
-	rows, err := q.db.Query(ctx, getMembersWithAll,
-		arg.WhereLikeName,
-		arg.SearchName,
-		arg.WhereHasPolicy,
-		arg.HasPolicyIds,
-		arg.WhenInAttendStatus,
-		arg.InAttendStatusIds,
-		arg.WhenInGrade,
-		arg.InGradeIds,
-		arg.WhenInGroup,
-		arg.InGroupIds,
-		arg.OrderMethod,
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []GetMembersWithAllRow{}
-	for rows.Next() {
-		var i GetMembersWithAllRow
-		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.AttendStatus.MAttendStatusesPkey,
-			&i.AttendStatus.AttendStatusID,
-			&i.AttendStatus.Name,
-			&i.AttendStatus.Key,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
-			&i.Role.MRolesPkey,
-			&i.Role.RoleID,
-			&i.Role.Name,
-			&i.Role.Description,
-			&i.Role.CreatedAt,
-			&i.Role.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getMembersWithAllUseKeysetPaginate = `-- name: GetMembersWithAllUseKeysetPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
-LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
-LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
-LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
-LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
-LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
-WHERE
-	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
-AND
-	CASE WHEN $4::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($5::uuid[])) > 0 ELSE TRUE END
-AND
-	CASE WHEN $6::boolean = true THEN m_members.attend_status_id = ANY($7::uuid[]) ELSE TRUE END
-AND
-	CASE WHEN $8::boolean = true THEN m_members.grade_id = ANY($9::uuid[]) ELSE TRUE END
-AND
-	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
-AND
-	CASE $12::text
-		WHEN 'next' THEN
-			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				ELSE m_members_pkey > $15::int
-			END
-		WHEN 'prev' THEN
-			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				ELSE m_members_pkey < $15::int
-			END
-	END
-ORDER BY
-	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC,
-	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
-	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
-LIMIT $1
-`
-
-type GetMembersWithAllUseKeysetPaginateParams struct {
-	Limit              int32       `json:"limit"`
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	CursorDirection    string      `json:"cursor_direction"`
-	OrderMethod        string      `json:"order_method"`
-	NameCursor         string      `json:"name_cursor"`
-	Cursor             int32       `json:"cursor"`
-}
-
-type GetMembersWithAllUseKeysetPaginateRow struct {
-	Member       Member       `json:"member"`
-	AttendStatus AttendStatus `json:"attend_status"`
-	Grade        Grade        `json:"grade"`
-	Group        Group        `json:"group"`
-	Organization Organization `json:"organization"`
-	Role         Role         `json:"role"`
-}
-
-func (q *Queries) GetMembersWithAllUseKeysetPaginate(ctx context.Context, arg GetMembersWithAllUseKeysetPaginateParams) ([]GetMembersWithAllUseKeysetPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getMembersWithAllUseKeysetPaginate,
-		arg.Limit,
-		arg.WhereLikeName,
-		arg.SearchName,
-		arg.WhereHasPolicy,
-		arg.HasPolicyIds,
-		arg.WhenInAttendStatus,
-		arg.InAttendStatusIds,
-		arg.WhenInGrade,
-		arg.InGradeIds,
-		arg.WhenInGroup,
-		arg.InGroupIds,
-		arg.CursorDirection,
-		arg.OrderMethod,
-		arg.NameCursor,
-		arg.Cursor,
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []GetMembersWithAllUseKeysetPaginateRow{}
-	for rows.Next() {
-		var i GetMembersWithAllUseKeysetPaginateRow
-		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.AttendStatus.MAttendStatusesPkey,
-			&i.AttendStatus.AttendStatusID,
-			&i.AttendStatus.Name,
-			&i.AttendStatus.Key,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
-			&i.Role.MRolesPkey,
-			&i.Role.RoleID,
-			&i.Role.Name,
-			&i.Role.Description,
-			&i.Role.CreatedAt,
-			&i.Role.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getMembersWithAllUseNumberedPaginate = `-- name: GetMembersWithAllUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
-LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
-LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
-LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
-LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
-LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
-WHERE
-	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
-AND
-	CASE WHEN $5::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($6::uuid[])) > 0 ELSE TRUE END
-AND
-	CASE WHEN $7::boolean = true THEN m_members.attend_status_id = ANY($8::uuid[]) ELSE TRUE END
-AND
-	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
-AND
-	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
-ORDER BY
-	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey ASC
-LIMIT $1 OFFSET $2
-`
-
-type GetMembersWithAllUseNumberedPaginateParams struct {
-	Limit              int32       `json:"limit"`
-	Offset             int32       `json:"offset"`
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	OrderMethod        string      `json:"order_method"`
-}
-
-type GetMembersWithAllUseNumberedPaginateRow struct {
-	Member       Member       `json:"member"`
-	AttendStatus AttendStatus `json:"attend_status"`
-	Grade        Grade        `json:"grade"`
-	Group        Group        `json:"group"`
-	Organization Organization `json:"organization"`
-	Role         Role         `json:"role"`
-}
-
-func (q *Queries) GetMembersWithAllUseNumberedPaginate(ctx context.Context, arg GetMembersWithAllUseNumberedPaginateParams) ([]GetMembersWithAllUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getMembersWithAllUseNumberedPaginate,
-		arg.Limit,
-		arg.Offset,
-		arg.WhereLikeName,
-		arg.SearchName,
-		arg.WhereHasPolicy,
-		arg.HasPolicyIds,
-		arg.WhenInAttendStatus,
-		arg.InAttendStatusIds,
-		arg.WhenInGrade,
-		arg.InGradeIds,
-		arg.WhenInGroup,
-		arg.InGroupIds,
-		arg.OrderMethod,
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []GetMembersWithAllUseNumberedPaginateRow{}
-	for rows.Next() {
-		var i GetMembersWithAllUseNumberedPaginateRow
-		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.AttendStatus.MAttendStatusesPkey,
-			&i.AttendStatus.AttendStatusID,
-			&i.AttendStatus.Name,
-			&i.AttendStatus.Key,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
-			&i.Role.MRolesPkey,
-			&i.Role.RoleID,
-			&i.Role.Name,
-			&i.Role.Description,
-			&i.Role.CreatedAt,
-			&i.Role.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getMembersWithAttendStatus = `-- name: GetMembersWithAttendStatus :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.name attend_status_name, m_attend_statuses.key attend_status_key FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE
 	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
@@ -1194,8 +964,24 @@ type GetMembersWithAttendStatusParams struct {
 }
 
 type GetMembersWithAttendStatusRow struct {
-	Member       Member       `json:"member"`
-	AttendStatus AttendStatus `json:"attend_status"`
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	AttendStatusName       pgtype.Text `json:"attend_status_name"`
+	AttendStatusKey        pgtype.Text `json:"attend_status_key"`
 }
 
 func (q *Queries) GetMembersWithAttendStatus(ctx context.Context, arg GetMembersWithAttendStatusParams) ([]GetMembersWithAttendStatusRow, error) {
@@ -1220,24 +1006,24 @@ func (q *Queries) GetMembersWithAttendStatus(ctx context.Context, arg GetMembers
 	for rows.Next() {
 		var i GetMembersWithAttendStatusRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.AttendStatus.MAttendStatusesPkey,
-			&i.AttendStatus.AttendStatusID,
-			&i.AttendStatus.Name,
-			&i.AttendStatus.Key,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.AttendStatusName,
+			&i.AttendStatusKey,
 		); err != nil {
 			return nil, err
 		}
@@ -1250,7 +1036,7 @@ func (q *Queries) GetMembersWithAttendStatus(ctx context.Context, arg GetMembers
 }
 
 const getMembersWithAttendStatusUseKeysetPaginate = `-- name: GetMembersWithAttendStatusUseKeysetPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.name attend_status_name, m_attend_statuses.key attend_status_key FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE
 	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
@@ -1306,8 +1092,24 @@ type GetMembersWithAttendStatusUseKeysetPaginateParams struct {
 }
 
 type GetMembersWithAttendStatusUseKeysetPaginateRow struct {
-	Member       Member       `json:"member"`
-	AttendStatus AttendStatus `json:"attend_status"`
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	AttendStatusName       pgtype.Text `json:"attend_status_name"`
+	AttendStatusKey        pgtype.Text `json:"attend_status_key"`
 }
 
 func (q *Queries) GetMembersWithAttendStatusUseKeysetPaginate(ctx context.Context, arg GetMembersWithAttendStatusUseKeysetPaginateParams) ([]GetMembersWithAttendStatusUseKeysetPaginateRow, error) {
@@ -1336,24 +1138,24 @@ func (q *Queries) GetMembersWithAttendStatusUseKeysetPaginate(ctx context.Contex
 	for rows.Next() {
 		var i GetMembersWithAttendStatusUseKeysetPaginateRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.AttendStatus.MAttendStatusesPkey,
-			&i.AttendStatus.AttendStatusID,
-			&i.AttendStatus.Name,
-			&i.AttendStatus.Key,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.AttendStatusName,
+			&i.AttendStatusKey,
 		); err != nil {
 			return nil, err
 		}
@@ -1366,7 +1168,7 @@ func (q *Queries) GetMembersWithAttendStatusUseKeysetPaginate(ctx context.Contex
 }
 
 const getMembersWithAttendStatusUseNumberedPaginate = `-- name: GetMembersWithAttendStatusUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.name attend_status_name, m_attend_statuses.key attend_status_key FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
@@ -1402,8 +1204,24 @@ type GetMembersWithAttendStatusUseNumberedPaginateParams struct {
 }
 
 type GetMembersWithAttendStatusUseNumberedPaginateRow struct {
-	Member       Member       `json:"member"`
-	AttendStatus AttendStatus `json:"attend_status"`
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	AttendStatusName       pgtype.Text `json:"attend_status_name"`
+	AttendStatusKey        pgtype.Text `json:"attend_status_key"`
 }
 
 func (q *Queries) GetMembersWithAttendStatusUseNumberedPaginate(ctx context.Context, arg GetMembersWithAttendStatusUseNumberedPaginateParams) ([]GetMembersWithAttendStatusUseNumberedPaginateRow, error) {
@@ -1430,24 +1248,24 @@ func (q *Queries) GetMembersWithAttendStatusUseNumberedPaginate(ctx context.Cont
 	for rows.Next() {
 		var i GetMembersWithAttendStatusUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.AttendStatus.MAttendStatusesPkey,
-			&i.AttendStatus.AttendStatusID,
-			&i.AttendStatus.Name,
-			&i.AttendStatus.Key,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.AttendStatusName,
+			&i.AttendStatusKey,
 		); err != nil {
 			return nil, err
 		}
@@ -1459,10 +1277,17 @@ func (q *Queries) GetMembersWithAttendStatusUseNumberedPaginate(ctx context.Cont
 	return items, nil
 }
 
-const getMembersWithGrade = `-- name: GetMembersWithGrade :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
+const getMembersWithCrew = `-- name: GetMembersWithCrew :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.key grade_key, m_grades.organization_id grade_organization_id, grag.name grade_organization_name, grag.description grade_organization_description,
+grag.color grade_organization_color, grag.is_personal grade_organization_is_personal,
+grag.is_whole grade_organization_is_whole, grag.chat_room_id grade_organization_chat_room_id,
+m_groups.key group_key, m_groups.organization_id group_organization_id, grog.name group_organization_name, grog.description group_organization_description,
+grog.color group_organization_color, grog.is_personal group_organization_is_personal,
+grog.is_whole group_organization_is_whole, grog.chat_room_id group_organization_chat_room_id FROM m_members
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
-LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations grag ON m_grades.organization_id = grag.organization_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations grog ON m_groups.organization_id = grog.organization_id
 WHERE
 	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
 AND
@@ -1479,7 +1304,7 @@ ORDER BY
 	m_members_pkey ASC
 `
 
-type GetMembersWithGradeParams struct {
+type GetMembersWithCrewParams struct {
 	WhereLikeName      bool        `json:"where_like_name"`
 	SearchName         string      `json:"search_name"`
 	WhereHasPolicy     bool        `json:"where_has_policy"`
@@ -1493,13 +1318,43 @@ type GetMembersWithGradeParams struct {
 	OrderMethod        string      `json:"order_method"`
 }
 
-type GetMembersWithGradeRow struct {
-	Member Member `json:"member"`
-	Grade  Grade  `json:"grade"`
+type GetMembersWithCrewRow struct {
+	MMembersPkey                 pgtype.Int8 `json:"m_members_pkey"`
+	MemberID                     uuid.UUID   `json:"member_id"`
+	LoginID                      string      `json:"login_id"`
+	Password                     string      `json:"password"`
+	Email                        string      `json:"email"`
+	Name                         string      `json:"name"`
+	FirstName                    string      `json:"first_name"`
+	LastName                     string      `json:"last_name"`
+	AttendStatusID               uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID               pgtype.UUID `json:"profile_image_id"`
+	GradeID                      uuid.UUID   `json:"grade_id"`
+	GroupID                      uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID       uuid.UUID   `json:"personal_organization_id"`
+	RoleID                       pgtype.UUID `json:"role_id"`
+	CreatedAt                    time.Time   `json:"created_at"`
+	UpdatedAt                    time.Time   `json:"updated_at"`
+	GradeKey                     pgtype.Text `json:"grade_key"`
+	GradeOrganizationID          pgtype.UUID `json:"grade_organization_id"`
+	GradeOrganizationName        pgtype.Text `json:"grade_organization_name"`
+	GradeOrganizationDescription pgtype.Text `json:"grade_organization_description"`
+	GradeOrganizationColor       pgtype.Text `json:"grade_organization_color"`
+	GradeOrganizationIsPersonal  pgtype.Bool `json:"grade_organization_is_personal"`
+	GradeOrganizationIsWhole     pgtype.Bool `json:"grade_organization_is_whole"`
+	GradeOrganizationChatRoomID  pgtype.UUID `json:"grade_organization_chat_room_id"`
+	GroupKey                     pgtype.Text `json:"group_key"`
+	GroupOrganizationID          pgtype.UUID `json:"group_organization_id"`
+	GroupOrganizationName        pgtype.Text `json:"group_organization_name"`
+	GroupOrganizationDescription pgtype.Text `json:"group_organization_description"`
+	GroupOrganizationColor       pgtype.Text `json:"group_organization_color"`
+	GroupOrganizationIsPersonal  pgtype.Bool `json:"group_organization_is_personal"`
+	GroupOrganizationIsWhole     pgtype.Bool `json:"group_organization_is_whole"`
+	GroupOrganizationChatRoomID  pgtype.UUID `json:"group_organization_chat_room_id"`
 }
 
-func (q *Queries) GetMembersWithGrade(ctx context.Context, arg GetMembersWithGradeParams) ([]GetMembersWithGradeRow, error) {
-	rows, err := q.db.Query(ctx, getMembersWithGrade,
+func (q *Queries) GetMembersWithCrew(ctx context.Context, arg GetMembersWithCrewParams) ([]GetMembersWithCrewRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithCrew,
 		arg.WhereLikeName,
 		arg.SearchName,
 		arg.WhereHasPolicy,
@@ -1516,28 +1371,42 @@ func (q *Queries) GetMembersWithGrade(ctx context.Context, arg GetMembersWithGra
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetMembersWithGradeRow{}
+	items := []GetMembersWithCrewRow{}
 	for rows.Next() {
-		var i GetMembersWithGradeRow
+		var i GetMembersWithCrewRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.GradeKey,
+			&i.GradeOrganizationID,
+			&i.GradeOrganizationName,
+			&i.GradeOrganizationDescription,
+			&i.GradeOrganizationColor,
+			&i.GradeOrganizationIsPersonal,
+			&i.GradeOrganizationIsWhole,
+			&i.GradeOrganizationChatRoomID,
+			&i.GroupKey,
+			&i.GroupOrganizationID,
+			&i.GroupOrganizationName,
+			&i.GroupOrganizationDescription,
+			&i.GroupOrganizationColor,
+			&i.GroupOrganizationIsPersonal,
+			&i.GroupOrganizationIsWhole,
+			&i.GroupOrganizationChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -1549,10 +1418,17 @@ func (q *Queries) GetMembersWithGrade(ctx context.Context, arg GetMembersWithGra
 	return items, nil
 }
 
-const getMembersWithGradeUseKeysetPaginate = `-- name: GetMembersWithGradeUseKeysetPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
+const getMembersWithCrewUseKeysetPaginate = `-- name: GetMembersWithCrewUseKeysetPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.key grade_key, m_grades.organization_id grade_organization_id, grag.name grade_organization_name, grag.description grade_organization_description,
+grag.color grade_organization_color, grag.is_personal grade_organization_is_personal,
+grag.is_whole grade_organization_is_whole, grag.chat_room_id grade_organization_chat_room_id,
+m_groups.key group_key, m_groups.organization_id group_organization_id, grog.name group_organization_name, grog.description group_organization_description,
+grog.color group_organization_color, grog.is_personal group_organization_is_personal,
+grog.is_whole group_organization_is_whole, grog.chat_room_id group_organization_chat_room_id FROM m_members
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
-LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations grag ON m_grades.organization_id = grag.organization_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations grog ON m_groups.organization_id = grog.organization_id
 WHERE
 	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
 AND
@@ -1588,7 +1464,7 @@ ORDER BY
 LIMIT $1
 `
 
-type GetMembersWithGradeUseKeysetPaginateParams struct {
+type GetMembersWithCrewUseKeysetPaginateParams struct {
 	Limit              int32       `json:"limit"`
 	WhereLikeName      bool        `json:"where_like_name"`
 	SearchName         string      `json:"search_name"`
@@ -1606,13 +1482,43 @@ type GetMembersWithGradeUseKeysetPaginateParams struct {
 	Cursor             int32       `json:"cursor"`
 }
 
-type GetMembersWithGradeUseKeysetPaginateRow struct {
-	Member Member `json:"member"`
-	Grade  Grade  `json:"grade"`
+type GetMembersWithCrewUseKeysetPaginateRow struct {
+	MMembersPkey                 pgtype.Int8 `json:"m_members_pkey"`
+	MemberID                     uuid.UUID   `json:"member_id"`
+	LoginID                      string      `json:"login_id"`
+	Password                     string      `json:"password"`
+	Email                        string      `json:"email"`
+	Name                         string      `json:"name"`
+	FirstName                    string      `json:"first_name"`
+	LastName                     string      `json:"last_name"`
+	AttendStatusID               uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID               pgtype.UUID `json:"profile_image_id"`
+	GradeID                      uuid.UUID   `json:"grade_id"`
+	GroupID                      uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID       uuid.UUID   `json:"personal_organization_id"`
+	RoleID                       pgtype.UUID `json:"role_id"`
+	CreatedAt                    time.Time   `json:"created_at"`
+	UpdatedAt                    time.Time   `json:"updated_at"`
+	GradeKey                     pgtype.Text `json:"grade_key"`
+	GradeOrganizationID          pgtype.UUID `json:"grade_organization_id"`
+	GradeOrganizationName        pgtype.Text `json:"grade_organization_name"`
+	GradeOrganizationDescription pgtype.Text `json:"grade_organization_description"`
+	GradeOrganizationColor       pgtype.Text `json:"grade_organization_color"`
+	GradeOrganizationIsPersonal  pgtype.Bool `json:"grade_organization_is_personal"`
+	GradeOrganizationIsWhole     pgtype.Bool `json:"grade_organization_is_whole"`
+	GradeOrganizationChatRoomID  pgtype.UUID `json:"grade_organization_chat_room_id"`
+	GroupKey                     pgtype.Text `json:"group_key"`
+	GroupOrganizationID          pgtype.UUID `json:"group_organization_id"`
+	GroupOrganizationName        pgtype.Text `json:"group_organization_name"`
+	GroupOrganizationDescription pgtype.Text `json:"group_organization_description"`
+	GroupOrganizationColor       pgtype.Text `json:"group_organization_color"`
+	GroupOrganizationIsPersonal  pgtype.Bool `json:"group_organization_is_personal"`
+	GroupOrganizationIsWhole     pgtype.Bool `json:"group_organization_is_whole"`
+	GroupOrganizationChatRoomID  pgtype.UUID `json:"group_organization_chat_room_id"`
 }
 
-func (q *Queries) GetMembersWithGradeUseKeysetPaginate(ctx context.Context, arg GetMembersWithGradeUseKeysetPaginateParams) ([]GetMembersWithGradeUseKeysetPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getMembersWithGradeUseKeysetPaginate,
+func (q *Queries) GetMembersWithCrewUseKeysetPaginate(ctx context.Context, arg GetMembersWithCrewUseKeysetPaginateParams) ([]GetMembersWithCrewUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithCrewUseKeysetPaginate,
 		arg.Limit,
 		arg.WhereLikeName,
 		arg.SearchName,
@@ -1633,28 +1539,42 @@ func (q *Queries) GetMembersWithGradeUseKeysetPaginate(ctx context.Context, arg 
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetMembersWithGradeUseKeysetPaginateRow{}
+	items := []GetMembersWithCrewUseKeysetPaginateRow{}
 	for rows.Next() {
-		var i GetMembersWithGradeUseKeysetPaginateRow
+		var i GetMembersWithCrewUseKeysetPaginateRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.GradeKey,
+			&i.GradeOrganizationID,
+			&i.GradeOrganizationName,
+			&i.GradeOrganizationDescription,
+			&i.GradeOrganizationColor,
+			&i.GradeOrganizationIsPersonal,
+			&i.GradeOrganizationIsWhole,
+			&i.GradeOrganizationChatRoomID,
+			&i.GroupKey,
+			&i.GroupOrganizationID,
+			&i.GroupOrganizationName,
+			&i.GroupOrganizationDescription,
+			&i.GroupOrganizationColor,
+			&i.GroupOrganizationIsPersonal,
+			&i.GroupOrganizationIsWhole,
+			&i.GroupOrganizationChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -1666,10 +1586,17 @@ func (q *Queries) GetMembersWithGradeUseKeysetPaginate(ctx context.Context, arg 
 	return items, nil
 }
 
-const getMembersWithGradeUseNumberedPaginate = `-- name: GetMembersWithGradeUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
+const getMembersWithCrewUseNumberedPaginate = `-- name: GetMembersWithCrewUseNumberedPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.key grade_key, m_grades.organization_id grade_organization_id, grag.name grade_organization_name, grag.description grade_organization_description,
+grag.color grade_organization_color, grag.is_personal grade_organization_is_personal,
+grag.is_whole grade_organization_is_whole, grag.chat_room_id grade_organization_chat_room_id,
+m_groups.key group_key, m_groups.organization_id group_organization_id, grog.name group_organization_name, grog.description group_organization_description,
+grog.color group_organization_color, grog.is_personal group_organization_is_personal,
+grog.is_whole group_organization_is_whole, grog.chat_room_id group_organization_chat_room_id FROM m_members
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
-LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations grag ON m_grades.organization_id = grag.organization_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations grog ON m_groups.organization_id = grog.organization_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -1687,7 +1614,7 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetMembersWithGradeUseNumberedPaginateParams struct {
+type GetMembersWithCrewUseNumberedPaginateParams struct {
 	Limit              int32       `json:"limit"`
 	Offset             int32       `json:"offset"`
 	WhereLikeName      bool        `json:"where_like_name"`
@@ -1703,13 +1630,43 @@ type GetMembersWithGradeUseNumberedPaginateParams struct {
 	OrderMethod        string      `json:"order_method"`
 }
 
-type GetMembersWithGradeUseNumberedPaginateRow struct {
-	Member Member `json:"member"`
-	Grade  Grade  `json:"grade"`
+type GetMembersWithCrewUseNumberedPaginateRow struct {
+	MMembersPkey                 pgtype.Int8 `json:"m_members_pkey"`
+	MemberID                     uuid.UUID   `json:"member_id"`
+	LoginID                      string      `json:"login_id"`
+	Password                     string      `json:"password"`
+	Email                        string      `json:"email"`
+	Name                         string      `json:"name"`
+	FirstName                    string      `json:"first_name"`
+	LastName                     string      `json:"last_name"`
+	AttendStatusID               uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID               pgtype.UUID `json:"profile_image_id"`
+	GradeID                      uuid.UUID   `json:"grade_id"`
+	GroupID                      uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID       uuid.UUID   `json:"personal_organization_id"`
+	RoleID                       pgtype.UUID `json:"role_id"`
+	CreatedAt                    time.Time   `json:"created_at"`
+	UpdatedAt                    time.Time   `json:"updated_at"`
+	GradeKey                     pgtype.Text `json:"grade_key"`
+	GradeOrganizationID          pgtype.UUID `json:"grade_organization_id"`
+	GradeOrganizationName        pgtype.Text `json:"grade_organization_name"`
+	GradeOrganizationDescription pgtype.Text `json:"grade_organization_description"`
+	GradeOrganizationColor       pgtype.Text `json:"grade_organization_color"`
+	GradeOrganizationIsPersonal  pgtype.Bool `json:"grade_organization_is_personal"`
+	GradeOrganizationIsWhole     pgtype.Bool `json:"grade_organization_is_whole"`
+	GradeOrganizationChatRoomID  pgtype.UUID `json:"grade_organization_chat_room_id"`
+	GroupKey                     pgtype.Text `json:"group_key"`
+	GroupOrganizationID          pgtype.UUID `json:"group_organization_id"`
+	GroupOrganizationName        pgtype.Text `json:"group_organization_name"`
+	GroupOrganizationDescription pgtype.Text `json:"group_organization_description"`
+	GroupOrganizationColor       pgtype.Text `json:"group_organization_color"`
+	GroupOrganizationIsPersonal  pgtype.Bool `json:"group_organization_is_personal"`
+	GroupOrganizationIsWhole     pgtype.Bool `json:"group_organization_is_whole"`
+	GroupOrganizationChatRoomID  pgtype.UUID `json:"group_organization_chat_room_id"`
 }
 
-func (q *Queries) GetMembersWithGradeUseNumberedPaginate(ctx context.Context, arg GetMembersWithGradeUseNumberedPaginateParams) ([]GetMembersWithGradeUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getMembersWithGradeUseNumberedPaginate,
+func (q *Queries) GetMembersWithCrewUseNumberedPaginate(ctx context.Context, arg GetMembersWithCrewUseNumberedPaginateParams) ([]GetMembersWithCrewUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithCrewUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.WhereLikeName,
@@ -1728,28 +1685,42 @@ func (q *Queries) GetMembersWithGradeUseNumberedPaginate(ctx context.Context, ar
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetMembersWithGradeUseNumberedPaginateRow{}
+	items := []GetMembersWithCrewUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetMembersWithGradeUseNumberedPaginateRow
+		var i GetMembersWithCrewUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.GradeKey,
+			&i.GradeOrganizationID,
+			&i.GradeOrganizationName,
+			&i.GradeOrganizationDescription,
+			&i.GradeOrganizationColor,
+			&i.GradeOrganizationIsPersonal,
+			&i.GradeOrganizationIsWhole,
+			&i.GradeOrganizationChatRoomID,
+			&i.GroupKey,
+			&i.GroupOrganizationID,
+			&i.GroupOrganizationName,
+			&i.GroupOrganizationDescription,
+			&i.GroupOrganizationColor,
+			&i.GroupOrganizationIsPersonal,
+			&i.GroupOrganizationIsWhole,
+			&i.GroupOrganizationChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -1761,10 +1732,10 @@ func (q *Queries) GetMembersWithGradeUseNumberedPaginate(ctx context.Context, ar
 	return items, nil
 }
 
-const getMembersWithGroup = `-- name: GetMembersWithGroup :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
-LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
-LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+const getMembersWithDetail = `-- name: GetMembersWithDetail :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_students.student_id, m_professors.professor_id FROM m_members
+LEFT JOIN m_students ON m_members.member_id = m_students.member_id
+LEFT JOIN m_professors ON m_members.member_id = m_professors.member_id
 WHERE
 	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
 AND
@@ -1781,7 +1752,7 @@ ORDER BY
 	m_members_pkey ASC
 `
 
-type GetMembersWithGroupParams struct {
+type GetMembersWithDetailParams struct {
 	WhereLikeName      bool        `json:"where_like_name"`
 	SearchName         string      `json:"search_name"`
 	WhereHasPolicy     bool        `json:"where_has_policy"`
@@ -1795,13 +1766,29 @@ type GetMembersWithGroupParams struct {
 	OrderMethod        string      `json:"order_method"`
 }
 
-type GetMembersWithGroupRow struct {
-	Member Member `json:"member"`
-	Group  Group  `json:"group"`
+type GetMembersWithDetailRow struct {
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	StudentID              pgtype.UUID `json:"student_id"`
+	ProfessorID            pgtype.UUID `json:"professor_id"`
 }
 
-func (q *Queries) GetMembersWithGroup(ctx context.Context, arg GetMembersWithGroupParams) ([]GetMembersWithGroupRow, error) {
-	rows, err := q.db.Query(ctx, getMembersWithGroup,
+func (q *Queries) GetMembersWithDetail(ctx context.Context, arg GetMembersWithDetailParams) ([]GetMembersWithDetailRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithDetail,
 		arg.WhereLikeName,
 		arg.SearchName,
 		arg.WhereHasPolicy,
@@ -1818,28 +1805,28 @@ func (q *Queries) GetMembersWithGroup(ctx context.Context, arg GetMembersWithGro
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetMembersWithGroupRow{}
+	items := []GetMembersWithDetailRow{}
 	for rows.Next() {
-		var i GetMembersWithGroupRow
+		var i GetMembersWithDetailRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.StudentID,
+			&i.ProfessorID,
 		); err != nil {
 			return nil, err
 		}
@@ -1851,10 +1838,10 @@ func (q *Queries) GetMembersWithGroup(ctx context.Context, arg GetMembersWithGro
 	return items, nil
 }
 
-const getMembersWithGroupUseKeysetPaginate = `-- name: GetMembersWithGroupUseKeysetPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
-LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
-LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+const getMembersWithDetailUseKeysetPaginate = `-- name: GetMembersWithDetailUseKeysetPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_students.student_id, m_professors.professor_id FROM m_members
+LEFT JOIN m_students ON m_members.member_id = m_students.member_id
+LEFT JOIN m_professors ON m_members.member_id = m_professors.member_id
 WHERE
 	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
 AND
@@ -1890,7 +1877,7 @@ ORDER BY
 LIMIT $1
 `
 
-type GetMembersWithGroupUseKeysetPaginateParams struct {
+type GetMembersWithDetailUseKeysetPaginateParams struct {
 	Limit              int32       `json:"limit"`
 	WhereLikeName      bool        `json:"where_like_name"`
 	SearchName         string      `json:"search_name"`
@@ -1908,13 +1895,29 @@ type GetMembersWithGroupUseKeysetPaginateParams struct {
 	Cursor             int32       `json:"cursor"`
 }
 
-type GetMembersWithGroupUseKeysetPaginateRow struct {
-	Member Member `json:"member"`
-	Group  Group  `json:"group"`
+type GetMembersWithDetailUseKeysetPaginateRow struct {
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	StudentID              pgtype.UUID `json:"student_id"`
+	ProfessorID            pgtype.UUID `json:"professor_id"`
 }
 
-func (q *Queries) GetMembersWithGroupUseKeysetPaginate(ctx context.Context, arg GetMembersWithGroupUseKeysetPaginateParams) ([]GetMembersWithGroupUseKeysetPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getMembersWithGroupUseKeysetPaginate,
+func (q *Queries) GetMembersWithDetailUseKeysetPaginate(ctx context.Context, arg GetMembersWithDetailUseKeysetPaginateParams) ([]GetMembersWithDetailUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithDetailUseKeysetPaginate,
 		arg.Limit,
 		arg.WhereLikeName,
 		arg.SearchName,
@@ -1935,28 +1938,28 @@ func (q *Queries) GetMembersWithGroupUseKeysetPaginate(ctx context.Context, arg 
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetMembersWithGroupUseKeysetPaginateRow{}
+	items := []GetMembersWithDetailUseKeysetPaginateRow{}
 	for rows.Next() {
-		var i GetMembersWithGroupUseKeysetPaginateRow
+		var i GetMembersWithDetailUseKeysetPaginateRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.StudentID,
+			&i.ProfessorID,
 		); err != nil {
 			return nil, err
 		}
@@ -1968,10 +1971,10 @@ func (q *Queries) GetMembersWithGroupUseKeysetPaginate(ctx context.Context, arg 
 	return items, nil
 }
 
-const getMembersWithGroupUseNumberedPaginate = `-- name: GetMembersWithGroupUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
-LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
-LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+const getMembersWithDetailUseNumberedPaginate = `-- name: GetMembersWithDetailUseNumberedPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_students.student_id, m_professors.professor_id FROM m_members
+LEFT JOIN m_students ON m_members.member_id = m_students.member_id
+LEFT JOIN m_professors ON m_members.member_id = m_professors.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
@@ -1989,7 +1992,7 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetMembersWithGroupUseNumberedPaginateParams struct {
+type GetMembersWithDetailUseNumberedPaginateParams struct {
 	Limit              int32       `json:"limit"`
 	Offset             int32       `json:"offset"`
 	WhereLikeName      bool        `json:"where_like_name"`
@@ -2005,13 +2008,29 @@ type GetMembersWithGroupUseNumberedPaginateParams struct {
 	OrderMethod        string      `json:"order_method"`
 }
 
-type GetMembersWithGroupUseNumberedPaginateRow struct {
-	Member Member `json:"member"`
-	Group  Group  `json:"group"`
+type GetMembersWithDetailUseNumberedPaginateRow struct {
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	StudentID              pgtype.UUID `json:"student_id"`
+	ProfessorID            pgtype.UUID `json:"professor_id"`
 }
 
-func (q *Queries) GetMembersWithGroupUseNumberedPaginate(ctx context.Context, arg GetMembersWithGroupUseNumberedPaginateParams) ([]GetMembersWithGroupUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getMembersWithGroupUseNumberedPaginate,
+func (q *Queries) GetMembersWithDetailUseNumberedPaginate(ctx context.Context, arg GetMembersWithDetailUseNumberedPaginateParams) ([]GetMembersWithDetailUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithDetailUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.WhereLikeName,
@@ -2030,28 +2049,28 @@ func (q *Queries) GetMembersWithGroupUseNumberedPaginate(ctx context.Context, ar
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetMembersWithGroupUseNumberedPaginateRow{}
+	items := []GetMembersWithDetailUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetMembersWithGroupUseNumberedPaginateRow
+		var i GetMembersWithDetailUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.StudentID,
+			&i.ProfessorID,
 		); err != nil {
 			return nil, err
 		}
@@ -2064,7 +2083,9 @@ func (q *Queries) GetMembersWithGroupUseNumberedPaginate(ctx context.Context, ar
 }
 
 const getMembersWithPersonalOrganization = `-- name: GetMembersWithPersonalOrganization :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id FROM m_members
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
@@ -2097,8 +2118,28 @@ type GetMembersWithPersonalOrganizationParams struct {
 }
 
 type GetMembersWithPersonalOrganizationRow struct {
-	Member       Member       `json:"member"`
-	Organization Organization `json:"organization"`
+	MMembersPkey            pgtype.Int8 `json:"m_members_pkey"`
+	MemberID                uuid.UUID   `json:"member_id"`
+	LoginID                 string      `json:"login_id"`
+	Password                string      `json:"password"`
+	Email                   string      `json:"email"`
+	Name                    string      `json:"name"`
+	FirstName               string      `json:"first_name"`
+	LastName                string      `json:"last_name"`
+	AttendStatusID          uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID          pgtype.UUID `json:"profile_image_id"`
+	GradeID                 uuid.UUID   `json:"grade_id"`
+	GroupID                 uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID  uuid.UUID   `json:"personal_organization_id"`
+	RoleID                  pgtype.UUID `json:"role_id"`
+	CreatedAt               time.Time   `json:"created_at"`
+	UpdatedAt               time.Time   `json:"updated_at"`
+	OrganizationName        pgtype.Text `json:"organization_name"`
+	OrganizationDescription pgtype.Text `json:"organization_description"`
+	OrganizationColor       pgtype.Text `json:"organization_color"`
+	OrganizationIsPersonal  pgtype.Bool `json:"organization_is_personal"`
+	OrganizationIsWhole     pgtype.Bool `json:"organization_is_whole"`
+	OrganizationChatRoomID  pgtype.UUID `json:"organization_chat_room_id"`
 }
 
 func (q *Queries) GetMembersWithPersonalOrganization(ctx context.Context, arg GetMembersWithPersonalOrganizationParams) ([]GetMembersWithPersonalOrganizationRow, error) {
@@ -2123,30 +2164,28 @@ func (q *Queries) GetMembersWithPersonalOrganization(ctx context.Context, arg Ge
 	for rows.Next() {
 		var i GetMembersWithPersonalOrganizationRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.OrganizationName,
+			&i.OrganizationDescription,
+			&i.OrganizationColor,
+			&i.OrganizationIsPersonal,
+			&i.OrganizationIsWhole,
+			&i.OrganizationChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -2159,7 +2198,9 @@ func (q *Queries) GetMembersWithPersonalOrganization(ctx context.Context, arg Ge
 }
 
 const getMembersWithPersonalOrganizationUseKeysetPaginate = `-- name: GetMembersWithPersonalOrganizationUseKeysetPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id FROM m_members
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
@@ -2215,8 +2256,28 @@ type GetMembersWithPersonalOrganizationUseKeysetPaginateParams struct {
 }
 
 type GetMembersWithPersonalOrganizationUseKeysetPaginateRow struct {
-	Member       Member       `json:"member"`
-	Organization Organization `json:"organization"`
+	MMembersPkey            pgtype.Int8 `json:"m_members_pkey"`
+	MemberID                uuid.UUID   `json:"member_id"`
+	LoginID                 string      `json:"login_id"`
+	Password                string      `json:"password"`
+	Email                   string      `json:"email"`
+	Name                    string      `json:"name"`
+	FirstName               string      `json:"first_name"`
+	LastName                string      `json:"last_name"`
+	AttendStatusID          uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID          pgtype.UUID `json:"profile_image_id"`
+	GradeID                 uuid.UUID   `json:"grade_id"`
+	GroupID                 uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID  uuid.UUID   `json:"personal_organization_id"`
+	RoleID                  pgtype.UUID `json:"role_id"`
+	CreatedAt               time.Time   `json:"created_at"`
+	UpdatedAt               time.Time   `json:"updated_at"`
+	OrganizationName        pgtype.Text `json:"organization_name"`
+	OrganizationDescription pgtype.Text `json:"organization_description"`
+	OrganizationColor       pgtype.Text `json:"organization_color"`
+	OrganizationIsPersonal  pgtype.Bool `json:"organization_is_personal"`
+	OrganizationIsWhole     pgtype.Bool `json:"organization_is_whole"`
+	OrganizationChatRoomID  pgtype.UUID `json:"organization_chat_room_id"`
 }
 
 func (q *Queries) GetMembersWithPersonalOrganizationUseKeysetPaginate(ctx context.Context, arg GetMembersWithPersonalOrganizationUseKeysetPaginateParams) ([]GetMembersWithPersonalOrganizationUseKeysetPaginateRow, error) {
@@ -2245,30 +2306,28 @@ func (q *Queries) GetMembersWithPersonalOrganizationUseKeysetPaginate(ctx contex
 	for rows.Next() {
 		var i GetMembersWithPersonalOrganizationUseKeysetPaginateRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.OrganizationName,
+			&i.OrganizationDescription,
+			&i.OrganizationColor,
+			&i.OrganizationIsPersonal,
+			&i.OrganizationIsWhole,
+			&i.OrganizationChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -2281,7 +2340,9 @@ func (q *Queries) GetMembersWithPersonalOrganizationUseKeysetPaginate(ctx contex
 }
 
 const getMembersWithPersonalOrganizationUseNumberedPaginate = `-- name: GetMembersWithPersonalOrganizationUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id FROM m_members
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
@@ -2317,8 +2378,28 @@ type GetMembersWithPersonalOrganizationUseNumberedPaginateParams struct {
 }
 
 type GetMembersWithPersonalOrganizationUseNumberedPaginateRow struct {
-	Member       Member       `json:"member"`
-	Organization Organization `json:"organization"`
+	MMembersPkey            pgtype.Int8 `json:"m_members_pkey"`
+	MemberID                uuid.UUID   `json:"member_id"`
+	LoginID                 string      `json:"login_id"`
+	Password                string      `json:"password"`
+	Email                   string      `json:"email"`
+	Name                    string      `json:"name"`
+	FirstName               string      `json:"first_name"`
+	LastName                string      `json:"last_name"`
+	AttendStatusID          uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID          pgtype.UUID `json:"profile_image_id"`
+	GradeID                 uuid.UUID   `json:"grade_id"`
+	GroupID                 uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID  uuid.UUID   `json:"personal_organization_id"`
+	RoleID                  pgtype.UUID `json:"role_id"`
+	CreatedAt               time.Time   `json:"created_at"`
+	UpdatedAt               time.Time   `json:"updated_at"`
+	OrganizationName        pgtype.Text `json:"organization_name"`
+	OrganizationDescription pgtype.Text `json:"organization_description"`
+	OrganizationColor       pgtype.Text `json:"organization_color"`
+	OrganizationIsPersonal  pgtype.Bool `json:"organization_is_personal"`
+	OrganizationIsWhole     pgtype.Bool `json:"organization_is_whole"`
+	OrganizationChatRoomID  pgtype.UUID `json:"organization_chat_room_id"`
 }
 
 func (q *Queries) GetMembersWithPersonalOrganizationUseNumberedPaginate(ctx context.Context, arg GetMembersWithPersonalOrganizationUseNumberedPaginateParams) ([]GetMembersWithPersonalOrganizationUseNumberedPaginateRow, error) {
@@ -2345,30 +2426,426 @@ func (q *Queries) GetMembersWithPersonalOrganizationUseNumberedPaginate(ctx cont
 	for rows.Next() {
 		var i GetMembersWithPersonalOrganizationUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.OrganizationName,
+			&i.OrganizationDescription,
+			&i.OrganizationColor,
+			&i.OrganizationIsPersonal,
+			&i.OrganizationIsWhole,
+			&i.OrganizationChatRoomID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersWithProfileImage = `-- name: GetMembersWithProfileImage :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, t_images.height profile_image_height,
+t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
+FROM m_members
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE
+	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($4::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN m_members.attend_status_id = ANY($6::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
+ORDER BY
+	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey ASC
+`
+
+type GetMembersWithProfileImageParams struct {
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	OrderMethod        string      `json:"order_method"`
+}
+
+type GetMembersWithProfileImageRow struct {
+	MMembersPkey                 pgtype.Int8   `json:"m_members_pkey"`
+	MemberID                     uuid.UUID     `json:"member_id"`
+	LoginID                      string        `json:"login_id"`
+	Password                     string        `json:"password"`
+	Email                        string        `json:"email"`
+	Name                         string        `json:"name"`
+	FirstName                    string        `json:"first_name"`
+	LastName                     string        `json:"last_name"`
+	AttendStatusID               uuid.UUID     `json:"attend_status_id"`
+	ProfileImageID               pgtype.UUID   `json:"profile_image_id"`
+	GradeID                      uuid.UUID     `json:"grade_id"`
+	GroupID                      uuid.UUID     `json:"group_id"`
+	PersonalOrganizationID       uuid.UUID     `json:"personal_organization_id"`
+	RoleID                       pgtype.UUID   `json:"role_id"`
+	CreatedAt                    time.Time     `json:"created_at"`
+	UpdatedAt                    time.Time     `json:"updated_at"`
+	ProfileImageHeight           pgtype.Float8 `json:"profile_image_height"`
+	ProfileImageWidth            pgtype.Float8 `json:"profile_image_width"`
+	ProfileImageAttachableItemID pgtype.UUID   `json:"profile_image_attachable_item_id"`
+	ProfileImageOwnerID          pgtype.UUID   `json:"profile_image_owner_id"`
+	ProfileImageFromOuter        pgtype.Bool   `json:"profile_image_from_outer"`
+	ProfileImageUrl              pgtype.Text   `json:"profile_image_url"`
+	ProfileImageSize             pgtype.Float8 `json:"profile_image_size"`
+	ProfileImageMimeTypeID       pgtype.UUID   `json:"profile_image_mime_type_id"`
+}
+
+func (q *Queries) GetMembersWithProfileImage(ctx context.Context, arg GetMembersWithProfileImageParams) ([]GetMembersWithProfileImageRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithProfileImage,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersWithProfileImageRow{}
+	for rows.Next() {
+		var i GetMembersWithProfileImageRow
+		if err := rows.Scan(
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ProfileImageHeight,
+			&i.ProfileImageWidth,
+			&i.ProfileImageAttachableItemID,
+			&i.ProfileImageOwnerID,
+			&i.ProfileImageFromOuter,
+			&i.ProfileImageUrl,
+			&i.ProfileImageSize,
+			&i.ProfileImageMimeTypeID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersWithProfileImageUseKeysetPaginate = `-- name: GetMembersWithProfileImageUseKeysetPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, t_images.height profile_image_height,
+t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
+FROM m_members
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE
+	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($5::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN m_members.attend_status_id = ANY($7::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN m_members.grade_id = ANY($9::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
+AND
+	CASE $12::text
+		WHEN 'next' THEN
+			CASE $13::text
+				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
+				ELSE m_members_pkey > $15::int
+			END
+		WHEN 'prev' THEN
+			CASE $13::text
+				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
+				ELSE m_members_pkey < $15::int
+			END
+	END
+ORDER BY
+	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC,
+	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
+	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
+LIMIT $1
+`
+
+type GetMembersWithProfileImageUseKeysetPaginateParams struct {
+	Limit              int32       `json:"limit"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	CursorDirection    string      `json:"cursor_direction"`
+	OrderMethod        string      `json:"order_method"`
+	NameCursor         string      `json:"name_cursor"`
+	Cursor             int32       `json:"cursor"`
+}
+
+type GetMembersWithProfileImageUseKeysetPaginateRow struct {
+	MMembersPkey                 pgtype.Int8   `json:"m_members_pkey"`
+	MemberID                     uuid.UUID     `json:"member_id"`
+	LoginID                      string        `json:"login_id"`
+	Password                     string        `json:"password"`
+	Email                        string        `json:"email"`
+	Name                         string        `json:"name"`
+	FirstName                    string        `json:"first_name"`
+	LastName                     string        `json:"last_name"`
+	AttendStatusID               uuid.UUID     `json:"attend_status_id"`
+	ProfileImageID               pgtype.UUID   `json:"profile_image_id"`
+	GradeID                      uuid.UUID     `json:"grade_id"`
+	GroupID                      uuid.UUID     `json:"group_id"`
+	PersonalOrganizationID       uuid.UUID     `json:"personal_organization_id"`
+	RoleID                       pgtype.UUID   `json:"role_id"`
+	CreatedAt                    time.Time     `json:"created_at"`
+	UpdatedAt                    time.Time     `json:"updated_at"`
+	ProfileImageHeight           pgtype.Float8 `json:"profile_image_height"`
+	ProfileImageWidth            pgtype.Float8 `json:"profile_image_width"`
+	ProfileImageAttachableItemID pgtype.UUID   `json:"profile_image_attachable_item_id"`
+	ProfileImageOwnerID          pgtype.UUID   `json:"profile_image_owner_id"`
+	ProfileImageFromOuter        pgtype.Bool   `json:"profile_image_from_outer"`
+	ProfileImageUrl              pgtype.Text   `json:"profile_image_url"`
+	ProfileImageSize             pgtype.Float8 `json:"profile_image_size"`
+	ProfileImageMimeTypeID       pgtype.UUID   `json:"profile_image_mime_type_id"`
+}
+
+func (q *Queries) GetMembersWithProfileImageUseKeysetPaginate(ctx context.Context, arg GetMembersWithProfileImageUseKeysetPaginateParams) ([]GetMembersWithProfileImageUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithProfileImageUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.NameCursor,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersWithProfileImageUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetMembersWithProfileImageUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ProfileImageHeight,
+			&i.ProfileImageWidth,
+			&i.ProfileImageAttachableItemID,
+			&i.ProfileImageOwnerID,
+			&i.ProfileImageFromOuter,
+			&i.ProfileImageUrl,
+			&i.ProfileImageSize,
+			&i.ProfileImageMimeTypeID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getMembersWithProfileImageUseNumberedPaginate = `-- name: GetMembersWithProfileImageUseNumberedPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, t_images.height profile_image_height,
+t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
+FROM m_members
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE
+	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN (SELECT COUNT(*) FROM m_role_associations WHERE role_id = m_members.role_id AND m_role_associations.policy_id = ANY($6::uuid[])) > 0 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN m_members.attend_status_id = ANY($8::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
+ORDER BY
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetMembersWithProfileImageUseNumberedPaginateParams struct {
+	Limit              int32       `json:"limit"`
+	Offset             int32       `json:"offset"`
+	WhereLikeName      bool        `json:"where_like_name"`
+	SearchName         string      `json:"search_name"`
+	WhereHasPolicy     bool        `json:"where_has_policy"`
+	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus bool        `json:"when_in_attend_status"`
+	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade        bool        `json:"when_in_grade"`
+	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup        bool        `json:"when_in_group"`
+	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	OrderMethod        string      `json:"order_method"`
+}
+
+type GetMembersWithProfileImageUseNumberedPaginateRow struct {
+	MMembersPkey                 pgtype.Int8   `json:"m_members_pkey"`
+	MemberID                     uuid.UUID     `json:"member_id"`
+	LoginID                      string        `json:"login_id"`
+	Password                     string        `json:"password"`
+	Email                        string        `json:"email"`
+	Name                         string        `json:"name"`
+	FirstName                    string        `json:"first_name"`
+	LastName                     string        `json:"last_name"`
+	AttendStatusID               uuid.UUID     `json:"attend_status_id"`
+	ProfileImageID               pgtype.UUID   `json:"profile_image_id"`
+	GradeID                      uuid.UUID     `json:"grade_id"`
+	GroupID                      uuid.UUID     `json:"group_id"`
+	PersonalOrganizationID       uuid.UUID     `json:"personal_organization_id"`
+	RoleID                       pgtype.UUID   `json:"role_id"`
+	CreatedAt                    time.Time     `json:"created_at"`
+	UpdatedAt                    time.Time     `json:"updated_at"`
+	ProfileImageHeight           pgtype.Float8 `json:"profile_image_height"`
+	ProfileImageWidth            pgtype.Float8 `json:"profile_image_width"`
+	ProfileImageAttachableItemID pgtype.UUID   `json:"profile_image_attachable_item_id"`
+	ProfileImageOwnerID          pgtype.UUID   `json:"profile_image_owner_id"`
+	ProfileImageFromOuter        pgtype.Bool   `json:"profile_image_from_outer"`
+	ProfileImageUrl              pgtype.Text   `json:"profile_image_url"`
+	ProfileImageSize             pgtype.Float8 `json:"profile_image_size"`
+	ProfileImageMimeTypeID       pgtype.UUID   `json:"profile_image_mime_type_id"`
+}
+
+func (q *Queries) GetMembersWithProfileImageUseNumberedPaginate(ctx context.Context, arg GetMembersWithProfileImageUseNumberedPaginateParams) ([]GetMembersWithProfileImageUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getMembersWithProfileImageUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereLikeName,
+		arg.SearchName,
+		arg.WhereHasPolicy,
+		arg.HasPolicyIds,
+		arg.WhenInAttendStatus,
+		arg.InAttendStatusIds,
+		arg.WhenInGrade,
+		arg.InGradeIds,
+		arg.WhenInGroup,
+		arg.InGroupIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetMembersWithProfileImageUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetMembersWithProfileImageUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ProfileImageHeight,
+			&i.ProfileImageWidth,
+			&i.ProfileImageAttachableItemID,
+			&i.ProfileImageOwnerID,
+			&i.ProfileImageFromOuter,
+			&i.ProfileImageUrl,
+			&i.ProfileImageSize,
+			&i.ProfileImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}
@@ -2381,7 +2858,7 @@ func (q *Queries) GetMembersWithPersonalOrganizationUseNumberedPaginate(ctx cont
 }
 
 const getMembersWithRole = `-- name: GetMembersWithRole :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.name role_name, m_roles.description role_description FROM m_members
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE
 	CASE WHEN $1::boolean = true THEN m_members.name LIKE '%' || $2::text || '%' ELSE TRUE END
@@ -2414,8 +2891,24 @@ type GetMembersWithRoleParams struct {
 }
 
 type GetMembersWithRoleRow struct {
-	Member Member `json:"member"`
-	Role   Role   `json:"role"`
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	RoleName               pgtype.Text `json:"role_name"`
+	RoleDescription        pgtype.Text `json:"role_description"`
 }
 
 func (q *Queries) GetMembersWithRole(ctx context.Context, arg GetMembersWithRoleParams) ([]GetMembersWithRoleRow, error) {
@@ -2440,26 +2933,24 @@ func (q *Queries) GetMembersWithRole(ctx context.Context, arg GetMembersWithRole
 	for rows.Next() {
 		var i GetMembersWithRoleRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Role.MRolesPkey,
-			&i.Role.RoleID,
-			&i.Role.Name,
-			&i.Role.Description,
-			&i.Role.CreatedAt,
-			&i.Role.UpdatedAt,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.RoleName,
+			&i.RoleDescription,
 		); err != nil {
 			return nil, err
 		}
@@ -2472,7 +2963,7 @@ func (q *Queries) GetMembersWithRole(ctx context.Context, arg GetMembersWithRole
 }
 
 const getMembersWithRoleUseKeysetPaginate = `-- name: GetMembersWithRoleUseKeysetPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.name role_name, m_roles.description role_description FROM m_members
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE
 	CASE WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE END
@@ -2528,8 +3019,24 @@ type GetMembersWithRoleUseKeysetPaginateParams struct {
 }
 
 type GetMembersWithRoleUseKeysetPaginateRow struct {
-	Member Member `json:"member"`
-	Role   Role   `json:"role"`
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	RoleName               pgtype.Text `json:"role_name"`
+	RoleDescription        pgtype.Text `json:"role_description"`
 }
 
 func (q *Queries) GetMembersWithRoleUseKeysetPaginate(ctx context.Context, arg GetMembersWithRoleUseKeysetPaginateParams) ([]GetMembersWithRoleUseKeysetPaginateRow, error) {
@@ -2558,26 +3065,24 @@ func (q *Queries) GetMembersWithRoleUseKeysetPaginate(ctx context.Context, arg G
 	for rows.Next() {
 		var i GetMembersWithRoleUseKeysetPaginateRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Role.MRolesPkey,
-			&i.Role.RoleID,
-			&i.Role.Name,
-			&i.Role.Description,
-			&i.Role.CreatedAt,
-			&i.Role.UpdatedAt,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.RoleName,
+			&i.RoleDescription,
 		); err != nil {
 			return nil, err
 		}
@@ -2590,7 +3095,7 @@ func (q *Queries) GetMembersWithRoleUseKeysetPaginate(ctx context.Context, arg G
 }
 
 const getMembersWithRoleUseNumberedPaginate = `-- name: GetMembersWithRoleUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.name role_name, m_roles.description role_description FROM m_members
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE
 	CASE WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE END
@@ -2626,8 +3131,24 @@ type GetMembersWithRoleUseNumberedPaginateParams struct {
 }
 
 type GetMembersWithRoleUseNumberedPaginateRow struct {
-	Member Member `json:"member"`
-	Role   Role   `json:"role"`
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	RoleName               pgtype.Text `json:"role_name"`
+	RoleDescription        pgtype.Text `json:"role_description"`
 }
 
 func (q *Queries) GetMembersWithRoleUseNumberedPaginate(ctx context.Context, arg GetMembersWithRoleUseNumberedPaginateParams) ([]GetMembersWithRoleUseNumberedPaginateRow, error) {
@@ -2654,26 +3175,24 @@ func (q *Queries) GetMembersWithRoleUseNumberedPaginate(ctx context.Context, arg
 	for rows.Next() {
 		var i GetMembersWithRoleUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Role.MRolesPkey,
-			&i.Role.RoleID,
-			&i.Role.Name,
-			&i.Role.Description,
-			&i.Role.CreatedAt,
-			&i.Role.UpdatedAt,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.RoleName,
+			&i.RoleDescription,
 		); err != nil {
 			return nil, err
 		}
@@ -2686,7 +3205,7 @@ func (q *Queries) GetMembersWithRoleUseNumberedPaginate(ctx context.Context, arg
 }
 
 const getPluralMembers = `-- name: GetPluralMembers :many
-SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE member_id = ANY($1::uuid[])
+SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE member_id = ANY($1::uuid[])
 ORDER BY
 	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
@@ -2714,6 +3233,8 @@ func (q *Queries) GetPluralMembers(ctx context.Context, arg GetPluralMembersPara
 			&i.Password,
 			&i.Email,
 			&i.Name,
+			&i.FirstName,
+			&i.LastName,
 			&i.AttendStatusID,
 			&i.ProfileImageID,
 			&i.GradeID,
@@ -2734,7 +3255,7 @@ func (q *Queries) GetPluralMembers(ctx context.Context, arg GetPluralMembersPara
 }
 
 const getPluralMembersUseNumberedPaginate = `-- name: GetPluralMembersUseNumberedPaginate :many
-SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE member_id = ANY($3::uuid[])
+SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE member_id = ANY($3::uuid[])
 ORDER BY
 	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
 	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
@@ -2770,6 +3291,8 @@ func (q *Queries) GetPluralMembersUseNumberedPaginate(ctx context.Context, arg G
 			&i.Password,
 			&i.Email,
 			&i.Name,
+			&i.FirstName,
+			&i.LastName,
 			&i.AttendStatusID,
 			&i.ProfileImageID,
 			&i.GradeID,
@@ -2789,198 +3312,8 @@ func (q *Queries) GetPluralMembersUseNumberedPaginate(ctx context.Context, arg G
 	return items, nil
 }
 
-const getPluralMembersWithAll = `-- name: GetPluralMembersWithAll :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
-LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
-LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
-LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
-LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
-LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
-WHERE member_id = ANY($1::uuid[])
-ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey ASC
-`
-
-type GetPluralMembersWithAllParams struct {
-	MemberIds   []uuid.UUID `json:"member_ids"`
-	OrderMethod string      `json:"order_method"`
-}
-
-type GetPluralMembersWithAllRow struct {
-	Member       Member       `json:"member"`
-	AttendStatus AttendStatus `json:"attend_status"`
-	Grade        Grade        `json:"grade"`
-	Group        Group        `json:"group"`
-	Organization Organization `json:"organization"`
-	Role         Role         `json:"role"`
-}
-
-func (q *Queries) GetPluralMembersWithAll(ctx context.Context, arg GetPluralMembersWithAllParams) ([]GetPluralMembersWithAllRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithAll, arg.MemberIds, arg.OrderMethod)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []GetPluralMembersWithAllRow{}
-	for rows.Next() {
-		var i GetPluralMembersWithAllRow
-		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.AttendStatus.MAttendStatusesPkey,
-			&i.AttendStatus.AttendStatusID,
-			&i.AttendStatus.Name,
-			&i.AttendStatus.Key,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
-			&i.Role.MRolesPkey,
-			&i.Role.RoleID,
-			&i.Role.Name,
-			&i.Role.Description,
-			&i.Role.CreatedAt,
-			&i.Role.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getPluralMembersWithAllUseNumberedPaginate = `-- name: GetPluralMembersWithAllUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
-LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
-LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
-LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
-LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
-LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
-WHERE member_id = ANY($3::uuid[])
-ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
-	m_members_pkey ASC
-LIMIT $1 OFFSET $2
-`
-
-type GetPluralMembersWithAllUseNumberedPaginateParams struct {
-	Limit       int32       `json:"limit"`
-	Offset      int32       `json:"offset"`
-	MemberIds   []uuid.UUID `json:"member_ids"`
-	OrderMethod string      `json:"order_method"`
-}
-
-type GetPluralMembersWithAllUseNumberedPaginateRow struct {
-	Member       Member       `json:"member"`
-	AttendStatus AttendStatus `json:"attend_status"`
-	Grade        Grade        `json:"grade"`
-	Group        Group        `json:"group"`
-	Organization Organization `json:"organization"`
-	Role         Role         `json:"role"`
-}
-
-func (q *Queries) GetPluralMembersWithAllUseNumberedPaginate(ctx context.Context, arg GetPluralMembersWithAllUseNumberedPaginateParams) ([]GetPluralMembersWithAllUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithAllUseNumberedPaginate,
-		arg.Limit,
-		arg.Offset,
-		arg.MemberIds,
-		arg.OrderMethod,
-	)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	items := []GetPluralMembersWithAllUseNumberedPaginateRow{}
-	for rows.Next() {
-		var i GetPluralMembersWithAllUseNumberedPaginateRow
-		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.AttendStatus.MAttendStatusesPkey,
-			&i.AttendStatus.AttendStatusID,
-			&i.AttendStatus.Name,
-			&i.AttendStatus.Key,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
-			&i.Role.MRolesPkey,
-			&i.Role.RoleID,
-			&i.Role.Name,
-			&i.Role.Description,
-			&i.Role.CreatedAt,
-			&i.Role.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getPluralMembersWithAttendStatus = `-- name: GetPluralMembersWithAttendStatus :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.name attend_status_name, m_attend_statuses.key attend_status_key FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
@@ -2995,8 +3328,24 @@ type GetPluralMembersWithAttendStatusParams struct {
 }
 
 type GetPluralMembersWithAttendStatusRow struct {
-	Member       Member       `json:"member"`
-	AttendStatus AttendStatus `json:"attend_status"`
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	AttendStatusName       pgtype.Text `json:"attend_status_name"`
+	AttendStatusKey        pgtype.Text `json:"attend_status_key"`
 }
 
 func (q *Queries) GetPluralMembersWithAttendStatus(ctx context.Context, arg GetPluralMembersWithAttendStatusParams) ([]GetPluralMembersWithAttendStatusRow, error) {
@@ -3009,24 +3358,24 @@ func (q *Queries) GetPluralMembersWithAttendStatus(ctx context.Context, arg GetP
 	for rows.Next() {
 		var i GetPluralMembersWithAttendStatusRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.AttendStatus.MAttendStatusesPkey,
-			&i.AttendStatus.AttendStatusID,
-			&i.AttendStatus.Name,
-			&i.AttendStatus.Key,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.AttendStatusName,
+			&i.AttendStatusKey,
 		); err != nil {
 			return nil, err
 		}
@@ -3039,7 +3388,7 @@ func (q *Queries) GetPluralMembersWithAttendStatus(ctx context.Context, arg GetP
 }
 
 const getPluralMembersWithAttendStatusUseNumberedPaginate = `-- name: GetPluralMembersWithAttendStatusUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.m_attend_statuses_pkey, m_attend_statuses.attend_status_id, m_attend_statuses.name, m_attend_statuses.key FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_attend_statuses.name attend_status_name, m_attend_statuses.key attend_status_key FROM m_members
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
@@ -3057,8 +3406,24 @@ type GetPluralMembersWithAttendStatusUseNumberedPaginateParams struct {
 }
 
 type GetPluralMembersWithAttendStatusUseNumberedPaginateRow struct {
-	Member       Member       `json:"member"`
-	AttendStatus AttendStatus `json:"attend_status"`
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	AttendStatusName       pgtype.Text `json:"attend_status_name"`
+	AttendStatusKey        pgtype.Text `json:"attend_status_key"`
 }
 
 func (q *Queries) GetPluralMembersWithAttendStatusUseNumberedPaginate(ctx context.Context, arg GetPluralMembersWithAttendStatusUseNumberedPaginateParams) ([]GetPluralMembersWithAttendStatusUseNumberedPaginateRow, error) {
@@ -3076,24 +3441,24 @@ func (q *Queries) GetPluralMembersWithAttendStatusUseNumberedPaginate(ctx contex
 	for rows.Next() {
 		var i GetPluralMembersWithAttendStatusUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.AttendStatus.MAttendStatusesPkey,
-			&i.AttendStatus.AttendStatusID,
-			&i.AttendStatus.Name,
-			&i.AttendStatus.Key,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.AttendStatusName,
+			&i.AttendStatusKey,
 		); err != nil {
 			return nil, err
 		}
@@ -3105,10 +3470,17 @@ func (q *Queries) GetPluralMembersWithAttendStatusUseNumberedPaginate(ctx contex
 	return items, nil
 }
 
-const getPluralMembersWithGrade = `-- name: GetPluralMembersWithGrade :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
+const getPluralMembersWithCrew = `-- name: GetPluralMembersWithCrew :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.key grade_key, m_grades.organization_id grade_organization_id, grag.name grade_organization_name, grag.description grade_organization_description,
+grag.color grade_organization_color, grag.is_personal grade_organization_is_personal,
+grag.is_whole grade_organization_is_whole, grag.chat_room_id grade_organization_chat_room_id,
+m_groups.key group_key, m_groups.organization_id group_organization_id, grog.name group_organization_name, grog.description group_organization_description,
+grog.color group_organization_color, grog.is_personal group_organization_is_personal,
+grog.is_whole group_organization_is_whole, grog.chat_room_id group_organization_chat_room_id FROM m_members
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
-LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations grag ON m_grades.organization_id = grag.organization_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations grog ON m_groups.organization_id = grog.organization_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
 	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
@@ -3116,44 +3488,88 @@ ORDER BY
 	m_members_pkey ASC
 `
 
-type GetPluralMembersWithGradeParams struct {
+type GetPluralMembersWithCrewParams struct {
 	MemberIds   []uuid.UUID `json:"member_ids"`
 	OrderMethod string      `json:"order_method"`
 }
 
-type GetPluralMembersWithGradeRow struct {
-	Member Member `json:"member"`
-	Grade  Grade  `json:"grade"`
+type GetPluralMembersWithCrewRow struct {
+	MMembersPkey                 pgtype.Int8 `json:"m_members_pkey"`
+	MemberID                     uuid.UUID   `json:"member_id"`
+	LoginID                      string      `json:"login_id"`
+	Password                     string      `json:"password"`
+	Email                        string      `json:"email"`
+	Name                         string      `json:"name"`
+	FirstName                    string      `json:"first_name"`
+	LastName                     string      `json:"last_name"`
+	AttendStatusID               uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID               pgtype.UUID `json:"profile_image_id"`
+	GradeID                      uuid.UUID   `json:"grade_id"`
+	GroupID                      uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID       uuid.UUID   `json:"personal_organization_id"`
+	RoleID                       pgtype.UUID `json:"role_id"`
+	CreatedAt                    time.Time   `json:"created_at"`
+	UpdatedAt                    time.Time   `json:"updated_at"`
+	GradeKey                     pgtype.Text `json:"grade_key"`
+	GradeOrganizationID          pgtype.UUID `json:"grade_organization_id"`
+	GradeOrganizationName        pgtype.Text `json:"grade_organization_name"`
+	GradeOrganizationDescription pgtype.Text `json:"grade_organization_description"`
+	GradeOrganizationColor       pgtype.Text `json:"grade_organization_color"`
+	GradeOrganizationIsPersonal  pgtype.Bool `json:"grade_organization_is_personal"`
+	GradeOrganizationIsWhole     pgtype.Bool `json:"grade_organization_is_whole"`
+	GradeOrganizationChatRoomID  pgtype.UUID `json:"grade_organization_chat_room_id"`
+	GroupKey                     pgtype.Text `json:"group_key"`
+	GroupOrganizationID          pgtype.UUID `json:"group_organization_id"`
+	GroupOrganizationName        pgtype.Text `json:"group_organization_name"`
+	GroupOrganizationDescription pgtype.Text `json:"group_organization_description"`
+	GroupOrganizationColor       pgtype.Text `json:"group_organization_color"`
+	GroupOrganizationIsPersonal  pgtype.Bool `json:"group_organization_is_personal"`
+	GroupOrganizationIsWhole     pgtype.Bool `json:"group_organization_is_whole"`
+	GroupOrganizationChatRoomID  pgtype.UUID `json:"group_organization_chat_room_id"`
 }
 
-func (q *Queries) GetPluralMembersWithGrade(ctx context.Context, arg GetPluralMembersWithGradeParams) ([]GetPluralMembersWithGradeRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithGrade, arg.MemberIds, arg.OrderMethod)
+func (q *Queries) GetPluralMembersWithCrew(ctx context.Context, arg GetPluralMembersWithCrewParams) ([]GetPluralMembersWithCrewRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithCrew, arg.MemberIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluralMembersWithGradeRow{}
+	items := []GetPluralMembersWithCrewRow{}
 	for rows.Next() {
-		var i GetPluralMembersWithGradeRow
+		var i GetPluralMembersWithCrewRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.GradeKey,
+			&i.GradeOrganizationID,
+			&i.GradeOrganizationName,
+			&i.GradeOrganizationDescription,
+			&i.GradeOrganizationColor,
+			&i.GradeOrganizationIsPersonal,
+			&i.GradeOrganizationIsWhole,
+			&i.GradeOrganizationChatRoomID,
+			&i.GroupKey,
+			&i.GroupOrganizationID,
+			&i.GroupOrganizationName,
+			&i.GroupOrganizationDescription,
+			&i.GroupOrganizationColor,
+			&i.GroupOrganizationIsPersonal,
+			&i.GroupOrganizationIsWhole,
+			&i.GroupOrganizationChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -3165,10 +3581,17 @@ func (q *Queries) GetPluralMembersWithGrade(ctx context.Context, arg GetPluralMe
 	return items, nil
 }
 
-const getPluralMembersWithGradeUseNumberedPaginate = `-- name: GetPluralMembersWithGradeUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id FROM m_members
+const getPluralMembersWithCrewUseNumberedPaginate = `-- name: GetPluralMembersWithCrewUseNumberedPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_grades.key grade_key, m_grades.organization_id grade_organization_id, grag.name grade_organization_name, grag.description grade_organization_description,
+grag.color grade_organization_color, grag.is_personal grade_organization_is_personal,
+grag.is_whole grade_organization_is_whole, grag.chat_room_id grade_organization_chat_room_id,
+m_groups.key group_key, m_groups.organization_id group_organization_id, grog.name group_organization_name, grog.description group_organization_description,
+grog.color group_organization_color, grog.is_personal group_organization_is_personal,
+grog.is_whole group_organization_is_whole, grog.chat_room_id group_organization_chat_room_id FROM m_members
 LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
-LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+LEFT JOIN m_organizations grag ON m_grades.organization_id = grag.organization_id
+LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
+LEFT JOIN m_organizations grog ON m_groups.organization_id = grog.organization_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
 	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
@@ -3177,20 +3600,50 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralMembersWithGradeUseNumberedPaginateParams struct {
+type GetPluralMembersWithCrewUseNumberedPaginateParams struct {
 	Limit       int32       `json:"limit"`
 	Offset      int32       `json:"offset"`
 	MemberIds   []uuid.UUID `json:"member_ids"`
 	OrderMethod string      `json:"order_method"`
 }
 
-type GetPluralMembersWithGradeUseNumberedPaginateRow struct {
-	Member Member `json:"member"`
-	Grade  Grade  `json:"grade"`
+type GetPluralMembersWithCrewUseNumberedPaginateRow struct {
+	MMembersPkey                 pgtype.Int8 `json:"m_members_pkey"`
+	MemberID                     uuid.UUID   `json:"member_id"`
+	LoginID                      string      `json:"login_id"`
+	Password                     string      `json:"password"`
+	Email                        string      `json:"email"`
+	Name                         string      `json:"name"`
+	FirstName                    string      `json:"first_name"`
+	LastName                     string      `json:"last_name"`
+	AttendStatusID               uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID               pgtype.UUID `json:"profile_image_id"`
+	GradeID                      uuid.UUID   `json:"grade_id"`
+	GroupID                      uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID       uuid.UUID   `json:"personal_organization_id"`
+	RoleID                       pgtype.UUID `json:"role_id"`
+	CreatedAt                    time.Time   `json:"created_at"`
+	UpdatedAt                    time.Time   `json:"updated_at"`
+	GradeKey                     pgtype.Text `json:"grade_key"`
+	GradeOrganizationID          pgtype.UUID `json:"grade_organization_id"`
+	GradeOrganizationName        pgtype.Text `json:"grade_organization_name"`
+	GradeOrganizationDescription pgtype.Text `json:"grade_organization_description"`
+	GradeOrganizationColor       pgtype.Text `json:"grade_organization_color"`
+	GradeOrganizationIsPersonal  pgtype.Bool `json:"grade_organization_is_personal"`
+	GradeOrganizationIsWhole     pgtype.Bool `json:"grade_organization_is_whole"`
+	GradeOrganizationChatRoomID  pgtype.UUID `json:"grade_organization_chat_room_id"`
+	GroupKey                     pgtype.Text `json:"group_key"`
+	GroupOrganizationID          pgtype.UUID `json:"group_organization_id"`
+	GroupOrganizationName        pgtype.Text `json:"group_organization_name"`
+	GroupOrganizationDescription pgtype.Text `json:"group_organization_description"`
+	GroupOrganizationColor       pgtype.Text `json:"group_organization_color"`
+	GroupOrganizationIsPersonal  pgtype.Bool `json:"group_organization_is_personal"`
+	GroupOrganizationIsWhole     pgtype.Bool `json:"group_organization_is_whole"`
+	GroupOrganizationChatRoomID  pgtype.UUID `json:"group_organization_chat_room_id"`
 }
 
-func (q *Queries) GetPluralMembersWithGradeUseNumberedPaginate(ctx context.Context, arg GetPluralMembersWithGradeUseNumberedPaginateParams) ([]GetPluralMembersWithGradeUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithGradeUseNumberedPaginate,
+func (q *Queries) GetPluralMembersWithCrewUseNumberedPaginate(ctx context.Context, arg GetPluralMembersWithCrewUseNumberedPaginateParams) ([]GetPluralMembersWithCrewUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithCrewUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.MemberIds,
@@ -3200,28 +3653,42 @@ func (q *Queries) GetPluralMembersWithGradeUseNumberedPaginate(ctx context.Conte
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluralMembersWithGradeUseNumberedPaginateRow{}
+	items := []GetPluralMembersWithCrewUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetPluralMembersWithGradeUseNumberedPaginateRow
+		var i GetPluralMembersWithCrewUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.GradeKey,
+			&i.GradeOrganizationID,
+			&i.GradeOrganizationName,
+			&i.GradeOrganizationDescription,
+			&i.GradeOrganizationColor,
+			&i.GradeOrganizationIsPersonal,
+			&i.GradeOrganizationIsWhole,
+			&i.GradeOrganizationChatRoomID,
+			&i.GroupKey,
+			&i.GroupOrganizationID,
+			&i.GroupOrganizationName,
+			&i.GroupOrganizationDescription,
+			&i.GroupOrganizationColor,
+			&i.GroupOrganizationIsPersonal,
+			&i.GroupOrganizationIsWhole,
+			&i.GroupOrganizationChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -3233,10 +3700,10 @@ func (q *Queries) GetPluralMembersWithGradeUseNumberedPaginate(ctx context.Conte
 	return items, nil
 }
 
-const getPluralMembersWithGroup = `-- name: GetPluralMembersWithGroup :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
-LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
-LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+const getPluralMembersWithDetail = `-- name: GetPluralMembersWithDetail :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_students.student_id, m_professors.professor_id FROM m_members
+LEFT JOIN m_students ON m_members.member_id = m_students.member_id
+LEFT JOIN m_professors ON m_members.member_id = m_professors.member_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
 	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
@@ -3244,44 +3711,60 @@ ORDER BY
 	m_members_pkey ASC
 `
 
-type GetPluralMembersWithGroupParams struct {
+type GetPluralMembersWithDetailParams struct {
 	MemberIds   []uuid.UUID `json:"member_ids"`
 	OrderMethod string      `json:"order_method"`
 }
 
-type GetPluralMembersWithGroupRow struct {
-	Member Member `json:"member"`
-	Group  Group  `json:"group"`
+type GetPluralMembersWithDetailRow struct {
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	StudentID              pgtype.UUID `json:"student_id"`
+	ProfessorID            pgtype.UUID `json:"professor_id"`
 }
 
-func (q *Queries) GetPluralMembersWithGroup(ctx context.Context, arg GetPluralMembersWithGroupParams) ([]GetPluralMembersWithGroupRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithGroup, arg.MemberIds, arg.OrderMethod)
+func (q *Queries) GetPluralMembersWithDetail(ctx context.Context, arg GetPluralMembersWithDetailParams) ([]GetPluralMembersWithDetailRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithDetail, arg.MemberIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluralMembersWithGroupRow{}
+	items := []GetPluralMembersWithDetailRow{}
 	for rows.Next() {
-		var i GetPluralMembersWithGroupRow
+		var i GetPluralMembersWithDetailRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.StudentID,
+			&i.ProfessorID,
 		); err != nil {
 			return nil, err
 		}
@@ -3293,10 +3776,10 @@ func (q *Queries) GetPluralMembersWithGroup(ctx context.Context, arg GetPluralMe
 	return items, nil
 }
 
-const getPluralMembersWithGroupUseNumberedPaginate = `-- name: GetPluralMembersWithGroupUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_groups.m_groups_pkey, m_groups.group_id, m_groups.key, m_groups.organization_id FROM m_members
-LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
-LEFT JOIN m_organizations ON m_groups.organization_id = m_organizations.organization_id
+const getPluralMembersWithDetailUseNumberedPaginate = `-- name: GetPluralMembersWithDetailUseNumberedPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_students.student_id, m_professors.professor_id FROM m_members
+LEFT JOIN m_students ON m_members.member_id = m_students.member_id
+LEFT JOIN m_professors ON m_members.member_id = m_professors.member_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
 	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
@@ -3305,20 +3788,36 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralMembersWithGroupUseNumberedPaginateParams struct {
+type GetPluralMembersWithDetailUseNumberedPaginateParams struct {
 	Limit       int32       `json:"limit"`
 	Offset      int32       `json:"offset"`
 	MemberIds   []uuid.UUID `json:"member_ids"`
 	OrderMethod string      `json:"order_method"`
 }
 
-type GetPluralMembersWithGroupUseNumberedPaginateRow struct {
-	Member Member `json:"member"`
-	Group  Group  `json:"group"`
+type GetPluralMembersWithDetailUseNumberedPaginateRow struct {
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	StudentID              pgtype.UUID `json:"student_id"`
+	ProfessorID            pgtype.UUID `json:"professor_id"`
 }
 
-func (q *Queries) GetPluralMembersWithGroupUseNumberedPaginate(ctx context.Context, arg GetPluralMembersWithGroupUseNumberedPaginateParams) ([]GetPluralMembersWithGroupUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralMembersWithGroupUseNumberedPaginate,
+func (q *Queries) GetPluralMembersWithDetailUseNumberedPaginate(ctx context.Context, arg GetPluralMembersWithDetailUseNumberedPaginateParams) ([]GetPluralMembersWithDetailUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithDetailUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.MemberIds,
@@ -3328,28 +3827,28 @@ func (q *Queries) GetPluralMembersWithGroupUseNumberedPaginate(ctx context.Conte
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluralMembersWithGroupUseNumberedPaginateRow{}
+	items := []GetPluralMembersWithDetailUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetPluralMembersWithGroupUseNumberedPaginateRow
+		var i GetPluralMembersWithDetailUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Group.MGroupsPkey,
-			&i.Group.GroupID,
-			&i.Group.Key,
-			&i.Group.OrganizationID,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.StudentID,
+			&i.ProfessorID,
 		); err != nil {
 			return nil, err
 		}
@@ -3362,7 +3861,9 @@ func (q *Queries) GetPluralMembersWithGroupUseNumberedPaginate(ctx context.Conte
 }
 
 const getPluralMembersWithPersonalOrganization = `-- name: GetPluralMembersWithPersonalOrganization :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id FROM m_members
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
@@ -3377,8 +3878,28 @@ type GetPluralMembersWithPersonalOrganizationParams struct {
 }
 
 type GetPluralMembersWithPersonalOrganizationRow struct {
-	Member       Member       `json:"member"`
-	Organization Organization `json:"organization"`
+	MMembersPkey            pgtype.Int8 `json:"m_members_pkey"`
+	MemberID                uuid.UUID   `json:"member_id"`
+	LoginID                 string      `json:"login_id"`
+	Password                string      `json:"password"`
+	Email                   string      `json:"email"`
+	Name                    string      `json:"name"`
+	FirstName               string      `json:"first_name"`
+	LastName                string      `json:"last_name"`
+	AttendStatusID          uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID          pgtype.UUID `json:"profile_image_id"`
+	GradeID                 uuid.UUID   `json:"grade_id"`
+	GroupID                 uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID  uuid.UUID   `json:"personal_organization_id"`
+	RoleID                  pgtype.UUID `json:"role_id"`
+	CreatedAt               time.Time   `json:"created_at"`
+	UpdatedAt               time.Time   `json:"updated_at"`
+	OrganizationName        pgtype.Text `json:"organization_name"`
+	OrganizationDescription pgtype.Text `json:"organization_description"`
+	OrganizationColor       pgtype.Text `json:"organization_color"`
+	OrganizationIsPersonal  pgtype.Bool `json:"organization_is_personal"`
+	OrganizationIsWhole     pgtype.Bool `json:"organization_is_whole"`
+	OrganizationChatRoomID  pgtype.UUID `json:"organization_chat_room_id"`
 }
 
 func (q *Queries) GetPluralMembersWithPersonalOrganization(ctx context.Context, arg GetPluralMembersWithPersonalOrganizationParams) ([]GetPluralMembersWithPersonalOrganizationRow, error) {
@@ -3391,30 +3912,28 @@ func (q *Queries) GetPluralMembersWithPersonalOrganization(ctx context.Context, 
 	for rows.Next() {
 		var i GetPluralMembersWithPersonalOrganizationRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.OrganizationName,
+			&i.OrganizationDescription,
+			&i.OrganizationColor,
+			&i.OrganizationIsPersonal,
+			&i.OrganizationIsWhole,
+			&i.OrganizationChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -3427,7 +3946,9 @@ func (q *Queries) GetPluralMembersWithPersonalOrganization(ctx context.Context, 
 }
 
 const getPluralMembersWithPersonalOrganizationUseNumberedPaginate = `-- name: GetPluralMembersWithPersonalOrganizationUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id FROM m_members
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
@@ -3445,8 +3966,28 @@ type GetPluralMembersWithPersonalOrganizationUseNumberedPaginateParams struct {
 }
 
 type GetPluralMembersWithPersonalOrganizationUseNumberedPaginateRow struct {
-	Member       Member       `json:"member"`
-	Organization Organization `json:"organization"`
+	MMembersPkey            pgtype.Int8 `json:"m_members_pkey"`
+	MemberID                uuid.UUID   `json:"member_id"`
+	LoginID                 string      `json:"login_id"`
+	Password                string      `json:"password"`
+	Email                   string      `json:"email"`
+	Name                    string      `json:"name"`
+	FirstName               string      `json:"first_name"`
+	LastName                string      `json:"last_name"`
+	AttendStatusID          uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID          pgtype.UUID `json:"profile_image_id"`
+	GradeID                 uuid.UUID   `json:"grade_id"`
+	GroupID                 uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID  uuid.UUID   `json:"personal_organization_id"`
+	RoleID                  pgtype.UUID `json:"role_id"`
+	CreatedAt               time.Time   `json:"created_at"`
+	UpdatedAt               time.Time   `json:"updated_at"`
+	OrganizationName        pgtype.Text `json:"organization_name"`
+	OrganizationDescription pgtype.Text `json:"organization_description"`
+	OrganizationColor       pgtype.Text `json:"organization_color"`
+	OrganizationIsPersonal  pgtype.Bool `json:"organization_is_personal"`
+	OrganizationIsWhole     pgtype.Bool `json:"organization_is_whole"`
+	OrganizationChatRoomID  pgtype.UUID `json:"organization_chat_room_id"`
 }
 
 func (q *Queries) GetPluralMembersWithPersonalOrganizationUseNumberedPaginate(ctx context.Context, arg GetPluralMembersWithPersonalOrganizationUseNumberedPaginateParams) ([]GetPluralMembersWithPersonalOrganizationUseNumberedPaginateRow, error) {
@@ -3464,30 +4005,220 @@ func (q *Queries) GetPluralMembersWithPersonalOrganizationUseNumberedPaginate(ct
 	for rows.Next() {
 		var i GetPluralMembersWithPersonalOrganizationUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.OrganizationName,
+			&i.OrganizationDescription,
+			&i.OrganizationColor,
+			&i.OrganizationIsPersonal,
+			&i.OrganizationIsWhole,
+			&i.OrganizationChatRoomID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMembersWithProfileImage = `-- name: GetPluralMembersWithProfileImage :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, t_images.height profile_image_height,
+t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
+FROM m_members
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE member_id = ANY($1::uuid[])
+ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey ASC
+`
+
+type GetPluralMembersWithProfileImageParams struct {
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+type GetPluralMembersWithProfileImageRow struct {
+	MMembersPkey                 pgtype.Int8   `json:"m_members_pkey"`
+	MemberID                     uuid.UUID     `json:"member_id"`
+	LoginID                      string        `json:"login_id"`
+	Password                     string        `json:"password"`
+	Email                        string        `json:"email"`
+	Name                         string        `json:"name"`
+	FirstName                    string        `json:"first_name"`
+	LastName                     string        `json:"last_name"`
+	AttendStatusID               uuid.UUID     `json:"attend_status_id"`
+	ProfileImageID               pgtype.UUID   `json:"profile_image_id"`
+	GradeID                      uuid.UUID     `json:"grade_id"`
+	GroupID                      uuid.UUID     `json:"group_id"`
+	PersonalOrganizationID       uuid.UUID     `json:"personal_organization_id"`
+	RoleID                       pgtype.UUID   `json:"role_id"`
+	CreatedAt                    time.Time     `json:"created_at"`
+	UpdatedAt                    time.Time     `json:"updated_at"`
+	ProfileImageHeight           pgtype.Float8 `json:"profile_image_height"`
+	ProfileImageWidth            pgtype.Float8 `json:"profile_image_width"`
+	ProfileImageAttachableItemID pgtype.UUID   `json:"profile_image_attachable_item_id"`
+	ProfileImageOwnerID          pgtype.UUID   `json:"profile_image_owner_id"`
+	ProfileImageFromOuter        pgtype.Bool   `json:"profile_image_from_outer"`
+	ProfileImageUrl              pgtype.Text   `json:"profile_image_url"`
+	ProfileImageSize             pgtype.Float8 `json:"profile_image_size"`
+	ProfileImageMimeTypeID       pgtype.UUID   `json:"profile_image_mime_type_id"`
+}
+
+func (q *Queries) GetPluralMembersWithProfileImage(ctx context.Context, arg GetPluralMembersWithProfileImageParams) ([]GetPluralMembersWithProfileImageRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithProfileImage, arg.MemberIds, arg.OrderMethod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralMembersWithProfileImageRow{}
+	for rows.Next() {
+		var i GetPluralMembersWithProfileImageRow
+		if err := rows.Scan(
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ProfileImageHeight,
+			&i.ProfileImageWidth,
+			&i.ProfileImageAttachableItemID,
+			&i.ProfileImageOwnerID,
+			&i.ProfileImageFromOuter,
+			&i.ProfileImageUrl,
+			&i.ProfileImageSize,
+			&i.ProfileImageMimeTypeID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMembersWithProfileImageUseNumberedPaginate = `-- name: GetPluralMembersWithProfileImageUseNumberedPaginate :many
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, t_images.height profile_image_height,
+t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
+FROM m_members
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE member_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
+	m_members_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralMembersWithProfileImageUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	MemberIds   []uuid.UUID `json:"member_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+type GetPluralMembersWithProfileImageUseNumberedPaginateRow struct {
+	MMembersPkey                 pgtype.Int8   `json:"m_members_pkey"`
+	MemberID                     uuid.UUID     `json:"member_id"`
+	LoginID                      string        `json:"login_id"`
+	Password                     string        `json:"password"`
+	Email                        string        `json:"email"`
+	Name                         string        `json:"name"`
+	FirstName                    string        `json:"first_name"`
+	LastName                     string        `json:"last_name"`
+	AttendStatusID               uuid.UUID     `json:"attend_status_id"`
+	ProfileImageID               pgtype.UUID   `json:"profile_image_id"`
+	GradeID                      uuid.UUID     `json:"grade_id"`
+	GroupID                      uuid.UUID     `json:"group_id"`
+	PersonalOrganizationID       uuid.UUID     `json:"personal_organization_id"`
+	RoleID                       pgtype.UUID   `json:"role_id"`
+	CreatedAt                    time.Time     `json:"created_at"`
+	UpdatedAt                    time.Time     `json:"updated_at"`
+	ProfileImageHeight           pgtype.Float8 `json:"profile_image_height"`
+	ProfileImageWidth            pgtype.Float8 `json:"profile_image_width"`
+	ProfileImageAttachableItemID pgtype.UUID   `json:"profile_image_attachable_item_id"`
+	ProfileImageOwnerID          pgtype.UUID   `json:"profile_image_owner_id"`
+	ProfileImageFromOuter        pgtype.Bool   `json:"profile_image_from_outer"`
+	ProfileImageUrl              pgtype.Text   `json:"profile_image_url"`
+	ProfileImageSize             pgtype.Float8 `json:"profile_image_size"`
+	ProfileImageMimeTypeID       pgtype.UUID   `json:"profile_image_mime_type_id"`
+}
+
+func (q *Queries) GetPluralMembersWithProfileImageUseNumberedPaginate(ctx context.Context, arg GetPluralMembersWithProfileImageUseNumberedPaginateParams) ([]GetPluralMembersWithProfileImageUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMembersWithProfileImageUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.MemberIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralMembersWithProfileImageUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralMembersWithProfileImageUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ProfileImageHeight,
+			&i.ProfileImageWidth,
+			&i.ProfileImageAttachableItemID,
+			&i.ProfileImageOwnerID,
+			&i.ProfileImageFromOuter,
+			&i.ProfileImageUrl,
+			&i.ProfileImageSize,
+			&i.ProfileImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}
@@ -3500,7 +4231,7 @@ func (q *Queries) GetPluralMembersWithPersonalOrganizationUseNumberedPaginate(ct
 }
 
 const getPluralMembersWithRole = `-- name: GetPluralMembersWithRole :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.name role_name, m_roles.description role_description FROM m_members
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
@@ -3515,8 +4246,24 @@ type GetPluralMembersWithRoleParams struct {
 }
 
 type GetPluralMembersWithRoleRow struct {
-	Member Member `json:"member"`
-	Role   Role   `json:"role"`
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	RoleName               pgtype.Text `json:"role_name"`
+	RoleDescription        pgtype.Text `json:"role_description"`
 }
 
 func (q *Queries) GetPluralMembersWithRole(ctx context.Context, arg GetPluralMembersWithRoleParams) ([]GetPluralMembersWithRoleRow, error) {
@@ -3529,26 +4276,24 @@ func (q *Queries) GetPluralMembersWithRole(ctx context.Context, arg GetPluralMem
 	for rows.Next() {
 		var i GetPluralMembersWithRoleRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Role.MRolesPkey,
-			&i.Role.RoleID,
-			&i.Role.Name,
-			&i.Role.Description,
-			&i.Role.CreatedAt,
-			&i.Role.UpdatedAt,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.RoleName,
+			&i.RoleDescription,
 		); err != nil {
 			return nil, err
 		}
@@ -3561,7 +4306,7 @@ func (q *Queries) GetPluralMembersWithRole(ctx context.Context, arg GetPluralMem
 }
 
 const getPluralMembersWithRoleUseNumberedPaginate = `-- name: GetPluralMembersWithRoleUseNumberedPaginate :many
-SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.m_roles_pkey, m_roles.role_id, m_roles.name, m_roles.description, m_roles.created_at, m_roles.updated_at FROM m_members
+SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_roles.name role_name, m_roles.description role_description FROM m_members
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
@@ -3579,8 +4324,24 @@ type GetPluralMembersWithRoleUseNumberedPaginateParams struct {
 }
 
 type GetPluralMembersWithRoleUseNumberedPaginateRow struct {
-	Member Member `json:"member"`
-	Role   Role   `json:"role"`
+	MMembersPkey           pgtype.Int8 `json:"m_members_pkey"`
+	MemberID               uuid.UUID   `json:"member_id"`
+	LoginID                string      `json:"login_id"`
+	Password               string      `json:"password"`
+	Email                  string      `json:"email"`
+	Name                   string      `json:"name"`
+	FirstName              string      `json:"first_name"`
+	LastName               string      `json:"last_name"`
+	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
+	GradeID                uuid.UUID   `json:"grade_id"`
+	GroupID                uuid.UUID   `json:"group_id"`
+	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
+	RoleID                 pgtype.UUID `json:"role_id"`
+	CreatedAt              time.Time   `json:"created_at"`
+	UpdatedAt              time.Time   `json:"updated_at"`
+	RoleName               pgtype.Text `json:"role_name"`
+	RoleDescription        pgtype.Text `json:"role_description"`
 }
 
 func (q *Queries) GetPluralMembersWithRoleUseNumberedPaginate(ctx context.Context, arg GetPluralMembersWithRoleUseNumberedPaginateParams) ([]GetPluralMembersWithRoleUseNumberedPaginateRow, error) {
@@ -3598,26 +4359,24 @@ func (q *Queries) GetPluralMembersWithRoleUseNumberedPaginate(ctx context.Contex
 	for rows.Next() {
 		var i GetPluralMembersWithRoleUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
-			&i.Role.MRolesPkey,
-			&i.Role.RoleID,
-			&i.Role.Name,
-			&i.Role.Description,
-			&i.Role.CreatedAt,
-			&i.Role.UpdatedAt,
+			&i.MMembersPkey,
+			&i.MemberID,
+			&i.LoginID,
+			&i.Password,
+			&i.Email,
+			&i.Name,
+			&i.FirstName,
+			&i.LastName,
+			&i.AttendStatusID,
+			&i.ProfileImageID,
+			&i.GradeID,
+			&i.GroupID,
+			&i.PersonalOrganizationID,
+			&i.RoleID,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.RoleName,
+			&i.RoleDescription,
 		); err != nil {
 			return nil, err
 		}
@@ -3642,13 +4401,15 @@ func (q *Queries) PluralDeleteMembers(ctx context.Context, memberIds []uuid.UUID
 }
 
 const updateMember = `-- name: UpdateMember :one
-UPDATE m_members SET email = $2, name = $3, profile_image_id = $4, updated_at = $5 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+UPDATE m_members SET email = $2, name = $3, first_name = $4, last_name = $5, profile_image_id = $6, updated_at = $7 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `
 
 type UpdateMemberParams struct {
 	MemberID       uuid.UUID   `json:"member_id"`
 	Email          string      `json:"email"`
 	Name           string      `json:"name"`
+	FirstName      string      `json:"first_name"`
+	LastName       string      `json:"last_name"`
 	ProfileImageID pgtype.UUID `json:"profile_image_id"`
 	UpdatedAt      time.Time   `json:"updated_at"`
 }
@@ -3658,6 +4419,8 @@ func (q *Queries) UpdateMember(ctx context.Context, arg UpdateMemberParams) (Mem
 		arg.MemberID,
 		arg.Email,
 		arg.Name,
+		arg.FirstName,
+		arg.LastName,
 		arg.ProfileImageID,
 		arg.UpdatedAt,
 	)
@@ -3669,6 +4432,8 @@ func (q *Queries) UpdateMember(ctx context.Context, arg UpdateMemberParams) (Mem
 		&i.Password,
 		&i.Email,
 		&i.Name,
+		&i.FirstName,
+		&i.LastName,
 		&i.AttendStatusID,
 		&i.ProfileImageID,
 		&i.GradeID,
@@ -3682,7 +4447,7 @@ func (q *Queries) UpdateMember(ctx context.Context, arg UpdateMemberParams) (Mem
 }
 
 const updateMemberAttendStatus = `-- name: UpdateMemberAttendStatus :one
-UPDATE m_members SET attend_status_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+UPDATE m_members SET attend_status_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `
 
 type UpdateMemberAttendStatusParams struct {
@@ -3701,6 +4466,8 @@ func (q *Queries) UpdateMemberAttendStatus(ctx context.Context, arg UpdateMember
 		&i.Password,
 		&i.Email,
 		&i.Name,
+		&i.FirstName,
+		&i.LastName,
 		&i.AttendStatusID,
 		&i.ProfileImageID,
 		&i.GradeID,
@@ -3714,7 +4481,7 @@ func (q *Queries) UpdateMemberAttendStatus(ctx context.Context, arg UpdateMember
 }
 
 const updateMemberGrade = `-- name: UpdateMemberGrade :one
-UPDATE m_members SET grade_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+UPDATE m_members SET grade_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `
 
 type UpdateMemberGradeParams struct {
@@ -3733,6 +4500,8 @@ func (q *Queries) UpdateMemberGrade(ctx context.Context, arg UpdateMemberGradePa
 		&i.Password,
 		&i.Email,
 		&i.Name,
+		&i.FirstName,
+		&i.LastName,
 		&i.AttendStatusID,
 		&i.ProfileImageID,
 		&i.GradeID,
@@ -3746,7 +4515,7 @@ func (q *Queries) UpdateMemberGrade(ctx context.Context, arg UpdateMemberGradePa
 }
 
 const updateMemberGroup = `-- name: UpdateMemberGroup :one
-UPDATE m_members SET group_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+UPDATE m_members SET group_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `
 
 type UpdateMemberGroupParams struct {
@@ -3765,6 +4534,8 @@ func (q *Queries) UpdateMemberGroup(ctx context.Context, arg UpdateMemberGroupPa
 		&i.Password,
 		&i.Email,
 		&i.Name,
+		&i.FirstName,
+		&i.LastName,
 		&i.AttendStatusID,
 		&i.ProfileImageID,
 		&i.GradeID,
@@ -3778,7 +4549,7 @@ func (q *Queries) UpdateMemberGroup(ctx context.Context, arg UpdateMemberGroupPa
 }
 
 const updateMemberLoginID = `-- name: UpdateMemberLoginID :one
-UPDATE m_members SET login_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+UPDATE m_members SET login_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `
 
 type UpdateMemberLoginIDParams struct {
@@ -3797,6 +4568,8 @@ func (q *Queries) UpdateMemberLoginID(ctx context.Context, arg UpdateMemberLogin
 		&i.Password,
 		&i.Email,
 		&i.Name,
+		&i.FirstName,
+		&i.LastName,
 		&i.AttendStatusID,
 		&i.ProfileImageID,
 		&i.GradeID,
@@ -3810,7 +4583,7 @@ func (q *Queries) UpdateMemberLoginID(ctx context.Context, arg UpdateMemberLogin
 }
 
 const updateMemberPassword = `-- name: UpdateMemberPassword :one
-UPDATE m_members SET password = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+UPDATE m_members SET password = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `
 
 type UpdateMemberPasswordParams struct {
@@ -3829,6 +4602,8 @@ func (q *Queries) UpdateMemberPassword(ctx context.Context, arg UpdateMemberPass
 		&i.Password,
 		&i.Email,
 		&i.Name,
+		&i.FirstName,
+		&i.LastName,
 		&i.AttendStatusID,
 		&i.ProfileImageID,
 		&i.GradeID,
@@ -3842,7 +4617,7 @@ func (q *Queries) UpdateMemberPassword(ctx context.Context, arg UpdateMemberPass
 }
 
 const updateMemberRole = `-- name: UpdateMemberRole :one
-UPDATE m_members SET role_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
+UPDATE m_members SET role_id = $2, updated_at = $3 WHERE member_id = $1 RETURNING m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at
 `
 
 type UpdateMemberRoleParams struct {
@@ -3861,6 +4636,8 @@ func (q *Queries) UpdateMemberRole(ctx context.Context, arg UpdateMemberRolePara
 		&i.Password,
 		&i.Email,
 		&i.Name,
+		&i.FirstName,
+		&i.LastName,
 		&i.AttendStatusID,
 		&i.ProfileImageID,
 		&i.GradeID,

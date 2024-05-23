@@ -158,7 +158,7 @@ func (q *Queries) FindRecordByID(ctx context.Context, recordID uuid.UUID) (Recor
 }
 
 const findRecordByIDWithAll = `-- name: FindRecordByIDWithAll :one
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
@@ -207,6 +207,8 @@ func (q *Queries) FindRecordByIDWithAll(ctx context.Context, recordID uuid.UUID)
 		&i.Member.Password,
 		&i.Member.Email,
 		&i.Member.Name,
+		&i.Member.FirstName,
+		&i.Member.LastName,
 		&i.Member.AttendStatusID,
 		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
@@ -220,7 +222,7 @@ func (q *Queries) FindRecordByIDWithAll(ctx context.Context, recordID uuid.UUID)
 }
 
 const findRecordByIDWithLastEditedBy = `-- name: FindRecordByIDWithLastEditedBy :one
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE record_id = $1
 `
@@ -250,6 +252,8 @@ func (q *Queries) FindRecordByIDWithLastEditedBy(ctx context.Context, recordID u
 		&i.Member.Password,
 		&i.Member.Email,
 		&i.Member.Name,
+		&i.Member.FirstName,
+		&i.Member.LastName,
 		&i.Member.AttendStatusID,
 		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
@@ -302,7 +306,7 @@ func (q *Queries) FindRecordByIDWithOrganization(ctx context.Context, recordID u
 }
 
 const findRecordByIDWithPostedBy = `-- name: FindRecordByIDWithPostedBy :one
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 WHERE record_id = $1
 `
@@ -332,6 +336,8 @@ func (q *Queries) FindRecordByIDWithPostedBy(ctx context.Context, recordID uuid.
 		&i.Member.Password,
 		&i.Member.Email,
 		&i.Member.Name,
+		&i.Member.FirstName,
+		&i.Member.LastName,
 		&i.Member.AttendStatusID,
 		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
@@ -482,7 +488,7 @@ func (q *Queries) GetPluralRecordsUseNumberedPaginate(ctx context.Context, arg G
 }
 
 const getPluralRecordsWithAll = `-- name: GetPluralRecordsWithAll :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
@@ -551,6 +557,8 @@ func (q *Queries) GetPluralRecordsWithAll(ctx context.Context, arg GetPluralReco
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -565,6 +573,8 @@ func (q *Queries) GetPluralRecordsWithAll(ctx context.Context, arg GetPluralReco
 			&i.Member_2.Password,
 			&i.Member_2.Email,
 			&i.Member_2.Name,
+			&i.Member_2.FirstName,
+			&i.Member_2.LastName,
 			&i.Member_2.AttendStatusID,
 			&i.Member_2.ProfileImageID,
 			&i.Member_2.GradeID,
@@ -585,7 +595,7 @@ func (q *Queries) GetPluralRecordsWithAll(ctx context.Context, arg GetPluralReco
 }
 
 const getPluralRecordsWithAllUseNumberedPaginate = `-- name: GetPluralRecordsWithAllUseNumberedPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
@@ -662,6 +672,8 @@ func (q *Queries) GetPluralRecordsWithAllUseNumberedPaginate(ctx context.Context
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -676,6 +688,8 @@ func (q *Queries) GetPluralRecordsWithAllUseNumberedPaginate(ctx context.Context
 			&i.Member_2.Password,
 			&i.Member_2.Email,
 			&i.Member_2.Name,
+			&i.Member_2.FirstName,
+			&i.Member_2.LastName,
 			&i.Member_2.AttendStatusID,
 			&i.Member_2.ProfileImageID,
 			&i.Member_2.GradeID,
@@ -696,7 +710,7 @@ func (q *Queries) GetPluralRecordsWithAllUseNumberedPaginate(ctx context.Context
 }
 
 const getPluralRecordsWithLastEditedBy = `-- name: GetPluralRecordsWithLastEditedBy :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE record_id = ANY($1::uuid[])
 ORDER BY
@@ -745,6 +759,8 @@ func (q *Queries) GetPluralRecordsWithLastEditedBy(ctx context.Context, arg GetP
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -765,7 +781,7 @@ func (q *Queries) GetPluralRecordsWithLastEditedBy(ctx context.Context, arg GetP
 }
 
 const getPluralRecordsWithLastEditedByUseNumberedPaginate = `-- name: GetPluralRecordsWithLastEditedByUseNumberedPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE record_id = ANY($3::uuid[])
 ORDER BY
@@ -822,6 +838,8 @@ func (q *Queries) GetPluralRecordsWithLastEditedByUseNumberedPaginate(ctx contex
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -980,7 +998,7 @@ func (q *Queries) GetPluralRecordsWithOrganizationUseNumberedPaginate(ctx contex
 }
 
 const getPluralRecordsWithPostedBy = `-- name: GetPluralRecordsWithPostedBy :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 WHERE record_id = ANY($1::uuid[])
 ORDER BY
@@ -1029,6 +1047,8 @@ func (q *Queries) GetPluralRecordsWithPostedBy(ctx context.Context, arg GetPlura
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -1049,7 +1069,7 @@ func (q *Queries) GetPluralRecordsWithPostedBy(ctx context.Context, arg GetPlura
 }
 
 const getPluralRecordsWithPostedByUseNumberedPaginate = `-- name: GetPluralRecordsWithPostedByUseNumberedPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 WHERE record_id = ANY($3::uuid[])
 ORDER BY
@@ -1106,6 +1126,8 @@ func (q *Queries) GetPluralRecordsWithPostedByUseNumberedPaginate(ctx context.Co
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -1537,7 +1559,7 @@ func (q *Queries) GetRecordsUseNumberedPaginate(ctx context.Context, arg GetReco
 }
 
 const getRecordsWithAll = `-- name: GetRecordsWithAll :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
@@ -1636,6 +1658,8 @@ func (q *Queries) GetRecordsWithAll(ctx context.Context, arg GetRecordsWithAllPa
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -1650,6 +1674,8 @@ func (q *Queries) GetRecordsWithAll(ctx context.Context, arg GetRecordsWithAllPa
 			&i.Member_2.Password,
 			&i.Member_2.Email,
 			&i.Member_2.Name,
+			&i.Member_2.FirstName,
+			&i.Member_2.LastName,
 			&i.Member_2.AttendStatusID,
 			&i.Member_2.ProfileImageID,
 			&i.Member_2.GradeID,
@@ -1670,7 +1696,7 @@ func (q *Queries) GetRecordsWithAll(ctx context.Context, arg GetRecordsWithAllPa
 }
 
 const getRecordsWithAllUseKeysetPaginate = `-- name: GetRecordsWithAllUseKeysetPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
@@ -1812,6 +1838,8 @@ func (q *Queries) GetRecordsWithAllUseKeysetPaginate(ctx context.Context, arg Ge
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -1826,6 +1854,8 @@ func (q *Queries) GetRecordsWithAllUseKeysetPaginate(ctx context.Context, arg Ge
 			&i.Member_2.Password,
 			&i.Member_2.Email,
 			&i.Member_2.Name,
+			&i.Member_2.FirstName,
+			&i.Member_2.LastName,
 			&i.Member_2.AttendStatusID,
 			&i.Member_2.ProfileImageID,
 			&i.Member_2.GradeID,
@@ -1846,7 +1876,7 @@ func (q *Queries) GetRecordsWithAllUseKeysetPaginate(ctx context.Context, arg Ge
 }
 
 const getRecordsWithAllUseNumberedPaginate = `-- name: GetRecordsWithAllUseNumberedPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
@@ -1950,6 +1980,8 @@ func (q *Queries) GetRecordsWithAllUseNumberedPaginate(ctx context.Context, arg 
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -1964,6 +1996,8 @@ func (q *Queries) GetRecordsWithAllUseNumberedPaginate(ctx context.Context, arg 
 			&i.Member_2.Password,
 			&i.Member_2.Email,
 			&i.Member_2.Name,
+			&i.Member_2.FirstName,
+			&i.Member_2.LastName,
 			&i.Member_2.AttendStatusID,
 			&i.Member_2.ProfileImageID,
 			&i.Member_2.GradeID,
@@ -1984,7 +2018,7 @@ func (q *Queries) GetRecordsWithAllUseNumberedPaginate(ctx context.Context, arg 
 }
 
 const getRecordsWithLastEditedBy = `-- name: GetRecordsWithLastEditedBy :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE
 	CASE WHEN $1::boolean = true THEN record_type_id = ANY($2) ELSE TRUE END
@@ -2063,6 +2097,8 @@ func (q *Queries) GetRecordsWithLastEditedBy(ctx context.Context, arg GetRecords
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -2083,7 +2119,7 @@ func (q *Queries) GetRecordsWithLastEditedBy(ctx context.Context, arg GetRecords
 }
 
 const getRecordsWithLastEditedByUseKeysetPaginate = `-- name: GetRecordsWithLastEditedByUseKeysetPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE
 	CASE WHEN $2::boolean = true THEN record_type_id = ANY($3) ELSE TRUE END
@@ -2205,6 +2241,8 @@ func (q *Queries) GetRecordsWithLastEditedByUseKeysetPaginate(ctx context.Contex
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -2225,7 +2263,7 @@ func (q *Queries) GetRecordsWithLastEditedByUseKeysetPaginate(ctx context.Contex
 }
 
 const getRecordsWithLastEditedByUseNumberedPaginate = `-- name: GetRecordsWithLastEditedByUseNumberedPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN record_type_id = ANY($4) ELSE TRUE END
@@ -2309,6 +2347,8 @@ func (q *Queries) GetRecordsWithLastEditedByUseNumberedPaginate(ctx context.Cont
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -2662,7 +2702,7 @@ func (q *Queries) GetRecordsWithOrganizationUseNumberedPaginate(ctx context.Cont
 }
 
 const getRecordsWithPostedBy = `-- name: GetRecordsWithPostedBy :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 WHERE
 	CASE WHEN $1::boolean = true THEN record_type_id = ANY($2) ELSE TRUE END
@@ -2741,6 +2781,8 @@ func (q *Queries) GetRecordsWithPostedBy(ctx context.Context, arg GetRecordsWith
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -2761,7 +2803,7 @@ func (q *Queries) GetRecordsWithPostedBy(ctx context.Context, arg GetRecordsWith
 }
 
 const getRecordsWithPostedByUseKeysetPaginate = `-- name: GetRecordsWithPostedByUseKeysetPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 WHERE
 	CASE WHEN $2::boolean = true THEN record_type_id = ANY($3) ELSE TRUE END
@@ -2883,6 +2925,8 @@ func (q *Queries) GetRecordsWithPostedByUseKeysetPaginate(ctx context.Context, a
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -2903,7 +2947,7 @@ func (q *Queries) GetRecordsWithPostedByUseKeysetPaginate(ctx context.Context, a
 }
 
 const getRecordsWithPostedByUseNumberedPaginate = `-- name: GetRecordsWithPostedByUseNumberedPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN record_type_id = ANY($4) ELSE TRUE END
@@ -2987,6 +3031,8 @@ func (q *Queries) GetRecordsWithPostedByUseNumberedPaginate(ctx context.Context,
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,

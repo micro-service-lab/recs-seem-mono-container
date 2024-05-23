@@ -80,7 +80,9 @@ func convOrganizationWithDetail(e query.FindOrganizationByIDWithDetailRow) entit
 	}
 }
 
-func convOrganizationWithChatRoomAndDetail(e query.FindOrganizationByIDWithChatRoomAndDetailRow) entity.OrganizationWithChatRoomAndDetail {
+func convOrganizationWithChatRoomAndDetail(
+	e query.FindOrganizationByIDWithChatRoomAndDetailRow,
+) entity.OrganizationWithChatRoomAndDetail {
 	return entity.OrganizationWithChatRoomAndDetail{
 		OrganizationID: e.OrganizationID,
 		Name:           e.Name,
@@ -407,7 +409,9 @@ func (a *PgAdapter) FindOrganizationWithChatRoomWithSd(
 	return findOrganizationWithChatRoom(ctx, qtx, organizationID)
 }
 
-func findOrganizationWithDetail(ctx context.Context, qtx *query.Queries, organizationID uuid.UUID) (entity.OrganizationWithDetail, error) {
+func findOrganizationWithDetail(
+	ctx context.Context, qtx *query.Queries, organizationID uuid.UUID,
+) (entity.OrganizationWithDetail, error) {
 	e, err := qtx.FindOrganizationByIDWithDetail(ctx, organizationID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -419,12 +423,16 @@ func findOrganizationWithDetail(ctx context.Context, qtx *query.Queries, organiz
 }
 
 // FindOrganizationWithDetail はオーガナイゼーションと詳細を取得します。
-func (a *PgAdapter) FindOrganizationWithDetail(ctx context.Context, organizationID uuid.UUID) (entity.OrganizationWithDetail, error) {
+func (a *PgAdapter) FindOrganizationWithDetail(
+	ctx context.Context, organizationID uuid.UUID,
+) (entity.OrganizationWithDetail, error) {
 	return findOrganizationWithDetail(ctx, a.query, organizationID)
 }
 
 // FindOrganizationWithDetailWithSd はSD付きでオーガナイゼーションと詳細を取得します。
-func (a *PgAdapter) FindOrganizationWithDetailWithSd(ctx context.Context, sd store.Sd, organizationID uuid.UUID) (entity.OrganizationWithDetail, error) {
+func (a *PgAdapter) FindOrganizationWithDetailWithSd(
+	ctx context.Context, sd store.Sd, organizationID uuid.UUID,
+) (entity.OrganizationWithDetail, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
@@ -434,24 +442,31 @@ func (a *PgAdapter) FindOrganizationWithDetailWithSd(ctx context.Context, sd sto
 	return findOrganizationWithDetail(ctx, qtx, organizationID)
 }
 
-func findOrganizationWithChatRoomAndDetail(ctx context.Context, qtx *query.Queries, organizationID uuid.UUID) (entity.OrganizationWithChatRoomAndDetail, error) {
+func findOrganizationWithChatRoomAndDetail(
+	ctx context.Context, qtx *query.Queries, organizationID uuid.UUID,
+) (entity.OrganizationWithChatRoomAndDetail, error) {
 	e, err := qtx.FindOrganizationByIDWithChatRoomAndDetail(ctx, organizationID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return entity.OrganizationWithChatRoomAndDetail{}, errhandle.NewModelNotFoundError("organization")
 		}
-		return entity.OrganizationWithChatRoomAndDetail{}, fmt.Errorf("failed to find organization with chat room and detail: %w", err)
+		return entity.OrganizationWithChatRoomAndDetail{},
+			fmt.Errorf("failed to find organization with chat room and detail: %w", err)
 	}
 	return convOrganizationWithChatRoomAndDetail(e), nil
 }
 
 // FindOrganizationWithChatRoomAndDetail はオーガナイゼーションとチャットルーム、詳細を取得します。
-func (a *PgAdapter) FindOrganizationWithChatRoomAndDetail(ctx context.Context, organizationID uuid.UUID) (entity.OrganizationWithChatRoomAndDetail, error) {
+func (a *PgAdapter) FindOrganizationWithChatRoomAndDetail(
+	ctx context.Context, organizationID uuid.UUID,
+) (entity.OrganizationWithChatRoomAndDetail, error) {
 	return findOrganizationWithChatRoomAndDetail(ctx, a.query, organizationID)
 }
 
 // FindOrganizationWithChatRoomAndDetailWithSd はSD付きでオーガナイゼーションとチャットルーム、詳細を取得します。
-func (a *PgAdapter) FindOrganizationWithChatRoomAndDetailWithSd(ctx context.Context, sd store.Sd, organizationID uuid.UUID) (entity.OrganizationWithChatRoomAndDetail, error) {
+func (a *PgAdapter) FindOrganizationWithChatRoomAndDetailWithSd(
+	ctx context.Context, sd store.Sd, organizationID uuid.UUID,
+) (entity.OrganizationWithChatRoomAndDetail, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
@@ -548,6 +563,7 @@ func getOrganizations(
 			CursorDirection:  cursorDir,
 			Cursor:           cursor,
 			NameCursor:       nameCursor,
+			OrderMethod:      orderMethod,
 		}
 		r, err := qtx.GetOrganizationsUseKeysetPaginate(ctx, p)
 		if err != nil {
@@ -666,7 +682,9 @@ func (a *PgAdapter) FindWholeOrganizationWithSd(ctx context.Context, sd store.Sd
 	return findWholeOrganization(ctx, qtx)
 }
 
-func findPersonalOrganization(ctx context.Context, qtx *query.Queries, memberID uuid.UUID) (entity.Organization, error) {
+func findPersonalOrganization(
+	ctx context.Context, qtx *query.Queries, memberID uuid.UUID,
+) (entity.Organization, error) {
 	e, err := qtx.FindPersonalOrganization(ctx, memberID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -692,7 +710,9 @@ func (a *PgAdapter) FindPersonalOrganization(ctx context.Context, memberID uuid.
 }
 
 // FindPersonalOrganizationWithSd はSD付きで個人オーガナイゼーションを取得します。
-func (a *PgAdapter) FindPersonalOrganizationWithSd(ctx context.Context, sd store.Sd, memberID uuid.UUID) (entity.Organization, error) {
+func (a *PgAdapter) FindPersonalOrganizationWithSd(
+	ctx context.Context, sd store.Sd, memberID uuid.UUID,
+) (entity.Organization, error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
@@ -843,6 +863,7 @@ func getOrganizationsWithChatRoom(
 			CursorDirection:  cursorDir,
 			Cursor:           cursor,
 			NameCursor:       nameCursor,
+			OrderMethod:      orderMethod,
 		}
 		r, err := qtx.GetOrganizationsWithChatRoomUseKeysetPaginate(ctx, p)
 		if err != nil {
@@ -952,12 +973,13 @@ func getPluralOrganizationsWithChatRoom(
 			OrderMethod:     orderMethod.GetStringValue(),
 		})
 	} else {
-		te, err = qtx.GetPluralOrganizationsWithChatRoomUseNumberedPaginate(ctx, query.GetPluralOrganizationsWithChatRoomUseNumberedPaginateParams{
-			OrganizationIds: organizationIDs,
-			Offset:          int32(np.Offset.Int64),
-			Limit:           int32(np.Limit.Int64),
-			OrderMethod:     orderMethod.GetStringValue(),
-		})
+		te, err = qtx.GetPluralOrganizationsWithChatRoomUseNumberedPaginate(
+			ctx, query.GetPluralOrganizationsWithChatRoomUseNumberedPaginateParams{
+				OrganizationIds: organizationIDs,
+				Offset:          int32(np.Offset.Int64),
+				Limit:           int32(np.Limit.Int64),
+				OrderMethod:     orderMethod.GetStringValue(),
+			})
 		e = make([]query.GetPluralOrganizationsWithChatRoomRow, len(te))
 		for i, v := range te {
 			e[i] = query.GetPluralOrganizationsWithChatRoomRow(v)
@@ -1076,6 +1098,7 @@ func getOrganizationsWithDetail(
 			CursorDirection:  cursorDir,
 			Cursor:           cursor,
 			NameCursor:       nameCursor,
+			OrderMethod:      orderMethod,
 		}
 		r, err := qtx.GetOrganizationsWithDetailUseKeysetPaginate(ctx, p)
 		if err != nil {
@@ -1185,12 +1208,13 @@ func getPluralOrganizationsWithDetail(
 			OrderMethod:     orderMethod.GetStringValue(),
 		})
 	} else {
-		te, err = qtx.GetPluralOrganizationsWithDetailUseNumberedPaginate(ctx, query.GetPluralOrganizationsWithDetailUseNumberedPaginateParams{
-			OrganizationIds: organizationIDs,
-			Offset:          int32(np.Offset.Int64),
-			Limit:           int32(np.Limit.Int64),
-			OrderMethod:     orderMethod.GetStringValue(),
-		})
+		te, err = qtx.GetPluralOrganizationsWithDetailUseNumberedPaginate(
+			ctx, query.GetPluralOrganizationsWithDetailUseNumberedPaginateParams{
+				OrganizationIds: organizationIDs,
+				Offset:          int32(np.Offset.Int64),
+				Limit:           int32(np.Limit.Int64),
+				OrderMethod:     orderMethod.GetStringValue(),
+			})
 		e = make([]query.GetPluralOrganizationsWithDetailRow, len(te))
 		for i, v := range te {
 			e[i] = query.GetPluralOrganizationsWithDetailRow(v)
@@ -1233,7 +1257,9 @@ func getOrganizationsWithChatRoomAndDetail(
 	order parameter.OrganizationOrderMethod, np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam, wc store.WithCountParam,
 ) (store.ListResult[entity.OrganizationWithChatRoomAndDetail], error) {
-	eConvFunc := func(e entity.OrganizationWithChatRoomAndDetailForQuery) (entity.OrganizationWithChatRoomAndDetail, error) {
+	eConvFunc := func(
+		e entity.OrganizationWithChatRoomAndDetailForQuery,
+	) (entity.OrganizationWithChatRoomAndDetail, error) {
 		return e.OrganizationWithChatRoomAndDetail, nil
 	}
 	runCFunc := func() (int64, error) {
@@ -1277,8 +1303,9 @@ func getOrganizationsWithChatRoomAndDetail(
 		e := make([]entity.OrganizationWithChatRoomAndDetailForQuery, len(r))
 		for i, v := range r {
 			e[i] = entity.OrganizationWithChatRoomAndDetailForQuery{
-				Pkey:                              entity.Int(v.MOrganizationsPkey),
-				OrganizationWithChatRoomAndDetail: convOrganizationWithChatRoomAndDetail(query.FindOrganizationByIDWithChatRoomAndDetailRow(v)),
+				Pkey: entity.Int(v.MOrganizationsPkey),
+				OrganizationWithChatRoomAndDetail: convOrganizationWithChatRoomAndDetail(
+					query.FindOrganizationByIDWithChatRoomAndDetailRow(v)),
 			}
 		}
 		return e, nil
@@ -1309,6 +1336,7 @@ func getOrganizationsWithChatRoomAndDetail(
 			CursorDirection:  cursorDir,
 			Cursor:           cursor,
 			NameCursor:       nameCursor,
+			OrderMethod:      orderMethod,
 		}
 		r, err := qtx.GetOrganizationsWithChatRoomAndDetailUseKeysetPaginate(ctx, p)
 		if err != nil {
@@ -1317,13 +1345,16 @@ func getOrganizationsWithChatRoomAndDetail(
 		e := make([]entity.OrganizationWithChatRoomAndDetailForQuery, len(r))
 		for i, v := range r {
 			e[i] = entity.OrganizationWithChatRoomAndDetailForQuery{
-				Pkey:                              entity.Int(v.MOrganizationsPkey),
-				OrganizationWithChatRoomAndDetail: convOrganizationWithChatRoomAndDetail(query.FindOrganizationByIDWithChatRoomAndDetailRow(v)),
+				Pkey: entity.Int(v.MOrganizationsPkey),
+				OrganizationWithChatRoomAndDetail: convOrganizationWithChatRoomAndDetail(
+					query.FindOrganizationByIDWithChatRoomAndDetailRow(v)),
 			}
 		}
 		return e, nil
 	}
-	runQNPFunc := func(orderMethod string, limit, offset int32) ([]entity.OrganizationWithChatRoomAndDetailForQuery, error) {
+	runQNPFunc := func(
+		orderMethod string, limit, offset int32,
+	) ([]entity.OrganizationWithChatRoomAndDetailForQuery, error) {
 		p := query.GetOrganizationsWithChatRoomAndDetailUseNumberedPaginateParams{
 			Limit:            limit,
 			Offset:           offset,
@@ -1345,8 +1376,9 @@ func getOrganizationsWithChatRoomAndDetail(
 		e := make([]entity.OrganizationWithChatRoomAndDetailForQuery, len(r))
 		for i, v := range r {
 			e[i] = entity.OrganizationWithChatRoomAndDetailForQuery{
-				Pkey:                              entity.Int(v.MOrganizationsPkey),
-				OrganizationWithChatRoomAndDetail: convOrganizationWithChatRoomAndDetail(query.FindOrganizationByIDWithChatRoomAndDetailRow(v)),
+				Pkey: entity.Int(v.MOrganizationsPkey),
+				OrganizationWithChatRoomAndDetail: convOrganizationWithChatRoomAndDetail(
+					query.FindOrganizationByIDWithChatRoomAndDetailRow(v)),
 			}
 		}
 		return e, nil
@@ -1375,7 +1407,8 @@ func getOrganizationsWithChatRoomAndDetail(
 		selector,
 	)
 	if err != nil {
-		return store.ListResult[entity.OrganizationWithChatRoomAndDetail]{}, fmt.Errorf("failed to get organizations: %w", err)
+		return store.ListResult[entity.OrganizationWithChatRoomAndDetail]{},
+			fmt.Errorf("failed to get organizations: %w", err)
 	}
 	return res, nil
 }
@@ -1418,19 +1451,21 @@ func getPluralOrganizationsWithChatRoomAndDetail(
 			OrderMethod:     orderMethod.GetStringValue(),
 		})
 	} else {
-		te, err = qtx.GetPluralOrganizationsWithChatRoomAndDetailUseNumberedPaginate(ctx, query.GetPluralOrganizationsWithChatRoomAndDetailUseNumberedPaginateParams{
-			OrganizationIds: organizationIDs,
-			Offset:          int32(np.Offset.Int64),
-			Limit:           int32(np.Limit.Int64),
-			OrderMethod:     orderMethod.GetStringValue(),
-		})
+		te, err = qtx.GetPluralOrganizationsWithChatRoomAndDetailUseNumberedPaginate(
+			ctx, query.GetPluralOrganizationsWithChatRoomAndDetailUseNumberedPaginateParams{
+				OrganizationIds: organizationIDs,
+				Offset:          int32(np.Offset.Int64),
+				Limit:           int32(np.Limit.Int64),
+				OrderMethod:     orderMethod.GetStringValue(),
+			})
 		e = make([]query.GetPluralOrganizationsWithChatRoomAndDetailRow, len(te))
 		for i, v := range te {
 			e[i] = query.GetPluralOrganizationsWithChatRoomAndDetailRow(v)
 		}
 	}
 	if err != nil {
-		return store.ListResult[entity.OrganizationWithChatRoomAndDetail]{}, fmt.Errorf("failed to get organizations: %w", err)
+		return store.ListResult[entity.OrganizationWithChatRoomAndDetail]{},
+			fmt.Errorf("failed to get organizations: %w", err)
 	}
 	entities := make([]entity.OrganizationWithChatRoomAndDetail, len(e))
 	for i, v := range e {

@@ -456,7 +456,7 @@ func getGroupsWithOrganization(
 		}
 		return r, nil
 	}
-	runQFunc := func(orderMethod string) ([]entity.GroupWithOrganizationForQuery, error) {
+	runQFunc := func(_ string) ([]entity.GroupWithOrganizationForQuery, error) {
 		r, err := qtx.GetGroupsWithOrganization(ctx)
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
@@ -473,8 +473,8 @@ func getGroupsWithOrganization(
 		}
 		return e, nil
 	}
-	runQCPFunc := func(subCursor, orderMethod string,
-		limit int32, cursorDir string, cursor int32, subCursorValue any,
+	runQCPFunc := func(_, _ string,
+		limit int32, cursorDir string, cursor int32, _ any,
 	) ([]entity.GroupWithOrganizationForQuery, error) {
 		p := query.GetGroupsWithOrganizationUseKeysetPaginateParams{
 			Limit:           limit,
@@ -494,7 +494,7 @@ func getGroupsWithOrganization(
 		}
 		return e, nil
 	}
-	runQNPFunc := func(orderMethod string, limit, offset int32) ([]entity.GroupWithOrganizationForQuery, error) {
+	runQNPFunc := func(_ string, limit, offset int32) ([]entity.GroupWithOrganizationForQuery, error) {
 		p := query.GetGroupsWithOrganizationUseNumberedPaginateParams{
 			Limit:  limit,
 			Offset: offset,
@@ -574,11 +574,12 @@ func getPluralGroupsWithOrganization(
 	if !np.Valid {
 		e, err = qtx.GetPluralGroupsWithOrganization(ctx, groupIDs)
 	} else {
-		te, err = qtx.GetPluralGroupsWithOrganizationUseNumberedPaginate(ctx, query.GetPluralGroupsWithOrganizationUseNumberedPaginateParams{
-			GroupIds: groupIDs,
-			Offset:   int32(np.Offset.Int64),
-			Limit:    int32(np.Limit.Int64),
-		})
+		te, err = qtx.GetPluralGroupsWithOrganizationUseNumberedPaginate(
+			ctx, query.GetPluralGroupsWithOrganizationUseNumberedPaginateParams{
+				GroupIds: groupIDs,
+				Offset:   int32(np.Offset.Int64),
+				Limit:    int32(np.Limit.Int64),
+			})
 		e = make([]query.GetPluralGroupsWithOrganizationRow, len(te))
 		for i, v := range te {
 			e[i] = query.GetPluralGroupsWithOrganizationRow(v)

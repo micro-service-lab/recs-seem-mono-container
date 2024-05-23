@@ -456,7 +456,7 @@ func getGradesWithOrganization(
 		}
 		return r, nil
 	}
-	runQFunc := func(orderMethod string) ([]entity.GradeWithOrganizationForQuery, error) {
+	runQFunc := func(_ string) ([]entity.GradeWithOrganizationForQuery, error) {
 		r, err := qtx.GetGradesWithOrganization(ctx)
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
@@ -473,8 +473,8 @@ func getGradesWithOrganization(
 		}
 		return e, nil
 	}
-	runQCPFunc := func(subCursor, orderMethod string,
-		limit int32, cursorDir string, cursor int32, subCursorValue any,
+	runQCPFunc := func(_, _ string,
+		limit int32, cursorDir string, cursor int32, _ any,
 	) ([]entity.GradeWithOrganizationForQuery, error) {
 		p := query.GetGradesWithOrganizationUseKeysetPaginateParams{
 			Limit:           limit,
@@ -494,7 +494,7 @@ func getGradesWithOrganization(
 		}
 		return e, nil
 	}
-	runQNPFunc := func(orderMethod string, limit, offset int32) ([]entity.GradeWithOrganizationForQuery, error) {
+	runQNPFunc := func(_ string, limit, offset int32) ([]entity.GradeWithOrganizationForQuery, error) {
 		p := query.GetGradesWithOrganizationUseNumberedPaginateParams{
 			Limit:  limit,
 			Offset: offset,
@@ -574,11 +574,12 @@ func getPluralGradesWithOrganization(
 	if !np.Valid {
 		e, err = qtx.GetPluralGradesWithOrganization(ctx, gradeIDs)
 	} else {
-		te, err = qtx.GetPluralGradesWithOrganizationUseNumberedPaginate(ctx, query.GetPluralGradesWithOrganizationUseNumberedPaginateParams{
-			GradeIds: gradeIDs,
-			Offset:   int32(np.Offset.Int64),
-			Limit:    int32(np.Limit.Int64),
-		})
+		te, err = qtx.GetPluralGradesWithOrganizationUseNumberedPaginate(
+			ctx, query.GetPluralGradesWithOrganizationUseNumberedPaginateParams{
+				GradeIds: gradeIDs,
+				Offset:   int32(np.Offset.Int64),
+				Limit:    int32(np.Limit.Int64),
+			})
 		e = make([]query.GetPluralGradesWithOrganizationRow, len(te))
 		for i, v := range te {
 			e[i] = query.GetPluralGradesWithOrganizationRow(v)

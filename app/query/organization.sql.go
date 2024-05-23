@@ -20,7 +20,7 @@ WHERE
 AND
 	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
 AND
 	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -343,7 +343,7 @@ func (q *Queries) FindOrganizationByIDWithDetail(ctx context.Context, organizati
 
 const findPersonalOrganization = `-- name: FindPersonalOrganization :one
 SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_organizations
-WHERE m_organizations.is_personal = true AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $1)
+WHERE m_organizations.is_personal = true AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $1)
 `
 
 func (q *Queries) FindPersonalOrganization(ctx context.Context, memberID uuid.UUID) (Organization, error) {
@@ -464,7 +464,7 @@ WHERE
 AND
 	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
 AND
 	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -537,7 +537,7 @@ WHERE
 AND
 	CASE WHEN $4::boolean = true THEN m_organizations.is_whole = $5 END
 AND
-	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
+	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
 AND
 	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -637,7 +637,7 @@ WHERE
 AND
 	CASE WHEN $5::boolean = true THEN m_organizations.is_whole = $6 END
 AND
-	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
+	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
 AND
 	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -724,7 +724,7 @@ WHERE
 AND
 	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
 AND
 	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -847,7 +847,7 @@ WHERE
 AND
 	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
 AND
 	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -978,7 +978,7 @@ WHERE
 AND
 	CASE WHEN $4::boolean = true THEN m_organizations.is_whole = $5 END
 AND
-	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
+	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
 AND
 	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -1136,7 +1136,7 @@ WHERE
 AND
 	CASE WHEN $5::boolean = true THEN m_organizations.is_whole = $6 END
 AND
-	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
+	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
 AND
 	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -1270,7 +1270,7 @@ WHERE
 AND
 	CASE WHEN $4::boolean = true THEN m_organizations.is_whole = $5 END
 AND
-	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
+	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
 AND
 	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -1418,7 +1418,7 @@ WHERE
 AND
 	CASE WHEN $5::boolean = true THEN m_organizations.is_whole = $6 END
 AND
-	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
+	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
 AND
 	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -1537,7 +1537,7 @@ WHERE
 AND
 	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
 AND
 	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -1633,7 +1633,7 @@ WHERE
 AND
 	CASE WHEN $4::boolean = true THEN m_organizations.is_whole = $5 END
 AND
-	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
+	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
 AND
 	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND
@@ -1756,7 +1756,7 @@ WHERE
 AND
 	CASE WHEN $5::boolean = true THEN m_organizations.is_whole = $6 END
 AND
-	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
+	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
 AND
 	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
 AND

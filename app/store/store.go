@@ -45,4 +45,5 @@ type Store interface {
 	Organization
 	Group
 	Grade
+	Member
 }

@@ -623,6 +623,8 @@ func (r iteratorForCreateMembers) Values() ([]interface{}, error) {
 		r.rows[0].Password,
 		r.rows[0].Email,
 		r.rows[0].Name,
+		r.rows[0].FirstName,
+		r.rows[0].LastName,
 		r.rows[0].AttendStatusID,
 		r.rows[0].GradeID,
 		r.rows[0].GroupID,
@@ -639,7 +641,7 @@ func (r iteratorForCreateMembers) Err() error {
 }
 
 func (q *Queries) CreateMembers(ctx context.Context, arg []CreateMembersParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"m_members"}, []string{"login_id", "password", "email", "name", "attend_status_id", "grade_id", "group_id", "profile_image_id", "role_id", "personal_organization_id", "created_at", "updated_at"}, &iteratorForCreateMembers{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"m_members"}, []string{"login_id", "password", "email", "name", "first_name", "last_name", "attend_status_id", "grade_id", "group_id", "profile_image_id", "role_id", "personal_organization_id", "created_at", "updated_at"}, &iteratorForCreateMembers{rows: arg})
 }
 
 // iteratorForCreateMessages implements pgx.CopyFromSource.

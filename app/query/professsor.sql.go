@@ -58,7 +58,7 @@ func (q *Queries) FindProfessorByID(ctx context.Context, professorID uuid.UUID) 
 }
 
 const findProfessorByIDWithMember = `-- name: FindProfessorByIDWithMember :one
-SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_professors
+SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_professors
 LEFT JOIN m_members ON m_professors.member_id = m_members.member_id
 WHERE professor_id = $1
 `
@@ -81,6 +81,8 @@ func (q *Queries) FindProfessorByIDWithMember(ctx context.Context, professorID u
 		&i.Member.Password,
 		&i.Member.Email,
 		&i.Member.Name,
+		&i.Member.FirstName,
+		&i.Member.LastName,
 		&i.Member.AttendStatusID,
 		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
@@ -254,7 +256,7 @@ func (q *Queries) GetProfessorsUseNumberedPaginate(ctx context.Context, arg GetP
 }
 
 const getProfessorsWithMember = `-- name: GetProfessorsWithMember :many
-SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_professors
+SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_professors
 LEFT JOIN m_members ON m_professors.member_id = m_members.member_id
 ORDER BY
 	m_professors_pkey ASC
@@ -286,6 +288,8 @@ func (q *Queries) GetProfessorsWithMember(ctx context.Context) ([]GetProfessorsW
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -306,7 +310,7 @@ func (q *Queries) GetProfessorsWithMember(ctx context.Context) ([]GetProfessorsW
 }
 
 const getProfessorsWithMemberUseKeysetPaginate = `-- name: GetProfessorsWithMemberUseKeysetPaginate :many
-SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_professors
+SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_professors
 LEFT JOIN m_members ON m_professors.member_id = m_members.member_id
 WHERE
 	CASE $2::text
@@ -353,6 +357,8 @@ func (q *Queries) GetProfessorsWithMemberUseKeysetPaginate(ctx context.Context, 
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
@@ -373,7 +379,7 @@ func (q *Queries) GetProfessorsWithMemberUseKeysetPaginate(ctx context.Context, 
 }
 
 const getProfessorsWithMemberUseNumberedPaginate = `-- name: GetProfessorsWithMemberUseNumberedPaginate :many
-SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_professors
+SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_professors
 LEFT JOIN m_members ON m_professors.member_id = m_members.member_id
 ORDER BY
 	m_professors_pkey ASC
@@ -411,6 +417,8 @@ func (q *Queries) GetProfessorsWithMemberUseNumberedPaginate(ctx context.Context
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
 			&i.Member.ProfileImageID,
 			&i.Member.GradeID,

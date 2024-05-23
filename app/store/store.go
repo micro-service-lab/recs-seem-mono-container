@@ -42,4 +42,5 @@ type Store interface {
 	AttachableItem
 	ChatRoom
 	ChatRoomBelonging
+	Organization
 }

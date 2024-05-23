@@ -17,7 +17,7 @@ DELETE FROM m_organizations WHERE organization_id = ANY(@organization_ids::uuid[
 SELECT * FROM m_organizations WHERE organization_id = $1;
 
 -- name: FindOrganizationByIDWithDetail :one
-SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
+SELECT m_organizations.*, m_groups.group_id, m_groups.key group_key, m_grades.key grade_key, m_grades.grade_id FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE m_organizations.organization_id = $1;
@@ -35,8 +35,8 @@ LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE m_organizations.organization_id = $1;
 
--- name: FindOrganizationByIDWithAll :one
-SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+-- name: FindOrganizationByIDWithChatRoomAndDetail :one
+SELECT m_organizations.*, m_groups.group_id, m_groups.key group_key, m_grades.key grade_key, m_grades.grade_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
@@ -157,7 +157,7 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetOrganizationsWithDetail :many
-SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
+SELECT m_organizations.*, m_groups.group_id, m_groups.key group_key, m_grades.key grade_key, m_grades.grade_id FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
@@ -176,7 +176,7 @@ ORDER BY
 	m_organizations_pkey ASC;
 
 -- name: GetOrganizationsWithDetailUseNumberedPaginate :many
-SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
+SELECT m_organizations.*, m_groups.group_id, m_groups.key group_key, m_grades.key grade_key, m_grades.grade_id FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
@@ -196,7 +196,7 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetOrganizationsWithDetailUseKeysetPaginate :many
-SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
+SELECT m_organizations.*, m_groups.group_id, m_groups.key group_key, m_grades.key grade_key, m_grades.grade_id FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
@@ -234,7 +234,7 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralOrganizationsWithDetail :many
-SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
+SELECT m_organizations.*, m_groups.group_id, m_groups.key group_key, m_grades.key grade_key, m_grades.grade_id FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
@@ -244,7 +244,7 @@ ORDER BY
 	m_organizations_pkey ASC;
 
 -- name: GetPluralOrganizationsWithDetailUseNumberedPaginate :many
-SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key FROM m_organizations
+SELECT m_organizations.*, m_groups.group_id, m_groups.key group_key, m_grades.key grade_key, m_grades.grade_id FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
@@ -387,8 +387,8 @@ ORDER BY
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2;
 
--- name: GetOrganizationsWithAll :many
-SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+-- name: GetOrganizationsWithChatRoomAndDetail :many
+SELECT m_organizations.*, m_groups.group_id, m_groups.key group_key, m_grades.key grade_key, m_grades.grade_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
@@ -415,8 +415,8 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC;
 
--- name: GetOrganizationsWithAllUseNumberedPaginate :many
-SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+-- name: GetOrganizationsWithChatRoomAndDetailUseNumberedPaginate :many
+SELECT m_organizations.*, m_groups.group_id, m_groups.key group_key, m_grades.key grade_key, m_grades.grade_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
@@ -444,8 +444,8 @@ ORDER BY
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2;
 
--- name: GetOrganizationsWithAllUseKeysetPaginate :many
-SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+-- name: GetOrganizationsWithChatRoomAndDetailUseKeysetPaginate :many
+SELECT m_organizations.*, m_groups.group_id, m_groups.key group_key, m_grades.key grade_key, m_grades.grade_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
@@ -491,8 +491,8 @@ ORDER BY
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_organizations_pkey END DESC
 LIMIT $1;
 
--- name: GetPluralOrganizationsWithAll :many
-SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+-- name: GetPluralOrganizationsWithChatRoomAndDetail :many
+SELECT m_organizations.*, m_groups.group_id, m_groups.key group_key, m_grades.key grade_key, m_grades.grade_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
@@ -510,8 +510,8 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
 	m_organizations_pkey ASC;
 
--- name: GetPluralOrganizationsWithAllUseNumberedPaginate :many
-SELECT m_organizations.*, m_groups.key group_key, m_grades.key grade_key, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+-- name: GetPluralOrganizationsWithChatRoomAndDetailUseNumberedPaginate :many
+SELECT m_organizations.*, m_groups.group_id, m_groups.key group_key, m_grades.key grade_key, m_grades.grade_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,

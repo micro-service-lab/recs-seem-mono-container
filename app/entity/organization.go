@@ -8,7 +8,7 @@ import (
 type Organization struct {
 	OrganizationID uuid.UUID `json:"organization_id"`
 	Name           string    `json:"name"`
-	Color          string    `json:"color"`
+	Color          String    `json:"color"`
 	Description    String    `json:"description"`
 	IsPersonal     bool      `json:"is_personal"`
 	IsWhole        bool      `json:"is_whole"`
@@ -19,7 +19,7 @@ type Organization struct {
 type OrganizationWithDetail struct {
 	OrganizationID uuid.UUID             `json:"organization_id"`
 	Name           string                `json:"name"`
-	Color          string                `json:"color"`
+	Color          String                `json:"color"`
 	Description    String                `json:"description"`
 	IsPersonal     bool                  `json:"is_personal"`
 	IsWhole        bool                  `json:"is_whole"`
@@ -38,7 +38,7 @@ type OrganizationWithDetailForQuery struct {
 type OrganizationWithChatRoom struct {
 	OrganizationID uuid.UUID              `json:"organization_id"`
 	Name           string                 `json:"name"`
-	Color          string                 `json:"color"`
+	Color          String                 `json:"color"`
 	Description    String                 `json:"description"`
 	IsPersonal     bool                   `json:"is_personal"`
 	IsWhole        bool                   `json:"is_whole"`
@@ -55,7 +55,7 @@ type OrganizationWithChatRoomForQuery struct {
 type OrganizationWithChatRoomAndDetail struct {
 	OrganizationID uuid.UUID              `json:"organization_id"`
 	Name           string                 `json:"name"`
-	Color          string                 `json:"color"`
+	Color          String                 `json:"color"`
 	Description    String                 `json:"description"`
 	IsPersonal     bool                   `json:"is_personal"`
 	IsWhole        bool                   `json:"is_whole"`

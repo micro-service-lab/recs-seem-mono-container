@@ -108,6 +108,12 @@ var _ Store = &StoreMock{}
 //			CountMimeTypesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereMimeTypeParam) (int64, error) {
 //				panic("mock out the CountMimeTypesWithSd method")
 //			},
+//			CountOrganizationsFunc: func(ctx context.Context, where parameter.WhereOrganizationParam) (int64, error) {
+//				panic("mock out the CountOrganizations method")
+//			},
+//			CountOrganizationsWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereOrganizationParam) (int64, error) {
+//				panic("mock out the CountOrganizationsWithSd method")
+//			},
 //			CountPermissionCategoriesFunc: func(ctx context.Context, where parameter.WherePermissionCategoryParam) (int64, error) {
 //				panic("mock out the CountPermissionCategories method")
 //			},
@@ -239,6 +245,18 @@ var _ Store = &StoreMock{}
 //			},
 //			CreateMimeTypesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateMimeTypeParam) (int64, error) {
 //				panic("mock out the CreateMimeTypesWithSd method")
+//			},
+//			CreateOrganizationFunc: func(ctx context.Context, param parameter.CreateOrganizationParam) (entity.Organization, error) {
+//				panic("mock out the CreateOrganization method")
+//			},
+//			CreateOrganizationWithSdFunc: func(ctx context.Context, sd Sd, param parameter.CreateOrganizationParam) (entity.Organization, error) {
+//				panic("mock out the CreateOrganizationWithSd method")
+//			},
+//			CreateOrganizationsFunc: func(ctx context.Context, params []parameter.CreateOrganizationParam) (int64, error) {
+//				panic("mock out the CreateOrganizations method")
+//			},
+//			CreateOrganizationsWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateOrganizationParam) (int64, error) {
+//				panic("mock out the CreateOrganizationsWithSd method")
 //			},
 //			CreatePermissionFunc: func(ctx context.Context, param parameter.CreatePermissionParam) (entity.Permission, error) {
 //				panic("mock out the CreatePermission method")
@@ -377,6 +395,12 @@ var _ Store = &StoreMock{}
 //			},
 //			DeleteMimeTypeWithSdFunc: func(ctx context.Context, sd Sd, mimeTypeID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteMimeTypeWithSd method")
+//			},
+//			DeleteOrganizationFunc: func(ctx context.Context, organizationID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteOrganization method")
+//			},
+//			DeleteOrganizationWithSdFunc: func(ctx context.Context, sd Sd, organizationID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteOrganizationWithSd method")
 //			},
 //			DeletePermissionFunc: func(ctx context.Context, permissionID uuid.UUID) (int64, error) {
 //				panic("mock out the DeletePermission method")
@@ -570,6 +594,30 @@ var _ Store = &StoreMock{}
 //			FindMimeTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.MimeType, error) {
 //				panic("mock out the FindMimeTypeByKeyWithSd method")
 //			},
+//			FindOrganizationByIDFunc: func(ctx context.Context, organizationID uuid.UUID) (entity.Organization, error) {
+//				panic("mock out the FindOrganizationByID method")
+//			},
+//			FindOrganizationByIDWithSdFunc: func(ctx context.Context, sd Sd, organizationID uuid.UUID) (entity.Organization, error) {
+//				panic("mock out the FindOrganizationByIDWithSd method")
+//			},
+//			FindOrganizationWithChatRoomFunc: func(ctx context.Context, organizationID uuid.UUID) (entity.OrganizationWithChatRoom, error) {
+//				panic("mock out the FindOrganizationWithChatRoom method")
+//			},
+//			FindOrganizationWithChatRoomAndDetailFunc: func(ctx context.Context, organizationID uuid.UUID) (entity.OrganizationWithChatRoomAndDetail, error) {
+//				panic("mock out the FindOrganizationWithChatRoomAndDetail method")
+//			},
+//			FindOrganizationWithChatRoomAndDetailWithSdFunc: func(ctx context.Context, sd Sd, organizationID uuid.UUID) (entity.OrganizationWithChatRoomAndDetail, error) {
+//				panic("mock out the FindOrganizationWithChatRoomAndDetailWithSd method")
+//			},
+//			FindOrganizationWithChatRoomWithSdFunc: func(ctx context.Context, sd Sd, organizationID uuid.UUID) (entity.OrganizationWithChatRoom, error) {
+//				panic("mock out the FindOrganizationWithChatRoomWithSd method")
+//			},
+//			FindOrganizationWithDetailFunc: func(ctx context.Context, organizationID uuid.UUID) (entity.OrganizationWithDetail, error) {
+//				panic("mock out the FindOrganizationWithDetail method")
+//			},
+//			FindOrganizationWithDetailWithSdFunc: func(ctx context.Context, sd Sd, organizationID uuid.UUID) (entity.OrganizationWithDetail, error) {
+//				panic("mock out the FindOrganizationWithDetailWithSd method")
+//			},
 //			FindPermissionByIDFunc: func(ctx context.Context, permissionID uuid.UUID) (entity.Permission, error) {
 //				panic("mock out the FindPermissionByID method")
 //			},
@@ -605,6 +653,12 @@ var _ Store = &StoreMock{}
 //			},
 //			FindPermissionCategoryByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.PermissionCategory, error) {
 //				panic("mock out the FindPermissionCategoryByKeyWithSd method")
+//			},
+//			FindPersonalOrganizationFunc: func(ctx context.Context, memberID uuid.UUID) (entity.Organization, error) {
+//				panic("mock out the FindPersonalOrganization method")
+//			},
+//			FindPersonalOrganizationWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID) (entity.Organization, error) {
+//				panic("mock out the FindPersonalOrganizationWithSd method")
 //			},
 //			FindPolicyByIDFunc: func(ctx context.Context, policyID uuid.UUID) (entity.Policy, error) {
 //				panic("mock out the FindPolicyByID method")
@@ -659,6 +713,12 @@ var _ Store = &StoreMock{}
 //			},
 //			FindRoleByIDWithSdFunc: func(ctx context.Context, sd Sd, roleID uuid.UUID) (entity.Role, error) {
 //				panic("mock out the FindRoleByIDWithSd method")
+//			},
+//			FindWholeOrganizationFunc: func(ctx context.Context) (entity.Organization, error) {
+//				panic("mock out the FindWholeOrganization method")
+//			},
+//			FindWholeOrganizationWithSdFunc: func(ctx context.Context, sd Sd) (entity.Organization, error) {
+//				panic("mock out the FindWholeOrganizationWithSd method")
 //			},
 //			GetAbsencesFunc: func(ctx context.Context, order parameter.AbsenceOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Absence], error) {
 //				panic("mock out the GetAbsences method")
@@ -719,6 +779,30 @@ var _ Store = &StoreMock{}
 //			},
 //			GetMimeTypesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereMimeTypeParam, order parameter.MimeTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MimeType], error) {
 //				panic("mock out the GetMimeTypesWithSd method")
+//			},
+//			GetOrganizationsFunc: func(ctx context.Context, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Organization], error) {
+//				panic("mock out the GetOrganizations method")
+//			},
+//			GetOrganizationsWithChatRoomFunc: func(ctx context.Context, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithChatRoom], error) {
+//				panic("mock out the GetOrganizationsWithChatRoom method")
+//			},
+//			GetOrganizationsWithChatRoomAndDetailFunc: func(ctx context.Context, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithChatRoomAndDetail], error) {
+//				panic("mock out the GetOrganizationsWithChatRoomAndDetail method")
+//			},
+//			GetOrganizationsWithChatRoomAndDetailWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithChatRoomAndDetail], error) {
+//				panic("mock out the GetOrganizationsWithChatRoomAndDetailWithSd method")
+//			},
+//			GetOrganizationsWithChatRoomWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithChatRoom], error) {
+//				panic("mock out the GetOrganizationsWithChatRoomWithSd method")
+//			},
+//			GetOrganizationsWithDetailFunc: func(ctx context.Context, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithDetail], error) {
+//				panic("mock out the GetOrganizationsWithDetail method")
+//			},
+//			GetOrganizationsWithDetailWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithDetail], error) {
+//				panic("mock out the GetOrganizationsWithDetailWithSd method")
+//			},
+//			GetOrganizationsWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Organization], error) {
+//				panic("mock out the GetOrganizationsWithSd method")
 //			},
 //			GetPermissionCategoriesFunc: func(ctx context.Context, where parameter.WherePermissionCategoryParam, order parameter.PermissionCategoryOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PermissionCategory], error) {
 //				panic("mock out the GetPermissionCategories method")
@@ -797,6 +881,30 @@ var _ Store = &StoreMock{}
 //			},
 //			GetPluralMimeTypesWithSdFunc: func(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID, order parameter.MimeTypeOrderMethod, np NumberedPaginationParam) (ListResult[entity.MimeType], error) {
 //				panic("mock out the GetPluralMimeTypesWithSd method")
+//			},
+//			GetPluralOrganizationsFunc: func(ctx context.Context, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.Organization], error) {
+//				panic("mock out the GetPluralOrganizations method")
+//			},
+//			GetPluralOrganizationsWithChatRoomFunc: func(ctx context.Context, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithChatRoom], error) {
+//				panic("mock out the GetPluralOrganizationsWithChatRoom method")
+//			},
+//			GetPluralOrganizationsWithChatRoomAndDetailFunc: func(ctx context.Context, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithChatRoomAndDetail], error) {
+//				panic("mock out the GetPluralOrganizationsWithChatRoomAndDetail method")
+//			},
+//			GetPluralOrganizationsWithChatRoomAndDetailWithSdFunc: func(ctx context.Context, sd Sd, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithChatRoomAndDetail], error) {
+//				panic("mock out the GetPluralOrganizationsWithChatRoomAndDetailWithSd method")
+//			},
+//			GetPluralOrganizationsWithChatRoomWithSdFunc: func(ctx context.Context, sd Sd, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithChatRoom], error) {
+//				panic("mock out the GetPluralOrganizationsWithChatRoomWithSd method")
+//			},
+//			GetPluralOrganizationsWithDetailFunc: func(ctx context.Context, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithDetail], error) {
+//				panic("mock out the GetPluralOrganizationsWithDetail method")
+//			},
+//			GetPluralOrganizationsWithDetailWithSdFunc: func(ctx context.Context, sd Sd, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithDetail], error) {
+//				panic("mock out the GetPluralOrganizationsWithDetailWithSd method")
+//			},
+//			GetPluralOrganizationsWithSdFunc: func(ctx context.Context, sd Sd, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.Organization], error) {
+//				panic("mock out the GetPluralOrganizationsWithSd method")
 //			},
 //			GetPluralPermissionCategoriesFunc: func(ctx context.Context, permissionCategoryIDs []uuid.UUID, order parameter.PermissionCategoryOrderMethod, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error) {
 //				panic("mock out the GetPluralPermissionCategories method")
@@ -918,6 +1026,12 @@ var _ Store = &StoreMock{}
 //			PluralDeleteMimeTypesWithSdFunc: func(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteMimeTypesWithSd method")
 //			},
+//			PluralDeleteOrganizationsFunc: func(ctx context.Context, organizationIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteOrganizations method")
+//			},
+//			PluralDeleteOrganizationsWithSdFunc: func(ctx context.Context, sd Sd, organizationIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteOrganizationsWithSd method")
+//			},
 //			PluralDeletePermissionCategoriesFunc: func(ctx context.Context, permissionCategoryIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeletePermissionCategories method")
 //			},
@@ -1028,6 +1142,12 @@ var _ Store = &StoreMock{}
 //			},
 //			UpdateMimeTypeWithSdFunc: func(ctx context.Context, sd Sd, mimeTypeID uuid.UUID, param parameter.UpdateMimeTypeParams) (entity.MimeType, error) {
 //				panic("mock out the UpdateMimeTypeWithSd method")
+//			},
+//			UpdateOrganizationFunc: func(ctx context.Context, organizationID uuid.UUID, param parameter.UpdateOrganizationParams) (entity.Organization, error) {
+//				panic("mock out the UpdateOrganization method")
+//			},
+//			UpdateOrganizationWithSdFunc: func(ctx context.Context, sd Sd, organizationID uuid.UUID, param parameter.UpdateOrganizationParams) (entity.Organization, error) {
+//				panic("mock out the UpdateOrganizationWithSd method")
 //			},
 //			UpdatePermissionFunc: func(ctx context.Context, permissionID uuid.UUID, param parameter.UpdatePermissionParams) (entity.Permission, error) {
 //				panic("mock out the UpdatePermission method")
@@ -1189,6 +1309,12 @@ type StoreMock struct {
 	// CountMimeTypesWithSdFunc mocks the CountMimeTypesWithSd method.
 	CountMimeTypesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereMimeTypeParam) (int64, error)
 
+	// CountOrganizationsFunc mocks the CountOrganizations method.
+	CountOrganizationsFunc func(ctx context.Context, where parameter.WhereOrganizationParam) (int64, error)
+
+	// CountOrganizationsWithSdFunc mocks the CountOrganizationsWithSd method.
+	CountOrganizationsWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereOrganizationParam) (int64, error)
+
 	// CountPermissionCategoriesFunc mocks the CountPermissionCategories method.
 	CountPermissionCategoriesFunc func(ctx context.Context, where parameter.WherePermissionCategoryParam) (int64, error)
 
@@ -1320,6 +1446,18 @@ type StoreMock struct {
 
 	// CreateMimeTypesWithSdFunc mocks the CreateMimeTypesWithSd method.
 	CreateMimeTypesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateMimeTypeParam) (int64, error)
+
+	// CreateOrganizationFunc mocks the CreateOrganization method.
+	CreateOrganizationFunc func(ctx context.Context, param parameter.CreateOrganizationParam) (entity.Organization, error)
+
+	// CreateOrganizationWithSdFunc mocks the CreateOrganizationWithSd method.
+	CreateOrganizationWithSdFunc func(ctx context.Context, sd Sd, param parameter.CreateOrganizationParam) (entity.Organization, error)
+
+	// CreateOrganizationsFunc mocks the CreateOrganizations method.
+	CreateOrganizationsFunc func(ctx context.Context, params []parameter.CreateOrganizationParam) (int64, error)
+
+	// CreateOrganizationsWithSdFunc mocks the CreateOrganizationsWithSd method.
+	CreateOrganizationsWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateOrganizationParam) (int64, error)
 
 	// CreatePermissionFunc mocks the CreatePermission method.
 	CreatePermissionFunc func(ctx context.Context, param parameter.CreatePermissionParam) (entity.Permission, error)
@@ -1458,6 +1596,12 @@ type StoreMock struct {
 
 	// DeleteMimeTypeWithSdFunc mocks the DeleteMimeTypeWithSd method.
 	DeleteMimeTypeWithSdFunc func(ctx context.Context, sd Sd, mimeTypeID uuid.UUID) (int64, error)
+
+	// DeleteOrganizationFunc mocks the DeleteOrganization method.
+	DeleteOrganizationFunc func(ctx context.Context, organizationID uuid.UUID) (int64, error)
+
+	// DeleteOrganizationWithSdFunc mocks the DeleteOrganizationWithSd method.
+	DeleteOrganizationWithSdFunc func(ctx context.Context, sd Sd, organizationID uuid.UUID) (int64, error)
 
 	// DeletePermissionFunc mocks the DeletePermission method.
 	DeletePermissionFunc func(ctx context.Context, permissionID uuid.UUID) (int64, error)
@@ -1651,6 +1795,30 @@ type StoreMock struct {
 	// FindMimeTypeByKeyWithSdFunc mocks the FindMimeTypeByKeyWithSd method.
 	FindMimeTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.MimeType, error)
 
+	// FindOrganizationByIDFunc mocks the FindOrganizationByID method.
+	FindOrganizationByIDFunc func(ctx context.Context, organizationID uuid.UUID) (entity.Organization, error)
+
+	// FindOrganizationByIDWithSdFunc mocks the FindOrganizationByIDWithSd method.
+	FindOrganizationByIDWithSdFunc func(ctx context.Context, sd Sd, organizationID uuid.UUID) (entity.Organization, error)
+
+	// FindOrganizationWithChatRoomFunc mocks the FindOrganizationWithChatRoom method.
+	FindOrganizationWithChatRoomFunc func(ctx context.Context, organizationID uuid.UUID) (entity.OrganizationWithChatRoom, error)
+
+	// FindOrganizationWithChatRoomAndDetailFunc mocks the FindOrganizationWithChatRoomAndDetail method.
+	FindOrganizationWithChatRoomAndDetailFunc func(ctx context.Context, organizationID uuid.UUID) (entity.OrganizationWithChatRoomAndDetail, error)
+
+	// FindOrganizationWithChatRoomAndDetailWithSdFunc mocks the FindOrganizationWithChatRoomAndDetailWithSd method.
+	FindOrganizationWithChatRoomAndDetailWithSdFunc func(ctx context.Context, sd Sd, organizationID uuid.UUID) (entity.OrganizationWithChatRoomAndDetail, error)
+
+	// FindOrganizationWithChatRoomWithSdFunc mocks the FindOrganizationWithChatRoomWithSd method.
+	FindOrganizationWithChatRoomWithSdFunc func(ctx context.Context, sd Sd, organizationID uuid.UUID) (entity.OrganizationWithChatRoom, error)
+
+	// FindOrganizationWithDetailFunc mocks the FindOrganizationWithDetail method.
+	FindOrganizationWithDetailFunc func(ctx context.Context, organizationID uuid.UUID) (entity.OrganizationWithDetail, error)
+
+	// FindOrganizationWithDetailWithSdFunc mocks the FindOrganizationWithDetailWithSd method.
+	FindOrganizationWithDetailWithSdFunc func(ctx context.Context, sd Sd, organizationID uuid.UUID) (entity.OrganizationWithDetail, error)
+
 	// FindPermissionByIDFunc mocks the FindPermissionByID method.
 	FindPermissionByIDFunc func(ctx context.Context, permissionID uuid.UUID) (entity.Permission, error)
 
@@ -1686,6 +1854,12 @@ type StoreMock struct {
 
 	// FindPermissionCategoryByKeyWithSdFunc mocks the FindPermissionCategoryByKeyWithSd method.
 	FindPermissionCategoryByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.PermissionCategory, error)
+
+	// FindPersonalOrganizationFunc mocks the FindPersonalOrganization method.
+	FindPersonalOrganizationFunc func(ctx context.Context, memberID uuid.UUID) (entity.Organization, error)
+
+	// FindPersonalOrganizationWithSdFunc mocks the FindPersonalOrganizationWithSd method.
+	FindPersonalOrganizationWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID) (entity.Organization, error)
 
 	// FindPolicyByIDFunc mocks the FindPolicyByID method.
 	FindPolicyByIDFunc func(ctx context.Context, policyID uuid.UUID) (entity.Policy, error)
@@ -1740,6 +1914,12 @@ type StoreMock struct {
 
 	// FindRoleByIDWithSdFunc mocks the FindRoleByIDWithSd method.
 	FindRoleByIDWithSdFunc func(ctx context.Context, sd Sd, roleID uuid.UUID) (entity.Role, error)
+
+	// FindWholeOrganizationFunc mocks the FindWholeOrganization method.
+	FindWholeOrganizationFunc func(ctx context.Context) (entity.Organization, error)
+
+	// FindWholeOrganizationWithSdFunc mocks the FindWholeOrganizationWithSd method.
+	FindWholeOrganizationWithSdFunc func(ctx context.Context, sd Sd) (entity.Organization, error)
 
 	// GetAbsencesFunc mocks the GetAbsences method.
 	GetAbsencesFunc func(ctx context.Context, order parameter.AbsenceOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Absence], error)
@@ -1800,6 +1980,30 @@ type StoreMock struct {
 
 	// GetMimeTypesWithSdFunc mocks the GetMimeTypesWithSd method.
 	GetMimeTypesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereMimeTypeParam, order parameter.MimeTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MimeType], error)
+
+	// GetOrganizationsFunc mocks the GetOrganizations method.
+	GetOrganizationsFunc func(ctx context.Context, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Organization], error)
+
+	// GetOrganizationsWithChatRoomFunc mocks the GetOrganizationsWithChatRoom method.
+	GetOrganizationsWithChatRoomFunc func(ctx context.Context, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithChatRoom], error)
+
+	// GetOrganizationsWithChatRoomAndDetailFunc mocks the GetOrganizationsWithChatRoomAndDetail method.
+	GetOrganizationsWithChatRoomAndDetailFunc func(ctx context.Context, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithChatRoomAndDetail], error)
+
+	// GetOrganizationsWithChatRoomAndDetailWithSdFunc mocks the GetOrganizationsWithChatRoomAndDetailWithSd method.
+	GetOrganizationsWithChatRoomAndDetailWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithChatRoomAndDetail], error)
+
+	// GetOrganizationsWithChatRoomWithSdFunc mocks the GetOrganizationsWithChatRoomWithSd method.
+	GetOrganizationsWithChatRoomWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithChatRoom], error)
+
+	// GetOrganizationsWithDetailFunc mocks the GetOrganizationsWithDetail method.
+	GetOrganizationsWithDetailFunc func(ctx context.Context, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithDetail], error)
+
+	// GetOrganizationsWithDetailWithSdFunc mocks the GetOrganizationsWithDetailWithSd method.
+	GetOrganizationsWithDetailWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithDetail], error)
+
+	// GetOrganizationsWithSdFunc mocks the GetOrganizationsWithSd method.
+	GetOrganizationsWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Organization], error)
 
 	// GetPermissionCategoriesFunc mocks the GetPermissionCategories method.
 	GetPermissionCategoriesFunc func(ctx context.Context, where parameter.WherePermissionCategoryParam, order parameter.PermissionCategoryOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.PermissionCategory], error)
@@ -1878,6 +2082,30 @@ type StoreMock struct {
 
 	// GetPluralMimeTypesWithSdFunc mocks the GetPluralMimeTypesWithSd method.
 	GetPluralMimeTypesWithSdFunc func(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID, order parameter.MimeTypeOrderMethod, np NumberedPaginationParam) (ListResult[entity.MimeType], error)
+
+	// GetPluralOrganizationsFunc mocks the GetPluralOrganizations method.
+	GetPluralOrganizationsFunc func(ctx context.Context, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.Organization], error)
+
+	// GetPluralOrganizationsWithChatRoomFunc mocks the GetPluralOrganizationsWithChatRoom method.
+	GetPluralOrganizationsWithChatRoomFunc func(ctx context.Context, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithChatRoom], error)
+
+	// GetPluralOrganizationsWithChatRoomAndDetailFunc mocks the GetPluralOrganizationsWithChatRoomAndDetail method.
+	GetPluralOrganizationsWithChatRoomAndDetailFunc func(ctx context.Context, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithChatRoomAndDetail], error)
+
+	// GetPluralOrganizationsWithChatRoomAndDetailWithSdFunc mocks the GetPluralOrganizationsWithChatRoomAndDetailWithSd method.
+	GetPluralOrganizationsWithChatRoomAndDetailWithSdFunc func(ctx context.Context, sd Sd, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithChatRoomAndDetail], error)
+
+	// GetPluralOrganizationsWithChatRoomWithSdFunc mocks the GetPluralOrganizationsWithChatRoomWithSd method.
+	GetPluralOrganizationsWithChatRoomWithSdFunc func(ctx context.Context, sd Sd, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithChatRoom], error)
+
+	// GetPluralOrganizationsWithDetailFunc mocks the GetPluralOrganizationsWithDetail method.
+	GetPluralOrganizationsWithDetailFunc func(ctx context.Context, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithDetail], error)
+
+	// GetPluralOrganizationsWithDetailWithSdFunc mocks the GetPluralOrganizationsWithDetailWithSd method.
+	GetPluralOrganizationsWithDetailWithSdFunc func(ctx context.Context, sd Sd, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithDetail], error)
+
+	// GetPluralOrganizationsWithSdFunc mocks the GetPluralOrganizationsWithSd method.
+	GetPluralOrganizationsWithSdFunc func(ctx context.Context, sd Sd, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.Organization], error)
 
 	// GetPluralPermissionCategoriesFunc mocks the GetPluralPermissionCategories method.
 	GetPluralPermissionCategoriesFunc func(ctx context.Context, permissionCategoryIDs []uuid.UUID, order parameter.PermissionCategoryOrderMethod, np NumberedPaginationParam) (ListResult[entity.PermissionCategory], error)
@@ -1999,6 +2227,12 @@ type StoreMock struct {
 	// PluralDeleteMimeTypesWithSdFunc mocks the PluralDeleteMimeTypesWithSd method.
 	PluralDeleteMimeTypesWithSdFunc func(ctx context.Context, sd Sd, mimeTypeIDs []uuid.UUID) (int64, error)
 
+	// PluralDeleteOrganizationsFunc mocks the PluralDeleteOrganizations method.
+	PluralDeleteOrganizationsFunc func(ctx context.Context, organizationIDs []uuid.UUID) (int64, error)
+
+	// PluralDeleteOrganizationsWithSdFunc mocks the PluralDeleteOrganizationsWithSd method.
+	PluralDeleteOrganizationsWithSdFunc func(ctx context.Context, sd Sd, organizationIDs []uuid.UUID) (int64, error)
+
 	// PluralDeletePermissionCategoriesFunc mocks the PluralDeletePermissionCategories method.
 	PluralDeletePermissionCategoriesFunc func(ctx context.Context, permissionCategoryIDs []uuid.UUID) (int64, error)
 
@@ -2109,6 +2343,12 @@ type StoreMock struct {
 
 	// UpdateMimeTypeWithSdFunc mocks the UpdateMimeTypeWithSd method.
 	UpdateMimeTypeWithSdFunc func(ctx context.Context, sd Sd, mimeTypeID uuid.UUID, param parameter.UpdateMimeTypeParams) (entity.MimeType, error)
+
+	// UpdateOrganizationFunc mocks the UpdateOrganization method.
+	UpdateOrganizationFunc func(ctx context.Context, organizationID uuid.UUID, param parameter.UpdateOrganizationParams) (entity.Organization, error)
+
+	// UpdateOrganizationWithSdFunc mocks the UpdateOrganizationWithSd method.
+	UpdateOrganizationWithSdFunc func(ctx context.Context, sd Sd, organizationID uuid.UUID, param parameter.UpdateOrganizationParams) (entity.Organization, error)
 
 	// UpdatePermissionFunc mocks the UpdatePermission method.
 	UpdatePermissionFunc func(ctx context.Context, permissionID uuid.UUID, param parameter.UpdatePermissionParams) (entity.Permission, error)
@@ -2406,6 +2646,22 @@ type StoreMock struct {
 			Sd Sd
 			// Where is the where argument value.
 			Where parameter.WhereMimeTypeParam
+		}
+		// CountOrganizations holds details about calls to the CountOrganizations method.
+		CountOrganizations []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereOrganizationParam
+		}
+		// CountOrganizationsWithSd holds details about calls to the CountOrganizationsWithSd method.
+		CountOrganizationsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereOrganizationParam
 		}
 		// CountPermissionCategories holds details about calls to the CountPermissionCategories method.
 		CountPermissionCategories []struct {
@@ -2766,6 +3022,38 @@ type StoreMock struct {
 			Sd Sd
 			// Params is the params argument value.
 			Params []parameter.CreateMimeTypeParam
+		}
+		// CreateOrganization holds details about calls to the CreateOrganization method.
+		CreateOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Param is the param argument value.
+			Param parameter.CreateOrganizationParam
+		}
+		// CreateOrganizationWithSd holds details about calls to the CreateOrganizationWithSd method.
+		CreateOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Param is the param argument value.
+			Param parameter.CreateOrganizationParam
+		}
+		// CreateOrganizations holds details about calls to the CreateOrganizations method.
+		CreateOrganizations []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.CreateOrganizationParam
+		}
+		// CreateOrganizationsWithSd holds details about calls to the CreateOrganizationsWithSd method.
+		CreateOrganizationsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Params is the params argument value.
+			Params []parameter.CreateOrganizationParam
 		}
 		// CreatePermission holds details about calls to the CreatePermission method.
 		CreatePermission []struct {
@@ -3134,6 +3422,22 @@ type StoreMock struct {
 			Sd Sd
 			// MimeTypeID is the mimeTypeID argument value.
 			MimeTypeID uuid.UUID
+		}
+		// DeleteOrganization holds details about calls to the DeleteOrganization method.
+		DeleteOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+		}
+		// DeleteOrganizationWithSd holds details about calls to the DeleteOrganizationWithSd method.
+		DeleteOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
 		}
 		// DeletePermission holds details about calls to the DeletePermission method.
 		DeletePermission []struct {
@@ -3659,6 +3963,70 @@ type StoreMock struct {
 			// Key is the key argument value.
 			Key string
 		}
+		// FindOrganizationByID holds details about calls to the FindOrganizationByID method.
+		FindOrganizationByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+		}
+		// FindOrganizationByIDWithSd holds details about calls to the FindOrganizationByIDWithSd method.
+		FindOrganizationByIDWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+		}
+		// FindOrganizationWithChatRoom holds details about calls to the FindOrganizationWithChatRoom method.
+		FindOrganizationWithChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+		}
+		// FindOrganizationWithChatRoomAndDetail holds details about calls to the FindOrganizationWithChatRoomAndDetail method.
+		FindOrganizationWithChatRoomAndDetail []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+		}
+		// FindOrganizationWithChatRoomAndDetailWithSd holds details about calls to the FindOrganizationWithChatRoomAndDetailWithSd method.
+		FindOrganizationWithChatRoomAndDetailWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+		}
+		// FindOrganizationWithChatRoomWithSd holds details about calls to the FindOrganizationWithChatRoomWithSd method.
+		FindOrganizationWithChatRoomWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+		}
+		// FindOrganizationWithDetail holds details about calls to the FindOrganizationWithDetail method.
+		FindOrganizationWithDetail []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+		}
+		// FindOrganizationWithDetailWithSd holds details about calls to the FindOrganizationWithDetailWithSd method.
+		FindOrganizationWithDetailWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+		}
 		// FindPermissionByID holds details about calls to the FindPermissionByID method.
 		FindPermissionByID []struct {
 			// Ctx is the ctx argument value.
@@ -3754,6 +4122,22 @@ type StoreMock struct {
 			Sd Sd
 			// Key is the key argument value.
 			Key string
+		}
+		// FindPersonalOrganization holds details about calls to the FindPersonalOrganization method.
+		FindPersonalOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+		}
+		// FindPersonalOrganizationWithSd holds details about calls to the FindPersonalOrganizationWithSd method.
+		FindPersonalOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
 		}
 		// FindPolicyByID holds details about calls to the FindPolicyByID method.
 		FindPolicyByID []struct {
@@ -3898,6 +4282,18 @@ type StoreMock struct {
 			Sd Sd
 			// RoleID is the roleID argument value.
 			RoleID uuid.UUID
+		}
+		// FindWholeOrganization holds details about calls to the FindWholeOrganization method.
+		FindWholeOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+		}
+		// FindWholeOrganizationWithSd holds details about calls to the FindWholeOrganizationWithSd method.
+		FindWholeOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
 		}
 		// GetAbsences holds details about calls to the GetAbsences method.
 		GetAbsences []struct {
@@ -4216,6 +4612,134 @@ type StoreMock struct {
 			Where parameter.WhereMimeTypeParam
 			// Order is the order argument value.
 			Order parameter.MimeTypeOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetOrganizations holds details about calls to the GetOrganizations method.
+		GetOrganizations []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereOrganizationParam
+			// Order is the order argument value.
+			Order parameter.OrganizationOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetOrganizationsWithChatRoom holds details about calls to the GetOrganizationsWithChatRoom method.
+		GetOrganizationsWithChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereOrganizationParam
+			// Order is the order argument value.
+			Order parameter.OrganizationOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetOrganizationsWithChatRoomAndDetail holds details about calls to the GetOrganizationsWithChatRoomAndDetail method.
+		GetOrganizationsWithChatRoomAndDetail []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereOrganizationParam
+			// Order is the order argument value.
+			Order parameter.OrganizationOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetOrganizationsWithChatRoomAndDetailWithSd holds details about calls to the GetOrganizationsWithChatRoomAndDetailWithSd method.
+		GetOrganizationsWithChatRoomAndDetailWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereOrganizationParam
+			// Order is the order argument value.
+			Order parameter.OrganizationOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetOrganizationsWithChatRoomWithSd holds details about calls to the GetOrganizationsWithChatRoomWithSd method.
+		GetOrganizationsWithChatRoomWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereOrganizationParam
+			// Order is the order argument value.
+			Order parameter.OrganizationOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetOrganizationsWithDetail holds details about calls to the GetOrganizationsWithDetail method.
+		GetOrganizationsWithDetail []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereOrganizationParam
+			// Order is the order argument value.
+			Order parameter.OrganizationOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetOrganizationsWithDetailWithSd holds details about calls to the GetOrganizationsWithDetailWithSd method.
+		GetOrganizationsWithDetailWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereOrganizationParam
+			// Order is the order argument value.
+			Order parameter.OrganizationOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetOrganizationsWithSd holds details about calls to the GetOrganizationsWithSd method.
+		GetOrganizationsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereOrganizationParam
+			// Order is the order argument value.
+			Order parameter.OrganizationOrderMethod
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 			// Cp is the cp argument value.
@@ -4556,6 +5080,102 @@ type StoreMock struct {
 			MimeTypeIDs []uuid.UUID
 			// Order is the order argument value.
 			Order parameter.MimeTypeOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralOrganizations holds details about calls to the GetPluralOrganizations method.
+		GetPluralOrganizations []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationIDs is the organizationIDs argument value.
+			OrganizationIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.OrganizationOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralOrganizationsWithChatRoom holds details about calls to the GetPluralOrganizationsWithChatRoom method.
+		GetPluralOrganizationsWithChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationIDs is the organizationIDs argument value.
+			OrganizationIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.OrganizationOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralOrganizationsWithChatRoomAndDetail holds details about calls to the GetPluralOrganizationsWithChatRoomAndDetail method.
+		GetPluralOrganizationsWithChatRoomAndDetail []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationIDs is the organizationIDs argument value.
+			OrganizationIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.OrganizationOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralOrganizationsWithChatRoomAndDetailWithSd holds details about calls to the GetPluralOrganizationsWithChatRoomAndDetailWithSd method.
+		GetPluralOrganizationsWithChatRoomAndDetailWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// OrganizationIDs is the organizationIDs argument value.
+			OrganizationIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.OrganizationOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralOrganizationsWithChatRoomWithSd holds details about calls to the GetPluralOrganizationsWithChatRoomWithSd method.
+		GetPluralOrganizationsWithChatRoomWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// OrganizationIDs is the organizationIDs argument value.
+			OrganizationIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.OrganizationOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralOrganizationsWithDetail holds details about calls to the GetPluralOrganizationsWithDetail method.
+		GetPluralOrganizationsWithDetail []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationIDs is the organizationIDs argument value.
+			OrganizationIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.OrganizationOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralOrganizationsWithDetailWithSd holds details about calls to the GetPluralOrganizationsWithDetailWithSd method.
+		GetPluralOrganizationsWithDetailWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// OrganizationIDs is the organizationIDs argument value.
+			OrganizationIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.OrganizationOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralOrganizationsWithSd holds details about calls to the GetPluralOrganizationsWithSd method.
+		GetPluralOrganizationsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// OrganizationIDs is the organizationIDs argument value.
+			OrganizationIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.OrganizationOrderMethod
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 		}
@@ -5047,6 +5667,22 @@ type StoreMock struct {
 			// MimeTypeIDs is the mimeTypeIDs argument value.
 			MimeTypeIDs []uuid.UUID
 		}
+		// PluralDeleteOrganizations holds details about calls to the PluralDeleteOrganizations method.
+		PluralDeleteOrganizations []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationIDs is the organizationIDs argument value.
+			OrganizationIDs []uuid.UUID
+		}
+		// PluralDeleteOrganizationsWithSd holds details about calls to the PluralDeleteOrganizationsWithSd method.
+		PluralDeleteOrganizationsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// OrganizationIDs is the organizationIDs argument value.
+			OrganizationIDs []uuid.UUID
+		}
 		// PluralDeletePermissionCategories holds details about calls to the PluralDeletePermissionCategories method.
 		PluralDeletePermissionCategories []struct {
 			// Ctx is the ctx argument value.
@@ -5390,6 +6026,26 @@ type StoreMock struct {
 			// Param is the param argument value.
 			Param parameter.UpdateMimeTypeParams
 		}
+		// UpdateOrganization holds details about calls to the UpdateOrganization method.
+		UpdateOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+			// Param is the param argument value.
+			Param parameter.UpdateOrganizationParams
+		}
+		// UpdateOrganizationWithSd holds details about calls to the UpdateOrganizationWithSd method.
+		UpdateOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+			// Param is the param argument value.
+			Param parameter.UpdateOrganizationParams
+		}
 		// UpdatePermission holds details about calls to the UpdatePermission method.
 		UpdatePermission []struct {
 			// Ctx is the ctx argument value.
@@ -5611,364 +6267,404 @@ type StoreMock struct {
 			Param parameter.UpdateRoleParams
 		}
 	}
-	lockAssociateRole                              sync.RWMutex
-	lockAssociateRoleWithSd                        sync.RWMutex
-	lockAssociateRoles                             sync.RWMutex
-	lockAssociateRolesWithSd                       sync.RWMutex
-	lockBegin                                      sync.RWMutex
-	lockBelongChatRoom                             sync.RWMutex
-	lockBelongChatRoomWithSd                       sync.RWMutex
-	lockBelongChatRooms                            sync.RWMutex
-	lockBelongChatRoomsWithSd                      sync.RWMutex
-	lockCleanup                                    sync.RWMutex
-	lockCommit                                     sync.RWMutex
-	lockCountAbsences                              sync.RWMutex
-	lockCountAbsencesWithSd                        sync.RWMutex
-	lockCountAttachableItems                       sync.RWMutex
-	lockCountAttachableItemsWithSd                 sync.RWMutex
-	lockCountAttendStatuses                        sync.RWMutex
-	lockCountAttendStatusesWithSd                  sync.RWMutex
-	lockCountAttendanceTypes                       sync.RWMutex
-	lockCountAttendanceTypesWithSd                 sync.RWMutex
-	lockCountChatRooms                             sync.RWMutex
-	lockCountChatRoomsOnMember                     sync.RWMutex
-	lockCountChatRoomsOnMemberWithSd               sync.RWMutex
-	lockCountChatRoomsWithSd                       sync.RWMutex
-	lockCountEventTypes                            sync.RWMutex
-	lockCountEventTypesWithSd                      sync.RWMutex
-	lockCountMembersOnChatRoom                     sync.RWMutex
-	lockCountMembersOnChatRoomWithSd               sync.RWMutex
-	lockCountMimeTypes                             sync.RWMutex
-	lockCountMimeTypesWithSd                       sync.RWMutex
-	lockCountPermissionCategories                  sync.RWMutex
-	lockCountPermissionCategoriesWithSd            sync.RWMutex
-	lockCountPermissions                           sync.RWMutex
-	lockCountPermissionsWithSd                     sync.RWMutex
-	lockCountPolicies                              sync.RWMutex
-	lockCountPoliciesOnRole                        sync.RWMutex
-	lockCountPoliciesOnRoleWithSd                  sync.RWMutex
-	lockCountPoliciesWithSd                        sync.RWMutex
-	lockCountPolicyCategories                      sync.RWMutex
-	lockCountPolicyCategoriesWithSd                sync.RWMutex
-	lockCountRecordTypes                           sync.RWMutex
-	lockCountRecordTypesWithSd                     sync.RWMutex
-	lockCountRoles                                 sync.RWMutex
-	lockCountRolesOnPolicy                         sync.RWMutex
-	lockCountRolesOnPolicyWithSd                   sync.RWMutex
-	lockCountRolesWithSd                           sync.RWMutex
-	lockCreateAbsence                              sync.RWMutex
-	lockCreateAbsenceWithSd                        sync.RWMutex
-	lockCreateAbsences                             sync.RWMutex
-	lockCreateAbsencesWithSd                       sync.RWMutex
-	lockCreateAttachableItem                       sync.RWMutex
-	lockCreateAttachableItemWithSd                 sync.RWMutex
-	lockCreateAttachableItems                      sync.RWMutex
-	lockCreateAttachableItemsWithSd                sync.RWMutex
-	lockCreateAttendStatus                         sync.RWMutex
-	lockCreateAttendStatusWithSd                   sync.RWMutex
-	lockCreateAttendStatuses                       sync.RWMutex
-	lockCreateAttendStatusesWithSd                 sync.RWMutex
-	lockCreateAttendanceType                       sync.RWMutex
-	lockCreateAttendanceTypeWithSd                 sync.RWMutex
-	lockCreateAttendanceTypes                      sync.RWMutex
-	lockCreateAttendanceTypesWithSd                sync.RWMutex
-	lockCreateChatRoom                             sync.RWMutex
-	lockCreateChatRoomWithSd                       sync.RWMutex
-	lockCreateChatRooms                            sync.RWMutex
-	lockCreateChatRoomsWithSd                      sync.RWMutex
-	lockCreateEventType                            sync.RWMutex
-	lockCreateEventTypeWithSd                      sync.RWMutex
-	lockCreateEventTypes                           sync.RWMutex
-	lockCreateEventTypesWithSd                     sync.RWMutex
-	lockCreateMimeType                             sync.RWMutex
-	lockCreateMimeTypeWithSd                       sync.RWMutex
-	lockCreateMimeTypes                            sync.RWMutex
-	lockCreateMimeTypesWithSd                      sync.RWMutex
-	lockCreatePermission                           sync.RWMutex
-	lockCreatePermissionCategories                 sync.RWMutex
-	lockCreatePermissionCategoriesWithSd           sync.RWMutex
-	lockCreatePermissionCategory                   sync.RWMutex
-	lockCreatePermissionCategoryWithSd             sync.RWMutex
-	lockCreatePermissionWithSd                     sync.RWMutex
-	lockCreatePermissions                          sync.RWMutex
-	lockCreatePermissionsWithSd                    sync.RWMutex
-	lockCreatePolicies                             sync.RWMutex
-	lockCreatePoliciesWithSd                       sync.RWMutex
-	lockCreatePolicy                               sync.RWMutex
-	lockCreatePolicyCategories                     sync.RWMutex
-	lockCreatePolicyCategoriesWithSd               sync.RWMutex
-	lockCreatePolicyCategory                       sync.RWMutex
-	lockCreatePolicyCategoryWithSd                 sync.RWMutex
-	lockCreatePolicyWithSd                         sync.RWMutex
-	lockCreateRecordType                           sync.RWMutex
-	lockCreateRecordTypeWithSd                     sync.RWMutex
-	lockCreateRecordTypes                          sync.RWMutex
-	lockCreateRecordTypesWithSd                    sync.RWMutex
-	lockCreateRole                                 sync.RWMutex
-	lockCreateRoleWithSd                           sync.RWMutex
-	lockCreateRoles                                sync.RWMutex
-	lockCreateRolesWithSd                          sync.RWMutex
-	lockDeleteAbsence                              sync.RWMutex
-	lockDeleteAbsenceWithSd                        sync.RWMutex
-	lockDeleteAttachableItem                       sync.RWMutex
-	lockDeleteAttachableItemWithSd                 sync.RWMutex
-	lockDeleteAttendStatus                         sync.RWMutex
-	lockDeleteAttendStatusByKey                    sync.RWMutex
-	lockDeleteAttendStatusByKeyWithSd              sync.RWMutex
-	lockDeleteAttendStatusWithSd                   sync.RWMutex
-	lockDeleteAttendanceType                       sync.RWMutex
-	lockDeleteAttendanceTypeByKey                  sync.RWMutex
-	lockDeleteAttendanceTypeByKeyWithSd            sync.RWMutex
-	lockDeleteAttendanceTypeWithSd                 sync.RWMutex
-	lockDeleteChatRoom                             sync.RWMutex
-	lockDeleteChatRoomWithSd                       sync.RWMutex
-	lockDeleteEventType                            sync.RWMutex
-	lockDeleteEventTypeByKey                       sync.RWMutex
-	lockDeleteEventTypeByKeyWithSd                 sync.RWMutex
-	lockDeleteEventTypeWithSd                      sync.RWMutex
-	lockDeleteMimeType                             sync.RWMutex
-	lockDeleteMimeTypeByKey                        sync.RWMutex
-	lockDeleteMimeTypeByKeyWithSd                  sync.RWMutex
-	lockDeleteMimeTypeWithSd                       sync.RWMutex
-	lockDeletePermission                           sync.RWMutex
-	lockDeletePermissionByKey                      sync.RWMutex
-	lockDeletePermissionByKeyWithSd                sync.RWMutex
-	lockDeletePermissionCategory                   sync.RWMutex
-	lockDeletePermissionCategoryByKey              sync.RWMutex
-	lockDeletePermissionCategoryByKeyWithSd        sync.RWMutex
-	lockDeletePermissionCategoryWithSd             sync.RWMutex
-	lockDeletePermissionWithSd                     sync.RWMutex
-	lockDeletePolicy                               sync.RWMutex
-	lockDeletePolicyByKey                          sync.RWMutex
-	lockDeletePolicyByKeyWithSd                    sync.RWMutex
-	lockDeletePolicyCategory                       sync.RWMutex
-	lockDeletePolicyCategoryByKey                  sync.RWMutex
-	lockDeletePolicyCategoryByKeyWithSd            sync.RWMutex
-	lockDeletePolicyCategoryWithSd                 sync.RWMutex
-	lockDeletePolicyWithSd                         sync.RWMutex
-	lockDeleteRecordType                           sync.RWMutex
-	lockDeleteRecordTypeByKey                      sync.RWMutex
-	lockDeleteRecordTypeByKeyWithSd                sync.RWMutex
-	lockDeleteRecordTypeWithSd                     sync.RWMutex
-	lockDeleteRole                                 sync.RWMutex
-	lockDeleteRoleWithSd                           sync.RWMutex
-	lockDisassociatePolicyOnRole                   sync.RWMutex
-	lockDisassociatePolicyOnRoleWithSd             sync.RWMutex
-	lockDisassociatePolicyOnRoles                  sync.RWMutex
-	lockDisassociatePolicyOnRolesWithSd            sync.RWMutex
-	lockDisassociateRole                           sync.RWMutex
-	lockDisassociateRoleOnPolicies                 sync.RWMutex
-	lockDisassociateRoleOnPoliciesWithSd           sync.RWMutex
-	lockDisassociateRoleOnPolicy                   sync.RWMutex
-	lockDisassociateRoleOnPolicyWithSd             sync.RWMutex
-	lockDisassociateRoleWithSd                     sync.RWMutex
-	lockDisbelongChatRoom                          sync.RWMutex
-	lockDisbelongChatRoomOnMember                  sync.RWMutex
-	lockDisbelongChatRoomOnMemberWithSd            sync.RWMutex
-	lockDisbelongChatRoomOnMembers                 sync.RWMutex
-	lockDisbelongChatRoomOnMembersWithSd           sync.RWMutex
-	lockDisbelongChatRoomWithSd                    sync.RWMutex
-	lockFindAbsenceByID                            sync.RWMutex
-	lockFindAbsenceByIDWithSd                      sync.RWMutex
-	lockFindAttachableItemByID                     sync.RWMutex
-	lockFindAttachableItemByIDWithMimeType         sync.RWMutex
-	lockFindAttachableItemByIDWithMimeTypeWithSd   sync.RWMutex
-	lockFindAttachableItemByIDWithSd               sync.RWMutex
-	lockFindAttendStatusByID                       sync.RWMutex
-	lockFindAttendStatusByIDWithSd                 sync.RWMutex
-	lockFindAttendStatusByKey                      sync.RWMutex
-	lockFindAttendStatusByKeyWithSd                sync.RWMutex
-	lockFindAttendanceTypeByID                     sync.RWMutex
-	lockFindAttendanceTypeByIDWithSd               sync.RWMutex
-	lockFindAttendanceTypeByKey                    sync.RWMutex
-	lockFindAttendanceTypeByKeyWithSd              sync.RWMutex
-	lockFindChatRoomByID                           sync.RWMutex
-	lockFindChatRoomByIDWithSd                     sync.RWMutex
-	lockFindChatRoomOnPrivate                      sync.RWMutex
-	lockFindChatRoomOnPrivateWithSd                sync.RWMutex
-	lockFindEventTypeByID                          sync.RWMutex
-	lockFindEventTypeByIDWithSd                    sync.RWMutex
-	lockFindEventTypeByKey                         sync.RWMutex
-	lockFindEventTypeByKeyWithSd                   sync.RWMutex
-	lockFindMimeTypeByID                           sync.RWMutex
-	lockFindMimeTypeByIDWithSd                     sync.RWMutex
-	lockFindMimeTypeByKey                          sync.RWMutex
-	lockFindMimeTypeByKeyWithSd                    sync.RWMutex
-	lockFindPermissionByID                         sync.RWMutex
-	lockFindPermissionByIDWithCategory             sync.RWMutex
-	lockFindPermissionByIDWithCategoryWithSd       sync.RWMutex
-	lockFindPermissionByIDWithSd                   sync.RWMutex
-	lockFindPermissionByKey                        sync.RWMutex
-	lockFindPermissionByKeyWithCategory            sync.RWMutex
-	lockFindPermissionByKeyWithCategoryWithSd      sync.RWMutex
-	lockFindPermissionByKeyWithSd                  sync.RWMutex
-	lockFindPermissionCategoryByID                 sync.RWMutex
-	lockFindPermissionCategoryByIDWithSd           sync.RWMutex
-	lockFindPermissionCategoryByKey                sync.RWMutex
-	lockFindPermissionCategoryByKeyWithSd          sync.RWMutex
-	lockFindPolicyByID                             sync.RWMutex
-	lockFindPolicyByIDWithCategory                 sync.RWMutex
-	lockFindPolicyByIDWithCategoryWithSd           sync.RWMutex
-	lockFindPolicyByIDWithSd                       sync.RWMutex
-	lockFindPolicyByKey                            sync.RWMutex
-	lockFindPolicyByKeyWithCategory                sync.RWMutex
-	lockFindPolicyByKeyWithCategoryWithSd          sync.RWMutex
-	lockFindPolicyByKeyWithSd                      sync.RWMutex
-	lockFindPolicyCategoryByID                     sync.RWMutex
-	lockFindPolicyCategoryByIDWithSd               sync.RWMutex
-	lockFindPolicyCategoryByKey                    sync.RWMutex
-	lockFindPolicyCategoryByKeyWithSd              sync.RWMutex
-	lockFindRecordTypeByID                         sync.RWMutex
-	lockFindRecordTypeByIDWithSd                   sync.RWMutex
-	lockFindRecordTypeByKey                        sync.RWMutex
-	lockFindRecordTypeByKeyWithSd                  sync.RWMutex
-	lockFindRoleByID                               sync.RWMutex
-	lockFindRoleByIDWithSd                         sync.RWMutex
-	lockGetAbsences                                sync.RWMutex
-	lockGetAbsencesWithSd                          sync.RWMutex
-	lockGetAttachableItems                         sync.RWMutex
-	lockGetAttachableItemsWithMimeType             sync.RWMutex
-	lockGetAttachableItemsWithMimeTypeWithSd       sync.RWMutex
-	lockGetAttachableItemsWithSd                   sync.RWMutex
-	lockGetAttendStatuses                          sync.RWMutex
-	lockGetAttendStatusesWithSd                    sync.RWMutex
-	lockGetAttendanceTypes                         sync.RWMutex
-	lockGetAttendanceTypesWithSd                   sync.RWMutex
-	lockGetChatRooms                               sync.RWMutex
-	lockGetChatRoomsOnMember                       sync.RWMutex
-	lockGetChatRoomsOnMemberWithSd                 sync.RWMutex
-	lockGetChatRoomsWithSd                         sync.RWMutex
-	lockGetEventTypes                              sync.RWMutex
-	lockGetEventTypesWithSd                        sync.RWMutex
-	lockGetMembersOnChatRoom                       sync.RWMutex
-	lockGetMembersOnChatRoomWithSd                 sync.RWMutex
-	lockGetMimeTypes                               sync.RWMutex
-	lockGetMimeTypesWithSd                         sync.RWMutex
-	lockGetPermissionCategories                    sync.RWMutex
-	lockGetPermissionCategoriesWithSd              sync.RWMutex
-	lockGetPermissions                             sync.RWMutex
-	lockGetPermissionsWithCategory                 sync.RWMutex
-	lockGetPermissionsWithCategoryWithSd           sync.RWMutex
-	lockGetPermissionsWithSd                       sync.RWMutex
-	lockGetPluralAbsences                          sync.RWMutex
-	lockGetPluralAbsencesWithSd                    sync.RWMutex
-	lockGetPluralAttachableItems                   sync.RWMutex
-	lockGetPluralAttachableItemsWithMimeType       sync.RWMutex
-	lockGetPluralAttachableItemsWithMimeTypeWithSd sync.RWMutex
-	lockGetPluralAttachableItemsWithSd             sync.RWMutex
-	lockGetPluralAttendStatuses                    sync.RWMutex
-	lockGetPluralAttendStatusesWithSd              sync.RWMutex
-	lockGetPluralAttendanceTypes                   sync.RWMutex
-	lockGetPluralAttendanceTypesWithSd             sync.RWMutex
-	lockGetPluralChatRooms                         sync.RWMutex
-	lockGetPluralChatRoomsOnMember                 sync.RWMutex
-	lockGetPluralChatRoomsOnMemberWithSd           sync.RWMutex
-	lockGetPluralChatRoomsWithSd                   sync.RWMutex
-	lockGetPluralEventTypes                        sync.RWMutex
-	lockGetPluralEventTypesWithSd                  sync.RWMutex
-	lockGetPluralMembersOnChatRoom                 sync.RWMutex
-	lockGetPluralMembersOnChatRoomWithSd           sync.RWMutex
-	lockGetPluralMimeTypes                         sync.RWMutex
-	lockGetPluralMimeTypesWithSd                   sync.RWMutex
-	lockGetPluralPermissionCategories              sync.RWMutex
-	lockGetPluralPermissionCategoriesWithSd        sync.RWMutex
-	lockGetPluralPermissions                       sync.RWMutex
-	lockGetPluralPermissionsWithSd                 sync.RWMutex
-	lockGetPluralPolicies                          sync.RWMutex
-	lockGetPluralPoliciesWithSd                    sync.RWMutex
-	lockGetPluralPolicyCategories                  sync.RWMutex
-	lockGetPluralPolicyCategoriesWithSd            sync.RWMutex
-	lockGetPluralRecordTypes                       sync.RWMutex
-	lockGetPluralRecordTypesWithSd                 sync.RWMutex
-	lockGetPluralRoles                             sync.RWMutex
-	lockGetPluralRolesWithSd                       sync.RWMutex
-	lockGetPolicies                                sync.RWMutex
-	lockGetPoliciesOnRole                          sync.RWMutex
-	lockGetPoliciesOnRoleWithSd                    sync.RWMutex
-	lockGetPoliciesWithCategory                    sync.RWMutex
-	lockGetPoliciesWithCategoryWithSd              sync.RWMutex
-	lockGetPoliciesWithSd                          sync.RWMutex
-	lockGetPolicyCategories                        sync.RWMutex
-	lockGetPolicyCategoriesWithSd                  sync.RWMutex
-	lockGetRecordTypes                             sync.RWMutex
-	lockGetRecordTypesWithSd                       sync.RWMutex
-	lockGetRoles                                   sync.RWMutex
-	lockGetRolesOnPolicy                           sync.RWMutex
-	lockGetRolesOnPolicyWithSd                     sync.RWMutex
-	lockGetRolesWithSd                             sync.RWMutex
-	lockPluralDeleteAbsences                       sync.RWMutex
-	lockPluralDeleteAbsencesWithSd                 sync.RWMutex
-	lockPluralDeleteAttachableItems                sync.RWMutex
-	lockPluralDeleteAttachableItemsWithSd          sync.RWMutex
-	lockPluralDeleteAttendStatuses                 sync.RWMutex
-	lockPluralDeleteAttendStatusesWithSd           sync.RWMutex
-	lockPluralDeleteAttendanceTypes                sync.RWMutex
-	lockPluralDeleteAttendanceTypesWithSd          sync.RWMutex
-	lockPluralDeleteChatRooms                      sync.RWMutex
-	lockPluralDeleteChatRoomsWithSd                sync.RWMutex
-	lockPluralDeleteEventTypes                     sync.RWMutex
-	lockPluralDeleteEventTypesWithSd               sync.RWMutex
-	lockPluralDeleteMimeTypes                      sync.RWMutex
-	lockPluralDeleteMimeTypesWithSd                sync.RWMutex
-	lockPluralDeletePermissionCategories           sync.RWMutex
-	lockPluralDeletePermissionCategoriesWithSd     sync.RWMutex
-	lockPluralDeletePermissions                    sync.RWMutex
-	lockPluralDeletePermissionsWithSd              sync.RWMutex
-	lockPluralDeletePolicies                       sync.RWMutex
-	lockPluralDeletePoliciesWithSd                 sync.RWMutex
-	lockPluralDeletePolicyCategories               sync.RWMutex
-	lockPluralDeletePolicyCategoriesWithSd         sync.RWMutex
-	lockPluralDeleteRecordTypes                    sync.RWMutex
-	lockPluralDeleteRecordTypesWithSd              sync.RWMutex
-	lockPluralDeleteRoles                          sync.RWMutex
-	lockPluralDeleteRolesWithSd                    sync.RWMutex
-	lockPluralDisassociatePolicyOnRole             sync.RWMutex
-	lockPluralDisassociatePolicyOnRoleWithSd       sync.RWMutex
-	lockPluralDisassociateRoleOnPolicy             sync.RWMutex
-	lockPluralDisassociateRoleOnPolicyWithSd       sync.RWMutex
-	lockRollback                                   sync.RWMutex
-	lockUpdateAttachableItem                       sync.RWMutex
-	lockUpdateAttachableItemWithSd                 sync.RWMutex
-	lockUpdateAttendStatus                         sync.RWMutex
-	lockUpdateAttendStatusByKey                    sync.RWMutex
-	lockUpdateAttendStatusByKeyWithSd              sync.RWMutex
-	lockUpdateAttendStatusWithSd                   sync.RWMutex
-	lockUpdateAttendanceType                       sync.RWMutex
-	lockUpdateAttendanceTypeByKey                  sync.RWMutex
-	lockUpdateAttendanceTypeByKeyWithSd            sync.RWMutex
-	lockUpdateAttendanceTypeWithSd                 sync.RWMutex
-	lockUpdateChatRoom                             sync.RWMutex
-	lockUpdateChatRoomWithSd                       sync.RWMutex
-	lockUpdateEventType                            sync.RWMutex
-	lockUpdateEventTypeByKey                       sync.RWMutex
-	lockUpdateEventTypeByKeyWithSd                 sync.RWMutex
-	lockUpdateEventTypeWithSd                      sync.RWMutex
-	lockUpdateMimeType                             sync.RWMutex
-	lockUpdateMimeTypeByKey                        sync.RWMutex
-	lockUpdateMimeTypeByKeyWithSd                  sync.RWMutex
-	lockUpdateMimeTypeWithSd                       sync.RWMutex
-	lockUpdatePermission                           sync.RWMutex
-	lockUpdatePermissionByKey                      sync.RWMutex
-	lockUpdatePermissionByKeyWithSd                sync.RWMutex
-	lockUpdatePermissionCategory                   sync.RWMutex
-	lockUpdatePermissionCategoryByKey              sync.RWMutex
-	lockUpdatePermissionCategoryByKeyWithSd        sync.RWMutex
-	lockUpdatePermissionCategoryWithSd             sync.RWMutex
-	lockUpdatePermissionWithSd                     sync.RWMutex
-	lockUpdatePolicy                               sync.RWMutex
-	lockUpdatePolicyByKey                          sync.RWMutex
-	lockUpdatePolicyByKeyWithSd                    sync.RWMutex
-	lockUpdatePolicyCategory                       sync.RWMutex
-	lockUpdatePolicyCategoryByKey                  sync.RWMutex
-	lockUpdatePolicyCategoryByKeyWithSd            sync.RWMutex
-	lockUpdatePolicyCategoryWithSd                 sync.RWMutex
-	lockUpdatePolicyWithSd                         sync.RWMutex
-	lockUpdateRecordType                           sync.RWMutex
-	lockUpdateRecordTypeByKey                      sync.RWMutex
-	lockUpdateRecordTypeByKeyWithSd                sync.RWMutex
-	lockUpdateRecordTypeWithSd                     sync.RWMutex
-	lockUpdateRole                                 sync.RWMutex
-	lockUpdateRoleWithSd                           sync.RWMutex
+	lockAssociateRole                                     sync.RWMutex
+	lockAssociateRoleWithSd                               sync.RWMutex
+	lockAssociateRoles                                    sync.RWMutex
+	lockAssociateRolesWithSd                              sync.RWMutex
+	lockBegin                                             sync.RWMutex
+	lockBelongChatRoom                                    sync.RWMutex
+	lockBelongChatRoomWithSd                              sync.RWMutex
+	lockBelongChatRooms                                   sync.RWMutex
+	lockBelongChatRoomsWithSd                             sync.RWMutex
+	lockCleanup                                           sync.RWMutex
+	lockCommit                                            sync.RWMutex
+	lockCountAbsences                                     sync.RWMutex
+	lockCountAbsencesWithSd                               sync.RWMutex
+	lockCountAttachableItems                              sync.RWMutex
+	lockCountAttachableItemsWithSd                        sync.RWMutex
+	lockCountAttendStatuses                               sync.RWMutex
+	lockCountAttendStatusesWithSd                         sync.RWMutex
+	lockCountAttendanceTypes                              sync.RWMutex
+	lockCountAttendanceTypesWithSd                        sync.RWMutex
+	lockCountChatRooms                                    sync.RWMutex
+	lockCountChatRoomsOnMember                            sync.RWMutex
+	lockCountChatRoomsOnMemberWithSd                      sync.RWMutex
+	lockCountChatRoomsWithSd                              sync.RWMutex
+	lockCountEventTypes                                   sync.RWMutex
+	lockCountEventTypesWithSd                             sync.RWMutex
+	lockCountMembersOnChatRoom                            sync.RWMutex
+	lockCountMembersOnChatRoomWithSd                      sync.RWMutex
+	lockCountMimeTypes                                    sync.RWMutex
+	lockCountMimeTypesWithSd                              sync.RWMutex
+	lockCountOrganizations                                sync.RWMutex
+	lockCountOrganizationsWithSd                          sync.RWMutex
+	lockCountPermissionCategories                         sync.RWMutex
+	lockCountPermissionCategoriesWithSd                   sync.RWMutex
+	lockCountPermissions                                  sync.RWMutex
+	lockCountPermissionsWithSd                            sync.RWMutex
+	lockCountPolicies                                     sync.RWMutex
+	lockCountPoliciesOnRole                               sync.RWMutex
+	lockCountPoliciesOnRoleWithSd                         sync.RWMutex
+	lockCountPoliciesWithSd                               sync.RWMutex
+	lockCountPolicyCategories                             sync.RWMutex
+	lockCountPolicyCategoriesWithSd                       sync.RWMutex
+	lockCountRecordTypes                                  sync.RWMutex
+	lockCountRecordTypesWithSd                            sync.RWMutex
+	lockCountRoles                                        sync.RWMutex
+	lockCountRolesOnPolicy                                sync.RWMutex
+	lockCountRolesOnPolicyWithSd                          sync.RWMutex
+	lockCountRolesWithSd                                  sync.RWMutex
+	lockCreateAbsence                                     sync.RWMutex
+	lockCreateAbsenceWithSd                               sync.RWMutex
+	lockCreateAbsences                                    sync.RWMutex
+	lockCreateAbsencesWithSd                              sync.RWMutex
+	lockCreateAttachableItem                              sync.RWMutex
+	lockCreateAttachableItemWithSd                        sync.RWMutex
+	lockCreateAttachableItems                             sync.RWMutex
+	lockCreateAttachableItemsWithSd                       sync.RWMutex
+	lockCreateAttendStatus                                sync.RWMutex
+	lockCreateAttendStatusWithSd                          sync.RWMutex
+	lockCreateAttendStatuses                              sync.RWMutex
+	lockCreateAttendStatusesWithSd                        sync.RWMutex
+	lockCreateAttendanceType                              sync.RWMutex
+	lockCreateAttendanceTypeWithSd                        sync.RWMutex
+	lockCreateAttendanceTypes                             sync.RWMutex
+	lockCreateAttendanceTypesWithSd                       sync.RWMutex
+	lockCreateChatRoom                                    sync.RWMutex
+	lockCreateChatRoomWithSd                              sync.RWMutex
+	lockCreateChatRooms                                   sync.RWMutex
+	lockCreateChatRoomsWithSd                             sync.RWMutex
+	lockCreateEventType                                   sync.RWMutex
+	lockCreateEventTypeWithSd                             sync.RWMutex
+	lockCreateEventTypes                                  sync.RWMutex
+	lockCreateEventTypesWithSd                            sync.RWMutex
+	lockCreateMimeType                                    sync.RWMutex
+	lockCreateMimeTypeWithSd                              sync.RWMutex
+	lockCreateMimeTypes                                   sync.RWMutex
+	lockCreateMimeTypesWithSd                             sync.RWMutex
+	lockCreateOrganization                                sync.RWMutex
+	lockCreateOrganizationWithSd                          sync.RWMutex
+	lockCreateOrganizations                               sync.RWMutex
+	lockCreateOrganizationsWithSd                         sync.RWMutex
+	lockCreatePermission                                  sync.RWMutex
+	lockCreatePermissionCategories                        sync.RWMutex
+	lockCreatePermissionCategoriesWithSd                  sync.RWMutex
+	lockCreatePermissionCategory                          sync.RWMutex
+	lockCreatePermissionCategoryWithSd                    sync.RWMutex
+	lockCreatePermissionWithSd                            sync.RWMutex
+	lockCreatePermissions                                 sync.RWMutex
+	lockCreatePermissionsWithSd                           sync.RWMutex
+	lockCreatePolicies                                    sync.RWMutex
+	lockCreatePoliciesWithSd                              sync.RWMutex
+	lockCreatePolicy                                      sync.RWMutex
+	lockCreatePolicyCategories                            sync.RWMutex
+	lockCreatePolicyCategoriesWithSd                      sync.RWMutex
+	lockCreatePolicyCategory                              sync.RWMutex
+	lockCreatePolicyCategoryWithSd                        sync.RWMutex
+	lockCreatePolicyWithSd                                sync.RWMutex
+	lockCreateRecordType                                  sync.RWMutex
+	lockCreateRecordTypeWithSd                            sync.RWMutex
+	lockCreateRecordTypes                                 sync.RWMutex
+	lockCreateRecordTypesWithSd                           sync.RWMutex
+	lockCreateRole                                        sync.RWMutex
+	lockCreateRoleWithSd                                  sync.RWMutex
+	lockCreateRoles                                       sync.RWMutex
+	lockCreateRolesWithSd                                 sync.RWMutex
+	lockDeleteAbsence                                     sync.RWMutex
+	lockDeleteAbsenceWithSd                               sync.RWMutex
+	lockDeleteAttachableItem                              sync.RWMutex
+	lockDeleteAttachableItemWithSd                        sync.RWMutex
+	lockDeleteAttendStatus                                sync.RWMutex
+	lockDeleteAttendStatusByKey                           sync.RWMutex
+	lockDeleteAttendStatusByKeyWithSd                     sync.RWMutex
+	lockDeleteAttendStatusWithSd                          sync.RWMutex
+	lockDeleteAttendanceType                              sync.RWMutex
+	lockDeleteAttendanceTypeByKey                         sync.RWMutex
+	lockDeleteAttendanceTypeByKeyWithSd                   sync.RWMutex
+	lockDeleteAttendanceTypeWithSd                        sync.RWMutex
+	lockDeleteChatRoom                                    sync.RWMutex
+	lockDeleteChatRoomWithSd                              sync.RWMutex
+	lockDeleteEventType                                   sync.RWMutex
+	lockDeleteEventTypeByKey                              sync.RWMutex
+	lockDeleteEventTypeByKeyWithSd                        sync.RWMutex
+	lockDeleteEventTypeWithSd                             sync.RWMutex
+	lockDeleteMimeType                                    sync.RWMutex
+	lockDeleteMimeTypeByKey                               sync.RWMutex
+	lockDeleteMimeTypeByKeyWithSd                         sync.RWMutex
+	lockDeleteMimeTypeWithSd                              sync.RWMutex
+	lockDeleteOrganization                                sync.RWMutex
+	lockDeleteOrganizationWithSd                          sync.RWMutex
+	lockDeletePermission                                  sync.RWMutex
+	lockDeletePermissionByKey                             sync.RWMutex
+	lockDeletePermissionByKeyWithSd                       sync.RWMutex
+	lockDeletePermissionCategory                          sync.RWMutex
+	lockDeletePermissionCategoryByKey                     sync.RWMutex
+	lockDeletePermissionCategoryByKeyWithSd               sync.RWMutex
+	lockDeletePermissionCategoryWithSd                    sync.RWMutex
+	lockDeletePermissionWithSd                            sync.RWMutex
+	lockDeletePolicy                                      sync.RWMutex
+	lockDeletePolicyByKey                                 sync.RWMutex
+	lockDeletePolicyByKeyWithSd                           sync.RWMutex
+	lockDeletePolicyCategory                              sync.RWMutex
+	lockDeletePolicyCategoryByKey                         sync.RWMutex
+	lockDeletePolicyCategoryByKeyWithSd                   sync.RWMutex
+	lockDeletePolicyCategoryWithSd                        sync.RWMutex
+	lockDeletePolicyWithSd                                sync.RWMutex
+	lockDeleteRecordType                                  sync.RWMutex
+	lockDeleteRecordTypeByKey                             sync.RWMutex
+	lockDeleteRecordTypeByKeyWithSd                       sync.RWMutex
+	lockDeleteRecordTypeWithSd                            sync.RWMutex
+	lockDeleteRole                                        sync.RWMutex
+	lockDeleteRoleWithSd                                  sync.RWMutex
+	lockDisassociatePolicyOnRole                          sync.RWMutex
+	lockDisassociatePolicyOnRoleWithSd                    sync.RWMutex
+	lockDisassociatePolicyOnRoles                         sync.RWMutex
+	lockDisassociatePolicyOnRolesWithSd                   sync.RWMutex
+	lockDisassociateRole                                  sync.RWMutex
+	lockDisassociateRoleOnPolicies                        sync.RWMutex
+	lockDisassociateRoleOnPoliciesWithSd                  sync.RWMutex
+	lockDisassociateRoleOnPolicy                          sync.RWMutex
+	lockDisassociateRoleOnPolicyWithSd                    sync.RWMutex
+	lockDisassociateRoleWithSd                            sync.RWMutex
+	lockDisbelongChatRoom                                 sync.RWMutex
+	lockDisbelongChatRoomOnMember                         sync.RWMutex
+	lockDisbelongChatRoomOnMemberWithSd                   sync.RWMutex
+	lockDisbelongChatRoomOnMembers                        sync.RWMutex
+	lockDisbelongChatRoomOnMembersWithSd                  sync.RWMutex
+	lockDisbelongChatRoomWithSd                           sync.RWMutex
+	lockFindAbsenceByID                                   sync.RWMutex
+	lockFindAbsenceByIDWithSd                             sync.RWMutex
+	lockFindAttachableItemByID                            sync.RWMutex
+	lockFindAttachableItemByIDWithMimeType                sync.RWMutex
+	lockFindAttachableItemByIDWithMimeTypeWithSd          sync.RWMutex
+	lockFindAttachableItemByIDWithSd                      sync.RWMutex
+	lockFindAttendStatusByID                              sync.RWMutex
+	lockFindAttendStatusByIDWithSd                        sync.RWMutex
+	lockFindAttendStatusByKey                             sync.RWMutex
+	lockFindAttendStatusByKeyWithSd                       sync.RWMutex
+	lockFindAttendanceTypeByID                            sync.RWMutex
+	lockFindAttendanceTypeByIDWithSd                      sync.RWMutex
+	lockFindAttendanceTypeByKey                           sync.RWMutex
+	lockFindAttendanceTypeByKeyWithSd                     sync.RWMutex
+	lockFindChatRoomByID                                  sync.RWMutex
+	lockFindChatRoomByIDWithSd                            sync.RWMutex
+	lockFindChatRoomOnPrivate                             sync.RWMutex
+	lockFindChatRoomOnPrivateWithSd                       sync.RWMutex
+	lockFindEventTypeByID                                 sync.RWMutex
+	lockFindEventTypeByIDWithSd                           sync.RWMutex
+	lockFindEventTypeByKey                                sync.RWMutex
+	lockFindEventTypeByKeyWithSd                          sync.RWMutex
+	lockFindMimeTypeByID                                  sync.RWMutex
+	lockFindMimeTypeByIDWithSd                            sync.RWMutex
+	lockFindMimeTypeByKey                                 sync.RWMutex
+	lockFindMimeTypeByKeyWithSd                           sync.RWMutex
+	lockFindOrganizationByID                              sync.RWMutex
+	lockFindOrganizationByIDWithSd                        sync.RWMutex
+	lockFindOrganizationWithChatRoom                      sync.RWMutex
+	lockFindOrganizationWithChatRoomAndDetail             sync.RWMutex
+	lockFindOrganizationWithChatRoomAndDetailWithSd       sync.RWMutex
+	lockFindOrganizationWithChatRoomWithSd                sync.RWMutex
+	lockFindOrganizationWithDetail                        sync.RWMutex
+	lockFindOrganizationWithDetailWithSd                  sync.RWMutex
+	lockFindPermissionByID                                sync.RWMutex
+	lockFindPermissionByIDWithCategory                    sync.RWMutex
+	lockFindPermissionByIDWithCategoryWithSd              sync.RWMutex
+	lockFindPermissionByIDWithSd                          sync.RWMutex
+	lockFindPermissionByKey                               sync.RWMutex
+	lockFindPermissionByKeyWithCategory                   sync.RWMutex
+	lockFindPermissionByKeyWithCategoryWithSd             sync.RWMutex
+	lockFindPermissionByKeyWithSd                         sync.RWMutex
+	lockFindPermissionCategoryByID                        sync.RWMutex
+	lockFindPermissionCategoryByIDWithSd                  sync.RWMutex
+	lockFindPermissionCategoryByKey                       sync.RWMutex
+	lockFindPermissionCategoryByKeyWithSd                 sync.RWMutex
+	lockFindPersonalOrganization                          sync.RWMutex
+	lockFindPersonalOrganizationWithSd                    sync.RWMutex
+	lockFindPolicyByID                                    sync.RWMutex
+	lockFindPolicyByIDWithCategory                        sync.RWMutex
+	lockFindPolicyByIDWithCategoryWithSd                  sync.RWMutex
+	lockFindPolicyByIDWithSd                              sync.RWMutex
+	lockFindPolicyByKey                                   sync.RWMutex
+	lockFindPolicyByKeyWithCategory                       sync.RWMutex
+	lockFindPolicyByKeyWithCategoryWithSd                 sync.RWMutex
+	lockFindPolicyByKeyWithSd                             sync.RWMutex
+	lockFindPolicyCategoryByID                            sync.RWMutex
+	lockFindPolicyCategoryByIDWithSd                      sync.RWMutex
+	lockFindPolicyCategoryByKey                           sync.RWMutex
+	lockFindPolicyCategoryByKeyWithSd                     sync.RWMutex
+	lockFindRecordTypeByID                                sync.RWMutex
+	lockFindRecordTypeByIDWithSd                          sync.RWMutex
+	lockFindRecordTypeByKey                               sync.RWMutex
+	lockFindRecordTypeByKeyWithSd                         sync.RWMutex
+	lockFindRoleByID                                      sync.RWMutex
+	lockFindRoleByIDWithSd                                sync.RWMutex
+	lockFindWholeOrganization                             sync.RWMutex
+	lockFindWholeOrganizationWithSd                       sync.RWMutex
+	lockGetAbsences                                       sync.RWMutex
+	lockGetAbsencesWithSd                                 sync.RWMutex
+	lockGetAttachableItems                                sync.RWMutex
+	lockGetAttachableItemsWithMimeType                    sync.RWMutex
+	lockGetAttachableItemsWithMimeTypeWithSd              sync.RWMutex
+	lockGetAttachableItemsWithSd                          sync.RWMutex
+	lockGetAttendStatuses                                 sync.RWMutex
+	lockGetAttendStatusesWithSd                           sync.RWMutex
+	lockGetAttendanceTypes                                sync.RWMutex
+	lockGetAttendanceTypesWithSd                          sync.RWMutex
+	lockGetChatRooms                                      sync.RWMutex
+	lockGetChatRoomsOnMember                              sync.RWMutex
+	lockGetChatRoomsOnMemberWithSd                        sync.RWMutex
+	lockGetChatRoomsWithSd                                sync.RWMutex
+	lockGetEventTypes                                     sync.RWMutex
+	lockGetEventTypesWithSd                               sync.RWMutex
+	lockGetMembersOnChatRoom                              sync.RWMutex
+	lockGetMembersOnChatRoomWithSd                        sync.RWMutex
+	lockGetMimeTypes                                      sync.RWMutex
+	lockGetMimeTypesWithSd                                sync.RWMutex
+	lockGetOrganizations                                  sync.RWMutex
+	lockGetOrganizationsWithChatRoom                      sync.RWMutex
+	lockGetOrganizationsWithChatRoomAndDetail             sync.RWMutex
+	lockGetOrganizationsWithChatRoomAndDetailWithSd       sync.RWMutex
+	lockGetOrganizationsWithChatRoomWithSd                sync.RWMutex
+	lockGetOrganizationsWithDetail                        sync.RWMutex
+	lockGetOrganizationsWithDetailWithSd                  sync.RWMutex
+	lockGetOrganizationsWithSd                            sync.RWMutex
+	lockGetPermissionCategories                           sync.RWMutex
+	lockGetPermissionCategoriesWithSd                     sync.RWMutex
+	lockGetPermissions                                    sync.RWMutex
+	lockGetPermissionsWithCategory                        sync.RWMutex
+	lockGetPermissionsWithCategoryWithSd                  sync.RWMutex
+	lockGetPermissionsWithSd                              sync.RWMutex
+	lockGetPluralAbsences                                 sync.RWMutex
+	lockGetPluralAbsencesWithSd                           sync.RWMutex
+	lockGetPluralAttachableItems                          sync.RWMutex
+	lockGetPluralAttachableItemsWithMimeType              sync.RWMutex
+	lockGetPluralAttachableItemsWithMimeTypeWithSd        sync.RWMutex
+	lockGetPluralAttachableItemsWithSd                    sync.RWMutex
+	lockGetPluralAttendStatuses                           sync.RWMutex
+	lockGetPluralAttendStatusesWithSd                     sync.RWMutex
+	lockGetPluralAttendanceTypes                          sync.RWMutex
+	lockGetPluralAttendanceTypesWithSd                    sync.RWMutex
+	lockGetPluralChatRooms                                sync.RWMutex
+	lockGetPluralChatRoomsOnMember                        sync.RWMutex
+	lockGetPluralChatRoomsOnMemberWithSd                  sync.RWMutex
+	lockGetPluralChatRoomsWithSd                          sync.RWMutex
+	lockGetPluralEventTypes                               sync.RWMutex
+	lockGetPluralEventTypesWithSd                         sync.RWMutex
+	lockGetPluralMembersOnChatRoom                        sync.RWMutex
+	lockGetPluralMembersOnChatRoomWithSd                  sync.RWMutex
+	lockGetPluralMimeTypes                                sync.RWMutex
+	lockGetPluralMimeTypesWithSd                          sync.RWMutex
+	lockGetPluralOrganizations                            sync.RWMutex
+	lockGetPluralOrganizationsWithChatRoom                sync.RWMutex
+	lockGetPluralOrganizationsWithChatRoomAndDetail       sync.RWMutex
+	lockGetPluralOrganizationsWithChatRoomAndDetailWithSd sync.RWMutex
+	lockGetPluralOrganizationsWithChatRoomWithSd          sync.RWMutex
+	lockGetPluralOrganizationsWithDetail                  sync.RWMutex
+	lockGetPluralOrganizationsWithDetailWithSd            sync.RWMutex
+	lockGetPluralOrganizationsWithSd                      sync.RWMutex
+	lockGetPluralPermissionCategories                     sync.RWMutex
+	lockGetPluralPermissionCategoriesWithSd               sync.RWMutex
+	lockGetPluralPermissions                              sync.RWMutex
+	lockGetPluralPermissionsWithSd                        sync.RWMutex
+	lockGetPluralPolicies                                 sync.RWMutex
+	lockGetPluralPoliciesWithSd                           sync.RWMutex
+	lockGetPluralPolicyCategories                         sync.RWMutex
+	lockGetPluralPolicyCategoriesWithSd                   sync.RWMutex
+	lockGetPluralRecordTypes                              sync.RWMutex
+	lockGetPluralRecordTypesWithSd                        sync.RWMutex
+	lockGetPluralRoles                                    sync.RWMutex
+	lockGetPluralRolesWithSd                              sync.RWMutex
+	lockGetPolicies                                       sync.RWMutex
+	lockGetPoliciesOnRole                                 sync.RWMutex
+	lockGetPoliciesOnRoleWithSd                           sync.RWMutex
+	lockGetPoliciesWithCategory                           sync.RWMutex
+	lockGetPoliciesWithCategoryWithSd                     sync.RWMutex
+	lockGetPoliciesWithSd                                 sync.RWMutex
+	lockGetPolicyCategories                               sync.RWMutex
+	lockGetPolicyCategoriesWithSd                         sync.RWMutex
+	lockGetRecordTypes                                    sync.RWMutex
+	lockGetRecordTypesWithSd                              sync.RWMutex
+	lockGetRoles                                          sync.RWMutex
+	lockGetRolesOnPolicy                                  sync.RWMutex
+	lockGetRolesOnPolicyWithSd                            sync.RWMutex
+	lockGetRolesWithSd                                    sync.RWMutex
+	lockPluralDeleteAbsences                              sync.RWMutex
+	lockPluralDeleteAbsencesWithSd                        sync.RWMutex
+	lockPluralDeleteAttachableItems                       sync.RWMutex
+	lockPluralDeleteAttachableItemsWithSd                 sync.RWMutex
+	lockPluralDeleteAttendStatuses                        sync.RWMutex
+	lockPluralDeleteAttendStatusesWithSd                  sync.RWMutex
+	lockPluralDeleteAttendanceTypes                       sync.RWMutex
+	lockPluralDeleteAttendanceTypesWithSd                 sync.RWMutex
+	lockPluralDeleteChatRooms                             sync.RWMutex
+	lockPluralDeleteChatRoomsWithSd                       sync.RWMutex
+	lockPluralDeleteEventTypes                            sync.RWMutex
+	lockPluralDeleteEventTypesWithSd                      sync.RWMutex
+	lockPluralDeleteMimeTypes                             sync.RWMutex
+	lockPluralDeleteMimeTypesWithSd                       sync.RWMutex
+	lockPluralDeleteOrganizations                         sync.RWMutex
+	lockPluralDeleteOrganizationsWithSd                   sync.RWMutex
+	lockPluralDeletePermissionCategories                  sync.RWMutex
+	lockPluralDeletePermissionCategoriesWithSd            sync.RWMutex
+	lockPluralDeletePermissions                           sync.RWMutex
+	lockPluralDeletePermissionsWithSd                     sync.RWMutex
+	lockPluralDeletePolicies                              sync.RWMutex
+	lockPluralDeletePoliciesWithSd                        sync.RWMutex
+	lockPluralDeletePolicyCategories                      sync.RWMutex
+	lockPluralDeletePolicyCategoriesWithSd                sync.RWMutex
+	lockPluralDeleteRecordTypes                           sync.RWMutex
+	lockPluralDeleteRecordTypesWithSd                     sync.RWMutex
+	lockPluralDeleteRoles                                 sync.RWMutex
+	lockPluralDeleteRolesWithSd                           sync.RWMutex
+	lockPluralDisassociatePolicyOnRole                    sync.RWMutex
+	lockPluralDisassociatePolicyOnRoleWithSd              sync.RWMutex
+	lockPluralDisassociateRoleOnPolicy                    sync.RWMutex
+	lockPluralDisassociateRoleOnPolicyWithSd              sync.RWMutex
+	lockRollback                                          sync.RWMutex
+	lockUpdateAttachableItem                              sync.RWMutex
+	lockUpdateAttachableItemWithSd                        sync.RWMutex
+	lockUpdateAttendStatus                                sync.RWMutex
+	lockUpdateAttendStatusByKey                           sync.RWMutex
+	lockUpdateAttendStatusByKeyWithSd                     sync.RWMutex
+	lockUpdateAttendStatusWithSd                          sync.RWMutex
+	lockUpdateAttendanceType                              sync.RWMutex
+	lockUpdateAttendanceTypeByKey                         sync.RWMutex
+	lockUpdateAttendanceTypeByKeyWithSd                   sync.RWMutex
+	lockUpdateAttendanceTypeWithSd                        sync.RWMutex
+	lockUpdateChatRoom                                    sync.RWMutex
+	lockUpdateChatRoomWithSd                              sync.RWMutex
+	lockUpdateEventType                                   sync.RWMutex
+	lockUpdateEventTypeByKey                              sync.RWMutex
+	lockUpdateEventTypeByKeyWithSd                        sync.RWMutex
+	lockUpdateEventTypeWithSd                             sync.RWMutex
+	lockUpdateMimeType                                    sync.RWMutex
+	lockUpdateMimeTypeByKey                               sync.RWMutex
+	lockUpdateMimeTypeByKeyWithSd                         sync.RWMutex
+	lockUpdateMimeTypeWithSd                              sync.RWMutex
+	lockUpdateOrganization                                sync.RWMutex
+	lockUpdateOrganizationWithSd                          sync.RWMutex
+	lockUpdatePermission                                  sync.RWMutex
+	lockUpdatePermissionByKey                             sync.RWMutex
+	lockUpdatePermissionByKeyWithSd                       sync.RWMutex
+	lockUpdatePermissionCategory                          sync.RWMutex
+	lockUpdatePermissionCategoryByKey                     sync.RWMutex
+	lockUpdatePermissionCategoryByKeyWithSd               sync.RWMutex
+	lockUpdatePermissionCategoryWithSd                    sync.RWMutex
+	lockUpdatePermissionWithSd                            sync.RWMutex
+	lockUpdatePolicy                                      sync.RWMutex
+	lockUpdatePolicyByKey                                 sync.RWMutex
+	lockUpdatePolicyByKeyWithSd                           sync.RWMutex
+	lockUpdatePolicyCategory                              sync.RWMutex
+	lockUpdatePolicyCategoryByKey                         sync.RWMutex
+	lockUpdatePolicyCategoryByKeyWithSd                   sync.RWMutex
+	lockUpdatePolicyCategoryWithSd                        sync.RWMutex
+	lockUpdatePolicyWithSd                                sync.RWMutex
+	lockUpdateRecordType                                  sync.RWMutex
+	lockUpdateRecordTypeByKey                             sync.RWMutex
+	lockUpdateRecordTypeByKeyWithSd                       sync.RWMutex
+	lockUpdateRecordTypeWithSd                            sync.RWMutex
+	lockUpdateRole                                        sync.RWMutex
+	lockUpdateRoleWithSd                                  sync.RWMutex
 }
 
 // AssociateRole calls AssociateRoleFunc.
@@ -7064,6 +7760,82 @@ func (mock *StoreMock) CountMimeTypesWithSdCalls() []struct {
 	mock.lockCountMimeTypesWithSd.RLock()
 	calls = mock.calls.CountMimeTypesWithSd
 	mock.lockCountMimeTypesWithSd.RUnlock()
+	return calls
+}
+
+// CountOrganizations calls CountOrganizationsFunc.
+func (mock *StoreMock) CountOrganizations(ctx context.Context, where parameter.WhereOrganizationParam) (int64, error) {
+	if mock.CountOrganizationsFunc == nil {
+		panic("StoreMock.CountOrganizationsFunc: method is nil but Store.CountOrganizations was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereOrganizationParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+	}
+	mock.lockCountOrganizations.Lock()
+	mock.calls.CountOrganizations = append(mock.calls.CountOrganizations, callInfo)
+	mock.lockCountOrganizations.Unlock()
+	return mock.CountOrganizationsFunc(ctx, where)
+}
+
+// CountOrganizationsCalls gets all the calls that were made to CountOrganizations.
+// Check the length with:
+//
+//	len(mockedStore.CountOrganizationsCalls())
+func (mock *StoreMock) CountOrganizationsCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereOrganizationParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereOrganizationParam
+	}
+	mock.lockCountOrganizations.RLock()
+	calls = mock.calls.CountOrganizations
+	mock.lockCountOrganizations.RUnlock()
+	return calls
+}
+
+// CountOrganizationsWithSd calls CountOrganizationsWithSdFunc.
+func (mock *StoreMock) CountOrganizationsWithSd(ctx context.Context, sd Sd, where parameter.WhereOrganizationParam) (int64, error) {
+	if mock.CountOrganizationsWithSdFunc == nil {
+		panic("StoreMock.CountOrganizationsWithSdFunc: method is nil but Store.CountOrganizationsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereOrganizationParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+	}
+	mock.lockCountOrganizationsWithSd.Lock()
+	mock.calls.CountOrganizationsWithSd = append(mock.calls.CountOrganizationsWithSd, callInfo)
+	mock.lockCountOrganizationsWithSd.Unlock()
+	return mock.CountOrganizationsWithSdFunc(ctx, sd, where)
+}
+
+// CountOrganizationsWithSdCalls gets all the calls that were made to CountOrganizationsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountOrganizationsWithSdCalls())
+func (mock *StoreMock) CountOrganizationsWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereOrganizationParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereOrganizationParam
+	}
+	mock.lockCountOrganizationsWithSd.RLock()
+	calls = mock.calls.CountOrganizationsWithSd
+	mock.lockCountOrganizationsWithSd.RUnlock()
 	return calls
 }
 
@@ -8752,6 +9524,158 @@ func (mock *StoreMock) CreateMimeTypesWithSdCalls() []struct {
 	mock.lockCreateMimeTypesWithSd.RLock()
 	calls = mock.calls.CreateMimeTypesWithSd
 	mock.lockCreateMimeTypesWithSd.RUnlock()
+	return calls
+}
+
+// CreateOrganization calls CreateOrganizationFunc.
+func (mock *StoreMock) CreateOrganization(ctx context.Context, param parameter.CreateOrganizationParam) (entity.Organization, error) {
+	if mock.CreateOrganizationFunc == nil {
+		panic("StoreMock.CreateOrganizationFunc: method is nil but Store.CreateOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Param parameter.CreateOrganizationParam
+	}{
+		Ctx:   ctx,
+		Param: param,
+	}
+	mock.lockCreateOrganization.Lock()
+	mock.calls.CreateOrganization = append(mock.calls.CreateOrganization, callInfo)
+	mock.lockCreateOrganization.Unlock()
+	return mock.CreateOrganizationFunc(ctx, param)
+}
+
+// CreateOrganizationCalls gets all the calls that were made to CreateOrganization.
+// Check the length with:
+//
+//	len(mockedStore.CreateOrganizationCalls())
+func (mock *StoreMock) CreateOrganizationCalls() []struct {
+	Ctx   context.Context
+	Param parameter.CreateOrganizationParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Param parameter.CreateOrganizationParam
+	}
+	mock.lockCreateOrganization.RLock()
+	calls = mock.calls.CreateOrganization
+	mock.lockCreateOrganization.RUnlock()
+	return calls
+}
+
+// CreateOrganizationWithSd calls CreateOrganizationWithSdFunc.
+func (mock *StoreMock) CreateOrganizationWithSd(ctx context.Context, sd Sd, param parameter.CreateOrganizationParam) (entity.Organization, error) {
+	if mock.CreateOrganizationWithSdFunc == nil {
+		panic("StoreMock.CreateOrganizationWithSdFunc: method is nil but Store.CreateOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateOrganizationParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Param: param,
+	}
+	mock.lockCreateOrganizationWithSd.Lock()
+	mock.calls.CreateOrganizationWithSd = append(mock.calls.CreateOrganizationWithSd, callInfo)
+	mock.lockCreateOrganizationWithSd.Unlock()
+	return mock.CreateOrganizationWithSdFunc(ctx, sd, param)
+}
+
+// CreateOrganizationWithSdCalls gets all the calls that were made to CreateOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateOrganizationWithSdCalls())
+func (mock *StoreMock) CreateOrganizationWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Param parameter.CreateOrganizationParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateOrganizationParam
+	}
+	mock.lockCreateOrganizationWithSd.RLock()
+	calls = mock.calls.CreateOrganizationWithSd
+	mock.lockCreateOrganizationWithSd.RUnlock()
+	return calls
+}
+
+// CreateOrganizations calls CreateOrganizationsFunc.
+func (mock *StoreMock) CreateOrganizations(ctx context.Context, params []parameter.CreateOrganizationParam) (int64, error) {
+	if mock.CreateOrganizationsFunc == nil {
+		panic("StoreMock.CreateOrganizationsFunc: method is nil but Store.CreateOrganizations was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.CreateOrganizationParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockCreateOrganizations.Lock()
+	mock.calls.CreateOrganizations = append(mock.calls.CreateOrganizations, callInfo)
+	mock.lockCreateOrganizations.Unlock()
+	return mock.CreateOrganizationsFunc(ctx, params)
+}
+
+// CreateOrganizationsCalls gets all the calls that were made to CreateOrganizations.
+// Check the length with:
+//
+//	len(mockedStore.CreateOrganizationsCalls())
+func (mock *StoreMock) CreateOrganizationsCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.CreateOrganizationParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.CreateOrganizationParam
+	}
+	mock.lockCreateOrganizations.RLock()
+	calls = mock.calls.CreateOrganizations
+	mock.lockCreateOrganizations.RUnlock()
+	return calls
+}
+
+// CreateOrganizationsWithSd calls CreateOrganizationsWithSdFunc.
+func (mock *StoreMock) CreateOrganizationsWithSd(ctx context.Context, sd Sd, params []parameter.CreateOrganizationParam) (int64, error) {
+	if mock.CreateOrganizationsWithSdFunc == nil {
+		panic("StoreMock.CreateOrganizationsWithSdFunc: method is nil but Store.CreateOrganizationsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateOrganizationParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		Params: params,
+	}
+	mock.lockCreateOrganizationsWithSd.Lock()
+	mock.calls.CreateOrganizationsWithSd = append(mock.calls.CreateOrganizationsWithSd, callInfo)
+	mock.lockCreateOrganizationsWithSd.Unlock()
+	return mock.CreateOrganizationsWithSdFunc(ctx, sd, params)
+}
+
+// CreateOrganizationsWithSdCalls gets all the calls that were made to CreateOrganizationsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateOrganizationsWithSdCalls())
+func (mock *StoreMock) CreateOrganizationsWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	Params []parameter.CreateOrganizationParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateOrganizationParam
+	}
+	mock.lockCreateOrganizationsWithSd.RLock()
+	calls = mock.calls.CreateOrganizationsWithSd
+	mock.lockCreateOrganizationsWithSd.RUnlock()
 	return calls
 }
 
@@ -10500,6 +11424,82 @@ func (mock *StoreMock) DeleteMimeTypeWithSdCalls() []struct {
 	mock.lockDeleteMimeTypeWithSd.RLock()
 	calls = mock.calls.DeleteMimeTypeWithSd
 	mock.lockDeleteMimeTypeWithSd.RUnlock()
+	return calls
+}
+
+// DeleteOrganization calls DeleteOrganizationFunc.
+func (mock *StoreMock) DeleteOrganization(ctx context.Context, organizationID uuid.UUID) (int64, error) {
+	if mock.DeleteOrganizationFunc == nil {
+		panic("StoreMock.DeleteOrganizationFunc: method is nil but Store.DeleteOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+	}{
+		Ctx:            ctx,
+		OrganizationID: organizationID,
+	}
+	mock.lockDeleteOrganization.Lock()
+	mock.calls.DeleteOrganization = append(mock.calls.DeleteOrganization, callInfo)
+	mock.lockDeleteOrganization.Unlock()
+	return mock.DeleteOrganizationFunc(ctx, organizationID)
+}
+
+// DeleteOrganizationCalls gets all the calls that were made to DeleteOrganization.
+// Check the length with:
+//
+//	len(mockedStore.DeleteOrganizationCalls())
+func (mock *StoreMock) DeleteOrganizationCalls() []struct {
+	Ctx            context.Context
+	OrganizationID uuid.UUID
+} {
+	var calls []struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+	}
+	mock.lockDeleteOrganization.RLock()
+	calls = mock.calls.DeleteOrganization
+	mock.lockDeleteOrganization.RUnlock()
+	return calls
+}
+
+// DeleteOrganizationWithSd calls DeleteOrganizationWithSdFunc.
+func (mock *StoreMock) DeleteOrganizationWithSd(ctx context.Context, sd Sd, organizationID uuid.UUID) (int64, error) {
+	if mock.DeleteOrganizationWithSdFunc == nil {
+		panic("StoreMock.DeleteOrganizationWithSdFunc: method is nil but Store.DeleteOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+	}{
+		Ctx:            ctx,
+		Sd:             sd,
+		OrganizationID: organizationID,
+	}
+	mock.lockDeleteOrganizationWithSd.Lock()
+	mock.calls.DeleteOrganizationWithSd = append(mock.calls.DeleteOrganizationWithSd, callInfo)
+	mock.lockDeleteOrganizationWithSd.Unlock()
+	return mock.DeleteOrganizationWithSdFunc(ctx, sd, organizationID)
+}
+
+// DeleteOrganizationWithSdCalls gets all the calls that were made to DeleteOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteOrganizationWithSdCalls())
+func (mock *StoreMock) DeleteOrganizationWithSdCalls() []struct {
+	Ctx            context.Context
+	Sd             Sd
+	OrganizationID uuid.UUID
+} {
+	var calls []struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+	}
+	mock.lockDeleteOrganizationWithSd.RLock()
+	calls = mock.calls.DeleteOrganizationWithSd
+	mock.lockDeleteOrganizationWithSd.RUnlock()
 	return calls
 }
 
@@ -12959,6 +13959,310 @@ func (mock *StoreMock) FindMimeTypeByKeyWithSdCalls() []struct {
 	return calls
 }
 
+// FindOrganizationByID calls FindOrganizationByIDFunc.
+func (mock *StoreMock) FindOrganizationByID(ctx context.Context, organizationID uuid.UUID) (entity.Organization, error) {
+	if mock.FindOrganizationByIDFunc == nil {
+		panic("StoreMock.FindOrganizationByIDFunc: method is nil but Store.FindOrganizationByID was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+	}{
+		Ctx:            ctx,
+		OrganizationID: organizationID,
+	}
+	mock.lockFindOrganizationByID.Lock()
+	mock.calls.FindOrganizationByID = append(mock.calls.FindOrganizationByID, callInfo)
+	mock.lockFindOrganizationByID.Unlock()
+	return mock.FindOrganizationByIDFunc(ctx, organizationID)
+}
+
+// FindOrganizationByIDCalls gets all the calls that were made to FindOrganizationByID.
+// Check the length with:
+//
+//	len(mockedStore.FindOrganizationByIDCalls())
+func (mock *StoreMock) FindOrganizationByIDCalls() []struct {
+	Ctx            context.Context
+	OrganizationID uuid.UUID
+} {
+	var calls []struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+	}
+	mock.lockFindOrganizationByID.RLock()
+	calls = mock.calls.FindOrganizationByID
+	mock.lockFindOrganizationByID.RUnlock()
+	return calls
+}
+
+// FindOrganizationByIDWithSd calls FindOrganizationByIDWithSdFunc.
+func (mock *StoreMock) FindOrganizationByIDWithSd(ctx context.Context, sd Sd, organizationID uuid.UUID) (entity.Organization, error) {
+	if mock.FindOrganizationByIDWithSdFunc == nil {
+		panic("StoreMock.FindOrganizationByIDWithSdFunc: method is nil but Store.FindOrganizationByIDWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+	}{
+		Ctx:            ctx,
+		Sd:             sd,
+		OrganizationID: organizationID,
+	}
+	mock.lockFindOrganizationByIDWithSd.Lock()
+	mock.calls.FindOrganizationByIDWithSd = append(mock.calls.FindOrganizationByIDWithSd, callInfo)
+	mock.lockFindOrganizationByIDWithSd.Unlock()
+	return mock.FindOrganizationByIDWithSdFunc(ctx, sd, organizationID)
+}
+
+// FindOrganizationByIDWithSdCalls gets all the calls that were made to FindOrganizationByIDWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindOrganizationByIDWithSdCalls())
+func (mock *StoreMock) FindOrganizationByIDWithSdCalls() []struct {
+	Ctx            context.Context
+	Sd             Sd
+	OrganizationID uuid.UUID
+} {
+	var calls []struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+	}
+	mock.lockFindOrganizationByIDWithSd.RLock()
+	calls = mock.calls.FindOrganizationByIDWithSd
+	mock.lockFindOrganizationByIDWithSd.RUnlock()
+	return calls
+}
+
+// FindOrganizationWithChatRoom calls FindOrganizationWithChatRoomFunc.
+func (mock *StoreMock) FindOrganizationWithChatRoom(ctx context.Context, organizationID uuid.UUID) (entity.OrganizationWithChatRoom, error) {
+	if mock.FindOrganizationWithChatRoomFunc == nil {
+		panic("StoreMock.FindOrganizationWithChatRoomFunc: method is nil but Store.FindOrganizationWithChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+	}{
+		Ctx:            ctx,
+		OrganizationID: organizationID,
+	}
+	mock.lockFindOrganizationWithChatRoom.Lock()
+	mock.calls.FindOrganizationWithChatRoom = append(mock.calls.FindOrganizationWithChatRoom, callInfo)
+	mock.lockFindOrganizationWithChatRoom.Unlock()
+	return mock.FindOrganizationWithChatRoomFunc(ctx, organizationID)
+}
+
+// FindOrganizationWithChatRoomCalls gets all the calls that were made to FindOrganizationWithChatRoom.
+// Check the length with:
+//
+//	len(mockedStore.FindOrganizationWithChatRoomCalls())
+func (mock *StoreMock) FindOrganizationWithChatRoomCalls() []struct {
+	Ctx            context.Context
+	OrganizationID uuid.UUID
+} {
+	var calls []struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+	}
+	mock.lockFindOrganizationWithChatRoom.RLock()
+	calls = mock.calls.FindOrganizationWithChatRoom
+	mock.lockFindOrganizationWithChatRoom.RUnlock()
+	return calls
+}
+
+// FindOrganizationWithChatRoomAndDetail calls FindOrganizationWithChatRoomAndDetailFunc.
+func (mock *StoreMock) FindOrganizationWithChatRoomAndDetail(ctx context.Context, organizationID uuid.UUID) (entity.OrganizationWithChatRoomAndDetail, error) {
+	if mock.FindOrganizationWithChatRoomAndDetailFunc == nil {
+		panic("StoreMock.FindOrganizationWithChatRoomAndDetailFunc: method is nil but Store.FindOrganizationWithChatRoomAndDetail was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+	}{
+		Ctx:            ctx,
+		OrganizationID: organizationID,
+	}
+	mock.lockFindOrganizationWithChatRoomAndDetail.Lock()
+	mock.calls.FindOrganizationWithChatRoomAndDetail = append(mock.calls.FindOrganizationWithChatRoomAndDetail, callInfo)
+	mock.lockFindOrganizationWithChatRoomAndDetail.Unlock()
+	return mock.FindOrganizationWithChatRoomAndDetailFunc(ctx, organizationID)
+}
+
+// FindOrganizationWithChatRoomAndDetailCalls gets all the calls that were made to FindOrganizationWithChatRoomAndDetail.
+// Check the length with:
+//
+//	len(mockedStore.FindOrganizationWithChatRoomAndDetailCalls())
+func (mock *StoreMock) FindOrganizationWithChatRoomAndDetailCalls() []struct {
+	Ctx            context.Context
+	OrganizationID uuid.UUID
+} {
+	var calls []struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+	}
+	mock.lockFindOrganizationWithChatRoomAndDetail.RLock()
+	calls = mock.calls.FindOrganizationWithChatRoomAndDetail
+	mock.lockFindOrganizationWithChatRoomAndDetail.RUnlock()
+	return calls
+}
+
+// FindOrganizationWithChatRoomAndDetailWithSd calls FindOrganizationWithChatRoomAndDetailWithSdFunc.
+func (mock *StoreMock) FindOrganizationWithChatRoomAndDetailWithSd(ctx context.Context, sd Sd, organizationID uuid.UUID) (entity.OrganizationWithChatRoomAndDetail, error) {
+	if mock.FindOrganizationWithChatRoomAndDetailWithSdFunc == nil {
+		panic("StoreMock.FindOrganizationWithChatRoomAndDetailWithSdFunc: method is nil but Store.FindOrganizationWithChatRoomAndDetailWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+	}{
+		Ctx:            ctx,
+		Sd:             sd,
+		OrganizationID: organizationID,
+	}
+	mock.lockFindOrganizationWithChatRoomAndDetailWithSd.Lock()
+	mock.calls.FindOrganizationWithChatRoomAndDetailWithSd = append(mock.calls.FindOrganizationWithChatRoomAndDetailWithSd, callInfo)
+	mock.lockFindOrganizationWithChatRoomAndDetailWithSd.Unlock()
+	return mock.FindOrganizationWithChatRoomAndDetailWithSdFunc(ctx, sd, organizationID)
+}
+
+// FindOrganizationWithChatRoomAndDetailWithSdCalls gets all the calls that were made to FindOrganizationWithChatRoomAndDetailWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindOrganizationWithChatRoomAndDetailWithSdCalls())
+func (mock *StoreMock) FindOrganizationWithChatRoomAndDetailWithSdCalls() []struct {
+	Ctx            context.Context
+	Sd             Sd
+	OrganizationID uuid.UUID
+} {
+	var calls []struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+	}
+	mock.lockFindOrganizationWithChatRoomAndDetailWithSd.RLock()
+	calls = mock.calls.FindOrganizationWithChatRoomAndDetailWithSd
+	mock.lockFindOrganizationWithChatRoomAndDetailWithSd.RUnlock()
+	return calls
+}
+
+// FindOrganizationWithChatRoomWithSd calls FindOrganizationWithChatRoomWithSdFunc.
+func (mock *StoreMock) FindOrganizationWithChatRoomWithSd(ctx context.Context, sd Sd, organizationID uuid.UUID) (entity.OrganizationWithChatRoom, error) {
+	if mock.FindOrganizationWithChatRoomWithSdFunc == nil {
+		panic("StoreMock.FindOrganizationWithChatRoomWithSdFunc: method is nil but Store.FindOrganizationWithChatRoomWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+	}{
+		Ctx:            ctx,
+		Sd:             sd,
+		OrganizationID: organizationID,
+	}
+	mock.lockFindOrganizationWithChatRoomWithSd.Lock()
+	mock.calls.FindOrganizationWithChatRoomWithSd = append(mock.calls.FindOrganizationWithChatRoomWithSd, callInfo)
+	mock.lockFindOrganizationWithChatRoomWithSd.Unlock()
+	return mock.FindOrganizationWithChatRoomWithSdFunc(ctx, sd, organizationID)
+}
+
+// FindOrganizationWithChatRoomWithSdCalls gets all the calls that were made to FindOrganizationWithChatRoomWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindOrganizationWithChatRoomWithSdCalls())
+func (mock *StoreMock) FindOrganizationWithChatRoomWithSdCalls() []struct {
+	Ctx            context.Context
+	Sd             Sd
+	OrganizationID uuid.UUID
+} {
+	var calls []struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+	}
+	mock.lockFindOrganizationWithChatRoomWithSd.RLock()
+	calls = mock.calls.FindOrganizationWithChatRoomWithSd
+	mock.lockFindOrganizationWithChatRoomWithSd.RUnlock()
+	return calls
+}
+
+// FindOrganizationWithDetail calls FindOrganizationWithDetailFunc.
+func (mock *StoreMock) FindOrganizationWithDetail(ctx context.Context, organizationID uuid.UUID) (entity.OrganizationWithDetail, error) {
+	if mock.FindOrganizationWithDetailFunc == nil {
+		panic("StoreMock.FindOrganizationWithDetailFunc: method is nil but Store.FindOrganizationWithDetail was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+	}{
+		Ctx:            ctx,
+		OrganizationID: organizationID,
+	}
+	mock.lockFindOrganizationWithDetail.Lock()
+	mock.calls.FindOrganizationWithDetail = append(mock.calls.FindOrganizationWithDetail, callInfo)
+	mock.lockFindOrganizationWithDetail.Unlock()
+	return mock.FindOrganizationWithDetailFunc(ctx, organizationID)
+}
+
+// FindOrganizationWithDetailCalls gets all the calls that were made to FindOrganizationWithDetail.
+// Check the length with:
+//
+//	len(mockedStore.FindOrganizationWithDetailCalls())
+func (mock *StoreMock) FindOrganizationWithDetailCalls() []struct {
+	Ctx            context.Context
+	OrganizationID uuid.UUID
+} {
+	var calls []struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+	}
+	mock.lockFindOrganizationWithDetail.RLock()
+	calls = mock.calls.FindOrganizationWithDetail
+	mock.lockFindOrganizationWithDetail.RUnlock()
+	return calls
+}
+
+// FindOrganizationWithDetailWithSd calls FindOrganizationWithDetailWithSdFunc.
+func (mock *StoreMock) FindOrganizationWithDetailWithSd(ctx context.Context, sd Sd, organizationID uuid.UUID) (entity.OrganizationWithDetail, error) {
+	if mock.FindOrganizationWithDetailWithSdFunc == nil {
+		panic("StoreMock.FindOrganizationWithDetailWithSdFunc: method is nil but Store.FindOrganizationWithDetailWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+	}{
+		Ctx:            ctx,
+		Sd:             sd,
+		OrganizationID: organizationID,
+	}
+	mock.lockFindOrganizationWithDetailWithSd.Lock()
+	mock.calls.FindOrganizationWithDetailWithSd = append(mock.calls.FindOrganizationWithDetailWithSd, callInfo)
+	mock.lockFindOrganizationWithDetailWithSd.Unlock()
+	return mock.FindOrganizationWithDetailWithSdFunc(ctx, sd, organizationID)
+}
+
+// FindOrganizationWithDetailWithSdCalls gets all the calls that were made to FindOrganizationWithDetailWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindOrganizationWithDetailWithSdCalls())
+func (mock *StoreMock) FindOrganizationWithDetailWithSdCalls() []struct {
+	Ctx            context.Context
+	Sd             Sd
+	OrganizationID uuid.UUID
+} {
+	var calls []struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+	}
+	mock.lockFindOrganizationWithDetailWithSd.RLock()
+	calls = mock.calls.FindOrganizationWithDetailWithSd
+	mock.lockFindOrganizationWithDetailWithSd.RUnlock()
+	return calls
+}
+
 // FindPermissionByID calls FindPermissionByIDFunc.
 func (mock *StoreMock) FindPermissionByID(ctx context.Context, permissionID uuid.UUID) (entity.Permission, error) {
 	if mock.FindPermissionByIDFunc == nil {
@@ -13412,6 +14716,82 @@ func (mock *StoreMock) FindPermissionCategoryByKeyWithSdCalls() []struct {
 	mock.lockFindPermissionCategoryByKeyWithSd.RLock()
 	calls = mock.calls.FindPermissionCategoryByKeyWithSd
 	mock.lockFindPermissionCategoryByKeyWithSd.RUnlock()
+	return calls
+}
+
+// FindPersonalOrganization calls FindPersonalOrganizationFunc.
+func (mock *StoreMock) FindPersonalOrganization(ctx context.Context, memberID uuid.UUID) (entity.Organization, error) {
+	if mock.FindPersonalOrganizationFunc == nil {
+		panic("StoreMock.FindPersonalOrganizationFunc: method is nil but Store.FindPersonalOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+	}{
+		Ctx:      ctx,
+		MemberID: memberID,
+	}
+	mock.lockFindPersonalOrganization.Lock()
+	mock.calls.FindPersonalOrganization = append(mock.calls.FindPersonalOrganization, callInfo)
+	mock.lockFindPersonalOrganization.Unlock()
+	return mock.FindPersonalOrganizationFunc(ctx, memberID)
+}
+
+// FindPersonalOrganizationCalls gets all the calls that were made to FindPersonalOrganization.
+// Check the length with:
+//
+//	len(mockedStore.FindPersonalOrganizationCalls())
+func (mock *StoreMock) FindPersonalOrganizationCalls() []struct {
+	Ctx      context.Context
+	MemberID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+	}
+	mock.lockFindPersonalOrganization.RLock()
+	calls = mock.calls.FindPersonalOrganization
+	mock.lockFindPersonalOrganization.RUnlock()
+	return calls
+}
+
+// FindPersonalOrganizationWithSd calls FindPersonalOrganizationWithSdFunc.
+func (mock *StoreMock) FindPersonalOrganizationWithSd(ctx context.Context, sd Sd, memberID uuid.UUID) (entity.Organization, error) {
+	if mock.FindPersonalOrganizationWithSdFunc == nil {
+		panic("StoreMock.FindPersonalOrganizationWithSdFunc: method is nil but Store.FindPersonalOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		MemberID uuid.UUID
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		MemberID: memberID,
+	}
+	mock.lockFindPersonalOrganizationWithSd.Lock()
+	mock.calls.FindPersonalOrganizationWithSd = append(mock.calls.FindPersonalOrganizationWithSd, callInfo)
+	mock.lockFindPersonalOrganizationWithSd.Unlock()
+	return mock.FindPersonalOrganizationWithSdFunc(ctx, sd, memberID)
+}
+
+// FindPersonalOrganizationWithSdCalls gets all the calls that were made to FindPersonalOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindPersonalOrganizationWithSdCalls())
+func (mock *StoreMock) FindPersonalOrganizationWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	MemberID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		MemberID uuid.UUID
+	}
+	mock.lockFindPersonalOrganizationWithSd.RLock()
+	calls = mock.calls.FindPersonalOrganizationWithSd
+	mock.lockFindPersonalOrganizationWithSd.RUnlock()
 	return calls
 }
 
@@ -14096,6 +15476,74 @@ func (mock *StoreMock) FindRoleByIDWithSdCalls() []struct {
 	mock.lockFindRoleByIDWithSd.RLock()
 	calls = mock.calls.FindRoleByIDWithSd
 	mock.lockFindRoleByIDWithSd.RUnlock()
+	return calls
+}
+
+// FindWholeOrganization calls FindWholeOrganizationFunc.
+func (mock *StoreMock) FindWholeOrganization(ctx context.Context) (entity.Organization, error) {
+	if mock.FindWholeOrganizationFunc == nil {
+		panic("StoreMock.FindWholeOrganizationFunc: method is nil but Store.FindWholeOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+	}{
+		Ctx: ctx,
+	}
+	mock.lockFindWholeOrganization.Lock()
+	mock.calls.FindWholeOrganization = append(mock.calls.FindWholeOrganization, callInfo)
+	mock.lockFindWholeOrganization.Unlock()
+	return mock.FindWholeOrganizationFunc(ctx)
+}
+
+// FindWholeOrganizationCalls gets all the calls that were made to FindWholeOrganization.
+// Check the length with:
+//
+//	len(mockedStore.FindWholeOrganizationCalls())
+func (mock *StoreMock) FindWholeOrganizationCalls() []struct {
+	Ctx context.Context
+} {
+	var calls []struct {
+		Ctx context.Context
+	}
+	mock.lockFindWholeOrganization.RLock()
+	calls = mock.calls.FindWholeOrganization
+	mock.lockFindWholeOrganization.RUnlock()
+	return calls
+}
+
+// FindWholeOrganizationWithSd calls FindWholeOrganizationWithSdFunc.
+func (mock *StoreMock) FindWholeOrganizationWithSd(ctx context.Context, sd Sd) (entity.Organization, error) {
+	if mock.FindWholeOrganizationWithSdFunc == nil {
+		panic("StoreMock.FindWholeOrganizationWithSdFunc: method is nil but Store.FindWholeOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Sd  Sd
+	}{
+		Ctx: ctx,
+		Sd:  sd,
+	}
+	mock.lockFindWholeOrganizationWithSd.Lock()
+	mock.calls.FindWholeOrganizationWithSd = append(mock.calls.FindWholeOrganizationWithSd, callInfo)
+	mock.lockFindWholeOrganizationWithSd.Unlock()
+	return mock.FindWholeOrganizationWithSdFunc(ctx, sd)
+}
+
+// FindWholeOrganizationWithSdCalls gets all the calls that were made to FindWholeOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindWholeOrganizationWithSdCalls())
+func (mock *StoreMock) FindWholeOrganizationWithSdCalls() []struct {
+	Ctx context.Context
+	Sd  Sd
+} {
+	var calls []struct {
+		Ctx context.Context
+		Sd  Sd
+	}
+	mock.lockFindWholeOrganizationWithSd.RLock()
+	calls = mock.calls.FindWholeOrganizationWithSd
+	mock.lockFindWholeOrganizationWithSd.RUnlock()
 	return calls
 }
 
@@ -15184,6 +16632,438 @@ func (mock *StoreMock) GetMimeTypesWithSdCalls() []struct {
 	mock.lockGetMimeTypesWithSd.RLock()
 	calls = mock.calls.GetMimeTypesWithSd
 	mock.lockGetMimeTypesWithSd.RUnlock()
+	return calls
+}
+
+// GetOrganizations calls GetOrganizationsFunc.
+func (mock *StoreMock) GetOrganizations(ctx context.Context, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Organization], error) {
+	if mock.GetOrganizationsFunc == nil {
+		panic("StoreMock.GetOrganizationsFunc: method is nil but Store.GetOrganizations was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereOrganizationParam
+		Order parameter.OrganizationOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetOrganizations.Lock()
+	mock.calls.GetOrganizations = append(mock.calls.GetOrganizations, callInfo)
+	mock.lockGetOrganizations.Unlock()
+	return mock.GetOrganizationsFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetOrganizationsCalls gets all the calls that were made to GetOrganizations.
+// Check the length with:
+//
+//	len(mockedStore.GetOrganizationsCalls())
+func (mock *StoreMock) GetOrganizationsCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereOrganizationParam
+	Order parameter.OrganizationOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereOrganizationParam
+		Order parameter.OrganizationOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetOrganizations.RLock()
+	calls = mock.calls.GetOrganizations
+	mock.lockGetOrganizations.RUnlock()
+	return calls
+}
+
+// GetOrganizationsWithChatRoom calls GetOrganizationsWithChatRoomFunc.
+func (mock *StoreMock) GetOrganizationsWithChatRoom(ctx context.Context, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithChatRoom], error) {
+	if mock.GetOrganizationsWithChatRoomFunc == nil {
+		panic("StoreMock.GetOrganizationsWithChatRoomFunc: method is nil but Store.GetOrganizationsWithChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereOrganizationParam
+		Order parameter.OrganizationOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetOrganizationsWithChatRoom.Lock()
+	mock.calls.GetOrganizationsWithChatRoom = append(mock.calls.GetOrganizationsWithChatRoom, callInfo)
+	mock.lockGetOrganizationsWithChatRoom.Unlock()
+	return mock.GetOrganizationsWithChatRoomFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetOrganizationsWithChatRoomCalls gets all the calls that were made to GetOrganizationsWithChatRoom.
+// Check the length with:
+//
+//	len(mockedStore.GetOrganizationsWithChatRoomCalls())
+func (mock *StoreMock) GetOrganizationsWithChatRoomCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereOrganizationParam
+	Order parameter.OrganizationOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereOrganizationParam
+		Order parameter.OrganizationOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetOrganizationsWithChatRoom.RLock()
+	calls = mock.calls.GetOrganizationsWithChatRoom
+	mock.lockGetOrganizationsWithChatRoom.RUnlock()
+	return calls
+}
+
+// GetOrganizationsWithChatRoomAndDetail calls GetOrganizationsWithChatRoomAndDetailFunc.
+func (mock *StoreMock) GetOrganizationsWithChatRoomAndDetail(ctx context.Context, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithChatRoomAndDetail], error) {
+	if mock.GetOrganizationsWithChatRoomAndDetailFunc == nil {
+		panic("StoreMock.GetOrganizationsWithChatRoomAndDetailFunc: method is nil but Store.GetOrganizationsWithChatRoomAndDetail was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereOrganizationParam
+		Order parameter.OrganizationOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetOrganizationsWithChatRoomAndDetail.Lock()
+	mock.calls.GetOrganizationsWithChatRoomAndDetail = append(mock.calls.GetOrganizationsWithChatRoomAndDetail, callInfo)
+	mock.lockGetOrganizationsWithChatRoomAndDetail.Unlock()
+	return mock.GetOrganizationsWithChatRoomAndDetailFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetOrganizationsWithChatRoomAndDetailCalls gets all the calls that were made to GetOrganizationsWithChatRoomAndDetail.
+// Check the length with:
+//
+//	len(mockedStore.GetOrganizationsWithChatRoomAndDetailCalls())
+func (mock *StoreMock) GetOrganizationsWithChatRoomAndDetailCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereOrganizationParam
+	Order parameter.OrganizationOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereOrganizationParam
+		Order parameter.OrganizationOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetOrganizationsWithChatRoomAndDetail.RLock()
+	calls = mock.calls.GetOrganizationsWithChatRoomAndDetail
+	mock.lockGetOrganizationsWithChatRoomAndDetail.RUnlock()
+	return calls
+}
+
+// GetOrganizationsWithChatRoomAndDetailWithSd calls GetOrganizationsWithChatRoomAndDetailWithSdFunc.
+func (mock *StoreMock) GetOrganizationsWithChatRoomAndDetailWithSd(ctx context.Context, sd Sd, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithChatRoomAndDetail], error) {
+	if mock.GetOrganizationsWithChatRoomAndDetailWithSdFunc == nil {
+		panic("StoreMock.GetOrganizationsWithChatRoomAndDetailWithSdFunc: method is nil but Store.GetOrganizationsWithChatRoomAndDetailWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereOrganizationParam
+		Order parameter.OrganizationOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetOrganizationsWithChatRoomAndDetailWithSd.Lock()
+	mock.calls.GetOrganizationsWithChatRoomAndDetailWithSd = append(mock.calls.GetOrganizationsWithChatRoomAndDetailWithSd, callInfo)
+	mock.lockGetOrganizationsWithChatRoomAndDetailWithSd.Unlock()
+	return mock.GetOrganizationsWithChatRoomAndDetailWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetOrganizationsWithChatRoomAndDetailWithSdCalls gets all the calls that were made to GetOrganizationsWithChatRoomAndDetailWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetOrganizationsWithChatRoomAndDetailWithSdCalls())
+func (mock *StoreMock) GetOrganizationsWithChatRoomAndDetailWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereOrganizationParam
+	Order parameter.OrganizationOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereOrganizationParam
+		Order parameter.OrganizationOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetOrganizationsWithChatRoomAndDetailWithSd.RLock()
+	calls = mock.calls.GetOrganizationsWithChatRoomAndDetailWithSd
+	mock.lockGetOrganizationsWithChatRoomAndDetailWithSd.RUnlock()
+	return calls
+}
+
+// GetOrganizationsWithChatRoomWithSd calls GetOrganizationsWithChatRoomWithSdFunc.
+func (mock *StoreMock) GetOrganizationsWithChatRoomWithSd(ctx context.Context, sd Sd, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithChatRoom], error) {
+	if mock.GetOrganizationsWithChatRoomWithSdFunc == nil {
+		panic("StoreMock.GetOrganizationsWithChatRoomWithSdFunc: method is nil but Store.GetOrganizationsWithChatRoomWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereOrganizationParam
+		Order parameter.OrganizationOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetOrganizationsWithChatRoomWithSd.Lock()
+	mock.calls.GetOrganizationsWithChatRoomWithSd = append(mock.calls.GetOrganizationsWithChatRoomWithSd, callInfo)
+	mock.lockGetOrganizationsWithChatRoomWithSd.Unlock()
+	return mock.GetOrganizationsWithChatRoomWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetOrganizationsWithChatRoomWithSdCalls gets all the calls that were made to GetOrganizationsWithChatRoomWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetOrganizationsWithChatRoomWithSdCalls())
+func (mock *StoreMock) GetOrganizationsWithChatRoomWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereOrganizationParam
+	Order parameter.OrganizationOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereOrganizationParam
+		Order parameter.OrganizationOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetOrganizationsWithChatRoomWithSd.RLock()
+	calls = mock.calls.GetOrganizationsWithChatRoomWithSd
+	mock.lockGetOrganizationsWithChatRoomWithSd.RUnlock()
+	return calls
+}
+
+// GetOrganizationsWithDetail calls GetOrganizationsWithDetailFunc.
+func (mock *StoreMock) GetOrganizationsWithDetail(ctx context.Context, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithDetail], error) {
+	if mock.GetOrganizationsWithDetailFunc == nil {
+		panic("StoreMock.GetOrganizationsWithDetailFunc: method is nil but Store.GetOrganizationsWithDetail was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereOrganizationParam
+		Order parameter.OrganizationOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetOrganizationsWithDetail.Lock()
+	mock.calls.GetOrganizationsWithDetail = append(mock.calls.GetOrganizationsWithDetail, callInfo)
+	mock.lockGetOrganizationsWithDetail.Unlock()
+	return mock.GetOrganizationsWithDetailFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetOrganizationsWithDetailCalls gets all the calls that were made to GetOrganizationsWithDetail.
+// Check the length with:
+//
+//	len(mockedStore.GetOrganizationsWithDetailCalls())
+func (mock *StoreMock) GetOrganizationsWithDetailCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereOrganizationParam
+	Order parameter.OrganizationOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereOrganizationParam
+		Order parameter.OrganizationOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetOrganizationsWithDetail.RLock()
+	calls = mock.calls.GetOrganizationsWithDetail
+	mock.lockGetOrganizationsWithDetail.RUnlock()
+	return calls
+}
+
+// GetOrganizationsWithDetailWithSd calls GetOrganizationsWithDetailWithSdFunc.
+func (mock *StoreMock) GetOrganizationsWithDetailWithSd(ctx context.Context, sd Sd, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithDetail], error) {
+	if mock.GetOrganizationsWithDetailWithSdFunc == nil {
+		panic("StoreMock.GetOrganizationsWithDetailWithSdFunc: method is nil but Store.GetOrganizationsWithDetailWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereOrganizationParam
+		Order parameter.OrganizationOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetOrganizationsWithDetailWithSd.Lock()
+	mock.calls.GetOrganizationsWithDetailWithSd = append(mock.calls.GetOrganizationsWithDetailWithSd, callInfo)
+	mock.lockGetOrganizationsWithDetailWithSd.Unlock()
+	return mock.GetOrganizationsWithDetailWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetOrganizationsWithDetailWithSdCalls gets all the calls that were made to GetOrganizationsWithDetailWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetOrganizationsWithDetailWithSdCalls())
+func (mock *StoreMock) GetOrganizationsWithDetailWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereOrganizationParam
+	Order parameter.OrganizationOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereOrganizationParam
+		Order parameter.OrganizationOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetOrganizationsWithDetailWithSd.RLock()
+	calls = mock.calls.GetOrganizationsWithDetailWithSd
+	mock.lockGetOrganizationsWithDetailWithSd.RUnlock()
+	return calls
+}
+
+// GetOrganizationsWithSd calls GetOrganizationsWithSdFunc.
+func (mock *StoreMock) GetOrganizationsWithSd(ctx context.Context, sd Sd, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Organization], error) {
+	if mock.GetOrganizationsWithSdFunc == nil {
+		panic("StoreMock.GetOrganizationsWithSdFunc: method is nil but Store.GetOrganizationsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereOrganizationParam
+		Order parameter.OrganizationOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetOrganizationsWithSd.Lock()
+	mock.calls.GetOrganizationsWithSd = append(mock.calls.GetOrganizationsWithSd, callInfo)
+	mock.lockGetOrganizationsWithSd.Unlock()
+	return mock.GetOrganizationsWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetOrganizationsWithSdCalls gets all the calls that were made to GetOrganizationsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetOrganizationsWithSdCalls())
+func (mock *StoreMock) GetOrganizationsWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereOrganizationParam
+	Order parameter.OrganizationOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereOrganizationParam
+		Order parameter.OrganizationOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetOrganizationsWithSd.RLock()
+	calls = mock.calls.GetOrganizationsWithSd
+	mock.lockGetOrganizationsWithSd.RUnlock()
 	return calls
 }
 
@@ -16428,6 +18308,374 @@ func (mock *StoreMock) GetPluralMimeTypesWithSdCalls() []struct {
 	mock.lockGetPluralMimeTypesWithSd.RLock()
 	calls = mock.calls.GetPluralMimeTypesWithSd
 	mock.lockGetPluralMimeTypesWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralOrganizations calls GetPluralOrganizationsFunc.
+func (mock *StoreMock) GetPluralOrganizations(ctx context.Context, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.Organization], error) {
+	if mock.GetPluralOrganizationsFunc == nil {
+		panic("StoreMock.GetPluralOrganizationsFunc: method is nil but Store.GetPluralOrganizations was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		OrganizationIDs []uuid.UUID
+		Order           parameter.OrganizationOrderMethod
+		Np              NumberedPaginationParam
+	}{
+		Ctx:             ctx,
+		OrganizationIDs: organizationIDs,
+		Order:           order,
+		Np:              np,
+	}
+	mock.lockGetPluralOrganizations.Lock()
+	mock.calls.GetPluralOrganizations = append(mock.calls.GetPluralOrganizations, callInfo)
+	mock.lockGetPluralOrganizations.Unlock()
+	return mock.GetPluralOrganizationsFunc(ctx, organizationIDs, order, np)
+}
+
+// GetPluralOrganizationsCalls gets all the calls that were made to GetPluralOrganizations.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralOrganizationsCalls())
+func (mock *StoreMock) GetPluralOrganizationsCalls() []struct {
+	Ctx             context.Context
+	OrganizationIDs []uuid.UUID
+	Order           parameter.OrganizationOrderMethod
+	Np              NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx             context.Context
+		OrganizationIDs []uuid.UUID
+		Order           parameter.OrganizationOrderMethod
+		Np              NumberedPaginationParam
+	}
+	mock.lockGetPluralOrganizations.RLock()
+	calls = mock.calls.GetPluralOrganizations
+	mock.lockGetPluralOrganizations.RUnlock()
+	return calls
+}
+
+// GetPluralOrganizationsWithChatRoom calls GetPluralOrganizationsWithChatRoomFunc.
+func (mock *StoreMock) GetPluralOrganizationsWithChatRoom(ctx context.Context, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithChatRoom], error) {
+	if mock.GetPluralOrganizationsWithChatRoomFunc == nil {
+		panic("StoreMock.GetPluralOrganizationsWithChatRoomFunc: method is nil but Store.GetPluralOrganizationsWithChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		OrganizationIDs []uuid.UUID
+		Order           parameter.OrganizationOrderMethod
+		Np              NumberedPaginationParam
+	}{
+		Ctx:             ctx,
+		OrganizationIDs: organizationIDs,
+		Order:           order,
+		Np:              np,
+	}
+	mock.lockGetPluralOrganizationsWithChatRoom.Lock()
+	mock.calls.GetPluralOrganizationsWithChatRoom = append(mock.calls.GetPluralOrganizationsWithChatRoom, callInfo)
+	mock.lockGetPluralOrganizationsWithChatRoom.Unlock()
+	return mock.GetPluralOrganizationsWithChatRoomFunc(ctx, organizationIDs, order, np)
+}
+
+// GetPluralOrganizationsWithChatRoomCalls gets all the calls that were made to GetPluralOrganizationsWithChatRoom.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralOrganizationsWithChatRoomCalls())
+func (mock *StoreMock) GetPluralOrganizationsWithChatRoomCalls() []struct {
+	Ctx             context.Context
+	OrganizationIDs []uuid.UUID
+	Order           parameter.OrganizationOrderMethod
+	Np              NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx             context.Context
+		OrganizationIDs []uuid.UUID
+		Order           parameter.OrganizationOrderMethod
+		Np              NumberedPaginationParam
+	}
+	mock.lockGetPluralOrganizationsWithChatRoom.RLock()
+	calls = mock.calls.GetPluralOrganizationsWithChatRoom
+	mock.lockGetPluralOrganizationsWithChatRoom.RUnlock()
+	return calls
+}
+
+// GetPluralOrganizationsWithChatRoomAndDetail calls GetPluralOrganizationsWithChatRoomAndDetailFunc.
+func (mock *StoreMock) GetPluralOrganizationsWithChatRoomAndDetail(ctx context.Context, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithChatRoomAndDetail], error) {
+	if mock.GetPluralOrganizationsWithChatRoomAndDetailFunc == nil {
+		panic("StoreMock.GetPluralOrganizationsWithChatRoomAndDetailFunc: method is nil but Store.GetPluralOrganizationsWithChatRoomAndDetail was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		OrganizationIDs []uuid.UUID
+		Order           parameter.OrganizationOrderMethod
+		Np              NumberedPaginationParam
+	}{
+		Ctx:             ctx,
+		OrganizationIDs: organizationIDs,
+		Order:           order,
+		Np:              np,
+	}
+	mock.lockGetPluralOrganizationsWithChatRoomAndDetail.Lock()
+	mock.calls.GetPluralOrganizationsWithChatRoomAndDetail = append(mock.calls.GetPluralOrganizationsWithChatRoomAndDetail, callInfo)
+	mock.lockGetPluralOrganizationsWithChatRoomAndDetail.Unlock()
+	return mock.GetPluralOrganizationsWithChatRoomAndDetailFunc(ctx, organizationIDs, order, np)
+}
+
+// GetPluralOrganizationsWithChatRoomAndDetailCalls gets all the calls that were made to GetPluralOrganizationsWithChatRoomAndDetail.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralOrganizationsWithChatRoomAndDetailCalls())
+func (mock *StoreMock) GetPluralOrganizationsWithChatRoomAndDetailCalls() []struct {
+	Ctx             context.Context
+	OrganizationIDs []uuid.UUID
+	Order           parameter.OrganizationOrderMethod
+	Np              NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx             context.Context
+		OrganizationIDs []uuid.UUID
+		Order           parameter.OrganizationOrderMethod
+		Np              NumberedPaginationParam
+	}
+	mock.lockGetPluralOrganizationsWithChatRoomAndDetail.RLock()
+	calls = mock.calls.GetPluralOrganizationsWithChatRoomAndDetail
+	mock.lockGetPluralOrganizationsWithChatRoomAndDetail.RUnlock()
+	return calls
+}
+
+// GetPluralOrganizationsWithChatRoomAndDetailWithSd calls GetPluralOrganizationsWithChatRoomAndDetailWithSdFunc.
+func (mock *StoreMock) GetPluralOrganizationsWithChatRoomAndDetailWithSd(ctx context.Context, sd Sd, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithChatRoomAndDetail], error) {
+	if mock.GetPluralOrganizationsWithChatRoomAndDetailWithSdFunc == nil {
+		panic("StoreMock.GetPluralOrganizationsWithChatRoomAndDetailWithSdFunc: method is nil but Store.GetPluralOrganizationsWithChatRoomAndDetailWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		Sd              Sd
+		OrganizationIDs []uuid.UUID
+		Order           parameter.OrganizationOrderMethod
+		Np              NumberedPaginationParam
+	}{
+		Ctx:             ctx,
+		Sd:              sd,
+		OrganizationIDs: organizationIDs,
+		Order:           order,
+		Np:              np,
+	}
+	mock.lockGetPluralOrganizationsWithChatRoomAndDetailWithSd.Lock()
+	mock.calls.GetPluralOrganizationsWithChatRoomAndDetailWithSd = append(mock.calls.GetPluralOrganizationsWithChatRoomAndDetailWithSd, callInfo)
+	mock.lockGetPluralOrganizationsWithChatRoomAndDetailWithSd.Unlock()
+	return mock.GetPluralOrganizationsWithChatRoomAndDetailWithSdFunc(ctx, sd, organizationIDs, order, np)
+}
+
+// GetPluralOrganizationsWithChatRoomAndDetailWithSdCalls gets all the calls that were made to GetPluralOrganizationsWithChatRoomAndDetailWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralOrganizationsWithChatRoomAndDetailWithSdCalls())
+func (mock *StoreMock) GetPluralOrganizationsWithChatRoomAndDetailWithSdCalls() []struct {
+	Ctx             context.Context
+	Sd              Sd
+	OrganizationIDs []uuid.UUID
+	Order           parameter.OrganizationOrderMethod
+	Np              NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx             context.Context
+		Sd              Sd
+		OrganizationIDs []uuid.UUID
+		Order           parameter.OrganizationOrderMethod
+		Np              NumberedPaginationParam
+	}
+	mock.lockGetPluralOrganizationsWithChatRoomAndDetailWithSd.RLock()
+	calls = mock.calls.GetPluralOrganizationsWithChatRoomAndDetailWithSd
+	mock.lockGetPluralOrganizationsWithChatRoomAndDetailWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralOrganizationsWithChatRoomWithSd calls GetPluralOrganizationsWithChatRoomWithSdFunc.
+func (mock *StoreMock) GetPluralOrganizationsWithChatRoomWithSd(ctx context.Context, sd Sd, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithChatRoom], error) {
+	if mock.GetPluralOrganizationsWithChatRoomWithSdFunc == nil {
+		panic("StoreMock.GetPluralOrganizationsWithChatRoomWithSdFunc: method is nil but Store.GetPluralOrganizationsWithChatRoomWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		Sd              Sd
+		OrganizationIDs []uuid.UUID
+		Order           parameter.OrganizationOrderMethod
+		Np              NumberedPaginationParam
+	}{
+		Ctx:             ctx,
+		Sd:              sd,
+		OrganizationIDs: organizationIDs,
+		Order:           order,
+		Np:              np,
+	}
+	mock.lockGetPluralOrganizationsWithChatRoomWithSd.Lock()
+	mock.calls.GetPluralOrganizationsWithChatRoomWithSd = append(mock.calls.GetPluralOrganizationsWithChatRoomWithSd, callInfo)
+	mock.lockGetPluralOrganizationsWithChatRoomWithSd.Unlock()
+	return mock.GetPluralOrganizationsWithChatRoomWithSdFunc(ctx, sd, organizationIDs, order, np)
+}
+
+// GetPluralOrganizationsWithChatRoomWithSdCalls gets all the calls that were made to GetPluralOrganizationsWithChatRoomWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralOrganizationsWithChatRoomWithSdCalls())
+func (mock *StoreMock) GetPluralOrganizationsWithChatRoomWithSdCalls() []struct {
+	Ctx             context.Context
+	Sd              Sd
+	OrganizationIDs []uuid.UUID
+	Order           parameter.OrganizationOrderMethod
+	Np              NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx             context.Context
+		Sd              Sd
+		OrganizationIDs []uuid.UUID
+		Order           parameter.OrganizationOrderMethod
+		Np              NumberedPaginationParam
+	}
+	mock.lockGetPluralOrganizationsWithChatRoomWithSd.RLock()
+	calls = mock.calls.GetPluralOrganizationsWithChatRoomWithSd
+	mock.lockGetPluralOrganizationsWithChatRoomWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralOrganizationsWithDetail calls GetPluralOrganizationsWithDetailFunc.
+func (mock *StoreMock) GetPluralOrganizationsWithDetail(ctx context.Context, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithDetail], error) {
+	if mock.GetPluralOrganizationsWithDetailFunc == nil {
+		panic("StoreMock.GetPluralOrganizationsWithDetailFunc: method is nil but Store.GetPluralOrganizationsWithDetail was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		OrganizationIDs []uuid.UUID
+		Order           parameter.OrganizationOrderMethod
+		Np              NumberedPaginationParam
+	}{
+		Ctx:             ctx,
+		OrganizationIDs: organizationIDs,
+		Order:           order,
+		Np:              np,
+	}
+	mock.lockGetPluralOrganizationsWithDetail.Lock()
+	mock.calls.GetPluralOrganizationsWithDetail = append(mock.calls.GetPluralOrganizationsWithDetail, callInfo)
+	mock.lockGetPluralOrganizationsWithDetail.Unlock()
+	return mock.GetPluralOrganizationsWithDetailFunc(ctx, organizationIDs, order, np)
+}
+
+// GetPluralOrganizationsWithDetailCalls gets all the calls that were made to GetPluralOrganizationsWithDetail.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralOrganizationsWithDetailCalls())
+func (mock *StoreMock) GetPluralOrganizationsWithDetailCalls() []struct {
+	Ctx             context.Context
+	OrganizationIDs []uuid.UUID
+	Order           parameter.OrganizationOrderMethod
+	Np              NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx             context.Context
+		OrganizationIDs []uuid.UUID
+		Order           parameter.OrganizationOrderMethod
+		Np              NumberedPaginationParam
+	}
+	mock.lockGetPluralOrganizationsWithDetail.RLock()
+	calls = mock.calls.GetPluralOrganizationsWithDetail
+	mock.lockGetPluralOrganizationsWithDetail.RUnlock()
+	return calls
+}
+
+// GetPluralOrganizationsWithDetailWithSd calls GetPluralOrganizationsWithDetailWithSdFunc.
+func (mock *StoreMock) GetPluralOrganizationsWithDetailWithSd(ctx context.Context, sd Sd, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithDetail], error) {
+	if mock.GetPluralOrganizationsWithDetailWithSdFunc == nil {
+		panic("StoreMock.GetPluralOrganizationsWithDetailWithSdFunc: method is nil but Store.GetPluralOrganizationsWithDetailWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		Sd              Sd
+		OrganizationIDs []uuid.UUID
+		Order           parameter.OrganizationOrderMethod
+		Np              NumberedPaginationParam
+	}{
+		Ctx:             ctx,
+		Sd:              sd,
+		OrganizationIDs: organizationIDs,
+		Order:           order,
+		Np:              np,
+	}
+	mock.lockGetPluralOrganizationsWithDetailWithSd.Lock()
+	mock.calls.GetPluralOrganizationsWithDetailWithSd = append(mock.calls.GetPluralOrganizationsWithDetailWithSd, callInfo)
+	mock.lockGetPluralOrganizationsWithDetailWithSd.Unlock()
+	return mock.GetPluralOrganizationsWithDetailWithSdFunc(ctx, sd, organizationIDs, order, np)
+}
+
+// GetPluralOrganizationsWithDetailWithSdCalls gets all the calls that were made to GetPluralOrganizationsWithDetailWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralOrganizationsWithDetailWithSdCalls())
+func (mock *StoreMock) GetPluralOrganizationsWithDetailWithSdCalls() []struct {
+	Ctx             context.Context
+	Sd              Sd
+	OrganizationIDs []uuid.UUID
+	Order           parameter.OrganizationOrderMethod
+	Np              NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx             context.Context
+		Sd              Sd
+		OrganizationIDs []uuid.UUID
+		Order           parameter.OrganizationOrderMethod
+		Np              NumberedPaginationParam
+	}
+	mock.lockGetPluralOrganizationsWithDetailWithSd.RLock()
+	calls = mock.calls.GetPluralOrganizationsWithDetailWithSd
+	mock.lockGetPluralOrganizationsWithDetailWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralOrganizationsWithSd calls GetPluralOrganizationsWithSdFunc.
+func (mock *StoreMock) GetPluralOrganizationsWithSd(ctx context.Context, sd Sd, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.Organization], error) {
+	if mock.GetPluralOrganizationsWithSdFunc == nil {
+		panic("StoreMock.GetPluralOrganizationsWithSdFunc: method is nil but Store.GetPluralOrganizationsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		Sd              Sd
+		OrganizationIDs []uuid.UUID
+		Order           parameter.OrganizationOrderMethod
+		Np              NumberedPaginationParam
+	}{
+		Ctx:             ctx,
+		Sd:              sd,
+		OrganizationIDs: organizationIDs,
+		Order:           order,
+		Np:              np,
+	}
+	mock.lockGetPluralOrganizationsWithSd.Lock()
+	mock.calls.GetPluralOrganizationsWithSd = append(mock.calls.GetPluralOrganizationsWithSd, callInfo)
+	mock.lockGetPluralOrganizationsWithSd.Unlock()
+	return mock.GetPluralOrganizationsWithSdFunc(ctx, sd, organizationIDs, order, np)
+}
+
+// GetPluralOrganizationsWithSdCalls gets all the calls that were made to GetPluralOrganizationsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralOrganizationsWithSdCalls())
+func (mock *StoreMock) GetPluralOrganizationsWithSdCalls() []struct {
+	Ctx             context.Context
+	Sd              Sd
+	OrganizationIDs []uuid.UUID
+	Order           parameter.OrganizationOrderMethod
+	Np              NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx             context.Context
+		Sd              Sd
+		OrganizationIDs []uuid.UUID
+		Order           parameter.OrganizationOrderMethod
+		Np              NumberedPaginationParam
+	}
+	mock.lockGetPluralOrganizationsWithSd.RLock()
+	calls = mock.calls.GetPluralOrganizationsWithSd
+	mock.lockGetPluralOrganizationsWithSd.RUnlock()
 	return calls
 }
 
@@ -18287,6 +20535,82 @@ func (mock *StoreMock) PluralDeleteMimeTypesWithSdCalls() []struct {
 	return calls
 }
 
+// PluralDeleteOrganizations calls PluralDeleteOrganizationsFunc.
+func (mock *StoreMock) PluralDeleteOrganizations(ctx context.Context, organizationIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteOrganizationsFunc == nil {
+		panic("StoreMock.PluralDeleteOrganizationsFunc: method is nil but Store.PluralDeleteOrganizations was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		OrganizationIDs []uuid.UUID
+	}{
+		Ctx:             ctx,
+		OrganizationIDs: organizationIDs,
+	}
+	mock.lockPluralDeleteOrganizations.Lock()
+	mock.calls.PluralDeleteOrganizations = append(mock.calls.PluralDeleteOrganizations, callInfo)
+	mock.lockPluralDeleteOrganizations.Unlock()
+	return mock.PluralDeleteOrganizationsFunc(ctx, organizationIDs)
+}
+
+// PluralDeleteOrganizationsCalls gets all the calls that were made to PluralDeleteOrganizations.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteOrganizationsCalls())
+func (mock *StoreMock) PluralDeleteOrganizationsCalls() []struct {
+	Ctx             context.Context
+	OrganizationIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx             context.Context
+		OrganizationIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteOrganizations.RLock()
+	calls = mock.calls.PluralDeleteOrganizations
+	mock.lockPluralDeleteOrganizations.RUnlock()
+	return calls
+}
+
+// PluralDeleteOrganizationsWithSd calls PluralDeleteOrganizationsWithSdFunc.
+func (mock *StoreMock) PluralDeleteOrganizationsWithSd(ctx context.Context, sd Sd, organizationIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteOrganizationsWithSdFunc == nil {
+		panic("StoreMock.PluralDeleteOrganizationsWithSdFunc: method is nil but Store.PluralDeleteOrganizationsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		Sd              Sd
+		OrganizationIDs []uuid.UUID
+	}{
+		Ctx:             ctx,
+		Sd:              sd,
+		OrganizationIDs: organizationIDs,
+	}
+	mock.lockPluralDeleteOrganizationsWithSd.Lock()
+	mock.calls.PluralDeleteOrganizationsWithSd = append(mock.calls.PluralDeleteOrganizationsWithSd, callInfo)
+	mock.lockPluralDeleteOrganizationsWithSd.Unlock()
+	return mock.PluralDeleteOrganizationsWithSdFunc(ctx, sd, organizationIDs)
+}
+
+// PluralDeleteOrganizationsWithSdCalls gets all the calls that were made to PluralDeleteOrganizationsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteOrganizationsWithSdCalls())
+func (mock *StoreMock) PluralDeleteOrganizationsWithSdCalls() []struct {
+	Ctx             context.Context
+	Sd              Sd
+	OrganizationIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx             context.Context
+		Sd              Sd
+		OrganizationIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteOrganizationsWithSd.RLock()
+	calls = mock.calls.PluralDeleteOrganizationsWithSd
+	mock.lockPluralDeleteOrganizationsWithSd.RUnlock()
+	return calls
+}
+
 // PluralDeletePermissionCategories calls PluralDeletePermissionCategoriesFunc.
 func (mock *StoreMock) PluralDeletePermissionCategories(ctx context.Context, permissionCategoryIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeletePermissionCategoriesFunc == nil {
@@ -19784,6 +22108,90 @@ func (mock *StoreMock) UpdateMimeTypeWithSdCalls() []struct {
 	mock.lockUpdateMimeTypeWithSd.RLock()
 	calls = mock.calls.UpdateMimeTypeWithSd
 	mock.lockUpdateMimeTypeWithSd.RUnlock()
+	return calls
+}
+
+// UpdateOrganization calls UpdateOrganizationFunc.
+func (mock *StoreMock) UpdateOrganization(ctx context.Context, organizationID uuid.UUID, param parameter.UpdateOrganizationParams) (entity.Organization, error) {
+	if mock.UpdateOrganizationFunc == nil {
+		panic("StoreMock.UpdateOrganizationFunc: method is nil but Store.UpdateOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+		Param          parameter.UpdateOrganizationParams
+	}{
+		Ctx:            ctx,
+		OrganizationID: organizationID,
+		Param:          param,
+	}
+	mock.lockUpdateOrganization.Lock()
+	mock.calls.UpdateOrganization = append(mock.calls.UpdateOrganization, callInfo)
+	mock.lockUpdateOrganization.Unlock()
+	return mock.UpdateOrganizationFunc(ctx, organizationID, param)
+}
+
+// UpdateOrganizationCalls gets all the calls that were made to UpdateOrganization.
+// Check the length with:
+//
+//	len(mockedStore.UpdateOrganizationCalls())
+func (mock *StoreMock) UpdateOrganizationCalls() []struct {
+	Ctx            context.Context
+	OrganizationID uuid.UUID
+	Param          parameter.UpdateOrganizationParams
+} {
+	var calls []struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+		Param          parameter.UpdateOrganizationParams
+	}
+	mock.lockUpdateOrganization.RLock()
+	calls = mock.calls.UpdateOrganization
+	mock.lockUpdateOrganization.RUnlock()
+	return calls
+}
+
+// UpdateOrganizationWithSd calls UpdateOrganizationWithSdFunc.
+func (mock *StoreMock) UpdateOrganizationWithSd(ctx context.Context, sd Sd, organizationID uuid.UUID, param parameter.UpdateOrganizationParams) (entity.Organization, error) {
+	if mock.UpdateOrganizationWithSdFunc == nil {
+		panic("StoreMock.UpdateOrganizationWithSdFunc: method is nil but Store.UpdateOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+		Param          parameter.UpdateOrganizationParams
+	}{
+		Ctx:            ctx,
+		Sd:             sd,
+		OrganizationID: organizationID,
+		Param:          param,
+	}
+	mock.lockUpdateOrganizationWithSd.Lock()
+	mock.calls.UpdateOrganizationWithSd = append(mock.calls.UpdateOrganizationWithSd, callInfo)
+	mock.lockUpdateOrganizationWithSd.Unlock()
+	return mock.UpdateOrganizationWithSdFunc(ctx, sd, organizationID, param)
+}
+
+// UpdateOrganizationWithSdCalls gets all the calls that were made to UpdateOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.UpdateOrganizationWithSdCalls())
+func (mock *StoreMock) UpdateOrganizationWithSdCalls() []struct {
+	Ctx            context.Context
+	Sd             Sd
+	OrganizationID uuid.UUID
+	Param          parameter.UpdateOrganizationParams
+} {
+	var calls []struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+		Param          parameter.UpdateOrganizationParams
+	}
+	mock.lockUpdateOrganizationWithSd.RLock()
+	calls = mock.calls.UpdateOrganizationWithSd
+	mock.lockUpdateOrganizationWithSd.RUnlock()
 	return calls
 }
 

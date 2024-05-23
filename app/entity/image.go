@@ -17,3 +17,9 @@ type ImageWithAttachableItem struct {
 	Width          Float          `json:"width"`
 	AttachableItem AttachableItem `json:"attachable_item"`
 }
+
+// ImageWithAttachableItemForQuery 画像と添付アイテムを表す構造体(クエリー用)。
+type ImageWithAttachableItemForQuery struct {
+	Pkey Int `json:"-"`
+	ImageWithAttachableItem
+}

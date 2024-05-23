@@ -13,3 +13,9 @@ type FileWithAttachableItem struct {
 	FileID         uuid.UUID      `json:"file_id"`
 	AttachableItem AttachableItem `json:"attachable_item"`
 }
+
+// FileWithAttachableItemForQuery ファイルと添付アイテムを表す構造体(クエリー用)。
+type FileWithAttachableItemForQuery struct {
+	Pkey Int `json:"-"`
+	FileWithAttachableItem
+}

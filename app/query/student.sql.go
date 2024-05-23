@@ -58,16 +58,34 @@ func (q *Queries) FindStudentByID(ctx context.Context, studentID uuid.UUID) (Stu
 }
 
 const findStudentByIDWithMember = `-- name: FindStudentByIDWithMember :one
-SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
+SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
+t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
+t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_students
 LEFT JOIN m_members ON m_students.member_id = m_members.member_id
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE student_id = $1
 `
 
 type FindStudentByIDWithMemberRow struct {
-	MStudentsPkey pgtype.Int8 `json:"m_students_pkey"`
-	StudentID     uuid.UUID   `json:"student_id"`
-	MemberID      uuid.UUID   `json:"member_id"`
-	Member        Member      `json:"member"`
+	MStudentsPkey                      pgtype.Int8   `json:"m_students_pkey"`
+	StudentID                          uuid.UUID     `json:"student_id"`
+	MemberID                           uuid.UUID     `json:"member_id"`
+	MemberName                         pgtype.Text   `json:"member_name"`
+	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
+	MemberLastName                     pgtype.Text   `json:"member_last_name"`
+	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
+	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
+	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
+	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
+	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
+	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
+	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
+	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
 }
 
 func (q *Queries) FindStudentByIDWithMember(ctx context.Context, studentID uuid.UUID) (FindStudentByIDWithMemberRow, error) {
@@ -77,35 +95,32 @@ func (q *Queries) FindStudentByIDWithMember(ctx context.Context, studentID uuid.
 		&i.MStudentsPkey,
 		&i.StudentID,
 		&i.MemberID,
-		&i.Member.MMembersPkey,
-		&i.Member.MemberID,
-		&i.Member.LoginID,
-		&i.Member.Password,
-		&i.Member.Email,
-		&i.Member.Name,
-		&i.Member.FirstName,
-		&i.Member.LastName,
-		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageID,
-		&i.Member.GradeID,
-		&i.Member.GroupID,
-		&i.Member.PersonalOrganizationID,
-		&i.Member.RoleID,
-		&i.Member.CreatedAt,
-		&i.Member.UpdatedAt,
+		&i.MemberName,
+		&i.MemberFirstName,
+		&i.MemberLastName,
+		&i.MemberEmail,
+		&i.MemberProfileImageID,
+		&i.MemberProfileImageHeight,
+		&i.MemberProfileImageWidth,
+		&i.MemberProfileImageAttachableItemID,
+		&i.MemberProfileImageOwnerID,
+		&i.MemberProfileImageFromOuter,
+		&i.MemberProfileImageUrl,
+		&i.MemberProfileImageSize,
+		&i.MemberProfileImageMimeTypeID,
 	)
 	return i, err
 }
 
 const getPluralStudents = `-- name: GetPluralStudents :many
 SELECT m_students_pkey, student_id, member_id FROM m_students
-WHERE member_id = ANY($1::uuid[])
+WHERE student_id = ANY($1::uuid[])
 ORDER BY
 	m_students_pkey ASC
 `
 
-func (q *Queries) GetPluralStudents(ctx context.Context, memberIds []uuid.UUID) ([]Student, error) {
-	rows, err := q.db.Query(ctx, getPluralStudents, memberIds)
+func (q *Queries) GetPluralStudents(ctx context.Context, studentIds []uuid.UUID) ([]Student, error) {
+	rows, err := q.db.Query(ctx, getPluralStudents, studentIds)
 	if err != nil {
 		return nil, err
 	}
@@ -126,20 +141,20 @@ func (q *Queries) GetPluralStudents(ctx context.Context, memberIds []uuid.UUID) 
 
 const getPluralStudentsUseNumberedPaginate = `-- name: GetPluralStudentsUseNumberedPaginate :many
 SELECT m_students_pkey, student_id, member_id FROM m_students
-WHERE member_id = ANY($3::uuid[])
+WHERE student_id = ANY($3::uuid[])
 ORDER BY
 	m_students_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralStudentsUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	MemberIds []uuid.UUID `json:"member_ids"`
+	Limit      int32       `json:"limit"`
+	Offset     int32       `json:"offset"`
+	StudentIds []uuid.UUID `json:"student_ids"`
 }
 
 func (q *Queries) GetPluralStudentsUseNumberedPaginate(ctx context.Context, arg GetPluralStudentsUseNumberedPaginateParams) ([]Student, error) {
-	rows, err := q.db.Query(ctx, getPluralStudentsUseNumberedPaginate, arg.Limit, arg.Offset, arg.MemberIds)
+	rows, err := q.db.Query(ctx, getPluralStudentsUseNumberedPaginate, arg.Limit, arg.Offset, arg.StudentIds)
 	if err != nil {
 		return nil, err
 	}
@@ -159,22 +174,40 @@ func (q *Queries) GetPluralStudentsUseNumberedPaginate(ctx context.Context, arg 
 }
 
 const getPluralStudentsWithMember = `-- name: GetPluralStudentsWithMember :many
-SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
+SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
+t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
+t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_students
 LEFT JOIN m_members ON m_students.member_id = m_members.member_id
-WHERE member_id = ANY($1::uuid[])
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE student_id = ANY($1::uuid[])
 ORDER BY
 	m_students_pkey ASC
 `
 
 type GetPluralStudentsWithMemberRow struct {
-	MStudentsPkey pgtype.Int8 `json:"m_students_pkey"`
-	StudentID     uuid.UUID   `json:"student_id"`
-	MemberID      uuid.UUID   `json:"member_id"`
-	Member        Member      `json:"member"`
+	MStudentsPkey                      pgtype.Int8   `json:"m_students_pkey"`
+	StudentID                          uuid.UUID     `json:"student_id"`
+	MemberID                           uuid.UUID     `json:"member_id"`
+	MemberName                         pgtype.Text   `json:"member_name"`
+	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
+	MemberLastName                     pgtype.Text   `json:"member_last_name"`
+	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
+	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
+	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
+	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
+	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
+	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
+	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
+	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
 }
 
-func (q *Queries) GetPluralStudentsWithMember(ctx context.Context, memberIds []uuid.UUID) ([]GetPluralStudentsWithMemberRow, error) {
-	rows, err := q.db.Query(ctx, getPluralStudentsWithMember, memberIds)
+func (q *Queries) GetPluralStudentsWithMember(ctx context.Context, studentIds []uuid.UUID) ([]GetPluralStudentsWithMemberRow, error) {
+	rows, err := q.db.Query(ctx, getPluralStudentsWithMember, studentIds)
 	if err != nil {
 		return nil, err
 	}
@@ -186,22 +219,19 @@ func (q *Queries) GetPluralStudentsWithMember(ctx context.Context, memberIds []u
 			&i.MStudentsPkey,
 			&i.StudentID,
 			&i.MemberID,
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.FirstName,
-			&i.Member.LastName,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
+			&i.MemberName,
+			&i.MemberFirstName,
+			&i.MemberLastName,
+			&i.MemberEmail,
+			&i.MemberProfileImageID,
+			&i.MemberProfileImageHeight,
+			&i.MemberProfileImageWidth,
+			&i.MemberProfileImageAttachableItemID,
+			&i.MemberProfileImageOwnerID,
+			&i.MemberProfileImageFromOuter,
+			&i.MemberProfileImageUrl,
+			&i.MemberProfileImageSize,
+			&i.MemberProfileImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}
@@ -214,29 +244,47 @@ func (q *Queries) GetPluralStudentsWithMember(ctx context.Context, memberIds []u
 }
 
 const getPluralStudentsWithMemberUseNumberedPaginate = `-- name: GetPluralStudentsWithMemberUseNumberedPaginate :many
-SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
+SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
+t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
+t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_students
 LEFT JOIN m_members ON m_students.member_id = m_members.member_id
-WHERE member_id = ANY($3::uuid[])
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE student_id = ANY($3::uuid[])
 ORDER BY
 	m_students_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralStudentsWithMemberUseNumberedPaginateParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	MemberIds []uuid.UUID `json:"member_ids"`
+	Limit      int32       `json:"limit"`
+	Offset     int32       `json:"offset"`
+	StudentIds []uuid.UUID `json:"student_ids"`
 }
 
 type GetPluralStudentsWithMemberUseNumberedPaginateRow struct {
-	MStudentsPkey pgtype.Int8 `json:"m_students_pkey"`
-	StudentID     uuid.UUID   `json:"student_id"`
-	MemberID      uuid.UUID   `json:"member_id"`
-	Member        Member      `json:"member"`
+	MStudentsPkey                      pgtype.Int8   `json:"m_students_pkey"`
+	StudentID                          uuid.UUID     `json:"student_id"`
+	MemberID                           uuid.UUID     `json:"member_id"`
+	MemberName                         pgtype.Text   `json:"member_name"`
+	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
+	MemberLastName                     pgtype.Text   `json:"member_last_name"`
+	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
+	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
+	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
+	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
+	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
+	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
+	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
+	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
 }
 
 func (q *Queries) GetPluralStudentsWithMemberUseNumberedPaginate(ctx context.Context, arg GetPluralStudentsWithMemberUseNumberedPaginateParams) ([]GetPluralStudentsWithMemberUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralStudentsWithMemberUseNumberedPaginate, arg.Limit, arg.Offset, arg.MemberIds)
+	rows, err := q.db.Query(ctx, getPluralStudentsWithMemberUseNumberedPaginate, arg.Limit, arg.Offset, arg.StudentIds)
 	if err != nil {
 		return nil, err
 	}
@@ -248,22 +296,19 @@ func (q *Queries) GetPluralStudentsWithMemberUseNumberedPaginate(ctx context.Con
 			&i.MStudentsPkey,
 			&i.StudentID,
 			&i.MemberID,
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.FirstName,
-			&i.Member.LastName,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
+			&i.MemberName,
+			&i.MemberFirstName,
+			&i.MemberLastName,
+			&i.MemberEmail,
+			&i.MemberProfileImageID,
+			&i.MemberProfileImageHeight,
+			&i.MemberProfileImageWidth,
+			&i.MemberProfileImageAttachableItemID,
+			&i.MemberProfileImageOwnerID,
+			&i.MemberProfileImageFromOuter,
+			&i.MemberProfileImageUrl,
+			&i.MemberProfileImageSize,
+			&i.MemberProfileImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}
@@ -374,9 +419,84 @@ func (q *Queries) GetStudentsUseNumberedPaginate(ctx context.Context, arg GetStu
 	return items, nil
 }
 
-const getStudentsWithMemberUseKeysetPaginate = `-- name: GetStudentsWithMemberUseKeysetPaginate :many
-SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
+const getStudentsWithMember = `-- name: GetStudentsWithMember :many
+SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
+t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
+t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_students
 LEFT JOIN m_members ON m_students.member_id = m_members.member_id
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+ORDER BY
+	m_students_pkey ASC
+`
+
+type GetStudentsWithMemberRow struct {
+	MStudentsPkey                      pgtype.Int8   `json:"m_students_pkey"`
+	StudentID                          uuid.UUID     `json:"student_id"`
+	MemberID                           uuid.UUID     `json:"member_id"`
+	MemberName                         pgtype.Text   `json:"member_name"`
+	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
+	MemberLastName                     pgtype.Text   `json:"member_last_name"`
+	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
+	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
+	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
+	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
+	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
+	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
+	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
+	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
+}
+
+func (q *Queries) GetStudentsWithMember(ctx context.Context) ([]GetStudentsWithMemberRow, error) {
+	rows, err := q.db.Query(ctx, getStudentsWithMember)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetStudentsWithMemberRow{}
+	for rows.Next() {
+		var i GetStudentsWithMemberRow
+		if err := rows.Scan(
+			&i.MStudentsPkey,
+			&i.StudentID,
+			&i.MemberID,
+			&i.MemberName,
+			&i.MemberFirstName,
+			&i.MemberLastName,
+			&i.MemberEmail,
+			&i.MemberProfileImageID,
+			&i.MemberProfileImageHeight,
+			&i.MemberProfileImageWidth,
+			&i.MemberProfileImageAttachableItemID,
+			&i.MemberProfileImageOwnerID,
+			&i.MemberProfileImageFromOuter,
+			&i.MemberProfileImageUrl,
+			&i.MemberProfileImageSize,
+			&i.MemberProfileImageMimeTypeID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getStudentsWithMemberUseKeysetPaginate = `-- name: GetStudentsWithMemberUseKeysetPaginate :many
+SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
+t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
+t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_students
+LEFT JOIN m_members ON m_students.member_id = m_members.member_id
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
 	CASE $2::text
 		WHEN 'next' THEN
@@ -397,10 +517,22 @@ type GetStudentsWithMemberUseKeysetPaginateParams struct {
 }
 
 type GetStudentsWithMemberUseKeysetPaginateRow struct {
-	MStudentsPkey pgtype.Int8 `json:"m_students_pkey"`
-	StudentID     uuid.UUID   `json:"student_id"`
-	MemberID      uuid.UUID   `json:"member_id"`
-	Member        Member      `json:"member"`
+	MStudentsPkey                      pgtype.Int8   `json:"m_students_pkey"`
+	StudentID                          uuid.UUID     `json:"student_id"`
+	MemberID                           uuid.UUID     `json:"member_id"`
+	MemberName                         pgtype.Text   `json:"member_name"`
+	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
+	MemberLastName                     pgtype.Text   `json:"member_last_name"`
+	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
+	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
+	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
+	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
+	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
+	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
+	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
+	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
 }
 
 func (q *Queries) GetStudentsWithMemberUseKeysetPaginate(ctx context.Context, arg GetStudentsWithMemberUseKeysetPaginateParams) ([]GetStudentsWithMemberUseKeysetPaginateRow, error) {
@@ -416,22 +548,19 @@ func (q *Queries) GetStudentsWithMemberUseKeysetPaginate(ctx context.Context, ar
 			&i.MStudentsPkey,
 			&i.StudentID,
 			&i.MemberID,
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.FirstName,
-			&i.Member.LastName,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
+			&i.MemberName,
+			&i.MemberFirstName,
+			&i.MemberLastName,
+			&i.MemberEmail,
+			&i.MemberProfileImageID,
+			&i.MemberProfileImageHeight,
+			&i.MemberProfileImageWidth,
+			&i.MemberProfileImageAttachableItemID,
+			&i.MemberProfileImageOwnerID,
+			&i.MemberProfileImageFromOuter,
+			&i.MemberProfileImageUrl,
+			&i.MemberProfileImageSize,
+			&i.MemberProfileImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}
@@ -444,8 +573,14 @@ func (q *Queries) GetStudentsWithMemberUseKeysetPaginate(ctx context.Context, ar
 }
 
 const getStudentsWithMemberUseNumberedPaginate = `-- name: GetStudentsWithMemberUseNumberedPaginate :many
-SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_students
+SELECT m_students.m_students_pkey, m_students.student_id, m_students.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
+t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
+t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_students
 LEFT JOIN m_members ON m_students.member_id = m_members.member_id
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 ORDER BY
 	m_students_pkey ASC
 LIMIT $1 OFFSET $2
@@ -457,10 +592,22 @@ type GetStudentsWithMemberUseNumberedPaginateParams struct {
 }
 
 type GetStudentsWithMemberUseNumberedPaginateRow struct {
-	MStudentsPkey pgtype.Int8 `json:"m_students_pkey"`
-	StudentID     uuid.UUID   `json:"student_id"`
-	MemberID      uuid.UUID   `json:"member_id"`
-	Member        Member      `json:"member"`
+	MStudentsPkey                      pgtype.Int8   `json:"m_students_pkey"`
+	StudentID                          uuid.UUID     `json:"student_id"`
+	MemberID                           uuid.UUID     `json:"member_id"`
+	MemberName                         pgtype.Text   `json:"member_name"`
+	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
+	MemberLastName                     pgtype.Text   `json:"member_last_name"`
+	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
+	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
+	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
+	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
+	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
+	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
+	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
+	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
 }
 
 func (q *Queries) GetStudentsWithMemberUseNumberedPaginate(ctx context.Context, arg GetStudentsWithMemberUseNumberedPaginateParams) ([]GetStudentsWithMemberUseNumberedPaginateRow, error) {
@@ -476,22 +623,19 @@ func (q *Queries) GetStudentsWithMemberUseNumberedPaginate(ctx context.Context, 
 			&i.MStudentsPkey,
 			&i.StudentID,
 			&i.MemberID,
-			&i.Member.MMembersPkey,
-			&i.Member.MemberID,
-			&i.Member.LoginID,
-			&i.Member.Password,
-			&i.Member.Email,
-			&i.Member.Name,
-			&i.Member.FirstName,
-			&i.Member.LastName,
-			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageID,
-			&i.Member.GradeID,
-			&i.Member.GroupID,
-			&i.Member.PersonalOrganizationID,
-			&i.Member.RoleID,
-			&i.Member.CreatedAt,
-			&i.Member.UpdatedAt,
+			&i.MemberName,
+			&i.MemberFirstName,
+			&i.MemberLastName,
+			&i.MemberEmail,
+			&i.MemberProfileImageID,
+			&i.MemberProfileImageHeight,
+			&i.MemberProfileImageWidth,
+			&i.MemberProfileImageAttachableItemID,
+			&i.MemberProfileImageOwnerID,
+			&i.MemberProfileImageFromOuter,
+			&i.MemberProfileImageUrl,
+			&i.MemberProfileImageSize,
+			&i.MemberProfileImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}

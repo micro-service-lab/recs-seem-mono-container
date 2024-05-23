@@ -14,9 +14,10 @@ DELETE FROM t_files WHERE file_id = ANY(@file_ids::uuid[]);
 SELECT * FROM t_files WHERE file_id = $1;
 
 -- name: FindFileByIDWithAttachableItem :one
-SELECT sqlc.embed(t_files), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_files
+SELECT t_files.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id
+FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE file_id = $1;
 
 -- name: GetFiles :many
@@ -46,36 +47,39 @@ LIMIT $1;
 
 -- name: GetPluralFiles :many
 SELECT * FROM t_files
-WHERE attachable_item_id = ANY(@attachable_item_ids::uuid[])
+WHERE file_id = ANY(@file_ids::uuid[])
 ORDER BY
 	t_files_pkey ASC;
 
 -- name: GetPluralFilesUseNumberedPaginate :many
 SELECT * FROM t_files
-WHERE attachable_item_id = ANY(@attachable_item_ids::uuid[])
+WHERE file_id = ANY(@file_ids::uuid[])
 ORDER BY
 	t_files_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetFilesWithAttachableItem :many
-SELECT sqlc.embed(t_files), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_files
+SELECT t_files.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id
+FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
 	t_files_pkey ASC;
 
 -- name: GetFilesWithAttachableItemUseNumberedPaginate :many
-SELECT sqlc.embed(t_files), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_files
+SELECT t_files.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id
+FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
 	t_files_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetFilesWithAttachableItemUseKeysetPaginate :many
-SELECT sqlc.embed(t_files), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_files
+SELECT t_files.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id
+FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
@@ -89,18 +93,20 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralFilesWithAttachableItem :many
-SELECT sqlc.embed(t_files), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_files
+SELECT t_files.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id
+FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
-WHERE attachable_item_id = ANY(@attachable_item_ids::uuid[])
+WHERE file_id = ANY(@file_ids::uuid[])
 ORDER BY
 	t_files_pkey ASC;
 
 -- name: GetPluralFilesWithAttachableItemUseNumberedPaginate :many
-SELECT sqlc.embed(t_files), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_files
+SELECT t_files.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id
+FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
-WHERE attachable_item_id = ANY(@attachable_item_ids::uuid[])
+WHERE file_id = ANY(@file_ids::uuid[])
 ORDER BY
 	t_files_pkey ASC
 LIMIT $1 OFFSET $2;

@@ -14,9 +14,9 @@ DELETE FROM t_images WHERE image_id = ANY(@image_ids::uuid[]);
 SELECT * FROM t_images WHERE image_id = $1;
 
 -- name: FindImageByIDWithAttachableItem :one
-SELECT sqlc.embed(t_images), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_images
+SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE image_id = $1;
 
 -- name: GetImages :many
@@ -46,36 +46,36 @@ LIMIT $1;
 
 -- name: GetPluralImages :many
 SELECT * FROM t_images
-WHERE attachable_item_id = ANY(@attachable_item_ids::uuid[])
+WHERE image_id = ANY(@image_ids::uuid[])
 ORDER BY
 	t_images_pkey ASC;
 
 -- name: GetPluralImagesUseNumberedPaginate :many
 SELECT * FROM t_images
-WHERE attachable_item_id = ANY(@attachable_item_ids::uuid[])
+WHERE image_id = ANY(@image_ids::uuid[])
 ORDER BY
 	t_images_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetImagesWithAttachableItem :many
-SELECT sqlc.embed(t_images), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_images
+SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
 	t_images_pkey ASC;
 
 -- name: GetImagesWithAttachableItemUseNumberedPaginate :many
-SELECT sqlc.embed(t_images), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_images
+SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 ORDER BY
 	t_images_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetImagesWithAttachableItemUseKeysetPaginate :many
-SELECT sqlc.embed(t_images), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_images
+SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
@@ -89,18 +89,18 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralImagesWithAttachableItem :many
-SELECT sqlc.embed(t_images), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_images
+SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
-WHERE attachable_item_id = ANY(@attachable_item_ids::uuid[])
+WHERE image_id = ANY(@image_ids::uuid[])
 ORDER BY
 	t_images_pkey ASC;
 
 -- name: GetPluralImagesWithAttachableItemUseNumberedPaginate :many
-SELECT sqlc.embed(t_images), sqlc.embed(t_attachable_items), sqlc.embed(m_mime_types) FROM t_images
+SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
-WHERE attachable_item_id = ANY(@attachable_item_ids::uuid[])
+WHERE image_id = ANY(@image_ids::uuid[])
 ORDER BY
 	t_images_pkey ASC
 LIMIT $1 OFFSET $2;

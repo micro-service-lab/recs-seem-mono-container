@@ -46,4 +46,8 @@ type Store interface {
 	Group
 	Grade
 	Member
+	Student
+	Professor
+	File
+	Image
 }

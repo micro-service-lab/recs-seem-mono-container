@@ -96,6 +96,18 @@ var _ Store = &StoreMock{}
 //			CountEventTypesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereEventTypeParam) (int64, error) {
 //				panic("mock out the CountEventTypesWithSd method")
 //			},
+//			CountGradesFunc: func(ctx context.Context, where parameter.WhereGradeParam) (int64, error) {
+//				panic("mock out the CountGrades method")
+//			},
+//			CountGradesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereGradeParam) (int64, error) {
+//				panic("mock out the CountGradesWithSd method")
+//			},
+//			CountGroupsFunc: func(ctx context.Context, where parameter.WhereGroupParam) (int64, error) {
+//				panic("mock out the CountGroups method")
+//			},
+//			CountGroupsWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereGroupParam) (int64, error) {
+//				panic("mock out the CountGroupsWithSd method")
+//			},
 //			CountMembersOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereMemberOnChatRoomParam) (int64, error) {
 //				panic("mock out the CountMembersOnChatRoom method")
 //			},
@@ -233,6 +245,30 @@ var _ Store = &StoreMock{}
 //			},
 //			CreateEventTypesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateEventTypeParam) (int64, error) {
 //				panic("mock out the CreateEventTypesWithSd method")
+//			},
+//			CreateGradeFunc: func(ctx context.Context, param parameter.CreateGradeParam) (entity.Grade, error) {
+//				panic("mock out the CreateGrade method")
+//			},
+//			CreateGradeWithSdFunc: func(ctx context.Context, sd Sd, param parameter.CreateGradeParam) (entity.Grade, error) {
+//				panic("mock out the CreateGradeWithSd method")
+//			},
+//			CreateGradesFunc: func(ctx context.Context, params []parameter.CreateGradeParam) (int64, error) {
+//				panic("mock out the CreateGrades method")
+//			},
+//			CreateGradesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateGradeParam) (int64, error) {
+//				panic("mock out the CreateGradesWithSd method")
+//			},
+//			CreateGroupFunc: func(ctx context.Context, param parameter.CreateGroupParam) (entity.Group, error) {
+//				panic("mock out the CreateGroup method")
+//			},
+//			CreateGroupWithSdFunc: func(ctx context.Context, sd Sd, param parameter.CreateGroupParam) (entity.Group, error) {
+//				panic("mock out the CreateGroupWithSd method")
+//			},
+//			CreateGroupsFunc: func(ctx context.Context, params []parameter.CreateGroupParam) (int64, error) {
+//				panic("mock out the CreateGroups method")
+//			},
+//			CreateGroupsWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateGroupParam) (int64, error) {
+//				panic("mock out the CreateGroupsWithSd method")
 //			},
 //			CreateMimeTypeFunc: func(ctx context.Context, param parameter.CreateMimeTypeParam) (entity.MimeType, error) {
 //				panic("mock out the CreateMimeType method")
@@ -383,6 +419,18 @@ var _ Store = &StoreMock{}
 //			},
 //			DeleteEventTypeWithSdFunc: func(ctx context.Context, sd Sd, eventTypeID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteEventTypeWithSd method")
+//			},
+//			DeleteGradeFunc: func(ctx context.Context, gradeID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteGrade method")
+//			},
+//			DeleteGradeWithSdFunc: func(ctx context.Context, sd Sd, gradeID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteGradeWithSd method")
+//			},
+//			DeleteGroupFunc: func(ctx context.Context, groupID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteGroup method")
+//			},
+//			DeleteGroupWithSdFunc: func(ctx context.Context, sd Sd, groupID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteGroupWithSd method")
 //			},
 //			DeleteMimeTypeFunc: func(ctx context.Context, mimeTypeID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteMimeType method")
@@ -582,6 +630,30 @@ var _ Store = &StoreMock{}
 //			FindEventTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.EventType, error) {
 //				panic("mock out the FindEventTypeByKeyWithSd method")
 //			},
+//			FindGradeByIDFunc: func(ctx context.Context, gradeID uuid.UUID) (entity.Grade, error) {
+//				panic("mock out the FindGradeByID method")
+//			},
+//			FindGradeByIDWithSdFunc: func(ctx context.Context, sd Sd, gradeID uuid.UUID) (entity.Grade, error) {
+//				panic("mock out the FindGradeByIDWithSd method")
+//			},
+//			FindGradeWithOrganizationFunc: func(ctx context.Context, gradeID uuid.UUID) (entity.GradeWithOrganization, error) {
+//				panic("mock out the FindGradeWithOrganization method")
+//			},
+//			FindGradeWithOrganizationWithSdFunc: func(ctx context.Context, sd Sd, gradeID uuid.UUID) (entity.GradeWithOrganization, error) {
+//				panic("mock out the FindGradeWithOrganizationWithSd method")
+//			},
+//			FindGroupByIDFunc: func(ctx context.Context, groupID uuid.UUID) (entity.Group, error) {
+//				panic("mock out the FindGroupByID method")
+//			},
+//			FindGroupByIDWithSdFunc: func(ctx context.Context, sd Sd, groupID uuid.UUID) (entity.Group, error) {
+//				panic("mock out the FindGroupByIDWithSd method")
+//			},
+//			FindGroupWithOrganizationFunc: func(ctx context.Context, groupID uuid.UUID) (entity.GroupWithOrganization, error) {
+//				panic("mock out the FindGroupWithOrganization method")
+//			},
+//			FindGroupWithOrganizationWithSdFunc: func(ctx context.Context, sd Sd, groupID uuid.UUID) (entity.GroupWithOrganization, error) {
+//				panic("mock out the FindGroupWithOrganizationWithSd method")
+//			},
 //			FindMimeTypeByIDFunc: func(ctx context.Context, mimeTypeID uuid.UUID) (entity.MimeType, error) {
 //				panic("mock out the FindMimeTypeByID method")
 //			},
@@ -768,6 +840,30 @@ var _ Store = &StoreMock{}
 //			GetEventTypesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereEventTypeParam, order parameter.EventTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.EventType], error) {
 //				panic("mock out the GetEventTypesWithSd method")
 //			},
+//			GetGradesFunc: func(ctx context.Context, where parameter.WhereGradeParam, order parameter.GradeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Grade], error) {
+//				panic("mock out the GetGrades method")
+//			},
+//			GetGradesWithOrganizationFunc: func(ctx context.Context, where parameter.WhereGradeParam, order parameter.GradeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.GradeWithOrganization], error) {
+//				panic("mock out the GetGradesWithOrganization method")
+//			},
+//			GetGradesWithOrganizationWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereGradeParam, order parameter.GradeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.GradeWithOrganization], error) {
+//				panic("mock out the GetGradesWithOrganizationWithSd method")
+//			},
+//			GetGradesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereGradeParam, order parameter.GradeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Grade], error) {
+//				panic("mock out the GetGradesWithSd method")
+//			},
+//			GetGroupsFunc: func(ctx context.Context, where parameter.WhereGroupParam, order parameter.GroupOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Group], error) {
+//				panic("mock out the GetGroups method")
+//			},
+//			GetGroupsWithOrganizationFunc: func(ctx context.Context, where parameter.WhereGroupParam, order parameter.GroupOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.GroupWithOrganization], error) {
+//				panic("mock out the GetGroupsWithOrganization method")
+//			},
+//			GetGroupsWithOrganizationWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereGroupParam, order parameter.GroupOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.GroupWithOrganization], error) {
+//				panic("mock out the GetGroupsWithOrganizationWithSd method")
+//			},
+//			GetGroupsWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereGroupParam, order parameter.GroupOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Group], error) {
+//				panic("mock out the GetGroupsWithSd method")
+//			},
 //			GetMembersOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereMemberOnChatRoomParam, order parameter.MemberOnChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoom], error) {
 //				panic("mock out the GetMembersOnChatRoom method")
 //			},
@@ -869,6 +965,30 @@ var _ Store = &StoreMock{}
 //			},
 //			GetPluralEventTypesWithSdFunc: func(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID, order parameter.EventTypeOrderMethod, np NumberedPaginationParam) (ListResult[entity.EventType], error) {
 //				panic("mock out the GetPluralEventTypesWithSd method")
+//			},
+//			GetPluralGradesFunc: func(ctx context.Context, gradeIDs []uuid.UUID, order parameter.GradeOrderMethod, np NumberedPaginationParam) (ListResult[entity.Grade], error) {
+//				panic("mock out the GetPluralGrades method")
+//			},
+//			GetPluralGradesWithOrganizationFunc: func(ctx context.Context, gradeIDs []uuid.UUID, order parameter.GradeOrderMethod, np NumberedPaginationParam) (ListResult[entity.GradeWithOrganization], error) {
+//				panic("mock out the GetPluralGradesWithOrganization method")
+//			},
+//			GetPluralGradesWithOrganizationWithSdFunc: func(ctx context.Context, sd Sd, gradeIDs []uuid.UUID, order parameter.GradeOrderMethod, np NumberedPaginationParam) (ListResult[entity.GradeWithOrganization], error) {
+//				panic("mock out the GetPluralGradesWithOrganizationWithSd method")
+//			},
+//			GetPluralGradesWithSdFunc: func(ctx context.Context, sd Sd, gradeIDs []uuid.UUID, order parameter.GradeOrderMethod, np NumberedPaginationParam) (ListResult[entity.Grade], error) {
+//				panic("mock out the GetPluralGradesWithSd method")
+//			},
+//			GetPluralGroupsFunc: func(ctx context.Context, groupIDs []uuid.UUID, order parameter.GroupOrderMethod, np NumberedPaginationParam) (ListResult[entity.Group], error) {
+//				panic("mock out the GetPluralGroups method")
+//			},
+//			GetPluralGroupsWithOrganizationFunc: func(ctx context.Context, groupIDs []uuid.UUID, order parameter.GroupOrderMethod, np NumberedPaginationParam) (ListResult[entity.GroupWithOrganization], error) {
+//				panic("mock out the GetPluralGroupsWithOrganization method")
+//			},
+//			GetPluralGroupsWithOrganizationWithSdFunc: func(ctx context.Context, sd Sd, groupIDs []uuid.UUID, order parameter.GroupOrderMethod, np NumberedPaginationParam) (ListResult[entity.GroupWithOrganization], error) {
+//				panic("mock out the GetPluralGroupsWithOrganizationWithSd method")
+//			},
+//			GetPluralGroupsWithSdFunc: func(ctx context.Context, sd Sd, groupIDs []uuid.UUID, order parameter.GroupOrderMethod, np NumberedPaginationParam) (ListResult[entity.Group], error) {
+//				panic("mock out the GetPluralGroupsWithSd method")
 //			},
 //			GetPluralMembersOnChatRoomFunc: func(ctx context.Context, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoom], error) {
 //				panic("mock out the GetPluralMembersOnChatRoom method")
@@ -1019,6 +1139,18 @@ var _ Store = &StoreMock{}
 //			},
 //			PluralDeleteEventTypesWithSdFunc: func(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteEventTypesWithSd method")
+//			},
+//			PluralDeleteGradesFunc: func(ctx context.Context, gradeIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteGrades method")
+//			},
+//			PluralDeleteGradesWithSdFunc: func(ctx context.Context, sd Sd, gradeIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteGradesWithSd method")
+//			},
+//			PluralDeleteGroupsFunc: func(ctx context.Context, groupIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteGroups method")
+//			},
+//			PluralDeleteGroupsWithSdFunc: func(ctx context.Context, sd Sd, groupIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteGroupsWithSd method")
 //			},
 //			PluralDeleteMimeTypesFunc: func(ctx context.Context, mimeTypeIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteMimeTypes method")
@@ -1297,6 +1429,18 @@ type StoreMock struct {
 	// CountEventTypesWithSdFunc mocks the CountEventTypesWithSd method.
 	CountEventTypesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereEventTypeParam) (int64, error)
 
+	// CountGradesFunc mocks the CountGrades method.
+	CountGradesFunc func(ctx context.Context, where parameter.WhereGradeParam) (int64, error)
+
+	// CountGradesWithSdFunc mocks the CountGradesWithSd method.
+	CountGradesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereGradeParam) (int64, error)
+
+	// CountGroupsFunc mocks the CountGroups method.
+	CountGroupsFunc func(ctx context.Context, where parameter.WhereGroupParam) (int64, error)
+
+	// CountGroupsWithSdFunc mocks the CountGroupsWithSd method.
+	CountGroupsWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereGroupParam) (int64, error)
+
 	// CountMembersOnChatRoomFunc mocks the CountMembersOnChatRoom method.
 	CountMembersOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereMemberOnChatRoomParam) (int64, error)
 
@@ -1434,6 +1578,30 @@ type StoreMock struct {
 
 	// CreateEventTypesWithSdFunc mocks the CreateEventTypesWithSd method.
 	CreateEventTypesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateEventTypeParam) (int64, error)
+
+	// CreateGradeFunc mocks the CreateGrade method.
+	CreateGradeFunc func(ctx context.Context, param parameter.CreateGradeParam) (entity.Grade, error)
+
+	// CreateGradeWithSdFunc mocks the CreateGradeWithSd method.
+	CreateGradeWithSdFunc func(ctx context.Context, sd Sd, param parameter.CreateGradeParam) (entity.Grade, error)
+
+	// CreateGradesFunc mocks the CreateGrades method.
+	CreateGradesFunc func(ctx context.Context, params []parameter.CreateGradeParam) (int64, error)
+
+	// CreateGradesWithSdFunc mocks the CreateGradesWithSd method.
+	CreateGradesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateGradeParam) (int64, error)
+
+	// CreateGroupFunc mocks the CreateGroup method.
+	CreateGroupFunc func(ctx context.Context, param parameter.CreateGroupParam) (entity.Group, error)
+
+	// CreateGroupWithSdFunc mocks the CreateGroupWithSd method.
+	CreateGroupWithSdFunc func(ctx context.Context, sd Sd, param parameter.CreateGroupParam) (entity.Group, error)
+
+	// CreateGroupsFunc mocks the CreateGroups method.
+	CreateGroupsFunc func(ctx context.Context, params []parameter.CreateGroupParam) (int64, error)
+
+	// CreateGroupsWithSdFunc mocks the CreateGroupsWithSd method.
+	CreateGroupsWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateGroupParam) (int64, error)
 
 	// CreateMimeTypeFunc mocks the CreateMimeType method.
 	CreateMimeTypeFunc func(ctx context.Context, param parameter.CreateMimeTypeParam) (entity.MimeType, error)
@@ -1584,6 +1752,18 @@ type StoreMock struct {
 
 	// DeleteEventTypeWithSdFunc mocks the DeleteEventTypeWithSd method.
 	DeleteEventTypeWithSdFunc func(ctx context.Context, sd Sd, eventTypeID uuid.UUID) (int64, error)
+
+	// DeleteGradeFunc mocks the DeleteGrade method.
+	DeleteGradeFunc func(ctx context.Context, gradeID uuid.UUID) (int64, error)
+
+	// DeleteGradeWithSdFunc mocks the DeleteGradeWithSd method.
+	DeleteGradeWithSdFunc func(ctx context.Context, sd Sd, gradeID uuid.UUID) (int64, error)
+
+	// DeleteGroupFunc mocks the DeleteGroup method.
+	DeleteGroupFunc func(ctx context.Context, groupID uuid.UUID) (int64, error)
+
+	// DeleteGroupWithSdFunc mocks the DeleteGroupWithSd method.
+	DeleteGroupWithSdFunc func(ctx context.Context, sd Sd, groupID uuid.UUID) (int64, error)
 
 	// DeleteMimeTypeFunc mocks the DeleteMimeType method.
 	DeleteMimeTypeFunc func(ctx context.Context, mimeTypeID uuid.UUID) (int64, error)
@@ -1783,6 +1963,30 @@ type StoreMock struct {
 	// FindEventTypeByKeyWithSdFunc mocks the FindEventTypeByKeyWithSd method.
 	FindEventTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.EventType, error)
 
+	// FindGradeByIDFunc mocks the FindGradeByID method.
+	FindGradeByIDFunc func(ctx context.Context, gradeID uuid.UUID) (entity.Grade, error)
+
+	// FindGradeByIDWithSdFunc mocks the FindGradeByIDWithSd method.
+	FindGradeByIDWithSdFunc func(ctx context.Context, sd Sd, gradeID uuid.UUID) (entity.Grade, error)
+
+	// FindGradeWithOrganizationFunc mocks the FindGradeWithOrganization method.
+	FindGradeWithOrganizationFunc func(ctx context.Context, gradeID uuid.UUID) (entity.GradeWithOrganization, error)
+
+	// FindGradeWithOrganizationWithSdFunc mocks the FindGradeWithOrganizationWithSd method.
+	FindGradeWithOrganizationWithSdFunc func(ctx context.Context, sd Sd, gradeID uuid.UUID) (entity.GradeWithOrganization, error)
+
+	// FindGroupByIDFunc mocks the FindGroupByID method.
+	FindGroupByIDFunc func(ctx context.Context, groupID uuid.UUID) (entity.Group, error)
+
+	// FindGroupByIDWithSdFunc mocks the FindGroupByIDWithSd method.
+	FindGroupByIDWithSdFunc func(ctx context.Context, sd Sd, groupID uuid.UUID) (entity.Group, error)
+
+	// FindGroupWithOrganizationFunc mocks the FindGroupWithOrganization method.
+	FindGroupWithOrganizationFunc func(ctx context.Context, groupID uuid.UUID) (entity.GroupWithOrganization, error)
+
+	// FindGroupWithOrganizationWithSdFunc mocks the FindGroupWithOrganizationWithSd method.
+	FindGroupWithOrganizationWithSdFunc func(ctx context.Context, sd Sd, groupID uuid.UUID) (entity.GroupWithOrganization, error)
+
 	// FindMimeTypeByIDFunc mocks the FindMimeTypeByID method.
 	FindMimeTypeByIDFunc func(ctx context.Context, mimeTypeID uuid.UUID) (entity.MimeType, error)
 
@@ -1969,6 +2173,30 @@ type StoreMock struct {
 	// GetEventTypesWithSdFunc mocks the GetEventTypesWithSd method.
 	GetEventTypesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereEventTypeParam, order parameter.EventTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.EventType], error)
 
+	// GetGradesFunc mocks the GetGrades method.
+	GetGradesFunc func(ctx context.Context, where parameter.WhereGradeParam, order parameter.GradeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Grade], error)
+
+	// GetGradesWithOrganizationFunc mocks the GetGradesWithOrganization method.
+	GetGradesWithOrganizationFunc func(ctx context.Context, where parameter.WhereGradeParam, order parameter.GradeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.GradeWithOrganization], error)
+
+	// GetGradesWithOrganizationWithSdFunc mocks the GetGradesWithOrganizationWithSd method.
+	GetGradesWithOrganizationWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereGradeParam, order parameter.GradeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.GradeWithOrganization], error)
+
+	// GetGradesWithSdFunc mocks the GetGradesWithSd method.
+	GetGradesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereGradeParam, order parameter.GradeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Grade], error)
+
+	// GetGroupsFunc mocks the GetGroups method.
+	GetGroupsFunc func(ctx context.Context, where parameter.WhereGroupParam, order parameter.GroupOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Group], error)
+
+	// GetGroupsWithOrganizationFunc mocks the GetGroupsWithOrganization method.
+	GetGroupsWithOrganizationFunc func(ctx context.Context, where parameter.WhereGroupParam, order parameter.GroupOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.GroupWithOrganization], error)
+
+	// GetGroupsWithOrganizationWithSdFunc mocks the GetGroupsWithOrganizationWithSd method.
+	GetGroupsWithOrganizationWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereGroupParam, order parameter.GroupOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.GroupWithOrganization], error)
+
+	// GetGroupsWithSdFunc mocks the GetGroupsWithSd method.
+	GetGroupsWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereGroupParam, order parameter.GroupOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Group], error)
+
 	// GetMembersOnChatRoomFunc mocks the GetMembersOnChatRoom method.
 	GetMembersOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereMemberOnChatRoomParam, order parameter.MemberOnChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoom], error)
 
@@ -2070,6 +2298,30 @@ type StoreMock struct {
 
 	// GetPluralEventTypesWithSdFunc mocks the GetPluralEventTypesWithSd method.
 	GetPluralEventTypesWithSdFunc func(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID, order parameter.EventTypeOrderMethod, np NumberedPaginationParam) (ListResult[entity.EventType], error)
+
+	// GetPluralGradesFunc mocks the GetPluralGrades method.
+	GetPluralGradesFunc func(ctx context.Context, gradeIDs []uuid.UUID, order parameter.GradeOrderMethod, np NumberedPaginationParam) (ListResult[entity.Grade], error)
+
+	// GetPluralGradesWithOrganizationFunc mocks the GetPluralGradesWithOrganization method.
+	GetPluralGradesWithOrganizationFunc func(ctx context.Context, gradeIDs []uuid.UUID, order parameter.GradeOrderMethod, np NumberedPaginationParam) (ListResult[entity.GradeWithOrganization], error)
+
+	// GetPluralGradesWithOrganizationWithSdFunc mocks the GetPluralGradesWithOrganizationWithSd method.
+	GetPluralGradesWithOrganizationWithSdFunc func(ctx context.Context, sd Sd, gradeIDs []uuid.UUID, order parameter.GradeOrderMethod, np NumberedPaginationParam) (ListResult[entity.GradeWithOrganization], error)
+
+	// GetPluralGradesWithSdFunc mocks the GetPluralGradesWithSd method.
+	GetPluralGradesWithSdFunc func(ctx context.Context, sd Sd, gradeIDs []uuid.UUID, order parameter.GradeOrderMethod, np NumberedPaginationParam) (ListResult[entity.Grade], error)
+
+	// GetPluralGroupsFunc mocks the GetPluralGroups method.
+	GetPluralGroupsFunc func(ctx context.Context, groupIDs []uuid.UUID, order parameter.GroupOrderMethod, np NumberedPaginationParam) (ListResult[entity.Group], error)
+
+	// GetPluralGroupsWithOrganizationFunc mocks the GetPluralGroupsWithOrganization method.
+	GetPluralGroupsWithOrganizationFunc func(ctx context.Context, groupIDs []uuid.UUID, order parameter.GroupOrderMethod, np NumberedPaginationParam) (ListResult[entity.GroupWithOrganization], error)
+
+	// GetPluralGroupsWithOrganizationWithSdFunc mocks the GetPluralGroupsWithOrganizationWithSd method.
+	GetPluralGroupsWithOrganizationWithSdFunc func(ctx context.Context, sd Sd, groupIDs []uuid.UUID, order parameter.GroupOrderMethod, np NumberedPaginationParam) (ListResult[entity.GroupWithOrganization], error)
+
+	// GetPluralGroupsWithSdFunc mocks the GetPluralGroupsWithSd method.
+	GetPluralGroupsWithSdFunc func(ctx context.Context, sd Sd, groupIDs []uuid.UUID, order parameter.GroupOrderMethod, np NumberedPaginationParam) (ListResult[entity.Group], error)
 
 	// GetPluralMembersOnChatRoomFunc mocks the GetPluralMembersOnChatRoom method.
 	GetPluralMembersOnChatRoomFunc func(ctx context.Context, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoom], error)
@@ -2220,6 +2472,18 @@ type StoreMock struct {
 
 	// PluralDeleteEventTypesWithSdFunc mocks the PluralDeleteEventTypesWithSd method.
 	PluralDeleteEventTypesWithSdFunc func(ctx context.Context, sd Sd, eventTypeIDs []uuid.UUID) (int64, error)
+
+	// PluralDeleteGradesFunc mocks the PluralDeleteGrades method.
+	PluralDeleteGradesFunc func(ctx context.Context, gradeIDs []uuid.UUID) (int64, error)
+
+	// PluralDeleteGradesWithSdFunc mocks the PluralDeleteGradesWithSd method.
+	PluralDeleteGradesWithSdFunc func(ctx context.Context, sd Sd, gradeIDs []uuid.UUID) (int64, error)
+
+	// PluralDeleteGroupsFunc mocks the PluralDeleteGroups method.
+	PluralDeleteGroupsFunc func(ctx context.Context, groupIDs []uuid.UUID) (int64, error)
+
+	// PluralDeleteGroupsWithSdFunc mocks the PluralDeleteGroupsWithSd method.
+	PluralDeleteGroupsWithSdFunc func(ctx context.Context, sd Sd, groupIDs []uuid.UUID) (int64, error)
 
 	// PluralDeleteMimeTypesFunc mocks the PluralDeleteMimeTypes method.
 	PluralDeleteMimeTypesFunc func(ctx context.Context, mimeTypeIDs []uuid.UUID) (int64, error)
@@ -2611,6 +2875,38 @@ type StoreMock struct {
 			// Where is the where argument value.
 			Where parameter.WhereEventTypeParam
 		}
+		// CountGrades holds details about calls to the CountGrades method.
+		CountGrades []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereGradeParam
+		}
+		// CountGradesWithSd holds details about calls to the CountGradesWithSd method.
+		CountGradesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereGradeParam
+		}
+		// CountGroups holds details about calls to the CountGroups method.
+		CountGroups []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereGroupParam
+		}
+		// CountGroupsWithSd holds details about calls to the CountGroupsWithSd method.
+		CountGroupsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereGroupParam
+		}
 		// CountMembersOnChatRoom holds details about calls to the CountMembersOnChatRoom method.
 		CountMembersOnChatRoom []struct {
 			// Ctx is the ctx argument value.
@@ -2990,6 +3286,70 @@ type StoreMock struct {
 			Sd Sd
 			// Params is the params argument value.
 			Params []parameter.CreateEventTypeParam
+		}
+		// CreateGrade holds details about calls to the CreateGrade method.
+		CreateGrade []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Param is the param argument value.
+			Param parameter.CreateGradeParam
+		}
+		// CreateGradeWithSd holds details about calls to the CreateGradeWithSd method.
+		CreateGradeWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Param is the param argument value.
+			Param parameter.CreateGradeParam
+		}
+		// CreateGrades holds details about calls to the CreateGrades method.
+		CreateGrades []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.CreateGradeParam
+		}
+		// CreateGradesWithSd holds details about calls to the CreateGradesWithSd method.
+		CreateGradesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Params is the params argument value.
+			Params []parameter.CreateGradeParam
+		}
+		// CreateGroup holds details about calls to the CreateGroup method.
+		CreateGroup []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Param is the param argument value.
+			Param parameter.CreateGroupParam
+		}
+		// CreateGroupWithSd holds details about calls to the CreateGroupWithSd method.
+		CreateGroupWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Param is the param argument value.
+			Param parameter.CreateGroupParam
+		}
+		// CreateGroups holds details about calls to the CreateGroups method.
+		CreateGroups []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.CreateGroupParam
+		}
+		// CreateGroupsWithSd holds details about calls to the CreateGroupsWithSd method.
+		CreateGroupsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Params is the params argument value.
+			Params []parameter.CreateGroupParam
 		}
 		// CreateMimeType holds details about calls to the CreateMimeType method.
 		CreateMimeType []struct {
@@ -3390,6 +3750,38 @@ type StoreMock struct {
 			Sd Sd
 			// EventTypeID is the eventTypeID argument value.
 			EventTypeID uuid.UUID
+		}
+		// DeleteGrade holds details about calls to the DeleteGrade method.
+		DeleteGrade []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// GradeID is the gradeID argument value.
+			GradeID uuid.UUID
+		}
+		// DeleteGradeWithSd holds details about calls to the DeleteGradeWithSd method.
+		DeleteGradeWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// GradeID is the gradeID argument value.
+			GradeID uuid.UUID
+		}
+		// DeleteGroup holds details about calls to the DeleteGroup method.
+		DeleteGroup []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// GroupID is the groupID argument value.
+			GroupID uuid.UUID
+		}
+		// DeleteGroupWithSd holds details about calls to the DeleteGroupWithSd method.
+		DeleteGroupWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// GroupID is the groupID argument value.
+			GroupID uuid.UUID
 		}
 		// DeleteMimeType holds details about calls to the DeleteMimeType method.
 		DeleteMimeType []struct {
@@ -3930,6 +4322,70 @@ type StoreMock struct {
 			Sd Sd
 			// Key is the key argument value.
 			Key string
+		}
+		// FindGradeByID holds details about calls to the FindGradeByID method.
+		FindGradeByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// GradeID is the gradeID argument value.
+			GradeID uuid.UUID
+		}
+		// FindGradeByIDWithSd holds details about calls to the FindGradeByIDWithSd method.
+		FindGradeByIDWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// GradeID is the gradeID argument value.
+			GradeID uuid.UUID
+		}
+		// FindGradeWithOrganization holds details about calls to the FindGradeWithOrganization method.
+		FindGradeWithOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// GradeID is the gradeID argument value.
+			GradeID uuid.UUID
+		}
+		// FindGradeWithOrganizationWithSd holds details about calls to the FindGradeWithOrganizationWithSd method.
+		FindGradeWithOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// GradeID is the gradeID argument value.
+			GradeID uuid.UUID
+		}
+		// FindGroupByID holds details about calls to the FindGroupByID method.
+		FindGroupByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// GroupID is the groupID argument value.
+			GroupID uuid.UUID
+		}
+		// FindGroupByIDWithSd holds details about calls to the FindGroupByIDWithSd method.
+		FindGroupByIDWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// GroupID is the groupID argument value.
+			GroupID uuid.UUID
+		}
+		// FindGroupWithOrganization holds details about calls to the FindGroupWithOrganization method.
+		FindGroupWithOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// GroupID is the groupID argument value.
+			GroupID uuid.UUID
+		}
+		// FindGroupWithOrganizationWithSd holds details about calls to the FindGroupWithOrganizationWithSd method.
+		FindGroupWithOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// GroupID is the groupID argument value.
+			GroupID uuid.UUID
 		}
 		// FindMimeTypeByID holds details about calls to the FindMimeTypeByID method.
 		FindMimeTypeByID []struct {
@@ -4551,6 +5007,134 @@ type StoreMock struct {
 			// Wc is the wc argument value.
 			Wc WithCountParam
 		}
+		// GetGrades holds details about calls to the GetGrades method.
+		GetGrades []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereGradeParam
+			// Order is the order argument value.
+			Order parameter.GradeOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetGradesWithOrganization holds details about calls to the GetGradesWithOrganization method.
+		GetGradesWithOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereGradeParam
+			// Order is the order argument value.
+			Order parameter.GradeOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetGradesWithOrganizationWithSd holds details about calls to the GetGradesWithOrganizationWithSd method.
+		GetGradesWithOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereGradeParam
+			// Order is the order argument value.
+			Order parameter.GradeOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetGradesWithSd holds details about calls to the GetGradesWithSd method.
+		GetGradesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereGradeParam
+			// Order is the order argument value.
+			Order parameter.GradeOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetGroups holds details about calls to the GetGroups method.
+		GetGroups []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereGroupParam
+			// Order is the order argument value.
+			Order parameter.GroupOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetGroupsWithOrganization holds details about calls to the GetGroupsWithOrganization method.
+		GetGroupsWithOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereGroupParam
+			// Order is the order argument value.
+			Order parameter.GroupOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetGroupsWithOrganizationWithSd holds details about calls to the GetGroupsWithOrganizationWithSd method.
+		GetGroupsWithOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereGroupParam
+			// Order is the order argument value.
+			Order parameter.GroupOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetGroupsWithSd holds details about calls to the GetGroupsWithSd method.
+		GetGroupsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereGroupParam
+			// Order is the order argument value.
+			Order parameter.GroupOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
 		// GetMembersOnChatRoom holds details about calls to the GetMembersOnChatRoom method.
 		GetMembersOnChatRoom []struct {
 			// Ctx is the ctx argument value.
@@ -5032,6 +5616,102 @@ type StoreMock struct {
 			EventTypeIDs []uuid.UUID
 			// Order is the order argument value.
 			Order parameter.EventTypeOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralGrades holds details about calls to the GetPluralGrades method.
+		GetPluralGrades []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// GradeIDs is the gradeIDs argument value.
+			GradeIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.GradeOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralGradesWithOrganization holds details about calls to the GetPluralGradesWithOrganization method.
+		GetPluralGradesWithOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// GradeIDs is the gradeIDs argument value.
+			GradeIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.GradeOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralGradesWithOrganizationWithSd holds details about calls to the GetPluralGradesWithOrganizationWithSd method.
+		GetPluralGradesWithOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// GradeIDs is the gradeIDs argument value.
+			GradeIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.GradeOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralGradesWithSd holds details about calls to the GetPluralGradesWithSd method.
+		GetPluralGradesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// GradeIDs is the gradeIDs argument value.
+			GradeIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.GradeOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralGroups holds details about calls to the GetPluralGroups method.
+		GetPluralGroups []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// GroupIDs is the groupIDs argument value.
+			GroupIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.GroupOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralGroupsWithOrganization holds details about calls to the GetPluralGroupsWithOrganization method.
+		GetPluralGroupsWithOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// GroupIDs is the groupIDs argument value.
+			GroupIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.GroupOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralGroupsWithOrganizationWithSd holds details about calls to the GetPluralGroupsWithOrganizationWithSd method.
+		GetPluralGroupsWithOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// GroupIDs is the groupIDs argument value.
+			GroupIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.GroupOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralGroupsWithSd holds details about calls to the GetPluralGroupsWithSd method.
+		GetPluralGroupsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// GroupIDs is the groupIDs argument value.
+			GroupIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.GroupOrderMethod
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 		}
@@ -5650,6 +6330,38 @@ type StoreMock struct {
 			Sd Sd
 			// EventTypeIDs is the eventTypeIDs argument value.
 			EventTypeIDs []uuid.UUID
+		}
+		// PluralDeleteGrades holds details about calls to the PluralDeleteGrades method.
+		PluralDeleteGrades []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// GradeIDs is the gradeIDs argument value.
+			GradeIDs []uuid.UUID
+		}
+		// PluralDeleteGradesWithSd holds details about calls to the PluralDeleteGradesWithSd method.
+		PluralDeleteGradesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// GradeIDs is the gradeIDs argument value.
+			GradeIDs []uuid.UUID
+		}
+		// PluralDeleteGroups holds details about calls to the PluralDeleteGroups method.
+		PluralDeleteGroups []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// GroupIDs is the groupIDs argument value.
+			GroupIDs []uuid.UUID
+		}
+		// PluralDeleteGroupsWithSd holds details about calls to the PluralDeleteGroupsWithSd method.
+		PluralDeleteGroupsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// GroupIDs is the groupIDs argument value.
+			GroupIDs []uuid.UUID
 		}
 		// PluralDeleteMimeTypes holds details about calls to the PluralDeleteMimeTypes method.
 		PluralDeleteMimeTypes []struct {
@@ -6292,6 +7004,10 @@ type StoreMock struct {
 	lockCountChatRoomsWithSd                              sync.RWMutex
 	lockCountEventTypes                                   sync.RWMutex
 	lockCountEventTypesWithSd                             sync.RWMutex
+	lockCountGrades                                       sync.RWMutex
+	lockCountGradesWithSd                                 sync.RWMutex
+	lockCountGroups                                       sync.RWMutex
+	lockCountGroupsWithSd                                 sync.RWMutex
 	lockCountMembersOnChatRoom                            sync.RWMutex
 	lockCountMembersOnChatRoomWithSd                      sync.RWMutex
 	lockCountMimeTypes                                    sync.RWMutex
@@ -6338,6 +7054,14 @@ type StoreMock struct {
 	lockCreateEventTypeWithSd                             sync.RWMutex
 	lockCreateEventTypes                                  sync.RWMutex
 	lockCreateEventTypesWithSd                            sync.RWMutex
+	lockCreateGrade                                       sync.RWMutex
+	lockCreateGradeWithSd                                 sync.RWMutex
+	lockCreateGrades                                      sync.RWMutex
+	lockCreateGradesWithSd                                sync.RWMutex
+	lockCreateGroup                                       sync.RWMutex
+	lockCreateGroupWithSd                                 sync.RWMutex
+	lockCreateGroups                                      sync.RWMutex
+	lockCreateGroupsWithSd                                sync.RWMutex
 	lockCreateMimeType                                    sync.RWMutex
 	lockCreateMimeTypeWithSd                              sync.RWMutex
 	lockCreateMimeTypes                                   sync.RWMutex
@@ -6388,6 +7112,10 @@ type StoreMock struct {
 	lockDeleteEventTypeByKey                              sync.RWMutex
 	lockDeleteEventTypeByKeyWithSd                        sync.RWMutex
 	lockDeleteEventTypeWithSd                             sync.RWMutex
+	lockDeleteGrade                                       sync.RWMutex
+	lockDeleteGradeWithSd                                 sync.RWMutex
+	lockDeleteGroup                                       sync.RWMutex
+	lockDeleteGroupWithSd                                 sync.RWMutex
 	lockDeleteMimeType                                    sync.RWMutex
 	lockDeleteMimeTypeByKey                               sync.RWMutex
 	lockDeleteMimeTypeByKeyWithSd                         sync.RWMutex
@@ -6454,6 +7182,14 @@ type StoreMock struct {
 	lockFindEventTypeByIDWithSd                           sync.RWMutex
 	lockFindEventTypeByKey                                sync.RWMutex
 	lockFindEventTypeByKeyWithSd                          sync.RWMutex
+	lockFindGradeByID                                     sync.RWMutex
+	lockFindGradeByIDWithSd                               sync.RWMutex
+	lockFindGradeWithOrganization                         sync.RWMutex
+	lockFindGradeWithOrganizationWithSd                   sync.RWMutex
+	lockFindGroupByID                                     sync.RWMutex
+	lockFindGroupByIDWithSd                               sync.RWMutex
+	lockFindGroupWithOrganization                         sync.RWMutex
+	lockFindGroupWithOrganizationWithSd                   sync.RWMutex
 	lockFindMimeTypeByID                                  sync.RWMutex
 	lockFindMimeTypeByIDWithSd                            sync.RWMutex
 	lockFindMimeTypeByKey                                 sync.RWMutex
@@ -6516,6 +7252,14 @@ type StoreMock struct {
 	lockGetChatRoomsWithSd                                sync.RWMutex
 	lockGetEventTypes                                     sync.RWMutex
 	lockGetEventTypesWithSd                               sync.RWMutex
+	lockGetGrades                                         sync.RWMutex
+	lockGetGradesWithOrganization                         sync.RWMutex
+	lockGetGradesWithOrganizationWithSd                   sync.RWMutex
+	lockGetGradesWithSd                                   sync.RWMutex
+	lockGetGroups                                         sync.RWMutex
+	lockGetGroupsWithOrganization                         sync.RWMutex
+	lockGetGroupsWithOrganizationWithSd                   sync.RWMutex
+	lockGetGroupsWithSd                                   sync.RWMutex
 	lockGetMembersOnChatRoom                              sync.RWMutex
 	lockGetMembersOnChatRoomWithSd                        sync.RWMutex
 	lockGetMimeTypes                                      sync.RWMutex
@@ -6550,6 +7294,14 @@ type StoreMock struct {
 	lockGetPluralChatRoomsWithSd                          sync.RWMutex
 	lockGetPluralEventTypes                               sync.RWMutex
 	lockGetPluralEventTypesWithSd                         sync.RWMutex
+	lockGetPluralGrades                                   sync.RWMutex
+	lockGetPluralGradesWithOrganization                   sync.RWMutex
+	lockGetPluralGradesWithOrganizationWithSd             sync.RWMutex
+	lockGetPluralGradesWithSd                             sync.RWMutex
+	lockGetPluralGroups                                   sync.RWMutex
+	lockGetPluralGroupsWithOrganization                   sync.RWMutex
+	lockGetPluralGroupsWithOrganizationWithSd             sync.RWMutex
+	lockGetPluralGroupsWithSd                             sync.RWMutex
 	lockGetPluralMembersOnChatRoom                        sync.RWMutex
 	lockGetPluralMembersOnChatRoomWithSd                  sync.RWMutex
 	lockGetPluralMimeTypes                                sync.RWMutex
@@ -6600,6 +7352,10 @@ type StoreMock struct {
 	lockPluralDeleteChatRoomsWithSd                       sync.RWMutex
 	lockPluralDeleteEventTypes                            sync.RWMutex
 	lockPluralDeleteEventTypesWithSd                      sync.RWMutex
+	lockPluralDeleteGrades                                sync.RWMutex
+	lockPluralDeleteGradesWithSd                          sync.RWMutex
+	lockPluralDeleteGroups                                sync.RWMutex
+	lockPluralDeleteGroupsWithSd                          sync.RWMutex
 	lockPluralDeleteMimeTypes                             sync.RWMutex
 	lockPluralDeleteMimeTypesWithSd                       sync.RWMutex
 	lockPluralDeleteOrganizations                         sync.RWMutex
@@ -7600,6 +8356,158 @@ func (mock *StoreMock) CountEventTypesWithSdCalls() []struct {
 	mock.lockCountEventTypesWithSd.RLock()
 	calls = mock.calls.CountEventTypesWithSd
 	mock.lockCountEventTypesWithSd.RUnlock()
+	return calls
+}
+
+// CountGrades calls CountGradesFunc.
+func (mock *StoreMock) CountGrades(ctx context.Context, where parameter.WhereGradeParam) (int64, error) {
+	if mock.CountGradesFunc == nil {
+		panic("StoreMock.CountGradesFunc: method is nil but Store.CountGrades was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereGradeParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+	}
+	mock.lockCountGrades.Lock()
+	mock.calls.CountGrades = append(mock.calls.CountGrades, callInfo)
+	mock.lockCountGrades.Unlock()
+	return mock.CountGradesFunc(ctx, where)
+}
+
+// CountGradesCalls gets all the calls that were made to CountGrades.
+// Check the length with:
+//
+//	len(mockedStore.CountGradesCalls())
+func (mock *StoreMock) CountGradesCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereGradeParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereGradeParam
+	}
+	mock.lockCountGrades.RLock()
+	calls = mock.calls.CountGrades
+	mock.lockCountGrades.RUnlock()
+	return calls
+}
+
+// CountGradesWithSd calls CountGradesWithSdFunc.
+func (mock *StoreMock) CountGradesWithSd(ctx context.Context, sd Sd, where parameter.WhereGradeParam) (int64, error) {
+	if mock.CountGradesWithSdFunc == nil {
+		panic("StoreMock.CountGradesWithSdFunc: method is nil but Store.CountGradesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereGradeParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+	}
+	mock.lockCountGradesWithSd.Lock()
+	mock.calls.CountGradesWithSd = append(mock.calls.CountGradesWithSd, callInfo)
+	mock.lockCountGradesWithSd.Unlock()
+	return mock.CountGradesWithSdFunc(ctx, sd, where)
+}
+
+// CountGradesWithSdCalls gets all the calls that were made to CountGradesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountGradesWithSdCalls())
+func (mock *StoreMock) CountGradesWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereGradeParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereGradeParam
+	}
+	mock.lockCountGradesWithSd.RLock()
+	calls = mock.calls.CountGradesWithSd
+	mock.lockCountGradesWithSd.RUnlock()
+	return calls
+}
+
+// CountGroups calls CountGroupsFunc.
+func (mock *StoreMock) CountGroups(ctx context.Context, where parameter.WhereGroupParam) (int64, error) {
+	if mock.CountGroupsFunc == nil {
+		panic("StoreMock.CountGroupsFunc: method is nil but Store.CountGroups was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereGroupParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+	}
+	mock.lockCountGroups.Lock()
+	mock.calls.CountGroups = append(mock.calls.CountGroups, callInfo)
+	mock.lockCountGroups.Unlock()
+	return mock.CountGroupsFunc(ctx, where)
+}
+
+// CountGroupsCalls gets all the calls that were made to CountGroups.
+// Check the length with:
+//
+//	len(mockedStore.CountGroupsCalls())
+func (mock *StoreMock) CountGroupsCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereGroupParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereGroupParam
+	}
+	mock.lockCountGroups.RLock()
+	calls = mock.calls.CountGroups
+	mock.lockCountGroups.RUnlock()
+	return calls
+}
+
+// CountGroupsWithSd calls CountGroupsWithSdFunc.
+func (mock *StoreMock) CountGroupsWithSd(ctx context.Context, sd Sd, where parameter.WhereGroupParam) (int64, error) {
+	if mock.CountGroupsWithSdFunc == nil {
+		panic("StoreMock.CountGroupsWithSdFunc: method is nil but Store.CountGroupsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereGroupParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+	}
+	mock.lockCountGroupsWithSd.Lock()
+	mock.calls.CountGroupsWithSd = append(mock.calls.CountGroupsWithSd, callInfo)
+	mock.lockCountGroupsWithSd.Unlock()
+	return mock.CountGroupsWithSdFunc(ctx, sd, where)
+}
+
+// CountGroupsWithSdCalls gets all the calls that were made to CountGroupsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountGroupsWithSdCalls())
+func (mock *StoreMock) CountGroupsWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereGroupParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereGroupParam
+	}
+	mock.lockCountGroupsWithSd.RLock()
+	calls = mock.calls.CountGroupsWithSd
+	mock.lockCountGroupsWithSd.RUnlock()
 	return calls
 }
 
@@ -9372,6 +10280,310 @@ func (mock *StoreMock) CreateEventTypesWithSdCalls() []struct {
 	mock.lockCreateEventTypesWithSd.RLock()
 	calls = mock.calls.CreateEventTypesWithSd
 	mock.lockCreateEventTypesWithSd.RUnlock()
+	return calls
+}
+
+// CreateGrade calls CreateGradeFunc.
+func (mock *StoreMock) CreateGrade(ctx context.Context, param parameter.CreateGradeParam) (entity.Grade, error) {
+	if mock.CreateGradeFunc == nil {
+		panic("StoreMock.CreateGradeFunc: method is nil but Store.CreateGrade was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Param parameter.CreateGradeParam
+	}{
+		Ctx:   ctx,
+		Param: param,
+	}
+	mock.lockCreateGrade.Lock()
+	mock.calls.CreateGrade = append(mock.calls.CreateGrade, callInfo)
+	mock.lockCreateGrade.Unlock()
+	return mock.CreateGradeFunc(ctx, param)
+}
+
+// CreateGradeCalls gets all the calls that were made to CreateGrade.
+// Check the length with:
+//
+//	len(mockedStore.CreateGradeCalls())
+func (mock *StoreMock) CreateGradeCalls() []struct {
+	Ctx   context.Context
+	Param parameter.CreateGradeParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Param parameter.CreateGradeParam
+	}
+	mock.lockCreateGrade.RLock()
+	calls = mock.calls.CreateGrade
+	mock.lockCreateGrade.RUnlock()
+	return calls
+}
+
+// CreateGradeWithSd calls CreateGradeWithSdFunc.
+func (mock *StoreMock) CreateGradeWithSd(ctx context.Context, sd Sd, param parameter.CreateGradeParam) (entity.Grade, error) {
+	if mock.CreateGradeWithSdFunc == nil {
+		panic("StoreMock.CreateGradeWithSdFunc: method is nil but Store.CreateGradeWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateGradeParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Param: param,
+	}
+	mock.lockCreateGradeWithSd.Lock()
+	mock.calls.CreateGradeWithSd = append(mock.calls.CreateGradeWithSd, callInfo)
+	mock.lockCreateGradeWithSd.Unlock()
+	return mock.CreateGradeWithSdFunc(ctx, sd, param)
+}
+
+// CreateGradeWithSdCalls gets all the calls that were made to CreateGradeWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateGradeWithSdCalls())
+func (mock *StoreMock) CreateGradeWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Param parameter.CreateGradeParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateGradeParam
+	}
+	mock.lockCreateGradeWithSd.RLock()
+	calls = mock.calls.CreateGradeWithSd
+	mock.lockCreateGradeWithSd.RUnlock()
+	return calls
+}
+
+// CreateGrades calls CreateGradesFunc.
+func (mock *StoreMock) CreateGrades(ctx context.Context, params []parameter.CreateGradeParam) (int64, error) {
+	if mock.CreateGradesFunc == nil {
+		panic("StoreMock.CreateGradesFunc: method is nil but Store.CreateGrades was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.CreateGradeParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockCreateGrades.Lock()
+	mock.calls.CreateGrades = append(mock.calls.CreateGrades, callInfo)
+	mock.lockCreateGrades.Unlock()
+	return mock.CreateGradesFunc(ctx, params)
+}
+
+// CreateGradesCalls gets all the calls that were made to CreateGrades.
+// Check the length with:
+//
+//	len(mockedStore.CreateGradesCalls())
+func (mock *StoreMock) CreateGradesCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.CreateGradeParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.CreateGradeParam
+	}
+	mock.lockCreateGrades.RLock()
+	calls = mock.calls.CreateGrades
+	mock.lockCreateGrades.RUnlock()
+	return calls
+}
+
+// CreateGradesWithSd calls CreateGradesWithSdFunc.
+func (mock *StoreMock) CreateGradesWithSd(ctx context.Context, sd Sd, params []parameter.CreateGradeParam) (int64, error) {
+	if mock.CreateGradesWithSdFunc == nil {
+		panic("StoreMock.CreateGradesWithSdFunc: method is nil but Store.CreateGradesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateGradeParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		Params: params,
+	}
+	mock.lockCreateGradesWithSd.Lock()
+	mock.calls.CreateGradesWithSd = append(mock.calls.CreateGradesWithSd, callInfo)
+	mock.lockCreateGradesWithSd.Unlock()
+	return mock.CreateGradesWithSdFunc(ctx, sd, params)
+}
+
+// CreateGradesWithSdCalls gets all the calls that were made to CreateGradesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateGradesWithSdCalls())
+func (mock *StoreMock) CreateGradesWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	Params []parameter.CreateGradeParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateGradeParam
+	}
+	mock.lockCreateGradesWithSd.RLock()
+	calls = mock.calls.CreateGradesWithSd
+	mock.lockCreateGradesWithSd.RUnlock()
+	return calls
+}
+
+// CreateGroup calls CreateGroupFunc.
+func (mock *StoreMock) CreateGroup(ctx context.Context, param parameter.CreateGroupParam) (entity.Group, error) {
+	if mock.CreateGroupFunc == nil {
+		panic("StoreMock.CreateGroupFunc: method is nil but Store.CreateGroup was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Param parameter.CreateGroupParam
+	}{
+		Ctx:   ctx,
+		Param: param,
+	}
+	mock.lockCreateGroup.Lock()
+	mock.calls.CreateGroup = append(mock.calls.CreateGroup, callInfo)
+	mock.lockCreateGroup.Unlock()
+	return mock.CreateGroupFunc(ctx, param)
+}
+
+// CreateGroupCalls gets all the calls that were made to CreateGroup.
+// Check the length with:
+//
+//	len(mockedStore.CreateGroupCalls())
+func (mock *StoreMock) CreateGroupCalls() []struct {
+	Ctx   context.Context
+	Param parameter.CreateGroupParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Param parameter.CreateGroupParam
+	}
+	mock.lockCreateGroup.RLock()
+	calls = mock.calls.CreateGroup
+	mock.lockCreateGroup.RUnlock()
+	return calls
+}
+
+// CreateGroupWithSd calls CreateGroupWithSdFunc.
+func (mock *StoreMock) CreateGroupWithSd(ctx context.Context, sd Sd, param parameter.CreateGroupParam) (entity.Group, error) {
+	if mock.CreateGroupWithSdFunc == nil {
+		panic("StoreMock.CreateGroupWithSdFunc: method is nil but Store.CreateGroupWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateGroupParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Param: param,
+	}
+	mock.lockCreateGroupWithSd.Lock()
+	mock.calls.CreateGroupWithSd = append(mock.calls.CreateGroupWithSd, callInfo)
+	mock.lockCreateGroupWithSd.Unlock()
+	return mock.CreateGroupWithSdFunc(ctx, sd, param)
+}
+
+// CreateGroupWithSdCalls gets all the calls that were made to CreateGroupWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateGroupWithSdCalls())
+func (mock *StoreMock) CreateGroupWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Param parameter.CreateGroupParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateGroupParam
+	}
+	mock.lockCreateGroupWithSd.RLock()
+	calls = mock.calls.CreateGroupWithSd
+	mock.lockCreateGroupWithSd.RUnlock()
+	return calls
+}
+
+// CreateGroups calls CreateGroupsFunc.
+func (mock *StoreMock) CreateGroups(ctx context.Context, params []parameter.CreateGroupParam) (int64, error) {
+	if mock.CreateGroupsFunc == nil {
+		panic("StoreMock.CreateGroupsFunc: method is nil but Store.CreateGroups was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.CreateGroupParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockCreateGroups.Lock()
+	mock.calls.CreateGroups = append(mock.calls.CreateGroups, callInfo)
+	mock.lockCreateGroups.Unlock()
+	return mock.CreateGroupsFunc(ctx, params)
+}
+
+// CreateGroupsCalls gets all the calls that were made to CreateGroups.
+// Check the length with:
+//
+//	len(mockedStore.CreateGroupsCalls())
+func (mock *StoreMock) CreateGroupsCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.CreateGroupParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.CreateGroupParam
+	}
+	mock.lockCreateGroups.RLock()
+	calls = mock.calls.CreateGroups
+	mock.lockCreateGroups.RUnlock()
+	return calls
+}
+
+// CreateGroupsWithSd calls CreateGroupsWithSdFunc.
+func (mock *StoreMock) CreateGroupsWithSd(ctx context.Context, sd Sd, params []parameter.CreateGroupParam) (int64, error) {
+	if mock.CreateGroupsWithSdFunc == nil {
+		panic("StoreMock.CreateGroupsWithSdFunc: method is nil but Store.CreateGroupsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateGroupParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		Params: params,
+	}
+	mock.lockCreateGroupsWithSd.Lock()
+	mock.calls.CreateGroupsWithSd = append(mock.calls.CreateGroupsWithSd, callInfo)
+	mock.lockCreateGroupsWithSd.Unlock()
+	return mock.CreateGroupsWithSdFunc(ctx, sd, params)
+}
+
+// CreateGroupsWithSdCalls gets all the calls that were made to CreateGroupsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateGroupsWithSdCalls())
+func (mock *StoreMock) CreateGroupsWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	Params []parameter.CreateGroupParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateGroupParam
+	}
+	mock.lockCreateGroupsWithSd.RLock()
+	calls = mock.calls.CreateGroupsWithSd
+	mock.lockCreateGroupsWithSd.RUnlock()
 	return calls
 }
 
@@ -11272,6 +12484,158 @@ func (mock *StoreMock) DeleteEventTypeWithSdCalls() []struct {
 	mock.lockDeleteEventTypeWithSd.RLock()
 	calls = mock.calls.DeleteEventTypeWithSd
 	mock.lockDeleteEventTypeWithSd.RUnlock()
+	return calls
+}
+
+// DeleteGrade calls DeleteGradeFunc.
+func (mock *StoreMock) DeleteGrade(ctx context.Context, gradeID uuid.UUID) (int64, error) {
+	if mock.DeleteGradeFunc == nil {
+		panic("StoreMock.DeleteGradeFunc: method is nil but Store.DeleteGrade was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		GradeID uuid.UUID
+	}{
+		Ctx:     ctx,
+		GradeID: gradeID,
+	}
+	mock.lockDeleteGrade.Lock()
+	mock.calls.DeleteGrade = append(mock.calls.DeleteGrade, callInfo)
+	mock.lockDeleteGrade.Unlock()
+	return mock.DeleteGradeFunc(ctx, gradeID)
+}
+
+// DeleteGradeCalls gets all the calls that were made to DeleteGrade.
+// Check the length with:
+//
+//	len(mockedStore.DeleteGradeCalls())
+func (mock *StoreMock) DeleteGradeCalls() []struct {
+	Ctx     context.Context
+	GradeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		GradeID uuid.UUID
+	}
+	mock.lockDeleteGrade.RLock()
+	calls = mock.calls.DeleteGrade
+	mock.lockDeleteGrade.RUnlock()
+	return calls
+}
+
+// DeleteGradeWithSd calls DeleteGradeWithSdFunc.
+func (mock *StoreMock) DeleteGradeWithSd(ctx context.Context, sd Sd, gradeID uuid.UUID) (int64, error) {
+	if mock.DeleteGradeWithSdFunc == nil {
+		panic("StoreMock.DeleteGradeWithSdFunc: method is nil but Store.DeleteGradeWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		Sd      Sd
+		GradeID uuid.UUID
+	}{
+		Ctx:     ctx,
+		Sd:      sd,
+		GradeID: gradeID,
+	}
+	mock.lockDeleteGradeWithSd.Lock()
+	mock.calls.DeleteGradeWithSd = append(mock.calls.DeleteGradeWithSd, callInfo)
+	mock.lockDeleteGradeWithSd.Unlock()
+	return mock.DeleteGradeWithSdFunc(ctx, sd, gradeID)
+}
+
+// DeleteGradeWithSdCalls gets all the calls that were made to DeleteGradeWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteGradeWithSdCalls())
+func (mock *StoreMock) DeleteGradeWithSdCalls() []struct {
+	Ctx     context.Context
+	Sd      Sd
+	GradeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		Sd      Sd
+		GradeID uuid.UUID
+	}
+	mock.lockDeleteGradeWithSd.RLock()
+	calls = mock.calls.DeleteGradeWithSd
+	mock.lockDeleteGradeWithSd.RUnlock()
+	return calls
+}
+
+// DeleteGroup calls DeleteGroupFunc.
+func (mock *StoreMock) DeleteGroup(ctx context.Context, groupID uuid.UUID) (int64, error) {
+	if mock.DeleteGroupFunc == nil {
+		panic("StoreMock.DeleteGroupFunc: method is nil but Store.DeleteGroup was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		GroupID uuid.UUID
+	}{
+		Ctx:     ctx,
+		GroupID: groupID,
+	}
+	mock.lockDeleteGroup.Lock()
+	mock.calls.DeleteGroup = append(mock.calls.DeleteGroup, callInfo)
+	mock.lockDeleteGroup.Unlock()
+	return mock.DeleteGroupFunc(ctx, groupID)
+}
+
+// DeleteGroupCalls gets all the calls that were made to DeleteGroup.
+// Check the length with:
+//
+//	len(mockedStore.DeleteGroupCalls())
+func (mock *StoreMock) DeleteGroupCalls() []struct {
+	Ctx     context.Context
+	GroupID uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		GroupID uuid.UUID
+	}
+	mock.lockDeleteGroup.RLock()
+	calls = mock.calls.DeleteGroup
+	mock.lockDeleteGroup.RUnlock()
+	return calls
+}
+
+// DeleteGroupWithSd calls DeleteGroupWithSdFunc.
+func (mock *StoreMock) DeleteGroupWithSd(ctx context.Context, sd Sd, groupID uuid.UUID) (int64, error) {
+	if mock.DeleteGroupWithSdFunc == nil {
+		panic("StoreMock.DeleteGroupWithSdFunc: method is nil but Store.DeleteGroupWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		Sd      Sd
+		GroupID uuid.UUID
+	}{
+		Ctx:     ctx,
+		Sd:      sd,
+		GroupID: groupID,
+	}
+	mock.lockDeleteGroupWithSd.Lock()
+	mock.calls.DeleteGroupWithSd = append(mock.calls.DeleteGroupWithSd, callInfo)
+	mock.lockDeleteGroupWithSd.Unlock()
+	return mock.DeleteGroupWithSdFunc(ctx, sd, groupID)
+}
+
+// DeleteGroupWithSdCalls gets all the calls that were made to DeleteGroupWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteGroupWithSdCalls())
+func (mock *StoreMock) DeleteGroupWithSdCalls() []struct {
+	Ctx     context.Context
+	Sd      Sd
+	GroupID uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		Sd      Sd
+		GroupID uuid.UUID
+	}
+	mock.lockDeleteGroupWithSd.RLock()
+	calls = mock.calls.DeleteGroupWithSd
+	mock.lockDeleteGroupWithSd.RUnlock()
 	return calls
 }
 
@@ -13804,6 +15168,310 @@ func (mock *StoreMock) FindEventTypeByKeyWithSdCalls() []struct {
 	mock.lockFindEventTypeByKeyWithSd.RLock()
 	calls = mock.calls.FindEventTypeByKeyWithSd
 	mock.lockFindEventTypeByKeyWithSd.RUnlock()
+	return calls
+}
+
+// FindGradeByID calls FindGradeByIDFunc.
+func (mock *StoreMock) FindGradeByID(ctx context.Context, gradeID uuid.UUID) (entity.Grade, error) {
+	if mock.FindGradeByIDFunc == nil {
+		panic("StoreMock.FindGradeByIDFunc: method is nil but Store.FindGradeByID was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		GradeID uuid.UUID
+	}{
+		Ctx:     ctx,
+		GradeID: gradeID,
+	}
+	mock.lockFindGradeByID.Lock()
+	mock.calls.FindGradeByID = append(mock.calls.FindGradeByID, callInfo)
+	mock.lockFindGradeByID.Unlock()
+	return mock.FindGradeByIDFunc(ctx, gradeID)
+}
+
+// FindGradeByIDCalls gets all the calls that were made to FindGradeByID.
+// Check the length with:
+//
+//	len(mockedStore.FindGradeByIDCalls())
+func (mock *StoreMock) FindGradeByIDCalls() []struct {
+	Ctx     context.Context
+	GradeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		GradeID uuid.UUID
+	}
+	mock.lockFindGradeByID.RLock()
+	calls = mock.calls.FindGradeByID
+	mock.lockFindGradeByID.RUnlock()
+	return calls
+}
+
+// FindGradeByIDWithSd calls FindGradeByIDWithSdFunc.
+func (mock *StoreMock) FindGradeByIDWithSd(ctx context.Context, sd Sd, gradeID uuid.UUID) (entity.Grade, error) {
+	if mock.FindGradeByIDWithSdFunc == nil {
+		panic("StoreMock.FindGradeByIDWithSdFunc: method is nil but Store.FindGradeByIDWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		Sd      Sd
+		GradeID uuid.UUID
+	}{
+		Ctx:     ctx,
+		Sd:      sd,
+		GradeID: gradeID,
+	}
+	mock.lockFindGradeByIDWithSd.Lock()
+	mock.calls.FindGradeByIDWithSd = append(mock.calls.FindGradeByIDWithSd, callInfo)
+	mock.lockFindGradeByIDWithSd.Unlock()
+	return mock.FindGradeByIDWithSdFunc(ctx, sd, gradeID)
+}
+
+// FindGradeByIDWithSdCalls gets all the calls that were made to FindGradeByIDWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindGradeByIDWithSdCalls())
+func (mock *StoreMock) FindGradeByIDWithSdCalls() []struct {
+	Ctx     context.Context
+	Sd      Sd
+	GradeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		Sd      Sd
+		GradeID uuid.UUID
+	}
+	mock.lockFindGradeByIDWithSd.RLock()
+	calls = mock.calls.FindGradeByIDWithSd
+	mock.lockFindGradeByIDWithSd.RUnlock()
+	return calls
+}
+
+// FindGradeWithOrganization calls FindGradeWithOrganizationFunc.
+func (mock *StoreMock) FindGradeWithOrganization(ctx context.Context, gradeID uuid.UUID) (entity.GradeWithOrganization, error) {
+	if mock.FindGradeWithOrganizationFunc == nil {
+		panic("StoreMock.FindGradeWithOrganizationFunc: method is nil but Store.FindGradeWithOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		GradeID uuid.UUID
+	}{
+		Ctx:     ctx,
+		GradeID: gradeID,
+	}
+	mock.lockFindGradeWithOrganization.Lock()
+	mock.calls.FindGradeWithOrganization = append(mock.calls.FindGradeWithOrganization, callInfo)
+	mock.lockFindGradeWithOrganization.Unlock()
+	return mock.FindGradeWithOrganizationFunc(ctx, gradeID)
+}
+
+// FindGradeWithOrganizationCalls gets all the calls that were made to FindGradeWithOrganization.
+// Check the length with:
+//
+//	len(mockedStore.FindGradeWithOrganizationCalls())
+func (mock *StoreMock) FindGradeWithOrganizationCalls() []struct {
+	Ctx     context.Context
+	GradeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		GradeID uuid.UUID
+	}
+	mock.lockFindGradeWithOrganization.RLock()
+	calls = mock.calls.FindGradeWithOrganization
+	mock.lockFindGradeWithOrganization.RUnlock()
+	return calls
+}
+
+// FindGradeWithOrganizationWithSd calls FindGradeWithOrganizationWithSdFunc.
+func (mock *StoreMock) FindGradeWithOrganizationWithSd(ctx context.Context, sd Sd, gradeID uuid.UUID) (entity.GradeWithOrganization, error) {
+	if mock.FindGradeWithOrganizationWithSdFunc == nil {
+		panic("StoreMock.FindGradeWithOrganizationWithSdFunc: method is nil but Store.FindGradeWithOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		Sd      Sd
+		GradeID uuid.UUID
+	}{
+		Ctx:     ctx,
+		Sd:      sd,
+		GradeID: gradeID,
+	}
+	mock.lockFindGradeWithOrganizationWithSd.Lock()
+	mock.calls.FindGradeWithOrganizationWithSd = append(mock.calls.FindGradeWithOrganizationWithSd, callInfo)
+	mock.lockFindGradeWithOrganizationWithSd.Unlock()
+	return mock.FindGradeWithOrganizationWithSdFunc(ctx, sd, gradeID)
+}
+
+// FindGradeWithOrganizationWithSdCalls gets all the calls that were made to FindGradeWithOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindGradeWithOrganizationWithSdCalls())
+func (mock *StoreMock) FindGradeWithOrganizationWithSdCalls() []struct {
+	Ctx     context.Context
+	Sd      Sd
+	GradeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		Sd      Sd
+		GradeID uuid.UUID
+	}
+	mock.lockFindGradeWithOrganizationWithSd.RLock()
+	calls = mock.calls.FindGradeWithOrganizationWithSd
+	mock.lockFindGradeWithOrganizationWithSd.RUnlock()
+	return calls
+}
+
+// FindGroupByID calls FindGroupByIDFunc.
+func (mock *StoreMock) FindGroupByID(ctx context.Context, groupID uuid.UUID) (entity.Group, error) {
+	if mock.FindGroupByIDFunc == nil {
+		panic("StoreMock.FindGroupByIDFunc: method is nil but Store.FindGroupByID was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		GroupID uuid.UUID
+	}{
+		Ctx:     ctx,
+		GroupID: groupID,
+	}
+	mock.lockFindGroupByID.Lock()
+	mock.calls.FindGroupByID = append(mock.calls.FindGroupByID, callInfo)
+	mock.lockFindGroupByID.Unlock()
+	return mock.FindGroupByIDFunc(ctx, groupID)
+}
+
+// FindGroupByIDCalls gets all the calls that were made to FindGroupByID.
+// Check the length with:
+//
+//	len(mockedStore.FindGroupByIDCalls())
+func (mock *StoreMock) FindGroupByIDCalls() []struct {
+	Ctx     context.Context
+	GroupID uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		GroupID uuid.UUID
+	}
+	mock.lockFindGroupByID.RLock()
+	calls = mock.calls.FindGroupByID
+	mock.lockFindGroupByID.RUnlock()
+	return calls
+}
+
+// FindGroupByIDWithSd calls FindGroupByIDWithSdFunc.
+func (mock *StoreMock) FindGroupByIDWithSd(ctx context.Context, sd Sd, groupID uuid.UUID) (entity.Group, error) {
+	if mock.FindGroupByIDWithSdFunc == nil {
+		panic("StoreMock.FindGroupByIDWithSdFunc: method is nil but Store.FindGroupByIDWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		Sd      Sd
+		GroupID uuid.UUID
+	}{
+		Ctx:     ctx,
+		Sd:      sd,
+		GroupID: groupID,
+	}
+	mock.lockFindGroupByIDWithSd.Lock()
+	mock.calls.FindGroupByIDWithSd = append(mock.calls.FindGroupByIDWithSd, callInfo)
+	mock.lockFindGroupByIDWithSd.Unlock()
+	return mock.FindGroupByIDWithSdFunc(ctx, sd, groupID)
+}
+
+// FindGroupByIDWithSdCalls gets all the calls that were made to FindGroupByIDWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindGroupByIDWithSdCalls())
+func (mock *StoreMock) FindGroupByIDWithSdCalls() []struct {
+	Ctx     context.Context
+	Sd      Sd
+	GroupID uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		Sd      Sd
+		GroupID uuid.UUID
+	}
+	mock.lockFindGroupByIDWithSd.RLock()
+	calls = mock.calls.FindGroupByIDWithSd
+	mock.lockFindGroupByIDWithSd.RUnlock()
+	return calls
+}
+
+// FindGroupWithOrganization calls FindGroupWithOrganizationFunc.
+func (mock *StoreMock) FindGroupWithOrganization(ctx context.Context, groupID uuid.UUID) (entity.GroupWithOrganization, error) {
+	if mock.FindGroupWithOrganizationFunc == nil {
+		panic("StoreMock.FindGroupWithOrganizationFunc: method is nil but Store.FindGroupWithOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		GroupID uuid.UUID
+	}{
+		Ctx:     ctx,
+		GroupID: groupID,
+	}
+	mock.lockFindGroupWithOrganization.Lock()
+	mock.calls.FindGroupWithOrganization = append(mock.calls.FindGroupWithOrganization, callInfo)
+	mock.lockFindGroupWithOrganization.Unlock()
+	return mock.FindGroupWithOrganizationFunc(ctx, groupID)
+}
+
+// FindGroupWithOrganizationCalls gets all the calls that were made to FindGroupWithOrganization.
+// Check the length with:
+//
+//	len(mockedStore.FindGroupWithOrganizationCalls())
+func (mock *StoreMock) FindGroupWithOrganizationCalls() []struct {
+	Ctx     context.Context
+	GroupID uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		GroupID uuid.UUID
+	}
+	mock.lockFindGroupWithOrganization.RLock()
+	calls = mock.calls.FindGroupWithOrganization
+	mock.lockFindGroupWithOrganization.RUnlock()
+	return calls
+}
+
+// FindGroupWithOrganizationWithSd calls FindGroupWithOrganizationWithSdFunc.
+func (mock *StoreMock) FindGroupWithOrganizationWithSd(ctx context.Context, sd Sd, groupID uuid.UUID) (entity.GroupWithOrganization, error) {
+	if mock.FindGroupWithOrganizationWithSdFunc == nil {
+		panic("StoreMock.FindGroupWithOrganizationWithSdFunc: method is nil but Store.FindGroupWithOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		Sd      Sd
+		GroupID uuid.UUID
+	}{
+		Ctx:     ctx,
+		Sd:      sd,
+		GroupID: groupID,
+	}
+	mock.lockFindGroupWithOrganizationWithSd.Lock()
+	mock.calls.FindGroupWithOrganizationWithSd = append(mock.calls.FindGroupWithOrganizationWithSd, callInfo)
+	mock.lockFindGroupWithOrganizationWithSd.Unlock()
+	return mock.FindGroupWithOrganizationWithSdFunc(ctx, sd, groupID)
+}
+
+// FindGroupWithOrganizationWithSdCalls gets all the calls that were made to FindGroupWithOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindGroupWithOrganizationWithSdCalls())
+func (mock *StoreMock) FindGroupWithOrganizationWithSdCalls() []struct {
+	Ctx     context.Context
+	Sd      Sd
+	GroupID uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		Sd      Sd
+		GroupID uuid.UUID
+	}
+	mock.lockFindGroupWithOrganizationWithSd.RLock()
+	calls = mock.calls.FindGroupWithOrganizationWithSd
+	mock.lockFindGroupWithOrganizationWithSd.RUnlock()
 	return calls
 }
 
@@ -16411,6 +18079,438 @@ func (mock *StoreMock) GetEventTypesWithSdCalls() []struct {
 	return calls
 }
 
+// GetGrades calls GetGradesFunc.
+func (mock *StoreMock) GetGrades(ctx context.Context, where parameter.WhereGradeParam, order parameter.GradeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Grade], error) {
+	if mock.GetGradesFunc == nil {
+		panic("StoreMock.GetGradesFunc: method is nil but Store.GetGrades was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereGradeParam
+		Order parameter.GradeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetGrades.Lock()
+	mock.calls.GetGrades = append(mock.calls.GetGrades, callInfo)
+	mock.lockGetGrades.Unlock()
+	return mock.GetGradesFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetGradesCalls gets all the calls that were made to GetGrades.
+// Check the length with:
+//
+//	len(mockedStore.GetGradesCalls())
+func (mock *StoreMock) GetGradesCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereGradeParam
+	Order parameter.GradeOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereGradeParam
+		Order parameter.GradeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetGrades.RLock()
+	calls = mock.calls.GetGrades
+	mock.lockGetGrades.RUnlock()
+	return calls
+}
+
+// GetGradesWithOrganization calls GetGradesWithOrganizationFunc.
+func (mock *StoreMock) GetGradesWithOrganization(ctx context.Context, where parameter.WhereGradeParam, order parameter.GradeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.GradeWithOrganization], error) {
+	if mock.GetGradesWithOrganizationFunc == nil {
+		panic("StoreMock.GetGradesWithOrganizationFunc: method is nil but Store.GetGradesWithOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereGradeParam
+		Order parameter.GradeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetGradesWithOrganization.Lock()
+	mock.calls.GetGradesWithOrganization = append(mock.calls.GetGradesWithOrganization, callInfo)
+	mock.lockGetGradesWithOrganization.Unlock()
+	return mock.GetGradesWithOrganizationFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetGradesWithOrganizationCalls gets all the calls that were made to GetGradesWithOrganization.
+// Check the length with:
+//
+//	len(mockedStore.GetGradesWithOrganizationCalls())
+func (mock *StoreMock) GetGradesWithOrganizationCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereGradeParam
+	Order parameter.GradeOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereGradeParam
+		Order parameter.GradeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetGradesWithOrganization.RLock()
+	calls = mock.calls.GetGradesWithOrganization
+	mock.lockGetGradesWithOrganization.RUnlock()
+	return calls
+}
+
+// GetGradesWithOrganizationWithSd calls GetGradesWithOrganizationWithSdFunc.
+func (mock *StoreMock) GetGradesWithOrganizationWithSd(ctx context.Context, sd Sd, where parameter.WhereGradeParam, order parameter.GradeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.GradeWithOrganization], error) {
+	if mock.GetGradesWithOrganizationWithSdFunc == nil {
+		panic("StoreMock.GetGradesWithOrganizationWithSdFunc: method is nil but Store.GetGradesWithOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereGradeParam
+		Order parameter.GradeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetGradesWithOrganizationWithSd.Lock()
+	mock.calls.GetGradesWithOrganizationWithSd = append(mock.calls.GetGradesWithOrganizationWithSd, callInfo)
+	mock.lockGetGradesWithOrganizationWithSd.Unlock()
+	return mock.GetGradesWithOrganizationWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetGradesWithOrganizationWithSdCalls gets all the calls that were made to GetGradesWithOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetGradesWithOrganizationWithSdCalls())
+func (mock *StoreMock) GetGradesWithOrganizationWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereGradeParam
+	Order parameter.GradeOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereGradeParam
+		Order parameter.GradeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetGradesWithOrganizationWithSd.RLock()
+	calls = mock.calls.GetGradesWithOrganizationWithSd
+	mock.lockGetGradesWithOrganizationWithSd.RUnlock()
+	return calls
+}
+
+// GetGradesWithSd calls GetGradesWithSdFunc.
+func (mock *StoreMock) GetGradesWithSd(ctx context.Context, sd Sd, where parameter.WhereGradeParam, order parameter.GradeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Grade], error) {
+	if mock.GetGradesWithSdFunc == nil {
+		panic("StoreMock.GetGradesWithSdFunc: method is nil but Store.GetGradesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereGradeParam
+		Order parameter.GradeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetGradesWithSd.Lock()
+	mock.calls.GetGradesWithSd = append(mock.calls.GetGradesWithSd, callInfo)
+	mock.lockGetGradesWithSd.Unlock()
+	return mock.GetGradesWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetGradesWithSdCalls gets all the calls that were made to GetGradesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetGradesWithSdCalls())
+func (mock *StoreMock) GetGradesWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereGradeParam
+	Order parameter.GradeOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereGradeParam
+		Order parameter.GradeOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetGradesWithSd.RLock()
+	calls = mock.calls.GetGradesWithSd
+	mock.lockGetGradesWithSd.RUnlock()
+	return calls
+}
+
+// GetGroups calls GetGroupsFunc.
+func (mock *StoreMock) GetGroups(ctx context.Context, where parameter.WhereGroupParam, order parameter.GroupOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Group], error) {
+	if mock.GetGroupsFunc == nil {
+		panic("StoreMock.GetGroupsFunc: method is nil but Store.GetGroups was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereGroupParam
+		Order parameter.GroupOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetGroups.Lock()
+	mock.calls.GetGroups = append(mock.calls.GetGroups, callInfo)
+	mock.lockGetGroups.Unlock()
+	return mock.GetGroupsFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetGroupsCalls gets all the calls that were made to GetGroups.
+// Check the length with:
+//
+//	len(mockedStore.GetGroupsCalls())
+func (mock *StoreMock) GetGroupsCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereGroupParam
+	Order parameter.GroupOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereGroupParam
+		Order parameter.GroupOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetGroups.RLock()
+	calls = mock.calls.GetGroups
+	mock.lockGetGroups.RUnlock()
+	return calls
+}
+
+// GetGroupsWithOrganization calls GetGroupsWithOrganizationFunc.
+func (mock *StoreMock) GetGroupsWithOrganization(ctx context.Context, where parameter.WhereGroupParam, order parameter.GroupOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.GroupWithOrganization], error) {
+	if mock.GetGroupsWithOrganizationFunc == nil {
+		panic("StoreMock.GetGroupsWithOrganizationFunc: method is nil but Store.GetGroupsWithOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereGroupParam
+		Order parameter.GroupOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetGroupsWithOrganization.Lock()
+	mock.calls.GetGroupsWithOrganization = append(mock.calls.GetGroupsWithOrganization, callInfo)
+	mock.lockGetGroupsWithOrganization.Unlock()
+	return mock.GetGroupsWithOrganizationFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetGroupsWithOrganizationCalls gets all the calls that were made to GetGroupsWithOrganization.
+// Check the length with:
+//
+//	len(mockedStore.GetGroupsWithOrganizationCalls())
+func (mock *StoreMock) GetGroupsWithOrganizationCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereGroupParam
+	Order parameter.GroupOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereGroupParam
+		Order parameter.GroupOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetGroupsWithOrganization.RLock()
+	calls = mock.calls.GetGroupsWithOrganization
+	mock.lockGetGroupsWithOrganization.RUnlock()
+	return calls
+}
+
+// GetGroupsWithOrganizationWithSd calls GetGroupsWithOrganizationWithSdFunc.
+func (mock *StoreMock) GetGroupsWithOrganizationWithSd(ctx context.Context, sd Sd, where parameter.WhereGroupParam, order parameter.GroupOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.GroupWithOrganization], error) {
+	if mock.GetGroupsWithOrganizationWithSdFunc == nil {
+		panic("StoreMock.GetGroupsWithOrganizationWithSdFunc: method is nil but Store.GetGroupsWithOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereGroupParam
+		Order parameter.GroupOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetGroupsWithOrganizationWithSd.Lock()
+	mock.calls.GetGroupsWithOrganizationWithSd = append(mock.calls.GetGroupsWithOrganizationWithSd, callInfo)
+	mock.lockGetGroupsWithOrganizationWithSd.Unlock()
+	return mock.GetGroupsWithOrganizationWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetGroupsWithOrganizationWithSdCalls gets all the calls that were made to GetGroupsWithOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetGroupsWithOrganizationWithSdCalls())
+func (mock *StoreMock) GetGroupsWithOrganizationWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereGroupParam
+	Order parameter.GroupOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereGroupParam
+		Order parameter.GroupOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetGroupsWithOrganizationWithSd.RLock()
+	calls = mock.calls.GetGroupsWithOrganizationWithSd
+	mock.lockGetGroupsWithOrganizationWithSd.RUnlock()
+	return calls
+}
+
+// GetGroupsWithSd calls GetGroupsWithSdFunc.
+func (mock *StoreMock) GetGroupsWithSd(ctx context.Context, sd Sd, where parameter.WhereGroupParam, order parameter.GroupOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Group], error) {
+	if mock.GetGroupsWithSdFunc == nil {
+		panic("StoreMock.GetGroupsWithSdFunc: method is nil but Store.GetGroupsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereGroupParam
+		Order parameter.GroupOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetGroupsWithSd.Lock()
+	mock.calls.GetGroupsWithSd = append(mock.calls.GetGroupsWithSd, callInfo)
+	mock.lockGetGroupsWithSd.Unlock()
+	return mock.GetGroupsWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetGroupsWithSdCalls gets all the calls that were made to GetGroupsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetGroupsWithSdCalls())
+func (mock *StoreMock) GetGroupsWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereGroupParam
+	Order parameter.GroupOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereGroupParam
+		Order parameter.GroupOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetGroupsWithSd.RLock()
+	calls = mock.calls.GetGroupsWithSd
+	mock.lockGetGroupsWithSd.RUnlock()
+	return calls
+}
+
 // GetMembersOnChatRoom calls GetMembersOnChatRoomFunc.
 func (mock *StoreMock) GetMembersOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereMemberOnChatRoomParam, order parameter.MemberOnChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoom], error) {
 	if mock.GetMembersOnChatRoomFunc == nil {
@@ -18124,6 +20224,374 @@ func (mock *StoreMock) GetPluralEventTypesWithSdCalls() []struct {
 	mock.lockGetPluralEventTypesWithSd.RLock()
 	calls = mock.calls.GetPluralEventTypesWithSd
 	mock.lockGetPluralEventTypesWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralGrades calls GetPluralGradesFunc.
+func (mock *StoreMock) GetPluralGrades(ctx context.Context, gradeIDs []uuid.UUID, order parameter.GradeOrderMethod, np NumberedPaginationParam) (ListResult[entity.Grade], error) {
+	if mock.GetPluralGradesFunc == nil {
+		panic("StoreMock.GetPluralGradesFunc: method is nil but Store.GetPluralGrades was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		GradeIDs []uuid.UUID
+		Order    parameter.GradeOrderMethod
+		Np       NumberedPaginationParam
+	}{
+		Ctx:      ctx,
+		GradeIDs: gradeIDs,
+		Order:    order,
+		Np:       np,
+	}
+	mock.lockGetPluralGrades.Lock()
+	mock.calls.GetPluralGrades = append(mock.calls.GetPluralGrades, callInfo)
+	mock.lockGetPluralGrades.Unlock()
+	return mock.GetPluralGradesFunc(ctx, gradeIDs, order, np)
+}
+
+// GetPluralGradesCalls gets all the calls that were made to GetPluralGrades.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralGradesCalls())
+func (mock *StoreMock) GetPluralGradesCalls() []struct {
+	Ctx      context.Context
+	GradeIDs []uuid.UUID
+	Order    parameter.GradeOrderMethod
+	Np       NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx      context.Context
+		GradeIDs []uuid.UUID
+		Order    parameter.GradeOrderMethod
+		Np       NumberedPaginationParam
+	}
+	mock.lockGetPluralGrades.RLock()
+	calls = mock.calls.GetPluralGrades
+	mock.lockGetPluralGrades.RUnlock()
+	return calls
+}
+
+// GetPluralGradesWithOrganization calls GetPluralGradesWithOrganizationFunc.
+func (mock *StoreMock) GetPluralGradesWithOrganization(ctx context.Context, gradeIDs []uuid.UUID, order parameter.GradeOrderMethod, np NumberedPaginationParam) (ListResult[entity.GradeWithOrganization], error) {
+	if mock.GetPluralGradesWithOrganizationFunc == nil {
+		panic("StoreMock.GetPluralGradesWithOrganizationFunc: method is nil but Store.GetPluralGradesWithOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		GradeIDs []uuid.UUID
+		Order    parameter.GradeOrderMethod
+		Np       NumberedPaginationParam
+	}{
+		Ctx:      ctx,
+		GradeIDs: gradeIDs,
+		Order:    order,
+		Np:       np,
+	}
+	mock.lockGetPluralGradesWithOrganization.Lock()
+	mock.calls.GetPluralGradesWithOrganization = append(mock.calls.GetPluralGradesWithOrganization, callInfo)
+	mock.lockGetPluralGradesWithOrganization.Unlock()
+	return mock.GetPluralGradesWithOrganizationFunc(ctx, gradeIDs, order, np)
+}
+
+// GetPluralGradesWithOrganizationCalls gets all the calls that were made to GetPluralGradesWithOrganization.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralGradesWithOrganizationCalls())
+func (mock *StoreMock) GetPluralGradesWithOrganizationCalls() []struct {
+	Ctx      context.Context
+	GradeIDs []uuid.UUID
+	Order    parameter.GradeOrderMethod
+	Np       NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx      context.Context
+		GradeIDs []uuid.UUID
+		Order    parameter.GradeOrderMethod
+		Np       NumberedPaginationParam
+	}
+	mock.lockGetPluralGradesWithOrganization.RLock()
+	calls = mock.calls.GetPluralGradesWithOrganization
+	mock.lockGetPluralGradesWithOrganization.RUnlock()
+	return calls
+}
+
+// GetPluralGradesWithOrganizationWithSd calls GetPluralGradesWithOrganizationWithSdFunc.
+func (mock *StoreMock) GetPluralGradesWithOrganizationWithSd(ctx context.Context, sd Sd, gradeIDs []uuid.UUID, order parameter.GradeOrderMethod, np NumberedPaginationParam) (ListResult[entity.GradeWithOrganization], error) {
+	if mock.GetPluralGradesWithOrganizationWithSdFunc == nil {
+		panic("StoreMock.GetPluralGradesWithOrganizationWithSdFunc: method is nil but Store.GetPluralGradesWithOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		GradeIDs []uuid.UUID
+		Order    parameter.GradeOrderMethod
+		Np       NumberedPaginationParam
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		GradeIDs: gradeIDs,
+		Order:    order,
+		Np:       np,
+	}
+	mock.lockGetPluralGradesWithOrganizationWithSd.Lock()
+	mock.calls.GetPluralGradesWithOrganizationWithSd = append(mock.calls.GetPluralGradesWithOrganizationWithSd, callInfo)
+	mock.lockGetPluralGradesWithOrganizationWithSd.Unlock()
+	return mock.GetPluralGradesWithOrganizationWithSdFunc(ctx, sd, gradeIDs, order, np)
+}
+
+// GetPluralGradesWithOrganizationWithSdCalls gets all the calls that were made to GetPluralGradesWithOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralGradesWithOrganizationWithSdCalls())
+func (mock *StoreMock) GetPluralGradesWithOrganizationWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	GradeIDs []uuid.UUID
+	Order    parameter.GradeOrderMethod
+	Np       NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		GradeIDs []uuid.UUID
+		Order    parameter.GradeOrderMethod
+		Np       NumberedPaginationParam
+	}
+	mock.lockGetPluralGradesWithOrganizationWithSd.RLock()
+	calls = mock.calls.GetPluralGradesWithOrganizationWithSd
+	mock.lockGetPluralGradesWithOrganizationWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralGradesWithSd calls GetPluralGradesWithSdFunc.
+func (mock *StoreMock) GetPluralGradesWithSd(ctx context.Context, sd Sd, gradeIDs []uuid.UUID, order parameter.GradeOrderMethod, np NumberedPaginationParam) (ListResult[entity.Grade], error) {
+	if mock.GetPluralGradesWithSdFunc == nil {
+		panic("StoreMock.GetPluralGradesWithSdFunc: method is nil but Store.GetPluralGradesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		GradeIDs []uuid.UUID
+		Order    parameter.GradeOrderMethod
+		Np       NumberedPaginationParam
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		GradeIDs: gradeIDs,
+		Order:    order,
+		Np:       np,
+	}
+	mock.lockGetPluralGradesWithSd.Lock()
+	mock.calls.GetPluralGradesWithSd = append(mock.calls.GetPluralGradesWithSd, callInfo)
+	mock.lockGetPluralGradesWithSd.Unlock()
+	return mock.GetPluralGradesWithSdFunc(ctx, sd, gradeIDs, order, np)
+}
+
+// GetPluralGradesWithSdCalls gets all the calls that were made to GetPluralGradesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralGradesWithSdCalls())
+func (mock *StoreMock) GetPluralGradesWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	GradeIDs []uuid.UUID
+	Order    parameter.GradeOrderMethod
+	Np       NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		GradeIDs []uuid.UUID
+		Order    parameter.GradeOrderMethod
+		Np       NumberedPaginationParam
+	}
+	mock.lockGetPluralGradesWithSd.RLock()
+	calls = mock.calls.GetPluralGradesWithSd
+	mock.lockGetPluralGradesWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralGroups calls GetPluralGroupsFunc.
+func (mock *StoreMock) GetPluralGroups(ctx context.Context, groupIDs []uuid.UUID, order parameter.GroupOrderMethod, np NumberedPaginationParam) (ListResult[entity.Group], error) {
+	if mock.GetPluralGroupsFunc == nil {
+		panic("StoreMock.GetPluralGroupsFunc: method is nil but Store.GetPluralGroups was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		GroupIDs []uuid.UUID
+		Order    parameter.GroupOrderMethod
+		Np       NumberedPaginationParam
+	}{
+		Ctx:      ctx,
+		GroupIDs: groupIDs,
+		Order:    order,
+		Np:       np,
+	}
+	mock.lockGetPluralGroups.Lock()
+	mock.calls.GetPluralGroups = append(mock.calls.GetPluralGroups, callInfo)
+	mock.lockGetPluralGroups.Unlock()
+	return mock.GetPluralGroupsFunc(ctx, groupIDs, order, np)
+}
+
+// GetPluralGroupsCalls gets all the calls that were made to GetPluralGroups.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralGroupsCalls())
+func (mock *StoreMock) GetPluralGroupsCalls() []struct {
+	Ctx      context.Context
+	GroupIDs []uuid.UUID
+	Order    parameter.GroupOrderMethod
+	Np       NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx      context.Context
+		GroupIDs []uuid.UUID
+		Order    parameter.GroupOrderMethod
+		Np       NumberedPaginationParam
+	}
+	mock.lockGetPluralGroups.RLock()
+	calls = mock.calls.GetPluralGroups
+	mock.lockGetPluralGroups.RUnlock()
+	return calls
+}
+
+// GetPluralGroupsWithOrganization calls GetPluralGroupsWithOrganizationFunc.
+func (mock *StoreMock) GetPluralGroupsWithOrganization(ctx context.Context, groupIDs []uuid.UUID, order parameter.GroupOrderMethod, np NumberedPaginationParam) (ListResult[entity.GroupWithOrganization], error) {
+	if mock.GetPluralGroupsWithOrganizationFunc == nil {
+		panic("StoreMock.GetPluralGroupsWithOrganizationFunc: method is nil but Store.GetPluralGroupsWithOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		GroupIDs []uuid.UUID
+		Order    parameter.GroupOrderMethod
+		Np       NumberedPaginationParam
+	}{
+		Ctx:      ctx,
+		GroupIDs: groupIDs,
+		Order:    order,
+		Np:       np,
+	}
+	mock.lockGetPluralGroupsWithOrganization.Lock()
+	mock.calls.GetPluralGroupsWithOrganization = append(mock.calls.GetPluralGroupsWithOrganization, callInfo)
+	mock.lockGetPluralGroupsWithOrganization.Unlock()
+	return mock.GetPluralGroupsWithOrganizationFunc(ctx, groupIDs, order, np)
+}
+
+// GetPluralGroupsWithOrganizationCalls gets all the calls that were made to GetPluralGroupsWithOrganization.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralGroupsWithOrganizationCalls())
+func (mock *StoreMock) GetPluralGroupsWithOrganizationCalls() []struct {
+	Ctx      context.Context
+	GroupIDs []uuid.UUID
+	Order    parameter.GroupOrderMethod
+	Np       NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx      context.Context
+		GroupIDs []uuid.UUID
+		Order    parameter.GroupOrderMethod
+		Np       NumberedPaginationParam
+	}
+	mock.lockGetPluralGroupsWithOrganization.RLock()
+	calls = mock.calls.GetPluralGroupsWithOrganization
+	mock.lockGetPluralGroupsWithOrganization.RUnlock()
+	return calls
+}
+
+// GetPluralGroupsWithOrganizationWithSd calls GetPluralGroupsWithOrganizationWithSdFunc.
+func (mock *StoreMock) GetPluralGroupsWithOrganizationWithSd(ctx context.Context, sd Sd, groupIDs []uuid.UUID, order parameter.GroupOrderMethod, np NumberedPaginationParam) (ListResult[entity.GroupWithOrganization], error) {
+	if mock.GetPluralGroupsWithOrganizationWithSdFunc == nil {
+		panic("StoreMock.GetPluralGroupsWithOrganizationWithSdFunc: method is nil but Store.GetPluralGroupsWithOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		GroupIDs []uuid.UUID
+		Order    parameter.GroupOrderMethod
+		Np       NumberedPaginationParam
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		GroupIDs: groupIDs,
+		Order:    order,
+		Np:       np,
+	}
+	mock.lockGetPluralGroupsWithOrganizationWithSd.Lock()
+	mock.calls.GetPluralGroupsWithOrganizationWithSd = append(mock.calls.GetPluralGroupsWithOrganizationWithSd, callInfo)
+	mock.lockGetPluralGroupsWithOrganizationWithSd.Unlock()
+	return mock.GetPluralGroupsWithOrganizationWithSdFunc(ctx, sd, groupIDs, order, np)
+}
+
+// GetPluralGroupsWithOrganizationWithSdCalls gets all the calls that were made to GetPluralGroupsWithOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralGroupsWithOrganizationWithSdCalls())
+func (mock *StoreMock) GetPluralGroupsWithOrganizationWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	GroupIDs []uuid.UUID
+	Order    parameter.GroupOrderMethod
+	Np       NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		GroupIDs []uuid.UUID
+		Order    parameter.GroupOrderMethod
+		Np       NumberedPaginationParam
+	}
+	mock.lockGetPluralGroupsWithOrganizationWithSd.RLock()
+	calls = mock.calls.GetPluralGroupsWithOrganizationWithSd
+	mock.lockGetPluralGroupsWithOrganizationWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralGroupsWithSd calls GetPluralGroupsWithSdFunc.
+func (mock *StoreMock) GetPluralGroupsWithSd(ctx context.Context, sd Sd, groupIDs []uuid.UUID, order parameter.GroupOrderMethod, np NumberedPaginationParam) (ListResult[entity.Group], error) {
+	if mock.GetPluralGroupsWithSdFunc == nil {
+		panic("StoreMock.GetPluralGroupsWithSdFunc: method is nil but Store.GetPluralGroupsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		GroupIDs []uuid.UUID
+		Order    parameter.GroupOrderMethod
+		Np       NumberedPaginationParam
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		GroupIDs: groupIDs,
+		Order:    order,
+		Np:       np,
+	}
+	mock.lockGetPluralGroupsWithSd.Lock()
+	mock.calls.GetPluralGroupsWithSd = append(mock.calls.GetPluralGroupsWithSd, callInfo)
+	mock.lockGetPluralGroupsWithSd.Unlock()
+	return mock.GetPluralGroupsWithSdFunc(ctx, sd, groupIDs, order, np)
+}
+
+// GetPluralGroupsWithSdCalls gets all the calls that were made to GetPluralGroupsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralGroupsWithSdCalls())
+func (mock *StoreMock) GetPluralGroupsWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	GroupIDs []uuid.UUID
+	Order    parameter.GroupOrderMethod
+	Np       NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		GroupIDs []uuid.UUID
+		Order    parameter.GroupOrderMethod
+		Np       NumberedPaginationParam
+	}
+	mock.lockGetPluralGroupsWithSd.RLock()
+	calls = mock.calls.GetPluralGroupsWithSd
+	mock.lockGetPluralGroupsWithSd.RUnlock()
 	return calls
 }
 
@@ -20456,6 +22924,158 @@ func (mock *StoreMock) PluralDeleteEventTypesWithSdCalls() []struct {
 	mock.lockPluralDeleteEventTypesWithSd.RLock()
 	calls = mock.calls.PluralDeleteEventTypesWithSd
 	mock.lockPluralDeleteEventTypesWithSd.RUnlock()
+	return calls
+}
+
+// PluralDeleteGrades calls PluralDeleteGradesFunc.
+func (mock *StoreMock) PluralDeleteGrades(ctx context.Context, gradeIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteGradesFunc == nil {
+		panic("StoreMock.PluralDeleteGradesFunc: method is nil but Store.PluralDeleteGrades was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		GradeIDs []uuid.UUID
+	}{
+		Ctx:      ctx,
+		GradeIDs: gradeIDs,
+	}
+	mock.lockPluralDeleteGrades.Lock()
+	mock.calls.PluralDeleteGrades = append(mock.calls.PluralDeleteGrades, callInfo)
+	mock.lockPluralDeleteGrades.Unlock()
+	return mock.PluralDeleteGradesFunc(ctx, gradeIDs)
+}
+
+// PluralDeleteGradesCalls gets all the calls that were made to PluralDeleteGrades.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteGradesCalls())
+func (mock *StoreMock) PluralDeleteGradesCalls() []struct {
+	Ctx      context.Context
+	GradeIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		GradeIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteGrades.RLock()
+	calls = mock.calls.PluralDeleteGrades
+	mock.lockPluralDeleteGrades.RUnlock()
+	return calls
+}
+
+// PluralDeleteGradesWithSd calls PluralDeleteGradesWithSdFunc.
+func (mock *StoreMock) PluralDeleteGradesWithSd(ctx context.Context, sd Sd, gradeIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteGradesWithSdFunc == nil {
+		panic("StoreMock.PluralDeleteGradesWithSdFunc: method is nil but Store.PluralDeleteGradesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		GradeIDs []uuid.UUID
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		GradeIDs: gradeIDs,
+	}
+	mock.lockPluralDeleteGradesWithSd.Lock()
+	mock.calls.PluralDeleteGradesWithSd = append(mock.calls.PluralDeleteGradesWithSd, callInfo)
+	mock.lockPluralDeleteGradesWithSd.Unlock()
+	return mock.PluralDeleteGradesWithSdFunc(ctx, sd, gradeIDs)
+}
+
+// PluralDeleteGradesWithSdCalls gets all the calls that were made to PluralDeleteGradesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteGradesWithSdCalls())
+func (mock *StoreMock) PluralDeleteGradesWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	GradeIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		GradeIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteGradesWithSd.RLock()
+	calls = mock.calls.PluralDeleteGradesWithSd
+	mock.lockPluralDeleteGradesWithSd.RUnlock()
+	return calls
+}
+
+// PluralDeleteGroups calls PluralDeleteGroupsFunc.
+func (mock *StoreMock) PluralDeleteGroups(ctx context.Context, groupIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteGroupsFunc == nil {
+		panic("StoreMock.PluralDeleteGroupsFunc: method is nil but Store.PluralDeleteGroups was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		GroupIDs []uuid.UUID
+	}{
+		Ctx:      ctx,
+		GroupIDs: groupIDs,
+	}
+	mock.lockPluralDeleteGroups.Lock()
+	mock.calls.PluralDeleteGroups = append(mock.calls.PluralDeleteGroups, callInfo)
+	mock.lockPluralDeleteGroups.Unlock()
+	return mock.PluralDeleteGroupsFunc(ctx, groupIDs)
+}
+
+// PluralDeleteGroupsCalls gets all the calls that were made to PluralDeleteGroups.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteGroupsCalls())
+func (mock *StoreMock) PluralDeleteGroupsCalls() []struct {
+	Ctx      context.Context
+	GroupIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		GroupIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteGroups.RLock()
+	calls = mock.calls.PluralDeleteGroups
+	mock.lockPluralDeleteGroups.RUnlock()
+	return calls
+}
+
+// PluralDeleteGroupsWithSd calls PluralDeleteGroupsWithSdFunc.
+func (mock *StoreMock) PluralDeleteGroupsWithSd(ctx context.Context, sd Sd, groupIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteGroupsWithSdFunc == nil {
+		panic("StoreMock.PluralDeleteGroupsWithSdFunc: method is nil but Store.PluralDeleteGroupsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		GroupIDs []uuid.UUID
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		GroupIDs: groupIDs,
+	}
+	mock.lockPluralDeleteGroupsWithSd.Lock()
+	mock.calls.PluralDeleteGroupsWithSd = append(mock.calls.PluralDeleteGroupsWithSd, callInfo)
+	mock.lockPluralDeleteGroupsWithSd.Unlock()
+	return mock.PluralDeleteGroupsWithSdFunc(ctx, sd, groupIDs)
+}
+
+// PluralDeleteGroupsWithSdCalls gets all the calls that were made to PluralDeleteGroupsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteGroupsWithSdCalls())
+func (mock *StoreMock) PluralDeleteGroupsWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	GroupIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		GroupIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteGroupsWithSd.RLock()
+	calls = mock.calls.PluralDeleteGroupsWithSd
+	mock.lockPluralDeleteGroupsWithSd.RUnlock()
 	return calls
 }
 

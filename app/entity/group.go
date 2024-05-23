@@ -8,3 +8,16 @@ type Group struct {
 	Key            string    `json:"key"`
 	OrganizationID uuid.UUID `json:"organization_id"`
 }
+
+// GroupWithOrganization グループと組織を表す構造体。
+type GroupWithOrganization struct {
+	GroupID      uuid.UUID `json:"group_id"`
+	Key          string    `json:"key"`
+	Organization Organization
+}
+
+// GroupWithOrganizationForQuery グループと組織を表す構造体(クエリー用)。
+type GroupWithOrganizationForQuery struct {
+	Pkey Int `json:"-"`
+	GroupWithOrganization
+}

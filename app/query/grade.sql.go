@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const countGrades = `-- name: CountGrades :one
@@ -89,34 +90,41 @@ func (q *Queries) FindGradeByID(ctx context.Context, gradeID uuid.UUID) (Grade, 
 }
 
 const findGradeByIDWithOrganization = `-- name: FindGradeByIDWithOrganization :one
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id
+FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE grade_id = $1
 `
 
 type FindGradeByIDWithOrganizationRow struct {
-	Grade        Grade        `json:"grade"`
-	Organization Organization `json:"organization"`
+	MGradesPkey             pgtype.Int8 `json:"m_grades_pkey"`
+	GradeID                 uuid.UUID   `json:"grade_id"`
+	Key                     string      `json:"key"`
+	OrganizationID          uuid.UUID   `json:"organization_id"`
+	OrganizationName        pgtype.Text `json:"organization_name"`
+	OrganizationDescription pgtype.Text `json:"organization_description"`
+	OrganizationColor       pgtype.Text `json:"organization_color"`
+	OrganizationIsPersonal  pgtype.Bool `json:"organization_is_personal"`
+	OrganizationIsWhole     pgtype.Bool `json:"organization_is_whole"`
+	OrganizationChatRoomID  pgtype.UUID `json:"organization_chat_room_id"`
 }
 
 func (q *Queries) FindGradeByIDWithOrganization(ctx context.Context, gradeID uuid.UUID) (FindGradeByIDWithOrganizationRow, error) {
 	row := q.db.QueryRow(ctx, findGradeByIDWithOrganization, gradeID)
 	var i FindGradeByIDWithOrganizationRow
 	err := row.Scan(
-		&i.Grade.MGradesPkey,
-		&i.Grade.GradeID,
-		&i.Grade.Key,
-		&i.Grade.OrganizationID,
-		&i.Organization.MOrganizationsPkey,
-		&i.Organization.OrganizationID,
-		&i.Organization.Name,
-		&i.Organization.Description,
-		&i.Organization.Color,
-		&i.Organization.IsPersonal,
-		&i.Organization.IsWhole,
-		&i.Organization.CreatedAt,
-		&i.Organization.UpdatedAt,
-		&i.Organization.ChatRoomID,
+		&i.MGradesPkey,
+		&i.GradeID,
+		&i.Key,
+		&i.OrganizationID,
+		&i.OrganizationName,
+		&i.OrganizationDescription,
+		&i.OrganizationColor,
+		&i.OrganizationIsPersonal,
+		&i.OrganizationIsWhole,
+		&i.OrganizationChatRoomID,
 	)
 	return i, err
 }
@@ -138,34 +146,41 @@ func (q *Queries) FindGradeByKey(ctx context.Context, key string) (Grade, error)
 }
 
 const findGradeByKeyWithOrganization = `-- name: FindGradeByKeyWithOrganization :one
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id
+FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE key = $1
 `
 
 type FindGradeByKeyWithOrganizationRow struct {
-	Grade        Grade        `json:"grade"`
-	Organization Organization `json:"organization"`
+	MGradesPkey             pgtype.Int8 `json:"m_grades_pkey"`
+	GradeID                 uuid.UUID   `json:"grade_id"`
+	Key                     string      `json:"key"`
+	OrganizationID          uuid.UUID   `json:"organization_id"`
+	OrganizationName        pgtype.Text `json:"organization_name"`
+	OrganizationDescription pgtype.Text `json:"organization_description"`
+	OrganizationColor       pgtype.Text `json:"organization_color"`
+	OrganizationIsPersonal  pgtype.Bool `json:"organization_is_personal"`
+	OrganizationIsWhole     pgtype.Bool `json:"organization_is_whole"`
+	OrganizationChatRoomID  pgtype.UUID `json:"organization_chat_room_id"`
 }
 
 func (q *Queries) FindGradeByKeyWithOrganization(ctx context.Context, key string) (FindGradeByKeyWithOrganizationRow, error) {
 	row := q.db.QueryRow(ctx, findGradeByKeyWithOrganization, key)
 	var i FindGradeByKeyWithOrganizationRow
 	err := row.Scan(
-		&i.Grade.MGradesPkey,
-		&i.Grade.GradeID,
-		&i.Grade.Key,
-		&i.Grade.OrganizationID,
-		&i.Organization.MOrganizationsPkey,
-		&i.Organization.OrganizationID,
-		&i.Organization.Name,
-		&i.Organization.Description,
-		&i.Organization.Color,
-		&i.Organization.IsPersonal,
-		&i.Organization.IsWhole,
-		&i.Organization.CreatedAt,
-		&i.Organization.UpdatedAt,
-		&i.Organization.ChatRoomID,
+		&i.MGradesPkey,
+		&i.GradeID,
+		&i.Key,
+		&i.OrganizationID,
+		&i.OrganizationName,
+		&i.OrganizationDescription,
+		&i.OrganizationColor,
+		&i.OrganizationIsPersonal,
+		&i.OrganizationIsWhole,
+		&i.OrganizationChatRoomID,
 	)
 	return i, err
 }
@@ -285,21 +300,30 @@ func (q *Queries) GetGradesUseNumberedPaginate(ctx context.Context, arg GetGrade
 }
 
 const getGradesWithOrganization = `-- name: GetGradesWithOrganization :many
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id
+FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 ORDER BY
-	CASE WHEN $1::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $1::text = 'r_name' THEN m_organizations.name END DESC,
 	m_grades_pkey ASC
 `
 
 type GetGradesWithOrganizationRow struct {
-	Grade        Grade        `json:"grade"`
-	Organization Organization `json:"organization"`
+	MGradesPkey             pgtype.Int8 `json:"m_grades_pkey"`
+	GradeID                 uuid.UUID   `json:"grade_id"`
+	Key                     string      `json:"key"`
+	OrganizationID          uuid.UUID   `json:"organization_id"`
+	OrganizationName        pgtype.Text `json:"organization_name"`
+	OrganizationDescription pgtype.Text `json:"organization_description"`
+	OrganizationColor       pgtype.Text `json:"organization_color"`
+	OrganizationIsPersonal  pgtype.Bool `json:"organization_is_personal"`
+	OrganizationIsWhole     pgtype.Bool `json:"organization_is_whole"`
+	OrganizationChatRoomID  pgtype.UUID `json:"organization_chat_room_id"`
 }
 
-func (q *Queries) GetGradesWithOrganization(ctx context.Context, orderMethod string) ([]GetGradesWithOrganizationRow, error) {
-	rows, err := q.db.Query(ctx, getGradesWithOrganization, orderMethod)
+func (q *Queries) GetGradesWithOrganization(ctx context.Context) ([]GetGradesWithOrganizationRow, error) {
+	rows, err := q.db.Query(ctx, getGradesWithOrganization)
 	if err != nil {
 		return nil, err
 	}
@@ -308,20 +332,16 @@ func (q *Queries) GetGradesWithOrganization(ctx context.Context, orderMethod str
 	for rows.Next() {
 		var i GetGradesWithOrganizationRow
 		if err := rows.Scan(
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
+			&i.MGradesPkey,
+			&i.GradeID,
+			&i.Key,
+			&i.OrganizationID,
+			&i.OrganizationName,
+			&i.OrganizationDescription,
+			&i.OrganizationColor,
+			&i.OrganizationIsPersonal,
+			&i.OrganizationIsWhole,
+			&i.OrganizationChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -334,28 +354,19 @@ func (q *Queries) GetGradesWithOrganization(ctx context.Context, orderMethod str
 }
 
 const getGradesWithOrganizationUseKeysetPaginate = `-- name: GetGradesWithOrganizationUseKeysetPaginate :many
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id
+FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE
 	CASE $2::text
 		WHEN 'next' THEN
-			CASE $3::text
-				WHEN 'name' THEN name > $4 OR (name = $4 AND m_grades_pkey > $5::int)
-				WHEN 'r_name' THEN name < $4 OR (name = $4 AND m_grades_pkey > $5::int)
-				ELSE m_grades_pkey > $5::int
-			END
+			m_grades_pkey > $3::int
 		WHEN 'prev' THEN
-			CASE $3::text
-				WHEN 'name' THEN name < $4 OR (name = $4 AND m_grades_pkey < $5::int)
-				WHEN 'r_name' THEN name > $4 OR (name = $4 AND m_grades_pkey < $5::int)
-				ELSE m_grades_pkey < $5::int
-			END
+			m_grades_pkey < $3::int
 	END
 ORDER BY
-	CASE WHEN $3::text = 'name' AND $2::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN $3::text = 'name' AND $2::text = 'prev' THEN m_organizations.name END DESC,
-	CASE WHEN $3::text = 'r_name' AND $2::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN $3::text = 'r_name' AND $2::text = 'prev' THEN m_organizations.name END DESC,
 	CASE WHEN $2::text = 'next' THEN m_grades_pkey END ASC,
 	CASE WHEN $2::text = 'prev' THEN m_grades_pkey END DESC
 LIMIT $1
@@ -364,24 +375,24 @@ LIMIT $1
 type GetGradesWithOrganizationUseKeysetPaginateParams struct {
 	Limit           int32  `json:"limit"`
 	CursorDirection string `json:"cursor_direction"`
-	OrderMethod     string `json:"order_method"`
-	NameCursor      string `json:"name_cursor"`
 	Cursor          int32  `json:"cursor"`
 }
 
 type GetGradesWithOrganizationUseKeysetPaginateRow struct {
-	Grade        Grade        `json:"grade"`
-	Organization Organization `json:"organization"`
+	MGradesPkey             pgtype.Int8 `json:"m_grades_pkey"`
+	GradeID                 uuid.UUID   `json:"grade_id"`
+	Key                     string      `json:"key"`
+	OrganizationID          uuid.UUID   `json:"organization_id"`
+	OrganizationName        pgtype.Text `json:"organization_name"`
+	OrganizationDescription pgtype.Text `json:"organization_description"`
+	OrganizationColor       pgtype.Text `json:"organization_color"`
+	OrganizationIsPersonal  pgtype.Bool `json:"organization_is_personal"`
+	OrganizationIsWhole     pgtype.Bool `json:"organization_is_whole"`
+	OrganizationChatRoomID  pgtype.UUID `json:"organization_chat_room_id"`
 }
 
 func (q *Queries) GetGradesWithOrganizationUseKeysetPaginate(ctx context.Context, arg GetGradesWithOrganizationUseKeysetPaginateParams) ([]GetGradesWithOrganizationUseKeysetPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getGradesWithOrganizationUseKeysetPaginate,
-		arg.Limit,
-		arg.CursorDirection,
-		arg.OrderMethod,
-		arg.NameCursor,
-		arg.Cursor,
-	)
+	rows, err := q.db.Query(ctx, getGradesWithOrganizationUseKeysetPaginate, arg.Limit, arg.CursorDirection, arg.Cursor)
 	if err != nil {
 		return nil, err
 	}
@@ -390,20 +401,16 @@ func (q *Queries) GetGradesWithOrganizationUseKeysetPaginate(ctx context.Context
 	for rows.Next() {
 		var i GetGradesWithOrganizationUseKeysetPaginateRow
 		if err := rows.Scan(
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
+			&i.MGradesPkey,
+			&i.GradeID,
+			&i.Key,
+			&i.OrganizationID,
+			&i.OrganizationName,
+			&i.OrganizationDescription,
+			&i.OrganizationColor,
+			&i.OrganizationIsPersonal,
+			&i.OrganizationIsWhole,
+			&i.OrganizationChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -416,28 +423,36 @@ func (q *Queries) GetGradesWithOrganizationUseKeysetPaginate(ctx context.Context
 }
 
 const getGradesWithOrganizationUseNumberedPaginate = `-- name: GetGradesWithOrganizationUseNumberedPaginate :many
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id
+FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $3::text = 'r_name' THEN m_organizations.name END DESC,
 	m_grades_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetGradesWithOrganizationUseNumberedPaginateParams struct {
-	Limit       int32  `json:"limit"`
-	Offset      int32  `json:"offset"`
-	OrderMethod string `json:"order_method"`
+	Limit  int32 `json:"limit"`
+	Offset int32 `json:"offset"`
 }
 
 type GetGradesWithOrganizationUseNumberedPaginateRow struct {
-	Grade        Grade        `json:"grade"`
-	Organization Organization `json:"organization"`
+	MGradesPkey             pgtype.Int8 `json:"m_grades_pkey"`
+	GradeID                 uuid.UUID   `json:"grade_id"`
+	Key                     string      `json:"key"`
+	OrganizationID          uuid.UUID   `json:"organization_id"`
+	OrganizationName        pgtype.Text `json:"organization_name"`
+	OrganizationDescription pgtype.Text `json:"organization_description"`
+	OrganizationColor       pgtype.Text `json:"organization_color"`
+	OrganizationIsPersonal  pgtype.Bool `json:"organization_is_personal"`
+	OrganizationIsWhole     pgtype.Bool `json:"organization_is_whole"`
+	OrganizationChatRoomID  pgtype.UUID `json:"organization_chat_room_id"`
 }
 
 func (q *Queries) GetGradesWithOrganizationUseNumberedPaginate(ctx context.Context, arg GetGradesWithOrganizationUseNumberedPaginateParams) ([]GetGradesWithOrganizationUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getGradesWithOrganizationUseNumberedPaginate, arg.Limit, arg.Offset, arg.OrderMethod)
+	rows, err := q.db.Query(ctx, getGradesWithOrganizationUseNumberedPaginate, arg.Limit, arg.Offset)
 	if err != nil {
 		return nil, err
 	}
@@ -446,20 +461,16 @@ func (q *Queries) GetGradesWithOrganizationUseNumberedPaginate(ctx context.Conte
 	for rows.Next() {
 		var i GetGradesWithOrganizationUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
+			&i.MGradesPkey,
+			&i.GradeID,
+			&i.Key,
+			&i.OrganizationID,
+			&i.OrganizationName,
+			&i.OrganizationDescription,
+			&i.OrganizationColor,
+			&i.OrganizationIsPersonal,
+			&i.OrganizationIsWhole,
+			&i.OrganizationChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -473,13 +484,13 @@ func (q *Queries) GetGradesWithOrganizationUseNumberedPaginate(ctx context.Conte
 
 const getPluralGrades = `-- name: GetPluralGrades :many
 SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades
-WHERE organization_id = ANY($1::uuid[])
+WHERE grade_id = ANY($1::uuid[])
 ORDER BY
 	m_grades_pkey ASC
 `
 
-func (q *Queries) GetPluralGrades(ctx context.Context, organizationIds []uuid.UUID) ([]Grade, error) {
-	rows, err := q.db.Query(ctx, getPluralGrades, organizationIds)
+func (q *Queries) GetPluralGrades(ctx context.Context, gradeIds []uuid.UUID) ([]Grade, error) {
+	rows, err := q.db.Query(ctx, getPluralGrades, gradeIds)
 	if err != nil {
 		return nil, err
 	}
@@ -505,20 +516,20 @@ func (q *Queries) GetPluralGrades(ctx context.Context, organizationIds []uuid.UU
 
 const getPluralGradesUseNumberedPaginate = `-- name: GetPluralGradesUseNumberedPaginate :many
 SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades
-WHERE organization_id = ANY($3::uuid[])
+WHERE grade_id = ANY($3::uuid[])
 ORDER BY
 	m_grades_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralGradesUseNumberedPaginateParams struct {
-	Limit           int32       `json:"limit"`
-	Offset          int32       `json:"offset"`
-	OrganizationIds []uuid.UUID `json:"organization_ids"`
+	Limit    int32       `json:"limit"`
+	Offset   int32       `json:"offset"`
+	GradeIds []uuid.UUID `json:"grade_ids"`
 }
 
 func (q *Queries) GetPluralGradesUseNumberedPaginate(ctx context.Context, arg GetPluralGradesUseNumberedPaginateParams) ([]Grade, error) {
-	rows, err := q.db.Query(ctx, getPluralGradesUseNumberedPaginate, arg.Limit, arg.Offset, arg.OrganizationIds)
+	rows, err := q.db.Query(ctx, getPluralGradesUseNumberedPaginate, arg.Limit, arg.Offset, arg.GradeIds)
 	if err != nil {
 		return nil, err
 	}
@@ -543,20 +554,31 @@ func (q *Queries) GetPluralGradesUseNumberedPaginate(ctx context.Context, arg Ge
 }
 
 const getPluralGradesWithOrganization = `-- name: GetPluralGradesWithOrganization :many
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id
+FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
-WHERE organization_id = ANY($1::uuid[])
+WHERE grade_id = ANY($1::uuid[])
 ORDER BY
 	m_grades_pkey ASC
 `
 
 type GetPluralGradesWithOrganizationRow struct {
-	Grade        Grade        `json:"grade"`
-	Organization Organization `json:"organization"`
+	MGradesPkey             pgtype.Int8 `json:"m_grades_pkey"`
+	GradeID                 uuid.UUID   `json:"grade_id"`
+	Key                     string      `json:"key"`
+	OrganizationID          uuid.UUID   `json:"organization_id"`
+	OrganizationName        pgtype.Text `json:"organization_name"`
+	OrganizationDescription pgtype.Text `json:"organization_description"`
+	OrganizationColor       pgtype.Text `json:"organization_color"`
+	OrganizationIsPersonal  pgtype.Bool `json:"organization_is_personal"`
+	OrganizationIsWhole     pgtype.Bool `json:"organization_is_whole"`
+	OrganizationChatRoomID  pgtype.UUID `json:"organization_chat_room_id"`
 }
 
-func (q *Queries) GetPluralGradesWithOrganization(ctx context.Context, organizationIds []uuid.UUID) ([]GetPluralGradesWithOrganizationRow, error) {
-	rows, err := q.db.Query(ctx, getPluralGradesWithOrganization, organizationIds)
+func (q *Queries) GetPluralGradesWithOrganization(ctx context.Context, gradeIds []uuid.UUID) ([]GetPluralGradesWithOrganizationRow, error) {
+	rows, err := q.db.Query(ctx, getPluralGradesWithOrganization, gradeIds)
 	if err != nil {
 		return nil, err
 	}
@@ -565,20 +587,16 @@ func (q *Queries) GetPluralGradesWithOrganization(ctx context.Context, organizat
 	for rows.Next() {
 		var i GetPluralGradesWithOrganizationRow
 		if err := rows.Scan(
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
+			&i.MGradesPkey,
+			&i.GradeID,
+			&i.Key,
+			&i.OrganizationID,
+			&i.OrganizationName,
+			&i.OrganizationDescription,
+			&i.OrganizationColor,
+			&i.OrganizationIsPersonal,
+			&i.OrganizationIsWhole,
+			&i.OrganizationChatRoomID,
 		); err != nil {
 			return nil, err
 		}
@@ -591,27 +609,38 @@ func (q *Queries) GetPluralGradesWithOrganization(ctx context.Context, organizat
 }
 
 const getPluralGradesWithOrganizationUseNumberedPaginate = `-- name: GetPluralGradesWithOrganizationUseNumberedPaginate :many
-SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM m_grades
+SELECT m_grades.m_grades_pkey, m_grades.grade_id, m_grades.key, m_grades.organization_id, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id
+FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
-WHERE organization_id = ANY($3::uuid[])
+WHERE grade_id = ANY($3::uuid[])
 ORDER BY
 	m_grades_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetPluralGradesWithOrganizationUseNumberedPaginateParams struct {
-	Limit           int32       `json:"limit"`
-	Offset          int32       `json:"offset"`
-	OrganizationIds []uuid.UUID `json:"organization_ids"`
+	Limit    int32       `json:"limit"`
+	Offset   int32       `json:"offset"`
+	GradeIds []uuid.UUID `json:"grade_ids"`
 }
 
 type GetPluralGradesWithOrganizationUseNumberedPaginateRow struct {
-	Grade        Grade        `json:"grade"`
-	Organization Organization `json:"organization"`
+	MGradesPkey             pgtype.Int8 `json:"m_grades_pkey"`
+	GradeID                 uuid.UUID   `json:"grade_id"`
+	Key                     string      `json:"key"`
+	OrganizationID          uuid.UUID   `json:"organization_id"`
+	OrganizationName        pgtype.Text `json:"organization_name"`
+	OrganizationDescription pgtype.Text `json:"organization_description"`
+	OrganizationColor       pgtype.Text `json:"organization_color"`
+	OrganizationIsPersonal  pgtype.Bool `json:"organization_is_personal"`
+	OrganizationIsWhole     pgtype.Bool `json:"organization_is_whole"`
+	OrganizationChatRoomID  pgtype.UUID `json:"organization_chat_room_id"`
 }
 
 func (q *Queries) GetPluralGradesWithOrganizationUseNumberedPaginate(ctx context.Context, arg GetPluralGradesWithOrganizationUseNumberedPaginateParams) ([]GetPluralGradesWithOrganizationUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralGradesWithOrganizationUseNumberedPaginate, arg.Limit, arg.Offset, arg.OrganizationIds)
+	rows, err := q.db.Query(ctx, getPluralGradesWithOrganizationUseNumberedPaginate, arg.Limit, arg.Offset, arg.GradeIds)
 	if err != nil {
 		return nil, err
 	}
@@ -620,20 +649,16 @@ func (q *Queries) GetPluralGradesWithOrganizationUseNumberedPaginate(ctx context
 	for rows.Next() {
 		var i GetPluralGradesWithOrganizationUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.Grade.MGradesPkey,
-			&i.Grade.GradeID,
-			&i.Grade.Key,
-			&i.Grade.OrganizationID,
-			&i.Organization.MOrganizationsPkey,
-			&i.Organization.OrganizationID,
-			&i.Organization.Name,
-			&i.Organization.Description,
-			&i.Organization.Color,
-			&i.Organization.IsPersonal,
-			&i.Organization.IsWhole,
-			&i.Organization.CreatedAt,
-			&i.Organization.UpdatedAt,
-			&i.Organization.ChatRoomID,
+			&i.MGradesPkey,
+			&i.GradeID,
+			&i.Key,
+			&i.OrganizationID,
+			&i.OrganizationName,
+			&i.OrganizationDescription,
+			&i.OrganizationColor,
+			&i.OrganizationIsPersonal,
+			&i.OrganizationIsWhole,
+			&i.OrganizationChatRoomID,
 		); err != nil {
 			return nil, err
 		}

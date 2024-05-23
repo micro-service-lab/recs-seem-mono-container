@@ -43,4 +43,6 @@ type Store interface {
 	ChatRoom
 	ChatRoomBelonging
 	Organization
+	Group
+	Grade
 }

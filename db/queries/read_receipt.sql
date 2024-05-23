@@ -7,8 +7,8 @@ INSERT INTO t_read_receipts (member_id, message_id, read_at) VALUES ($1, $2, $3)
 -- name: ReadReceipt :one
 UPDATE t_read_receipts SET read_at = $3 WHERE member_id = $1 AND message_id = $2 RETURNING *;
 
--- name: ReadReceipts :many
-SELECT * FROM t_read_receipts WHERE member_id = $1 AND message_id = ANY(@message_ids::uuid[]);
+-- name: ReadReceipts :execrows
+UPDATE t_read_receipts SET read_at = $2 WHERE member_id = $1 AND message_id = ANY(@message_ids::uuid[]);
 
 -- name: GetReadableMembersOnMessage :many
 SELECT m_members.*, t_read_receipts.read_at read_at, t_images.height profile_image_height,
@@ -213,7 +213,7 @@ LIMIT $2;
 -- name: GetPluralReadableMessagesOnMember :many
 SELECT t_messages.*, t_read_receipts.read_at read_at FROM t_messages
 LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
-WHERE message_id = ANY(@message_ids::uuid[])
+WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
 	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC,
 	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
@@ -222,7 +222,7 @@ ORDER BY
 -- name: GetPluralReadableMessagesOnMemberUseNumberedPaginate :many
 SELECT t_messages.*, t_read_receipts.read_at read_at FROM t_messages
 LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
-WHERE message_id = ANY(@message_ids::uuid[])
+WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
 	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC,
 	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
@@ -237,7 +237,7 @@ AND
 AND
 	CASE WHEN @where_is_not_read::boolean = true THEN read_at IS NULL ELSE TRUE END;
 
--- name: CountReadableMessageOnChatRoomAndMember :one
+-- name: CountReadableMessagesOnChatRoomAndMember :one
 SELECT COUNT(*) FROM t_read_receipts
 LEFT JOIN t_messages ON t_read_receipts.message_id = t_messages.message_id
 WHERE t_messages.chat_room_id = $1
@@ -247,7 +247,7 @@ AND
 AND
 	CASE WHEN @where_is_not_read::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END;
 
--- name: CountReadableMessagesOnChatRoomAndMember :many
+-- name: CountReadableMessagesOnChatRoomsAndMember :many
 SELECT t_messages.chat_room_id, COUNT(*) FROM t_read_receipts
 LEFT JOIN t_messages ON t_read_receipts.message_id = t_messages.message_id
 WHERE t_messages.chat_room_id = ANY(@chat_room_ids::uuid[])

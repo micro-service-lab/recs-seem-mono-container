@@ -46,7 +46,7 @@ func (q *Queries) CountReadableMembersOnMessage(ctx context.Context, arg CountRe
 	return count, err
 }
 
-const countReadableMessageOnChatRoomAndMember = `-- name: CountReadableMessageOnChatRoomAndMember :one
+const countReadableMessagesOnChatRoomAndMember = `-- name: CountReadableMessagesOnChatRoomAndMember :one
 SELECT COUNT(*) FROM t_read_receipts
 LEFT JOIN t_messages ON t_read_receipts.message_id = t_messages.message_id
 WHERE t_messages.chat_room_id = $1
@@ -57,15 +57,15 @@ AND
 	CASE WHEN $4::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
 `
 
-type CountReadableMessageOnChatRoomAndMemberParams struct {
+type CountReadableMessagesOnChatRoomAndMemberParams struct {
 	ChatRoomID     uuid.UUID `json:"chat_room_id"`
 	MemberID       uuid.UUID `json:"member_id"`
 	WhereIsRead    bool      `json:"where_is_read"`
 	WhereIsNotRead bool      `json:"where_is_not_read"`
 }
 
-func (q *Queries) CountReadableMessageOnChatRoomAndMember(ctx context.Context, arg CountReadableMessageOnChatRoomAndMemberParams) (int64, error) {
-	row := q.db.QueryRow(ctx, countReadableMessageOnChatRoomAndMember,
+func (q *Queries) CountReadableMessagesOnChatRoomAndMember(ctx context.Context, arg CountReadableMessagesOnChatRoomAndMemberParams) (int64, error) {
+	row := q.db.QueryRow(ctx, countReadableMessagesOnChatRoomAndMember,
 		arg.ChatRoomID,
 		arg.MemberID,
 		arg.WhereIsRead,
@@ -76,7 +76,7 @@ func (q *Queries) CountReadableMessageOnChatRoomAndMember(ctx context.Context, a
 	return count, err
 }
 
-const countReadableMessagesOnChatRoomAndMember = `-- name: CountReadableMessagesOnChatRoomAndMember :many
+const countReadableMessagesOnChatRoomsAndMember = `-- name: CountReadableMessagesOnChatRoomsAndMember :many
 SELECT t_messages.chat_room_id, COUNT(*) FROM t_read_receipts
 LEFT JOIN t_messages ON t_read_receipts.message_id = t_messages.message_id
 WHERE t_messages.chat_room_id = ANY($2::uuid[])
@@ -88,20 +88,20 @@ AND
 GROUP BY t_messages.chat_room_id
 `
 
-type CountReadableMessagesOnChatRoomAndMemberParams struct {
+type CountReadableMessagesOnChatRoomsAndMemberParams struct {
 	MemberID       uuid.UUID   `json:"member_id"`
 	ChatRoomIds    []uuid.UUID `json:"chat_room_ids"`
 	WhereIsRead    bool        `json:"where_is_read"`
 	WhereIsNotRead bool        `json:"where_is_not_read"`
 }
 
-type CountReadableMessagesOnChatRoomAndMemberRow struct {
+type CountReadableMessagesOnChatRoomsAndMemberRow struct {
 	ChatRoomID pgtype.UUID `json:"chat_room_id"`
 	Count      int64       `json:"count"`
 }
 
-func (q *Queries) CountReadableMessagesOnChatRoomAndMember(ctx context.Context, arg CountReadableMessagesOnChatRoomAndMemberParams) ([]CountReadableMessagesOnChatRoomAndMemberRow, error) {
-	rows, err := q.db.Query(ctx, countReadableMessagesOnChatRoomAndMember,
+func (q *Queries) CountReadableMessagesOnChatRoomsAndMember(ctx context.Context, arg CountReadableMessagesOnChatRoomsAndMemberParams) ([]CountReadableMessagesOnChatRoomsAndMemberRow, error) {
+	rows, err := q.db.Query(ctx, countReadableMessagesOnChatRoomsAndMember,
 		arg.MemberID,
 		arg.ChatRoomIds,
 		arg.WhereIsRead,
@@ -111,9 +111,9 @@ func (q *Queries) CountReadableMessagesOnChatRoomAndMember(ctx context.Context, 
 		return nil, err
 	}
 	defer rows.Close()
-	items := []CountReadableMessagesOnChatRoomAndMemberRow{}
+	items := []CountReadableMessagesOnChatRoomsAndMemberRow{}
 	for rows.Next() {
-		var i CountReadableMessagesOnChatRoomAndMemberRow
+		var i CountReadableMessagesOnChatRoomsAndMemberRow
 		if err := rows.Scan(&i.ChatRoomID, &i.Count); err != nil {
 			return nil, err
 		}
@@ -380,7 +380,7 @@ func (q *Queries) GetPluralReadableMembersOnMessageUseNumberedPaginate(ctx conte
 const getPluralReadableMessagesOnMember = `-- name: GetPluralReadableMessagesOnMember :many
 SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_read_receipts.read_at read_at FROM t_messages
 LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
-WHERE message_id = ANY($1::uuid[])
+WHERE member_id = ANY($1::uuid[])
 ORDER BY
 	CASE WHEN $2::text = 'read_at' THEN t_read_receipts.read_at END ASC,
 	CASE WHEN $2::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
@@ -388,7 +388,7 @@ ORDER BY
 `
 
 type GetPluralReadableMessagesOnMemberParams struct {
-	MessageIds  []uuid.UUID `json:"message_ids"`
+	MemberIds   []uuid.UUID `json:"member_ids"`
 	OrderMethod string      `json:"order_method"`
 }
 
@@ -404,7 +404,7 @@ type GetPluralReadableMessagesOnMemberRow struct {
 }
 
 func (q *Queries) GetPluralReadableMessagesOnMember(ctx context.Context, arg GetPluralReadableMessagesOnMemberParams) ([]GetPluralReadableMessagesOnMemberRow, error) {
-	rows, err := q.db.Query(ctx, getPluralReadableMessagesOnMember, arg.MessageIds, arg.OrderMethod)
+	rows, err := q.db.Query(ctx, getPluralReadableMessagesOnMember, arg.MemberIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -435,7 +435,7 @@ func (q *Queries) GetPluralReadableMessagesOnMember(ctx context.Context, arg Get
 const getPluralReadableMessagesOnMemberUseNumberedPaginate = `-- name: GetPluralReadableMessagesOnMemberUseNumberedPaginate :many
 SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_read_receipts.read_at read_at FROM t_messages
 LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
-WHERE message_id = ANY($3::uuid[])
+WHERE member_id = ANY($3::uuid[])
 ORDER BY
 	CASE WHEN $4::text = 'read_at' THEN t_read_receipts.read_at END ASC,
 	CASE WHEN $4::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
@@ -446,7 +446,7 @@ LIMIT $1 OFFSET $2
 type GetPluralReadableMessagesOnMemberUseNumberedPaginateParams struct {
 	Limit       int32       `json:"limit"`
 	Offset      int32       `json:"offset"`
-	MessageIds  []uuid.UUID `json:"message_ids"`
+	MemberIds   []uuid.UUID `json:"member_ids"`
 	OrderMethod string      `json:"order_method"`
 }
 
@@ -465,7 +465,7 @@ func (q *Queries) GetPluralReadableMessagesOnMemberUseNumberedPaginate(ctx conte
 	rows, err := q.db.Query(ctx, getPluralReadableMessagesOnMemberUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
-		arg.MessageIds,
+		arg.MemberIds,
 		arg.OrderMethod,
 	)
 	if err != nil {
@@ -1129,36 +1129,20 @@ func (q *Queries) ReadReceipt(ctx context.Context, arg ReadReceiptParams) (TRead
 	return i, err
 }
 
-const readReceipts = `-- name: ReadReceipts :many
-SELECT t_read_receipts_pkey, member_id, message_id, read_at FROM t_read_receipts WHERE member_id = $1 AND message_id = ANY($2::uuid[])
+const readReceipts = `-- name: ReadReceipts :execrows
+UPDATE t_read_receipts SET read_at = $2 WHERE member_id = $1 AND message_id = ANY($3::uuid[])
 `
 
 type ReadReceiptsParams struct {
-	MemberID   uuid.UUID   `json:"member_id"`
-	MessageIds []uuid.UUID `json:"message_ids"`
+	MemberID   uuid.UUID          `json:"member_id"`
+	ReadAt     pgtype.Timestamptz `json:"read_at"`
+	MessageIds []uuid.UUID        `json:"message_ids"`
 }
 
-func (q *Queries) ReadReceipts(ctx context.Context, arg ReadReceiptsParams) ([]TReadReceipt, error) {
-	rows, err := q.db.Query(ctx, readReceipts, arg.MemberID, arg.MessageIds)
+func (q *Queries) ReadReceipts(ctx context.Context, arg ReadReceiptsParams) (int64, error) {
+	result, err := q.db.Exec(ctx, readReceipts, arg.MemberID, arg.ReadAt, arg.MessageIds)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
-	defer rows.Close()
-	items := []TReadReceipt{}
-	for rows.Next() {
-		var i TReadReceipt
-		if err := rows.Scan(
-			&i.TReadReceiptsPkey,
-			&i.MemberID,
-			&i.MessageID,
-			&i.ReadAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+	return result.RowsAffected(), nil
 }

@@ -51,4 +51,5 @@ type Store interface {
 	File
 	Image
 	Message
+	ReadReceipt
 }

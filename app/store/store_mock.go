@@ -132,6 +132,12 @@ var _ Store = &StoreMock{}
 //			CountMembersWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereMemberParam) (int64, error) {
 //				panic("mock out the CountMembersWithSd method")
 //			},
+//			CountMessagesFunc: func(ctx context.Context, where parameter.WhereMessageParam) (int64, error) {
+//				panic("mock out the CountMessages method")
+//			},
+//			CountMessagesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereMessageParam) (int64, error) {
+//				panic("mock out the CountMessagesWithSd method")
+//			},
 //			CountMimeTypesFunc: func(ctx context.Context, where parameter.WhereMimeTypeParam) (int64, error) {
 //				panic("mock out the CountMimeTypes method")
 //			},
@@ -336,6 +342,18 @@ var _ Store = &StoreMock{}
 //			CreateMembersWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateMemberParam) (int64, error) {
 //				panic("mock out the CreateMembersWithSd method")
 //			},
+//			CreateMessageFunc: func(ctx context.Context, param parameter.CreateMessageParam) (entity.Message, error) {
+//				panic("mock out the CreateMessage method")
+//			},
+//			CreateMessageWithSdFunc: func(ctx context.Context, sd Sd, param parameter.CreateMessageParam) (entity.Message, error) {
+//				panic("mock out the CreateMessageWithSd method")
+//			},
+//			CreateMessagesFunc: func(ctx context.Context, params []parameter.CreateMessageParam) (int64, error) {
+//				panic("mock out the CreateMessages method")
+//			},
+//			CreateMessagesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateMessageParam) (int64, error) {
+//				panic("mock out the CreateMessagesWithSd method")
+//			},
 //			CreateMimeTypeFunc: func(ctx context.Context, param parameter.CreateMimeTypeParam) (entity.MimeType, error) {
 //				panic("mock out the CreateMimeType method")
 //			},
@@ -539,6 +557,18 @@ var _ Store = &StoreMock{}
 //			},
 //			DeleteMemberWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteMemberWithSd method")
+//			},
+//			DeleteMessageFunc: func(ctx context.Context, messageID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteMessage method")
+//			},
+//			DeleteMessageWithSdFunc: func(ctx context.Context, sd Sd, messageID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteMessageWithSd method")
+//			},
+//			DeleteMessagesOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteMessagesOnChatRoom method")
+//			},
+//			DeleteMessagesOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteMessagesOnChatRoomWithSd method")
 //			},
 //			DeleteMimeTypeFunc: func(ctx context.Context, mimeTypeID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteMimeType method")
@@ -858,6 +888,24 @@ var _ Store = &StoreMock{}
 //			FindMemberWithRoleWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID) (entity.MemberWithRole, error) {
 //				panic("mock out the FindMemberWithRoleWithSd method")
 //			},
+//			FindMessageByIDFunc: func(ctx context.Context, messageID uuid.UUID) (entity.Message, error) {
+//				panic("mock out the FindMessageByID method")
+//			},
+//			FindMessageByIDWithSdFunc: func(ctx context.Context, sd Sd, messageID uuid.UUID) (entity.Message, error) {
+//				panic("mock out the FindMessageByIDWithSd method")
+//			},
+//			FindMessageWithChatRoomFunc: func(ctx context.Context, messageID uuid.UUID) (entity.MessageWithChatRoom, error) {
+//				panic("mock out the FindMessageWithChatRoom method")
+//			},
+//			FindMessageWithChatRoomWithSdFunc: func(ctx context.Context, sd Sd, messageID uuid.UUID) (entity.MessageWithChatRoom, error) {
+//				panic("mock out the FindMessageWithChatRoomWithSd method")
+//			},
+//			FindMessageWithSenderFunc: func(ctx context.Context, messageID uuid.UUID) (entity.MessageWithSender, error) {
+//				panic("mock out the FindMessageWithSender method")
+//			},
+//			FindMessageWithSenderWithSdFunc: func(ctx context.Context, sd Sd, messageID uuid.UUID) (entity.MessageWithSender, error) {
+//				panic("mock out the FindMessageWithSenderWithSd method")
+//			},
 //			FindMimeTypeByIDFunc: func(ctx context.Context, mimeTypeID uuid.UUID) (entity.MimeType, error) {
 //				panic("mock out the FindMimeTypeByID method")
 //			},
@@ -1164,6 +1212,24 @@ var _ Store = &StoreMock{}
 //			GetMembersWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereMemberParam, order parameter.MemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Member], error) {
 //				panic("mock out the GetMembersWithSd method")
 //			},
+//			GetMessagesFunc: func(ctx context.Context, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Message], error) {
+//				panic("mock out the GetMessages method")
+//			},
+//			GetMessagesWithChatRoomFunc: func(ctx context.Context, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MessageWithChatRoom], error) {
+//				panic("mock out the GetMessagesWithChatRoom method")
+//			},
+//			GetMessagesWithChatRoomWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MessageWithChatRoom], error) {
+//				panic("mock out the GetMessagesWithChatRoomWithSd method")
+//			},
+//			GetMessagesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Message], error) {
+//				panic("mock out the GetMessagesWithSd method")
+//			},
+//			GetMessagesWithSenderFunc: func(ctx context.Context, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MessageWithSender], error) {
+//				panic("mock out the GetMessagesWithSender method")
+//			},
+//			GetMessagesWithSenderWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MessageWithSender], error) {
+//				panic("mock out the GetMessagesWithSenderWithSd method")
+//			},
 //			GetMimeTypesFunc: func(ctx context.Context, where parameter.WhereMimeTypeParam, order parameter.MimeTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MimeType], error) {
 //				panic("mock out the GetMimeTypes method")
 //			},
@@ -1355,6 +1421,24 @@ var _ Store = &StoreMock{}
 //			},
 //			GetPluralMembersWithSdFunc: func(ctx context.Context, sd Sd, memberIDs []uuid.UUID, order parameter.MemberOrderMethod, np NumberedPaginationParam) (ListResult[entity.Member], error) {
 //				panic("mock out the GetPluralMembersWithSd method")
+//			},
+//			GetPluralMessagesFunc: func(ctx context.Context, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.Message], error) {
+//				panic("mock out the GetPluralMessages method")
+//			},
+//			GetPluralMessagesWithChatRoomFunc: func(ctx context.Context, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.MessageWithChatRoom], error) {
+//				panic("mock out the GetPluralMessagesWithChatRoom method")
+//			},
+//			GetPluralMessagesWithChatRoomWithSdFunc: func(ctx context.Context, sd Sd, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.MessageWithChatRoom], error) {
+//				panic("mock out the GetPluralMessagesWithChatRoomWithSd method")
+//			},
+//			GetPluralMessagesWithSdFunc: func(ctx context.Context, sd Sd, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.Message], error) {
+//				panic("mock out the GetPluralMessagesWithSd method")
+//			},
+//			GetPluralMessagesWithSenderFunc: func(ctx context.Context, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.MessageWithSender], error) {
+//				panic("mock out the GetPluralMessagesWithSender method")
+//			},
+//			GetPluralMessagesWithSenderWithSdFunc: func(ctx context.Context, sd Sd, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.MessageWithSender], error) {
+//				panic("mock out the GetPluralMessagesWithSenderWithSd method")
 //			},
 //			GetPluralMimeTypesFunc: func(ctx context.Context, mimeTypeIDs []uuid.UUID, order parameter.MimeTypeOrderMethod, np NumberedPaginationParam) (ListResult[entity.MimeType], error) {
 //				panic("mock out the GetPluralMimeTypes method")
@@ -1578,6 +1662,12 @@ var _ Store = &StoreMock{}
 //			PluralDeleteMembersWithSdFunc: func(ctx context.Context, sd Sd, memberIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteMembersWithSd method")
 //			},
+//			PluralDeleteMessagesFunc: func(ctx context.Context, messageIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteMessages method")
+//			},
+//			PluralDeleteMessagesWithSdFunc: func(ctx context.Context, sd Sd, messageIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteMessagesWithSd method")
+//			},
 //			PluralDeleteMimeTypesFunc: func(ctx context.Context, mimeTypeIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteMimeTypes method")
 //			},
@@ -1742,6 +1832,12 @@ var _ Store = &StoreMock{}
 //			},
 //			UpdateMemberWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID, param parameter.UpdateMemberParams) (entity.Member, error) {
 //				panic("mock out the UpdateMemberWithSd method")
+//			},
+//			UpdateMessageFunc: func(ctx context.Context, messageID uuid.UUID, param parameter.UpdateMessageParams) (entity.Message, error) {
+//				panic("mock out the UpdateMessage method")
+//			},
+//			UpdateMessageWithSdFunc: func(ctx context.Context, sd Sd, messageID uuid.UUID, param parameter.UpdateMessageParams) (entity.Message, error) {
+//				panic("mock out the UpdateMessageWithSd method")
 //			},
 //			UpdateMimeTypeFunc: func(ctx context.Context, mimeTypeID uuid.UUID, param parameter.UpdateMimeTypeParams) (entity.MimeType, error) {
 //				panic("mock out the UpdateMimeType method")
@@ -1944,6 +2040,12 @@ type StoreMock struct {
 
 	// CountMembersWithSdFunc mocks the CountMembersWithSd method.
 	CountMembersWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereMemberParam) (int64, error)
+
+	// CountMessagesFunc mocks the CountMessages method.
+	CountMessagesFunc func(ctx context.Context, where parameter.WhereMessageParam) (int64, error)
+
+	// CountMessagesWithSdFunc mocks the CountMessagesWithSd method.
+	CountMessagesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereMessageParam) (int64, error)
 
 	// CountMimeTypesFunc mocks the CountMimeTypes method.
 	CountMimeTypesFunc func(ctx context.Context, where parameter.WhereMimeTypeParam) (int64, error)
@@ -2149,6 +2251,18 @@ type StoreMock struct {
 	// CreateMembersWithSdFunc mocks the CreateMembersWithSd method.
 	CreateMembersWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateMemberParam) (int64, error)
 
+	// CreateMessageFunc mocks the CreateMessage method.
+	CreateMessageFunc func(ctx context.Context, param parameter.CreateMessageParam) (entity.Message, error)
+
+	// CreateMessageWithSdFunc mocks the CreateMessageWithSd method.
+	CreateMessageWithSdFunc func(ctx context.Context, sd Sd, param parameter.CreateMessageParam) (entity.Message, error)
+
+	// CreateMessagesFunc mocks the CreateMessages method.
+	CreateMessagesFunc func(ctx context.Context, params []parameter.CreateMessageParam) (int64, error)
+
+	// CreateMessagesWithSdFunc mocks the CreateMessagesWithSd method.
+	CreateMessagesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateMessageParam) (int64, error)
+
 	// CreateMimeTypeFunc mocks the CreateMimeType method.
 	CreateMimeTypeFunc func(ctx context.Context, param parameter.CreateMimeTypeParam) (entity.MimeType, error)
 
@@ -2352,6 +2466,18 @@ type StoreMock struct {
 
 	// DeleteMemberWithSdFunc mocks the DeleteMemberWithSd method.
 	DeleteMemberWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID) (int64, error)
+
+	// DeleteMessageFunc mocks the DeleteMessage method.
+	DeleteMessageFunc func(ctx context.Context, messageID uuid.UUID) (int64, error)
+
+	// DeleteMessageWithSdFunc mocks the DeleteMessageWithSd method.
+	DeleteMessageWithSdFunc func(ctx context.Context, sd Sd, messageID uuid.UUID) (int64, error)
+
+	// DeleteMessagesOnChatRoomFunc mocks the DeleteMessagesOnChatRoom method.
+	DeleteMessagesOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID) (int64, error)
+
+	// DeleteMessagesOnChatRoomWithSdFunc mocks the DeleteMessagesOnChatRoomWithSd method.
+	DeleteMessagesOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID) (int64, error)
 
 	// DeleteMimeTypeFunc mocks the DeleteMimeType method.
 	DeleteMimeTypeFunc func(ctx context.Context, mimeTypeID uuid.UUID) (int64, error)
@@ -2671,6 +2797,24 @@ type StoreMock struct {
 	// FindMemberWithRoleWithSdFunc mocks the FindMemberWithRoleWithSd method.
 	FindMemberWithRoleWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID) (entity.MemberWithRole, error)
 
+	// FindMessageByIDFunc mocks the FindMessageByID method.
+	FindMessageByIDFunc func(ctx context.Context, messageID uuid.UUID) (entity.Message, error)
+
+	// FindMessageByIDWithSdFunc mocks the FindMessageByIDWithSd method.
+	FindMessageByIDWithSdFunc func(ctx context.Context, sd Sd, messageID uuid.UUID) (entity.Message, error)
+
+	// FindMessageWithChatRoomFunc mocks the FindMessageWithChatRoom method.
+	FindMessageWithChatRoomFunc func(ctx context.Context, messageID uuid.UUID) (entity.MessageWithChatRoom, error)
+
+	// FindMessageWithChatRoomWithSdFunc mocks the FindMessageWithChatRoomWithSd method.
+	FindMessageWithChatRoomWithSdFunc func(ctx context.Context, sd Sd, messageID uuid.UUID) (entity.MessageWithChatRoom, error)
+
+	// FindMessageWithSenderFunc mocks the FindMessageWithSender method.
+	FindMessageWithSenderFunc func(ctx context.Context, messageID uuid.UUID) (entity.MessageWithSender, error)
+
+	// FindMessageWithSenderWithSdFunc mocks the FindMessageWithSenderWithSd method.
+	FindMessageWithSenderWithSdFunc func(ctx context.Context, sd Sd, messageID uuid.UUID) (entity.MessageWithSender, error)
+
 	// FindMimeTypeByIDFunc mocks the FindMimeTypeByID method.
 	FindMimeTypeByIDFunc func(ctx context.Context, mimeTypeID uuid.UUID) (entity.MimeType, error)
 
@@ -2977,6 +3121,24 @@ type StoreMock struct {
 	// GetMembersWithSdFunc mocks the GetMembersWithSd method.
 	GetMembersWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereMemberParam, order parameter.MemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Member], error)
 
+	// GetMessagesFunc mocks the GetMessages method.
+	GetMessagesFunc func(ctx context.Context, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Message], error)
+
+	// GetMessagesWithChatRoomFunc mocks the GetMessagesWithChatRoom method.
+	GetMessagesWithChatRoomFunc func(ctx context.Context, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MessageWithChatRoom], error)
+
+	// GetMessagesWithChatRoomWithSdFunc mocks the GetMessagesWithChatRoomWithSd method.
+	GetMessagesWithChatRoomWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MessageWithChatRoom], error)
+
+	// GetMessagesWithSdFunc mocks the GetMessagesWithSd method.
+	GetMessagesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Message], error)
+
+	// GetMessagesWithSenderFunc mocks the GetMessagesWithSender method.
+	GetMessagesWithSenderFunc func(ctx context.Context, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MessageWithSender], error)
+
+	// GetMessagesWithSenderWithSdFunc mocks the GetMessagesWithSenderWithSd method.
+	GetMessagesWithSenderWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MessageWithSender], error)
+
 	// GetMimeTypesFunc mocks the GetMimeTypes method.
 	GetMimeTypesFunc func(ctx context.Context, where parameter.WhereMimeTypeParam, order parameter.MimeTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MimeType], error)
 
@@ -3168,6 +3330,24 @@ type StoreMock struct {
 
 	// GetPluralMembersWithSdFunc mocks the GetPluralMembersWithSd method.
 	GetPluralMembersWithSdFunc func(ctx context.Context, sd Sd, memberIDs []uuid.UUID, order parameter.MemberOrderMethod, np NumberedPaginationParam) (ListResult[entity.Member], error)
+
+	// GetPluralMessagesFunc mocks the GetPluralMessages method.
+	GetPluralMessagesFunc func(ctx context.Context, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.Message], error)
+
+	// GetPluralMessagesWithChatRoomFunc mocks the GetPluralMessagesWithChatRoom method.
+	GetPluralMessagesWithChatRoomFunc func(ctx context.Context, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.MessageWithChatRoom], error)
+
+	// GetPluralMessagesWithChatRoomWithSdFunc mocks the GetPluralMessagesWithChatRoomWithSd method.
+	GetPluralMessagesWithChatRoomWithSdFunc func(ctx context.Context, sd Sd, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.MessageWithChatRoom], error)
+
+	// GetPluralMessagesWithSdFunc mocks the GetPluralMessagesWithSd method.
+	GetPluralMessagesWithSdFunc func(ctx context.Context, sd Sd, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.Message], error)
+
+	// GetPluralMessagesWithSenderFunc mocks the GetPluralMessagesWithSender method.
+	GetPluralMessagesWithSenderFunc func(ctx context.Context, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.MessageWithSender], error)
+
+	// GetPluralMessagesWithSenderWithSdFunc mocks the GetPluralMessagesWithSenderWithSd method.
+	GetPluralMessagesWithSenderWithSdFunc func(ctx context.Context, sd Sd, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.MessageWithSender], error)
 
 	// GetPluralMimeTypesFunc mocks the GetPluralMimeTypes method.
 	GetPluralMimeTypesFunc func(ctx context.Context, mimeTypeIDs []uuid.UUID, order parameter.MimeTypeOrderMethod, np NumberedPaginationParam) (ListResult[entity.MimeType], error)
@@ -3391,6 +3571,12 @@ type StoreMock struct {
 	// PluralDeleteMembersWithSdFunc mocks the PluralDeleteMembersWithSd method.
 	PluralDeleteMembersWithSdFunc func(ctx context.Context, sd Sd, memberIDs []uuid.UUID) (int64, error)
 
+	// PluralDeleteMessagesFunc mocks the PluralDeleteMessages method.
+	PluralDeleteMessagesFunc func(ctx context.Context, messageIDs []uuid.UUID) (int64, error)
+
+	// PluralDeleteMessagesWithSdFunc mocks the PluralDeleteMessagesWithSd method.
+	PluralDeleteMessagesWithSdFunc func(ctx context.Context, sd Sd, messageIDs []uuid.UUID) (int64, error)
+
 	// PluralDeleteMimeTypesFunc mocks the PluralDeleteMimeTypes method.
 	PluralDeleteMimeTypesFunc func(ctx context.Context, mimeTypeIDs []uuid.UUID) (int64, error)
 
@@ -3555,6 +3741,12 @@ type StoreMock struct {
 
 	// UpdateMemberWithSdFunc mocks the UpdateMemberWithSd method.
 	UpdateMemberWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID, param parameter.UpdateMemberParams) (entity.Member, error)
+
+	// UpdateMessageFunc mocks the UpdateMessage method.
+	UpdateMessageFunc func(ctx context.Context, messageID uuid.UUID, param parameter.UpdateMessageParams) (entity.Message, error)
+
+	// UpdateMessageWithSdFunc mocks the UpdateMessageWithSd method.
+	UpdateMessageWithSdFunc func(ctx context.Context, sd Sd, messageID uuid.UUID, param parameter.UpdateMessageParams) (entity.Message, error)
 
 	// UpdateMimeTypeFunc mocks the UpdateMimeType method.
 	UpdateMimeTypeFunc func(ctx context.Context, mimeTypeID uuid.UUID, param parameter.UpdateMimeTypeParams) (entity.MimeType, error)
@@ -3934,6 +4126,22 @@ type StoreMock struct {
 			Sd Sd
 			// Where is the where argument value.
 			Where parameter.WhereMemberParam
+		}
+		// CountMessages holds details about calls to the CountMessages method.
+		CountMessages []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereMessageParam
+		}
+		// CountMessagesWithSd holds details about calls to the CountMessagesWithSd method.
+		CountMessagesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereMessageParam
 		}
 		// CountMimeTypes holds details about calls to the CountMimeTypes method.
 		CountMimeTypes []struct {
@@ -4487,6 +4695,38 @@ type StoreMock struct {
 			// Params is the params argument value.
 			Params []parameter.CreateMemberParam
 		}
+		// CreateMessage holds details about calls to the CreateMessage method.
+		CreateMessage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Param is the param argument value.
+			Param parameter.CreateMessageParam
+		}
+		// CreateMessageWithSd holds details about calls to the CreateMessageWithSd method.
+		CreateMessageWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Param is the param argument value.
+			Param parameter.CreateMessageParam
+		}
+		// CreateMessages holds details about calls to the CreateMessages method.
+		CreateMessages []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.CreateMessageParam
+		}
+		// CreateMessagesWithSd holds details about calls to the CreateMessagesWithSd method.
+		CreateMessagesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Params is the params argument value.
+			Params []parameter.CreateMessageParam
+		}
 		// CreateMimeType holds details about calls to the CreateMimeType method.
 		CreateMimeType []struct {
 			// Ctx is the ctx argument value.
@@ -5030,6 +5270,38 @@ type StoreMock struct {
 			Sd Sd
 			// MemberID is the memberID argument value.
 			MemberID uuid.UUID
+		}
+		// DeleteMessage holds details about calls to the DeleteMessage method.
+		DeleteMessage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+		}
+		// DeleteMessageWithSd holds details about calls to the DeleteMessageWithSd method.
+		DeleteMessageWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+		}
+		// DeleteMessagesOnChatRoom holds details about calls to the DeleteMessagesOnChatRoom method.
+		DeleteMessagesOnChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+		}
+		// DeleteMessagesOnChatRoomWithSd holds details about calls to the DeleteMessagesOnChatRoomWithSd method.
+		DeleteMessagesOnChatRoomWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
 		}
 		// DeleteMimeType holds details about calls to the DeleteMimeType method.
 		DeleteMimeType []struct {
@@ -5890,6 +6162,54 @@ type StoreMock struct {
 			Sd Sd
 			// MemberID is the memberID argument value.
 			MemberID uuid.UUID
+		}
+		// FindMessageByID holds details about calls to the FindMessageByID method.
+		FindMessageByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+		}
+		// FindMessageByIDWithSd holds details about calls to the FindMessageByIDWithSd method.
+		FindMessageByIDWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+		}
+		// FindMessageWithChatRoom holds details about calls to the FindMessageWithChatRoom method.
+		FindMessageWithChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+		}
+		// FindMessageWithChatRoomWithSd holds details about calls to the FindMessageWithChatRoomWithSd method.
+		FindMessageWithChatRoomWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+		}
+		// FindMessageWithSender holds details about calls to the FindMessageWithSender method.
+		FindMessageWithSender []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+		}
+		// FindMessageWithSenderWithSd holds details about calls to the FindMessageWithSenderWithSd method.
+		FindMessageWithSenderWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
 		}
 		// FindMimeTypeByID holds details about calls to the FindMimeTypeByID method.
 		FindMimeTypeByID []struct {
@@ -7091,6 +7411,102 @@ type StoreMock struct {
 			// Wc is the wc argument value.
 			Wc WithCountParam
 		}
+		// GetMessages holds details about calls to the GetMessages method.
+		GetMessages []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereMessageParam
+			// Order is the order argument value.
+			Order parameter.MessageOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetMessagesWithChatRoom holds details about calls to the GetMessagesWithChatRoom method.
+		GetMessagesWithChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereMessageParam
+			// Order is the order argument value.
+			Order parameter.MessageOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetMessagesWithChatRoomWithSd holds details about calls to the GetMessagesWithChatRoomWithSd method.
+		GetMessagesWithChatRoomWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereMessageParam
+			// Order is the order argument value.
+			Order parameter.MessageOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetMessagesWithSd holds details about calls to the GetMessagesWithSd method.
+		GetMessagesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereMessageParam
+			// Order is the order argument value.
+			Order parameter.MessageOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetMessagesWithSender holds details about calls to the GetMessagesWithSender method.
+		GetMessagesWithSender []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereMessageParam
+			// Order is the order argument value.
+			Order parameter.MessageOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetMessagesWithSenderWithSd holds details about calls to the GetMessagesWithSenderWithSd method.
+		GetMessagesWithSenderWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereMessageParam
+			// Order is the order argument value.
+			Order parameter.MessageOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
 		// GetMimeTypes holds details about calls to the GetMimeTypes method.
 		GetMimeTypes []struct {
 			// Ctx is the ctx argument value.
@@ -7920,6 +8336,78 @@ type StoreMock struct {
 			MemberIDs []uuid.UUID
 			// Order is the order argument value.
 			Order parameter.MemberOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralMessages holds details about calls to the GetPluralMessages method.
+		GetPluralMessages []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageIDs is the messageIDs argument value.
+			MessageIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MessageOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralMessagesWithChatRoom holds details about calls to the GetPluralMessagesWithChatRoom method.
+		GetPluralMessagesWithChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageIDs is the messageIDs argument value.
+			MessageIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MessageOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralMessagesWithChatRoomWithSd holds details about calls to the GetPluralMessagesWithChatRoomWithSd method.
+		GetPluralMessagesWithChatRoomWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MessageIDs is the messageIDs argument value.
+			MessageIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MessageOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralMessagesWithSd holds details about calls to the GetPluralMessagesWithSd method.
+		GetPluralMessagesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MessageIDs is the messageIDs argument value.
+			MessageIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MessageOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralMessagesWithSender holds details about calls to the GetPluralMessagesWithSender method.
+		GetPluralMessagesWithSender []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageIDs is the messageIDs argument value.
+			MessageIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MessageOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralMessagesWithSenderWithSd holds details about calls to the GetPluralMessagesWithSenderWithSd method.
+		GetPluralMessagesWithSenderWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MessageIDs is the messageIDs argument value.
+			MessageIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MessageOrderMethod
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 		}
@@ -8819,6 +9307,22 @@ type StoreMock struct {
 			// MemberIDs is the memberIDs argument value.
 			MemberIDs []uuid.UUID
 		}
+		// PluralDeleteMessages holds details about calls to the PluralDeleteMessages method.
+		PluralDeleteMessages []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageIDs is the messageIDs argument value.
+			MessageIDs []uuid.UUID
+		}
+		// PluralDeleteMessagesWithSd holds details about calls to the PluralDeleteMessagesWithSd method.
+		PluralDeleteMessagesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MessageIDs is the messageIDs argument value.
+			MessageIDs []uuid.UUID
+		}
 		// PluralDeleteMimeTypes holds details about calls to the PluralDeleteMimeTypes method.
 		PluralDeleteMimeTypes []struct {
 			// Ctx is the ctx argument value.
@@ -9326,6 +9830,26 @@ type StoreMock struct {
 			// Param is the param argument value.
 			Param parameter.UpdateMemberParams
 		}
+		// UpdateMessage holds details about calls to the UpdateMessage method.
+		UpdateMessage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+			// Param is the param argument value.
+			Param parameter.UpdateMessageParams
+		}
+		// UpdateMessageWithSd holds details about calls to the UpdateMessageWithSd method.
+		UpdateMessageWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+			// Param is the param argument value.
+			Param parameter.UpdateMessageParams
+		}
 		// UpdateMimeType holds details about calls to the UpdateMimeType method.
 		UpdateMimeType []struct {
 			// Ctx is the ctx argument value.
@@ -9644,6 +10168,8 @@ type StoreMock struct {
 	lockCountMembersOnChatRoom                            sync.RWMutex
 	lockCountMembersOnChatRoomWithSd                      sync.RWMutex
 	lockCountMembersWithSd                                sync.RWMutex
+	lockCountMessages                                     sync.RWMutex
+	lockCountMessagesWithSd                               sync.RWMutex
 	lockCountMimeTypes                                    sync.RWMutex
 	lockCountMimeTypesWithSd                              sync.RWMutex
 	lockCountOrganizations                                sync.RWMutex
@@ -9712,6 +10238,10 @@ type StoreMock struct {
 	lockCreateMemberWithSd                                sync.RWMutex
 	lockCreateMembers                                     sync.RWMutex
 	lockCreateMembersWithSd                               sync.RWMutex
+	lockCreateMessage                                     sync.RWMutex
+	lockCreateMessageWithSd                               sync.RWMutex
+	lockCreateMessages                                    sync.RWMutex
+	lockCreateMessagesWithSd                              sync.RWMutex
 	lockCreateMimeType                                    sync.RWMutex
 	lockCreateMimeTypeWithSd                              sync.RWMutex
 	lockCreateMimeTypes                                   sync.RWMutex
@@ -9780,6 +10310,10 @@ type StoreMock struct {
 	lockDeleteImageWithSd                                 sync.RWMutex
 	lockDeleteMember                                      sync.RWMutex
 	lockDeleteMemberWithSd                                sync.RWMutex
+	lockDeleteMessage                                     sync.RWMutex
+	lockDeleteMessageWithSd                               sync.RWMutex
+	lockDeleteMessagesOnChatRoom                          sync.RWMutex
+	lockDeleteMessagesOnChatRoomWithSd                    sync.RWMutex
 	lockDeleteMimeType                                    sync.RWMutex
 	lockDeleteMimeTypeByKey                               sync.RWMutex
 	lockDeleteMimeTypeByKeyWithSd                         sync.RWMutex
@@ -9886,6 +10420,12 @@ type StoreMock struct {
 	lockFindMemberWithProfileImageWithSd                  sync.RWMutex
 	lockFindMemberWithRole                                sync.RWMutex
 	lockFindMemberWithRoleWithSd                          sync.RWMutex
+	lockFindMessageByID                                   sync.RWMutex
+	lockFindMessageByIDWithSd                             sync.RWMutex
+	lockFindMessageWithChatRoom                           sync.RWMutex
+	lockFindMessageWithChatRoomWithSd                     sync.RWMutex
+	lockFindMessageWithSender                             sync.RWMutex
+	lockFindMessageWithSenderWithSd                       sync.RWMutex
 	lockFindMimeTypeByID                                  sync.RWMutex
 	lockFindMimeTypeByIDWithSd                            sync.RWMutex
 	lockFindMimeTypeByKey                                 sync.RWMutex
@@ -9988,6 +10528,12 @@ type StoreMock struct {
 	lockGetMembersWithRole                                sync.RWMutex
 	lockGetMembersWithRoleWithSd                          sync.RWMutex
 	lockGetMembersWithSd                                  sync.RWMutex
+	lockGetMessages                                       sync.RWMutex
+	lockGetMessagesWithChatRoom                           sync.RWMutex
+	lockGetMessagesWithChatRoomWithSd                     sync.RWMutex
+	lockGetMessagesWithSd                                 sync.RWMutex
+	lockGetMessagesWithSender                             sync.RWMutex
+	lockGetMessagesWithSenderWithSd                       sync.RWMutex
 	lockGetMimeTypes                                      sync.RWMutex
 	lockGetMimeTypesWithSd                                sync.RWMutex
 	lockGetOrganizations                                  sync.RWMutex
@@ -10052,6 +10598,12 @@ type StoreMock struct {
 	lockGetPluralMembersWithRole                          sync.RWMutex
 	lockGetPluralMembersWithRoleWithSd                    sync.RWMutex
 	lockGetPluralMembersWithSd                            sync.RWMutex
+	lockGetPluralMessages                                 sync.RWMutex
+	lockGetPluralMessagesWithChatRoom                     sync.RWMutex
+	lockGetPluralMessagesWithChatRoomWithSd               sync.RWMutex
+	lockGetPluralMessagesWithSd                           sync.RWMutex
+	lockGetPluralMessagesWithSender                       sync.RWMutex
+	lockGetPluralMessagesWithSenderWithSd                 sync.RWMutex
 	lockGetPluralMimeTypes                                sync.RWMutex
 	lockGetPluralMimeTypesWithSd                          sync.RWMutex
 	lockGetPluralOrganizations                            sync.RWMutex
@@ -10126,6 +10678,8 @@ type StoreMock struct {
 	lockPluralDeleteImagesWithSd                          sync.RWMutex
 	lockPluralDeleteMembers                               sync.RWMutex
 	lockPluralDeleteMembersWithSd                         sync.RWMutex
+	lockPluralDeleteMessages                              sync.RWMutex
+	lockPluralDeleteMessagesWithSd                        sync.RWMutex
 	lockPluralDeleteMimeTypes                             sync.RWMutex
 	lockPluralDeleteMimeTypesWithSd                       sync.RWMutex
 	lockPluralDeleteOrganizations                         sync.RWMutex
@@ -10181,6 +10735,8 @@ type StoreMock struct {
 	lockUpdateMemberRole                                  sync.RWMutex
 	lockUpdateMemberRoleWithSd                            sync.RWMutex
 	lockUpdateMemberWithSd                                sync.RWMutex
+	lockUpdateMessage                                     sync.RWMutex
+	lockUpdateMessageWithSd                               sync.RWMutex
 	lockUpdateMimeType                                    sync.RWMutex
 	lockUpdateMimeTypeByKey                               sync.RWMutex
 	lockUpdateMimeTypeByKeyWithSd                         sync.RWMutex
@@ -11608,6 +12164,82 @@ func (mock *StoreMock) CountMembersWithSdCalls() []struct {
 	mock.lockCountMembersWithSd.RLock()
 	calls = mock.calls.CountMembersWithSd
 	mock.lockCountMembersWithSd.RUnlock()
+	return calls
+}
+
+// CountMessages calls CountMessagesFunc.
+func (mock *StoreMock) CountMessages(ctx context.Context, where parameter.WhereMessageParam) (int64, error) {
+	if mock.CountMessagesFunc == nil {
+		panic("StoreMock.CountMessagesFunc: method is nil but Store.CountMessages was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereMessageParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+	}
+	mock.lockCountMessages.Lock()
+	mock.calls.CountMessages = append(mock.calls.CountMessages, callInfo)
+	mock.lockCountMessages.Unlock()
+	return mock.CountMessagesFunc(ctx, where)
+}
+
+// CountMessagesCalls gets all the calls that were made to CountMessages.
+// Check the length with:
+//
+//	len(mockedStore.CountMessagesCalls())
+func (mock *StoreMock) CountMessagesCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereMessageParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereMessageParam
+	}
+	mock.lockCountMessages.RLock()
+	calls = mock.calls.CountMessages
+	mock.lockCountMessages.RUnlock()
+	return calls
+}
+
+// CountMessagesWithSd calls CountMessagesWithSdFunc.
+func (mock *StoreMock) CountMessagesWithSd(ctx context.Context, sd Sd, where parameter.WhereMessageParam) (int64, error) {
+	if mock.CountMessagesWithSdFunc == nil {
+		panic("StoreMock.CountMessagesWithSdFunc: method is nil but Store.CountMessagesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereMessageParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+	}
+	mock.lockCountMessagesWithSd.Lock()
+	mock.calls.CountMessagesWithSd = append(mock.calls.CountMessagesWithSd, callInfo)
+	mock.lockCountMessagesWithSd.Unlock()
+	return mock.CountMessagesWithSdFunc(ctx, sd, where)
+}
+
+// CountMessagesWithSdCalls gets all the calls that were made to CountMessagesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountMessagesWithSdCalls())
+func (mock *StoreMock) CountMessagesWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereMessageParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereMessageParam
+	}
+	mock.lockCountMessagesWithSd.RLock()
+	calls = mock.calls.CountMessagesWithSd
+	mock.lockCountMessagesWithSd.RUnlock()
 	return calls
 }
 
@@ -14211,6 +14843,158 @@ func (mock *StoreMock) CreateMembersWithSdCalls() []struct {
 	return calls
 }
 
+// CreateMessage calls CreateMessageFunc.
+func (mock *StoreMock) CreateMessage(ctx context.Context, param parameter.CreateMessageParam) (entity.Message, error) {
+	if mock.CreateMessageFunc == nil {
+		panic("StoreMock.CreateMessageFunc: method is nil but Store.CreateMessage was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Param parameter.CreateMessageParam
+	}{
+		Ctx:   ctx,
+		Param: param,
+	}
+	mock.lockCreateMessage.Lock()
+	mock.calls.CreateMessage = append(mock.calls.CreateMessage, callInfo)
+	mock.lockCreateMessage.Unlock()
+	return mock.CreateMessageFunc(ctx, param)
+}
+
+// CreateMessageCalls gets all the calls that were made to CreateMessage.
+// Check the length with:
+//
+//	len(mockedStore.CreateMessageCalls())
+func (mock *StoreMock) CreateMessageCalls() []struct {
+	Ctx   context.Context
+	Param parameter.CreateMessageParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Param parameter.CreateMessageParam
+	}
+	mock.lockCreateMessage.RLock()
+	calls = mock.calls.CreateMessage
+	mock.lockCreateMessage.RUnlock()
+	return calls
+}
+
+// CreateMessageWithSd calls CreateMessageWithSdFunc.
+func (mock *StoreMock) CreateMessageWithSd(ctx context.Context, sd Sd, param parameter.CreateMessageParam) (entity.Message, error) {
+	if mock.CreateMessageWithSdFunc == nil {
+		panic("StoreMock.CreateMessageWithSdFunc: method is nil but Store.CreateMessageWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateMessageParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Param: param,
+	}
+	mock.lockCreateMessageWithSd.Lock()
+	mock.calls.CreateMessageWithSd = append(mock.calls.CreateMessageWithSd, callInfo)
+	mock.lockCreateMessageWithSd.Unlock()
+	return mock.CreateMessageWithSdFunc(ctx, sd, param)
+}
+
+// CreateMessageWithSdCalls gets all the calls that were made to CreateMessageWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateMessageWithSdCalls())
+func (mock *StoreMock) CreateMessageWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Param parameter.CreateMessageParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateMessageParam
+	}
+	mock.lockCreateMessageWithSd.RLock()
+	calls = mock.calls.CreateMessageWithSd
+	mock.lockCreateMessageWithSd.RUnlock()
+	return calls
+}
+
+// CreateMessages calls CreateMessagesFunc.
+func (mock *StoreMock) CreateMessages(ctx context.Context, params []parameter.CreateMessageParam) (int64, error) {
+	if mock.CreateMessagesFunc == nil {
+		panic("StoreMock.CreateMessagesFunc: method is nil but Store.CreateMessages was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.CreateMessageParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockCreateMessages.Lock()
+	mock.calls.CreateMessages = append(mock.calls.CreateMessages, callInfo)
+	mock.lockCreateMessages.Unlock()
+	return mock.CreateMessagesFunc(ctx, params)
+}
+
+// CreateMessagesCalls gets all the calls that were made to CreateMessages.
+// Check the length with:
+//
+//	len(mockedStore.CreateMessagesCalls())
+func (mock *StoreMock) CreateMessagesCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.CreateMessageParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.CreateMessageParam
+	}
+	mock.lockCreateMessages.RLock()
+	calls = mock.calls.CreateMessages
+	mock.lockCreateMessages.RUnlock()
+	return calls
+}
+
+// CreateMessagesWithSd calls CreateMessagesWithSdFunc.
+func (mock *StoreMock) CreateMessagesWithSd(ctx context.Context, sd Sd, params []parameter.CreateMessageParam) (int64, error) {
+	if mock.CreateMessagesWithSdFunc == nil {
+		panic("StoreMock.CreateMessagesWithSdFunc: method is nil but Store.CreateMessagesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateMessageParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		Params: params,
+	}
+	mock.lockCreateMessagesWithSd.Lock()
+	mock.calls.CreateMessagesWithSd = append(mock.calls.CreateMessagesWithSd, callInfo)
+	mock.lockCreateMessagesWithSd.Unlock()
+	return mock.CreateMessagesWithSdFunc(ctx, sd, params)
+}
+
+// CreateMessagesWithSdCalls gets all the calls that were made to CreateMessagesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateMessagesWithSdCalls())
+func (mock *StoreMock) CreateMessagesWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	Params []parameter.CreateMessageParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateMessageParam
+	}
+	mock.lockCreateMessagesWithSd.RLock()
+	calls = mock.calls.CreateMessagesWithSd
+	mock.lockCreateMessagesWithSd.RUnlock()
+	return calls
+}
+
 // CreateMimeType calls CreateMimeTypeFunc.
 func (mock *StoreMock) CreateMimeType(ctx context.Context, param parameter.CreateMimeTypeParam) (entity.MimeType, error) {
 	if mock.CreateMimeTypeFunc == nil {
@@ -16792,6 +17576,158 @@ func (mock *StoreMock) DeleteMemberWithSdCalls() []struct {
 	mock.lockDeleteMemberWithSd.RLock()
 	calls = mock.calls.DeleteMemberWithSd
 	mock.lockDeleteMemberWithSd.RUnlock()
+	return calls
+}
+
+// DeleteMessage calls DeleteMessageFunc.
+func (mock *StoreMock) DeleteMessage(ctx context.Context, messageID uuid.UUID) (int64, error) {
+	if mock.DeleteMessageFunc == nil {
+		panic("StoreMock.DeleteMessageFunc: method is nil but Store.DeleteMessage was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+	}{
+		Ctx:       ctx,
+		MessageID: messageID,
+	}
+	mock.lockDeleteMessage.Lock()
+	mock.calls.DeleteMessage = append(mock.calls.DeleteMessage, callInfo)
+	mock.lockDeleteMessage.Unlock()
+	return mock.DeleteMessageFunc(ctx, messageID)
+}
+
+// DeleteMessageCalls gets all the calls that were made to DeleteMessage.
+// Check the length with:
+//
+//	len(mockedStore.DeleteMessageCalls())
+func (mock *StoreMock) DeleteMessageCalls() []struct {
+	Ctx       context.Context
+	MessageID uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+	}
+	mock.lockDeleteMessage.RLock()
+	calls = mock.calls.DeleteMessage
+	mock.lockDeleteMessage.RUnlock()
+	return calls
+}
+
+// DeleteMessageWithSd calls DeleteMessageWithSdFunc.
+func (mock *StoreMock) DeleteMessageWithSd(ctx context.Context, sd Sd, messageID uuid.UUID) (int64, error) {
+	if mock.DeleteMessageWithSdFunc == nil {
+		panic("StoreMock.DeleteMessageWithSdFunc: method is nil but Store.DeleteMessageWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+	}{
+		Ctx:       ctx,
+		Sd:        sd,
+		MessageID: messageID,
+	}
+	mock.lockDeleteMessageWithSd.Lock()
+	mock.calls.DeleteMessageWithSd = append(mock.calls.DeleteMessageWithSd, callInfo)
+	mock.lockDeleteMessageWithSd.Unlock()
+	return mock.DeleteMessageWithSdFunc(ctx, sd, messageID)
+}
+
+// DeleteMessageWithSdCalls gets all the calls that were made to DeleteMessageWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteMessageWithSdCalls())
+func (mock *StoreMock) DeleteMessageWithSdCalls() []struct {
+	Ctx       context.Context
+	Sd        Sd
+	MessageID uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+	}
+	mock.lockDeleteMessageWithSd.RLock()
+	calls = mock.calls.DeleteMessageWithSd
+	mock.lockDeleteMessageWithSd.RUnlock()
+	return calls
+}
+
+// DeleteMessagesOnChatRoom calls DeleteMessagesOnChatRoomFunc.
+func (mock *StoreMock) DeleteMessagesOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) (int64, error) {
+	if mock.DeleteMessagesOnChatRoomFunc == nil {
+		panic("StoreMock.DeleteMessagesOnChatRoomFunc: method is nil but Store.DeleteMessagesOnChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+	}{
+		Ctx:        ctx,
+		ChatRoomID: chatRoomID,
+	}
+	mock.lockDeleteMessagesOnChatRoom.Lock()
+	mock.calls.DeleteMessagesOnChatRoom = append(mock.calls.DeleteMessagesOnChatRoom, callInfo)
+	mock.lockDeleteMessagesOnChatRoom.Unlock()
+	return mock.DeleteMessagesOnChatRoomFunc(ctx, chatRoomID)
+}
+
+// DeleteMessagesOnChatRoomCalls gets all the calls that were made to DeleteMessagesOnChatRoom.
+// Check the length with:
+//
+//	len(mockedStore.DeleteMessagesOnChatRoomCalls())
+func (mock *StoreMock) DeleteMessagesOnChatRoomCalls() []struct {
+	Ctx        context.Context
+	ChatRoomID uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+	}
+	mock.lockDeleteMessagesOnChatRoom.RLock()
+	calls = mock.calls.DeleteMessagesOnChatRoom
+	mock.lockDeleteMessagesOnChatRoom.RUnlock()
+	return calls
+}
+
+// DeleteMessagesOnChatRoomWithSd calls DeleteMessagesOnChatRoomWithSdFunc.
+func (mock *StoreMock) DeleteMessagesOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID) (int64, error) {
+	if mock.DeleteMessagesOnChatRoomWithSdFunc == nil {
+		panic("StoreMock.DeleteMessagesOnChatRoomWithSdFunc: method is nil but Store.DeleteMessagesOnChatRoomWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		ChatRoomID: chatRoomID,
+	}
+	mock.lockDeleteMessagesOnChatRoomWithSd.Lock()
+	mock.calls.DeleteMessagesOnChatRoomWithSd = append(mock.calls.DeleteMessagesOnChatRoomWithSd, callInfo)
+	mock.lockDeleteMessagesOnChatRoomWithSd.Unlock()
+	return mock.DeleteMessagesOnChatRoomWithSdFunc(ctx, sd, chatRoomID)
+}
+
+// DeleteMessagesOnChatRoomWithSdCalls gets all the calls that were made to DeleteMessagesOnChatRoomWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteMessagesOnChatRoomWithSdCalls())
+func (mock *StoreMock) DeleteMessagesOnChatRoomWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	ChatRoomID uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+	}
+	mock.lockDeleteMessagesOnChatRoomWithSd.RLock()
+	calls = mock.calls.DeleteMessagesOnChatRoomWithSd
+	mock.lockDeleteMessagesOnChatRoomWithSd.RUnlock()
 	return calls
 }
 
@@ -20844,6 +21780,234 @@ func (mock *StoreMock) FindMemberWithRoleWithSdCalls() []struct {
 	mock.lockFindMemberWithRoleWithSd.RLock()
 	calls = mock.calls.FindMemberWithRoleWithSd
 	mock.lockFindMemberWithRoleWithSd.RUnlock()
+	return calls
+}
+
+// FindMessageByID calls FindMessageByIDFunc.
+func (mock *StoreMock) FindMessageByID(ctx context.Context, messageID uuid.UUID) (entity.Message, error) {
+	if mock.FindMessageByIDFunc == nil {
+		panic("StoreMock.FindMessageByIDFunc: method is nil but Store.FindMessageByID was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+	}{
+		Ctx:       ctx,
+		MessageID: messageID,
+	}
+	mock.lockFindMessageByID.Lock()
+	mock.calls.FindMessageByID = append(mock.calls.FindMessageByID, callInfo)
+	mock.lockFindMessageByID.Unlock()
+	return mock.FindMessageByIDFunc(ctx, messageID)
+}
+
+// FindMessageByIDCalls gets all the calls that were made to FindMessageByID.
+// Check the length with:
+//
+//	len(mockedStore.FindMessageByIDCalls())
+func (mock *StoreMock) FindMessageByIDCalls() []struct {
+	Ctx       context.Context
+	MessageID uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+	}
+	mock.lockFindMessageByID.RLock()
+	calls = mock.calls.FindMessageByID
+	mock.lockFindMessageByID.RUnlock()
+	return calls
+}
+
+// FindMessageByIDWithSd calls FindMessageByIDWithSdFunc.
+func (mock *StoreMock) FindMessageByIDWithSd(ctx context.Context, sd Sd, messageID uuid.UUID) (entity.Message, error) {
+	if mock.FindMessageByIDWithSdFunc == nil {
+		panic("StoreMock.FindMessageByIDWithSdFunc: method is nil but Store.FindMessageByIDWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+	}{
+		Ctx:       ctx,
+		Sd:        sd,
+		MessageID: messageID,
+	}
+	mock.lockFindMessageByIDWithSd.Lock()
+	mock.calls.FindMessageByIDWithSd = append(mock.calls.FindMessageByIDWithSd, callInfo)
+	mock.lockFindMessageByIDWithSd.Unlock()
+	return mock.FindMessageByIDWithSdFunc(ctx, sd, messageID)
+}
+
+// FindMessageByIDWithSdCalls gets all the calls that were made to FindMessageByIDWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindMessageByIDWithSdCalls())
+func (mock *StoreMock) FindMessageByIDWithSdCalls() []struct {
+	Ctx       context.Context
+	Sd        Sd
+	MessageID uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+	}
+	mock.lockFindMessageByIDWithSd.RLock()
+	calls = mock.calls.FindMessageByIDWithSd
+	mock.lockFindMessageByIDWithSd.RUnlock()
+	return calls
+}
+
+// FindMessageWithChatRoom calls FindMessageWithChatRoomFunc.
+func (mock *StoreMock) FindMessageWithChatRoom(ctx context.Context, messageID uuid.UUID) (entity.MessageWithChatRoom, error) {
+	if mock.FindMessageWithChatRoomFunc == nil {
+		panic("StoreMock.FindMessageWithChatRoomFunc: method is nil but Store.FindMessageWithChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+	}{
+		Ctx:       ctx,
+		MessageID: messageID,
+	}
+	mock.lockFindMessageWithChatRoom.Lock()
+	mock.calls.FindMessageWithChatRoom = append(mock.calls.FindMessageWithChatRoom, callInfo)
+	mock.lockFindMessageWithChatRoom.Unlock()
+	return mock.FindMessageWithChatRoomFunc(ctx, messageID)
+}
+
+// FindMessageWithChatRoomCalls gets all the calls that were made to FindMessageWithChatRoom.
+// Check the length with:
+//
+//	len(mockedStore.FindMessageWithChatRoomCalls())
+func (mock *StoreMock) FindMessageWithChatRoomCalls() []struct {
+	Ctx       context.Context
+	MessageID uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+	}
+	mock.lockFindMessageWithChatRoom.RLock()
+	calls = mock.calls.FindMessageWithChatRoom
+	mock.lockFindMessageWithChatRoom.RUnlock()
+	return calls
+}
+
+// FindMessageWithChatRoomWithSd calls FindMessageWithChatRoomWithSdFunc.
+func (mock *StoreMock) FindMessageWithChatRoomWithSd(ctx context.Context, sd Sd, messageID uuid.UUID) (entity.MessageWithChatRoom, error) {
+	if mock.FindMessageWithChatRoomWithSdFunc == nil {
+		panic("StoreMock.FindMessageWithChatRoomWithSdFunc: method is nil but Store.FindMessageWithChatRoomWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+	}{
+		Ctx:       ctx,
+		Sd:        sd,
+		MessageID: messageID,
+	}
+	mock.lockFindMessageWithChatRoomWithSd.Lock()
+	mock.calls.FindMessageWithChatRoomWithSd = append(mock.calls.FindMessageWithChatRoomWithSd, callInfo)
+	mock.lockFindMessageWithChatRoomWithSd.Unlock()
+	return mock.FindMessageWithChatRoomWithSdFunc(ctx, sd, messageID)
+}
+
+// FindMessageWithChatRoomWithSdCalls gets all the calls that were made to FindMessageWithChatRoomWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindMessageWithChatRoomWithSdCalls())
+func (mock *StoreMock) FindMessageWithChatRoomWithSdCalls() []struct {
+	Ctx       context.Context
+	Sd        Sd
+	MessageID uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+	}
+	mock.lockFindMessageWithChatRoomWithSd.RLock()
+	calls = mock.calls.FindMessageWithChatRoomWithSd
+	mock.lockFindMessageWithChatRoomWithSd.RUnlock()
+	return calls
+}
+
+// FindMessageWithSender calls FindMessageWithSenderFunc.
+func (mock *StoreMock) FindMessageWithSender(ctx context.Context, messageID uuid.UUID) (entity.MessageWithSender, error) {
+	if mock.FindMessageWithSenderFunc == nil {
+		panic("StoreMock.FindMessageWithSenderFunc: method is nil but Store.FindMessageWithSender was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+	}{
+		Ctx:       ctx,
+		MessageID: messageID,
+	}
+	mock.lockFindMessageWithSender.Lock()
+	mock.calls.FindMessageWithSender = append(mock.calls.FindMessageWithSender, callInfo)
+	mock.lockFindMessageWithSender.Unlock()
+	return mock.FindMessageWithSenderFunc(ctx, messageID)
+}
+
+// FindMessageWithSenderCalls gets all the calls that were made to FindMessageWithSender.
+// Check the length with:
+//
+//	len(mockedStore.FindMessageWithSenderCalls())
+func (mock *StoreMock) FindMessageWithSenderCalls() []struct {
+	Ctx       context.Context
+	MessageID uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+	}
+	mock.lockFindMessageWithSender.RLock()
+	calls = mock.calls.FindMessageWithSender
+	mock.lockFindMessageWithSender.RUnlock()
+	return calls
+}
+
+// FindMessageWithSenderWithSd calls FindMessageWithSenderWithSdFunc.
+func (mock *StoreMock) FindMessageWithSenderWithSd(ctx context.Context, sd Sd, messageID uuid.UUID) (entity.MessageWithSender, error) {
+	if mock.FindMessageWithSenderWithSdFunc == nil {
+		panic("StoreMock.FindMessageWithSenderWithSdFunc: method is nil but Store.FindMessageWithSenderWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+	}{
+		Ctx:       ctx,
+		Sd:        sd,
+		MessageID: messageID,
+	}
+	mock.lockFindMessageWithSenderWithSd.Lock()
+	mock.calls.FindMessageWithSenderWithSd = append(mock.calls.FindMessageWithSenderWithSd, callInfo)
+	mock.lockFindMessageWithSenderWithSd.Unlock()
+	return mock.FindMessageWithSenderWithSdFunc(ctx, sd, messageID)
+}
+
+// FindMessageWithSenderWithSdCalls gets all the calls that were made to FindMessageWithSenderWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindMessageWithSenderWithSdCalls())
+func (mock *StoreMock) FindMessageWithSenderWithSdCalls() []struct {
+	Ctx       context.Context
+	Sd        Sd
+	MessageID uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+	}
+	mock.lockFindMessageWithSenderWithSd.RLock()
+	calls = mock.calls.FindMessageWithSenderWithSd
+	mock.lockFindMessageWithSenderWithSd.RUnlock()
 	return calls
 }
 
@@ -25491,6 +26655,330 @@ func (mock *StoreMock) GetMembersWithSdCalls() []struct {
 	return calls
 }
 
+// GetMessages calls GetMessagesFunc.
+func (mock *StoreMock) GetMessages(ctx context.Context, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Message], error) {
+	if mock.GetMessagesFunc == nil {
+		panic("StoreMock.GetMessagesFunc: method is nil but Store.GetMessages was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereMessageParam
+		Order parameter.MessageOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetMessages.Lock()
+	mock.calls.GetMessages = append(mock.calls.GetMessages, callInfo)
+	mock.lockGetMessages.Unlock()
+	return mock.GetMessagesFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetMessagesCalls gets all the calls that were made to GetMessages.
+// Check the length with:
+//
+//	len(mockedStore.GetMessagesCalls())
+func (mock *StoreMock) GetMessagesCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereMessageParam
+	Order parameter.MessageOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereMessageParam
+		Order parameter.MessageOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetMessages.RLock()
+	calls = mock.calls.GetMessages
+	mock.lockGetMessages.RUnlock()
+	return calls
+}
+
+// GetMessagesWithChatRoom calls GetMessagesWithChatRoomFunc.
+func (mock *StoreMock) GetMessagesWithChatRoom(ctx context.Context, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MessageWithChatRoom], error) {
+	if mock.GetMessagesWithChatRoomFunc == nil {
+		panic("StoreMock.GetMessagesWithChatRoomFunc: method is nil but Store.GetMessagesWithChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereMessageParam
+		Order parameter.MessageOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetMessagesWithChatRoom.Lock()
+	mock.calls.GetMessagesWithChatRoom = append(mock.calls.GetMessagesWithChatRoom, callInfo)
+	mock.lockGetMessagesWithChatRoom.Unlock()
+	return mock.GetMessagesWithChatRoomFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetMessagesWithChatRoomCalls gets all the calls that were made to GetMessagesWithChatRoom.
+// Check the length with:
+//
+//	len(mockedStore.GetMessagesWithChatRoomCalls())
+func (mock *StoreMock) GetMessagesWithChatRoomCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereMessageParam
+	Order parameter.MessageOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereMessageParam
+		Order parameter.MessageOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetMessagesWithChatRoom.RLock()
+	calls = mock.calls.GetMessagesWithChatRoom
+	mock.lockGetMessagesWithChatRoom.RUnlock()
+	return calls
+}
+
+// GetMessagesWithChatRoomWithSd calls GetMessagesWithChatRoomWithSdFunc.
+func (mock *StoreMock) GetMessagesWithChatRoomWithSd(ctx context.Context, sd Sd, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MessageWithChatRoom], error) {
+	if mock.GetMessagesWithChatRoomWithSdFunc == nil {
+		panic("StoreMock.GetMessagesWithChatRoomWithSdFunc: method is nil but Store.GetMessagesWithChatRoomWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereMessageParam
+		Order parameter.MessageOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetMessagesWithChatRoomWithSd.Lock()
+	mock.calls.GetMessagesWithChatRoomWithSd = append(mock.calls.GetMessagesWithChatRoomWithSd, callInfo)
+	mock.lockGetMessagesWithChatRoomWithSd.Unlock()
+	return mock.GetMessagesWithChatRoomWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetMessagesWithChatRoomWithSdCalls gets all the calls that were made to GetMessagesWithChatRoomWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetMessagesWithChatRoomWithSdCalls())
+func (mock *StoreMock) GetMessagesWithChatRoomWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereMessageParam
+	Order parameter.MessageOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereMessageParam
+		Order parameter.MessageOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetMessagesWithChatRoomWithSd.RLock()
+	calls = mock.calls.GetMessagesWithChatRoomWithSd
+	mock.lockGetMessagesWithChatRoomWithSd.RUnlock()
+	return calls
+}
+
+// GetMessagesWithSd calls GetMessagesWithSdFunc.
+func (mock *StoreMock) GetMessagesWithSd(ctx context.Context, sd Sd, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Message], error) {
+	if mock.GetMessagesWithSdFunc == nil {
+		panic("StoreMock.GetMessagesWithSdFunc: method is nil but Store.GetMessagesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereMessageParam
+		Order parameter.MessageOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetMessagesWithSd.Lock()
+	mock.calls.GetMessagesWithSd = append(mock.calls.GetMessagesWithSd, callInfo)
+	mock.lockGetMessagesWithSd.Unlock()
+	return mock.GetMessagesWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetMessagesWithSdCalls gets all the calls that were made to GetMessagesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetMessagesWithSdCalls())
+func (mock *StoreMock) GetMessagesWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereMessageParam
+	Order parameter.MessageOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereMessageParam
+		Order parameter.MessageOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetMessagesWithSd.RLock()
+	calls = mock.calls.GetMessagesWithSd
+	mock.lockGetMessagesWithSd.RUnlock()
+	return calls
+}
+
+// GetMessagesWithSender calls GetMessagesWithSenderFunc.
+func (mock *StoreMock) GetMessagesWithSender(ctx context.Context, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MessageWithSender], error) {
+	if mock.GetMessagesWithSenderFunc == nil {
+		panic("StoreMock.GetMessagesWithSenderFunc: method is nil but Store.GetMessagesWithSender was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereMessageParam
+		Order parameter.MessageOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetMessagesWithSender.Lock()
+	mock.calls.GetMessagesWithSender = append(mock.calls.GetMessagesWithSender, callInfo)
+	mock.lockGetMessagesWithSender.Unlock()
+	return mock.GetMessagesWithSenderFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetMessagesWithSenderCalls gets all the calls that were made to GetMessagesWithSender.
+// Check the length with:
+//
+//	len(mockedStore.GetMessagesWithSenderCalls())
+func (mock *StoreMock) GetMessagesWithSenderCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereMessageParam
+	Order parameter.MessageOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereMessageParam
+		Order parameter.MessageOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetMessagesWithSender.RLock()
+	calls = mock.calls.GetMessagesWithSender
+	mock.lockGetMessagesWithSender.RUnlock()
+	return calls
+}
+
+// GetMessagesWithSenderWithSd calls GetMessagesWithSenderWithSdFunc.
+func (mock *StoreMock) GetMessagesWithSenderWithSd(ctx context.Context, sd Sd, where parameter.WhereMessageParam, order parameter.MessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MessageWithSender], error) {
+	if mock.GetMessagesWithSenderWithSdFunc == nil {
+		panic("StoreMock.GetMessagesWithSenderWithSdFunc: method is nil but Store.GetMessagesWithSenderWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereMessageParam
+		Order parameter.MessageOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetMessagesWithSenderWithSd.Lock()
+	mock.calls.GetMessagesWithSenderWithSd = append(mock.calls.GetMessagesWithSenderWithSd, callInfo)
+	mock.lockGetMessagesWithSenderWithSd.Unlock()
+	return mock.GetMessagesWithSenderWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetMessagesWithSenderWithSdCalls gets all the calls that were made to GetMessagesWithSenderWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetMessagesWithSenderWithSdCalls())
+func (mock *StoreMock) GetMessagesWithSenderWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereMessageParam
+	Order parameter.MessageOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereMessageParam
+		Order parameter.MessageOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetMessagesWithSenderWithSd.RLock()
+	calls = mock.calls.GetMessagesWithSenderWithSd
+	mock.lockGetMessagesWithSenderWithSd.RUnlock()
+	return calls
+}
+
 // GetMimeTypes calls GetMimeTypesFunc.
 func (mock *StoreMock) GetMimeTypes(ctx context.Context, where parameter.WhereMimeTypeParam, order parameter.MimeTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MimeType], error) {
 	if mock.GetMimeTypesFunc == nil {
@@ -28560,6 +30048,282 @@ func (mock *StoreMock) GetPluralMembersWithSdCalls() []struct {
 	mock.lockGetPluralMembersWithSd.RLock()
 	calls = mock.calls.GetPluralMembersWithSd
 	mock.lockGetPluralMembersWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralMessages calls GetPluralMessagesFunc.
+func (mock *StoreMock) GetPluralMessages(ctx context.Context, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.Message], error) {
+	if mock.GetPluralMessagesFunc == nil {
+		panic("StoreMock.GetPluralMessagesFunc: method is nil but Store.GetPluralMessages was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+		Order      parameter.MessageOrderMethod
+		Np         NumberedPaginationParam
+	}{
+		Ctx:        ctx,
+		MessageIDs: messageIDs,
+		Order:      order,
+		Np:         np,
+	}
+	mock.lockGetPluralMessages.Lock()
+	mock.calls.GetPluralMessages = append(mock.calls.GetPluralMessages, callInfo)
+	mock.lockGetPluralMessages.Unlock()
+	return mock.GetPluralMessagesFunc(ctx, messageIDs, order, np)
+}
+
+// GetPluralMessagesCalls gets all the calls that were made to GetPluralMessages.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralMessagesCalls())
+func (mock *StoreMock) GetPluralMessagesCalls() []struct {
+	Ctx        context.Context
+	MessageIDs []uuid.UUID
+	Order      parameter.MessageOrderMethod
+	Np         NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+		Order      parameter.MessageOrderMethod
+		Np         NumberedPaginationParam
+	}
+	mock.lockGetPluralMessages.RLock()
+	calls = mock.calls.GetPluralMessages
+	mock.lockGetPluralMessages.RUnlock()
+	return calls
+}
+
+// GetPluralMessagesWithChatRoom calls GetPluralMessagesWithChatRoomFunc.
+func (mock *StoreMock) GetPluralMessagesWithChatRoom(ctx context.Context, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.MessageWithChatRoom], error) {
+	if mock.GetPluralMessagesWithChatRoomFunc == nil {
+		panic("StoreMock.GetPluralMessagesWithChatRoomFunc: method is nil but Store.GetPluralMessagesWithChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+		Order      parameter.MessageOrderMethod
+		Np         NumberedPaginationParam
+	}{
+		Ctx:        ctx,
+		MessageIDs: messageIDs,
+		Order:      order,
+		Np:         np,
+	}
+	mock.lockGetPluralMessagesWithChatRoom.Lock()
+	mock.calls.GetPluralMessagesWithChatRoom = append(mock.calls.GetPluralMessagesWithChatRoom, callInfo)
+	mock.lockGetPluralMessagesWithChatRoom.Unlock()
+	return mock.GetPluralMessagesWithChatRoomFunc(ctx, messageIDs, order, np)
+}
+
+// GetPluralMessagesWithChatRoomCalls gets all the calls that were made to GetPluralMessagesWithChatRoom.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralMessagesWithChatRoomCalls())
+func (mock *StoreMock) GetPluralMessagesWithChatRoomCalls() []struct {
+	Ctx        context.Context
+	MessageIDs []uuid.UUID
+	Order      parameter.MessageOrderMethod
+	Np         NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+		Order      parameter.MessageOrderMethod
+		Np         NumberedPaginationParam
+	}
+	mock.lockGetPluralMessagesWithChatRoom.RLock()
+	calls = mock.calls.GetPluralMessagesWithChatRoom
+	mock.lockGetPluralMessagesWithChatRoom.RUnlock()
+	return calls
+}
+
+// GetPluralMessagesWithChatRoomWithSd calls GetPluralMessagesWithChatRoomWithSdFunc.
+func (mock *StoreMock) GetPluralMessagesWithChatRoomWithSd(ctx context.Context, sd Sd, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.MessageWithChatRoom], error) {
+	if mock.GetPluralMessagesWithChatRoomWithSdFunc == nil {
+		panic("StoreMock.GetPluralMessagesWithChatRoomWithSdFunc: method is nil but Store.GetPluralMessagesWithChatRoomWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		MessageIDs []uuid.UUID
+		Order      parameter.MessageOrderMethod
+		Np         NumberedPaginationParam
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		MessageIDs: messageIDs,
+		Order:      order,
+		Np:         np,
+	}
+	mock.lockGetPluralMessagesWithChatRoomWithSd.Lock()
+	mock.calls.GetPluralMessagesWithChatRoomWithSd = append(mock.calls.GetPluralMessagesWithChatRoomWithSd, callInfo)
+	mock.lockGetPluralMessagesWithChatRoomWithSd.Unlock()
+	return mock.GetPluralMessagesWithChatRoomWithSdFunc(ctx, sd, messageIDs, order, np)
+}
+
+// GetPluralMessagesWithChatRoomWithSdCalls gets all the calls that were made to GetPluralMessagesWithChatRoomWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralMessagesWithChatRoomWithSdCalls())
+func (mock *StoreMock) GetPluralMessagesWithChatRoomWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	MessageIDs []uuid.UUID
+	Order      parameter.MessageOrderMethod
+	Np         NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		MessageIDs []uuid.UUID
+		Order      parameter.MessageOrderMethod
+		Np         NumberedPaginationParam
+	}
+	mock.lockGetPluralMessagesWithChatRoomWithSd.RLock()
+	calls = mock.calls.GetPluralMessagesWithChatRoomWithSd
+	mock.lockGetPluralMessagesWithChatRoomWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralMessagesWithSd calls GetPluralMessagesWithSdFunc.
+func (mock *StoreMock) GetPluralMessagesWithSd(ctx context.Context, sd Sd, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.Message], error) {
+	if mock.GetPluralMessagesWithSdFunc == nil {
+		panic("StoreMock.GetPluralMessagesWithSdFunc: method is nil but Store.GetPluralMessagesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		MessageIDs []uuid.UUID
+		Order      parameter.MessageOrderMethod
+		Np         NumberedPaginationParam
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		MessageIDs: messageIDs,
+		Order:      order,
+		Np:         np,
+	}
+	mock.lockGetPluralMessagesWithSd.Lock()
+	mock.calls.GetPluralMessagesWithSd = append(mock.calls.GetPluralMessagesWithSd, callInfo)
+	mock.lockGetPluralMessagesWithSd.Unlock()
+	return mock.GetPluralMessagesWithSdFunc(ctx, sd, messageIDs, order, np)
+}
+
+// GetPluralMessagesWithSdCalls gets all the calls that were made to GetPluralMessagesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralMessagesWithSdCalls())
+func (mock *StoreMock) GetPluralMessagesWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	MessageIDs []uuid.UUID
+	Order      parameter.MessageOrderMethod
+	Np         NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		MessageIDs []uuid.UUID
+		Order      parameter.MessageOrderMethod
+		Np         NumberedPaginationParam
+	}
+	mock.lockGetPluralMessagesWithSd.RLock()
+	calls = mock.calls.GetPluralMessagesWithSd
+	mock.lockGetPluralMessagesWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralMessagesWithSender calls GetPluralMessagesWithSenderFunc.
+func (mock *StoreMock) GetPluralMessagesWithSender(ctx context.Context, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.MessageWithSender], error) {
+	if mock.GetPluralMessagesWithSenderFunc == nil {
+		panic("StoreMock.GetPluralMessagesWithSenderFunc: method is nil but Store.GetPluralMessagesWithSender was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+		Order      parameter.MessageOrderMethod
+		Np         NumberedPaginationParam
+	}{
+		Ctx:        ctx,
+		MessageIDs: messageIDs,
+		Order:      order,
+		Np:         np,
+	}
+	mock.lockGetPluralMessagesWithSender.Lock()
+	mock.calls.GetPluralMessagesWithSender = append(mock.calls.GetPluralMessagesWithSender, callInfo)
+	mock.lockGetPluralMessagesWithSender.Unlock()
+	return mock.GetPluralMessagesWithSenderFunc(ctx, messageIDs, order, np)
+}
+
+// GetPluralMessagesWithSenderCalls gets all the calls that were made to GetPluralMessagesWithSender.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralMessagesWithSenderCalls())
+func (mock *StoreMock) GetPluralMessagesWithSenderCalls() []struct {
+	Ctx        context.Context
+	MessageIDs []uuid.UUID
+	Order      parameter.MessageOrderMethod
+	Np         NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+		Order      parameter.MessageOrderMethod
+		Np         NumberedPaginationParam
+	}
+	mock.lockGetPluralMessagesWithSender.RLock()
+	calls = mock.calls.GetPluralMessagesWithSender
+	mock.lockGetPluralMessagesWithSender.RUnlock()
+	return calls
+}
+
+// GetPluralMessagesWithSenderWithSd calls GetPluralMessagesWithSenderWithSdFunc.
+func (mock *StoreMock) GetPluralMessagesWithSenderWithSd(ctx context.Context, sd Sd, messageIDs []uuid.UUID, order parameter.MessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.MessageWithSender], error) {
+	if mock.GetPluralMessagesWithSenderWithSdFunc == nil {
+		panic("StoreMock.GetPluralMessagesWithSenderWithSdFunc: method is nil but Store.GetPluralMessagesWithSenderWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		MessageIDs []uuid.UUID
+		Order      parameter.MessageOrderMethod
+		Np         NumberedPaginationParam
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		MessageIDs: messageIDs,
+		Order:      order,
+		Np:         np,
+	}
+	mock.lockGetPluralMessagesWithSenderWithSd.Lock()
+	mock.calls.GetPluralMessagesWithSenderWithSd = append(mock.calls.GetPluralMessagesWithSenderWithSd, callInfo)
+	mock.lockGetPluralMessagesWithSenderWithSd.Unlock()
+	return mock.GetPluralMessagesWithSenderWithSdFunc(ctx, sd, messageIDs, order, np)
+}
+
+// GetPluralMessagesWithSenderWithSdCalls gets all the calls that were made to GetPluralMessagesWithSenderWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralMessagesWithSenderWithSdCalls())
+func (mock *StoreMock) GetPluralMessagesWithSenderWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	MessageIDs []uuid.UUID
+	Order      parameter.MessageOrderMethod
+	Np         NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		MessageIDs []uuid.UUID
+		Order      parameter.MessageOrderMethod
+		Np         NumberedPaginationParam
+	}
+	mock.lockGetPluralMessagesWithSenderWithSd.RLock()
+	calls = mock.calls.GetPluralMessagesWithSenderWithSd
+	mock.lockGetPluralMessagesWithSenderWithSd.RUnlock()
 	return calls
 }
 
@@ -31983,6 +33747,82 @@ func (mock *StoreMock) PluralDeleteMembersWithSdCalls() []struct {
 	return calls
 }
 
+// PluralDeleteMessages calls PluralDeleteMessagesFunc.
+func (mock *StoreMock) PluralDeleteMessages(ctx context.Context, messageIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteMessagesFunc == nil {
+		panic("StoreMock.PluralDeleteMessagesFunc: method is nil but Store.PluralDeleteMessages was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+	}{
+		Ctx:        ctx,
+		MessageIDs: messageIDs,
+	}
+	mock.lockPluralDeleteMessages.Lock()
+	mock.calls.PluralDeleteMessages = append(mock.calls.PluralDeleteMessages, callInfo)
+	mock.lockPluralDeleteMessages.Unlock()
+	return mock.PluralDeleteMessagesFunc(ctx, messageIDs)
+}
+
+// PluralDeleteMessagesCalls gets all the calls that were made to PluralDeleteMessages.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteMessagesCalls())
+func (mock *StoreMock) PluralDeleteMessagesCalls() []struct {
+	Ctx        context.Context
+	MessageIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteMessages.RLock()
+	calls = mock.calls.PluralDeleteMessages
+	mock.lockPluralDeleteMessages.RUnlock()
+	return calls
+}
+
+// PluralDeleteMessagesWithSd calls PluralDeleteMessagesWithSdFunc.
+func (mock *StoreMock) PluralDeleteMessagesWithSd(ctx context.Context, sd Sd, messageIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteMessagesWithSdFunc == nil {
+		panic("StoreMock.PluralDeleteMessagesWithSdFunc: method is nil but Store.PluralDeleteMessagesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		MessageIDs []uuid.UUID
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		MessageIDs: messageIDs,
+	}
+	mock.lockPluralDeleteMessagesWithSd.Lock()
+	mock.calls.PluralDeleteMessagesWithSd = append(mock.calls.PluralDeleteMessagesWithSd, callInfo)
+	mock.lockPluralDeleteMessagesWithSd.Unlock()
+	return mock.PluralDeleteMessagesWithSdFunc(ctx, sd, messageIDs)
+}
+
+// PluralDeleteMessagesWithSdCalls gets all the calls that were made to PluralDeleteMessagesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteMessagesWithSdCalls())
+func (mock *StoreMock) PluralDeleteMessagesWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	MessageIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		MessageIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteMessagesWithSd.RLock()
+	calls = mock.calls.PluralDeleteMessagesWithSd
+	mock.lockPluralDeleteMessagesWithSd.RUnlock()
+	return calls
+}
+
 // PluralDeleteMimeTypes calls PluralDeleteMimeTypesFunc.
 func (mock *StoreMock) PluralDeleteMimeTypes(ctx context.Context, mimeTypeIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteMimeTypesFunc == nil {
@@ -34204,6 +36044,90 @@ func (mock *StoreMock) UpdateMemberWithSdCalls() []struct {
 	mock.lockUpdateMemberWithSd.RLock()
 	calls = mock.calls.UpdateMemberWithSd
 	mock.lockUpdateMemberWithSd.RUnlock()
+	return calls
+}
+
+// UpdateMessage calls UpdateMessageFunc.
+func (mock *StoreMock) UpdateMessage(ctx context.Context, messageID uuid.UUID, param parameter.UpdateMessageParams) (entity.Message, error) {
+	if mock.UpdateMessageFunc == nil {
+		panic("StoreMock.UpdateMessageFunc: method is nil but Store.UpdateMessage was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+		Param     parameter.UpdateMessageParams
+	}{
+		Ctx:       ctx,
+		MessageID: messageID,
+		Param:     param,
+	}
+	mock.lockUpdateMessage.Lock()
+	mock.calls.UpdateMessage = append(mock.calls.UpdateMessage, callInfo)
+	mock.lockUpdateMessage.Unlock()
+	return mock.UpdateMessageFunc(ctx, messageID, param)
+}
+
+// UpdateMessageCalls gets all the calls that were made to UpdateMessage.
+// Check the length with:
+//
+//	len(mockedStore.UpdateMessageCalls())
+func (mock *StoreMock) UpdateMessageCalls() []struct {
+	Ctx       context.Context
+	MessageID uuid.UUID
+	Param     parameter.UpdateMessageParams
+} {
+	var calls []struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+		Param     parameter.UpdateMessageParams
+	}
+	mock.lockUpdateMessage.RLock()
+	calls = mock.calls.UpdateMessage
+	mock.lockUpdateMessage.RUnlock()
+	return calls
+}
+
+// UpdateMessageWithSd calls UpdateMessageWithSdFunc.
+func (mock *StoreMock) UpdateMessageWithSd(ctx context.Context, sd Sd, messageID uuid.UUID, param parameter.UpdateMessageParams) (entity.Message, error) {
+	if mock.UpdateMessageWithSdFunc == nil {
+		panic("StoreMock.UpdateMessageWithSdFunc: method is nil but Store.UpdateMessageWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+		Param     parameter.UpdateMessageParams
+	}{
+		Ctx:       ctx,
+		Sd:        sd,
+		MessageID: messageID,
+		Param:     param,
+	}
+	mock.lockUpdateMessageWithSd.Lock()
+	mock.calls.UpdateMessageWithSd = append(mock.calls.UpdateMessageWithSd, callInfo)
+	mock.lockUpdateMessageWithSd.Unlock()
+	return mock.UpdateMessageWithSdFunc(ctx, sd, messageID, param)
+}
+
+// UpdateMessageWithSdCalls gets all the calls that were made to UpdateMessageWithSd.
+// Check the length with:
+//
+//	len(mockedStore.UpdateMessageWithSdCalls())
+func (mock *StoreMock) UpdateMessageWithSdCalls() []struct {
+	Ctx       context.Context
+	Sd        Sd
+	MessageID uuid.UUID
+	Param     parameter.UpdateMessageParams
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+		Param     parameter.UpdateMessageParams
+	}
+	mock.lockUpdateMessageWithSd.RLock()
+	calls = mock.calls.UpdateMessageWithSd
+	mock.lockUpdateMessageWithSd.RUnlock()
 	return calls
 }
 

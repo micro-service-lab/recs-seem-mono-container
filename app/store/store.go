@@ -50,4 +50,5 @@ type Store interface {
 	Professor
 	File
 	Image
+	Message
 }

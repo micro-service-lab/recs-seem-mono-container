@@ -175,11 +175,11 @@ func belongChatRoom(
 	ctx context.Context,
 	qtx *query.Queries,
 	param parameter.BelongChatRoomParam,
-	now time.Time,
 ) (entity.ChatRoomBelonging, error) {
 	p := query.CreateChatRoomBelongingParams{
 		MemberID:   param.MemberID,
 		ChatRoomID: param.ChatRoomID,
+		AddedAt:    param.AddedAt,
 	}
 	b, err := qtx.CreateChatRoomBelonging(ctx, p)
 	if err != nil {
@@ -192,7 +192,7 @@ func belongChatRoom(
 	return entity.ChatRoomBelonging{
 		MemberID:   b.MemberID,
 		ChatRoomID: b.ChatRoomID,
-		AddedAt:    now,
+		AddedAt:    b.AddedAt,
 	}, nil
 }
 
@@ -200,7 +200,7 @@ func belongChatRoom(
 func (a *PgAdapter) BelongChatRoom(
 	ctx context.Context, param parameter.BelongChatRoomParam,
 ) (entity.ChatRoomBelonging, error) {
-	return belongChatRoom(ctx, a.query, param, a.clocker.Now())
+	return belongChatRoom(ctx, a.query, param)
 }
 
 // BelongChatRoomWithSd SD付きでメンバーをチャットルームに所属させる。
@@ -213,21 +213,20 @@ func (a *PgAdapter) BelongChatRoomWithSd(
 	if !ok {
 		return entity.ChatRoomBelonging{}, store.ErrNotFoundDescriptor
 	}
-	return belongChatRoom(ctx, qtx, param, a.clocker.Now())
+	return belongChatRoom(ctx, qtx, param)
 }
 
 func belongChatRooms(
 	ctx context.Context,
 	qtx *query.Queries,
 	params []parameter.BelongChatRoomParam,
-	now time.Time,
 ) (int64, error) {
 	param := make([]query.CreateChatRoomBelongingsParams, len(params))
 	for i, p := range params {
 		param[i] = query.CreateChatRoomBelongingsParams{
 			MemberID:   p.MemberID,
 			ChatRoomID: p.ChatRoomID,
-			AddedAt:    now,
+			AddedAt:    p.AddedAt,
 		}
 	}
 	b, err := qtx.CreateChatRoomBelongings(ctx, param)
@@ -245,7 +244,7 @@ func belongChatRooms(
 func (a *PgAdapter) BelongChatRooms(
 	ctx context.Context, params []parameter.BelongChatRoomParam,
 ) (int64, error) {
-	return belongChatRooms(ctx, a.query, params, a.clocker.Now())
+	return belongChatRooms(ctx, a.query, params)
 }
 
 // BelongChatRoomsWithSd SD付きでメンバーを複数のチャットルームに所属させる。
@@ -258,7 +257,7 @@ func (a *PgAdapter) BelongChatRoomsWithSd(
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	return belongChatRooms(ctx, qtx, params, a.clocker.Now())
+	return belongChatRooms(ctx, qtx, params)
 }
 
 func disbelongChatRoom(

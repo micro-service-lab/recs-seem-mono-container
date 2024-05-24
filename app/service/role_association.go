@@ -20,7 +20,7 @@ type ManageRoleAssociation struct {
 // AssociateRoles ロールを複数関連付ける。
 func (m *ManageRoleAssociation) AssociateRoles(
 	ctx context.Context, params []parameter.AssociationRoleParam,
-) (int64, error) {
+) (es int64, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return 0, fmt.Errorf("failed to begin transaction: %w", err)
@@ -69,7 +69,7 @@ func (m *ManageRoleAssociation) AssociateRoles(
 	if len(po.Data) != len(policyIDs) {
 		return 0, errhandle.NewModelNotFoundError(AssociateRoleTargetPolicies)
 	}
-	es, err := m.DB.AssociateRolesWithSd(ctx, sd, params)
+	es, err = m.DB.AssociateRolesWithSd(ctx, sd, params)
 	if err != nil {
 		return 0, fmt.Errorf("failed to associate roles: %w", err)
 	}
@@ -79,7 +79,7 @@ func (m *ManageRoleAssociation) AssociateRoles(
 // DisassociateRoleOnPolicy ポリシーに関連付けられたロールを解除する。
 func (m *ManageRoleAssociation) DisassociateRoleOnPolicy(
 	ctx context.Context, policyID uuid.UUID,
-) (int64, error) {
+) (es int64, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return 0, fmt.Errorf("failed to begin transaction: %w", err)
@@ -104,7 +104,7 @@ func (m *ManageRoleAssociation) DisassociateRoleOnPolicy(
 	if len(po.Data) != 1 {
 		return 0, errhandle.NewModelNotFoundError("policy")
 	}
-	es, err := m.DB.DisassociateRoleOnPolicyWithSd(ctx, sd, policyID)
+	es, err = m.DB.DisassociateRoleOnPolicyWithSd(ctx, sd, policyID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to disassociate role on policy: %w", err)
 	}
@@ -114,7 +114,7 @@ func (m *ManageRoleAssociation) DisassociateRoleOnPolicy(
 // DisassociateRoleOnPolicies 複数のポリシーに関連付けられたロールを解除する。
 func (m *ManageRoleAssociation) DisassociateRoleOnPolicies(
 	ctx context.Context, policyIDs []uuid.UUID,
-) (int64, error) {
+) (es int64, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return 0, fmt.Errorf("failed to begin transaction: %w", err)
@@ -138,7 +138,7 @@ func (m *ManageRoleAssociation) DisassociateRoleOnPolicies(
 	if len(po.Data) != len(policyIDs) {
 		return 0, errhandle.NewModelNotFoundError("policy")
 	}
-	es, err := m.DB.DisassociateRoleOnPoliciesWithSd(ctx, sd, policyIDs)
+	es, err = m.DB.DisassociateRoleOnPoliciesWithSd(ctx, sd, policyIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to disassociate role on policies: %w", err)
 	}
@@ -148,7 +148,7 @@ func (m *ManageRoleAssociation) DisassociateRoleOnPolicies(
 // PluralDisassociateRoleOnPolicy ポリシーに関連付けられたロールを複数解除する。
 func (m *ManageRoleAssociation) PluralDisassociateRoleOnPolicy(
 	ctx context.Context, policyID uuid.UUID, roleIDs []uuid.UUID,
-) (int64, error) {
+) (es int64, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return 0, fmt.Errorf("failed to begin transaction: %w", err)
@@ -180,7 +180,7 @@ func (m *ManageRoleAssociation) PluralDisassociateRoleOnPolicy(
 	if len(po.Data) != 1 {
 		return 0, errhandle.NewModelNotFoundError(AssociateRoleTargetPolicies)
 	}
-	es, err := m.DB.PluralDisassociateRoleOnPolicyWithSd(ctx, sd, policyID, roleIDs)
+	es, err = m.DB.PluralDisassociateRoleOnPolicyWithSd(ctx, sd, policyID, roleIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to plural disassociate role on policy: %w", err)
 	}
@@ -190,7 +190,7 @@ func (m *ManageRoleAssociation) PluralDisassociateRoleOnPolicy(
 // DisassociatePolicyOnRole ロールに関連付けられたポリシーを解除する。
 func (m *ManageRoleAssociation) DisassociatePolicyOnRole(
 	ctx context.Context, roleID uuid.UUID,
-) (int64, error) {
+) (es int64, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return 0, fmt.Errorf("failed to begin transaction: %w", err)
@@ -215,7 +215,7 @@ func (m *ManageRoleAssociation) DisassociatePolicyOnRole(
 	if len(ro.Data) != 1 {
 		return 0, errhandle.NewModelNotFoundError(AssociateRoleTargetRoles)
 	}
-	es, err := m.DB.DisassociatePolicyOnRoleWithSd(ctx, sd, roleID)
+	es, err = m.DB.DisassociatePolicyOnRoleWithSd(ctx, sd, roleID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to disassociate policy on role: %w", err)
 	}
@@ -225,7 +225,7 @@ func (m *ManageRoleAssociation) DisassociatePolicyOnRole(
 // DisassociatePolicyOnRoles ロールに関連付けられたポリシーを複数解除する。
 func (m *ManageRoleAssociation) DisassociatePolicyOnRoles(
 	ctx context.Context, roleIDs []uuid.UUID,
-) (int64, error) {
+) (es int64, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return 0, fmt.Errorf("failed to begin transaction: %w", err)
@@ -249,7 +249,7 @@ func (m *ManageRoleAssociation) DisassociatePolicyOnRoles(
 	if len(ro.Data) != len(roleIDs) {
 		return 0, errhandle.NewModelNotFoundError(AssociateRoleTargetRoles)
 	}
-	es, err := m.DB.DisassociatePolicyOnRolesWithSd(ctx, sd, roleIDs)
+	es, err = m.DB.DisassociatePolicyOnRolesWithSd(ctx, sd, roleIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to disassociate policy on roles: %w", err)
 	}
@@ -259,7 +259,7 @@ func (m *ManageRoleAssociation) DisassociatePolicyOnRoles(
 // PluralDisassociatePolicyOnRole ロールに関連付けられたポリシーを複数解除する。
 func (m *ManageRoleAssociation) PluralDisassociatePolicyOnRole(
 	ctx context.Context, roleID uuid.UUID, policyIDs []uuid.UUID,
-) (int64, error) {
+) (es int64, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return 0, fmt.Errorf("failed to begin transaction: %w", err)
@@ -291,7 +291,7 @@ func (m *ManageRoleAssociation) PluralDisassociatePolicyOnRole(
 	if len(po.Data) != len(policyIDs) {
 		return 0, errhandle.NewModelNotFoundError(AssociateRoleTargetPolicies)
 	}
-	es, err := m.DB.PluralDisassociatePolicyOnRoleWithSd(ctx, sd, roleID, policyIDs)
+	es, err = m.DB.PluralDisassociatePolicyOnRoleWithSd(ctx, sd, roleID, policyIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to plural disassociate policy on role: %w", err)
 	}
@@ -308,7 +308,7 @@ func (m *ManageRoleAssociation) GetRolesOnPolicy(
 	cursor parameter.Cursor,
 	offset parameter.Offset,
 	withCount parameter.WithCount,
-) (store.ListResult[entity.RoleOnPolicy], error) {
+) (es store.ListResult[entity.RoleOnPolicy], err error) {
 	wc := store.WithCountParam{
 		Valid: bool(withCount),
 	}
@@ -333,7 +333,7 @@ func (m *ManageRoleAssociation) GetRolesOnPolicy(
 		}
 	case parameter.NonePagination:
 	}
-	es, err := m.DB.GetRolesOnPolicy(ctx, policyID, where, order, np, cp, wc)
+	es, err = m.DB.GetRolesOnPolicy(ctx, policyID, where, order, np, cp, wc)
 	if err != nil {
 		return store.ListResult[entity.RoleOnPolicy]{}, fmt.Errorf("failed to get roles on policy: %w", err)
 	}
@@ -350,7 +350,7 @@ func (m *ManageRoleAssociation) GetPoliciesOnRole(
 	cursor parameter.Cursor,
 	offset parameter.Offset,
 	withCount parameter.WithCount,
-) (store.ListResult[entity.PolicyOnRole], error) {
+) (es store.ListResult[entity.PolicyOnRole], err error) {
 	wc := store.WithCountParam{
 		Valid: bool(withCount),
 	}
@@ -375,7 +375,7 @@ func (m *ManageRoleAssociation) GetPoliciesOnRole(
 		}
 	case parameter.NonePagination:
 	}
-	es, err := m.DB.GetPoliciesOnRole(ctx, roleID, where, order, np, cp, wc)
+	es, err = m.DB.GetPoliciesOnRole(ctx, roleID, where, order, np, cp, wc)
 	if err != nil {
 		return store.ListResult[entity.PolicyOnRole]{}, fmt.Errorf("failed to get policies on role: %w", err)
 	}
@@ -386,12 +386,12 @@ func (m *ManageRoleAssociation) GetPoliciesOnRole(
 func (m *ManageRoleAssociation) GetRolesOnPolicyCount(
 	ctx context.Context, policyID uuid.UUID,
 	whereSearchName string,
-) (int64, error) {
+) (es int64, err error) {
 	where := parameter.WhereRoleOnPolicyParam{
 		WhereLikeName: whereSearchName != "",
 		SearchName:    whereSearchName,
 	}
-	es, err := m.DB.CountRolesOnPolicy(ctx, policyID, where)
+	es, err = m.DB.CountRolesOnPolicy(ctx, policyID, where)
 	if err != nil {
 		return 0, fmt.Errorf("failed to get roles on policy count: %w", err)
 	}
@@ -402,12 +402,12 @@ func (m *ManageRoleAssociation) GetRolesOnPolicyCount(
 func (m *ManageRoleAssociation) GetPoliciesOnRoleCount(
 	ctx context.Context, roleID uuid.UUID,
 	whereSearchName string,
-) (int64, error) {
+) (es int64, err error) {
 	where := parameter.WherePolicyOnRoleParam{
 		WhereLikeName: whereSearchName != "",
 		SearchName:    whereSearchName,
 	}
-	es, err := m.DB.CountPoliciesOnRole(ctx, roleID, where)
+	es, err = m.DB.CountPoliciesOnRole(ctx, roleID, where)
 	if err != nil {
 		return 0, fmt.Errorf("failed to get policies on role count: %w", err)
 	}

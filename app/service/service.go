@@ -25,6 +25,7 @@ type Manager struct {
 	ManagePolicy
 	ManageRole
 	ManageRoleAssociation
+	ManageOrganization
 }
 
 // NewManager creates a new Manager.
@@ -42,6 +43,7 @@ func NewManager(db store.Store) *Manager {
 		ManagePolicy:             ManagePolicy{DB: db},
 		ManageRole:               ManageRole{DB: db},
 		ManageRoleAssociation:    ManageRoleAssociation{DB: db},
+		ManageOrganization:       ManageOrganization{DB: db},
 	}
 }
 
@@ -60,6 +62,7 @@ type ManagerInterface interface {
 	PolicyManager
 	RoleManager
 	RoleAssociationManager
+	OrganizationManager
 }
 
 // AttendStatusManager is a interface for attend status service.
@@ -373,6 +376,87 @@ type RoleAssociationManager interface {
 	GetPoliciesOnRoleCount(
 		ctx context.Context, roleID uuid.UUID,
 		whereSearchName string,
+	) (int64, error)
+}
+
+// OrganizationManager is a interface for organization service.
+type OrganizationManager interface {
+	CreateOrganization(
+		ctx context.Context, name string, description, color entity.String,
+	) (e entity.Organization, err error)
+	UpdateOrganization(
+		ctx context.Context, id uuid.UUID, name string, description, color entity.String,
+	) (e entity.Organization, err error)
+	DeleteOrganization(ctx context.Context, id uuid.UUID) (int64, error)
+	FindOrganizationByID(
+		ctx context.Context,
+		id uuid.UUID,
+	) (entity.Organization, error)
+	FindOrganizationWithChatRoom(
+		ctx context.Context,
+		id uuid.UUID,
+	) (entity.OrganizationWithChatRoom, error)
+	FindOrganizationWithDetail(
+		ctx context.Context,
+		id uuid.UUID,
+	) (entity.OrganizationWithDetail, error)
+	FindOrganizationWithChatRoomAndDetail(
+		ctx context.Context,
+		id uuid.UUID,
+	) (entity.OrganizationWithChatRoomAndDetail, error)
+	GetOrganizations(
+		ctx context.Context,
+		whereSearchName string,
+		whereOrganizationType parameter.WhereOrganizationType,
+		wherePersonalMemberID uuid.UUID,
+		order parameter.OrganizationOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.Organization], error)
+	GetOrganizationsWithDetail(
+		ctx context.Context,
+		whereSearchName string,
+		whereOrganizationType parameter.WhereOrganizationType,
+		wherePersonalMemberID uuid.UUID,
+		order parameter.OrganizationOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.OrganizationWithDetail], error)
+	GetOrganizationsWithChatRoom(
+		ctx context.Context,
+		whereSearchName string,
+		whereOrganizationType parameter.WhereOrganizationType,
+		wherePersonalMemberID uuid.UUID,
+		order parameter.OrganizationOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.OrganizationWithChatRoom], error)
+	GetOrganizationsWithChatRoomAndDetail(
+		ctx context.Context,
+		whereSearchName string,
+		whereOrganizationType parameter.WhereOrganizationType,
+		wherePersonalMemberID uuid.UUID,
+		order parameter.OrganizationOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.OrganizationWithChatRoomAndDetail], error)
+	GetOrganizationsCount(
+		ctx context.Context,
+		whereSearchName string,
+		whereOrganizationType parameter.WhereOrganizationType,
+		wherePersonalMemberID uuid.UUID,
 	) (int64, error)
 }
 

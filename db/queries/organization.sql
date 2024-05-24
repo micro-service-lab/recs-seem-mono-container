@@ -73,15 +73,15 @@ WHERE m_organizations.is_personal = true AND EXISTS (SELECT * FROM m_members WHE
 -- name: GetOrganizations :many
 SELECT * FROM m_organizations
 WHERE
-	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
+	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole END
+	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole ELSE TRUE END
 AND
-	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) END
+	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) ELSE TRUE END
 AND
-	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
@@ -90,15 +90,15 @@ ORDER BY
 -- name: GetOrganizationsUseNumberedPaginate :many
 SELECT * FROM m_organizations
 WHERE
-	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
+	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole END
+	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole ELSE TRUE END
 AND
-	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) END
+	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) ELSE TRUE END
 AND
-	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
@@ -108,15 +108,15 @@ LIMIT $1 OFFSET $2;
 -- name: GetOrganizationsUseKeysetPaginate :many
 SELECT * FROM m_organizations
 WHERE
-	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
+	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole END
+	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole ELSE TRUE END
 AND
-	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) END
+	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) ELSE TRUE END
 AND
-	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
@@ -161,15 +161,15 @@ SELECT m_organizations.*, m_groups.group_id, m_groups.key group_key, m_grades.ke
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
-	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
+	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole END
+	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole ELSE TRUE END
 AND
-	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) END
+	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) ELSE TRUE END
 AND
-	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
@@ -180,15 +180,15 @@ SELECT m_organizations.*, m_groups.group_id, m_groups.key group_key, m_grades.ke
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
-	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
+	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole END
+	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole ELSE TRUE END
 AND
-	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) END
+	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) ELSE TRUE END
 AND
-	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
@@ -200,15 +200,15 @@ SELECT m_organizations.*, m_groups.group_id, m_groups.key group_key, m_grades.ke
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
-	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
+	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole END
+	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole ELSE TRUE END
 AND
-	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) END
+	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) ELSE TRUE END
 AND
-	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
@@ -266,15 +266,15 @@ LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
+	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole END
+	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole ELSE TRUE END
 AND
-	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) END
+	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) ELSE TRUE END
 AND
-	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
@@ -292,15 +292,15 @@ LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
+	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole END
+	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole ELSE TRUE END
 AND
-	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) END
+	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) ELSE TRUE END
 AND
-	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
@@ -319,15 +319,15 @@ LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
+	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole END
+	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole ELSE TRUE END
 AND
-	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) END
+	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) ELSE TRUE END
 AND
-	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
@@ -401,15 +401,15 @@ LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
+	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole END
+	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole ELSE TRUE END
 AND
-	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) END
+	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) ELSE TRUE END
 AND
-	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
@@ -429,15 +429,15 @@ LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
+	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole END
+	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole ELSE TRUE END
 AND
-	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) END
+	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) ELSE TRUE END
 AND
-	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
@@ -458,15 +458,15 @@ LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
+	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole END
+	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole ELSE TRUE END
 AND
-	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) END
+	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) ELSE TRUE END
 AND
-	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
@@ -533,12 +533,12 @@ LIMIT $1 OFFSET $2;
 -- name: CountOrganizations :one
 SELECT COUNT(*) FROM m_organizations
 WHERE
-	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' END
+	CASE WHEN @where_like_name::boolean = true THEN m_organizations.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 AND
-	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole END
+	CASE WHEN @where_is_whole::boolean = true THEN m_organizations.is_whole = @is_whole ELSE TRUE END
 AND
-	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) END
+	CASE WHEN @where_is_personal::boolean = true THEN m_organizations.is_personal = @is_personal AND EXISTS (SELECT * FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = @personal_member_id::uuid) ELSE TRUE END
 AND
-	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN @where_is_group::boolean = true THEN EXISTS (SELECT * FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END;
+	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END;

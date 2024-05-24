@@ -217,4 +217,32 @@ var (
 		Message:    "request format error",
 		StatusCode: http.StatusBadRequest,
 	}
+
+	// AttemptOperatePersonalOrganization 個人用オーガナイゼーションの操作を試みる
+	AttemptOperatePersonalOrganization = APIResponseType{
+		Code:       "226",
+		Message:    "attempt operate personal organization error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// AttemptOperateWholeOrganization 全体用オーガナイゼーションの操作を試みる
+	AttemptOperateWholeOrganization = APIResponseType{
+		Code:       "227",
+		Message:    "attempt operate whole organization error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// AttemptOperateGroupOrganization グループ用オーガナイゼーションの操作を試みる
+	AttemptOperateGroupOrganization = APIResponseType{
+		Code:       "228",
+		Message:    "attempt operate group organization error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// AttemptOperateGradeOrganization 学年用オーガナイゼーションの操作を試みる
+	AttemptOperateGradeOrganization = APIResponseType{
+		Code:       "229",
+		Message:    "attempt operate grade organization error",
+		StatusCode: http.StatusForbidden,
+	}
 )

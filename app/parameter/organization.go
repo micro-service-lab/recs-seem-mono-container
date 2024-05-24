@@ -36,6 +36,95 @@ type WhereOrganizationParam struct {
 	WhereIsGrade     bool
 }
 
+// OrganizationWith オーガナイゼーションの付加情報。
+type OrganizationWith struct {
+	withDetail   bool
+	withChatRoom bool
+}
+
+// OrganizationWithParams オーガナイゼーションの付加情報。
+type OrganizationWithParams []OrganizationWith
+
+// ParseOrganizationWithParam オーガナイゼーションの付加情報をパースする。
+func ParseOrganizationWithParam(v string) (any, error) {
+	if v == "" {
+		return OrganizationWith{}, nil
+	}
+	switch v {
+	case "detail":
+		return OrganizationWith{withDetail: true}, nil
+	case "chat_room":
+		return OrganizationWith{withChatRoom: true}, nil
+	default:
+		return OrganizationWith{}, nil
+	}
+}
+
+// OrganizationWithCase オーガナイゼーションの付加情報のケース。
+type OrganizationWithCase int8
+
+const (
+	// OrganizationWithCaseChatRoomAndDetail はチャットルームとカテゴリを含む。
+	OrganizationWithCaseChatRoomAndDetail OrganizationWithCase = 0b11
+	// OrganizationWithCaseChatRoom はチャットルームを含む。
+	OrganizationWithCaseChatRoom OrganizationWithCase = 0b10
+	// OrganizationWithCaseDetail はカテゴリを含む。
+	OrganizationWithCaseDetail OrganizationWithCase = 0b1
+	// OrganizationWithCaseDefault はデフォルト。
+	OrganizationWithCaseDefault OrganizationWithCase = 0b0
+)
+
+// Case はケースを取得する。
+func (p OrganizationWithParams) Case() OrganizationWithCase {
+	var c OrganizationWithCase
+	for _, v := range p {
+		if v.withDetail {
+			c |= OrganizationWithCaseDetail
+		}
+		if v.withChatRoom {
+			c |= OrganizationWithCaseChatRoom
+		}
+	}
+	return c
+}
+
+// WhereOrganizationType オーガナイゼーション検索のタイプ。
+type WhereOrganizationType string
+
+const (
+	// WhereOrganizationTypeDefault デフォルト。
+	WhereOrganizationTypeDefault WhereOrganizationType = "default"
+	// WhereOrganizationTypePersonal パーソナル。
+	WhereOrganizationTypePersonal WhereOrganizationType = "personal"
+	// WhereOrganizationTypeWhole 全体。
+	WhereOrganizationTypeWhole WhereOrganizationType = "whole"
+	// WhereOrganizationTypeGroup グループ。
+	WhereOrganizationTypeGroup WhereOrganizationType = "group"
+	// WhereOrganizationTypeGrade 学年。
+	WhereOrganizationTypeGrade WhereOrganizationType = "grade"
+)
+
+// ParseWhereOrganizationType はオーガナイゼーション検索のタイプをパースする。
+func ParseWhereOrganizationType(v string) (any, error) {
+	if v == "" {
+		return WhereOrganizationTypeDefault, nil
+	}
+	switch v {
+	case string(WhereOrganizationTypeDefault):
+		return WhereOrganizationTypeDefault, nil
+	case string(WhereOrganizationTypePersonal):
+		return WhereOrganizationTypePersonal, nil
+	case string(WhereOrganizationTypeWhole):
+		return WhereOrganizationTypeWhole, nil
+	case string(WhereOrganizationTypeGroup):
+		return WhereOrganizationTypeGroup, nil
+	case string(WhereOrganizationTypeGrade):
+		return WhereOrganizationTypeGrade, nil
+	default:
+		return WhereOrganizationTypeDefault, nil
+	}
+}
+
 // OrganizationOrderMethod オーガナイゼーションの並び替え方法。
 type OrganizationOrderMethod string
 

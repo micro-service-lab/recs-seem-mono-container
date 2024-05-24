@@ -16,15 +16,15 @@ import (
 const countOrganizations = `-- name: CountOrganizations :one
 SELECT COUNT(*) FROM m_organizations
 WHERE
-	CASE WHEN $1::boolean = true THEN m_organizations.name LIKE '%' || $2::text || '%' END
+	CASE WHEN $1::boolean = true THEN m_organizations.name LIKE '%' || $2::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 END
+	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) ELSE TRUE END
 AND
-	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 `
 
 type CountOrganizationsParams struct {
@@ -460,15 +460,15 @@ func (q *Queries) FindWholeOrganizationWithChatRoom(ctx context.Context) (FindWh
 const getOrganizations = `-- name: GetOrganizations :many
 SELECT m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations
 WHERE
-	CASE WHEN $1::boolean = true THEN m_organizations.name LIKE '%' || $2::text || '%' END
+	CASE WHEN $1::boolean = true THEN m_organizations.name LIKE '%' || $2::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 END
+	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) ELSE TRUE END
 AND
-	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN $10::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN $10::text = 'r_name' THEN m_organizations.name END DESC,
@@ -533,15 +533,15 @@ func (q *Queries) GetOrganizations(ctx context.Context, arg GetOrganizationsPara
 const getOrganizationsUseKeysetPaginate = `-- name: GetOrganizationsUseKeysetPaginate :many
 SELECT m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations
 WHERE
-	CASE WHEN $2::boolean = true THEN m_organizations.name LIKE '%' || $3::text || '%' END
+	CASE WHEN $2::boolean = true THEN m_organizations.name LIKE '%' || $3::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $4::boolean = true THEN m_organizations.is_whole = $5 END
+	CASE WHEN $4::boolean = true THEN m_organizations.is_whole = $5 ELSE TRUE END
 AND
-	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
+	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
 	CASE $11::text
 		WHEN 'next' THEN
@@ -633,15 +633,15 @@ func (q *Queries) GetOrganizationsUseKeysetPaginate(ctx context.Context, arg Get
 const getOrganizationsUseNumberedPaginate = `-- name: GetOrganizationsUseNumberedPaginate :many
 SELECT m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations
 WHERE
-	CASE WHEN $3::boolean = true THEN m_organizations.name LIKE '%' || $4::text || '%' END
+	CASE WHEN $3::boolean = true THEN m_organizations.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_whole = $6 END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_whole = $6 ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
+	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) ELSE TRUE END
 AND
-	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN $11::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN $11::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN $12::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN $12::text = 'r_name' THEN m_organizations.name END DESC,
@@ -720,15 +720,15 @@ LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN $1::boolean = true THEN m_organizations.name LIKE '%' || $2::text || '%' END
+	CASE WHEN $1::boolean = true THEN m_organizations.name LIKE '%' || $2::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 END
+	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) ELSE TRUE END
 AND
-	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN $10::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN $10::text = 'r_name' THEN m_organizations.name END DESC,
@@ -843,15 +843,15 @@ LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN $1::boolean = true THEN m_organizations.name LIKE '%' || $2::text || '%' END
+	CASE WHEN $1::boolean = true THEN m_organizations.name LIKE '%' || $2::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 END
+	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) ELSE TRUE END
 AND
-	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN $10::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN $10::text = 'r_name' THEN m_organizations.name END DESC,
@@ -974,15 +974,15 @@ LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN $2::boolean = true THEN m_organizations.name LIKE '%' || $3::text || '%' END
+	CASE WHEN $2::boolean = true THEN m_organizations.name LIKE '%' || $3::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $4::boolean = true THEN m_organizations.is_whole = $5 END
+	CASE WHEN $4::boolean = true THEN m_organizations.is_whole = $5 ELSE TRUE END
 AND
-	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
+	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
 	CASE $11::text
 		WHEN 'next' THEN
@@ -1132,15 +1132,15 @@ LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN $3::boolean = true THEN m_organizations.name LIKE '%' || $4::text || '%' END
+	CASE WHEN $3::boolean = true THEN m_organizations.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_whole = $6 END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_whole = $6 ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
+	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) ELSE TRUE END
 AND
-	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN $11::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN $11::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN $12::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN $12::text = 'r_name' THEN m_organizations.name END DESC,
@@ -1266,15 +1266,15 @@ LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN $2::boolean = true THEN m_organizations.name LIKE '%' || $3::text || '%' END
+	CASE WHEN $2::boolean = true THEN m_organizations.name LIKE '%' || $3::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $4::boolean = true THEN m_organizations.is_whole = $5 END
+	CASE WHEN $4::boolean = true THEN m_organizations.is_whole = $5 ELSE TRUE END
 AND
-	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
+	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
 	CASE $11::text
 		WHEN 'next' THEN
@@ -1414,15 +1414,15 @@ LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN $3::boolean = true THEN m_organizations.name LIKE '%' || $4::text || '%' END
+	CASE WHEN $3::boolean = true THEN m_organizations.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_whole = $6 END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_whole = $6 ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
+	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) ELSE TRUE END
 AND
-	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN $11::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN $11::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN $12::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN $12::text = 'r_name' THEN m_organizations.name END DESC,
@@ -1533,15 +1533,15 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
-	CASE WHEN $1::boolean = true THEN m_organizations.name LIKE '%' || $2::text || '%' END
+	CASE WHEN $1::boolean = true THEN m_organizations.name LIKE '%' || $2::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 END
+	CASE WHEN $3::boolean = true THEN m_organizations.is_whole = $4 ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_personal = $6 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $7::uuid) ELSE TRUE END
 AND
-	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN $8::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN $10::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN $10::text = 'r_name' THEN m_organizations.name END DESC,
@@ -1629,15 +1629,15 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
-	CASE WHEN $2::boolean = true THEN m_organizations.name LIKE '%' || $3::text || '%' END
+	CASE WHEN $2::boolean = true THEN m_organizations.name LIKE '%' || $3::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $4::boolean = true THEN m_organizations.is_whole = $5 END
+	CASE WHEN $4::boolean = true THEN m_organizations.is_whole = $5 ELSE TRUE END
 AND
-	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) END
+	CASE WHEN $6::boolean = true THEN m_organizations.is_personal = $7 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $8::uuid) ELSE TRUE END
 AND
-	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
 	CASE $11::text
 		WHEN 'next' THEN
@@ -1752,15 +1752,15 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE
-	CASE WHEN $3::boolean = true THEN m_organizations.name LIKE '%' || $4::text || '%' END
+	CASE WHEN $3::boolean = true THEN m_organizations.name LIKE '%' || $4::text || '%' ELSE TRUE END
 AND
-	CASE WHEN $5::boolean = true THEN m_organizations.is_whole = $6 END
+	CASE WHEN $5::boolean = true THEN m_organizations.is_whole = $6 ELSE TRUE END
 AND
-	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) END
+	CASE WHEN $7::boolean = true THEN m_organizations.is_personal = $8 AND EXISTS (SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE m_members.personal_organization_id = m_organizations.organization_id AND m_members.member_id = $9::uuid) ELSE TRUE END
 AND
-	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) END
+	CASE WHEN $10::boolean = true THEN EXISTS (SELECT m_groups_pkey, group_id, key, organization_id FROM m_groups WHERE m_groups.organization_id = m_organizations.organization_id) ELSE TRUE END
 AND
-	CASE WHEN $11::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) END
+	CASE WHEN $11::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN $12::text = 'name' THEN m_organizations.name END ASC,
 	CASE WHEN $12::text = 'r_name' THEN m_organizations.name END DESC,

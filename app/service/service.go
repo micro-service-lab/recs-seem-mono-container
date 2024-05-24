@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/i18n"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 )
@@ -29,7 +30,7 @@ type Manager struct {
 }
 
 // NewManager creates a new Manager.
-func NewManager(db store.Store) *Manager {
+func NewManager(db store.Store, _ i18n.Translation) *Manager {
 	return &Manager{
 		ManageAttendStatus:       ManageAttendStatus{DB: db},
 		ManageAbsence:            ManageAbsence{DB: db},

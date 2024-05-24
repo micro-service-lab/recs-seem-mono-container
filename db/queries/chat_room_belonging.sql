@@ -160,7 +160,7 @@ AND (
 ) = t_messages.message_id
 WHERE member_id = $1
 AND CASE
-	WHEN @where_like_name::boolean = true THEN m_members.name LIKE '%' || @search_name::text || '%'
+	WHEN @where_like_name::boolean = true THEN m_chat_rooms.name LIKE '%' || @search_name::text || '%'
 END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_chat_rooms.name END ASC,
@@ -196,7 +196,7 @@ AND (
 ) = t_messages.message_id
 WHERE member_id = $1
 AND CASE
-	WHEN @where_like_name::boolean = true THEN m_members.name LIKE '%' || @search_name::text || '%'
+	WHEN @where_like_name::boolean = true THEN m_chat_rooms.name LIKE '%' || @search_name::text || '%'
 END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_chat_rooms.name END ASC,
@@ -233,7 +233,7 @@ AND (
 ) = t_messages.message_id
 WHERE member_id = $1
 AND CASE
-	WHEN @where_like_name::boolean = true THEN m_members.name LIKE '%' || @search_name::text || '%'
+	WHEN @where_like_name::boolean = true THEN m_chat_rooms.name LIKE '%' || @search_name::text || '%'
 END
 AND CASE @cursor_direction::text
 	WHEN 'next' THEN

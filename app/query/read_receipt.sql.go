@@ -157,9 +157,9 @@ type CreateReadReceiptParams struct {
 	ReadAt    pgtype.Timestamptz `json:"read_at"`
 }
 
-func (q *Queries) CreateReadReceipt(ctx context.Context, arg CreateReadReceiptParams) (TReadReceipt, error) {
+func (q *Queries) CreateReadReceipt(ctx context.Context, arg CreateReadReceiptParams) (ReadReceipt, error) {
 	row := q.db.QueryRow(ctx, createReadReceipt, arg.MemberID, arg.MessageID, arg.ReadAt)
-	var i TReadReceipt
+	var i ReadReceipt
 	err := row.Scan(
 		&i.TReadReceiptsPkey,
 		&i.MemberID,
@@ -1117,9 +1117,9 @@ type ReadReceiptParams struct {
 	ReadAt    pgtype.Timestamptz `json:"read_at"`
 }
 
-func (q *Queries) ReadReceipt(ctx context.Context, arg ReadReceiptParams) (TReadReceipt, error) {
+func (q *Queries) ReadReceipt(ctx context.Context, arg ReadReceiptParams) (ReadReceipt, error) {
 	row := q.db.QueryRow(ctx, readReceipt, arg.MemberID, arg.MessageID, arg.ReadAt)
-	var i TReadReceipt
+	var i ReadReceipt
 	err := row.Scan(
 		&i.TReadReceiptsPkey,
 		&i.MemberID,

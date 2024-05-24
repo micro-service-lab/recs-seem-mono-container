@@ -175,6 +175,14 @@ type Member struct {
 	UpdatedAt              time.Time   `json:"updated_at"`
 }
 
+type Membership struct {
+	MMembershipsPkey pgtype.Int8 `json:"m_memberships_pkey"`
+	MemberID         uuid.UUID   `json:"member_id"`
+	OrganizationID   uuid.UUID   `json:"organization_id"`
+	WorkPositionID   pgtype.UUID `json:"work_position_id"`
+	AddedAt          time.Time   `json:"added_at"`
+}
+
 type Message struct {
 	TMessagesPkey pgtype.Int8 `json:"t_messages_pkey"`
 	MessageID     uuid.UUID   `json:"message_id"`
@@ -261,6 +269,13 @@ type Professor struct {
 	MemberID        uuid.UUID   `json:"member_id"`
 }
 
+type ReadReceipt struct {
+	TReadReceiptsPkey pgtype.Int8        `json:"t_read_receipts_pkey"`
+	MemberID          uuid.UUID          `json:"member_id"`
+	MessageID         uuid.UUID          `json:"message_id"`
+	ReadAt            pgtype.Timestamptz `json:"read_at"`
+}
+
 type Record struct {
 	TRecordsPkey   pgtype.Int8 `json:"t_records_pkey"`
 	RecordID       uuid.UUID   `json:"record_id"`
@@ -300,13 +315,6 @@ type Student struct {
 	MStudentsPkey pgtype.Int8 `json:"m_students_pkey"`
 	StudentID     uuid.UUID   `json:"student_id"`
 	MemberID      uuid.UUID   `json:"member_id"`
-}
-
-type TReadReceipt struct {
-	TReadReceiptsPkey pgtype.Int8        `json:"t_read_receipts_pkey"`
-	MemberID          uuid.UUID          `json:"member_id"`
-	MessageID         uuid.UUID          `json:"message_id"`
-	ReadAt            pgtype.Timestamptz `json:"read_at"`
 }
 
 type WorkPosition struct {

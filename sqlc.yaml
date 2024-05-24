@@ -59,4 +59,6 @@ sql:
         m_record_type: RecordType
         t_record: Record
         t_attached_message: AttachedMessage
+        t_read_receipt: ReadReceipt
+        m_membership: Membership
 

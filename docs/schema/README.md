@@ -40,6 +40,7 @@
 | [public.t_records](public.t_records.md) | 10 |  | BASE TABLE |
 | [public.t_attached_messages](public.t_attached_messages.md) | 4 |  | BASE TABLE |
 | [public.t_read_receipts](public.t_read_receipts.md) | 4 |  | BASE TABLE |
+| [public.m_memberships](public.m_memberships.md) | 5 |  | BASE TABLE |
 
 ## Stored procedures and functions
 

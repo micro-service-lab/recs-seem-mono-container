@@ -52,4 +52,5 @@ type Store interface {
 	Image
 	Message
 	ReadReceipt
+	Membership
 }

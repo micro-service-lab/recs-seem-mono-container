@@ -55,14 +55,14 @@ func (c *Container) Init(ctx context.Context) error {
 	}
 	c.Store = str
 
-	svc := service.NewManager(str)
-
-	c.ServiceManager = svc
-
 	c.Translator, err = i18n.NewTranslator()
 	if err != nil {
 		return fmt.Errorf("failed to create translator: %w", err)
 	}
+
+	svc := service.NewManager(str, c.Translator)
+
+	c.ServiceManager = svc
 
 	return nil
 }

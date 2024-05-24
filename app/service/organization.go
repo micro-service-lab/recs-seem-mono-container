@@ -18,6 +18,70 @@ type ManageOrganization struct {
 	DB store.Store
 }
 
+// Organization オーガナイゼーション。
+type Organization struct {
+	Name        string
+	Description string
+	Color       string
+}
+
+// WholeOrganization 全体オーガナイゼーション。
+var WholeOrganization = Organization{
+	Name:        "全体グループ",
+	Description: "研究室の全員が所属するグループです。",
+	Color:       "#FF0000",
+}
+
+// CreateWholeOrganization 全体グループを作成する。
+func (m *ManageOrganization) CreateWholeOrganization(
+	ctx context.Context,
+	name,
+	description,
+	color string,
+) (e entity.Organization, err error) {
+	sd, err := m.DB.Begin(ctx)
+	if err != nil {
+		return entity.Organization{}, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			if rerr := m.DB.Rollback(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to rollback transaction: %w", rerr)
+			}
+		} else {
+			if rerr := m.DB.Commit(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to commit transaction: %w", rerr)
+			}
+		}
+	}()
+	cr, err := m.DB.CreateChatRoomWithSd(ctx, sd, parameter.CreateChatRoomParam{
+		Name:             WholeOrganization.Name,
+		IsPrivate:        false,
+		CoverImageID:     entity.UUID{},
+		OwnerID:          entity.UUID{},
+		FromOrganization: true,
+	})
+	if err != nil {
+		return entity.Organization{}, fmt.Errorf("failed to create chat room: %w", err)
+	}
+	p := parameter.CreateOrganizationParam{
+		Name:        name,
+		Description: entity.String{Valid: true, String: description},
+		Color:       entity.String{Valid: true, String: color},
+		IsPersonal:  false,
+		IsWhole:     true,
+		ChatRoomID: entity.UUID{
+			Valid: true,
+			Bytes: cr.ChatRoomID,
+		},
+	}
+	e, err = m.DB.CreateOrganizationWithSd(ctx, sd, p)
+	if err != nil {
+		return entity.Organization{}, fmt.Errorf("failed to create organization: %w", err)
+	}
+	return e, nil
+}
+
 // CreateOrganization オーガナイゼーションを作成する。
 func (m *ManageOrganization) CreateOrganization(
 	ctx context.Context, name string, description, color entity.String,
@@ -126,7 +190,7 @@ func (m *ManageOrganization) UpdateOrganization(
 }
 
 // DeleteOrganization オーガナイゼーションを削除する。
-func (m *ManageOrganization) DeleteOrganization(ctx context.Context, id uuid.UUID) (int64, error) {
+func (m *ManageOrganization) DeleteOrganization(ctx context.Context, id uuid.UUID) (c int64, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return 0, fmt.Errorf("failed to begin transaction: %w", err)
@@ -158,7 +222,7 @@ func (m *ManageOrganization) DeleteOrganization(ctx context.Context, id uuid.UUI
 	if origin.IsWhole {
 		return 0, errhandle.NewCommonError(response.AttemptOperateWholeOrganization, nil)
 	}
-	c, err := m.DB.DeleteOrganizationWithSd(ctx, sd, id)
+	c, err = m.DB.DeleteOrganizationWithSd(ctx, sd, id)
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete organization: %w", err)
 	}

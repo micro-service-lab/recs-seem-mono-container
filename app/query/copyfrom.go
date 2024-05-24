@@ -644,6 +644,41 @@ func (q *Queries) CreateMembers(ctx context.Context, arg []CreateMembersParams) 
 	return q.db.CopyFrom(ctx, []string{"m_members"}, []string{"login_id", "password", "email", "name", "first_name", "last_name", "attend_status_id", "grade_id", "group_id", "profile_image_id", "role_id", "personal_organization_id", "created_at", "updated_at"}, &iteratorForCreateMembers{rows: arg})
 }
 
+// iteratorForCreateMemberships implements pgx.CopyFromSource.
+type iteratorForCreateMemberships struct {
+	rows                 []CreateMembershipsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateMemberships) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateMemberships) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].MemberID,
+		r.rows[0].OrganizationID,
+		r.rows[0].WorkPositionID,
+		r.rows[0].AddedAt,
+	}, nil
+}
+
+func (r iteratorForCreateMemberships) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateMemberships(ctx context.Context, arg []CreateMembershipsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"m_memberships"}, []string{"member_id", "organization_id", "work_position_id", "added_at"}, &iteratorForCreateMemberships{rows: arg})
+}
+
 // iteratorForCreateMessages implements pgx.CopyFromSource.
 type iteratorForCreateMessages struct {
 	rows                 []CreateMessagesParams

@@ -7,7 +7,7 @@
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | m_work_positions_pkey | bigint | nextval('m_work_positions_m_work_positions_pkey_seq'::regclass) | false |  |  |  |
-| work_position_id | uuid | uuid_generate_v4() | false | [public.m_permission_associations](public.m_permission_associations.md) |  |  |
+| work_position_id | uuid | uuid_generate_v4() | false | [public.m_permission_associations](public.m_permission_associations.md) [public.m_memberships](public.m_memberships.md) |  |  |
 | organization_id | uuid |  | false |  | [public.m_organizations](public.m_organizations.md) |  |
 | name | varchar(255) |  | false |  |  |  |
 | description | text |  | false |  |  |  |

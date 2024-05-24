@@ -48,6 +48,18 @@ var _ Store = &StoreMock{}
 //			BelongChatRoomsWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.BelongChatRoomParam) (int64, error) {
 //				panic("mock out the BelongChatRoomsWithSd method")
 //			},
+//			BelongOrganizationFunc: func(ctx context.Context, param parameter.BelongOrganizationParam) (entity.Membership, error) {
+//				panic("mock out the BelongOrganization method")
+//			},
+//			BelongOrganizationWithSdFunc: func(ctx context.Context, sd Sd, param parameter.BelongOrganizationParam) (entity.Membership, error) {
+//				panic("mock out the BelongOrganizationWithSd method")
+//			},
+//			BelongOrganizationsFunc: func(ctx context.Context, params []parameter.BelongOrganizationParam) (int64, error) {
+//				panic("mock out the BelongOrganizations method")
+//			},
+//			BelongOrganizationsWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.BelongOrganizationParam) (int64, error) {
+//				panic("mock out the BelongOrganizationsWithSd method")
+//			},
 //			CleanupFunc: func(contextMoqParam context.Context) error {
 //				panic("mock out the Cleanup method")
 //			},
@@ -129,6 +141,12 @@ var _ Store = &StoreMock{}
 //			CountMembersOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereMemberOnChatRoomParam) (int64, error) {
 //				panic("mock out the CountMembersOnChatRoomWithSd method")
 //			},
+//			CountMembersOnOrganizationFunc: func(ctx context.Context, organizationID uuid.UUID, where parameter.WhereMemberOnOrganizationParam) (int64, error) {
+//				panic("mock out the CountMembersOnOrganization method")
+//			},
+//			CountMembersOnOrganizationWithSdFunc: func(ctx context.Context, sd Sd, organizationID uuid.UUID, where parameter.WhereMemberOnOrganizationParam) (int64, error) {
+//				panic("mock out the CountMembersOnOrganizationWithSd method")
+//			},
 //			CountMembersWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereMemberParam) (int64, error) {
 //				panic("mock out the CountMembersWithSd method")
 //			},
@@ -146,6 +164,12 @@ var _ Store = &StoreMock{}
 //			},
 //			CountOrganizationsFunc: func(ctx context.Context, where parameter.WhereOrganizationParam) (int64, error) {
 //				panic("mock out the CountOrganizations method")
+//			},
+//			CountOrganizationsOnMemberFunc: func(ctx context.Context, memberID uuid.UUID, where parameter.WhereOrganizationOnMemberParam) (int64, error) {
+//				panic("mock out the CountOrganizationsOnMember method")
+//			},
+//			CountOrganizationsOnMemberWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID, where parameter.WhereOrganizationOnMemberParam) (int64, error) {
+//				panic("mock out the CountOrganizationsOnMemberWithSd method")
 //			},
 //			CountOrganizationsWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereOrganizationParam) (int64, error) {
 //				panic("mock out the CountOrganizationsWithSd method")
@@ -750,6 +774,24 @@ var _ Store = &StoreMock{}
 //			DisbelongChatRoomWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID, chatRoomID uuid.UUID) (int64, error) {
 //				panic("mock out the DisbelongChatRoomWithSd method")
 //			},
+//			DisbelongOrganizationFunc: func(ctx context.Context, memberID uuid.UUID, organizationID uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongOrganization method")
+//			},
+//			DisbelongOrganizationOnMemberFunc: func(ctx context.Context, memberID uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongOrganizationOnMember method")
+//			},
+//			DisbelongOrganizationOnMemberWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongOrganizationOnMemberWithSd method")
+//			},
+//			DisbelongOrganizationOnMembersFunc: func(ctx context.Context, memberIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongOrganizationOnMembers method")
+//			},
+//			DisbelongOrganizationOnMembersWithSdFunc: func(ctx context.Context, sd Sd, memberIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongOrganizationOnMembersWithSd method")
+//			},
+//			DisbelongOrganizationWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID, organizationID uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongOrganizationWithSd method")
+//			},
 //			FindAbsenceByIDFunc: func(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error) {
 //				panic("mock out the FindAbsenceByID method")
 //			},
@@ -1209,6 +1251,12 @@ var _ Store = &StoreMock{}
 //			GetMembersOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereMemberOnChatRoomParam, order parameter.MemberOnChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoom], error) {
 //				panic("mock out the GetMembersOnChatRoomWithSd method")
 //			},
+//			GetMembersOnOrganizationFunc: func(ctx context.Context, organizationID uuid.UUID, where parameter.WhereMemberOnOrganizationParam, order parameter.MemberOnOrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnOrganization], error) {
+//				panic("mock out the GetMembersOnOrganization method")
+//			},
+//			GetMembersOnOrganizationWithSdFunc: func(ctx context.Context, sd Sd, organizationID uuid.UUID, where parameter.WhereMemberOnOrganizationParam, order parameter.MemberOnOrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnOrganization], error) {
+//				panic("mock out the GetMembersOnOrganizationWithSd method")
+//			},
 //			GetMembersWithAttendStatusFunc: func(ctx context.Context, where parameter.WhereMemberParam, order parameter.MemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberWithAttendStatus], error) {
 //				panic("mock out the GetMembersWithAttendStatus method")
 //			},
@@ -1274,6 +1322,12 @@ var _ Store = &StoreMock{}
 //			},
 //			GetOrganizationsFunc: func(ctx context.Context, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Organization], error) {
 //				panic("mock out the GetOrganizations method")
+//			},
+//			GetOrganizationsOnMemberFunc: func(ctx context.Context, memberID uuid.UUID, where parameter.WhereOrganizationOnMemberParam, order parameter.OrganizationOnMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationOnMember], error) {
+//				panic("mock out the GetOrganizationsOnMember method")
+//			},
+//			GetOrganizationsOnMemberWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID, where parameter.WhereOrganizationOnMemberParam, order parameter.OrganizationOnMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationOnMember], error) {
+//				panic("mock out the GetOrganizationsOnMemberWithSd method")
 //			},
 //			GetOrganizationsWithChatRoomFunc: func(ctx context.Context, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithChatRoom], error) {
 //				panic("mock out the GetOrganizationsWithChatRoom method")
@@ -1419,6 +1473,12 @@ var _ Store = &StoreMock{}
 //			GetPluralMembersOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoom], error) {
 //				panic("mock out the GetPluralMembersOnChatRoomWithSd method")
 //			},
+//			GetPluralMembersOnOrganizationFunc: func(ctx context.Context, organizationIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnOrganizationOrderMethod) (ListResult[entity.MemberOnOrganization], error) {
+//				panic("mock out the GetPluralMembersOnOrganization method")
+//			},
+//			GetPluralMembersOnOrganizationWithSdFunc: func(ctx context.Context, sd Sd, organizationIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnOrganizationOrderMethod) (ListResult[entity.MemberOnOrganization], error) {
+//				panic("mock out the GetPluralMembersOnOrganizationWithSd method")
+//			},
 //			GetPluralMembersWithAttendStatusFunc: func(ctx context.Context, memberIDs []uuid.UUID, order parameter.MemberOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberWithAttendStatus], error) {
 //				panic("mock out the GetPluralMembersWithAttendStatus method")
 //			},
@@ -1484,6 +1544,12 @@ var _ Store = &StoreMock{}
 //			},
 //			GetPluralOrganizationsFunc: func(ctx context.Context, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.Organization], error) {
 //				panic("mock out the GetPluralOrganizations method")
+//			},
+//			GetPluralOrganizationsOnMemberFunc: func(ctx context.Context, memberIDs []uuid.UUID, np NumberedPaginationParam, order parameter.OrganizationOnMemberOrderMethod) (ListResult[entity.OrganizationOnMember], error) {
+//				panic("mock out the GetPluralOrganizationsOnMember method")
+//			},
+//			GetPluralOrganizationsOnMemberWithSdFunc: func(ctx context.Context, sd Sd, memberIDs []uuid.UUID, np NumberedPaginationParam, order parameter.OrganizationOnMemberOrderMethod) (ListResult[entity.OrganizationOnMember], error) {
+//				panic("mock out the GetPluralOrganizationsOnMemberWithSd method")
 //			},
 //			GetPluralOrganizationsWithChatRoomFunc: func(ctx context.Context, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithChatRoom], error) {
 //				panic("mock out the GetPluralOrganizationsWithChatRoom method")
@@ -2029,6 +2095,18 @@ type StoreMock struct {
 	// BelongChatRoomsWithSdFunc mocks the BelongChatRoomsWithSd method.
 	BelongChatRoomsWithSdFunc func(ctx context.Context, sd Sd, params []parameter.BelongChatRoomParam) (int64, error)
 
+	// BelongOrganizationFunc mocks the BelongOrganization method.
+	BelongOrganizationFunc func(ctx context.Context, param parameter.BelongOrganizationParam) (entity.Membership, error)
+
+	// BelongOrganizationWithSdFunc mocks the BelongOrganizationWithSd method.
+	BelongOrganizationWithSdFunc func(ctx context.Context, sd Sd, param parameter.BelongOrganizationParam) (entity.Membership, error)
+
+	// BelongOrganizationsFunc mocks the BelongOrganizations method.
+	BelongOrganizationsFunc func(ctx context.Context, params []parameter.BelongOrganizationParam) (int64, error)
+
+	// BelongOrganizationsWithSdFunc mocks the BelongOrganizationsWithSd method.
+	BelongOrganizationsWithSdFunc func(ctx context.Context, sd Sd, params []parameter.BelongOrganizationParam) (int64, error)
+
 	// CleanupFunc mocks the Cleanup method.
 	CleanupFunc func(contextMoqParam context.Context) error
 
@@ -2110,6 +2188,12 @@ type StoreMock struct {
 	// CountMembersOnChatRoomWithSdFunc mocks the CountMembersOnChatRoomWithSd method.
 	CountMembersOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereMemberOnChatRoomParam) (int64, error)
 
+	// CountMembersOnOrganizationFunc mocks the CountMembersOnOrganization method.
+	CountMembersOnOrganizationFunc func(ctx context.Context, organizationID uuid.UUID, where parameter.WhereMemberOnOrganizationParam) (int64, error)
+
+	// CountMembersOnOrganizationWithSdFunc mocks the CountMembersOnOrganizationWithSd method.
+	CountMembersOnOrganizationWithSdFunc func(ctx context.Context, sd Sd, organizationID uuid.UUID, where parameter.WhereMemberOnOrganizationParam) (int64, error)
+
 	// CountMembersWithSdFunc mocks the CountMembersWithSd method.
 	CountMembersWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereMemberParam) (int64, error)
 
@@ -2127,6 +2211,12 @@ type StoreMock struct {
 
 	// CountOrganizationsFunc mocks the CountOrganizations method.
 	CountOrganizationsFunc func(ctx context.Context, where parameter.WhereOrganizationParam) (int64, error)
+
+	// CountOrganizationsOnMemberFunc mocks the CountOrganizationsOnMember method.
+	CountOrganizationsOnMemberFunc func(ctx context.Context, memberID uuid.UUID, where parameter.WhereOrganizationOnMemberParam) (int64, error)
+
+	// CountOrganizationsOnMemberWithSdFunc mocks the CountOrganizationsOnMemberWithSd method.
+	CountOrganizationsOnMemberWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID, where parameter.WhereOrganizationOnMemberParam) (int64, error)
 
 	// CountOrganizationsWithSdFunc mocks the CountOrganizationsWithSd method.
 	CountOrganizationsWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereOrganizationParam) (int64, error)
@@ -2731,6 +2821,24 @@ type StoreMock struct {
 	// DisbelongChatRoomWithSdFunc mocks the DisbelongChatRoomWithSd method.
 	DisbelongChatRoomWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID, chatRoomID uuid.UUID) (int64, error)
 
+	// DisbelongOrganizationFunc mocks the DisbelongOrganization method.
+	DisbelongOrganizationFunc func(ctx context.Context, memberID uuid.UUID, organizationID uuid.UUID) (int64, error)
+
+	// DisbelongOrganizationOnMemberFunc mocks the DisbelongOrganizationOnMember method.
+	DisbelongOrganizationOnMemberFunc func(ctx context.Context, memberID uuid.UUID) (int64, error)
+
+	// DisbelongOrganizationOnMemberWithSdFunc mocks the DisbelongOrganizationOnMemberWithSd method.
+	DisbelongOrganizationOnMemberWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID) (int64, error)
+
+	// DisbelongOrganizationOnMembersFunc mocks the DisbelongOrganizationOnMembers method.
+	DisbelongOrganizationOnMembersFunc func(ctx context.Context, memberIDs []uuid.UUID) (int64, error)
+
+	// DisbelongOrganizationOnMembersWithSdFunc mocks the DisbelongOrganizationOnMembersWithSd method.
+	DisbelongOrganizationOnMembersWithSdFunc func(ctx context.Context, sd Sd, memberIDs []uuid.UUID) (int64, error)
+
+	// DisbelongOrganizationWithSdFunc mocks the DisbelongOrganizationWithSd method.
+	DisbelongOrganizationWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID, organizationID uuid.UUID) (int64, error)
+
 	// FindAbsenceByIDFunc mocks the FindAbsenceByID method.
 	FindAbsenceByIDFunc func(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error)
 
@@ -3190,6 +3298,12 @@ type StoreMock struct {
 	// GetMembersOnChatRoomWithSdFunc mocks the GetMembersOnChatRoomWithSd method.
 	GetMembersOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereMemberOnChatRoomParam, order parameter.MemberOnChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoom], error)
 
+	// GetMembersOnOrganizationFunc mocks the GetMembersOnOrganization method.
+	GetMembersOnOrganizationFunc func(ctx context.Context, organizationID uuid.UUID, where parameter.WhereMemberOnOrganizationParam, order parameter.MemberOnOrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnOrganization], error)
+
+	// GetMembersOnOrganizationWithSdFunc mocks the GetMembersOnOrganizationWithSd method.
+	GetMembersOnOrganizationWithSdFunc func(ctx context.Context, sd Sd, organizationID uuid.UUID, where parameter.WhereMemberOnOrganizationParam, order parameter.MemberOnOrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnOrganization], error)
+
 	// GetMembersWithAttendStatusFunc mocks the GetMembersWithAttendStatus method.
 	GetMembersWithAttendStatusFunc func(ctx context.Context, where parameter.WhereMemberParam, order parameter.MemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberWithAttendStatus], error)
 
@@ -3255,6 +3369,12 @@ type StoreMock struct {
 
 	// GetOrganizationsFunc mocks the GetOrganizations method.
 	GetOrganizationsFunc func(ctx context.Context, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Organization], error)
+
+	// GetOrganizationsOnMemberFunc mocks the GetOrganizationsOnMember method.
+	GetOrganizationsOnMemberFunc func(ctx context.Context, memberID uuid.UUID, where parameter.WhereOrganizationOnMemberParam, order parameter.OrganizationOnMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationOnMember], error)
+
+	// GetOrganizationsOnMemberWithSdFunc mocks the GetOrganizationsOnMemberWithSd method.
+	GetOrganizationsOnMemberWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID, where parameter.WhereOrganizationOnMemberParam, order parameter.OrganizationOnMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationOnMember], error)
 
 	// GetOrganizationsWithChatRoomFunc mocks the GetOrganizationsWithChatRoom method.
 	GetOrganizationsWithChatRoomFunc func(ctx context.Context, where parameter.WhereOrganizationParam, order parameter.OrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationWithChatRoom], error)
@@ -3400,6 +3520,12 @@ type StoreMock struct {
 	// GetPluralMembersOnChatRoomWithSdFunc mocks the GetPluralMembersOnChatRoomWithSd method.
 	GetPluralMembersOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoom], error)
 
+	// GetPluralMembersOnOrganizationFunc mocks the GetPluralMembersOnOrganization method.
+	GetPluralMembersOnOrganizationFunc func(ctx context.Context, organizationIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnOrganizationOrderMethod) (ListResult[entity.MemberOnOrganization], error)
+
+	// GetPluralMembersOnOrganizationWithSdFunc mocks the GetPluralMembersOnOrganizationWithSd method.
+	GetPluralMembersOnOrganizationWithSdFunc func(ctx context.Context, sd Sd, organizationIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnOrganizationOrderMethod) (ListResult[entity.MemberOnOrganization], error)
+
 	// GetPluralMembersWithAttendStatusFunc mocks the GetPluralMembersWithAttendStatus method.
 	GetPluralMembersWithAttendStatusFunc func(ctx context.Context, memberIDs []uuid.UUID, order parameter.MemberOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberWithAttendStatus], error)
 
@@ -3465,6 +3591,12 @@ type StoreMock struct {
 
 	// GetPluralOrganizationsFunc mocks the GetPluralOrganizations method.
 	GetPluralOrganizationsFunc func(ctx context.Context, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.Organization], error)
+
+	// GetPluralOrganizationsOnMemberFunc mocks the GetPluralOrganizationsOnMember method.
+	GetPluralOrganizationsOnMemberFunc func(ctx context.Context, memberIDs []uuid.UUID, np NumberedPaginationParam, order parameter.OrganizationOnMemberOrderMethod) (ListResult[entity.OrganizationOnMember], error)
+
+	// GetPluralOrganizationsOnMemberWithSdFunc mocks the GetPluralOrganizationsOnMemberWithSd method.
+	GetPluralOrganizationsOnMemberWithSdFunc func(ctx context.Context, sd Sd, memberIDs []uuid.UUID, np NumberedPaginationParam, order parameter.OrganizationOnMemberOrderMethod) (ListResult[entity.OrganizationOnMember], error)
 
 	// GetPluralOrganizationsWithChatRoomFunc mocks the GetPluralOrganizationsWithChatRoom method.
 	GetPluralOrganizationsWithChatRoomFunc func(ctx context.Context, organizationIDs []uuid.UUID, order parameter.OrganizationOrderMethod, np NumberedPaginationParam) (ListResult[entity.OrganizationWithChatRoom], error)
@@ -4047,6 +4179,38 @@ type StoreMock struct {
 			// Params is the params argument value.
 			Params []parameter.BelongChatRoomParam
 		}
+		// BelongOrganization holds details about calls to the BelongOrganization method.
+		BelongOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Param is the param argument value.
+			Param parameter.BelongOrganizationParam
+		}
+		// BelongOrganizationWithSd holds details about calls to the BelongOrganizationWithSd method.
+		BelongOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Param is the param argument value.
+			Param parameter.BelongOrganizationParam
+		}
+		// BelongOrganizations holds details about calls to the BelongOrganizations method.
+		BelongOrganizations []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.BelongOrganizationParam
+		}
+		// BelongOrganizationsWithSd holds details about calls to the BelongOrganizationsWithSd method.
+		BelongOrganizationsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Params is the params argument value.
+			Params []parameter.BelongOrganizationParam
+		}
 		// Cleanup holds details about calls to the Cleanup method.
 		Cleanup []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -4262,6 +4426,26 @@ type StoreMock struct {
 			// Where is the where argument value.
 			Where parameter.WhereMemberOnChatRoomParam
 		}
+		// CountMembersOnOrganization holds details about calls to the CountMembersOnOrganization method.
+		CountMembersOnOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereMemberOnOrganizationParam
+		}
+		// CountMembersOnOrganizationWithSd holds details about calls to the CountMembersOnOrganizationWithSd method.
+		CountMembersOnOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereMemberOnOrganizationParam
+		}
 		// CountMembersWithSd holds details about calls to the CountMembersWithSd method.
 		CountMembersWithSd []struct {
 			// Ctx is the ctx argument value.
@@ -4309,6 +4493,26 @@ type StoreMock struct {
 			Ctx context.Context
 			// Where is the where argument value.
 			Where parameter.WhereOrganizationParam
+		}
+		// CountOrganizationsOnMember holds details about calls to the CountOrganizationsOnMember method.
+		CountOrganizationsOnMember []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereOrganizationOnMemberParam
+		}
+		// CountOrganizationsOnMemberWithSd holds details about calls to the CountOrganizationsOnMemberWithSd method.
+		CountOrganizationsOnMemberWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereOrganizationOnMemberParam
 		}
 		// CountOrganizationsWithSd holds details about calls to the CountOrganizationsWithSd method.
 		CountOrganizationsWithSd []struct {
@@ -5959,6 +6163,58 @@ type StoreMock struct {
 			// ChatRoomID is the chatRoomID argument value.
 			ChatRoomID uuid.UUID
 		}
+		// DisbelongOrganization holds details about calls to the DisbelongOrganization method.
+		DisbelongOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+		}
+		// DisbelongOrganizationOnMember holds details about calls to the DisbelongOrganizationOnMember method.
+		DisbelongOrganizationOnMember []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+		}
+		// DisbelongOrganizationOnMemberWithSd holds details about calls to the DisbelongOrganizationOnMemberWithSd method.
+		DisbelongOrganizationOnMemberWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+		}
+		// DisbelongOrganizationOnMembers holds details about calls to the DisbelongOrganizationOnMembers method.
+		DisbelongOrganizationOnMembers []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MemberIDs is the memberIDs argument value.
+			MemberIDs []uuid.UUID
+		}
+		// DisbelongOrganizationOnMembersWithSd holds details about calls to the DisbelongOrganizationOnMembersWithSd method.
+		DisbelongOrganizationOnMembersWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MemberIDs is the memberIDs argument value.
+			MemberIDs []uuid.UUID
+		}
+		// DisbelongOrganizationWithSd holds details about calls to the DisbelongOrganizationWithSd method.
+		DisbelongOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+		}
 		// FindAbsenceByID holds details about calls to the FindAbsenceByID method.
 		FindAbsenceByID []struct {
 			// Ctx is the ctx argument value.
@@ -7466,6 +7722,42 @@ type StoreMock struct {
 			// Wc is the wc argument value.
 			Wc WithCountParam
 		}
+		// GetMembersOnOrganization holds details about calls to the GetMembersOnOrganization method.
+		GetMembersOnOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereMemberOnOrganizationParam
+			// Order is the order argument value.
+			Order parameter.MemberOnOrganizationOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetMembersOnOrganizationWithSd holds details about calls to the GetMembersOnOrganizationWithSd method.
+		GetMembersOnOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereMemberOnOrganizationParam
+			// Order is the order argument value.
+			Order parameter.MemberOnOrganizationOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
 		// GetMembersWithAttendStatus holds details about calls to the GetMembersWithAttendStatus method.
 		GetMembersWithAttendStatus []struct {
 			// Ctx is the ctx argument value.
@@ -7811,6 +8103,42 @@ type StoreMock struct {
 			Where parameter.WhereOrganizationParam
 			// Order is the order argument value.
 			Order parameter.OrganizationOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetOrganizationsOnMember holds details about calls to the GetOrganizationsOnMember method.
+		GetOrganizationsOnMember []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereOrganizationOnMemberParam
+			// Order is the order argument value.
+			Order parameter.OrganizationOnMemberOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetOrganizationsOnMemberWithSd holds details about calls to the GetOrganizationsOnMemberWithSd method.
+		GetOrganizationsOnMemberWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereOrganizationOnMemberParam
+			// Order is the order argument value.
+			Order parameter.OrganizationOnMemberOrderMethod
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 			// Cp is the cp argument value.
@@ -8446,6 +8774,30 @@ type StoreMock struct {
 			// Order is the order argument value.
 			Order parameter.MemberOnChatRoomOrderMethod
 		}
+		// GetPluralMembersOnOrganization holds details about calls to the GetPluralMembersOnOrganization method.
+		GetPluralMembersOnOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationIDs is the organizationIDs argument value.
+			OrganizationIDs []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Order is the order argument value.
+			Order parameter.MemberOnOrganizationOrderMethod
+		}
+		// GetPluralMembersOnOrganizationWithSd holds details about calls to the GetPluralMembersOnOrganizationWithSd method.
+		GetPluralMembersOnOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// OrganizationIDs is the organizationIDs argument value.
+			OrganizationIDs []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Order is the order argument value.
+			Order parameter.MemberOnOrganizationOrderMethod
+		}
 		// GetPluralMembersWithAttendStatus holds details about calls to the GetPluralMembersWithAttendStatus method.
 		GetPluralMembersWithAttendStatus []struct {
 			// Ctx is the ctx argument value.
@@ -8709,6 +9061,30 @@ type StoreMock struct {
 			Order parameter.OrganizationOrderMethod
 			// Np is the np argument value.
 			Np NumberedPaginationParam
+		}
+		// GetPluralOrganizationsOnMember holds details about calls to the GetPluralOrganizationsOnMember method.
+		GetPluralOrganizationsOnMember []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MemberIDs is the memberIDs argument value.
+			MemberIDs []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Order is the order argument value.
+			Order parameter.OrganizationOnMemberOrderMethod
+		}
+		// GetPluralOrganizationsOnMemberWithSd holds details about calls to the GetPluralOrganizationsOnMemberWithSd method.
+		GetPluralOrganizationsOnMemberWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MemberIDs is the memberIDs argument value.
+			MemberIDs []uuid.UUID
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Order is the order argument value.
+			Order parameter.OrganizationOnMemberOrderMethod
 		}
 		// GetPluralOrganizationsWithChatRoom holds details about calls to the GetPluralOrganizationsWithChatRoom method.
 		GetPluralOrganizationsWithChatRoom []struct {
@@ -10556,6 +10932,10 @@ type StoreMock struct {
 	lockBelongChatRoomWithSd                              sync.RWMutex
 	lockBelongChatRooms                                   sync.RWMutex
 	lockBelongChatRoomsWithSd                             sync.RWMutex
+	lockBelongOrganization                                sync.RWMutex
+	lockBelongOrganizationWithSd                          sync.RWMutex
+	lockBelongOrganizations                               sync.RWMutex
+	lockBelongOrganizationsWithSd                         sync.RWMutex
 	lockCleanup                                           sync.RWMutex
 	lockCommit                                            sync.RWMutex
 	lockCountAbsences                                     sync.RWMutex
@@ -10583,12 +10963,16 @@ type StoreMock struct {
 	lockCountMembers                                      sync.RWMutex
 	lockCountMembersOnChatRoom                            sync.RWMutex
 	lockCountMembersOnChatRoomWithSd                      sync.RWMutex
+	lockCountMembersOnOrganization                        sync.RWMutex
+	lockCountMembersOnOrganizationWithSd                  sync.RWMutex
 	lockCountMembersWithSd                                sync.RWMutex
 	lockCountMessages                                     sync.RWMutex
 	lockCountMessagesWithSd                               sync.RWMutex
 	lockCountMimeTypes                                    sync.RWMutex
 	lockCountMimeTypesWithSd                              sync.RWMutex
 	lockCountOrganizations                                sync.RWMutex
+	lockCountOrganizationsOnMember                        sync.RWMutex
+	lockCountOrganizationsOnMemberWithSd                  sync.RWMutex
 	lockCountOrganizationsWithSd                          sync.RWMutex
 	lockCountPermissionCategories                         sync.RWMutex
 	lockCountPermissionCategoriesWithSd                   sync.RWMutex
@@ -10790,6 +11174,12 @@ type StoreMock struct {
 	lockDisbelongChatRoomOnMembers                        sync.RWMutex
 	lockDisbelongChatRoomOnMembersWithSd                  sync.RWMutex
 	lockDisbelongChatRoomWithSd                           sync.RWMutex
+	lockDisbelongOrganization                             sync.RWMutex
+	lockDisbelongOrganizationOnMember                     sync.RWMutex
+	lockDisbelongOrganizationOnMemberWithSd               sync.RWMutex
+	lockDisbelongOrganizationOnMembers                    sync.RWMutex
+	lockDisbelongOrganizationOnMembersWithSd              sync.RWMutex
+	lockDisbelongOrganizationWithSd                       sync.RWMutex
 	lockFindAbsenceByID                                   sync.RWMutex
 	lockFindAbsenceByIDWithSd                             sync.RWMutex
 	lockFindAttachableItemByID                            sync.RWMutex
@@ -10943,6 +11333,8 @@ type StoreMock struct {
 	lockGetMembers                                        sync.RWMutex
 	lockGetMembersOnChatRoom                              sync.RWMutex
 	lockGetMembersOnChatRoomWithSd                        sync.RWMutex
+	lockGetMembersOnOrganization                          sync.RWMutex
+	lockGetMembersOnOrganizationWithSd                    sync.RWMutex
 	lockGetMembersWithAttendStatus                        sync.RWMutex
 	lockGetMembersWithAttendStatusWithSd                  sync.RWMutex
 	lockGetMembersWithCrew                                sync.RWMutex
@@ -10965,6 +11357,8 @@ type StoreMock struct {
 	lockGetMimeTypes                                      sync.RWMutex
 	lockGetMimeTypesWithSd                                sync.RWMutex
 	lockGetOrganizations                                  sync.RWMutex
+	lockGetOrganizationsOnMember                          sync.RWMutex
+	lockGetOrganizationsOnMemberWithSd                    sync.RWMutex
 	lockGetOrganizationsWithChatRoom                      sync.RWMutex
 	lockGetOrganizationsWithChatRoomAndDetail             sync.RWMutex
 	lockGetOrganizationsWithChatRoomAndDetailWithSd       sync.RWMutex
@@ -11013,6 +11407,8 @@ type StoreMock struct {
 	lockGetPluralMembers                                  sync.RWMutex
 	lockGetPluralMembersOnChatRoom                        sync.RWMutex
 	lockGetPluralMembersOnChatRoomWithSd                  sync.RWMutex
+	lockGetPluralMembersOnOrganization                    sync.RWMutex
+	lockGetPluralMembersOnOrganizationWithSd              sync.RWMutex
 	lockGetPluralMembersWithAttendStatus                  sync.RWMutex
 	lockGetPluralMembersWithAttendStatusWithSd            sync.RWMutex
 	lockGetPluralMembersWithCrew                          sync.RWMutex
@@ -11035,6 +11431,8 @@ type StoreMock struct {
 	lockGetPluralMimeTypes                                sync.RWMutex
 	lockGetPluralMimeTypesWithSd                          sync.RWMutex
 	lockGetPluralOrganizations                            sync.RWMutex
+	lockGetPluralOrganizationsOnMember                    sync.RWMutex
+	lockGetPluralOrganizationsOnMemberWithSd              sync.RWMutex
 	lockGetPluralOrganizationsWithChatRoom                sync.RWMutex
 	lockGetPluralOrganizationsWithChatRoomAndDetail       sync.RWMutex
 	lockGetPluralOrganizationsWithChatRoomAndDetailWithSd sync.RWMutex
@@ -11540,6 +11938,158 @@ func (mock *StoreMock) BelongChatRoomsWithSdCalls() []struct {
 	mock.lockBelongChatRoomsWithSd.RLock()
 	calls = mock.calls.BelongChatRoomsWithSd
 	mock.lockBelongChatRoomsWithSd.RUnlock()
+	return calls
+}
+
+// BelongOrganization calls BelongOrganizationFunc.
+func (mock *StoreMock) BelongOrganization(ctx context.Context, param parameter.BelongOrganizationParam) (entity.Membership, error) {
+	if mock.BelongOrganizationFunc == nil {
+		panic("StoreMock.BelongOrganizationFunc: method is nil but Store.BelongOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Param parameter.BelongOrganizationParam
+	}{
+		Ctx:   ctx,
+		Param: param,
+	}
+	mock.lockBelongOrganization.Lock()
+	mock.calls.BelongOrganization = append(mock.calls.BelongOrganization, callInfo)
+	mock.lockBelongOrganization.Unlock()
+	return mock.BelongOrganizationFunc(ctx, param)
+}
+
+// BelongOrganizationCalls gets all the calls that were made to BelongOrganization.
+// Check the length with:
+//
+//	len(mockedStore.BelongOrganizationCalls())
+func (mock *StoreMock) BelongOrganizationCalls() []struct {
+	Ctx   context.Context
+	Param parameter.BelongOrganizationParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Param parameter.BelongOrganizationParam
+	}
+	mock.lockBelongOrganization.RLock()
+	calls = mock.calls.BelongOrganization
+	mock.lockBelongOrganization.RUnlock()
+	return calls
+}
+
+// BelongOrganizationWithSd calls BelongOrganizationWithSdFunc.
+func (mock *StoreMock) BelongOrganizationWithSd(ctx context.Context, sd Sd, param parameter.BelongOrganizationParam) (entity.Membership, error) {
+	if mock.BelongOrganizationWithSdFunc == nil {
+		panic("StoreMock.BelongOrganizationWithSdFunc: method is nil but Store.BelongOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.BelongOrganizationParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Param: param,
+	}
+	mock.lockBelongOrganizationWithSd.Lock()
+	mock.calls.BelongOrganizationWithSd = append(mock.calls.BelongOrganizationWithSd, callInfo)
+	mock.lockBelongOrganizationWithSd.Unlock()
+	return mock.BelongOrganizationWithSdFunc(ctx, sd, param)
+}
+
+// BelongOrganizationWithSdCalls gets all the calls that were made to BelongOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.BelongOrganizationWithSdCalls())
+func (mock *StoreMock) BelongOrganizationWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Param parameter.BelongOrganizationParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.BelongOrganizationParam
+	}
+	mock.lockBelongOrganizationWithSd.RLock()
+	calls = mock.calls.BelongOrganizationWithSd
+	mock.lockBelongOrganizationWithSd.RUnlock()
+	return calls
+}
+
+// BelongOrganizations calls BelongOrganizationsFunc.
+func (mock *StoreMock) BelongOrganizations(ctx context.Context, params []parameter.BelongOrganizationParam) (int64, error) {
+	if mock.BelongOrganizationsFunc == nil {
+		panic("StoreMock.BelongOrganizationsFunc: method is nil but Store.BelongOrganizations was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.BelongOrganizationParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockBelongOrganizations.Lock()
+	mock.calls.BelongOrganizations = append(mock.calls.BelongOrganizations, callInfo)
+	mock.lockBelongOrganizations.Unlock()
+	return mock.BelongOrganizationsFunc(ctx, params)
+}
+
+// BelongOrganizationsCalls gets all the calls that were made to BelongOrganizations.
+// Check the length with:
+//
+//	len(mockedStore.BelongOrganizationsCalls())
+func (mock *StoreMock) BelongOrganizationsCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.BelongOrganizationParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.BelongOrganizationParam
+	}
+	mock.lockBelongOrganizations.RLock()
+	calls = mock.calls.BelongOrganizations
+	mock.lockBelongOrganizations.RUnlock()
+	return calls
+}
+
+// BelongOrganizationsWithSd calls BelongOrganizationsWithSdFunc.
+func (mock *StoreMock) BelongOrganizationsWithSd(ctx context.Context, sd Sd, params []parameter.BelongOrganizationParam) (int64, error) {
+	if mock.BelongOrganizationsWithSdFunc == nil {
+		panic("StoreMock.BelongOrganizationsWithSdFunc: method is nil but Store.BelongOrganizationsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.BelongOrganizationParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		Params: params,
+	}
+	mock.lockBelongOrganizationsWithSd.Lock()
+	mock.calls.BelongOrganizationsWithSd = append(mock.calls.BelongOrganizationsWithSd, callInfo)
+	mock.lockBelongOrganizationsWithSd.Unlock()
+	return mock.BelongOrganizationsWithSdFunc(ctx, sd, params)
+}
+
+// BelongOrganizationsWithSdCalls gets all the calls that were made to BelongOrganizationsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.BelongOrganizationsWithSdCalls())
+func (mock *StoreMock) BelongOrganizationsWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	Params []parameter.BelongOrganizationParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.BelongOrganizationParam
+	}
+	mock.lockBelongOrganizationsWithSd.RLock()
+	calls = mock.calls.BelongOrganizationsWithSd
+	mock.lockBelongOrganizationsWithSd.RUnlock()
 	return calls
 }
 
@@ -12567,6 +13117,90 @@ func (mock *StoreMock) CountMembersOnChatRoomWithSdCalls() []struct {
 	return calls
 }
 
+// CountMembersOnOrganization calls CountMembersOnOrganizationFunc.
+func (mock *StoreMock) CountMembersOnOrganization(ctx context.Context, organizationID uuid.UUID, where parameter.WhereMemberOnOrganizationParam) (int64, error) {
+	if mock.CountMembersOnOrganizationFunc == nil {
+		panic("StoreMock.CountMembersOnOrganizationFunc: method is nil but Store.CountMembersOnOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+		Where          parameter.WhereMemberOnOrganizationParam
+	}{
+		Ctx:            ctx,
+		OrganizationID: organizationID,
+		Where:          where,
+	}
+	mock.lockCountMembersOnOrganization.Lock()
+	mock.calls.CountMembersOnOrganization = append(mock.calls.CountMembersOnOrganization, callInfo)
+	mock.lockCountMembersOnOrganization.Unlock()
+	return mock.CountMembersOnOrganizationFunc(ctx, organizationID, where)
+}
+
+// CountMembersOnOrganizationCalls gets all the calls that were made to CountMembersOnOrganization.
+// Check the length with:
+//
+//	len(mockedStore.CountMembersOnOrganizationCalls())
+func (mock *StoreMock) CountMembersOnOrganizationCalls() []struct {
+	Ctx            context.Context
+	OrganizationID uuid.UUID
+	Where          parameter.WhereMemberOnOrganizationParam
+} {
+	var calls []struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+		Where          parameter.WhereMemberOnOrganizationParam
+	}
+	mock.lockCountMembersOnOrganization.RLock()
+	calls = mock.calls.CountMembersOnOrganization
+	mock.lockCountMembersOnOrganization.RUnlock()
+	return calls
+}
+
+// CountMembersOnOrganizationWithSd calls CountMembersOnOrganizationWithSdFunc.
+func (mock *StoreMock) CountMembersOnOrganizationWithSd(ctx context.Context, sd Sd, organizationID uuid.UUID, where parameter.WhereMemberOnOrganizationParam) (int64, error) {
+	if mock.CountMembersOnOrganizationWithSdFunc == nil {
+		panic("StoreMock.CountMembersOnOrganizationWithSdFunc: method is nil but Store.CountMembersOnOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+		Where          parameter.WhereMemberOnOrganizationParam
+	}{
+		Ctx:            ctx,
+		Sd:             sd,
+		OrganizationID: organizationID,
+		Where:          where,
+	}
+	mock.lockCountMembersOnOrganizationWithSd.Lock()
+	mock.calls.CountMembersOnOrganizationWithSd = append(mock.calls.CountMembersOnOrganizationWithSd, callInfo)
+	mock.lockCountMembersOnOrganizationWithSd.Unlock()
+	return mock.CountMembersOnOrganizationWithSdFunc(ctx, sd, organizationID, where)
+}
+
+// CountMembersOnOrganizationWithSdCalls gets all the calls that were made to CountMembersOnOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountMembersOnOrganizationWithSdCalls())
+func (mock *StoreMock) CountMembersOnOrganizationWithSdCalls() []struct {
+	Ctx            context.Context
+	Sd             Sd
+	OrganizationID uuid.UUID
+	Where          parameter.WhereMemberOnOrganizationParam
+} {
+	var calls []struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+		Where          parameter.WhereMemberOnOrganizationParam
+	}
+	mock.lockCountMembersOnOrganizationWithSd.RLock()
+	calls = mock.calls.CountMembersOnOrganizationWithSd
+	mock.lockCountMembersOnOrganizationWithSd.RUnlock()
+	return calls
+}
+
 // CountMembersWithSd calls CountMembersWithSdFunc.
 func (mock *StoreMock) CountMembersWithSd(ctx context.Context, sd Sd, where parameter.WhereMemberParam) (int64, error) {
 	if mock.CountMembersWithSdFunc == nil {
@@ -12792,6 +13426,90 @@ func (mock *StoreMock) CountOrganizationsCalls() []struct {
 	mock.lockCountOrganizations.RLock()
 	calls = mock.calls.CountOrganizations
 	mock.lockCountOrganizations.RUnlock()
+	return calls
+}
+
+// CountOrganizationsOnMember calls CountOrganizationsOnMemberFunc.
+func (mock *StoreMock) CountOrganizationsOnMember(ctx context.Context, memberID uuid.UUID, where parameter.WhereOrganizationOnMemberParam) (int64, error) {
+	if mock.CountOrganizationsOnMemberFunc == nil {
+		panic("StoreMock.CountOrganizationsOnMemberFunc: method is nil but Store.CountOrganizationsOnMember was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+		Where    parameter.WhereOrganizationOnMemberParam
+	}{
+		Ctx:      ctx,
+		MemberID: memberID,
+		Where:    where,
+	}
+	mock.lockCountOrganizationsOnMember.Lock()
+	mock.calls.CountOrganizationsOnMember = append(mock.calls.CountOrganizationsOnMember, callInfo)
+	mock.lockCountOrganizationsOnMember.Unlock()
+	return mock.CountOrganizationsOnMemberFunc(ctx, memberID, where)
+}
+
+// CountOrganizationsOnMemberCalls gets all the calls that were made to CountOrganizationsOnMember.
+// Check the length with:
+//
+//	len(mockedStore.CountOrganizationsOnMemberCalls())
+func (mock *StoreMock) CountOrganizationsOnMemberCalls() []struct {
+	Ctx      context.Context
+	MemberID uuid.UUID
+	Where    parameter.WhereOrganizationOnMemberParam
+} {
+	var calls []struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+		Where    parameter.WhereOrganizationOnMemberParam
+	}
+	mock.lockCountOrganizationsOnMember.RLock()
+	calls = mock.calls.CountOrganizationsOnMember
+	mock.lockCountOrganizationsOnMember.RUnlock()
+	return calls
+}
+
+// CountOrganizationsOnMemberWithSd calls CountOrganizationsOnMemberWithSdFunc.
+func (mock *StoreMock) CountOrganizationsOnMemberWithSd(ctx context.Context, sd Sd, memberID uuid.UUID, where parameter.WhereOrganizationOnMemberParam) (int64, error) {
+	if mock.CountOrganizationsOnMemberWithSdFunc == nil {
+		panic("StoreMock.CountOrganizationsOnMemberWithSdFunc: method is nil but Store.CountOrganizationsOnMemberWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		MemberID uuid.UUID
+		Where    parameter.WhereOrganizationOnMemberParam
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		MemberID: memberID,
+		Where:    where,
+	}
+	mock.lockCountOrganizationsOnMemberWithSd.Lock()
+	mock.calls.CountOrganizationsOnMemberWithSd = append(mock.calls.CountOrganizationsOnMemberWithSd, callInfo)
+	mock.lockCountOrganizationsOnMemberWithSd.Unlock()
+	return mock.CountOrganizationsOnMemberWithSdFunc(ctx, sd, memberID, where)
+}
+
+// CountOrganizationsOnMemberWithSdCalls gets all the calls that were made to CountOrganizationsOnMemberWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountOrganizationsOnMemberWithSdCalls())
+func (mock *StoreMock) CountOrganizationsOnMemberWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	MemberID uuid.UUID
+	Where    parameter.WhereOrganizationOnMemberParam
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		MemberID uuid.UUID
+		Where    parameter.WhereOrganizationOnMemberParam
+	}
+	mock.lockCountOrganizationsOnMemberWithSd.RLock()
+	calls = mock.calls.CountOrganizationsOnMemberWithSd
+	mock.lockCountOrganizationsOnMemberWithSd.RUnlock()
 	return calls
 }
 
@@ -20515,6 +21233,242 @@ func (mock *StoreMock) DisbelongChatRoomWithSdCalls() []struct {
 	return calls
 }
 
+// DisbelongOrganization calls DisbelongOrganizationFunc.
+func (mock *StoreMock) DisbelongOrganization(ctx context.Context, memberID uuid.UUID, organizationID uuid.UUID) (int64, error) {
+	if mock.DisbelongOrganizationFunc == nil {
+		panic("StoreMock.DisbelongOrganizationFunc: method is nil but Store.DisbelongOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		MemberID       uuid.UUID
+		OrganizationID uuid.UUID
+	}{
+		Ctx:            ctx,
+		MemberID:       memberID,
+		OrganizationID: organizationID,
+	}
+	mock.lockDisbelongOrganization.Lock()
+	mock.calls.DisbelongOrganization = append(mock.calls.DisbelongOrganization, callInfo)
+	mock.lockDisbelongOrganization.Unlock()
+	return mock.DisbelongOrganizationFunc(ctx, memberID, organizationID)
+}
+
+// DisbelongOrganizationCalls gets all the calls that were made to DisbelongOrganization.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongOrganizationCalls())
+func (mock *StoreMock) DisbelongOrganizationCalls() []struct {
+	Ctx            context.Context
+	MemberID       uuid.UUID
+	OrganizationID uuid.UUID
+} {
+	var calls []struct {
+		Ctx            context.Context
+		MemberID       uuid.UUID
+		OrganizationID uuid.UUID
+	}
+	mock.lockDisbelongOrganization.RLock()
+	calls = mock.calls.DisbelongOrganization
+	mock.lockDisbelongOrganization.RUnlock()
+	return calls
+}
+
+// DisbelongOrganizationOnMember calls DisbelongOrganizationOnMemberFunc.
+func (mock *StoreMock) DisbelongOrganizationOnMember(ctx context.Context, memberID uuid.UUID) (int64, error) {
+	if mock.DisbelongOrganizationOnMemberFunc == nil {
+		panic("StoreMock.DisbelongOrganizationOnMemberFunc: method is nil but Store.DisbelongOrganizationOnMember was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+	}{
+		Ctx:      ctx,
+		MemberID: memberID,
+	}
+	mock.lockDisbelongOrganizationOnMember.Lock()
+	mock.calls.DisbelongOrganizationOnMember = append(mock.calls.DisbelongOrganizationOnMember, callInfo)
+	mock.lockDisbelongOrganizationOnMember.Unlock()
+	return mock.DisbelongOrganizationOnMemberFunc(ctx, memberID)
+}
+
+// DisbelongOrganizationOnMemberCalls gets all the calls that were made to DisbelongOrganizationOnMember.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongOrganizationOnMemberCalls())
+func (mock *StoreMock) DisbelongOrganizationOnMemberCalls() []struct {
+	Ctx      context.Context
+	MemberID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+	}
+	mock.lockDisbelongOrganizationOnMember.RLock()
+	calls = mock.calls.DisbelongOrganizationOnMember
+	mock.lockDisbelongOrganizationOnMember.RUnlock()
+	return calls
+}
+
+// DisbelongOrganizationOnMemberWithSd calls DisbelongOrganizationOnMemberWithSdFunc.
+func (mock *StoreMock) DisbelongOrganizationOnMemberWithSd(ctx context.Context, sd Sd, memberID uuid.UUID) (int64, error) {
+	if mock.DisbelongOrganizationOnMemberWithSdFunc == nil {
+		panic("StoreMock.DisbelongOrganizationOnMemberWithSdFunc: method is nil but Store.DisbelongOrganizationOnMemberWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		MemberID uuid.UUID
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		MemberID: memberID,
+	}
+	mock.lockDisbelongOrganizationOnMemberWithSd.Lock()
+	mock.calls.DisbelongOrganizationOnMemberWithSd = append(mock.calls.DisbelongOrganizationOnMemberWithSd, callInfo)
+	mock.lockDisbelongOrganizationOnMemberWithSd.Unlock()
+	return mock.DisbelongOrganizationOnMemberWithSdFunc(ctx, sd, memberID)
+}
+
+// DisbelongOrganizationOnMemberWithSdCalls gets all the calls that were made to DisbelongOrganizationOnMemberWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongOrganizationOnMemberWithSdCalls())
+func (mock *StoreMock) DisbelongOrganizationOnMemberWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	MemberID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		MemberID uuid.UUID
+	}
+	mock.lockDisbelongOrganizationOnMemberWithSd.RLock()
+	calls = mock.calls.DisbelongOrganizationOnMemberWithSd
+	mock.lockDisbelongOrganizationOnMemberWithSd.RUnlock()
+	return calls
+}
+
+// DisbelongOrganizationOnMembers calls DisbelongOrganizationOnMembersFunc.
+func (mock *StoreMock) DisbelongOrganizationOnMembers(ctx context.Context, memberIDs []uuid.UUID) (int64, error) {
+	if mock.DisbelongOrganizationOnMembersFunc == nil {
+		panic("StoreMock.DisbelongOrganizationOnMembersFunc: method is nil but Store.DisbelongOrganizationOnMembers was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		MemberIDs []uuid.UUID
+	}{
+		Ctx:       ctx,
+		MemberIDs: memberIDs,
+	}
+	mock.lockDisbelongOrganizationOnMembers.Lock()
+	mock.calls.DisbelongOrganizationOnMembers = append(mock.calls.DisbelongOrganizationOnMembers, callInfo)
+	mock.lockDisbelongOrganizationOnMembers.Unlock()
+	return mock.DisbelongOrganizationOnMembersFunc(ctx, memberIDs)
+}
+
+// DisbelongOrganizationOnMembersCalls gets all the calls that were made to DisbelongOrganizationOnMembers.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongOrganizationOnMembersCalls())
+func (mock *StoreMock) DisbelongOrganizationOnMembersCalls() []struct {
+	Ctx       context.Context
+	MemberIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		MemberIDs []uuid.UUID
+	}
+	mock.lockDisbelongOrganizationOnMembers.RLock()
+	calls = mock.calls.DisbelongOrganizationOnMembers
+	mock.lockDisbelongOrganizationOnMembers.RUnlock()
+	return calls
+}
+
+// DisbelongOrganizationOnMembersWithSd calls DisbelongOrganizationOnMembersWithSdFunc.
+func (mock *StoreMock) DisbelongOrganizationOnMembersWithSd(ctx context.Context, sd Sd, memberIDs []uuid.UUID) (int64, error) {
+	if mock.DisbelongOrganizationOnMembersWithSdFunc == nil {
+		panic("StoreMock.DisbelongOrganizationOnMembersWithSdFunc: method is nil but Store.DisbelongOrganizationOnMembersWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Sd        Sd
+		MemberIDs []uuid.UUID
+	}{
+		Ctx:       ctx,
+		Sd:        sd,
+		MemberIDs: memberIDs,
+	}
+	mock.lockDisbelongOrganizationOnMembersWithSd.Lock()
+	mock.calls.DisbelongOrganizationOnMembersWithSd = append(mock.calls.DisbelongOrganizationOnMembersWithSd, callInfo)
+	mock.lockDisbelongOrganizationOnMembersWithSd.Unlock()
+	return mock.DisbelongOrganizationOnMembersWithSdFunc(ctx, sd, memberIDs)
+}
+
+// DisbelongOrganizationOnMembersWithSdCalls gets all the calls that were made to DisbelongOrganizationOnMembersWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongOrganizationOnMembersWithSdCalls())
+func (mock *StoreMock) DisbelongOrganizationOnMembersWithSdCalls() []struct {
+	Ctx       context.Context
+	Sd        Sd
+	MemberIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Sd        Sd
+		MemberIDs []uuid.UUID
+	}
+	mock.lockDisbelongOrganizationOnMembersWithSd.RLock()
+	calls = mock.calls.DisbelongOrganizationOnMembersWithSd
+	mock.lockDisbelongOrganizationOnMembersWithSd.RUnlock()
+	return calls
+}
+
+// DisbelongOrganizationWithSd calls DisbelongOrganizationWithSdFunc.
+func (mock *StoreMock) DisbelongOrganizationWithSd(ctx context.Context, sd Sd, memberID uuid.UUID, organizationID uuid.UUID) (int64, error) {
+	if mock.DisbelongOrganizationWithSdFunc == nil {
+		panic("StoreMock.DisbelongOrganizationWithSdFunc: method is nil but Store.DisbelongOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		Sd             Sd
+		MemberID       uuid.UUID
+		OrganizationID uuid.UUID
+	}{
+		Ctx:            ctx,
+		Sd:             sd,
+		MemberID:       memberID,
+		OrganizationID: organizationID,
+	}
+	mock.lockDisbelongOrganizationWithSd.Lock()
+	mock.calls.DisbelongOrganizationWithSd = append(mock.calls.DisbelongOrganizationWithSd, callInfo)
+	mock.lockDisbelongOrganizationWithSd.Unlock()
+	return mock.DisbelongOrganizationWithSdFunc(ctx, sd, memberID, organizationID)
+}
+
+// DisbelongOrganizationWithSdCalls gets all the calls that were made to DisbelongOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongOrganizationWithSdCalls())
+func (mock *StoreMock) DisbelongOrganizationWithSdCalls() []struct {
+	Ctx            context.Context
+	Sd             Sd
+	MemberID       uuid.UUID
+	OrganizationID uuid.UUID
+} {
+	var calls []struct {
+		Ctx            context.Context
+		Sd             Sd
+		MemberID       uuid.UUID
+		OrganizationID uuid.UUID
+	}
+	mock.lockDisbelongOrganizationWithSd.RLock()
+	calls = mock.calls.DisbelongOrganizationWithSd
+	mock.lockDisbelongOrganizationWithSd.RUnlock()
+	return calls
+}
+
 // FindAbsenceByID calls FindAbsenceByIDFunc.
 func (mock *StoreMock) FindAbsenceByID(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error) {
 	if mock.FindAbsenceByIDFunc == nil {
@@ -26895,6 +27849,122 @@ func (mock *StoreMock) GetMembersOnChatRoomWithSdCalls() []struct {
 	return calls
 }
 
+// GetMembersOnOrganization calls GetMembersOnOrganizationFunc.
+func (mock *StoreMock) GetMembersOnOrganization(ctx context.Context, organizationID uuid.UUID, where parameter.WhereMemberOnOrganizationParam, order parameter.MemberOnOrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnOrganization], error) {
+	if mock.GetMembersOnOrganizationFunc == nil {
+		panic("StoreMock.GetMembersOnOrganizationFunc: method is nil but Store.GetMembersOnOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+		Where          parameter.WhereMemberOnOrganizationParam
+		Order          parameter.MemberOnOrganizationOrderMethod
+		Np             NumberedPaginationParam
+		Cp             CursorPaginationParam
+		Wc             WithCountParam
+	}{
+		Ctx:            ctx,
+		OrganizationID: organizationID,
+		Where:          where,
+		Order:          order,
+		Np:             np,
+		Cp:             cp,
+		Wc:             wc,
+	}
+	mock.lockGetMembersOnOrganization.Lock()
+	mock.calls.GetMembersOnOrganization = append(mock.calls.GetMembersOnOrganization, callInfo)
+	mock.lockGetMembersOnOrganization.Unlock()
+	return mock.GetMembersOnOrganizationFunc(ctx, organizationID, where, order, np, cp, wc)
+}
+
+// GetMembersOnOrganizationCalls gets all the calls that were made to GetMembersOnOrganization.
+// Check the length with:
+//
+//	len(mockedStore.GetMembersOnOrganizationCalls())
+func (mock *StoreMock) GetMembersOnOrganizationCalls() []struct {
+	Ctx            context.Context
+	OrganizationID uuid.UUID
+	Where          parameter.WhereMemberOnOrganizationParam
+	Order          parameter.MemberOnOrganizationOrderMethod
+	Np             NumberedPaginationParam
+	Cp             CursorPaginationParam
+	Wc             WithCountParam
+} {
+	var calls []struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+		Where          parameter.WhereMemberOnOrganizationParam
+		Order          parameter.MemberOnOrganizationOrderMethod
+		Np             NumberedPaginationParam
+		Cp             CursorPaginationParam
+		Wc             WithCountParam
+	}
+	mock.lockGetMembersOnOrganization.RLock()
+	calls = mock.calls.GetMembersOnOrganization
+	mock.lockGetMembersOnOrganization.RUnlock()
+	return calls
+}
+
+// GetMembersOnOrganizationWithSd calls GetMembersOnOrganizationWithSdFunc.
+func (mock *StoreMock) GetMembersOnOrganizationWithSd(ctx context.Context, sd Sd, organizationID uuid.UUID, where parameter.WhereMemberOnOrganizationParam, order parameter.MemberOnOrganizationOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnOrganization], error) {
+	if mock.GetMembersOnOrganizationWithSdFunc == nil {
+		panic("StoreMock.GetMembersOnOrganizationWithSdFunc: method is nil but Store.GetMembersOnOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+		Where          parameter.WhereMemberOnOrganizationParam
+		Order          parameter.MemberOnOrganizationOrderMethod
+		Np             NumberedPaginationParam
+		Cp             CursorPaginationParam
+		Wc             WithCountParam
+	}{
+		Ctx:            ctx,
+		Sd:             sd,
+		OrganizationID: organizationID,
+		Where:          where,
+		Order:          order,
+		Np:             np,
+		Cp:             cp,
+		Wc:             wc,
+	}
+	mock.lockGetMembersOnOrganizationWithSd.Lock()
+	mock.calls.GetMembersOnOrganizationWithSd = append(mock.calls.GetMembersOnOrganizationWithSd, callInfo)
+	mock.lockGetMembersOnOrganizationWithSd.Unlock()
+	return mock.GetMembersOnOrganizationWithSdFunc(ctx, sd, organizationID, where, order, np, cp, wc)
+}
+
+// GetMembersOnOrganizationWithSdCalls gets all the calls that were made to GetMembersOnOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetMembersOnOrganizationWithSdCalls())
+func (mock *StoreMock) GetMembersOnOrganizationWithSdCalls() []struct {
+	Ctx            context.Context
+	Sd             Sd
+	OrganizationID uuid.UUID
+	Where          parameter.WhereMemberOnOrganizationParam
+	Order          parameter.MemberOnOrganizationOrderMethod
+	Np             NumberedPaginationParam
+	Cp             CursorPaginationParam
+	Wc             WithCountParam
+} {
+	var calls []struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+		Where          parameter.WhereMemberOnOrganizationParam
+		Order          parameter.MemberOnOrganizationOrderMethod
+		Np             NumberedPaginationParam
+		Cp             CursorPaginationParam
+		Wc             WithCountParam
+	}
+	mock.lockGetMembersOnOrganizationWithSd.RLock()
+	calls = mock.calls.GetMembersOnOrganizationWithSd
+	mock.lockGetMembersOnOrganizationWithSd.RUnlock()
+	return calls
+}
+
 // GetMembersWithAttendStatus calls GetMembersWithAttendStatusFunc.
 func (mock *StoreMock) GetMembersWithAttendStatus(ctx context.Context, where parameter.WhereMemberParam, order parameter.MemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberWithAttendStatus], error) {
 	if mock.GetMembersWithAttendStatusFunc == nil {
@@ -28080,6 +29150,122 @@ func (mock *StoreMock) GetOrganizationsCalls() []struct {
 	mock.lockGetOrganizations.RLock()
 	calls = mock.calls.GetOrganizations
 	mock.lockGetOrganizations.RUnlock()
+	return calls
+}
+
+// GetOrganizationsOnMember calls GetOrganizationsOnMemberFunc.
+func (mock *StoreMock) GetOrganizationsOnMember(ctx context.Context, memberID uuid.UUID, where parameter.WhereOrganizationOnMemberParam, order parameter.OrganizationOnMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationOnMember], error) {
+	if mock.GetOrganizationsOnMemberFunc == nil {
+		panic("StoreMock.GetOrganizationsOnMemberFunc: method is nil but Store.GetOrganizationsOnMember was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+		Where    parameter.WhereOrganizationOnMemberParam
+		Order    parameter.OrganizationOnMemberOrderMethod
+		Np       NumberedPaginationParam
+		Cp       CursorPaginationParam
+		Wc       WithCountParam
+	}{
+		Ctx:      ctx,
+		MemberID: memberID,
+		Where:    where,
+		Order:    order,
+		Np:       np,
+		Cp:       cp,
+		Wc:       wc,
+	}
+	mock.lockGetOrganizationsOnMember.Lock()
+	mock.calls.GetOrganizationsOnMember = append(mock.calls.GetOrganizationsOnMember, callInfo)
+	mock.lockGetOrganizationsOnMember.Unlock()
+	return mock.GetOrganizationsOnMemberFunc(ctx, memberID, where, order, np, cp, wc)
+}
+
+// GetOrganizationsOnMemberCalls gets all the calls that were made to GetOrganizationsOnMember.
+// Check the length with:
+//
+//	len(mockedStore.GetOrganizationsOnMemberCalls())
+func (mock *StoreMock) GetOrganizationsOnMemberCalls() []struct {
+	Ctx      context.Context
+	MemberID uuid.UUID
+	Where    parameter.WhereOrganizationOnMemberParam
+	Order    parameter.OrganizationOnMemberOrderMethod
+	Np       NumberedPaginationParam
+	Cp       CursorPaginationParam
+	Wc       WithCountParam
+} {
+	var calls []struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+		Where    parameter.WhereOrganizationOnMemberParam
+		Order    parameter.OrganizationOnMemberOrderMethod
+		Np       NumberedPaginationParam
+		Cp       CursorPaginationParam
+		Wc       WithCountParam
+	}
+	mock.lockGetOrganizationsOnMember.RLock()
+	calls = mock.calls.GetOrganizationsOnMember
+	mock.lockGetOrganizationsOnMember.RUnlock()
+	return calls
+}
+
+// GetOrganizationsOnMemberWithSd calls GetOrganizationsOnMemberWithSdFunc.
+func (mock *StoreMock) GetOrganizationsOnMemberWithSd(ctx context.Context, sd Sd, memberID uuid.UUID, where parameter.WhereOrganizationOnMemberParam, order parameter.OrganizationOnMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.OrganizationOnMember], error) {
+	if mock.GetOrganizationsOnMemberWithSdFunc == nil {
+		panic("StoreMock.GetOrganizationsOnMemberWithSdFunc: method is nil but Store.GetOrganizationsOnMemberWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		MemberID uuid.UUID
+		Where    parameter.WhereOrganizationOnMemberParam
+		Order    parameter.OrganizationOnMemberOrderMethod
+		Np       NumberedPaginationParam
+		Cp       CursorPaginationParam
+		Wc       WithCountParam
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		MemberID: memberID,
+		Where:    where,
+		Order:    order,
+		Np:       np,
+		Cp:       cp,
+		Wc:       wc,
+	}
+	mock.lockGetOrganizationsOnMemberWithSd.Lock()
+	mock.calls.GetOrganizationsOnMemberWithSd = append(mock.calls.GetOrganizationsOnMemberWithSd, callInfo)
+	mock.lockGetOrganizationsOnMemberWithSd.Unlock()
+	return mock.GetOrganizationsOnMemberWithSdFunc(ctx, sd, memberID, where, order, np, cp, wc)
+}
+
+// GetOrganizationsOnMemberWithSdCalls gets all the calls that were made to GetOrganizationsOnMemberWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetOrganizationsOnMemberWithSdCalls())
+func (mock *StoreMock) GetOrganizationsOnMemberWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	MemberID uuid.UUID
+	Where    parameter.WhereOrganizationOnMemberParam
+	Order    parameter.OrganizationOnMemberOrderMethod
+	Np       NumberedPaginationParam
+	Cp       CursorPaginationParam
+	Wc       WithCountParam
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		MemberID uuid.UUID
+		Where    parameter.WhereOrganizationOnMemberParam
+		Order    parameter.OrganizationOnMemberOrderMethod
+		Np       NumberedPaginationParam
+		Cp       CursorPaginationParam
+		Wc       WithCountParam
+	}
+	mock.lockGetOrganizationsOnMemberWithSd.RLock()
+	calls = mock.calls.GetOrganizationsOnMemberWithSd
+	mock.lockGetOrganizationsOnMemberWithSd.RUnlock()
 	return calls
 }
 
@@ -30395,6 +31581,98 @@ func (mock *StoreMock) GetPluralMembersOnChatRoomWithSdCalls() []struct {
 	return calls
 }
 
+// GetPluralMembersOnOrganization calls GetPluralMembersOnOrganizationFunc.
+func (mock *StoreMock) GetPluralMembersOnOrganization(ctx context.Context, organizationIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnOrganizationOrderMethod) (ListResult[entity.MemberOnOrganization], error) {
+	if mock.GetPluralMembersOnOrganizationFunc == nil {
+		panic("StoreMock.GetPluralMembersOnOrganizationFunc: method is nil but Store.GetPluralMembersOnOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		OrganizationIDs []uuid.UUID
+		Np              NumberedPaginationParam
+		Order           parameter.MemberOnOrganizationOrderMethod
+	}{
+		Ctx:             ctx,
+		OrganizationIDs: organizationIDs,
+		Np:              np,
+		Order:           order,
+	}
+	mock.lockGetPluralMembersOnOrganization.Lock()
+	mock.calls.GetPluralMembersOnOrganization = append(mock.calls.GetPluralMembersOnOrganization, callInfo)
+	mock.lockGetPluralMembersOnOrganization.Unlock()
+	return mock.GetPluralMembersOnOrganizationFunc(ctx, organizationIDs, np, order)
+}
+
+// GetPluralMembersOnOrganizationCalls gets all the calls that were made to GetPluralMembersOnOrganization.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralMembersOnOrganizationCalls())
+func (mock *StoreMock) GetPluralMembersOnOrganizationCalls() []struct {
+	Ctx             context.Context
+	OrganizationIDs []uuid.UUID
+	Np              NumberedPaginationParam
+	Order           parameter.MemberOnOrganizationOrderMethod
+} {
+	var calls []struct {
+		Ctx             context.Context
+		OrganizationIDs []uuid.UUID
+		Np              NumberedPaginationParam
+		Order           parameter.MemberOnOrganizationOrderMethod
+	}
+	mock.lockGetPluralMembersOnOrganization.RLock()
+	calls = mock.calls.GetPluralMembersOnOrganization
+	mock.lockGetPluralMembersOnOrganization.RUnlock()
+	return calls
+}
+
+// GetPluralMembersOnOrganizationWithSd calls GetPluralMembersOnOrganizationWithSdFunc.
+func (mock *StoreMock) GetPluralMembersOnOrganizationWithSd(ctx context.Context, sd Sd, organizationIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnOrganizationOrderMethod) (ListResult[entity.MemberOnOrganization], error) {
+	if mock.GetPluralMembersOnOrganizationWithSdFunc == nil {
+		panic("StoreMock.GetPluralMembersOnOrganizationWithSdFunc: method is nil but Store.GetPluralMembersOnOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		Sd              Sd
+		OrganizationIDs []uuid.UUID
+		Np              NumberedPaginationParam
+		Order           parameter.MemberOnOrganizationOrderMethod
+	}{
+		Ctx:             ctx,
+		Sd:              sd,
+		OrganizationIDs: organizationIDs,
+		Np:              np,
+		Order:           order,
+	}
+	mock.lockGetPluralMembersOnOrganizationWithSd.Lock()
+	mock.calls.GetPluralMembersOnOrganizationWithSd = append(mock.calls.GetPluralMembersOnOrganizationWithSd, callInfo)
+	mock.lockGetPluralMembersOnOrganizationWithSd.Unlock()
+	return mock.GetPluralMembersOnOrganizationWithSdFunc(ctx, sd, organizationIDs, np, order)
+}
+
+// GetPluralMembersOnOrganizationWithSdCalls gets all the calls that were made to GetPluralMembersOnOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralMembersOnOrganizationWithSdCalls())
+func (mock *StoreMock) GetPluralMembersOnOrganizationWithSdCalls() []struct {
+	Ctx             context.Context
+	Sd              Sd
+	OrganizationIDs []uuid.UUID
+	Np              NumberedPaginationParam
+	Order           parameter.MemberOnOrganizationOrderMethod
+} {
+	var calls []struct {
+		Ctx             context.Context
+		Sd              Sd
+		OrganizationIDs []uuid.UUID
+		Np              NumberedPaginationParam
+		Order           parameter.MemberOnOrganizationOrderMethod
+	}
+	mock.lockGetPluralMembersOnOrganizationWithSd.RLock()
+	calls = mock.calls.GetPluralMembersOnOrganizationWithSd
+	mock.lockGetPluralMembersOnOrganizationWithSd.RUnlock()
+	return calls
+}
+
 // GetPluralMembersWithAttendStatus calls GetPluralMembersWithAttendStatusFunc.
 func (mock *StoreMock) GetPluralMembersWithAttendStatus(ctx context.Context, memberIDs []uuid.UUID, order parameter.MemberOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberWithAttendStatus], error) {
 	if mock.GetPluralMembersWithAttendStatusFunc == nil {
@@ -31404,6 +32682,98 @@ func (mock *StoreMock) GetPluralOrganizationsCalls() []struct {
 	mock.lockGetPluralOrganizations.RLock()
 	calls = mock.calls.GetPluralOrganizations
 	mock.lockGetPluralOrganizations.RUnlock()
+	return calls
+}
+
+// GetPluralOrganizationsOnMember calls GetPluralOrganizationsOnMemberFunc.
+func (mock *StoreMock) GetPluralOrganizationsOnMember(ctx context.Context, memberIDs []uuid.UUID, np NumberedPaginationParam, order parameter.OrganizationOnMemberOrderMethod) (ListResult[entity.OrganizationOnMember], error) {
+	if mock.GetPluralOrganizationsOnMemberFunc == nil {
+		panic("StoreMock.GetPluralOrganizationsOnMemberFunc: method is nil but Store.GetPluralOrganizationsOnMember was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		MemberIDs []uuid.UUID
+		Np        NumberedPaginationParam
+		Order     parameter.OrganizationOnMemberOrderMethod
+	}{
+		Ctx:       ctx,
+		MemberIDs: memberIDs,
+		Np:        np,
+		Order:     order,
+	}
+	mock.lockGetPluralOrganizationsOnMember.Lock()
+	mock.calls.GetPluralOrganizationsOnMember = append(mock.calls.GetPluralOrganizationsOnMember, callInfo)
+	mock.lockGetPluralOrganizationsOnMember.Unlock()
+	return mock.GetPluralOrganizationsOnMemberFunc(ctx, memberIDs, np, order)
+}
+
+// GetPluralOrganizationsOnMemberCalls gets all the calls that were made to GetPluralOrganizationsOnMember.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralOrganizationsOnMemberCalls())
+func (mock *StoreMock) GetPluralOrganizationsOnMemberCalls() []struct {
+	Ctx       context.Context
+	MemberIDs []uuid.UUID
+	Np        NumberedPaginationParam
+	Order     parameter.OrganizationOnMemberOrderMethod
+} {
+	var calls []struct {
+		Ctx       context.Context
+		MemberIDs []uuid.UUID
+		Np        NumberedPaginationParam
+		Order     parameter.OrganizationOnMemberOrderMethod
+	}
+	mock.lockGetPluralOrganizationsOnMember.RLock()
+	calls = mock.calls.GetPluralOrganizationsOnMember
+	mock.lockGetPluralOrganizationsOnMember.RUnlock()
+	return calls
+}
+
+// GetPluralOrganizationsOnMemberWithSd calls GetPluralOrganizationsOnMemberWithSdFunc.
+func (mock *StoreMock) GetPluralOrganizationsOnMemberWithSd(ctx context.Context, sd Sd, memberIDs []uuid.UUID, np NumberedPaginationParam, order parameter.OrganizationOnMemberOrderMethod) (ListResult[entity.OrganizationOnMember], error) {
+	if mock.GetPluralOrganizationsOnMemberWithSdFunc == nil {
+		panic("StoreMock.GetPluralOrganizationsOnMemberWithSdFunc: method is nil but Store.GetPluralOrganizationsOnMemberWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Sd        Sd
+		MemberIDs []uuid.UUID
+		Np        NumberedPaginationParam
+		Order     parameter.OrganizationOnMemberOrderMethod
+	}{
+		Ctx:       ctx,
+		Sd:        sd,
+		MemberIDs: memberIDs,
+		Np:        np,
+		Order:     order,
+	}
+	mock.lockGetPluralOrganizationsOnMemberWithSd.Lock()
+	mock.calls.GetPluralOrganizationsOnMemberWithSd = append(mock.calls.GetPluralOrganizationsOnMemberWithSd, callInfo)
+	mock.lockGetPluralOrganizationsOnMemberWithSd.Unlock()
+	return mock.GetPluralOrganizationsOnMemberWithSdFunc(ctx, sd, memberIDs, np, order)
+}
+
+// GetPluralOrganizationsOnMemberWithSdCalls gets all the calls that were made to GetPluralOrganizationsOnMemberWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralOrganizationsOnMemberWithSdCalls())
+func (mock *StoreMock) GetPluralOrganizationsOnMemberWithSdCalls() []struct {
+	Ctx       context.Context
+	Sd        Sd
+	MemberIDs []uuid.UUID
+	Np        NumberedPaginationParam
+	Order     parameter.OrganizationOnMemberOrderMethod
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Sd        Sd
+		MemberIDs []uuid.UUID
+		Np        NumberedPaginationParam
+		Order     parameter.OrganizationOnMemberOrderMethod
+	}
+	mock.lockGetPluralOrganizationsOnMemberWithSd.RLock()
+	calls = mock.calls.GetPluralOrganizationsOnMemberWithSd
+	mock.lockGetPluralOrganizationsOnMemberWithSd.RUnlock()
 	return calls
 }
 

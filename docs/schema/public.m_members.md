@@ -7,7 +7,7 @@
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | m_members_pkey | bigint | nextval('m_members_m_members_pkey_seq'::regclass) | false |  |  |  |
-| member_id | uuid | uuid_generate_v4() | false | [public.t_attachable_items](public.t_attachable_items.md) [public.m_students](public.m_students.md) [public.m_professors](public.m_professors.md) [public.t_events](public.t_events.md) [public.t_attendances](public.t_attendances.md) [public.t_lab_io_histories](public.t_lab_io_histories.md) [public.m_chat_rooms](public.m_chat_rooms.md) [public.t_messages](public.t_messages.md) [public.t_position_histories](public.t_position_histories.md) [public.m_chat_room_belongings](public.m_chat_room_belongings.md) [public.t_records](public.t_records.md) [public.t_read_receipts](public.t_read_receipts.md) |  |  |
+| member_id | uuid | uuid_generate_v4() | false | [public.t_attachable_items](public.t_attachable_items.md) [public.m_students](public.m_students.md) [public.m_professors](public.m_professors.md) [public.t_events](public.t_events.md) [public.t_attendances](public.t_attendances.md) [public.t_lab_io_histories](public.t_lab_io_histories.md) [public.m_chat_rooms](public.m_chat_rooms.md) [public.t_messages](public.t_messages.md) [public.t_position_histories](public.t_position_histories.md) [public.m_chat_room_belongings](public.m_chat_room_belongings.md) [public.t_records](public.t_records.md) [public.t_read_receipts](public.t_read_receipts.md) [public.m_memberships](public.m_memberships.md) |  |  |
 | login_id | varchar(255) |  | false |  |  |  |
 | password | varchar(255) |  | false |  |  |  |
 | email | varchar(255) |  | false |  |  |  |

@@ -29,15 +29,13 @@ m_members.profile_image_id member_profile_image_id
 FROM m_chat_rooms
 LEFT JOIN m_chat_room_belongings ON m_chat_rooms.chat_room_id = m_chat_room_belongings.chat_room_id
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
-LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
-LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE (SELECT COUNT(chat_room_id) FROM m_chat_room_belongings WHERE chat_room_id = m_chat_rooms.chat_room_id AND
 (m_chat_room_belongings.member_id = sqlc.arg(owner_id) OR m_chat_room_belongings.member_id = sqlc.arg(member_id))) = 2
 AND is_private = true
 AND m_chat_rooms_belongs.member_id <> sqlc.arg(owner_id);
 
 -- name: FindChatRoomByIDWithOwner :one
-SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members) FROM m_chat_rooms
+SELECT m_chat_rooms.*, sqlc.embed(m_members) FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE chat_room_id = $1;
 
@@ -104,7 +102,7 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetChatRoomsWithOwner :many
-SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members) FROM m_chat_rooms
+SELECT m_chat_rooms.*, sqlc.embed(m_members) FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE
 	CASE WHEN @where_in_owner::boolean THEN owner_id = ANY(@in_owner::uuid[]) ELSE TRUE END
@@ -118,7 +116,7 @@ ORDER BY
 	m_chat_rooms_pkey ASC;
 
 -- name: GetChatRoomsWithOwnerUseNumberedPaginate :many
-SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members) FROM m_chat_rooms
+SELECT m_chat_rooms.*, sqlc.embed(m_members) FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE
 	CASE WHEN @where_in_owner::boolean THEN owner_id = ANY(@in_owner::uuid[]) ELSE TRUE END
@@ -133,7 +131,7 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetChatRoomsWithOwnerUseKeysetPaginate :many
-SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members) FROM m_chat_rooms
+SELECT m_chat_rooms.*, sqlc.embed(m_members) FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE
 	CASE WHEN @where_in_owner::boolean = true THEN owner_id = ANY(@in_owner::uuid[]) ELSE TRUE END
@@ -156,14 +154,14 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralChatRoomsWithOwner :many
-SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members) FROM m_chat_rooms
+SELECT m_chat_rooms.*, sqlc.embed(m_members) FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
 ORDER BY
 	m_chat_rooms_pkey ASC;
 
 -- name: GetPluralChatRoomsWithOwnerUseNumberedPaginate :many
-SELECT sqlc.embed(m_chat_rooms), sqlc.embed(m_members) FROM m_chat_rooms
+SELECT m_chat_rooms.*, sqlc.embed(m_members) FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
 ORDER BY

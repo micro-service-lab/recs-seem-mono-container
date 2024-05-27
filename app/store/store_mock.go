@@ -810,6 +810,18 @@ var _ Store = &StoreMock{}
 //			FindAttachableItemByIDWithSdFunc: func(ctx context.Context, sd Sd, attachableItemID uuid.UUID) (entity.AttachableItemWithContent, error) {
 //				panic("mock out the FindAttachableItemByIDWithSd method")
 //			},
+//			FindAttachableItemByURLFunc: func(ctx context.Context, url string) (entity.AttachableItemWithContent, error) {
+//				panic("mock out the FindAttachableItemByURL method")
+//			},
+//			FindAttachableItemByURLWithMimeTypeFunc: func(ctx context.Context, url string) (entity.AttachableItemWithMimeType, error) {
+//				panic("mock out the FindAttachableItemByURLWithMimeType method")
+//			},
+//			FindAttachableItemByURLWithMimeTypeWithSdFunc: func(ctx context.Context, sd Sd, url string) (entity.AttachableItemWithMimeType, error) {
+//				panic("mock out the FindAttachableItemByURLWithMimeTypeWithSd method")
+//			},
+//			FindAttachableItemByURLWithSdFunc: func(ctx context.Context, sd Sd, url string) (entity.AttachableItemWithContent, error) {
+//				panic("mock out the FindAttachableItemByURLWithSd method")
+//			},
 //			FindAttendStatusByIDFunc: func(ctx context.Context, attendStatusID uuid.UUID) (entity.AttendStatus, error) {
 //				panic("mock out the FindAttendStatusByID method")
 //			},
@@ -995,6 +1007,12 @@ var _ Store = &StoreMock{}
 //			},
 //			FindMimeTypeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.MimeType, error) {
 //				panic("mock out the FindMimeTypeByKeyWithSd method")
+//			},
+//			FindMimeTypeByKindFunc: func(ctx context.Context, kind string) (entity.MimeType, error) {
+//				panic("mock out the FindMimeTypeByKind method")
+//			},
+//			FindMimeTypeByKindWithSdFunc: func(ctx context.Context, sd Sd, kind string) (entity.MimeType, error) {
+//				panic("mock out the FindMimeTypeByKindWithSd method")
 //			},
 //			FindOrganizationByIDFunc: func(ctx context.Context, organizationID uuid.UUID) (entity.Organization, error) {
 //				panic("mock out the FindOrganizationByID method")
@@ -2857,6 +2875,18 @@ type StoreMock struct {
 	// FindAttachableItemByIDWithSdFunc mocks the FindAttachableItemByIDWithSd method.
 	FindAttachableItemByIDWithSdFunc func(ctx context.Context, sd Sd, attachableItemID uuid.UUID) (entity.AttachableItemWithContent, error)
 
+	// FindAttachableItemByURLFunc mocks the FindAttachableItemByURL method.
+	FindAttachableItemByURLFunc func(ctx context.Context, url string) (entity.AttachableItemWithContent, error)
+
+	// FindAttachableItemByURLWithMimeTypeFunc mocks the FindAttachableItemByURLWithMimeType method.
+	FindAttachableItemByURLWithMimeTypeFunc func(ctx context.Context, url string) (entity.AttachableItemWithMimeType, error)
+
+	// FindAttachableItemByURLWithMimeTypeWithSdFunc mocks the FindAttachableItemByURLWithMimeTypeWithSd method.
+	FindAttachableItemByURLWithMimeTypeWithSdFunc func(ctx context.Context, sd Sd, url string) (entity.AttachableItemWithMimeType, error)
+
+	// FindAttachableItemByURLWithSdFunc mocks the FindAttachableItemByURLWithSd method.
+	FindAttachableItemByURLWithSdFunc func(ctx context.Context, sd Sd, url string) (entity.AttachableItemWithContent, error)
+
 	// FindAttendStatusByIDFunc mocks the FindAttendStatusByID method.
 	FindAttendStatusByIDFunc func(ctx context.Context, attendStatusID uuid.UUID) (entity.AttendStatus, error)
 
@@ -3042,6 +3072,12 @@ type StoreMock struct {
 
 	// FindMimeTypeByKeyWithSdFunc mocks the FindMimeTypeByKeyWithSd method.
 	FindMimeTypeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.MimeType, error)
+
+	// FindMimeTypeByKindFunc mocks the FindMimeTypeByKind method.
+	FindMimeTypeByKindFunc func(ctx context.Context, kind string) (entity.MimeType, error)
+
+	// FindMimeTypeByKindWithSdFunc mocks the FindMimeTypeByKindWithSd method.
+	FindMimeTypeByKindWithSdFunc func(ctx context.Context, sd Sd, kind string) (entity.MimeType, error)
 
 	// FindOrganizationByIDFunc mocks the FindOrganizationByID method.
 	FindOrganizationByIDFunc func(ctx context.Context, organizationID uuid.UUID) (entity.Organization, error)
@@ -6263,6 +6299,38 @@ type StoreMock struct {
 			// AttachableItemID is the attachableItemID argument value.
 			AttachableItemID uuid.UUID
 		}
+		// FindAttachableItemByURL holds details about calls to the FindAttachableItemByURL method.
+		FindAttachableItemByURL []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// URL is the url argument value.
+			URL string
+		}
+		// FindAttachableItemByURLWithMimeType holds details about calls to the FindAttachableItemByURLWithMimeType method.
+		FindAttachableItemByURLWithMimeType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// URL is the url argument value.
+			URL string
+		}
+		// FindAttachableItemByURLWithMimeTypeWithSd holds details about calls to the FindAttachableItemByURLWithMimeTypeWithSd method.
+		FindAttachableItemByURLWithMimeTypeWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// URL is the url argument value.
+			URL string
+		}
+		// FindAttachableItemByURLWithSd holds details about calls to the FindAttachableItemByURLWithSd method.
+		FindAttachableItemByURLWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// URL is the url argument value.
+			URL string
+		}
 		// FindAttendStatusByID holds details about calls to the FindAttendStatusByID method.
 		FindAttendStatusByID []struct {
 			// Ctx is the ctx argument value.
@@ -6762,6 +6830,22 @@ type StoreMock struct {
 			Sd Sd
 			// Key is the key argument value.
 			Key string
+		}
+		// FindMimeTypeByKind holds details about calls to the FindMimeTypeByKind method.
+		FindMimeTypeByKind []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Kind is the kind argument value.
+			Kind string
+		}
+		// FindMimeTypeByKindWithSd holds details about calls to the FindMimeTypeByKindWithSd method.
+		FindMimeTypeByKindWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Kind is the kind argument value.
+			Kind string
 		}
 		// FindOrganizationByID holds details about calls to the FindOrganizationByID method.
 		FindOrganizationByID []struct {
@@ -11186,6 +11270,10 @@ type StoreMock struct {
 	lockFindAttachableItemByIDWithMimeType                sync.RWMutex
 	lockFindAttachableItemByIDWithMimeTypeWithSd          sync.RWMutex
 	lockFindAttachableItemByIDWithSd                      sync.RWMutex
+	lockFindAttachableItemByURL                           sync.RWMutex
+	lockFindAttachableItemByURLWithMimeType               sync.RWMutex
+	lockFindAttachableItemByURLWithMimeTypeWithSd         sync.RWMutex
+	lockFindAttachableItemByURLWithSd                     sync.RWMutex
 	lockFindAttendStatusByID                              sync.RWMutex
 	lockFindAttendStatusByIDWithSd                        sync.RWMutex
 	lockFindAttendStatusByKey                             sync.RWMutex
@@ -11248,6 +11336,8 @@ type StoreMock struct {
 	lockFindMimeTypeByIDWithSd                            sync.RWMutex
 	lockFindMimeTypeByKey                                 sync.RWMutex
 	lockFindMimeTypeByKeyWithSd                           sync.RWMutex
+	lockFindMimeTypeByKind                                sync.RWMutex
+	lockFindMimeTypeByKindWithSd                          sync.RWMutex
 	lockFindOrganizationByID                              sync.RWMutex
 	lockFindOrganizationByIDWithSd                        sync.RWMutex
 	lockFindOrganizationWithChatRoom                      sync.RWMutex
@@ -21697,6 +21787,158 @@ func (mock *StoreMock) FindAttachableItemByIDWithSdCalls() []struct {
 	return calls
 }
 
+// FindAttachableItemByURL calls FindAttachableItemByURLFunc.
+func (mock *StoreMock) FindAttachableItemByURL(ctx context.Context, url string) (entity.AttachableItemWithContent, error) {
+	if mock.FindAttachableItemByURLFunc == nil {
+		panic("StoreMock.FindAttachableItemByURLFunc: method is nil but Store.FindAttachableItemByURL was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		URL string
+	}{
+		Ctx: ctx,
+		URL: url,
+	}
+	mock.lockFindAttachableItemByURL.Lock()
+	mock.calls.FindAttachableItemByURL = append(mock.calls.FindAttachableItemByURL, callInfo)
+	mock.lockFindAttachableItemByURL.Unlock()
+	return mock.FindAttachableItemByURLFunc(ctx, url)
+}
+
+// FindAttachableItemByURLCalls gets all the calls that were made to FindAttachableItemByURL.
+// Check the length with:
+//
+//	len(mockedStore.FindAttachableItemByURLCalls())
+func (mock *StoreMock) FindAttachableItemByURLCalls() []struct {
+	Ctx context.Context
+	URL string
+} {
+	var calls []struct {
+		Ctx context.Context
+		URL string
+	}
+	mock.lockFindAttachableItemByURL.RLock()
+	calls = mock.calls.FindAttachableItemByURL
+	mock.lockFindAttachableItemByURL.RUnlock()
+	return calls
+}
+
+// FindAttachableItemByURLWithMimeType calls FindAttachableItemByURLWithMimeTypeFunc.
+func (mock *StoreMock) FindAttachableItemByURLWithMimeType(ctx context.Context, url string) (entity.AttachableItemWithMimeType, error) {
+	if mock.FindAttachableItemByURLWithMimeTypeFunc == nil {
+		panic("StoreMock.FindAttachableItemByURLWithMimeTypeFunc: method is nil but Store.FindAttachableItemByURLWithMimeType was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		URL string
+	}{
+		Ctx: ctx,
+		URL: url,
+	}
+	mock.lockFindAttachableItemByURLWithMimeType.Lock()
+	mock.calls.FindAttachableItemByURLWithMimeType = append(mock.calls.FindAttachableItemByURLWithMimeType, callInfo)
+	mock.lockFindAttachableItemByURLWithMimeType.Unlock()
+	return mock.FindAttachableItemByURLWithMimeTypeFunc(ctx, url)
+}
+
+// FindAttachableItemByURLWithMimeTypeCalls gets all the calls that were made to FindAttachableItemByURLWithMimeType.
+// Check the length with:
+//
+//	len(mockedStore.FindAttachableItemByURLWithMimeTypeCalls())
+func (mock *StoreMock) FindAttachableItemByURLWithMimeTypeCalls() []struct {
+	Ctx context.Context
+	URL string
+} {
+	var calls []struct {
+		Ctx context.Context
+		URL string
+	}
+	mock.lockFindAttachableItemByURLWithMimeType.RLock()
+	calls = mock.calls.FindAttachableItemByURLWithMimeType
+	mock.lockFindAttachableItemByURLWithMimeType.RUnlock()
+	return calls
+}
+
+// FindAttachableItemByURLWithMimeTypeWithSd calls FindAttachableItemByURLWithMimeTypeWithSdFunc.
+func (mock *StoreMock) FindAttachableItemByURLWithMimeTypeWithSd(ctx context.Context, sd Sd, url string) (entity.AttachableItemWithMimeType, error) {
+	if mock.FindAttachableItemByURLWithMimeTypeWithSdFunc == nil {
+		panic("StoreMock.FindAttachableItemByURLWithMimeTypeWithSdFunc: method is nil but Store.FindAttachableItemByURLWithMimeTypeWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Sd  Sd
+		URL string
+	}{
+		Ctx: ctx,
+		Sd:  sd,
+		URL: url,
+	}
+	mock.lockFindAttachableItemByURLWithMimeTypeWithSd.Lock()
+	mock.calls.FindAttachableItemByURLWithMimeTypeWithSd = append(mock.calls.FindAttachableItemByURLWithMimeTypeWithSd, callInfo)
+	mock.lockFindAttachableItemByURLWithMimeTypeWithSd.Unlock()
+	return mock.FindAttachableItemByURLWithMimeTypeWithSdFunc(ctx, sd, url)
+}
+
+// FindAttachableItemByURLWithMimeTypeWithSdCalls gets all the calls that were made to FindAttachableItemByURLWithMimeTypeWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindAttachableItemByURLWithMimeTypeWithSdCalls())
+func (mock *StoreMock) FindAttachableItemByURLWithMimeTypeWithSdCalls() []struct {
+	Ctx context.Context
+	Sd  Sd
+	URL string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Sd  Sd
+		URL string
+	}
+	mock.lockFindAttachableItemByURLWithMimeTypeWithSd.RLock()
+	calls = mock.calls.FindAttachableItemByURLWithMimeTypeWithSd
+	mock.lockFindAttachableItemByURLWithMimeTypeWithSd.RUnlock()
+	return calls
+}
+
+// FindAttachableItemByURLWithSd calls FindAttachableItemByURLWithSdFunc.
+func (mock *StoreMock) FindAttachableItemByURLWithSd(ctx context.Context, sd Sd, url string) (entity.AttachableItemWithContent, error) {
+	if mock.FindAttachableItemByURLWithSdFunc == nil {
+		panic("StoreMock.FindAttachableItemByURLWithSdFunc: method is nil but Store.FindAttachableItemByURLWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Sd  Sd
+		URL string
+	}{
+		Ctx: ctx,
+		Sd:  sd,
+		URL: url,
+	}
+	mock.lockFindAttachableItemByURLWithSd.Lock()
+	mock.calls.FindAttachableItemByURLWithSd = append(mock.calls.FindAttachableItemByURLWithSd, callInfo)
+	mock.lockFindAttachableItemByURLWithSd.Unlock()
+	return mock.FindAttachableItemByURLWithSdFunc(ctx, sd, url)
+}
+
+// FindAttachableItemByURLWithSdCalls gets all the calls that were made to FindAttachableItemByURLWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindAttachableItemByURLWithSdCalls())
+func (mock *StoreMock) FindAttachableItemByURLWithSdCalls() []struct {
+	Ctx context.Context
+	Sd  Sd
+	URL string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Sd  Sd
+		URL string
+	}
+	mock.lockFindAttachableItemByURLWithSd.RLock()
+	calls = mock.calls.FindAttachableItemByURLWithSd
+	mock.lockFindAttachableItemByURLWithSd.RUnlock()
+	return calls
+}
+
 // FindAttendStatusByID calls FindAttendStatusByIDFunc.
 func (mock *StoreMock) FindAttendStatusByID(ctx context.Context, attendStatusID uuid.UUID) (entity.AttendStatus, error) {
 	if mock.FindAttendStatusByIDFunc == nil {
@@ -24058,6 +24300,82 @@ func (mock *StoreMock) FindMimeTypeByKeyWithSdCalls() []struct {
 	mock.lockFindMimeTypeByKeyWithSd.RLock()
 	calls = mock.calls.FindMimeTypeByKeyWithSd
 	mock.lockFindMimeTypeByKeyWithSd.RUnlock()
+	return calls
+}
+
+// FindMimeTypeByKind calls FindMimeTypeByKindFunc.
+func (mock *StoreMock) FindMimeTypeByKind(ctx context.Context, kind string) (entity.MimeType, error) {
+	if mock.FindMimeTypeByKindFunc == nil {
+		panic("StoreMock.FindMimeTypeByKindFunc: method is nil but Store.FindMimeTypeByKind was just called")
+	}
+	callInfo := struct {
+		Ctx  context.Context
+		Kind string
+	}{
+		Ctx:  ctx,
+		Kind: kind,
+	}
+	mock.lockFindMimeTypeByKind.Lock()
+	mock.calls.FindMimeTypeByKind = append(mock.calls.FindMimeTypeByKind, callInfo)
+	mock.lockFindMimeTypeByKind.Unlock()
+	return mock.FindMimeTypeByKindFunc(ctx, kind)
+}
+
+// FindMimeTypeByKindCalls gets all the calls that were made to FindMimeTypeByKind.
+// Check the length with:
+//
+//	len(mockedStore.FindMimeTypeByKindCalls())
+func (mock *StoreMock) FindMimeTypeByKindCalls() []struct {
+	Ctx  context.Context
+	Kind string
+} {
+	var calls []struct {
+		Ctx  context.Context
+		Kind string
+	}
+	mock.lockFindMimeTypeByKind.RLock()
+	calls = mock.calls.FindMimeTypeByKind
+	mock.lockFindMimeTypeByKind.RUnlock()
+	return calls
+}
+
+// FindMimeTypeByKindWithSd calls FindMimeTypeByKindWithSdFunc.
+func (mock *StoreMock) FindMimeTypeByKindWithSd(ctx context.Context, sd Sd, kind string) (entity.MimeType, error) {
+	if mock.FindMimeTypeByKindWithSdFunc == nil {
+		panic("StoreMock.FindMimeTypeByKindWithSdFunc: method is nil but Store.FindMimeTypeByKindWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx  context.Context
+		Sd   Sd
+		Kind string
+	}{
+		Ctx:  ctx,
+		Sd:   sd,
+		Kind: kind,
+	}
+	mock.lockFindMimeTypeByKindWithSd.Lock()
+	mock.calls.FindMimeTypeByKindWithSd = append(mock.calls.FindMimeTypeByKindWithSd, callInfo)
+	mock.lockFindMimeTypeByKindWithSd.Unlock()
+	return mock.FindMimeTypeByKindWithSdFunc(ctx, sd, kind)
+}
+
+// FindMimeTypeByKindWithSdCalls gets all the calls that were made to FindMimeTypeByKindWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindMimeTypeByKindWithSdCalls())
+func (mock *StoreMock) FindMimeTypeByKindWithSdCalls() []struct {
+	Ctx  context.Context
+	Sd   Sd
+	Kind string
+} {
+	var calls []struct {
+		Ctx  context.Context
+		Sd   Sd
+		Kind string
+	}
+	mock.lockFindMimeTypeByKindWithSd.RLock()
+	calls = mock.calls.FindMimeTypeByKindWithSd
+	mock.lockFindMimeTypeByKindWithSd.RUnlock()
 	return calls
 }
 

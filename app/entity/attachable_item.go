@@ -10,6 +10,7 @@ type AttachableItem struct {
 	OwnerID          UUID      `json:"owner_id"`
 	FromOuter        bool      `json:"from_outer"`
 	URL              string    `json:"url"`
+	Alias            string    `json:"alias"`
 	Size             Float     `json:"size"`
 	MimeTypeID       uuid.UUID `json:"mime_type_id"`
 	ImageID          UUID      `json:"image_id,omitempty"`
@@ -22,6 +23,7 @@ type AttachableItemWithContent struct {
 	OwnerID          UUID                  `json:"owner_id"`
 	FromOuter        bool                  `json:"from_outer"`
 	URL              string                `json:"url"`
+	Alias            string                `json:"alias"`
 	Size             Float                 `json:"size"`
 	MimeTypeID       uuid.UUID             `json:"mime_type_id"`
 	Image            NullableEntity[Image] `json:"image,omitempty"`
@@ -40,6 +42,7 @@ type AttachableItemWithMimeType struct {
 	OwnerID          UUID                     `json:"owner_id"`
 	FromOuter        bool                     `json:"from_outer"`
 	URL              string                   `json:"url"`
+	Alias            string                   `json:"alias"`
 	Size             Float                    `json:"size"`
 	MimeType         NullableEntity[MimeType] `json:"mime_type"`
 	Image            NullableEntity[Image]    `json:"image,omitempty"`

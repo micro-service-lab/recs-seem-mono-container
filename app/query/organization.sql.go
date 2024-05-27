@@ -148,7 +148,7 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
 FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
@@ -178,6 +178,7 @@ type FindOrganizationByIDWithChatRoomRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
@@ -207,6 +208,7 @@ func (q *Queries) FindOrganizationByIDWithChatRoom(ctx context.Context, organiza
 		&i.ChatRoomCoverImageAttachableItemID,
 		&i.ChatRoomCoverImageOwnerID,
 		&i.ChatRoomCoverImageFromOuter,
+		&i.ChatRoomCoverImageAlias,
 		&i.ChatRoomCoverImageUrl,
 		&i.ChatRoomCoverImageSize,
 		&i.ChatRoomCoverImageMimeTypeID,
@@ -219,7 +221,7 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
 FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
@@ -255,6 +257,7 @@ type FindOrganizationByIDWithChatRoomAndDetailRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
@@ -288,6 +291,7 @@ func (q *Queries) FindOrganizationByIDWithChatRoomAndDetail(ctx context.Context,
 		&i.ChatRoomCoverImageAttachableItemID,
 		&i.ChatRoomCoverImageOwnerID,
 		&i.ChatRoomCoverImageFromOuter,
+		&i.ChatRoomCoverImageAlias,
 		&i.ChatRoomCoverImageUrl,
 		&i.ChatRoomCoverImageSize,
 		&i.ChatRoomCoverImageMimeTypeID,
@@ -391,7 +395,7 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
 FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
@@ -421,6 +425,7 @@ type FindWholeOrganizationWithChatRoomRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
@@ -450,6 +455,7 @@ func (q *Queries) FindWholeOrganizationWithChatRoom(ctx context.Context) (FindWh
 		&i.ChatRoomCoverImageAttachableItemID,
 		&i.ChatRoomCoverImageOwnerID,
 		&i.ChatRoomCoverImageFromOuter,
+		&i.ChatRoomCoverImageAlias,
 		&i.ChatRoomCoverImageUrl,
 		&i.ChatRoomCoverImageSize,
 		&i.ChatRoomCoverImageMimeTypeID,
@@ -713,7 +719,7 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
 FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
@@ -769,6 +775,7 @@ type GetOrganizationsWithChatRoomRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
@@ -815,6 +822,7 @@ func (q *Queries) GetOrganizationsWithChatRoom(ctx context.Context, arg GetOrgan
 			&i.ChatRoomCoverImageAttachableItemID,
 			&i.ChatRoomCoverImageOwnerID,
 			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageAlias,
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
@@ -834,7 +842,7 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
 FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
@@ -896,6 +904,7 @@ type GetOrganizationsWithChatRoomAndDetailRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
@@ -946,6 +955,7 @@ func (q *Queries) GetOrganizationsWithChatRoomAndDetail(ctx context.Context, arg
 			&i.ChatRoomCoverImageAttachableItemID,
 			&i.ChatRoomCoverImageOwnerID,
 			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageAlias,
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
@@ -965,7 +975,7 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
 FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
@@ -1050,6 +1060,7 @@ type GetOrganizationsWithChatRoomAndDetailUseKeysetPaginateRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
@@ -1104,6 +1115,7 @@ func (q *Queries) GetOrganizationsWithChatRoomAndDetailUseKeysetPaginate(ctx con
 			&i.ChatRoomCoverImageAttachableItemID,
 			&i.ChatRoomCoverImageOwnerID,
 			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageAlias,
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
@@ -1123,7 +1135,7 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
 FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
@@ -1188,6 +1200,7 @@ type GetOrganizationsWithChatRoomAndDetailUseNumberedPaginateRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
@@ -1240,6 +1253,7 @@ func (q *Queries) GetOrganizationsWithChatRoomAndDetailUseNumberedPaginate(ctx c
 			&i.ChatRoomCoverImageAttachableItemID,
 			&i.ChatRoomCoverImageOwnerID,
 			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageAlias,
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
@@ -1259,7 +1273,7 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
 FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
@@ -1338,6 +1352,7 @@ type GetOrganizationsWithChatRoomUseKeysetPaginateRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
@@ -1388,6 +1403,7 @@ func (q *Queries) GetOrganizationsWithChatRoomUseKeysetPaginate(ctx context.Cont
 			&i.ChatRoomCoverImageAttachableItemID,
 			&i.ChatRoomCoverImageOwnerID,
 			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageAlias,
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
@@ -1407,7 +1423,7 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
 FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
@@ -1466,6 +1482,7 @@ type GetOrganizationsWithChatRoomUseNumberedPaginateRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
@@ -1514,6 +1531,7 @@ func (q *Queries) GetOrganizationsWithChatRoomUseNumberedPaginate(ctx context.Co
 			&i.ChatRoomCoverImageAttachableItemID,
 			&i.ChatRoomCoverImageOwnerID,
 			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageAlias,
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
@@ -1949,7 +1967,7 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
 FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
@@ -1988,6 +2006,7 @@ type GetPluralOrganizationsWithChatRoomRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
@@ -2023,6 +2042,7 @@ func (q *Queries) GetPluralOrganizationsWithChatRoom(ctx context.Context, arg Ge
 			&i.ChatRoomCoverImageAttachableItemID,
 			&i.ChatRoomCoverImageOwnerID,
 			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageAlias,
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
@@ -2042,7 +2062,7 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
 FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
@@ -2087,6 +2107,7 @@ type GetPluralOrganizationsWithChatRoomAndDetailRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
@@ -2126,6 +2147,7 @@ func (q *Queries) GetPluralOrganizationsWithChatRoomAndDetail(ctx context.Contex
 			&i.ChatRoomCoverImageAttachableItemID,
 			&i.ChatRoomCoverImageOwnerID,
 			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageAlias,
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
@@ -2145,7 +2167,7 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
 FROM m_organizations
 LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
@@ -2193,6 +2215,7 @@ type GetPluralOrganizationsWithChatRoomAndDetailUseNumberedPaginateRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
@@ -2237,6 +2260,7 @@ func (q *Queries) GetPluralOrganizationsWithChatRoomAndDetailUseNumberedPaginate
 			&i.ChatRoomCoverImageAttachableItemID,
 			&i.ChatRoomCoverImageOwnerID,
 			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageAlias,
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
@@ -2256,7 +2280,7 @@ SELECT m_organizations.m_organizations_pkey, m_organizations.organization_id, m_
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id
 FROM m_organizations
 LEFT JOIN m_chat_rooms ON m_organizations.chat_room_id = m_chat_rooms.chat_room_id
@@ -2298,6 +2322,7 @@ type GetPluralOrganizationsWithChatRoomUseNumberedPaginateRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
@@ -2338,6 +2363,7 @@ func (q *Queries) GetPluralOrganizationsWithChatRoomUseNumberedPaginate(ctx cont
 			&i.ChatRoomCoverImageAttachableItemID,
 			&i.ChatRoomCoverImageOwnerID,
 			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageAlias,
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,

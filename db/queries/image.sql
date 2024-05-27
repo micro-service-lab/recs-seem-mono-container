@@ -14,7 +14,7 @@ DELETE FROM t_images WHERE image_id = ANY(@image_ids::uuid[]);
 SELECT * FROM t_images WHERE image_id = $1;
 
 -- name: FindImageByIDWithAttachableItem :one
-SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer, t_attachable_items.alias alias,
 t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE image_id = $1;
@@ -58,14 +58,14 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetImagesWithAttachableItem :many
-SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer, t_attachable_items.alias alias,
 t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 ORDER BY
 	t_images_pkey ASC;
 
 -- name: GetImagesWithAttachableItemUseNumberedPaginate :many
-SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer, t_attachable_items.alias alias,
 t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 ORDER BY
@@ -73,7 +73,7 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetImagesWithAttachableItemUseKeysetPaginate :many
-SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer, t_attachable_items.alias alias,
 t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
@@ -89,7 +89,7 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralImagesWithAttachableItem :many
-SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer, t_attachable_items.alias alias,
 t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE image_id = ANY(@image_ids::uuid[])
@@ -97,7 +97,7 @@ ORDER BY
 	t_images_pkey ASC;
 
 -- name: GetPluralImagesWithAttachableItemUseNumberedPaginate :many
-SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+SELECT t_images.*, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer, t_attachable_items.alias alias,
 t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id FROM t_images
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE image_id = ANY(@image_ids::uuid[])

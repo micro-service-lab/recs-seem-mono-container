@@ -9,8 +9,9 @@ import (
 // CreateAttachableItemParam 添付可能アイテム作成のパラメータ。
 type CreateAttachableItemParam struct {
 	URL        string
+	Alias      string
 	Size       entity.Float
-	OwnerID    uuid.UUID
+	OwnerID    entity.UUID
 	FromOuter  bool
 	MimeTypeID uuid.UUID
 }
@@ -18,6 +19,7 @@ type CreateAttachableItemParam struct {
 // UpdateAttachableItemParams 添付可能アイテム更新のパラメータ。
 type UpdateAttachableItemParams struct {
 	URL        string
+	Alias      string
 	Size       entity.Float
 	MimeTypeID uuid.UUID
 }

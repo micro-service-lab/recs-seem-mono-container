@@ -1,10 +1,35 @@
 package parameter
 
 import (
+	"io"
+
 	"github.com/google/uuid"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
 )
+
+// CreateImageServiceParam 画像作成のパラメータ。
+type CreateImageServiceParam struct {
+	Origin io.Reader
+	Alias  string
+}
+
+// CreateImageSpecifyFilenameServiceParam 画像作成のパラメータ。
+type CreateImageSpecifyFilenameServiceParam struct {
+	Origin   io.Reader
+	Filename string
+	Alias    string
+}
+
+// CreateImageFromOuterServiceParam 画像作成のパラメータ。
+type CreateImageFromOuterServiceParam struct {
+	URL        string
+	Alias      string
+	Size       entity.Float
+	MimeTypeID uuid.UUID
+	Height     entity.Float
+	Width      entity.Float
+}
 
 // CreateImageParam 画像作成のパラメータ。
 type CreateImageParam struct {

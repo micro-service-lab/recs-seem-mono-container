@@ -42,7 +42,7 @@ WHERE member_id = $1;
 -- name: FindMemberWithProfileImage :one
 SELECT m_members.*, t_images.height profile_image_height,
 t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
-t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer, t_attachable_items.alias profile_image_alias,
 t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
 FROM m_members
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
@@ -77,7 +77,7 @@ WHERE member_id = $1;
 -- name: FindMemberByIDWithProfileImage :one
 SELECT m_members.*, t_images.height profile_image_height,
 t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
-t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer, t_attachable_items.alias profile_image_alias,
 t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
 FROM m_members
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
@@ -276,7 +276,7 @@ LIMIT $1 OFFSET $2;
 -- name: GetMembersWithProfileImage :many
 SELECT m_members.*, t_images.height profile_image_height,
 t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
-t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer, t_attachable_items.alias profile_image_alias,
 t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
 FROM m_members
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
@@ -299,7 +299,7 @@ ORDER BY
 -- name: GetMembersWithProfileImageUseNumberedPaginate :many
 SELECT m_members.*, t_images.height profile_image_height,
 t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
-t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer, t_attachable_items.alias profile_image_alias,
 t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
 FROM m_members
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
@@ -323,7 +323,7 @@ LIMIT $1 OFFSET $2;
 -- name: GetMembersWithProfileImageUseKeysetPaginate :many
 SELECT m_members.*, t_images.height profile_image_height,
 t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
-t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer, t_attachable_items.alias profile_image_alias,
 t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
 FROM m_members
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
@@ -365,7 +365,7 @@ LIMIT $1;
 -- name: GetPluralMembersWithProfileImage :many
 SELECT m_members.*, t_images.height profile_image_height,
 t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
-t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer, t_attachable_items.alias profile_image_alias,
 t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
 FROM m_members
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
@@ -379,7 +379,7 @@ ORDER BY
 -- name: GetPluralMembersWithProfileImageUseNumberedPaginate :many
 SELECT m_members.*, t_images.height profile_image_height,
 t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
-t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer, t_attachable_items.alias profile_image_alias,
 t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
 FROM m_members
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id

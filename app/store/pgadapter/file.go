@@ -24,6 +24,7 @@ func convFileWithAttachableItem(e query.FindFileByIDWithAttachableItemRow) entit
 			OwnerID:          entity.UUID(e.OwnerID),
 			FromOuter:        e.FromOuter.Bool,
 			URL:              e.Url.String,
+			Alias:            e.Alias.String,
 			Size:             entity.Float(e.Size),
 			MimeTypeID:       e.MimeTypeID.Bytes,
 		},

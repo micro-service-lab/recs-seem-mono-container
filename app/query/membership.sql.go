@@ -134,7 +134,7 @@ const getMembersOnOrganization = `-- name: GetMembersOnOrganization :many
 SELECT m_memberships.m_memberships_pkey, m_memberships.member_id, m_memberships.organization_id, m_memberships.work_position_id, m_memberships.added_at, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
-t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
 t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_memberships
 LEFT JOIN m_members ON m_memberships.member_id = m_members.member_id
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
@@ -174,6 +174,7 @@ type GetMembersOnOrganizationRow struct {
 	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
 	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
 	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageAlias            pgtype.Text   `json:"member_profile_image_alias"`
 	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
 	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
 	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
@@ -209,6 +210,7 @@ func (q *Queries) GetMembersOnOrganization(ctx context.Context, arg GetMembersOn
 			&i.MemberProfileImageAttachableItemID,
 			&i.MemberProfileImageOwnerID,
 			&i.MemberProfileImageFromOuter,
+			&i.MemberProfileImageAlias,
 			&i.MemberProfileImageUrl,
 			&i.MemberProfileImageSize,
 			&i.MemberProfileImageMimeTypeID,
@@ -227,7 +229,7 @@ const getMembersOnOrganizationUseKeysetPaginate = `-- name: GetMembersOnOrganiza
 SELECT m_memberships.m_memberships_pkey, m_memberships.member_id, m_memberships.organization_id, m_memberships.work_position_id, m_memberships.added_at, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
-t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
 t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_memberships
 LEFT JOIN m_members ON m_memberships.member_id = m_members.member_id
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
@@ -296,6 +298,7 @@ type GetMembersOnOrganizationUseKeysetPaginateRow struct {
 	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
 	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
 	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageAlias            pgtype.Text   `json:"member_profile_image_alias"`
 	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
 	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
 	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
@@ -336,6 +339,7 @@ func (q *Queries) GetMembersOnOrganizationUseKeysetPaginate(ctx context.Context,
 			&i.MemberProfileImageAttachableItemID,
 			&i.MemberProfileImageOwnerID,
 			&i.MemberProfileImageFromOuter,
+			&i.MemberProfileImageAlias,
 			&i.MemberProfileImageUrl,
 			&i.MemberProfileImageSize,
 			&i.MemberProfileImageMimeTypeID,
@@ -354,7 +358,7 @@ const getMembersOnOrganizationUseNumberedPaginate = `-- name: GetMembersOnOrgani
 SELECT m_memberships.m_memberships_pkey, m_memberships.member_id, m_memberships.organization_id, m_memberships.work_position_id, m_memberships.added_at, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
-t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
 t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_memberships
 LEFT JOIN m_members ON m_memberships.member_id = m_members.member_id
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
@@ -397,6 +401,7 @@ type GetMembersOnOrganizationUseNumberedPaginateRow struct {
 	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
 	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
 	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageAlias            pgtype.Text   `json:"member_profile_image_alias"`
 	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
 	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
 	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
@@ -434,6 +439,7 @@ func (q *Queries) GetMembersOnOrganizationUseNumberedPaginate(ctx context.Contex
 			&i.MemberProfileImageAttachableItemID,
 			&i.MemberProfileImageOwnerID,
 			&i.MemberProfileImageFromOuter,
+			&i.MemberProfileImageAlias,
 			&i.MemberProfileImageUrl,
 			&i.MemberProfileImageSize,
 			&i.MemberProfileImageMimeTypeID,
@@ -719,7 +725,7 @@ const getPluralMembersOnOrganization = `-- name: GetPluralMembersOnOrganization 
 SELECT m_memberships.m_memberships_pkey, m_memberships.member_id, m_memberships.organization_id, m_memberships.work_position_id, m_memberships.added_at, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
-t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
 t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_memberships
 LEFT JOIN m_members ON m_memberships.member_id = m_members.member_id
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
@@ -754,6 +760,7 @@ type GetPluralMembersOnOrganizationRow struct {
 	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
 	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
 	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageAlias            pgtype.Text   `json:"member_profile_image_alias"`
 	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
 	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
 	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
@@ -784,6 +791,7 @@ func (q *Queries) GetPluralMembersOnOrganization(ctx context.Context, arg GetPlu
 			&i.MemberProfileImageAttachableItemID,
 			&i.MemberProfileImageOwnerID,
 			&i.MemberProfileImageFromOuter,
+			&i.MemberProfileImageAlias,
 			&i.MemberProfileImageUrl,
 			&i.MemberProfileImageSize,
 			&i.MemberProfileImageMimeTypeID,
@@ -802,7 +810,7 @@ const getPluralMembersOnOrganizationUseNumberedPaginate = `-- name: GetPluralMem
 SELECT m_memberships.m_memberships_pkey, m_memberships.member_id, m_memberships.organization_id, m_memberships.work_position_id, m_memberships.added_at, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
-t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
 t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_memberships
 LEFT JOIN m_members ON m_memberships.member_id = m_members.member_id
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
@@ -840,6 +848,7 @@ type GetPluralMembersOnOrganizationUseNumberedPaginateRow struct {
 	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
 	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
 	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageAlias            pgtype.Text   `json:"member_profile_image_alias"`
 	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
 	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
 	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
@@ -875,6 +884,7 @@ func (q *Queries) GetPluralMembersOnOrganizationUseNumberedPaginate(ctx context.
 			&i.MemberProfileImageAttachableItemID,
 			&i.MemberProfileImageOwnerID,
 			&i.MemberProfileImageFromOuter,
+			&i.MemberProfileImageAlias,
 			&i.MemberProfileImageUrl,
 			&i.MemberProfileImageSize,
 			&i.MemberProfileImageMimeTypeID,

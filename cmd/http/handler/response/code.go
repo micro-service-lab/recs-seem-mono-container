@@ -245,4 +245,11 @@ var (
 		Message:    "attempt operate grade organization error",
 		StatusCode: http.StatusForbidden,
 	}
+
+	// ConflictStorageKey ストレージキーの競合
+	ConflictStorageKey = APIResponseType{
+		Code:       "230",
+		Message:    "conflict storage key error",
+		StatusCode: http.StatusConflict,
+	}
 )

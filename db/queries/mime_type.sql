@@ -25,6 +25,9 @@ SELECT * FROM m_mime_types WHERE mime_type_id = $1;
 -- name: FindMimeTypeByKey :one
 SELECT * FROM m_mime_types WHERE key = $1;
 
+-- name: FindMimeTypeByKind :one
+SELECT * FROM m_mime_types WHERE kind = $1;
+
 -- name: GetMimeTypes :many
 SELECT * FROM m_mime_types
 WHERE

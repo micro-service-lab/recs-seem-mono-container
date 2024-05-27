@@ -116,6 +116,23 @@ func (q *Queries) FindMimeTypeByKey(ctx context.Context, key string) (MimeType, 
 	return i, err
 }
 
+const findMimeTypeByKind = `-- name: FindMimeTypeByKind :one
+SELECT m_mime_types_pkey, mime_type_id, name, kind, key FROM m_mime_types WHERE kind = $1
+`
+
+func (q *Queries) FindMimeTypeByKind(ctx context.Context, kind string) (MimeType, error) {
+	row := q.db.QueryRow(ctx, findMimeTypeByKind, kind)
+	var i MimeType
+	err := row.Scan(
+		&i.MMimeTypesPkey,
+		&i.MimeTypeID,
+		&i.Name,
+		&i.Kind,
+		&i.Key,
+	)
+	return i, err
+}
+
 const getMimeTypes = `-- name: GetMimeTypes :many
 SELECT m_mime_types_pkey, mime_type_id, name, kind, key FROM m_mime_types
 WHERE

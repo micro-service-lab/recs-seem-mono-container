@@ -53,6 +53,7 @@ func convReadableMemberOnMessage(e query.GetReadableMembersOnMessageRow) entity.
 						OwnerID:          entity.UUID(e.ProfileImageOwnerID),
 						FromOuter:        e.ProfileImageFromOuter.Bool,
 						URL:              e.ProfileImageUrl.String,
+						Alias:            e.ProfileImageAlias.String,
 						Size:             entity.Float(e.ProfileImageSize),
 						MimeTypeID:       e.ProfileImageMimeTypeID.Bytes,
 					},

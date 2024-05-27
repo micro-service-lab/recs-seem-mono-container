@@ -47,6 +47,7 @@ func attachableItemConv(
 		OwnerID:          entity.UUID(attachableItem.OwnerID),
 		FromOuter:        attachableItem.FromOuter,
 		URL:              attachableItem.Url,
+		Alias:            attachableItem.Alias,
 		Size:             entity.Float(attachableItem.Size),
 		MimeTypeID:       attachableItem.MimeTypeID,
 		Image:            image,
@@ -94,6 +95,7 @@ func attachableItemConvWithMimeType(
 		OwnerID:          entity.UUID(attachableItem.OwnerID),
 		FromOuter:        attachableItem.FromOuter,
 		URL:              attachableItem.Url,
+		Alias:            attachableItem.Alias,
 		Size:             entity.Float(attachableItem.Size),
 		MimeType:         mimeType,
 		Image:            image,
@@ -143,8 +145,9 @@ func createAttachableItem(
 ) (entity.AttachableItem, error) {
 	p := query.CreateAttachableItemParams{
 		Url:        param.URL,
+		Alias:      param.Alias,
 		Size:       pgtype.Float8(param.Size),
-		OwnerID:    pgtype.UUID{Bytes: param.OwnerID, Valid: true},
+		OwnerID:    pgtype.UUID(param.OwnerID),
 		FromOuter:  param.FromOuter,
 		MimeTypeID: param.MimeTypeID,
 	}
@@ -161,6 +164,7 @@ func createAttachableItem(
 		OwnerID:          entity.UUID(attachableItem.OwnerID),
 		FromOuter:        attachableItem.FromOuter,
 		URL:              attachableItem.Url,
+		Alias:            attachableItem.Alias,
 		Size:             entity.Float(attachableItem.Size),
 		MimeTypeID:       attachableItem.MimeTypeID,
 	}
@@ -195,7 +199,8 @@ func createAttachableItems(
 		p = append(p, query.CreateAttachableItemsParams{
 			Url:        param.URL,
 			Size:       pgtype.Float8(param.Size),
-			OwnerID:    pgtype.UUID{Bytes: param.OwnerID, Valid: true},
+			Alias:      param.Alias,
+			OwnerID:    pgtype.UUID(param.OwnerID),
 			FromOuter:  param.FromOuter,
 			MimeTypeID: param.MimeTypeID,
 		})
@@ -359,6 +364,72 @@ func (a *PgAdapter) FindAttachableItemByIDWithMimeTypeWithSd(
 		return entity.AttachableItemWithMimeType{}, store.ErrNotFoundDescriptor
 	}
 	return findAttachableItemByIDWithMimeType(ctx, qtx, attachableItemID)
+}
+
+func findAttachableItemByURL(
+	ctx context.Context, qtx *query.Queries, url string,
+) (entity.AttachableItemWithContent, error) {
+	attachableItem, err := qtx.FindAttachableItemByURL(ctx, url)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.AttachableItemWithContent{}, errhandle.NewModelNotFoundError("attachable item")
+		}
+		return entity.AttachableItemWithContent{}, fmt.Errorf("failed to find attachable item: %w", err)
+	}
+	return attachableItemConv(query.FindAttachableItemByIDRow(attachableItem)), nil
+}
+
+// FindAttachableItemByURL 添付可能アイテムを取得する。
+func (a *PgAdapter) FindAttachableItemByURL(
+	ctx context.Context, url string,
+) (entity.AttachableItemWithContent, error) {
+	return findAttachableItemByURL(ctx, a.query, url)
+}
+
+// FindAttachableItemByURLWithSd SD付きで添付可能アイテムを取得する。
+func (a *PgAdapter) FindAttachableItemByURLWithSd(
+	ctx context.Context, sd store.Sd, url string,
+) (entity.AttachableItemWithContent, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return entity.AttachableItemWithContent{}, store.ErrNotFoundDescriptor
+	}
+	return findAttachableItemByURL(ctx, qtx, url)
+}
+
+func findAttachableItemByURLWithMimeType(
+	ctx context.Context, qtx *query.Queries, url string,
+) (entity.AttachableItemWithMimeType, error) {
+	attachableItem, err := qtx.FindAttachableItemByURLWithMimeType(ctx, url)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.AttachableItemWithMimeType{}, errhandle.NewModelNotFoundError("attachable item")
+		}
+		return entity.AttachableItemWithMimeType{}, fmt.Errorf("failed to find attachable item: %w", err)
+	}
+	return attachableItemConvWithMimeType(query.FindAttachableItemByIDWithMimeTypeRow(attachableItem)), nil
+}
+
+// FindAttachableItemByURLWithMimeType 添付可能アイテムとそのマイムタイプを取得する。
+func (a *PgAdapter) FindAttachableItemByURLWithMimeType(
+	ctx context.Context, url string,
+) (entity.AttachableItemWithMimeType, error) {
+	return findAttachableItemByURLWithMimeType(ctx, a.query, url)
+}
+
+// FindAttachableItemByURLWithMimeTypeWithSd SD付きで添付可能アイテムとそのマイムタイプを取得する。
+func (a *PgAdapter) FindAttachableItemByURLWithMimeTypeWithSd(
+	ctx context.Context, sd store.Sd, url string,
+) (entity.AttachableItemWithMimeType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return entity.AttachableItemWithMimeType{}, store.ErrNotFoundDescriptor
+	}
+	return findAttachableItemByURLWithMimeType(ctx, qtx, url)
 }
 
 func getAttachableItems(
@@ -758,6 +829,7 @@ func updateAttachableItem(
 		AttachableItemID: attachableItemID,
 		Url:              param.URL,
 		Size:             pgtype.Float8(param.Size),
+		Alias:            param.Alias,
 		MimeTypeID:       param.MimeTypeID,
 	}
 	attachableItem, err := qtx.UpdateAttachableItem(ctx, p)
@@ -772,6 +844,7 @@ func updateAttachableItem(
 		OwnerID:          entity.UUID(attachableItem.OwnerID),
 		FromOuter:        attachableItem.FromOuter,
 		URL:              attachableItem.Url,
+		Alias:            attachableItem.Alias,
 		Size:             entity.Float(attachableItem.Size),
 		MimeTypeID:       attachableItem.MimeTypeID,
 	}

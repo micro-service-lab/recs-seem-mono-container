@@ -109,6 +109,7 @@ func convMemberWithProfileImage(e query.FindMemberByIDWithProfileImageRow) entit
 					OwnerID:          entity.UUID(e.ProfileImageOwnerID),
 					FromOuter:        e.ProfileImageFromOuter.Bool,
 					URL:              e.ProfileImageUrl.String,
+					Alias:            e.ProfileImageAlias.String,
 					Size:             entity.Float(e.ProfileImageSize),
 					MimeTypeID:       e.ProfileImageMimeTypeID.Bytes,
 				},

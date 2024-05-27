@@ -3,12 +3,14 @@ package service
 
 import (
 	"context"
+	"io"
 
 	"github.com/google/uuid"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/i18n"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/storage"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 )
 
@@ -27,10 +29,11 @@ type Manager struct {
 	ManageRole
 	ManageRoleAssociation
 	ManageOrganization
+	ManageImage
 }
 
 // NewManager creates a new Manager.
-func NewManager(db store.Store, _ i18n.Translation) *Manager {
+func NewManager(db store.Store, _ i18n.Translation, stg storage.Storage) *Manager {
 	return &Manager{
 		ManageAttendStatus:       ManageAttendStatus{DB: db},
 		ManageAbsence:            ManageAbsence{DB: db},
@@ -45,6 +48,7 @@ func NewManager(db store.Store, _ i18n.Translation) *Manager {
 		ManageRole:               ManageRole{DB: db},
 		ManageRoleAssociation:    ManageRoleAssociation{DB: db},
 		ManageOrganization:       ManageOrganization{DB: db},
+		ManageImage:              ManageImage{DB: db, Storage: stg},
 	}
 }
 
@@ -64,6 +68,7 @@ type ManagerInterface interface {
 	RoleManager
 	RoleAssociationManager
 	OrganizationManager
+	ImageManager
 }
 
 // AttendStatusManager is a interface for attend status service.
@@ -458,6 +463,51 @@ type OrganizationManager interface {
 		whereSearchName string,
 		whereOrganizationType parameter.WhereOrganizationType,
 		wherePersonalMemberID uuid.UUID,
+	) (int64, error)
+}
+
+// ImageManager is a interface for image service.
+type ImageManager interface {
+	CreateImage(
+		ctx context.Context,
+		origin io.Reader,
+		alias string,
+		ownerID entity.UUID,
+	) (entity.Image, error)
+	CreateImages(
+		ctx context.Context,
+		ownerID entity.UUID,
+		params []parameter.CreateImageServiceParam,
+	) ([]entity.Image, error)
+	CreateImageSpecifyFilename(
+		ctx context.Context,
+		origin io.Reader,
+		alias string,
+		ownerID entity.UUID,
+		filename string,
+	) (entity.Image, error)
+	CreateImagesSpecifyFilename(
+		ctx context.Context,
+		ownerID entity.UUID,
+		params []parameter.CreateImageSpecifyFilenameServiceParam,
+	) ([]entity.Image, error)
+	CreateImageFromOuter(
+		ctx context.Context,
+		url,
+		alias string,
+		size entity.Float,
+		ownerID entity.UUID,
+		mimeTypeID uuid.UUID,
+		height, width entity.Float,
+	) (entity.Image, error)
+	CreateImagesFromOuter(
+		ctx context.Context,
+		ownerID entity.UUID,
+		params []parameter.CreateImageFromOuterServiceParam,
+	) ([]entity.Image, error)
+	DeleteImage(ctx context.Context, id uuid.UUID) (int64, error)
+	PluralDeleteImages(
+		ctx context.Context, ids []uuid.UUID,
 	) (int64, error)
 }
 

@@ -48,6 +48,7 @@ services:
       until (/usr/bin/mc config host add minio http://minio:9000 miniominio miniominio) do echo '...waiting...' && sleep 1; done;
       /usr/bin/mc mb minio/default-bucket;
       /usr/bin/mc policy download minio/default-bucket;
+      /usr/bin/mc anonymous set public minio/default-bucket;
       exit 0;
       "
 

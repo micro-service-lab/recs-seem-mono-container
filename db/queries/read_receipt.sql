@@ -13,7 +13,7 @@ UPDATE t_read_receipts SET read_at = $2 WHERE member_id = $1 AND message_id = AN
 -- name: GetReadableMembersOnMessage :many
 SELECT m_members.*, t_read_receipts.read_at read_at, t_images.height profile_image_height,
 t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
-t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer, t_attachable_items.alias profile_image_alias,
 t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
 FROM m_members
 LEFT JOIN t_read_receipts ON m_members.member_id = t_read_receipts.member_id
@@ -36,7 +36,7 @@ ORDER BY
 -- name: GetReadableMembersOnMessageUseNumberedPaginate :many
 SELECT m_members.*, t_read_receipts.read_at read_at, t_images.height profile_image_height,
 t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
-t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer, t_attachable_items.alias profile_image_alias,
 t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
 FROM m_members
 LEFT JOIN t_read_receipts ON m_members.member_id = t_read_receipts.member_id
@@ -60,7 +60,7 @@ LIMIT $2 OFFSET $3;
 -- name: GetReadableMembersOnMessageUseKeysetPaginate :many
 SELECT m_members.*, t_read_receipts.read_at read_at, t_images.height profile_image_height,
 t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
-t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer, t_attachable_items.alias profile_image_alias,
 t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
 FROM m_members
 LEFT JOIN t_read_receipts ON m_members.member_id = t_read_receipts.member_id
@@ -108,7 +108,7 @@ LIMIT $2;
 -- name: GetPluralReadableMembersOnMessage :many
 SELECT m_members.*, t_read_receipts.read_at read_at, t_images.height profile_image_height,
 t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
-t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer, t_attachable_items.alias profile_image_alias,
 t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
 FROM m_members
 LEFT JOIN t_read_receipts ON m_members.member_id = t_read_receipts.member_id
@@ -125,7 +125,7 @@ ORDER BY
 -- name: GetPluralReadableMembersOnMessageUseNumberedPaginate :many
 SELECT m_members.*, t_read_receipts.read_at read_at, t_images.height profile_image_height,
 t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
-t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer,
+t_attachable_items.owner_id profile_image_owner_id, t_attachable_items.from_outer profile_image_from_outer, t_attachable_items.alias profile_image_alias,
 t_attachable_items.url profile_image_url, t_attachable_items.size profile_image_size, t_attachable_items.mime_type_id profile_image_mime_type_id
 FROM m_members
 LEFT JOIN t_read_receipts ON m_members.member_id = t_read_receipts.member_id

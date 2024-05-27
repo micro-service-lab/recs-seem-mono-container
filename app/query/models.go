@@ -22,6 +22,7 @@ type AttachableItem struct {
 	AttachableItemID     uuid.UUID     `json:"attachable_item_id"`
 	Url                  string        `json:"url"`
 	Size                 pgtype.Float8 `json:"size"`
+	Alias                string        `json:"alias"`
 	MimeTypeID           uuid.UUID     `json:"mime_type_id"`
 	OwnerID              pgtype.UUID   `json:"owner_id"`
 	FromOuter            bool          `json:"from_outer"`

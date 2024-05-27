@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/batch"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 )
 
 var (
@@ -117,6 +118,9 @@ var seedPermissionsCmd *cobra.Command
 // seedPoliciesCmd inserts policies.
 var seedPoliciesCmd *cobra.Command
 
+// seedDefaultImagesCmd inserts default images.
+var seedDefaultImagesCmd *cobra.Command
+
 // seedAllCmd inserts all seed data.
 var seedAllCmd = &cobra.Command{
 	Use:   "all",
@@ -139,7 +143,10 @@ The seed command is executed when the application is started for the first time.
 				seedPolicyCategoriesCmd.Run(cmd, args)
 				seedPoliciesCmd.Run(cmd, args)
 			},
-			seedMimeTypesCmd.Run,
+			func(cmd *cobra.Command, args []string) {
+				seedMimeTypesCmd.Run(cmd, args)
+				seedDefaultImagesCmd.Run(cmd, args)
+			},
 			seedRecordTypesCmd.Run,
 		}
 		var wg sync.WaitGroup
@@ -258,6 +265,17 @@ func seedInit() {
 			Manager: &AppContainer.ServiceManager,
 		},
 	)
+	seedDefaultImagesCmd = seedCmdGenerator(
+		"default_image",
+		"default images",
+		"Default Images",
+		func(ctx context.Context) (int64, error) {
+			return AppContainer.Store.CountImages(ctx, parameter.WhereImageParam{})
+		},
+		&batch.InitDefaultImages{
+			Manager: &AppContainer.ServiceManager,
+		},
+	)
 
 	rootCmd.AddCommand(seedCmd)
 	seedCmd.AddCommand(seedAllCmd)
@@ -270,6 +288,7 @@ func seedInit() {
 	seedCmd.AddCommand(seedRecordTypesCmd)
 	seedCmd.AddCommand(seedPermissionsCmd)
 	seedCmd.AddCommand(seedPoliciesCmd)
+	seedCmd.AddCommand(seedDefaultImagesCmd)
 
 	seedCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "Force seed")
 	seedCmd.PersistentFlags().BoolVarP(&diff, "diff", "d", false, "Seed only if there is a difference")

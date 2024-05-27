@@ -36,6 +36,7 @@ func convProfessorWithMember(e query.FindProfessorByIDWithMemberRow) entity.Prof
 						OwnerID:          entity.UUID(e.MemberProfileImageOwnerID),
 						FromOuter:        e.MemberProfileImageFromOuter.Bool,
 						URL:              e.MemberProfileImageUrl.String,
+						Alias:            e.MemberProfileImageAlias.String,
 						Size:             entity.Float(e.MemberProfileImageSize),
 						MimeTypeID:       e.MemberProfileImageMimeTypeID.Bytes,
 					},

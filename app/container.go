@@ -4,9 +4,11 @@ package app
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/i18n"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/storage"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store/pgadapter"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
@@ -18,6 +20,7 @@ import (
 type Container struct {
 	ServiceManager service.ManagerInterface
 	Store          store.Store
+	Storage        storage.Storage
 	Clocker        clock.Clock
 	Config         *config.Config
 	Translator     i18n.Translation
@@ -60,7 +63,39 @@ func (c *Container) Init(ctx context.Context) error {
 		return fmt.Errorf("failed to create translator: %w", err)
 	}
 
-	svc := service.NewManager(str, c.Translator)
+	s3Bucket := os.Getenv("S3_BUCKET_NAME")
+	if s3Bucket == "" {
+		s3Bucket = "default-bucket"
+	}
+	s3CredentialKey := os.Getenv("S3_CREDENTIALS_KEY")
+	if s3CredentialKey == "" {
+		s3CredentialKey = "minio"
+	}
+	s3CredentialSecret := os.Getenv("S3_CREDENTIALS_SECRET")
+	if s3CredentialSecret == "" {
+		s3CredentialSecret = "minio123"
+	}
+	s3ExternalEndpoint := os.Getenv("S3_EXTERNAL_ENDPOINT")
+	if s3ExternalEndpoint == "" {
+		s3ExternalEndpoint = "http://localhost:9000"
+	}
+	s3Endpoint := fmt.Sprintf("%s:%d", cfg.StorageHost, cfg.StoragePort)
+
+	s3, err := storage.NewS3(
+		ctx,
+		s3Endpoint,
+		s3ExternalEndpoint,
+		s3CredentialKey,
+		s3CredentialSecret,
+		s3Bucket,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to create storage: %w", err)
+	}
+
+	c.Storage = s3
+
+	svc := service.NewManager(str, c.Translator, s3)
 
 	c.ServiceManager = svc
 

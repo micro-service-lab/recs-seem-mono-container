@@ -65,6 +65,7 @@ func (r iteratorForCreateAttachableItems) Values() ([]interface{}, error) {
 	return []interface{}{
 		r.rows[0].Url,
 		r.rows[0].Size,
+		r.rows[0].Alias,
 		r.rows[0].OwnerID,
 		r.rows[0].FromOuter,
 		r.rows[0].MimeTypeID,
@@ -76,7 +77,7 @@ func (r iteratorForCreateAttachableItems) Err() error {
 }
 
 func (q *Queries) CreateAttachableItems(ctx context.Context, arg []CreateAttachableItemsParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"t_attachable_items"}, []string{"url", "size", "owner_id", "from_outer", "mime_type_id"}, &iteratorForCreateAttachableItems{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"t_attachable_items"}, []string{"url", "size", "alias", "owner_id", "from_outer", "mime_type_id"}, &iteratorForCreateAttachableItems{rows: arg})
 }
 
 // iteratorForCreateAttachedMessages implements pgx.CopyFromSource.

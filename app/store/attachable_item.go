@@ -43,6 +43,15 @@ type AttachableItem interface {
 	// FindAttachableItemByIDWithMimeTypeWithSd SD付きで添付可能アイテムとそのマイムタイプを取得する。
 	FindAttachableItemByIDWithMimeTypeWithSd(
 		ctx context.Context, sd Sd, attachableItemID uuid.UUID) (entity.AttachableItemWithMimeType, error)
+	// FindAttachableItemByURL 添付可能アイテムを取得する。
+	FindAttachableItemByURL(ctx context.Context, url string) (entity.AttachableItemWithContent, error)
+	// FindAttachableItemByURLWithSd SD付きで添付可能アイテムを取得する。
+	FindAttachableItemByURLWithSd(ctx context.Context, sd Sd, url string) (entity.AttachableItemWithContent, error)
+	// FindAttachableItemByURLWithMimeType 添付可能アイテムとそのマイムタイプを取得する。
+	FindAttachableItemByURLWithMimeType(ctx context.Context, url string) (entity.AttachableItemWithMimeType, error)
+	// FindAttachableItemByURLWithMimeTypeWithSd SD付きで添付可能アイテムとそのマイムタイプを取得する。
+	FindAttachableItemByURLWithMimeTypeWithSd(
+		ctx context.Context, sd Sd, url string) (entity.AttachableItemWithMimeType, error)
 	// GetAttachableItems 添付可能アイテムを取得する。
 	GetAttachableItems(
 		ctx context.Context,

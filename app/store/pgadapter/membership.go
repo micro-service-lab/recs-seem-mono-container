@@ -48,6 +48,7 @@ func convMemberOnOrganization(r query.GetMembersOnOrganizationRow) entity.Member
 					OwnerID:          entity.UUID(r.MemberProfileImageOwnerID),
 					FromOuter:        r.MemberProfileImageFromOuter.Bool,
 					URL:              r.MemberProfileImageUrl.String,
+					Alias:            r.MemberProfileImageAlias.String,
 					Size:             entity.Float(r.MemberProfileImageSize),
 					MimeTypeID:       r.MemberProfileImageMimeTypeID.Bytes,
 				},

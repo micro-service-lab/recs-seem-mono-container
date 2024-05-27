@@ -9,6 +9,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"io"
 	"sync"
 )
 
@@ -42,6 +43,24 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			CreateEventTypesFunc: func(ctx context.Context, ps []parameter.CreateEventTypeParam) (int64, error) {
 //				panic("mock out the CreateEventTypes method")
+//			},
+//			CreateImageFunc: func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.Image, error) {
+//				panic("mock out the CreateImage method")
+//			},
+//			CreateImageFromOuterFunc: func(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID, height entity.Float, width entity.Float) (entity.Image, error) {
+//				panic("mock out the CreateImageFromOuter method")
+//			},
+//			CreateImageSpecifyFilenameFunc: func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.Image, error) {
+//				panic("mock out the CreateImageSpecifyFilename method")
+//			},
+//			CreateImagesFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageServiceParam) ([]entity.Image, error) {
+//				panic("mock out the CreateImages method")
+//			},
+//			CreateImagesFromOuterFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageFromOuterServiceParam) ([]entity.Image, error) {
+//				panic("mock out the CreateImagesFromOuter method")
+//			},
+//			CreateImagesSpecifyFilenameFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageSpecifyFilenameServiceParam) ([]entity.Image, error) {
+//				panic("mock out the CreateImagesSpecifyFilename method")
 //			},
 //			CreateMimeTypeFunc: func(ctx context.Context, name string, key string, kind string) (entity.MimeType, error) {
 //				panic("mock out the CreateMimeType method")
@@ -96,6 +115,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			DeleteEventTypeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteEventType method")
+//			},
+//			DeleteImageFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteImage method")
 //			},
 //			DeleteMimeTypeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteMimeType method")
@@ -316,6 +338,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			PluralDeleteEventTypesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteEventTypes method")
 //			},
+//			PluralDeleteImagesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteImages method")
+//			},
 //			PluralDeleteMimeTypesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteMimeTypes method")
 //			},
@@ -404,6 +429,24 @@ type ManagerInterfaceMock struct {
 	// CreateEventTypesFunc mocks the CreateEventTypes method.
 	CreateEventTypesFunc func(ctx context.Context, ps []parameter.CreateEventTypeParam) (int64, error)
 
+	// CreateImageFunc mocks the CreateImage method.
+	CreateImageFunc func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.Image, error)
+
+	// CreateImageFromOuterFunc mocks the CreateImageFromOuter method.
+	CreateImageFromOuterFunc func(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID, height entity.Float, width entity.Float) (entity.Image, error)
+
+	// CreateImageSpecifyFilenameFunc mocks the CreateImageSpecifyFilename method.
+	CreateImageSpecifyFilenameFunc func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.Image, error)
+
+	// CreateImagesFunc mocks the CreateImages method.
+	CreateImagesFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageServiceParam) ([]entity.Image, error)
+
+	// CreateImagesFromOuterFunc mocks the CreateImagesFromOuter method.
+	CreateImagesFromOuterFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageFromOuterServiceParam) ([]entity.Image, error)
+
+	// CreateImagesSpecifyFilenameFunc mocks the CreateImagesSpecifyFilename method.
+	CreateImagesSpecifyFilenameFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageSpecifyFilenameServiceParam) ([]entity.Image, error)
+
 	// CreateMimeTypeFunc mocks the CreateMimeType method.
 	CreateMimeTypeFunc func(ctx context.Context, name string, key string, kind string) (entity.MimeType, error)
 
@@ -457,6 +500,9 @@ type ManagerInterfaceMock struct {
 
 	// DeleteEventTypeFunc mocks the DeleteEventType method.
 	DeleteEventTypeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
+
+	// DeleteImageFunc mocks the DeleteImage method.
+	DeleteImageFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
 	// DeleteMimeTypeFunc mocks the DeleteMimeType method.
 	DeleteMimeTypeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
@@ -677,6 +723,9 @@ type ManagerInterfaceMock struct {
 	// PluralDeleteEventTypesFunc mocks the PluralDeleteEventTypes method.
 	PluralDeleteEventTypesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
+	// PluralDeleteImagesFunc mocks the PluralDeleteImages method.
+	PluralDeleteImagesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
+
 	// PluralDeleteMimeTypesFunc mocks the PluralDeleteMimeTypes method.
 	PluralDeleteMimeTypesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
@@ -797,6 +846,76 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// Ps is the ps argument value.
 			Ps []parameter.CreateEventTypeParam
+		}
+		// CreateImage holds details about calls to the CreateImage method.
+		CreateImage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Origin is the origin argument value.
+			Origin io.Reader
+			// Alias is the alias argument value.
+			Alias string
+			// OwnerID is the ownerID argument value.
+			OwnerID entity.UUID
+		}
+		// CreateImageFromOuter holds details about calls to the CreateImageFromOuter method.
+		CreateImageFromOuter []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// URL is the url argument value.
+			URL string
+			// Alias is the alias argument value.
+			Alias string
+			// Size is the size argument value.
+			Size entity.Float
+			// OwnerID is the ownerID argument value.
+			OwnerID entity.UUID
+			// MimeTypeID is the mimeTypeID argument value.
+			MimeTypeID uuid.UUID
+			// Height is the height argument value.
+			Height entity.Float
+			// Width is the width argument value.
+			Width entity.Float
+		}
+		// CreateImageSpecifyFilename holds details about calls to the CreateImageSpecifyFilename method.
+		CreateImageSpecifyFilename []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Origin is the origin argument value.
+			Origin io.Reader
+			// Alias is the alias argument value.
+			Alias string
+			// OwnerID is the ownerID argument value.
+			OwnerID entity.UUID
+			// Filename is the filename argument value.
+			Filename string
+		}
+		// CreateImages holds details about calls to the CreateImages method.
+		CreateImages []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OwnerID is the ownerID argument value.
+			OwnerID entity.UUID
+			// Params is the params argument value.
+			Params []parameter.CreateImageServiceParam
+		}
+		// CreateImagesFromOuter holds details about calls to the CreateImagesFromOuter method.
+		CreateImagesFromOuter []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OwnerID is the ownerID argument value.
+			OwnerID entity.UUID
+			// Params is the params argument value.
+			Params []parameter.CreateImageFromOuterServiceParam
+		}
+		// CreateImagesSpecifyFilename holds details about calls to the CreateImagesSpecifyFilename method.
+		CreateImagesSpecifyFilename []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OwnerID is the ownerID argument value.
+			OwnerID entity.UUID
+			// Params is the params argument value.
+			Params []parameter.CreateImageSpecifyFilenameServiceParam
 		}
 		// CreateMimeType holds details about calls to the CreateMimeType method.
 		CreateMimeType []struct {
@@ -951,6 +1070,13 @@ type ManagerInterfaceMock struct {
 		}
 		// DeleteEventType holds details about calls to the DeleteEventType method.
 		DeleteEventType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// DeleteImage holds details about calls to the DeleteImage method.
+		DeleteImage []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// ID is the id argument value.
@@ -1723,6 +1849,13 @@ type ManagerInterfaceMock struct {
 			// Ids is the ids argument value.
 			Ids []uuid.UUID
 		}
+		// PluralDeleteImages holds details about calls to the PluralDeleteImages method.
+		PluralDeleteImages []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ids is the ids argument value.
+			Ids []uuid.UUID
+		}
 		// PluralDeleteMimeTypes holds details about calls to the PluralDeleteMimeTypes method.
 		PluralDeleteMimeTypes []struct {
 			// Ctx is the ctx argument value.
@@ -1939,6 +2072,12 @@ type ManagerInterfaceMock struct {
 	lockCreateAttendanceTypes                 sync.RWMutex
 	lockCreateEventType                       sync.RWMutex
 	lockCreateEventTypes                      sync.RWMutex
+	lockCreateImage                           sync.RWMutex
+	lockCreateImageFromOuter                  sync.RWMutex
+	lockCreateImageSpecifyFilename            sync.RWMutex
+	lockCreateImages                          sync.RWMutex
+	lockCreateImagesFromOuter                 sync.RWMutex
+	lockCreateImagesSpecifyFilename           sync.RWMutex
 	lockCreateMimeType                        sync.RWMutex
 	lockCreateMimeTypes                       sync.RWMutex
 	lockCreateOrganization                    sync.RWMutex
@@ -1957,6 +2096,7 @@ type ManagerInterfaceMock struct {
 	lockDeleteAttendStatus                    sync.RWMutex
 	lockDeleteAttendanceType                  sync.RWMutex
 	lockDeleteEventType                       sync.RWMutex
+	lockDeleteImage                           sync.RWMutex
 	lockDeleteMimeType                        sync.RWMutex
 	lockDeleteOrganization                    sync.RWMutex
 	lockDeletePermission                      sync.RWMutex
@@ -2030,6 +2170,7 @@ type ManagerInterfaceMock struct {
 	lockPluralDeleteAttendStatuses            sync.RWMutex
 	lockPluralDeleteAttendanceTypes           sync.RWMutex
 	lockPluralDeleteEventTypes                sync.RWMutex
+	lockPluralDeleteImages                    sync.RWMutex
 	lockPluralDeleteMimeTypes                 sync.RWMutex
 	lockPluralDeletePermissionCategories      sync.RWMutex
 	lockPluralDeletePermissions               sync.RWMutex
@@ -2321,6 +2462,278 @@ func (mock *ManagerInterfaceMock) CreateEventTypesCalls() []struct {
 	mock.lockCreateEventTypes.RLock()
 	calls = mock.calls.CreateEventTypes
 	mock.lockCreateEventTypes.RUnlock()
+	return calls
+}
+
+// CreateImage calls CreateImageFunc.
+func (mock *ManagerInterfaceMock) CreateImage(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.Image, error) {
+	if mock.CreateImageFunc == nil {
+		panic("ManagerInterfaceMock.CreateImageFunc: method is nil but ManagerInterface.CreateImage was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		Origin  io.Reader
+		Alias   string
+		OwnerID entity.UUID
+	}{
+		Ctx:     ctx,
+		Origin:  origin,
+		Alias:   alias,
+		OwnerID: ownerID,
+	}
+	mock.lockCreateImage.Lock()
+	mock.calls.CreateImage = append(mock.calls.CreateImage, callInfo)
+	mock.lockCreateImage.Unlock()
+	return mock.CreateImageFunc(ctx, origin, alias, ownerID)
+}
+
+// CreateImageCalls gets all the calls that were made to CreateImage.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateImageCalls())
+func (mock *ManagerInterfaceMock) CreateImageCalls() []struct {
+	Ctx     context.Context
+	Origin  io.Reader
+	Alias   string
+	OwnerID entity.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		Origin  io.Reader
+		Alias   string
+		OwnerID entity.UUID
+	}
+	mock.lockCreateImage.RLock()
+	calls = mock.calls.CreateImage
+	mock.lockCreateImage.RUnlock()
+	return calls
+}
+
+// CreateImageFromOuter calls CreateImageFromOuterFunc.
+func (mock *ManagerInterfaceMock) CreateImageFromOuter(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID, height entity.Float, width entity.Float) (entity.Image, error) {
+	if mock.CreateImageFromOuterFunc == nil {
+		panic("ManagerInterfaceMock.CreateImageFromOuterFunc: method is nil but ManagerInterface.CreateImageFromOuter was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		URL        string
+		Alias      string
+		Size       entity.Float
+		OwnerID    entity.UUID
+		MimeTypeID uuid.UUID
+		Height     entity.Float
+		Width      entity.Float
+	}{
+		Ctx:        ctx,
+		URL:        url,
+		Alias:      alias,
+		Size:       size,
+		OwnerID:    ownerID,
+		MimeTypeID: mimeTypeID,
+		Height:     height,
+		Width:      width,
+	}
+	mock.lockCreateImageFromOuter.Lock()
+	mock.calls.CreateImageFromOuter = append(mock.calls.CreateImageFromOuter, callInfo)
+	mock.lockCreateImageFromOuter.Unlock()
+	return mock.CreateImageFromOuterFunc(ctx, url, alias, size, ownerID, mimeTypeID, height, width)
+}
+
+// CreateImageFromOuterCalls gets all the calls that were made to CreateImageFromOuter.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateImageFromOuterCalls())
+func (mock *ManagerInterfaceMock) CreateImageFromOuterCalls() []struct {
+	Ctx        context.Context
+	URL        string
+	Alias      string
+	Size       entity.Float
+	OwnerID    entity.UUID
+	MimeTypeID uuid.UUID
+	Height     entity.Float
+	Width      entity.Float
+} {
+	var calls []struct {
+		Ctx        context.Context
+		URL        string
+		Alias      string
+		Size       entity.Float
+		OwnerID    entity.UUID
+		MimeTypeID uuid.UUID
+		Height     entity.Float
+		Width      entity.Float
+	}
+	mock.lockCreateImageFromOuter.RLock()
+	calls = mock.calls.CreateImageFromOuter
+	mock.lockCreateImageFromOuter.RUnlock()
+	return calls
+}
+
+// CreateImageSpecifyFilename calls CreateImageSpecifyFilenameFunc.
+func (mock *ManagerInterfaceMock) CreateImageSpecifyFilename(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.Image, error) {
+	if mock.CreateImageSpecifyFilenameFunc == nil {
+		panic("ManagerInterfaceMock.CreateImageSpecifyFilenameFunc: method is nil but ManagerInterface.CreateImageSpecifyFilename was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Origin   io.Reader
+		Alias    string
+		OwnerID  entity.UUID
+		Filename string
+	}{
+		Ctx:      ctx,
+		Origin:   origin,
+		Alias:    alias,
+		OwnerID:  ownerID,
+		Filename: filename,
+	}
+	mock.lockCreateImageSpecifyFilename.Lock()
+	mock.calls.CreateImageSpecifyFilename = append(mock.calls.CreateImageSpecifyFilename, callInfo)
+	mock.lockCreateImageSpecifyFilename.Unlock()
+	return mock.CreateImageSpecifyFilenameFunc(ctx, origin, alias, ownerID, filename)
+}
+
+// CreateImageSpecifyFilenameCalls gets all the calls that were made to CreateImageSpecifyFilename.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateImageSpecifyFilenameCalls())
+func (mock *ManagerInterfaceMock) CreateImageSpecifyFilenameCalls() []struct {
+	Ctx      context.Context
+	Origin   io.Reader
+	Alias    string
+	OwnerID  entity.UUID
+	Filename string
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Origin   io.Reader
+		Alias    string
+		OwnerID  entity.UUID
+		Filename string
+	}
+	mock.lockCreateImageSpecifyFilename.RLock()
+	calls = mock.calls.CreateImageSpecifyFilename
+	mock.lockCreateImageSpecifyFilename.RUnlock()
+	return calls
+}
+
+// CreateImages calls CreateImagesFunc.
+func (mock *ManagerInterfaceMock) CreateImages(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageServiceParam) ([]entity.Image, error) {
+	if mock.CreateImagesFunc == nil {
+		panic("ManagerInterfaceMock.CreateImagesFunc: method is nil but ManagerInterface.CreateImages was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		OwnerID entity.UUID
+		Params  []parameter.CreateImageServiceParam
+	}{
+		Ctx:     ctx,
+		OwnerID: ownerID,
+		Params:  params,
+	}
+	mock.lockCreateImages.Lock()
+	mock.calls.CreateImages = append(mock.calls.CreateImages, callInfo)
+	mock.lockCreateImages.Unlock()
+	return mock.CreateImagesFunc(ctx, ownerID, params)
+}
+
+// CreateImagesCalls gets all the calls that were made to CreateImages.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateImagesCalls())
+func (mock *ManagerInterfaceMock) CreateImagesCalls() []struct {
+	Ctx     context.Context
+	OwnerID entity.UUID
+	Params  []parameter.CreateImageServiceParam
+} {
+	var calls []struct {
+		Ctx     context.Context
+		OwnerID entity.UUID
+		Params  []parameter.CreateImageServiceParam
+	}
+	mock.lockCreateImages.RLock()
+	calls = mock.calls.CreateImages
+	mock.lockCreateImages.RUnlock()
+	return calls
+}
+
+// CreateImagesFromOuter calls CreateImagesFromOuterFunc.
+func (mock *ManagerInterfaceMock) CreateImagesFromOuter(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageFromOuterServiceParam) ([]entity.Image, error) {
+	if mock.CreateImagesFromOuterFunc == nil {
+		panic("ManagerInterfaceMock.CreateImagesFromOuterFunc: method is nil but ManagerInterface.CreateImagesFromOuter was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		OwnerID entity.UUID
+		Params  []parameter.CreateImageFromOuterServiceParam
+	}{
+		Ctx:     ctx,
+		OwnerID: ownerID,
+		Params:  params,
+	}
+	mock.lockCreateImagesFromOuter.Lock()
+	mock.calls.CreateImagesFromOuter = append(mock.calls.CreateImagesFromOuter, callInfo)
+	mock.lockCreateImagesFromOuter.Unlock()
+	return mock.CreateImagesFromOuterFunc(ctx, ownerID, params)
+}
+
+// CreateImagesFromOuterCalls gets all the calls that were made to CreateImagesFromOuter.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateImagesFromOuterCalls())
+func (mock *ManagerInterfaceMock) CreateImagesFromOuterCalls() []struct {
+	Ctx     context.Context
+	OwnerID entity.UUID
+	Params  []parameter.CreateImageFromOuterServiceParam
+} {
+	var calls []struct {
+		Ctx     context.Context
+		OwnerID entity.UUID
+		Params  []parameter.CreateImageFromOuterServiceParam
+	}
+	mock.lockCreateImagesFromOuter.RLock()
+	calls = mock.calls.CreateImagesFromOuter
+	mock.lockCreateImagesFromOuter.RUnlock()
+	return calls
+}
+
+// CreateImagesSpecifyFilename calls CreateImagesSpecifyFilenameFunc.
+func (mock *ManagerInterfaceMock) CreateImagesSpecifyFilename(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageSpecifyFilenameServiceParam) ([]entity.Image, error) {
+	if mock.CreateImagesSpecifyFilenameFunc == nil {
+		panic("ManagerInterfaceMock.CreateImagesSpecifyFilenameFunc: method is nil but ManagerInterface.CreateImagesSpecifyFilename was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		OwnerID entity.UUID
+		Params  []parameter.CreateImageSpecifyFilenameServiceParam
+	}{
+		Ctx:     ctx,
+		OwnerID: ownerID,
+		Params:  params,
+	}
+	mock.lockCreateImagesSpecifyFilename.Lock()
+	mock.calls.CreateImagesSpecifyFilename = append(mock.calls.CreateImagesSpecifyFilename, callInfo)
+	mock.lockCreateImagesSpecifyFilename.Unlock()
+	return mock.CreateImagesSpecifyFilenameFunc(ctx, ownerID, params)
+}
+
+// CreateImagesSpecifyFilenameCalls gets all the calls that were made to CreateImagesSpecifyFilename.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateImagesSpecifyFilenameCalls())
+func (mock *ManagerInterfaceMock) CreateImagesSpecifyFilenameCalls() []struct {
+	Ctx     context.Context
+	OwnerID entity.UUID
+	Params  []parameter.CreateImageSpecifyFilenameServiceParam
+} {
+	var calls []struct {
+		Ctx     context.Context
+		OwnerID entity.UUID
+		Params  []parameter.CreateImageSpecifyFilenameServiceParam
+	}
+	mock.lockCreateImagesSpecifyFilename.RLock()
+	calls = mock.calls.CreateImagesSpecifyFilename
+	mock.lockCreateImagesSpecifyFilename.RUnlock()
 	return calls
 }
 
@@ -3033,6 +3446,42 @@ func (mock *ManagerInterfaceMock) DeleteEventTypeCalls() []struct {
 	mock.lockDeleteEventType.RLock()
 	calls = mock.calls.DeleteEventType
 	mock.lockDeleteEventType.RUnlock()
+	return calls
+}
+
+// DeleteImage calls DeleteImageFunc.
+func (mock *ManagerInterfaceMock) DeleteImage(ctx context.Context, id uuid.UUID) (int64, error) {
+	if mock.DeleteImageFunc == nil {
+		panic("ManagerInterfaceMock.DeleteImageFunc: method is nil but ManagerInterface.DeleteImage was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockDeleteImage.Lock()
+	mock.calls.DeleteImage = append(mock.calls.DeleteImage, callInfo)
+	mock.lockDeleteImage.Unlock()
+	return mock.DeleteImageFunc(ctx, id)
+}
+
+// DeleteImageCalls gets all the calls that were made to DeleteImage.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeleteImageCalls())
+func (mock *ManagerInterfaceMock) DeleteImageCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockDeleteImage.RLock()
+	calls = mock.calls.DeleteImage
+	mock.lockDeleteImage.RUnlock()
 	return calls
 }
 
@@ -6173,6 +6622,42 @@ func (mock *ManagerInterfaceMock) PluralDeleteEventTypesCalls() []struct {
 	mock.lockPluralDeleteEventTypes.RLock()
 	calls = mock.calls.PluralDeleteEventTypes
 	mock.lockPluralDeleteEventTypes.RUnlock()
+	return calls
+}
+
+// PluralDeleteImages calls PluralDeleteImagesFunc.
+func (mock *ManagerInterfaceMock) PluralDeleteImages(ctx context.Context, ids []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteImagesFunc == nil {
+		panic("ManagerInterfaceMock.PluralDeleteImagesFunc: method is nil but ManagerInterface.PluralDeleteImages was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}{
+		Ctx: ctx,
+		Ids: ids,
+	}
+	mock.lockPluralDeleteImages.Lock()
+	mock.calls.PluralDeleteImages = append(mock.calls.PluralDeleteImages, callInfo)
+	mock.lockPluralDeleteImages.Unlock()
+	return mock.PluralDeleteImagesFunc(ctx, ids)
+}
+
+// PluralDeleteImagesCalls gets all the calls that were made to PluralDeleteImages.
+// Check the length with:
+//
+//	len(mockedManagerInterface.PluralDeleteImagesCalls())
+func (mock *ManagerInterfaceMock) PluralDeleteImagesCalls() []struct {
+	Ctx context.Context
+	Ids []uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}
+	mock.lockPluralDeleteImages.RLock()
+	calls = mock.calls.PluralDeleteImages
+	mock.lockPluralDeleteImages.RUnlock()
 	return calls
 }
 

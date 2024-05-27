@@ -296,6 +296,41 @@ func (a *PgAdapter) FindMimeTypeByKeyWithSd(
 	return findMimeTypeByKey(ctx, qtx, key)
 }
 
+func findMimeTypeByKind(ctx context.Context, qtx *query.Queries, kind string) (entity.MimeType, error) {
+	e, err := qtx.FindMimeTypeByKind(ctx, kind)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.MimeType{}, errhandle.NewModelNotFoundError("mime type")
+		}
+		return entity.MimeType{}, fmt.Errorf("failed to find mime type: %w", err)
+	}
+	entity := entity.MimeType{
+		MimeTypeID: e.MimeTypeID,
+		Name:       e.Name,
+		Key:        e.Key,
+		Kind:       e.Kind,
+	}
+	return entity, nil
+}
+
+// FindMimeTypeByKind マイムタイプを取得する。
+func (a *PgAdapter) FindMimeTypeByKind(ctx context.Context, kind string) (entity.MimeType, error) {
+	return findMimeTypeByKind(ctx, a.query, kind)
+}
+
+// FindMimeTypeByKindWithSd SD付きでマイムタイプを取得する。
+func (a *PgAdapter) FindMimeTypeByKindWithSd(
+	ctx context.Context, sd store.Sd, kind string,
+) (entity.MimeType, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return entity.MimeType{}, store.ErrNotFoundDescriptor
+	}
+	return findMimeTypeByKind(ctx, qtx, kind)
+}
+
 // MimeTypeCursor is a cursor for MimeType.
 type MimeTypeCursor struct {
 	CursorID         int32

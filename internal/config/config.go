@@ -26,6 +26,9 @@ type Config struct {
 	DBPassword string `env:"DB_PASSWORD"`
 	DBUrl      string `env:"DB_URL,required"`
 
+	StorageHost string `env:"STORAGE_HOST" envDefault:"localhost"`
+	StoragePort uint16 `env:"STORAGE_PORT" envDefault:"9000"`
+
 	// Redis connection
 	RedisHost     string `env:"REDIS_HOST" envDefault:"localhost"`
 	RedisPort     uint16 `env:"REDIS_PORT" envDefault:"6379"`

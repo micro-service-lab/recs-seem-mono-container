@@ -58,7 +58,7 @@ func (q *Queries) FindFileByID(ctx context.Context, fileID uuid.UUID) (File, err
 }
 
 const findFileByIDWithAttachableItem = `-- name: FindFileByIDWithAttachableItem :one
-SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer, t_attachable_items.alias alias,
 t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id
 FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
@@ -71,6 +71,7 @@ type FindFileByIDWithAttachableItemRow struct {
 	AttachableItemID uuid.UUID     `json:"attachable_item_id"`
 	OwnerID          pgtype.UUID   `json:"owner_id"`
 	FromOuter        pgtype.Bool   `json:"from_outer"`
+	Alias            pgtype.Text   `json:"alias"`
 	Url              pgtype.Text   `json:"url"`
 	Size             pgtype.Float8 `json:"size"`
 	MimeTypeID       pgtype.UUID   `json:"mime_type_id"`
@@ -85,6 +86,7 @@ func (q *Queries) FindFileByIDWithAttachableItem(ctx context.Context, fileID uui
 		&i.AttachableItemID,
 		&i.OwnerID,
 		&i.FromOuter,
+		&i.Alias,
 		&i.Url,
 		&i.Size,
 		&i.MimeTypeID,
@@ -192,7 +194,7 @@ func (q *Queries) GetFilesUseNumberedPaginate(ctx context.Context, arg GetFilesU
 }
 
 const getFilesWithAttachableItem = `-- name: GetFilesWithAttachableItem :many
-SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer, t_attachable_items.alias alias,
 t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id
 FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
@@ -206,6 +208,7 @@ type GetFilesWithAttachableItemRow struct {
 	AttachableItemID uuid.UUID     `json:"attachable_item_id"`
 	OwnerID          pgtype.UUID   `json:"owner_id"`
 	FromOuter        pgtype.Bool   `json:"from_outer"`
+	Alias            pgtype.Text   `json:"alias"`
 	Url              pgtype.Text   `json:"url"`
 	Size             pgtype.Float8 `json:"size"`
 	MimeTypeID       pgtype.UUID   `json:"mime_type_id"`
@@ -226,6 +229,7 @@ func (q *Queries) GetFilesWithAttachableItem(ctx context.Context) ([]GetFilesWit
 			&i.AttachableItemID,
 			&i.OwnerID,
 			&i.FromOuter,
+			&i.Alias,
 			&i.Url,
 			&i.Size,
 			&i.MimeTypeID,
@@ -241,7 +245,7 @@ func (q *Queries) GetFilesWithAttachableItem(ctx context.Context) ([]GetFilesWit
 }
 
 const getFilesWithAttachableItemUseKeysetPaginate = `-- name: GetFilesWithAttachableItemUseKeysetPaginate :many
-SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer, t_attachable_items.alias alias,
 t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id
 FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
@@ -270,6 +274,7 @@ type GetFilesWithAttachableItemUseKeysetPaginateRow struct {
 	AttachableItemID uuid.UUID     `json:"attachable_item_id"`
 	OwnerID          pgtype.UUID   `json:"owner_id"`
 	FromOuter        pgtype.Bool   `json:"from_outer"`
+	Alias            pgtype.Text   `json:"alias"`
 	Url              pgtype.Text   `json:"url"`
 	Size             pgtype.Float8 `json:"size"`
 	MimeTypeID       pgtype.UUID   `json:"mime_type_id"`
@@ -290,6 +295,7 @@ func (q *Queries) GetFilesWithAttachableItemUseKeysetPaginate(ctx context.Contex
 			&i.AttachableItemID,
 			&i.OwnerID,
 			&i.FromOuter,
+			&i.Alias,
 			&i.Url,
 			&i.Size,
 			&i.MimeTypeID,
@@ -305,7 +311,7 @@ func (q *Queries) GetFilesWithAttachableItemUseKeysetPaginate(ctx context.Contex
 }
 
 const getFilesWithAttachableItemUseNumberedPaginate = `-- name: GetFilesWithAttachableItemUseNumberedPaginate :many
-SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer, t_attachable_items.alias alias,
 t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id
 FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
@@ -325,6 +331,7 @@ type GetFilesWithAttachableItemUseNumberedPaginateRow struct {
 	AttachableItemID uuid.UUID     `json:"attachable_item_id"`
 	OwnerID          pgtype.UUID   `json:"owner_id"`
 	FromOuter        pgtype.Bool   `json:"from_outer"`
+	Alias            pgtype.Text   `json:"alias"`
 	Url              pgtype.Text   `json:"url"`
 	Size             pgtype.Float8 `json:"size"`
 	MimeTypeID       pgtype.UUID   `json:"mime_type_id"`
@@ -345,6 +352,7 @@ func (q *Queries) GetFilesWithAttachableItemUseNumberedPaginate(ctx context.Cont
 			&i.AttachableItemID,
 			&i.OwnerID,
 			&i.FromOuter,
+			&i.Alias,
 			&i.Url,
 			&i.Size,
 			&i.MimeTypeID,
@@ -421,7 +429,7 @@ func (q *Queries) GetPluralFilesUseNumberedPaginate(ctx context.Context, arg Get
 }
 
 const getPluralFilesWithAttachableItem = `-- name: GetPluralFilesWithAttachableItem :many
-SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer, t_attachable_items.alias alias,
 t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id
 FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
@@ -436,6 +444,7 @@ type GetPluralFilesWithAttachableItemRow struct {
 	AttachableItemID uuid.UUID     `json:"attachable_item_id"`
 	OwnerID          pgtype.UUID   `json:"owner_id"`
 	FromOuter        pgtype.Bool   `json:"from_outer"`
+	Alias            pgtype.Text   `json:"alias"`
 	Url              pgtype.Text   `json:"url"`
 	Size             pgtype.Float8 `json:"size"`
 	MimeTypeID       pgtype.UUID   `json:"mime_type_id"`
@@ -456,6 +465,7 @@ func (q *Queries) GetPluralFilesWithAttachableItem(ctx context.Context, fileIds 
 			&i.AttachableItemID,
 			&i.OwnerID,
 			&i.FromOuter,
+			&i.Alias,
 			&i.Url,
 			&i.Size,
 			&i.MimeTypeID,
@@ -471,7 +481,7 @@ func (q *Queries) GetPluralFilesWithAttachableItem(ctx context.Context, fileIds 
 }
 
 const getPluralFilesWithAttachableItemUseNumberedPaginate = `-- name: GetPluralFilesWithAttachableItemUseNumberedPaginate :many
-SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer,
+SELECT t_files.t_files_pkey, t_files.file_id, t_files.attachable_item_id, t_attachable_items.owner_id owner_id, t_attachable_items.from_outer from_outer, t_attachable_items.alias alias,
 t_attachable_items.url url, t_attachable_items.size size, t_attachable_items.mime_type_id mime_type_id
 FROM t_files
 LEFT JOIN t_attachable_items ON t_files.attachable_item_id = t_attachable_items.attachable_item_id
@@ -493,6 +503,7 @@ type GetPluralFilesWithAttachableItemUseNumberedPaginateRow struct {
 	AttachableItemID uuid.UUID     `json:"attachable_item_id"`
 	OwnerID          pgtype.UUID   `json:"owner_id"`
 	FromOuter        pgtype.Bool   `json:"from_outer"`
+	Alias            pgtype.Text   `json:"alias"`
 	Url              pgtype.Text   `json:"url"`
 	Size             pgtype.Float8 `json:"size"`
 	MimeTypeID       pgtype.UUID   `json:"mime_type_id"`
@@ -513,6 +524,7 @@ func (q *Queries) GetPluralFilesWithAttachableItemUseNumberedPaginate(ctx contex
 			&i.AttachableItemID,
 			&i.OwnerID,
 			&i.FromOuter,
+			&i.Alias,
 			&i.Url,
 			&i.Size,
 			&i.MimeTypeID,

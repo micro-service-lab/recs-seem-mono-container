@@ -127,7 +127,7 @@ SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belonging
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
 t_messages.message_id, t_messages.posted_at chat_room_latest_message_posted_at, t_messages.body chat_room_latest_message_body
 FROM m_chat_room_belongings
@@ -181,6 +181,7 @@ type GetChatRoomsOnMemberRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID        `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID        `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool        `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text        `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text        `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8      `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID        `json:"chat_room_cover_image_mime_type_id"`
@@ -218,6 +219,7 @@ func (q *Queries) GetChatRoomsOnMember(ctx context.Context, arg GetChatRoomsOnMe
 			&i.ChatRoomCoverImageAttachableItemID,
 			&i.ChatRoomCoverImageOwnerID,
 			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageAlias,
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
@@ -240,7 +242,7 @@ SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belonging
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
 t_messages.message_id, t_messages.posted_at chat_room_latest_message_posted_at, t_messages.body chat_room_latest_message_body
 FROM m_chat_room_belongings
@@ -338,6 +340,7 @@ type GetChatRoomsOnMemberUseKeysetPaginateRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID        `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID        `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool        `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text        `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text        `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8      `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID        `json:"chat_room_cover_image_mime_type_id"`
@@ -381,6 +384,7 @@ func (q *Queries) GetChatRoomsOnMemberUseKeysetPaginate(ctx context.Context, arg
 			&i.ChatRoomCoverImageAttachableItemID,
 			&i.ChatRoomCoverImageOwnerID,
 			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageAlias,
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
@@ -403,7 +407,7 @@ SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belonging
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
 t_messages.message_id, t_messages.posted_at chat_room_latest_message_posted_at, t_messages.body chat_room_latest_message_body
 FROM m_chat_room_belongings
@@ -460,6 +464,7 @@ type GetChatRoomsOnMemberUseNumberedPaginateRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID        `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID        `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool        `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text        `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text        `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8      `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID        `json:"chat_room_cover_image_mime_type_id"`
@@ -499,6 +504,7 @@ func (q *Queries) GetChatRoomsOnMemberUseNumberedPaginate(ctx context.Context, a
 			&i.ChatRoomCoverImageAttachableItemID,
 			&i.ChatRoomCoverImageOwnerID,
 			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageAlias,
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
@@ -520,7 +526,7 @@ const getMembersOnChatRoom = `-- name: GetMembersOnChatRoom :many
 SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
-t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
 t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_chat_room_belongings
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
@@ -559,6 +565,7 @@ type GetMembersOnChatRoomRow struct {
 	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
 	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
 	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageAlias            pgtype.Text   `json:"member_profile_image_alias"`
 	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
 	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
 	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
@@ -593,6 +600,7 @@ func (q *Queries) GetMembersOnChatRoom(ctx context.Context, arg GetMembersOnChat
 			&i.MemberProfileImageAttachableItemID,
 			&i.MemberProfileImageOwnerID,
 			&i.MemberProfileImageFromOuter,
+			&i.MemberProfileImageAlias,
 			&i.MemberProfileImageUrl,
 			&i.MemberProfileImageSize,
 			&i.MemberProfileImageMimeTypeID,
@@ -611,7 +619,7 @@ const getMembersOnChatRoomUseKeysetPaginate = `-- name: GetMembersOnChatRoomUseK
 SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
-t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
 t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_chat_room_belongings
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
@@ -679,6 +687,7 @@ type GetMembersOnChatRoomUseKeysetPaginateRow struct {
 	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
 	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
 	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageAlias            pgtype.Text   `json:"member_profile_image_alias"`
 	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
 	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
 	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
@@ -718,6 +727,7 @@ func (q *Queries) GetMembersOnChatRoomUseKeysetPaginate(ctx context.Context, arg
 			&i.MemberProfileImageAttachableItemID,
 			&i.MemberProfileImageOwnerID,
 			&i.MemberProfileImageFromOuter,
+			&i.MemberProfileImageAlias,
 			&i.MemberProfileImageUrl,
 			&i.MemberProfileImageSize,
 			&i.MemberProfileImageMimeTypeID,
@@ -736,7 +746,7 @@ const getMembersOnChatRoomUseNumberedPaginate = `-- name: GetMembersOnChatRoomUs
 SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
-t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
 t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_chat_room_belongings
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
@@ -778,6 +788,7 @@ type GetMembersOnChatRoomUseNumberedPaginateRow struct {
 	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
 	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
 	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageAlias            pgtype.Text   `json:"member_profile_image_alias"`
 	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
 	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
 	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
@@ -814,6 +825,7 @@ func (q *Queries) GetMembersOnChatRoomUseNumberedPaginate(ctx context.Context, a
 			&i.MemberProfileImageAttachableItemID,
 			&i.MemberProfileImageOwnerID,
 			&i.MemberProfileImageFromOuter,
+			&i.MemberProfileImageAlias,
 			&i.MemberProfileImageUrl,
 			&i.MemberProfileImageSize,
 			&i.MemberProfileImageMimeTypeID,
@@ -833,7 +845,7 @@ SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belonging
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
 t_messages.message_id, t_messages.posted_at chat_room_latest_message_posted_at, t_messages.body chat_room_latest_message_body
 FROM m_chat_room_belongings
@@ -882,6 +894,7 @@ type GetPluralChatRoomsOnMemberRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID        `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID        `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool        `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text        `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text        `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8      `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID        `json:"chat_room_cover_image_mime_type_id"`
@@ -914,6 +927,7 @@ func (q *Queries) GetPluralChatRoomsOnMember(ctx context.Context, arg GetPluralC
 			&i.ChatRoomCoverImageAttachableItemID,
 			&i.ChatRoomCoverImageOwnerID,
 			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageAlias,
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
@@ -936,7 +950,7 @@ SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belonging
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
-t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer,
+t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
 t_messages.message_id, t_messages.posted_at chat_room_latest_message_posted_at, t_messages.body chat_room_latest_message_body
 FROM m_chat_room_belongings
@@ -988,6 +1002,7 @@ type GetPluralChatRoomsOnMemberUseNumberedPaginateRow struct {
 	ChatRoomCoverImageAttachableItemID pgtype.UUID        `json:"chat_room_cover_image_attachable_item_id"`
 	ChatRoomCoverImageOwnerID          pgtype.UUID        `json:"chat_room_cover_image_owner_id"`
 	ChatRoomCoverImageFromOuter        pgtype.Bool        `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text        `json:"chat_room_cover_image_alias"`
 	ChatRoomCoverImageUrl              pgtype.Text        `json:"chat_room_cover_image_url"`
 	ChatRoomCoverImageSize             pgtype.Float8      `json:"chat_room_cover_image_size"`
 	ChatRoomCoverImageMimeTypeID       pgtype.UUID        `json:"chat_room_cover_image_mime_type_id"`
@@ -1025,6 +1040,7 @@ func (q *Queries) GetPluralChatRoomsOnMemberUseNumberedPaginate(ctx context.Cont
 			&i.ChatRoomCoverImageAttachableItemID,
 			&i.ChatRoomCoverImageOwnerID,
 			&i.ChatRoomCoverImageFromOuter,
+			&i.ChatRoomCoverImageAlias,
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
@@ -1046,7 +1062,7 @@ const getPluralMembersOnChatRoom = `-- name: GetPluralMembersOnChatRoom :many
 SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
-t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
 t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_chat_room_belongings
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
@@ -1080,6 +1096,7 @@ type GetPluralMembersOnChatRoomRow struct {
 	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
 	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
 	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageAlias            pgtype.Text   `json:"member_profile_image_alias"`
 	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
 	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
 	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
@@ -1109,6 +1126,7 @@ func (q *Queries) GetPluralMembersOnChatRoom(ctx context.Context, arg GetPluralM
 			&i.MemberProfileImageAttachableItemID,
 			&i.MemberProfileImageOwnerID,
 			&i.MemberProfileImageFromOuter,
+			&i.MemberProfileImageAlias,
 			&i.MemberProfileImageUrl,
 			&i.MemberProfileImageSize,
 			&i.MemberProfileImageMimeTypeID,
@@ -1127,7 +1145,7 @@ const getPluralMembersOnChatRoomUseNumberedPaginate = `-- name: GetPluralMembers
 SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
-t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
 t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_chat_room_belongings
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
@@ -1164,6 +1182,7 @@ type GetPluralMembersOnChatRoomUseNumberedPaginateRow struct {
 	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
 	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
 	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageAlias            pgtype.Text   `json:"member_profile_image_alias"`
 	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
 	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
 	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
@@ -1198,6 +1217,7 @@ func (q *Queries) GetPluralMembersOnChatRoomUseNumberedPaginate(ctx context.Cont
 			&i.MemberProfileImageAttachableItemID,
 			&i.MemberProfileImageOwnerID,
 			&i.MemberProfileImageFromOuter,
+			&i.MemberProfileImageAlias,
 			&i.MemberProfileImageUrl,
 			&i.MemberProfileImageSize,
 			&i.MemberProfileImageMimeTypeID,

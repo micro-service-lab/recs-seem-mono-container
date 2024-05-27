@@ -44,6 +44,10 @@ type MimeType interface {
 	FindMimeTypeByKey(ctx context.Context, key string) (entity.MimeType, error)
 	// FindMimeTypeByKeyWithSd SD付きでマイムタイプを取得する。
 	FindMimeTypeByKeyWithSd(ctx context.Context, sd Sd, key string) (entity.MimeType, error)
+	// FindMimeTypeByKind マイムタイプを取得する。
+	FindMimeTypeByKind(ctx context.Context, kind string) (entity.MimeType, error)
+	// FindMimeTypeByKindWithSd SD付きでマイムタイプを取得する。
+	FindMimeTypeByKindWithSd(ctx context.Context, sd Sd, kind string) (entity.MimeType, error)
 	// GetMimeTypes マイムタイプを取得する。
 	GetMimeTypes(
 		ctx context.Context,

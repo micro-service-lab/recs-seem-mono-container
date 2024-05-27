@@ -141,23 +141,31 @@ WHERE chat_room_id = $1
 `
 
 type FindChatRoomByIDWithOwnerRow struct {
-	ChatRoom ChatRoom `json:"chat_room"`
-	Member   Member   `json:"member"`
+	MChatRoomsPkey   pgtype.Int8 `json:"m_chat_rooms_pkey"`
+	ChatRoomID       uuid.UUID   `json:"chat_room_id"`
+	Name             string      `json:"name"`
+	IsPrivate        bool        `json:"is_private"`
+	CoverImageID     pgtype.UUID `json:"cover_image_id"`
+	OwnerID          pgtype.UUID `json:"owner_id"`
+	FromOrganization bool        `json:"from_organization"`
+	CreatedAt        time.Time   `json:"created_at"`
+	UpdatedAt        time.Time   `json:"updated_at"`
+	Member           Member      `json:"member"`
 }
 
 func (q *Queries) FindChatRoomByIDWithOwner(ctx context.Context, chatRoomID uuid.UUID) (FindChatRoomByIDWithOwnerRow, error) {
 	row := q.db.QueryRow(ctx, findChatRoomByIDWithOwner, chatRoomID)
 	var i FindChatRoomByIDWithOwnerRow
 	err := row.Scan(
-		&i.ChatRoom.MChatRoomsPkey,
-		&i.ChatRoom.ChatRoomID,
-		&i.ChatRoom.Name,
-		&i.ChatRoom.IsPrivate,
-		&i.ChatRoom.CoverImageID,
-		&i.ChatRoom.OwnerID,
-		&i.ChatRoom.FromOrganization,
-		&i.ChatRoom.CreatedAt,
-		&i.ChatRoom.UpdatedAt,
+		&i.MChatRoomsPkey,
+		&i.ChatRoomID,
+		&i.Name,
+		&i.IsPrivate,
+		&i.CoverImageID,
+		&i.OwnerID,
+		&i.FromOrganization,
+		&i.CreatedAt,
+		&i.UpdatedAt,
 		&i.Member.MMembersPkey,
 		&i.Member.MemberID,
 		&i.Member.LoginID,
@@ -214,8 +222,6 @@ m_members.profile_image_id member_profile_image_id
 FROM m_chat_rooms
 LEFT JOIN m_chat_room_belongings ON m_chat_rooms.chat_room_id = m_chat_room_belongings.chat_room_id
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
-LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
-LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE (SELECT COUNT(chat_room_id) FROM m_chat_room_belongings WHERE chat_room_id = m_chat_rooms.chat_room_id AND
 (m_chat_room_belongings.member_id = $1 OR m_chat_room_belongings.member_id = $2)) = 2
 AND is_private = true
@@ -509,8 +515,16 @@ type GetChatRoomsWithOwnerParams struct {
 }
 
 type GetChatRoomsWithOwnerRow struct {
-	ChatRoom ChatRoom `json:"chat_room"`
-	Member   Member   `json:"member"`
+	MChatRoomsPkey   pgtype.Int8 `json:"m_chat_rooms_pkey"`
+	ChatRoomID       uuid.UUID   `json:"chat_room_id"`
+	Name             string      `json:"name"`
+	IsPrivate        bool        `json:"is_private"`
+	CoverImageID     pgtype.UUID `json:"cover_image_id"`
+	OwnerID          pgtype.UUID `json:"owner_id"`
+	FromOrganization bool        `json:"from_organization"`
+	CreatedAt        time.Time   `json:"created_at"`
+	UpdatedAt        time.Time   `json:"updated_at"`
+	Member           Member      `json:"member"`
 }
 
 func (q *Queries) GetChatRoomsWithOwner(ctx context.Context, arg GetChatRoomsWithOwnerParams) ([]GetChatRoomsWithOwnerRow, error) {
@@ -532,15 +546,15 @@ func (q *Queries) GetChatRoomsWithOwner(ctx context.Context, arg GetChatRoomsWit
 	for rows.Next() {
 		var i GetChatRoomsWithOwnerRow
 		if err := rows.Scan(
-			&i.ChatRoom.MChatRoomsPkey,
-			&i.ChatRoom.ChatRoomID,
-			&i.ChatRoom.Name,
-			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
-			&i.ChatRoom.OwnerID,
-			&i.ChatRoom.FromOrganization,
-			&i.ChatRoom.CreatedAt,
-			&i.ChatRoom.UpdatedAt,
+			&i.MChatRoomsPkey,
+			&i.ChatRoomID,
+			&i.Name,
+			&i.IsPrivate,
+			&i.CoverImageID,
+			&i.OwnerID,
+			&i.FromOrganization,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,
 			&i.Member.LoginID,
@@ -607,8 +621,16 @@ type GetChatRoomsWithOwnerUseKeysetPaginateParams struct {
 }
 
 type GetChatRoomsWithOwnerUseKeysetPaginateRow struct {
-	ChatRoom ChatRoom `json:"chat_room"`
-	Member   Member   `json:"member"`
+	MChatRoomsPkey   pgtype.Int8 `json:"m_chat_rooms_pkey"`
+	ChatRoomID       uuid.UUID   `json:"chat_room_id"`
+	Name             string      `json:"name"`
+	IsPrivate        bool        `json:"is_private"`
+	CoverImageID     pgtype.UUID `json:"cover_image_id"`
+	OwnerID          pgtype.UUID `json:"owner_id"`
+	FromOrganization bool        `json:"from_organization"`
+	CreatedAt        time.Time   `json:"created_at"`
+	UpdatedAt        time.Time   `json:"updated_at"`
+	Member           Member      `json:"member"`
 }
 
 func (q *Queries) GetChatRoomsWithOwnerUseKeysetPaginate(ctx context.Context, arg GetChatRoomsWithOwnerUseKeysetPaginateParams) ([]GetChatRoomsWithOwnerUseKeysetPaginateRow, error) {
@@ -633,15 +655,15 @@ func (q *Queries) GetChatRoomsWithOwnerUseKeysetPaginate(ctx context.Context, ar
 	for rows.Next() {
 		var i GetChatRoomsWithOwnerUseKeysetPaginateRow
 		if err := rows.Scan(
-			&i.ChatRoom.MChatRoomsPkey,
-			&i.ChatRoom.ChatRoomID,
-			&i.ChatRoom.Name,
-			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
-			&i.ChatRoom.OwnerID,
-			&i.ChatRoom.FromOrganization,
-			&i.ChatRoom.CreatedAt,
-			&i.ChatRoom.UpdatedAt,
+			&i.MChatRoomsPkey,
+			&i.ChatRoomID,
+			&i.Name,
+			&i.IsPrivate,
+			&i.CoverImageID,
+			&i.OwnerID,
+			&i.FromOrganization,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,
 			&i.Member.LoginID,
@@ -699,8 +721,16 @@ type GetChatRoomsWithOwnerUseNumberedPaginateParams struct {
 }
 
 type GetChatRoomsWithOwnerUseNumberedPaginateRow struct {
-	ChatRoom ChatRoom `json:"chat_room"`
-	Member   Member   `json:"member"`
+	MChatRoomsPkey   pgtype.Int8 `json:"m_chat_rooms_pkey"`
+	ChatRoomID       uuid.UUID   `json:"chat_room_id"`
+	Name             string      `json:"name"`
+	IsPrivate        bool        `json:"is_private"`
+	CoverImageID     pgtype.UUID `json:"cover_image_id"`
+	OwnerID          pgtype.UUID `json:"owner_id"`
+	FromOrganization bool        `json:"from_organization"`
+	CreatedAt        time.Time   `json:"created_at"`
+	UpdatedAt        time.Time   `json:"updated_at"`
+	Member           Member      `json:"member"`
 }
 
 func (q *Queries) GetChatRoomsWithOwnerUseNumberedPaginate(ctx context.Context, arg GetChatRoomsWithOwnerUseNumberedPaginateParams) ([]GetChatRoomsWithOwnerUseNumberedPaginateRow, error) {
@@ -724,15 +754,15 @@ func (q *Queries) GetChatRoomsWithOwnerUseNumberedPaginate(ctx context.Context, 
 	for rows.Next() {
 		var i GetChatRoomsWithOwnerUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.ChatRoom.MChatRoomsPkey,
-			&i.ChatRoom.ChatRoomID,
-			&i.ChatRoom.Name,
-			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
-			&i.ChatRoom.OwnerID,
-			&i.ChatRoom.FromOrganization,
-			&i.ChatRoom.CreatedAt,
-			&i.ChatRoom.UpdatedAt,
+			&i.MChatRoomsPkey,
+			&i.ChatRoomID,
+			&i.Name,
+			&i.IsPrivate,
+			&i.CoverImageID,
+			&i.OwnerID,
+			&i.FromOrganization,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,
 			&i.Member.LoginID,
@@ -850,8 +880,16 @@ ORDER BY
 `
 
 type GetPluralChatRoomsWithOwnerRow struct {
-	ChatRoom ChatRoom `json:"chat_room"`
-	Member   Member   `json:"member"`
+	MChatRoomsPkey   pgtype.Int8 `json:"m_chat_rooms_pkey"`
+	ChatRoomID       uuid.UUID   `json:"chat_room_id"`
+	Name             string      `json:"name"`
+	IsPrivate        bool        `json:"is_private"`
+	CoverImageID     pgtype.UUID `json:"cover_image_id"`
+	OwnerID          pgtype.UUID `json:"owner_id"`
+	FromOrganization bool        `json:"from_organization"`
+	CreatedAt        time.Time   `json:"created_at"`
+	UpdatedAt        time.Time   `json:"updated_at"`
+	Member           Member      `json:"member"`
 }
 
 func (q *Queries) GetPluralChatRoomsWithOwner(ctx context.Context, chatRoomIds []uuid.UUID) ([]GetPluralChatRoomsWithOwnerRow, error) {
@@ -864,15 +902,15 @@ func (q *Queries) GetPluralChatRoomsWithOwner(ctx context.Context, chatRoomIds [
 	for rows.Next() {
 		var i GetPluralChatRoomsWithOwnerRow
 		if err := rows.Scan(
-			&i.ChatRoom.MChatRoomsPkey,
-			&i.ChatRoom.ChatRoomID,
-			&i.ChatRoom.Name,
-			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
-			&i.ChatRoom.OwnerID,
-			&i.ChatRoom.FromOrganization,
-			&i.ChatRoom.CreatedAt,
-			&i.ChatRoom.UpdatedAt,
+			&i.MChatRoomsPkey,
+			&i.ChatRoomID,
+			&i.Name,
+			&i.IsPrivate,
+			&i.CoverImageID,
+			&i.OwnerID,
+			&i.FromOrganization,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,
 			&i.Member.LoginID,
@@ -916,8 +954,16 @@ type GetPluralChatRoomsWithOwnerUseNumberedPaginateParams struct {
 }
 
 type GetPluralChatRoomsWithOwnerUseNumberedPaginateRow struct {
-	ChatRoom ChatRoom `json:"chat_room"`
-	Member   Member   `json:"member"`
+	MChatRoomsPkey   pgtype.Int8 `json:"m_chat_rooms_pkey"`
+	ChatRoomID       uuid.UUID   `json:"chat_room_id"`
+	Name             string      `json:"name"`
+	IsPrivate        bool        `json:"is_private"`
+	CoverImageID     pgtype.UUID `json:"cover_image_id"`
+	OwnerID          pgtype.UUID `json:"owner_id"`
+	FromOrganization bool        `json:"from_organization"`
+	CreatedAt        time.Time   `json:"created_at"`
+	UpdatedAt        time.Time   `json:"updated_at"`
+	Member           Member      `json:"member"`
 }
 
 func (q *Queries) GetPluralChatRoomsWithOwnerUseNumberedPaginate(ctx context.Context, arg GetPluralChatRoomsWithOwnerUseNumberedPaginateParams) ([]GetPluralChatRoomsWithOwnerUseNumberedPaginateRow, error) {
@@ -930,15 +976,15 @@ func (q *Queries) GetPluralChatRoomsWithOwnerUseNumberedPaginate(ctx context.Con
 	for rows.Next() {
 		var i GetPluralChatRoomsWithOwnerUseNumberedPaginateRow
 		if err := rows.Scan(
-			&i.ChatRoom.MChatRoomsPkey,
-			&i.ChatRoom.ChatRoomID,
-			&i.ChatRoom.Name,
-			&i.ChatRoom.IsPrivate,
-			&i.ChatRoom.CoverImageID,
-			&i.ChatRoom.OwnerID,
-			&i.ChatRoom.FromOrganization,
-			&i.ChatRoom.CreatedAt,
-			&i.ChatRoom.UpdatedAt,
+			&i.MChatRoomsPkey,
+			&i.ChatRoomID,
+			&i.Name,
+			&i.IsPrivate,
+			&i.CoverImageID,
+			&i.OwnerID,
+			&i.FromOrganization,
+			&i.CreatedAt,
+			&i.UpdatedAt,
 			&i.Member.MMembersPkey,
 			&i.Member.MemberID,
 			&i.Member.LoginID,

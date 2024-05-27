@@ -34,6 +34,20 @@ type AssociateRolesOnPolicyRequest struct {
 func (h *AssociateRolesOnPolicy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	id := uuid.MustParse(chi.URLParam(r, "policy_id"))
+	file := r.MultipartForm.File["file"]
+	for _, f := range file {
+		fh, err := f.Open()
+		if err != nil {
+			log.Printf("failed to open file: %v", err)
+			handled, err := errhandle.ErrorHandle(ctx, w, err)
+			if !handled || err != nil {
+				log.Printf("failed to handle error: %v", err)
+			}
+			return
+		}
+		defer fh.Close()
+	}
+
 	var err error
 	var req AssociateRolesOnPolicyRequest
 	if err = json.NewDecoder(r.Body).Decode(&req); err == nil || errors.Is(err, io.EOF) {

@@ -2,6 +2,18 @@
 other = "PolicyIDs"
 [RoleIDs]
 other = "RoleIDs"
+[RoleID]
+other = "RoleID"
+[ProfileImageID]
+other = "ProfileImageID"
+[GradeID]
+other = "GradeID"
+[GradeIDs]
+other = "GradeIDs"
+[GroupID]
+other = "GroupID"
+[GroupIDs]
+other = "GroupIDs"
 
 [ModelNotExists]
 other = "{{.ID}} is not exists on the system"

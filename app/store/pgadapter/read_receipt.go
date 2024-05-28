@@ -40,8 +40,8 @@ func convReadableMemberOnMessage(e query.GetReadableMembersOnMessageRow) entity.
 			MemberID:  e.MemberID,
 			Name:      e.Name,
 			Email:     e.Email,
-			FirstName: e.FirstName,
-			LastName:  e.LastName,
+			FirstName: entity.String(e.FirstName),
+			LastName:  entity.String(e.LastName),
 			ProfileImage: entity.NullableEntity[entity.ImageWithAttachableItem]{
 				Valid: e.ProfileImageID.Valid,
 				Entity: entity.ImageWithAttachableItem{

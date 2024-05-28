@@ -8,10 +8,12 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/hasher"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/i18n"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/storage"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 )
 
 // Manager is a manager for services.
@@ -35,10 +37,17 @@ type Manager struct {
 	ManageGrade
 	ManageGroup
 	ManageChatRoom
+	ManageMember
 }
 
 // NewManager creates a new Manager.
-func NewManager(db store.Store, _ i18n.Translation, stg storage.Storage) *Manager {
+func NewManager(
+	db store.Store,
+	_ i18n.Translation,
+	stg storage.Storage,
+	h hasher.Hash,
+	clk clock.Clock,
+) *Manager {
 	return &Manager{
 		ManageAttendStatus:       ManageAttendStatus{DB: db},
 		ManageAbsence:            ManageAbsence{DB: db},
@@ -59,6 +68,7 @@ func NewManager(db store.Store, _ i18n.Translation, stg storage.Storage) *Manage
 		ManageGrade:              ManageGrade{DB: db},
 		ManageGroup:              ManageGroup{DB: db},
 		ManageChatRoom:           ManageChatRoom{DB: db, Storage: stg},
+		ManageMember:             ManageMember{DB: db, Hash: h, Clocker: clk},
 	}
 }
 
@@ -84,6 +94,7 @@ type ManagerInterface interface {
 	GradeManager
 	GroupManager
 	ChatRoomManager
+	MemberManager
 }
 
 // AttendStatusManager is a interface for attend status service.
@@ -708,6 +719,58 @@ type ChatRoomManager interface {
 		ctx context.Context,
 		id uuid.UUID,
 	) (entity.ChatRoomWithCoverImage, error)
+}
+
+// MemberManager is a interface for member service.
+type MemberManager interface {
+	CreateMember(
+		ctx context.Context,
+		loginID,
+		rawPassword,
+		email,
+		name string,
+		firstName,
+		lastName entity.String,
+		gradeID,
+		groupID uuid.UUID,
+		profileImageID,
+		roleID entity.UUID,
+	) (e entity.Member, err error)
+	UpdateMember(
+		ctx context.Context,
+		id uuid.UUID,
+		email,
+		name string,
+		firstName,
+		lastName entity.String,
+		profileImageID entity.UUID,
+	) (e entity.Member, err error)
+	DeleteMember(ctx context.Context, id uuid.UUID) (int64, error)
+	UpdateMemberPassword(
+		ctx context.Context,
+		id uuid.UUID,
+		rawPassword string,
+	) (entity.Member, error)
+	UpdateMemberRole(
+		ctx context.Context,
+		id uuid.UUID,
+		roleID entity.UUID,
+	) (e entity.Member, err error)
+	UpdateMemberLoginID(
+		ctx context.Context,
+		id uuid.UUID,
+		loginID string,
+	) (e entity.Member, err error)
+	UpdateMemberGrade(
+		ctx context.Context,
+		id uuid.UUID,
+		gradeID uuid.UUID,
+	) (e entity.Member, err error)
+	UpdateMemberGroup(
+		ctx context.Context,
+		id uuid.UUID,
+		groupID uuid.UUID,
+	) (e entity.Member, err error)
 }
 
 // AttachableItemManager is a interface for attachable item service.

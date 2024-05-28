@@ -68,7 +68,7 @@ func (h *AssociatePoliciesOnRole) ServeHTTP(w http.ResponseWriter, r *http.Reque
 				policyStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "PolicyIDs", i18n.Options{
 					DefaultMessage: &i18n.Message{
 						ID:    "PolicyIDs",
-						Other: "Policy not found",
+						Other: "PolicyIDs",
 					},
 				})
 				msgStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "ModelNotExists", i18n.Options{

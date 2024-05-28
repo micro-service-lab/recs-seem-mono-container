@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/micro-service-lab/recs-seem-mono-container/app/hasher"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/i18n"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/storage"
@@ -24,6 +25,7 @@ type Container struct {
 	Clocker        clock.Clock
 	Config         *config.Config
 	Translator     i18n.Translation
+	Hash           hasher.Hash
 }
 
 // NewContainer creates a new Container.
@@ -95,7 +97,11 @@ func (c *Container) Init(ctx context.Context) error {
 
 	c.Storage = s3
 
-	svc := service.NewManager(str, c.Translator, s3)
+	h := hasher.NewBcrypt()
+
+	c.Hash = h
+
+	svc := service.NewManager(str, c.Translator, s3, h, clk)
 
 	c.ServiceManager = svc
 

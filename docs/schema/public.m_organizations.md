@@ -30,7 +30,7 @@
 | ---- | ---------- |
 | m_organizations_pkey | CREATE UNIQUE INDEX m_organizations_pkey ON public.m_organizations USING btree (m_organizations_pkey) |
 | idx_m_organizations_id | CREATE UNIQUE INDEX idx_m_organizations_id ON public.m_organizations USING btree (organization_id) |
-| idx_m_organizations_name | CREATE UNIQUE INDEX idx_m_organizations_name ON public.m_organizations USING btree (name) |
+| idx_m_organizations_name | CREATE INDEX idx_m_organizations_name ON public.m_organizations USING btree (name) |
 
 ## Relations
 

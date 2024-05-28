@@ -11,4 +11,4 @@ CREATE TABLE m_organizations (
 );
 ALTER TABLE m_organizations ADD CONSTRAINT m_organizations_pkey PRIMARY KEY (m_organizations_pkey);
 CREATE UNIQUE INDEX idx_m_organizations_id ON m_organizations(organization_id);
-CREATE UNIQUE INDEX idx_m_organizations_name ON m_organizations(name);
+CREATE INDEX idx_m_organizations_name ON m_organizations(name);

@@ -2,6 +2,18 @@
 other = "ポリシーID"
 [RoleIDs]
 other = "ロールID"
+[RoleID]
+other = "ロールID"
+[ProfileImageID]
+other = "プロフィール画像ID"
+[GradeID]
+other = "学年ID"
+[GradeIDs]
+other = "学年ID"
+[GroupID]
+other = "班ID"
+[GroupIDs]
+other = "班ID"
 
 
 [ModelNotExists]

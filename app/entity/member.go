@@ -1,14 +1,16 @@
 package entity
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 // Member メンバーを表す構造体。
 type Member struct {
 	MemberID               uuid.UUID `json:"member_id"`
 	Email                  string    `json:"email"`
 	Name                   string    `json:"name"`
-	FirstName              string    `json:"first_name"`
-	LastName               string    `json:"last_name"`
+	FirstName              String    `json:"first_name"`
+	LastName               String    `json:"last_name"`
 	AttendStatusID         uuid.UUID `json:"attend_status_id"`
 	ProfileImageID         UUID      `json:"profile_image_id"`
 	GradeID                uuid.UUID `json:"grade_id"`
@@ -29,8 +31,8 @@ type MemberWithAttendStatus struct {
 	MemberID               uuid.UUID    `json:"member_id"`
 	Email                  string       `json:"email"`
 	Name                   string       `json:"name"`
-	FirstName              string       `json:"first_name"`
-	LastName               string       `json:"last_name"`
+	FirstName              String       `json:"first_name"`
+	LastName               String       `json:"last_name"`
 	AttendStatus           AttendStatus `json:"attend_status"`
 	ProfileImageID         UUID         `json:"profile_image_id"`
 	GradeID                uuid.UUID    `json:"grade_id"`
@@ -50,8 +52,8 @@ type MemberWithProfileImage struct {
 	MemberID               uuid.UUID                               `json:"member_id"`
 	Email                  string                                  `json:"email"`
 	Name                   string                                  `json:"name"`
-	FirstName              string                                  `json:"first_name"`
-	LastName               string                                  `json:"last_name"`
+	FirstName              String                                  `json:"first_name"`
+	LastName               String                                  `json:"last_name"`
 	AttendStatusID         uuid.UUID                               `json:"attend_status_id"`
 	ProfileImage           NullableEntity[ImageWithAttachableItem] `json:"profile_image"`
 	GradeID                uuid.UUID                               `json:"grade_id"`
@@ -71,8 +73,8 @@ type MemberWithDetail struct {
 	MemberID               uuid.UUID                 `json:"member_id"`
 	Email                  string                    `json:"email"`
 	Name                   string                    `json:"name"`
-	FirstName              string                    `json:"first_name"`
-	LastName               string                    `json:"last_name"`
+	FirstName              String                    `json:"first_name"`
+	LastName               String                    `json:"last_name"`
 	AttendStatusID         uuid.UUID                 `json:"attend_status_id"`
 	ProfileImageID         UUID                      `json:"profile_image_id"`
 	GradeID                uuid.UUID                 `json:"grade_id"`
@@ -94,8 +96,8 @@ type MemberWithCrew struct {
 	MemberID               uuid.UUID             `json:"member_id"`
 	Email                  string                `json:"email"`
 	Name                   string                `json:"name"`
-	FirstName              string                `json:"first_name"`
-	LastName               string                `json:"last_name"`
+	FirstName              String                `json:"first_name"`
+	LastName               String                `json:"last_name"`
 	AttendStatusID         uuid.UUID             `json:"attend_status_id"`
 	ProfileImageID         UUID                  `json:"profile_image_id"`
 	Grade                  GradeWithOrganization `json:"grade"`
@@ -115,8 +117,8 @@ type MemberWithRole struct {
 	MemberID               uuid.UUID            `json:"member_id"`
 	Email                  string               `json:"email"`
 	Name                   string               `json:"name"`
-	FirstName              string               `json:"first_name"`
-	LastName               string               `json:"last_name"`
+	FirstName              String               `json:"first_name"`
+	LastName               String               `json:"last_name"`
 	AttendStatusID         uuid.UUID            `json:"attend_status_id"`
 	ProfileImageID         UUID                 `json:"profile_image_id"`
 	GradeID                uuid.UUID            `json:"grade_id"`
@@ -136,8 +138,8 @@ type MemberWithPersonalOrganization struct {
 	MemberID             uuid.UUID    `json:"member_id"`
 	Email                string       `json:"email"`
 	Name                 string       `json:"name"`
-	FirstName            string       `json:"first_name"`
-	LastName             string       `json:"last_name"`
+	FirstName            String       `json:"first_name"`
+	LastName             String       `json:"last_name"`
 	AttendStatusID       uuid.UUID    `json:"attend_status_id"`
 	ProfileImageID       UUID         `json:"profile_image_id"`
 	GradeID              uuid.UUID    `json:"grade_id"`
@@ -156,8 +158,8 @@ type MemberWithPersonalOrganizationForQuery struct {
 type MemberCard struct {
 	MemberID     uuid.UUID                               `json:"member_id"`
 	Name         string                                  `json:"name"`
-	FirstName    string                                  `json:"first_name"`
-	LastName     string                                  `json:"last_name"`
+	FirstName    String                                  `json:"first_name"`
+	LastName     String                                  `json:"last_name"`
 	Email        string                                  `json:"email"`
 	ProfileImage NullableEntity[ImageWithAttachableItem] `json:"profile_image"`
 }

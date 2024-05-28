@@ -82,7 +82,7 @@ func (h *AssociateRolesOnPolicy) ServeHTTP(w http.ResponseWriter, r *http.Reques
 				roleStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "RoleIDs", i18n.Options{
 					DefaultMessage: &i18n.Message{
 						ID:    "RoleIDs",
-						Other: "Role not found",
+						Other: "RoleIDs",
 					},
 				})
 				msgStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "ModelNotExists", i18n.Options{

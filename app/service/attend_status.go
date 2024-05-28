@@ -27,6 +27,9 @@ const (
 	AttendStatusKeyNotAttend AttendStatusKey = "not_attend"
 )
 
+// DefaultAttendStatusKey デフォルトの出席状況キー。
+const DefaultAttendStatusKey = AttendStatusKeyNotAttend
+
 // AttendStatus 出席状況。
 type AttendStatus struct {
 	Key  string

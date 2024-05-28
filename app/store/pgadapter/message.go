@@ -70,8 +70,8 @@ func convMessageWithSender(e query.FindMessageByIDWithSenderRow) entity.MessageW
 			Entity: entity.MemberCard{
 				MemberID:  e.SenderID.Bytes,
 				Name:      e.MemberName.String,
-				FirstName: e.MemberFirstName.String,
-				LastName:  e.MemberLastName.String,
+				FirstName: entity.String(e.MemberFirstName),
+				LastName:  entity.String(e.MemberLastName),
 				Email:     e.MemberEmail.String,
 				ProfileImage: entity.NullableEntity[entity.ImageWithAttachableItem]{
 					Valid: e.MemberProfileImageID.Valid,

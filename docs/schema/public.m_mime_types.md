@@ -25,6 +25,7 @@
 | m_mime_types_pkey | CREATE UNIQUE INDEX m_mime_types_pkey ON public.m_mime_types USING btree (m_mime_types_pkey) |
 | idx_m_mime_types_id | CREATE UNIQUE INDEX idx_m_mime_types_id ON public.m_mime_types USING btree (mime_type_id) |
 | idx_m_mime_types_key | CREATE UNIQUE INDEX idx_m_mime_types_key ON public.m_mime_types USING btree (key) |
+| idx_m_mime_types_kind | CREATE INDEX idx_m_mime_types_kind ON public.m_mime_types USING btree (kind) |
 
 ## Relations
 

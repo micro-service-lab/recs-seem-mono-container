@@ -88,8 +88,8 @@ func convMemberOnChatRoom(r query.GetMembersOnChatRoomRow) entity.MemberOnChatRo
 		Member: entity.MemberCard{
 			MemberID:     r.MemberID,
 			Name:         r.MemberName.String,
-			FirstName:    r.MemberFirstName.String,
-			LastName:     r.MemberLastName.String,
+			FirstName:    entity.String(r.MemberFirstName),
+			LastName:     entity.String(r.MemberLastName),
 			Email:        r.MemberEmail.String,
 			ProfileImage: profileImg,
 		},

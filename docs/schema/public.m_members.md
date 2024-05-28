@@ -12,8 +12,8 @@
 | password | varchar(255) |  | false |  |  |  |
 | email | varchar(255) |  | false |  |  |  |
 | name | varchar(255) |  | false |  |  |  |
-| first_name | varchar(255) |  | false |  |  |  |
-| last_name | varchar(255) |  | false |  |  |  |
+| first_name | varchar(255) |  | true |  |  |  |
+| last_name | varchar(255) |  | true |  |  |  |
 | attend_status_id | uuid |  | false |  | [public.m_attend_statuses](public.m_attend_statuses.md) |  |
 | profile_image_id | uuid |  | true |  | [public.t_images](public.t_images.md) |  |
 | grade_id | uuid |  | false |  | [public.m_grades](public.m_grades.md) |  |

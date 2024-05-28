@@ -67,8 +67,8 @@ type CreateMemberParams struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
 	GroupID                uuid.UUID   `json:"group_id"`
@@ -123,8 +123,8 @@ type CreateMembersParams struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
 	GroupID                uuid.UUID   `json:"group_id"`
@@ -188,8 +188,8 @@ type FindMemberByIDWithAttendStatusRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -249,8 +249,8 @@ type FindMemberByIDWithCrewRow struct {
 	Password                     string      `json:"password"`
 	Email                        string      `json:"email"`
 	Name                         string      `json:"name"`
-	FirstName                    string      `json:"first_name"`
-	LastName                     string      `json:"last_name"`
+	FirstName                    pgtype.Text `json:"first_name"`
+	LastName                     pgtype.Text `json:"last_name"`
 	AttendStatusID               uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID `json:"profile_image_id"`
 	GradeID                      uuid.UUID   `json:"grade_id"`
@@ -331,8 +331,8 @@ type FindMemberByIDWithDetailRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -386,8 +386,8 @@ type FindMemberByIDWithPersonalOrganizationRow struct {
 	Password                string      `json:"password"`
 	Email                   string      `json:"email"`
 	Name                    string      `json:"name"`
-	FirstName               string      `json:"first_name"`
-	LastName                string      `json:"last_name"`
+	FirstName               pgtype.Text `json:"first_name"`
+	LastName                pgtype.Text `json:"last_name"`
 	AttendStatusID          uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID          pgtype.UUID `json:"profile_image_id"`
 	GradeID                 uuid.UUID   `json:"grade_id"`
@@ -452,8 +452,8 @@ type FindMemberByIDWithProfileImageRow struct {
 	Password                     string        `json:"password"`
 	Email                        string        `json:"email"`
 	Name                         string        `json:"name"`
-	FirstName                    string        `json:"first_name"`
-	LastName                     string        `json:"last_name"`
+	FirstName                    pgtype.Text   `json:"first_name"`
+	LastName                     pgtype.Text   `json:"last_name"`
 	AttendStatusID               uuid.UUID     `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID   `json:"profile_image_id"`
 	GradeID                      uuid.UUID     `json:"grade_id"`
@@ -519,8 +519,8 @@ type FindMemberByIDWithRoleRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -605,8 +605,8 @@ type FindMemberWithProfileImageRow struct {
 	Password                     string        `json:"password"`
 	Email                        string        `json:"email"`
 	Name                         string        `json:"name"`
-	FirstName                    string        `json:"first_name"`
-	LastName                     string        `json:"last_name"`
+	FirstName                    pgtype.Text   `json:"first_name"`
+	LastName                     pgtype.Text   `json:"last_name"`
 	AttendStatusID               uuid.UUID     `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID   `json:"profile_image_id"`
 	GradeID                      uuid.UUID     `json:"grade_id"`
@@ -974,8 +974,8 @@ type GetMembersWithAttendStatusRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -1102,8 +1102,8 @@ type GetMembersWithAttendStatusUseKeysetPaginateRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -1214,8 +1214,8 @@ type GetMembersWithAttendStatusUseNumberedPaginateRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -1329,8 +1329,8 @@ type GetMembersWithCrewRow struct {
 	Password                     string      `json:"password"`
 	Email                        string      `json:"email"`
 	Name                         string      `json:"name"`
-	FirstName                    string      `json:"first_name"`
-	LastName                     string      `json:"last_name"`
+	FirstName                    pgtype.Text `json:"first_name"`
+	LastName                     pgtype.Text `json:"last_name"`
 	AttendStatusID               uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID `json:"profile_image_id"`
 	GradeID                      uuid.UUID   `json:"grade_id"`
@@ -1493,8 +1493,8 @@ type GetMembersWithCrewUseKeysetPaginateRow struct {
 	Password                     string      `json:"password"`
 	Email                        string      `json:"email"`
 	Name                         string      `json:"name"`
-	FirstName                    string      `json:"first_name"`
-	LastName                     string      `json:"last_name"`
+	FirstName                    pgtype.Text `json:"first_name"`
+	LastName                     pgtype.Text `json:"last_name"`
 	AttendStatusID               uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID `json:"profile_image_id"`
 	GradeID                      uuid.UUID   `json:"grade_id"`
@@ -1641,8 +1641,8 @@ type GetMembersWithCrewUseNumberedPaginateRow struct {
 	Password                     string      `json:"password"`
 	Email                        string      `json:"email"`
 	Name                         string      `json:"name"`
-	FirstName                    string      `json:"first_name"`
-	LastName                     string      `json:"last_name"`
+	FirstName                    pgtype.Text `json:"first_name"`
+	LastName                     pgtype.Text `json:"last_name"`
 	AttendStatusID               uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID `json:"profile_image_id"`
 	GradeID                      uuid.UUID   `json:"grade_id"`
@@ -1777,8 +1777,8 @@ type GetMembersWithDetailRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -1906,8 +1906,8 @@ type GetMembersWithDetailUseKeysetPaginateRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -2019,8 +2019,8 @@ type GetMembersWithDetailUseNumberedPaginateRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -2128,8 +2128,8 @@ type GetMembersWithPersonalOrganizationRow struct {
 	Password                string      `json:"password"`
 	Email                   string      `json:"email"`
 	Name                    string      `json:"name"`
-	FirstName               string      `json:"first_name"`
-	LastName                string      `json:"last_name"`
+	FirstName               pgtype.Text `json:"first_name"`
+	LastName                pgtype.Text `json:"last_name"`
 	AttendStatusID          uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID          pgtype.UUID `json:"profile_image_id"`
 	GradeID                 uuid.UUID   `json:"grade_id"`
@@ -2266,8 +2266,8 @@ type GetMembersWithPersonalOrganizationUseKeysetPaginateRow struct {
 	Password                string      `json:"password"`
 	Email                   string      `json:"email"`
 	Name                    string      `json:"name"`
-	FirstName               string      `json:"first_name"`
-	LastName                string      `json:"last_name"`
+	FirstName               pgtype.Text `json:"first_name"`
+	LastName                pgtype.Text `json:"last_name"`
 	AttendStatusID          uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID          pgtype.UUID `json:"profile_image_id"`
 	GradeID                 uuid.UUID   `json:"grade_id"`
@@ -2388,8 +2388,8 @@ type GetMembersWithPersonalOrganizationUseNumberedPaginateRow struct {
 	Password                string      `json:"password"`
 	Email                   string      `json:"email"`
 	Name                    string      `json:"name"`
-	FirstName               string      `json:"first_name"`
-	LastName                string      `json:"last_name"`
+	FirstName               pgtype.Text `json:"first_name"`
+	LastName                pgtype.Text `json:"last_name"`
 	AttendStatusID          uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID          pgtype.UUID `json:"profile_image_id"`
 	GradeID                 uuid.UUID   `json:"grade_id"`
@@ -2508,8 +2508,8 @@ type GetMembersWithProfileImageRow struct {
 	Password                     string        `json:"password"`
 	Email                        string        `json:"email"`
 	Name                         string        `json:"name"`
-	FirstName                    string        `json:"first_name"`
-	LastName                     string        `json:"last_name"`
+	FirstName                    pgtype.Text   `json:"first_name"`
+	LastName                     pgtype.Text   `json:"last_name"`
 	AttendStatusID               uuid.UUID     `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID   `json:"profile_image_id"`
 	GradeID                      uuid.UUID     `json:"grade_id"`
@@ -2655,8 +2655,8 @@ type GetMembersWithProfileImageUseKeysetPaginateRow struct {
 	Password                     string        `json:"password"`
 	Email                        string        `json:"email"`
 	Name                         string        `json:"name"`
-	FirstName                    string        `json:"first_name"`
-	LastName                     string        `json:"last_name"`
+	FirstName                    pgtype.Text   `json:"first_name"`
+	LastName                     pgtype.Text   `json:"last_name"`
 	AttendStatusID               uuid.UUID     `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID   `json:"profile_image_id"`
 	GradeID                      uuid.UUID     `json:"grade_id"`
@@ -2786,8 +2786,8 @@ type GetMembersWithProfileImageUseNumberedPaginateRow struct {
 	Password                     string        `json:"password"`
 	Email                        string        `json:"email"`
 	Name                         string        `json:"name"`
-	FirstName                    string        `json:"first_name"`
-	LastName                     string        `json:"last_name"`
+	FirstName                    pgtype.Text   `json:"first_name"`
+	LastName                     pgtype.Text   `json:"last_name"`
 	AttendStatusID               uuid.UUID     `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID   `json:"profile_image_id"`
 	GradeID                      uuid.UUID     `json:"grade_id"`
@@ -2907,8 +2907,8 @@ type GetMembersWithRoleRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -3035,8 +3035,8 @@ type GetMembersWithRoleUseKeysetPaginateRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -3147,8 +3147,8 @@ type GetMembersWithRoleUseNumberedPaginateRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -3344,8 +3344,8 @@ type GetPluralMembersWithAttendStatusRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -3422,8 +3422,8 @@ type GetPluralMembersWithAttendStatusUseNumberedPaginateRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -3510,8 +3510,8 @@ type GetPluralMembersWithCrewRow struct {
 	Password                     string      `json:"password"`
 	Email                        string      `json:"email"`
 	Name                         string      `json:"name"`
-	FirstName                    string      `json:"first_name"`
-	LastName                     string      `json:"last_name"`
+	FirstName                    pgtype.Text `json:"first_name"`
+	LastName                     pgtype.Text `json:"last_name"`
 	AttendStatusID               uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID `json:"profile_image_id"`
 	GradeID                      uuid.UUID   `json:"grade_id"`
@@ -3624,8 +3624,8 @@ type GetPluralMembersWithCrewUseNumberedPaginateRow struct {
 	Password                     string      `json:"password"`
 	Email                        string      `json:"email"`
 	Name                         string      `json:"name"`
-	FirstName                    string      `json:"first_name"`
-	LastName                     string      `json:"last_name"`
+	FirstName                    pgtype.Text `json:"first_name"`
+	LastName                     pgtype.Text `json:"last_name"`
 	AttendStatusID               uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID `json:"profile_image_id"`
 	GradeID                      uuid.UUID   `json:"grade_id"`
@@ -3733,8 +3733,8 @@ type GetPluralMembersWithDetailRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -3812,8 +3812,8 @@ type GetPluralMembersWithDetailUseNumberedPaginateRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -3894,8 +3894,8 @@ type GetPluralMembersWithPersonalOrganizationRow struct {
 	Password                string      `json:"password"`
 	Email                   string      `json:"email"`
 	Name                    string      `json:"name"`
-	FirstName               string      `json:"first_name"`
-	LastName                string      `json:"last_name"`
+	FirstName               pgtype.Text `json:"first_name"`
+	LastName                pgtype.Text `json:"last_name"`
 	AttendStatusID          uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID          pgtype.UUID `json:"profile_image_id"`
 	GradeID                 uuid.UUID   `json:"grade_id"`
@@ -3982,8 +3982,8 @@ type GetPluralMembersWithPersonalOrganizationUseNumberedPaginateRow struct {
 	Password                string      `json:"password"`
 	Email                   string      `json:"email"`
 	Name                    string      `json:"name"`
-	FirstName               string      `json:"first_name"`
-	LastName                string      `json:"last_name"`
+	FirstName               pgtype.Text `json:"first_name"`
+	LastName                pgtype.Text `json:"last_name"`
 	AttendStatusID          uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID          pgtype.UUID `json:"profile_image_id"`
 	GradeID                 uuid.UUID   `json:"grade_id"`
@@ -4075,8 +4075,8 @@ type GetPluralMembersWithProfileImageRow struct {
 	Password                     string        `json:"password"`
 	Email                        string        `json:"email"`
 	Name                         string        `json:"name"`
-	FirstName                    string        `json:"first_name"`
-	LastName                     string        `json:"last_name"`
+	FirstName                    pgtype.Text   `json:"first_name"`
+	LastName                     pgtype.Text   `json:"last_name"`
 	AttendStatusID               uuid.UUID     `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID   `json:"profile_image_id"`
 	GradeID                      uuid.UUID     `json:"grade_id"`
@@ -4172,8 +4172,8 @@ type GetPluralMembersWithProfileImageUseNumberedPaginateRow struct {
 	Password                     string        `json:"password"`
 	Email                        string        `json:"email"`
 	Name                         string        `json:"name"`
-	FirstName                    string        `json:"first_name"`
-	LastName                     string        `json:"last_name"`
+	FirstName                    pgtype.Text   `json:"first_name"`
+	LastName                     pgtype.Text   `json:"last_name"`
 	AttendStatusID               uuid.UUID     `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID   `json:"profile_image_id"`
 	GradeID                      uuid.UUID     `json:"grade_id"`
@@ -4266,8 +4266,8 @@ type GetPluralMembersWithRoleRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -4344,8 +4344,8 @@ type GetPluralMembersWithRoleUseNumberedPaginateRow struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
-	FirstName              string      `json:"first_name"`
-	LastName               string      `json:"last_name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
 	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
@@ -4422,8 +4422,8 @@ type UpdateMemberParams struct {
 	MemberID       uuid.UUID   `json:"member_id"`
 	Email          string      `json:"email"`
 	Name           string      `json:"name"`
-	FirstName      string      `json:"first_name"`
-	LastName       string      `json:"last_name"`
+	FirstName      pgtype.Text `json:"first_name"`
+	LastName       pgtype.Text `json:"last_name"`
 	ProfileImageID pgtype.UUID `json:"profile_image_id"`
 	UpdatedAt      time.Time   `json:"updated_at"`
 }

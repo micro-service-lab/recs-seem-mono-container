@@ -205,8 +205,8 @@ type GetPluralReadableMembersOnMessageRow struct {
 	Password                     string             `json:"password"`
 	Email                        string             `json:"email"`
 	Name                         string             `json:"name"`
-	FirstName                    string             `json:"first_name"`
-	LastName                     string             `json:"last_name"`
+	FirstName                    pgtype.Text        `json:"first_name"`
+	LastName                     pgtype.Text        `json:"last_name"`
 	AttendStatusID               uuid.UUID          `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID        `json:"profile_image_id"`
 	GradeID                      uuid.UUID          `json:"grade_id"`
@@ -307,8 +307,8 @@ type GetPluralReadableMembersOnMessageUseNumberedPaginateRow struct {
 	Password                     string             `json:"password"`
 	Email                        string             `json:"email"`
 	Name                         string             `json:"name"`
-	FirstName                    string             `json:"first_name"`
-	LastName                     string             `json:"last_name"`
+	FirstName                    pgtype.Text        `json:"first_name"`
+	LastName                     pgtype.Text        `json:"last_name"`
 	AttendStatusID               uuid.UUID          `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID        `json:"profile_image_id"`
 	GradeID                      uuid.UUID          `json:"grade_id"`
@@ -539,8 +539,8 @@ type GetReadableMembersOnMessageRow struct {
 	Password                     string             `json:"password"`
 	Email                        string             `json:"email"`
 	Name                         string             `json:"name"`
-	FirstName                    string             `json:"first_name"`
-	LastName                     string             `json:"last_name"`
+	FirstName                    pgtype.Text        `json:"first_name"`
+	LastName                     pgtype.Text        `json:"last_name"`
 	AttendStatusID               uuid.UUID          `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID        `json:"profile_image_id"`
 	GradeID                      uuid.UUID          `json:"grade_id"`
@@ -685,8 +685,8 @@ type GetReadableMembersOnMessageUseKeysetPaginateRow struct {
 	Password                     string             `json:"password"`
 	Email                        string             `json:"email"`
 	Name                         string             `json:"name"`
-	FirstName                    string             `json:"first_name"`
-	LastName                     string             `json:"last_name"`
+	FirstName                    pgtype.Text        `json:"first_name"`
+	LastName                     pgtype.Text        `json:"last_name"`
 	AttendStatusID               uuid.UUID          `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID        `json:"profile_image_id"`
 	GradeID                      uuid.UUID          `json:"grade_id"`
@@ -809,8 +809,8 @@ type GetReadableMembersOnMessageUseNumberedPaginateRow struct {
 	Password                     string             `json:"password"`
 	Email                        string             `json:"email"`
 	Name                         string             `json:"name"`
-	FirstName                    string             `json:"first_name"`
-	LastName                     string             `json:"last_name"`
+	FirstName                    pgtype.Text        `json:"first_name"`
+	LastName                     pgtype.Text        `json:"last_name"`
 	AttendStatusID               uuid.UUID          `json:"attend_status_id"`
 	ProfileImageID               pgtype.UUID        `json:"profile_image_id"`
 	GradeID                      uuid.UUID          `json:"grade_id"`

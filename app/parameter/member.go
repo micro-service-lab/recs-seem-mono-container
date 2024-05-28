@@ -12,8 +12,8 @@ type CreateMemberParam struct {
 	Password               string
 	Email                  string
 	Name                   string
-	FirstName              string
-	LastName               string
+	FirstName              entity.String
+	LastName               entity.String
 	AttendStatusID         uuid.UUID
 	GradeID                uuid.UUID
 	GroupID                uuid.UUID
@@ -26,8 +26,8 @@ type CreateMemberParam struct {
 type UpdateMemberParams struct {
 	Email          string
 	Name           string
-	FirstName      string
-	LastName       string
+	FirstName      entity.String
+	LastName       entity.String
 	ProfileImageID entity.UUID
 }
 

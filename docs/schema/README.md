@@ -18,7 +18,7 @@
 | [public.m_groups](public.m_groups.md) | 4 |  | BASE TABLE |
 | [public.m_grades](public.m_grades.md) | 4 |  | BASE TABLE |
 | [public.m_mime_types](public.m_mime_types.md) | 5 |  | BASE TABLE |
-| [public.t_attachable_items](public.t_attachable_items.md) | 7 |  | BASE TABLE |
+| [public.t_attachable_items](public.t_attachable_items.md) | 8 |  | BASE TABLE |
 | [public.t_images](public.t_images.md) | 5 |  | BASE TABLE |
 | [public.t_files](public.t_files.md) | 3 |  | BASE TABLE |
 | [public.m_members](public.m_members.md) | 16 |  | BASE TABLE |

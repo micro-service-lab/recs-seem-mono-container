@@ -43,6 +43,14 @@ type ChatRoomBelonging interface {
 	DisbelongChatRoomOnMembers(ctx context.Context, memberIDs []uuid.UUID) (int64, error)
 	// DisbelongChatRoomOnMembersWithSd SD付きでメンバー上の複数のチャットルームから所属解除する。
 	DisbelongChatRoomOnMembersWithSd(ctx context.Context, sd Sd, memberIDs []uuid.UUID) (int64, error)
+	// DisbelongChatRoomOnChatRoom チャットルーム上のメンバーから所属解除する。
+	DisbelongChatRoomOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) (int64, error)
+	// DisbelongChatRoomOnChatRoomWithSd SD付きでチャットルーム上のメンバーから所属解除する。
+	DisbelongChatRoomOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID) (int64, error)
+	// DisbelongChatRoomOnChatRooms チャットルーム上の複数のメンバーから所属解除する。
+	DisbelongChatRoomOnChatRooms(ctx context.Context, chatRoomIDs []uuid.UUID) (int64, error)
+	// DisbelongChatRoomOnChatRoomsWithSd SD付きでチャットルーム上の複数のメンバーから所属解除する。
+	DisbelongChatRoomOnChatRoomsWithSd(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID) (int64, error)
 	// GetChatRoomsOnMember メンバー上のチャットルームを取得する。
 	GetChatRoomsOnMember(
 		ctx context.Context,

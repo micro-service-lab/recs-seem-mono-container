@@ -13,6 +13,12 @@ DELETE FROM m_chat_room_belongings WHERE member_id = $1;
 -- name: DeleteChatRoomBelongingsOnMembers :execrows
 DELETE FROM m_chat_room_belongings WHERE member_id = ANY(@member_ids::uuid[]);
 
+-- name: DeleteChatRoomBelongingsOnChatRoom :execrows
+DELETE FROM m_chat_room_belongings WHERE chat_room_id = $1;
+
+-- name: DeleteChatRoomBelongingsOnChatRooms :execrows
+DELETE FROM m_chat_room_belongings WHERE chat_room_id = ANY(@chat_room_ids::uuid[]);
+
 -- name: GetMembersOnChatRoom :many
 SELECT m_chat_room_belongings.*, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,

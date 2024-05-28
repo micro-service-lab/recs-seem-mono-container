@@ -44,6 +44,14 @@ type Membership interface {
 	DisbelongOrganizationOnMembers(ctx context.Context, memberIDs []uuid.UUID) (int64, error)
 	// DisbelongOrganizationOnMembersWithSd SD付きでメンバー上の複数のチャットルームから所属解除する。
 	DisbelongOrganizationOnMembersWithSd(ctx context.Context, sd Sd, memberIDs []uuid.UUID) (int64, error)
+	// DisbelongOrganizationOnOrganization チャットルーム上のメンバーから所属解除する。
+	DisbelongOrganizationOnOrganization(ctx context.Context, organizationID uuid.UUID) (int64, error)
+	// DisbelongOrganizationOnOrganizationWithSd SD付きでチャットルーム上のメンバーから所属解除する。
+	DisbelongOrganizationOnOrganizationWithSd(ctx context.Context, sd Sd, organizationID uuid.UUID) (int64, error)
+	// DisbelongOrganizationOnOrganizations チャットルーム上の複数のメンバーから所属解除する。
+	DisbelongOrganizationOnOrganizations(ctx context.Context, organizationIDs []uuid.UUID) (int64, error)
+	// DisbelongOrganizationOnOrganizationsWithSd SD付きでチャットルーム上の複数のメンバーから所属解除する。
+	DisbelongOrganizationOnOrganizationsWithSd(ctx context.Context, sd Sd, organizationIDs []uuid.UUID) (int64, error)
 	// GetOrganizationsOnMember メンバー上のチャットルームを取得する。
 	GetOrganizationsOnMember(
 		ctx context.Context,

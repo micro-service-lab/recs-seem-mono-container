@@ -36,6 +36,17 @@ type ChatRoom interface {
 	FindChatRoomByID(ctx context.Context, chatRoomID uuid.UUID) (entity.ChatRoom, error)
 	// FindChatRoomByIDWithSd SD付きでチャットルームを取得する。
 	FindChatRoomByIDWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID) (entity.ChatRoom, error)
+	// FindChatRoomByIDWithCoverImage チャットルームを取得する。
+	FindChatRoomByIDWithCoverImage(
+		ctx context.Context,
+		chatRoomID uuid.UUID,
+	) (entity.ChatRoomWithCoverImage, error)
+	// FindChatRoomByIDWithCoverImageWithSd SD付きでチャットルームを取得する。
+	FindChatRoomByIDWithCoverImageWithSd(
+		ctx context.Context,
+		sd Sd,
+		chatRoomID uuid.UUID,
+	) (entity.ChatRoomWithCoverImage, error)
 	// FindChatRoomOnPrivate チャットルームを取得する。
 	FindChatRoomOnPrivate(
 		ctx context.Context,
@@ -83,6 +94,40 @@ type ChatRoom interface {
 		order parameter.ChatRoomOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.ChatRoom], error)
+	// GetChatRoomsWithCoverImage チャットルームを取得する。
+	GetChatRoomsWithCoverImage(
+		ctx context.Context,
+		where parameter.WhereChatRoomParam,
+		order parameter.ChatRoomOrderMethod,
+		np NumberedPaginationParam,
+		cp CursorPaginationParam,
+		wc WithCountParam,
+	) (ListResult[entity.ChatRoomWithCoverImage], error)
+	// GetChatRoomsWithCoverImageWithSd SD付きでチャットルームを取得する。
+	GetChatRoomsWithCoverImageWithSd(
+		ctx context.Context,
+		sd Sd,
+		where parameter.WhereChatRoomParam,
+		order parameter.ChatRoomOrderMethod,
+		np NumberedPaginationParam,
+		cp CursorPaginationParam,
+		wc WithCountParam,
+	) (ListResult[entity.ChatRoomWithCoverImage], error)
+	// GetPluralChatRoomsWithCoverImage チャットルームを取得する。
+	GetPluralChatRoomsWithCoverImage(
+		ctx context.Context,
+		chatRoomIDs []uuid.UUID,
+		order parameter.ChatRoomOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.ChatRoomWithCoverImage], error)
+	// GetPluralChatRoomsWithCoverImageWithSd SD付きでチャットルームを取得する。
+	GetPluralChatRoomsWithCoverImageWithSd(
+		ctx context.Context,
+		sd Sd,
+		chatRoomIDs []uuid.UUID,
+		order parameter.ChatRoomOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.ChatRoomWithCoverImage], error)
 	// UpdateChatRoom チャットルームを更新する。
 	UpdateChatRoom(
 		ctx context.Context,

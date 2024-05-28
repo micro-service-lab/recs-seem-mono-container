@@ -11,103 +11,71 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 )
 
-// GradeKey 年次キー。
-type GradeKey string
+// GroupKey 班キー。
+type GroupKey string
 
 const (
-	// GradeKeyBachelor1 1年生。
-	GradeKeyBachelor1 GradeKey = "bachelor1"
-	// GradeKeyBachelor2 2年生。
-	GradeKeyBachelor2 GradeKey = "bachelor2"
-	// GradeKeyBachelor3 3年生。
-	GradeKeyBachelor3 GradeKey = "bachelor3"
-	// GradeKeyBachelor4 4年生。
-	GradeKeyBachelor4 GradeKey = "bachelor4"
-	// GradeKeyMaster1 修士1年生。
-	GradeKeyMaster1 GradeKey = "master1"
-	// GradeKeyMaster2 修士2年生。
-	GradeKeyMaster2 GradeKey = "master2"
-	// GradeKeyDoctor 博士。
-	GradeKeyDoctor GradeKey = "doctor"
-	// GradeKeyProfessor 教授。
-	GradeKeyProfessor GradeKey = "professor"
+	// GroupKeyWeb 班キー: Web。
+	GroupKeyWeb GroupKey = "web"
+	// GroupKeyGrid 班キー: Grid。
+	GroupKeyGrid GroupKey = "grid"
+	// GroupKeyNetwork 班キー: Network。
+	GroupKeyNetwork GroupKey = "network"
+	// GroupKeyProfessor 班キー: Professor。
+	GroupKeyProfessor GroupKey = "professor"
 )
 
-// Grade 年次。
-type Grade struct {
+// Group 班。
+type Group struct {
 	Key         string
 	Name        string
 	Description string
 	Color       string
 }
 
-// Grades 年次一覧。
-var Grades = []Grade{
+// Groups 班一覧。
+var Groups = []Group{
 	{
-		Key:         string(GradeKeyBachelor1),
-		Name:        "B1",
-		Description: "学部1回生",
-		Color:       "#FF0000",
+		Key:         string(GroupKeyWeb),
+		Name:        "Web班",
+		Description: "Web班",
+		Color:       "#77A6F7",
 	},
 	{
-		Key:         string(GradeKeyBachelor2),
-		Name:        "B2",
-		Description: "学部2回生",
-		Color:       "#00FF00",
+		Key:         string(GroupKeyGrid),
+		Name:        "Grid班",
+		Description: "Grid班",
+		Color:       "#1E90FF",
 	},
 	{
-		Key:         string(GradeKeyBachelor3),
-		Name:        "B3",
-		Description: "学部3回生",
-		Color:       "#0000FF",
+		Key:         string(GroupKeyNetwork),
+		Name:        "Network班",
+		Description: "Network班",
+		Color:       "#00BFFF",
 	},
 	{
-		Key:         string(GradeKeyBachelor4),
-		Name:        "B4",
-		Description: "学部4回生",
-		Color:       "#FFFF00",
-	},
-	{
-		Key:         string(GradeKeyMaster1),
-		Name:        "M1",
-		Description: "修士1回生",
-		Color:       "#FF00FF",
-	},
-	{
-		Key:         string(GradeKeyMaster2),
-		Name:        "M2",
-		Description: "修士2回生",
-		Color:       "#00FFFF",
-	},
-	{
-		Key:         string(GradeKeyDoctor),
-		Name:        "ドクター",
-		Description: "博士",
-		Color:       "#FFA500",
-	},
-	{
-		Key:         string(GradeKeyProfessor),
-		Name:        "教授",
+		Key:         string(GroupKeyProfessor),
+		Name:        "教授(班)",
 		Description: "教授",
 		Color:       "#EEE8AA",
 	},
 }
 
-// ManageGrade 年次管理サービス。
-type ManageGrade struct {
+// ManageGroup 班管理サービス。
+type ManageGroup struct {
 	DB store.Store
 }
 
-// CreateGrade 年次を作成する。
-func (m *ManageGrade) CreateGrade(
+// CreateGroup 班を作成する。
+func (m *ManageGroup) CreateGroup(
 	ctx context.Context,
 	name, key string,
 	description, color entity.String,
 	coverImageID entity.UUID,
-) (e entity.Grade, err error) {
+) (e entity.Group, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
-		return entity.Grade{}, fmt.Errorf("failed to begin transaction: %w", err)
+		return entity.Group{}, fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer func() {
 		if err != nil {
@@ -123,7 +91,7 @@ func (m *ManageGrade) CreateGrade(
 	if coverImageID.Valid {
 		_, err := m.DB.FindImageByIDWithSd(ctx, sd, coverImageID.Bytes)
 		if err != nil {
-			return entity.Grade{}, fmt.Errorf("failed to find image: %w", err)
+			return entity.Group{}, fmt.Errorf("failed to find image: %w", err)
 		}
 	}
 	crp := parameter.CreateChatRoomParam{
@@ -135,7 +103,7 @@ func (m *ManageGrade) CreateGrade(
 	}
 	cr, err := m.DB.CreateChatRoomWithSd(ctx, sd, crp)
 	if err != nil {
-		return entity.Grade{}, fmt.Errorf("failed to create chat room: %w", err)
+		return entity.Group{}, fmt.Errorf("failed to create chat room: %w", err)
 	}
 	op := parameter.CreateOrganizationParam{
 		Name:        name,
@@ -147,22 +115,22 @@ func (m *ManageGrade) CreateGrade(
 	}
 	o, err := m.DB.CreateOrganizationWithSd(ctx, sd, op)
 	if err != nil {
-		return entity.Grade{}, fmt.Errorf("failed to create organization: %w", err)
+		return entity.Group{}, fmt.Errorf("failed to create organization: %w", err)
 	}
-	p := parameter.CreateGradeParam{
+	p := parameter.CreateGroupParam{
 		Key:            key,
 		OrganizationID: o.OrganizationID,
 	}
-	e, err = m.DB.CreateGradeWithSd(ctx, sd, p)
+	e, err = m.DB.CreateGroupWithSd(ctx, sd, p)
 	if err != nil {
-		return entity.Grade{}, fmt.Errorf("failed to create grade: %w", err)
+		return entity.Group{}, fmt.Errorf("failed to create group: %w", err)
 	}
 	return e, nil
 }
 
-// CreateGrades 年次を複数作成する。
-func (m *ManageGrade) CreateGrades(
-	ctx context.Context, ps []parameter.CreateGradeServiceParam,
+// CreateGroups 班を複数作成する。
+func (m *ManageGroup) CreateGroups(
+	ctx context.Context, ps []parameter.CreateGroupServiceParam,
 ) (c int64, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
@@ -198,7 +166,7 @@ func (m *ManageGrade) CreateGrades(
 			return 0, fmt.Errorf("failed to get plural images: %w", err)
 		}
 	}
-	var p []parameter.CreateGradeParam
+	var p []parameter.CreateGroupParam
 	for _, v := range ps {
 		crp := parameter.CreateChatRoomParam{
 			Name:             v.Name,
@@ -223,20 +191,20 @@ func (m *ManageGrade) CreateGrades(
 		if err != nil {
 			return 0, fmt.Errorf("failed to create organization: %w", err)
 		}
-		p = append(p, parameter.CreateGradeParam{
+		p = append(p, parameter.CreateGroupParam{
 			Key:            v.Key,
 			OrganizationID: o.OrganizationID,
 		})
 	}
-	c, err = m.DB.CreateGradesWithSd(ctx, sd, p)
+	c, err = m.DB.CreateGroupsWithSd(ctx, sd, p)
 	if err != nil {
-		return 0, fmt.Errorf("failed to create grades: %w", err)
+		return 0, fmt.Errorf("failed to create groups: %w", err)
 	}
 	return c, nil
 }
 
-// DeleteGrade 年次を削除する。
-func (m *ManageGrade) DeleteGrade(ctx context.Context, id uuid.UUID) (c int64, err error) {
+// DeleteGroup 班を削除する。
+func (m *ManageGroup) DeleteGroup(ctx context.Context, id uuid.UUID) (c int64, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return 0, fmt.Errorf("failed to begin transaction: %w", err)
@@ -252,13 +220,13 @@ func (m *ManageGrade) DeleteGrade(ctx context.Context, id uuid.UUID) (c int64, e
 			}
 		}
 	}()
-	e, err := m.DB.FindGradeWithOrganizationWithSd(ctx, sd, id)
+	e, err := m.DB.FindGroupWithOrganizationWithSd(ctx, sd, id)
 	if err != nil {
-		return 0, fmt.Errorf("failed to find grade: %w", err)
+		return 0, fmt.Errorf("failed to find group: %w", err)
 	}
-	c, err = m.DB.DeleteGradeWithSd(ctx, sd, id)
+	c, err = m.DB.DeleteGroupWithSd(ctx, sd, id)
 	if err != nil {
-		return 0, fmt.Errorf("failed to delete grade: %w", err)
+		return 0, fmt.Errorf("failed to delete group: %w", err)
 	}
 	_, err = m.DB.DisbelongOrganizationOnOrganizationWithSd(ctx, sd, e.Organization.OrganizationID)
 	if err != nil {
@@ -285,8 +253,8 @@ func (m *ManageGrade) DeleteGrade(ctx context.Context, id uuid.UUID) (c int64, e
 	return c, nil
 }
 
-// PluralDeleteGrades 年次を複数削除する。
-func (m *ManageGrade) PluralDeleteGrades(
+// PluralDeleteGroups 班を複数削除する。
+func (m *ManageGroup) PluralDeleteGroups(
 	ctx context.Context, ids []uuid.UUID,
 ) (c int64, err error) {
 	sd, err := m.DB.Begin(ctx)
@@ -304,13 +272,13 @@ func (m *ManageGrade) PluralDeleteGrades(
 			}
 		}
 	}()
-	es, err := m.DB.GetPluralGradesWithOrganizationWithSd(
-		ctx, sd, ids, parameter.GradeOrderMethodDefault, store.NumberedPaginationParam{})
+	es, err := m.DB.GetPluralGroupsWithOrganizationWithSd(
+		ctx, sd, ids, parameter.GroupOrderMethodDefault, store.NumberedPaginationParam{})
 	if err != nil {
-		return 0, fmt.Errorf("failed to get plural grades: %w", err)
+		return 0, fmt.Errorf("failed to get plural groups: %w", err)
 	}
 	if len(es.Data) != len(ids) {
-		return 0, fmt.Errorf("failed to get plural grades: %w", err)
+		return 0, fmt.Errorf("failed to get plural groups: %w", err)
 	}
 	var chatRoomIDs []uuid.UUID
 	var organizationIDs []uuid.UUID
@@ -324,9 +292,9 @@ func (m *ManageGrade) PluralDeleteGrades(
 		}
 		organizationIDs = append(organizationIDs, e.Organization.OrganizationID)
 	}
-	c, err = m.DB.PluralDeleteGradesWithSd(ctx, sd, ids)
+	c, err = m.DB.PluralDeleteGroupsWithSd(ctx, sd, ids)
 	if err != nil {
-		return 0, fmt.Errorf("failed to plural delete grades: %w", err)
+		return 0, fmt.Errorf("failed to plural delete groups: %w", err)
 	}
 	_, err = m.DB.DisbelongOrganizationOnOrganizationsWithSd(ctx, sd, organizationIDs)
 	if err != nil {
@@ -349,17 +317,17 @@ func (m *ManageGrade) PluralDeleteGrades(
 	return c, nil
 }
 
-// UpdateGrade 年次を更新する。
-func (m *ManageGrade) UpdateGrade(
+// UpdateGroup 班を更新する。
+func (m *ManageGroup) UpdateGroup(
 	ctx context.Context,
 	id uuid.UUID,
 	name string,
 	description, color entity.String,
 	coverImageID entity.UUID,
-) (e entity.Grade, err error) {
+) (e entity.Group, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
-		return entity.Grade{}, fmt.Errorf("failed to begin transaction: %w", err)
+		return entity.Group{}, fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer func() {
 		if err != nil {
@@ -372,14 +340,14 @@ func (m *ManageGrade) UpdateGrade(
 			}
 		}
 	}()
-	fe, err := m.DB.FindGradeWithOrganizationWithSd(ctx, sd, id)
+	fe, err := m.DB.FindGroupWithOrganizationWithSd(ctx, sd, id)
 	if err != nil {
-		return entity.Grade{}, fmt.Errorf("failed to find grade: %w", err)
+		return entity.Group{}, fmt.Errorf("failed to find group: %w", err)
 	}
 	if coverImageID.Valid {
 		_, err := m.DB.FindImageByIDWithSd(ctx, sd, coverImageID.Bytes)
 		if err != nil {
-			return entity.Grade{}, fmt.Errorf("failed to find image: %w", err)
+			return entity.Group{}, fmt.Errorf("failed to find image: %w", err)
 		}
 	}
 	if fe.Organization.ChatRoomID.Valid {
@@ -391,7 +359,7 @@ func (m *ManageGrade) UpdateGrade(
 		}
 		_, err = m.DB.UpdateChatRoomWithSd(ctx, sd, fe.Organization.ChatRoomID.Bytes, crp)
 		if err != nil {
-			return entity.Grade{}, fmt.Errorf("failed to update chat room: %w", err)
+			return entity.Group{}, fmt.Errorf("failed to update chat room: %w", err)
 		}
 	}
 	op := parameter.UpdateOrganizationParams{
@@ -401,27 +369,27 @@ func (m *ManageGrade) UpdateGrade(
 	}
 	_, err = m.DB.UpdateOrganizationWithSd(ctx, sd, fe.Organization.OrganizationID, op)
 	if err != nil {
-		return entity.Grade{}, fmt.Errorf("failed to update organization: %w", err)
+		return entity.Group{}, fmt.Errorf("failed to update organization: %w", err)
 	}
 	return e, nil
 }
 
-// GetGrades 年次を取得する。
-func (m *ManageGrade) GetGrades(
+// GetGroups 班を取得する。
+func (m *ManageGroup) GetGroups(
 	ctx context.Context,
-	order parameter.GradeOrderMethod,
+	order parameter.GroupOrderMethod,
 	pg parameter.Pagination,
 	limit parameter.Limit,
 	cursor parameter.Cursor,
 	offset parameter.Offset,
 	withCount parameter.WithCount,
-) (store.ListResult[entity.Grade], error) {
+) (store.ListResult[entity.Group], error) {
 	wc := store.WithCountParam{
 		Valid: bool(withCount),
 	}
 	var np store.NumberedPaginationParam
 	var cp store.CursorPaginationParam
-	where := parameter.WhereGradeParam{}
+	where := parameter.WhereGroupParam{}
 	switch pg {
 	case parameter.NumberedPagination:
 		np = store.NumberedPaginationParam{
@@ -437,29 +405,29 @@ func (m *ManageGrade) GetGrades(
 		}
 	case parameter.NonePagination:
 	}
-	r, err := m.DB.GetGrades(ctx, where, order, np, cp, wc)
+	r, err := m.DB.GetGroups(ctx, where, order, np, cp, wc)
 	if err != nil {
-		return store.ListResult[entity.Grade]{}, fmt.Errorf("failed to get grades: %w", err)
+		return store.ListResult[entity.Group]{}, fmt.Errorf("failed to get groups: %w", err)
 	}
 	return r, nil
 }
 
-// GetGradesWithOrganization 年次を取得する。
-func (m *ManageGrade) GetGradesWithOrganization(
+// GetGroupsWithOrganization 班を取得する。
+func (m *ManageGroup) GetGroupsWithOrganization(
 	ctx context.Context,
-	order parameter.GradeOrderMethod,
+	order parameter.GroupOrderMethod,
 	pg parameter.Pagination,
 	limit parameter.Limit,
 	cursor parameter.Cursor,
 	offset parameter.Offset,
 	withCount parameter.WithCount,
-) (store.ListResult[entity.GradeWithOrganization], error) {
+) (store.ListResult[entity.GroupWithOrganization], error) {
 	wc := store.WithCountParam{
 		Valid: bool(withCount),
 	}
 	var np store.NumberedPaginationParam
 	var cp store.CursorPaginationParam
-	where := parameter.WhereGradeParam{}
+	where := parameter.WhereGroupParam{}
 	switch pg {
 	case parameter.NumberedPagination:
 		np = store.NumberedPaginationParam{
@@ -475,21 +443,21 @@ func (m *ManageGrade) GetGradesWithOrganization(
 		}
 	case parameter.NonePagination:
 	}
-	r, err := m.DB.GetGradesWithOrganization(ctx, where, order, np, cp, wc)
+	r, err := m.DB.GetGroupsWithOrganization(ctx, where, order, np, cp, wc)
 	if err != nil {
-		return store.ListResult[entity.GradeWithOrganization]{}, fmt.Errorf("failed to get grades: %w", err)
+		return store.ListResult[entity.GroupWithOrganization]{}, fmt.Errorf("failed to get groups: %w", err)
 	}
 	return r, nil
 }
 
-// GetGradesCount 年次の数を取得する。
-func (m *ManageGrade) GetGradesCount(
+// GetGroupsCount 班の数を取得する。
+func (m *ManageGroup) GetGroupsCount(
 	ctx context.Context,
 ) (int64, error) {
-	p := parameter.WhereGradeParam{}
-	c, err := m.DB.CountGrades(ctx, p)
+	p := parameter.WhereGroupParam{}
+	c, err := m.DB.CountGroups(ctx, p)
 	if err != nil {
-		return 0, fmt.Errorf("failed to get grades count: %w", err)
+		return 0, fmt.Errorf("failed to get groups count: %w", err)
 	}
 	return c, nil
 }

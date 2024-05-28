@@ -339,6 +339,70 @@ func (a *PgAdapter) DisbelongOrganizationOnMembersWithSd(
 	return disbelongOrganizationOnMembers(ctx, qtx, memberIDs)
 }
 
+func disbelongOrganizationOnOrganization(
+	ctx context.Context,
+	qtx *query.Queries,
+	organizationID uuid.UUID,
+) (int64, error) {
+	b, err := qtx.DeleteMembershipsOnOrganization(ctx, organizationID)
+	if err != nil {
+		return 0, fmt.Errorf("failed to disbelong membership on organization: %w", err)
+	}
+	return b, nil
+}
+
+// DisbelongOrganizationOnOrganization チャットルーム上のメンバーから所属解除する。
+func (a *PgAdapter) DisbelongOrganizationOnOrganization(
+	ctx context.Context, organizationID uuid.UUID,
+) (int64, error) {
+	return disbelongOrganizationOnOrganization(ctx, a.query, organizationID)
+}
+
+// DisbelongOrganizationOnOrganizationWithSd SD付きでチャットルーム上のメンバーから所属解除する。
+func (a *PgAdapter) DisbelongOrganizationOnOrganizationWithSd(
+	ctx context.Context, sd store.Sd, organizationID uuid.UUID,
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return 0, store.ErrNotFoundDescriptor
+	}
+	return disbelongOrganizationOnOrganization(ctx, qtx, organizationID)
+}
+
+func disbelongOrganizationOnOrganizations(
+	ctx context.Context,
+	qtx *query.Queries,
+	organizationIDs []uuid.UUID,
+) (int64, error) {
+	b, err := qtx.DeleteMembershipsOnOrganizations(ctx, organizationIDs)
+	if err != nil {
+		return 0, fmt.Errorf("failed to disbelong membership on organizations: %w", err)
+	}
+	return b, nil
+}
+
+// DisbelongOrganizationOnOrganizations チャットルーム上の複数のメンバーから所属解除する。
+func (a *PgAdapter) DisbelongOrganizationOnOrganizations(
+	ctx context.Context, organizationIDs []uuid.UUID,
+) (int64, error) {
+	return disbelongOrganizationOnOrganizations(ctx, a.query, organizationIDs)
+}
+
+// DisbelongOrganizationOnOrganizationsWithSd SD付きでチャットルーム上の複数のメンバーから所属解除する。
+func (a *PgAdapter) DisbelongOrganizationOnOrganizationsWithSd(
+	ctx context.Context, sd store.Sd, organizationIDs []uuid.UUID,
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return 0, store.ErrNotFoundDescriptor
+	}
+	return disbelongOrganizationOnOrganizations(ctx, qtx, organizationIDs)
+}
+
 func getOrganizationsOnMember(
 	ctx context.Context,
 	qtx *query.Queries,

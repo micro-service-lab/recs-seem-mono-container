@@ -13,6 +13,12 @@ DELETE FROM m_memberships WHERE member_id = $1;
 -- name: DeleteMembershipsOnMembers :execrows
 DELETE FROM m_memberships WHERE member_id = ANY(@member_ids::uuid[]);
 
+-- name: DeleteMembershipsOnOrganization :execrows
+DELETE FROM m_memberships WHERE organization_id = $1;
+
+-- name: DeleteMembershipsOnOrganizations :execrows
+DELETE FROM m_memberships WHERE organization_id = ANY(@organization_ids::uuid[]);
+
 -- name: GetMembersOnOrganization :many
 SELECT m_memberships.*, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,

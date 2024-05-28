@@ -18,6 +18,38 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 )
 
+func convChatRoomWithCoverImage(e query.FindChatRoomByIDWithCoverImageRow) entity.ChatRoomWithCoverImage {
+	var image entity.NullableEntity[entity.ImageWithAttachableItem]
+	if e.CoverImageID.Valid {
+		image = entity.NullableEntity[entity.ImageWithAttachableItem]{
+			Valid: true,
+			Entity: entity.ImageWithAttachableItem{
+				ImageID: e.CoverImageID.Bytes,
+				Height:  entity.Float(e.CoverImageHeight),
+				Width:   entity.Float(e.CoverImageWidth),
+				AttachableItem: entity.AttachableItem{
+					AttachableItemID: e.CoverImageAttachableItemID.Bytes,
+					OwnerID:          entity.UUID(e.CoverImageOwnerID),
+					FromOuter:        e.CoverImageFromOuter.Bool,
+					URL:              e.CoverImageUrl.String,
+					Alias:            e.CoverImageAlias.String,
+					Size:             entity.Float(e.CoverImageSize),
+					MimeTypeID:       e.CoverImageMimeTypeID.Bytes,
+					ImageID:          entity.UUID(e.CoverImageID),
+				},
+			},
+		}
+	}
+	return entity.ChatRoomWithCoverImage{
+		ChatRoomID:       e.ChatRoomID,
+		Name:             e.Name,
+		IsPrivate:        e.IsPrivate,
+		FromOrganization: e.FromOrganization,
+		OwnerID:          entity.UUID(e.OwnerID),
+		CoverImage:       image,
+	}
+}
+
 func countChatRooms(ctx context.Context, qtx *query.Queries, where parameter.WhereChatRoomParam) (int64, error) {
 	p := query.CountChatRoomsParams{
 		WhereInOwner:            where.WhereInOwner,
@@ -242,6 +274,39 @@ func (a *PgAdapter) FindChatRoomByIDWithSd(
 		return entity.ChatRoom{}, store.ErrNotFoundDescriptor
 	}
 	return findChatRoomByID(ctx, qtx, chatRoomID)
+}
+
+func findChatRoomByIDWithCoverImage(
+	ctx context.Context, qtx *query.Queries, chatRoomID uuid.UUID,
+) (entity.ChatRoomWithCoverImage, error) {
+	e, err := qtx.FindChatRoomByIDWithCoverImage(ctx, chatRoomID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.ChatRoomWithCoverImage{}, errhandle.NewModelNotFoundError("chat room")
+		}
+		return entity.ChatRoomWithCoverImage{}, fmt.Errorf("failed to find chat room: %w", err)
+	}
+	return convChatRoomWithCoverImage(e), nil
+}
+
+// FindChatRoomByIDWithCoverImage チャットルームを取得する。
+func (a *PgAdapter) FindChatRoomByIDWithCoverImage(
+	ctx context.Context, chatRoomID uuid.UUID,
+) (entity.ChatRoomWithCoverImage, error) {
+	return findChatRoomByIDWithCoverImage(ctx, a.query, chatRoomID)
+}
+
+// FindChatRoomByIDWithCoverImageWithSd SD付きでチャットルームを取得する。
+func (a *PgAdapter) FindChatRoomByIDWithCoverImageWithSd(
+	ctx context.Context, sd store.Sd, chatRoomID uuid.UUID,
+) (entity.ChatRoomWithCoverImage, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return entity.ChatRoomWithCoverImage{}, store.ErrNotFoundDescriptor
+	}
+	return findChatRoomByIDWithCoverImage(ctx, qtx, chatRoomID)
 }
 
 func findChatRoomOnPrivate(
@@ -489,6 +554,219 @@ func (a *PgAdapter) GetPluralChatRoomsWithSd(
 		return store.ListResult[entity.ChatRoom]{}, store.ErrNotFoundDescriptor
 	}
 	return getPluralChatRooms(ctx, qtx, chatRoomIDs, order, np)
+}
+
+func getChatRoomsWithCoverImage(
+	ctx context.Context,
+	qtx *query.Queries,
+	where parameter.WhereChatRoomParam,
+	order parameter.ChatRoomOrderMethod,
+	np store.NumberedPaginationParam,
+	cp store.CursorPaginationParam,
+	wc store.WithCountParam,
+) (store.ListResult[entity.ChatRoomWithCoverImage], error) {
+	eConvFunc := func(e query.FindChatRoomByIDWithCoverImageRow) (entity.ChatRoomWithCoverImage, error) {
+		return convChatRoomWithCoverImage(e), nil
+	}
+	runCFunc := func() (int64, error) {
+		p := query.CountChatRoomsParams{
+			WhereInOwner:            where.WhereInOwner,
+			InOwner:                 where.InOwner,
+			WhereIsPrivate:          where.WhereIsPrivate,
+			IsPrivate:               where.IsPrivate,
+			WhereIsFromOrganization: where.WhereIsFromOrganization,
+			IsFromOrganization:      where.IsFromOrganization,
+			WhereFromOrganizations:  where.WhereFromOrganizations,
+			FromOrganizations:       where.FromOrganizations,
+		}
+		r, err := qtx.CountChatRooms(ctx, p)
+		if err != nil {
+			return 0, fmt.Errorf("failed to count chat rooms: %w", err)
+		}
+		return r, nil
+	}
+	runQFunc := func(_ string) ([]query.FindChatRoomByIDWithCoverImageRow, error) {
+		p := query.GetChatRoomsWithCoverImageParams{
+			WhereInOwner:            where.WhereInOwner,
+			InOwner:                 where.InOwner,
+			WhereIsPrivate:          where.WhereIsPrivate,
+			IsPrivate:               where.IsPrivate,
+			WhereIsFromOrganization: where.WhereIsFromOrganization,
+			IsFromOrganization:      where.IsFromOrganization,
+			WhereFromOrganizations:  where.WhereFromOrganizations,
+			FromOrganizations:       where.FromOrganizations,
+		}
+		r, err := qtx.GetChatRoomsWithCoverImage(ctx, p)
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return []query.FindChatRoomByIDWithCoverImageRow{}, nil
+			}
+			return nil, fmt.Errorf("failed to get chat rooms: %w", err)
+		}
+		var es []query.FindChatRoomByIDWithCoverImageRow
+		for _, v := range r {
+			es = append(es, query.FindChatRoomByIDWithCoverImageRow(v))
+		}
+		return es, nil
+	}
+	runQCPFunc := func(_, _ string,
+		limit int32, cursorDir string, cursor int32, _ any,
+	) ([]query.FindChatRoomByIDWithCoverImageRow, error) {
+		p := query.GetChatRoomsWithCoverImageUseKeysetPaginateParams{
+			Limit:                   int32(limit),
+			WhereInOwner:            where.WhereInOwner,
+			InOwner:                 where.InOwner,
+			WhereIsPrivate:          where.WhereIsPrivate,
+			IsPrivate:               where.IsPrivate,
+			WhereIsFromOrganization: where.WhereIsFromOrganization,
+			IsFromOrganization:      where.IsFromOrganization,
+			WhereFromOrganizations:  where.WhereFromOrganizations,
+			FromOrganizations:       where.FromOrganizations,
+			CursorDirection:         cursorDir,
+			Cursor:                  int32(cursor),
+		}
+		r, err := qtx.GetChatRoomsWithCoverImageUseKeysetPaginate(ctx, p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get chat rooms: %w", err)
+		}
+		var es []query.FindChatRoomByIDWithCoverImageRow
+		for _, v := range r {
+			es = append(es, query.FindChatRoomByIDWithCoverImageRow(v))
+		}
+		return es, nil
+	}
+	runQNPFunc := func(
+		_ string, limit, offset int32,
+	) ([]query.FindChatRoomByIDWithCoverImageRow, error) {
+		p := query.GetChatRoomsWithCoverImageUseNumberedPaginateParams{
+			Limit:                   int32(limit),
+			Offset:                  int32(offset),
+			WhereInOwner:            where.WhereInOwner,
+			InOwner:                 where.InOwner,
+			WhereIsPrivate:          where.WhereIsPrivate,
+			IsPrivate:               where.IsPrivate,
+			WhereIsFromOrganization: where.WhereIsFromOrganization,
+			IsFromOrganization:      where.IsFromOrganization,
+			WhereFromOrganizations:  where.WhereFromOrganizations,
+			FromOrganizations:       where.FromOrganizations,
+		}
+		r, err := qtx.GetChatRoomsWithCoverImageUseNumberedPaginate(ctx, p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get chat rooms: %w", err)
+		}
+		var es []query.FindChatRoomByIDWithCoverImageRow
+		for _, v := range r {
+			es = append(es, query.FindChatRoomByIDWithCoverImageRow(v))
+		}
+		return es, nil
+	}
+	selector := func(subCursor string, e query.FindChatRoomByIDWithCoverImageRow) (entity.Int, any) {
+		switch subCursor {
+		case parameter.PermissionDefaultCursorKey:
+			return entity.Int(e.MChatRoomsPkey), nil
+		}
+		return entity.Int(e.MChatRoomsPkey), nil
+	}
+
+	res, err := store.RunListQuery(
+		ctx,
+		order,
+		np,
+		cp,
+		wc,
+		eConvFunc,
+		runCFunc,
+		runQFunc,
+		runQCPFunc,
+		runQNPFunc,
+		selector,
+	)
+	if err != nil {
+		return store.ListResult[entity.ChatRoomWithCoverImage]{}, fmt.Errorf("failed to get chat rooms: %w", err)
+	}
+	return res, nil
+}
+
+// GetChatRoomsWithCoverImage チャットルームを取得する。
+func (a *PgAdapter) GetChatRoomsWithCoverImage(
+	ctx context.Context, where parameter.WhereChatRoomParam,
+	order parameter.ChatRoomOrderMethod, np store.NumberedPaginationParam,
+	cp store.CursorPaginationParam, wc store.WithCountParam,
+) (store.ListResult[entity.ChatRoomWithCoverImage], error) {
+	return getChatRoomsWithCoverImage(ctx, a.query, where, order, np, cp, wc)
+}
+
+// GetChatRoomsWithCoverImageWithSd SD付きでチャットルームを取得する。
+func (a *PgAdapter) GetChatRoomsWithCoverImageWithSd(
+	ctx context.Context, sd store.Sd, where parameter.WhereChatRoomParam,
+	order parameter.ChatRoomOrderMethod, np store.NumberedPaginationParam,
+	cp store.CursorPaginationParam, wc store.WithCountParam,
+) (store.ListResult[entity.ChatRoomWithCoverImage], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ListResult[entity.ChatRoomWithCoverImage]{}, store.ErrNotFoundDescriptor
+	}
+	return getChatRoomsWithCoverImage(ctx, qtx, where, order, np, cp, wc)
+}
+
+func getPluralChatRoomsWithCoverImage(
+	ctx context.Context, qtx *query.Queries, chatRoomIDs []uuid.UUID,
+	_ parameter.ChatRoomOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomWithCoverImage], error) {
+	var e []query.FindChatRoomByIDWithCoverImageRow
+	var err error
+	if !np.Valid {
+		var ge []query.GetPluralChatRoomsWithCoverImageRow
+		ge, err = qtx.GetPluralChatRoomsWithCoverImage(ctx, chatRoomIDs)
+		e = make([]query.FindChatRoomByIDWithCoverImageRow, len(ge))
+		for i, v := range ge {
+			e[i] = query.FindChatRoomByIDWithCoverImageRow(v)
+		}
+	} else {
+		var ge []query.GetPluralChatRoomsWithCoverImageUseNumberedPaginateRow
+		ge, err = qtx.GetPluralChatRoomsWithCoverImageUseNumberedPaginate(
+			ctx, query.GetPluralChatRoomsWithCoverImageUseNumberedPaginateParams{
+				ChatRoomIds: chatRoomIDs,
+				Offset:      int32(np.Offset.Int64),
+				Limit:       int32(np.Limit.Int64),
+			})
+		e = make([]query.FindChatRoomByIDWithCoverImageRow, len(ge))
+		for i, v := range ge {
+			e[i] = query.FindChatRoomByIDWithCoverImageRow(v)
+		}
+	}
+	if err != nil {
+		return store.ListResult[entity.ChatRoomWithCoverImage]{}, fmt.Errorf("failed to get chat rooms: %w", err)
+	}
+	entities := make([]entity.ChatRoomWithCoverImage, len(e))
+	for i, v := range e {
+		entities[i] = convChatRoomWithCoverImage(v)
+	}
+	return store.ListResult[entity.ChatRoomWithCoverImage]{Data: entities}, nil
+}
+
+// GetPluralChatRoomsWithCoverImage チャットルームを取得する。
+func (a *PgAdapter) GetPluralChatRoomsWithCoverImage(
+	ctx context.Context, chatRoomIDs []uuid.UUID,
+	order parameter.ChatRoomOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomWithCoverImage], error) {
+	return getPluralChatRoomsWithCoverImage(ctx, a.query, chatRoomIDs, order, np)
+}
+
+// GetPluralChatRoomsWithCoverImageWithSd SD付きでチャットルームを取得する。
+func (a *PgAdapter) GetPluralChatRoomsWithCoverImageWithSd(
+	ctx context.Context, sd store.Sd, chatRoomIDs []uuid.UUID,
+	order parameter.ChatRoomOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomWithCoverImage], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ListResult[entity.ChatRoomWithCoverImage]{}, store.ErrNotFoundDescriptor
+	}
+	return getPluralChatRoomsWithCoverImage(ctx, qtx, chatRoomIDs, order, np)
 }
 
 func updateChatRoom(

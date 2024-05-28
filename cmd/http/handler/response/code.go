@@ -252,4 +252,11 @@ var (
 		Message:    "conflict storage key error",
 		StatusCode: http.StatusConflict,
 	}
+
+	// NotFileOwner ファイルの所有者でない
+	NotFileOwner = APIResponseType{
+		Code:       "231",
+		Message:    "not file owner error",
+		StatusCode: http.StatusForbidden,
+	}
 )

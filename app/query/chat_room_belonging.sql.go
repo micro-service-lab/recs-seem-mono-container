@@ -98,6 +98,30 @@ func (q *Queries) DeleteChatRoomBelonging(ctx context.Context, arg DeleteChatRoo
 	return result.RowsAffected(), nil
 }
 
+const deleteChatRoomBelongingsOnChatRoom = `-- name: DeleteChatRoomBelongingsOnChatRoom :execrows
+DELETE FROM m_chat_room_belongings WHERE chat_room_id = $1
+`
+
+func (q *Queries) DeleteChatRoomBelongingsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteChatRoomBelongingsOnChatRoom, chatRoomID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const deleteChatRoomBelongingsOnChatRooms = `-- name: DeleteChatRoomBelongingsOnChatRooms :execrows
+DELETE FROM m_chat_room_belongings WHERE chat_room_id = ANY($1::uuid[])
+`
+
+func (q *Queries) DeleteChatRoomBelongingsOnChatRooms(ctx context.Context, chatRoomIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteChatRoomBelongingsOnChatRooms, chatRoomIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
 const deleteChatRoomBelongingsOnMember = `-- name: DeleteChatRoomBelongingsOnMember :execrows
 DELETE FROM m_chat_room_belongings WHERE member_id = $1
 `

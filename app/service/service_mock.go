@@ -44,6 +44,36 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreateEventTypesFunc: func(ctx context.Context, ps []parameter.CreateEventTypeParam) (int64, error) {
 //				panic("mock out the CreateEventTypes method")
 //			},
+//			CreateFileFunc: func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.File, error) {
+//				panic("mock out the CreateFile method")
+//			},
+//			CreateFileFromOuterFunc: func(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID) (entity.File, error) {
+//				panic("mock out the CreateFileFromOuter method")
+//			},
+//			CreateFileSpecifyFilenameFunc: func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.File, error) {
+//				panic("mock out the CreateFileSpecifyFilename method")
+//			},
+//			CreateFilesFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileServiceParam) ([]entity.File, error) {
+//				panic("mock out the CreateFiles method")
+//			},
+//			CreateFilesFromOuterFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileFromOuterServiceParam) ([]entity.File, error) {
+//				panic("mock out the CreateFilesFromOuter method")
+//			},
+//			CreateFilesSpecifyFilenameFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileSpecifyFilenameServiceParam) ([]entity.File, error) {
+//				panic("mock out the CreateFilesSpecifyFilename method")
+//			},
+//			CreateGradeFunc: func(ctx context.Context, name string, key string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Grade, error) {
+//				panic("mock out the CreateGrade method")
+//			},
+//			CreateGradesFunc: func(ctx context.Context, ps []parameter.CreateGradeServiceParam) (int64, error) {
+//				panic("mock out the CreateGrades method")
+//			},
+//			CreateGroupFunc: func(ctx context.Context, name string, key string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Group, error) {
+//				panic("mock out the CreateGroup method")
+//			},
+//			CreateGroupsFunc: func(ctx context.Context, ps []parameter.CreateGroupServiceParam) (int64, error) {
+//				panic("mock out the CreateGroups method")
+//			},
 //			CreateImageFunc: func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.Image, error) {
 //				panic("mock out the CreateImage method")
 //			},
@@ -116,6 +146,15 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			DeleteEventTypeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteEventType method")
 //			},
+//			DeleteFileFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteFile method")
+//			},
+//			DeleteGradeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteGrade method")
+//			},
+//			DeleteGroupFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteGroup method")
+//			},
 //			DeleteImageFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteImage method")
 //			},
@@ -155,6 +194,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			DisassociateRoleOnPolicyFunc: func(ctx context.Context, policyID uuid.UUID) (int64, error) {
 //				panic("mock out the DisassociateRoleOnPolicy method")
 //			},
+//			FindAttachableItemByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.AttachableItemWithContent, error) {
+//				panic("mock out the FindAttachableItemByID method")
+//			},
+//			FindAttachableItemByURLFunc: func(ctx context.Context, url string) (entity.AttachableItemWithContent, error) {
+//				panic("mock out the FindAttachableItemByURL method")
+//			},
 //			FindAttendStatusByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error) {
 //				panic("mock out the FindAttendStatusByID method")
 //			},
@@ -166,6 +211,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			FindAttendanceTypeByKeyFunc: func(ctx context.Context, key string) (entity.AttendanceType, error) {
 //				panic("mock out the FindAttendanceTypeByKey method")
+//			},
+//			FindChatRoomByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.ChatRoom, error) {
+//				panic("mock out the FindChatRoomByID method")
+//			},
+//			FindChatRoomByIDWithCoverImageFunc: func(ctx context.Context, id uuid.UUID) (entity.ChatRoomWithCoverImage, error) {
+//				panic("mock out the FindChatRoomByIDWithCoverImage method")
 //			},
 //			FindEventTypeByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.EventType, error) {
 //				panic("mock out the FindEventTypeByID method")
@@ -254,6 +305,36 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			GetEventTypesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
 //				panic("mock out the GetEventTypesCount method")
 //			},
+//			GetFilesFunc: func(ctx context.Context, order parameter.FileOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.File], error) {
+//				panic("mock out the GetFiles method")
+//			},
+//			GetFilesCountFunc: func(ctx context.Context) (int64, error) {
+//				panic("mock out the GetFilesCount method")
+//			},
+//			GetGradesFunc: func(ctx context.Context, order parameter.GradeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Grade], error) {
+//				panic("mock out the GetGrades method")
+//			},
+//			GetGradesCountFunc: func(ctx context.Context) (int64, error) {
+//				panic("mock out the GetGradesCount method")
+//			},
+//			GetGradesWithOrganizationFunc: func(ctx context.Context, order parameter.GradeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.GradeWithOrganization], error) {
+//				panic("mock out the GetGradesWithOrganization method")
+//			},
+//			GetGroupsFunc: func(ctx context.Context, order parameter.GroupOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Group], error) {
+//				panic("mock out the GetGroups method")
+//			},
+//			GetGroupsCountFunc: func(ctx context.Context) (int64, error) {
+//				panic("mock out the GetGroupsCount method")
+//			},
+//			GetGroupsWithOrganizationFunc: func(ctx context.Context, order parameter.GroupOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.GroupWithOrganization], error) {
+//				panic("mock out the GetGroupsWithOrganization method")
+//			},
+//			GetImagesFunc: func(ctx context.Context, order parameter.ImageOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Image], error) {
+//				panic("mock out the GetImages method")
+//			},
+//			GetImagesCountFunc: func(ctx context.Context) (int64, error) {
+//				panic("mock out the GetImagesCount method")
+//			},
 //			GetMimeTypesFunc: func(ctx context.Context, whereSearchName string, order parameter.MimeTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MimeType], error) {
 //				panic("mock out the GetMimeTypes method")
 //			},
@@ -338,6 +419,15 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			PluralDeleteEventTypesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteEventTypes method")
 //			},
+//			PluralDeleteFilesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteFiles method")
+//			},
+//			PluralDeleteGradesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteGrades method")
+//			},
+//			PluralDeleteGroupsFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteGroups method")
+//			},
 //			PluralDeleteImagesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteImages method")
 //			},
@@ -376,6 +466,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			UpdateEventTypeFunc: func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.EventType, error) {
 //				panic("mock out the UpdateEventType method")
+//			},
+//			UpdateGradeFunc: func(ctx context.Context, id uuid.UUID, name string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Grade, error) {
+//				panic("mock out the UpdateGrade method")
+//			},
+//			UpdateGroupFunc: func(ctx context.Context, id uuid.UUID, name string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Group, error) {
+//				panic("mock out the UpdateGroup method")
 //			},
 //			UpdateMimeTypeFunc: func(ctx context.Context, id uuid.UUID, name string, key string, kind string) (entity.MimeType, error) {
 //				panic("mock out the UpdateMimeType method")
@@ -428,6 +524,36 @@ type ManagerInterfaceMock struct {
 
 	// CreateEventTypesFunc mocks the CreateEventTypes method.
 	CreateEventTypesFunc func(ctx context.Context, ps []parameter.CreateEventTypeParam) (int64, error)
+
+	// CreateFileFunc mocks the CreateFile method.
+	CreateFileFunc func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.File, error)
+
+	// CreateFileFromOuterFunc mocks the CreateFileFromOuter method.
+	CreateFileFromOuterFunc func(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID) (entity.File, error)
+
+	// CreateFileSpecifyFilenameFunc mocks the CreateFileSpecifyFilename method.
+	CreateFileSpecifyFilenameFunc func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.File, error)
+
+	// CreateFilesFunc mocks the CreateFiles method.
+	CreateFilesFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileServiceParam) ([]entity.File, error)
+
+	// CreateFilesFromOuterFunc mocks the CreateFilesFromOuter method.
+	CreateFilesFromOuterFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileFromOuterServiceParam) ([]entity.File, error)
+
+	// CreateFilesSpecifyFilenameFunc mocks the CreateFilesSpecifyFilename method.
+	CreateFilesSpecifyFilenameFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileSpecifyFilenameServiceParam) ([]entity.File, error)
+
+	// CreateGradeFunc mocks the CreateGrade method.
+	CreateGradeFunc func(ctx context.Context, name string, key string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Grade, error)
+
+	// CreateGradesFunc mocks the CreateGrades method.
+	CreateGradesFunc func(ctx context.Context, ps []parameter.CreateGradeServiceParam) (int64, error)
+
+	// CreateGroupFunc mocks the CreateGroup method.
+	CreateGroupFunc func(ctx context.Context, name string, key string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Group, error)
+
+	// CreateGroupsFunc mocks the CreateGroups method.
+	CreateGroupsFunc func(ctx context.Context, ps []parameter.CreateGroupServiceParam) (int64, error)
 
 	// CreateImageFunc mocks the CreateImage method.
 	CreateImageFunc func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.Image, error)
@@ -501,6 +627,15 @@ type ManagerInterfaceMock struct {
 	// DeleteEventTypeFunc mocks the DeleteEventType method.
 	DeleteEventTypeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
+	// DeleteFileFunc mocks the DeleteFile method.
+	DeleteFileFunc func(ctx context.Context, id uuid.UUID) (int64, error)
+
+	// DeleteGradeFunc mocks the DeleteGrade method.
+	DeleteGradeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
+
+	// DeleteGroupFunc mocks the DeleteGroup method.
+	DeleteGroupFunc func(ctx context.Context, id uuid.UUID) (int64, error)
+
 	// DeleteImageFunc mocks the DeleteImage method.
 	DeleteImageFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
@@ -540,6 +675,12 @@ type ManagerInterfaceMock struct {
 	// DisassociateRoleOnPolicyFunc mocks the DisassociateRoleOnPolicy method.
 	DisassociateRoleOnPolicyFunc func(ctx context.Context, policyID uuid.UUID) (int64, error)
 
+	// FindAttachableItemByIDFunc mocks the FindAttachableItemByID method.
+	FindAttachableItemByIDFunc func(ctx context.Context, id uuid.UUID) (entity.AttachableItemWithContent, error)
+
+	// FindAttachableItemByURLFunc mocks the FindAttachableItemByURL method.
+	FindAttachableItemByURLFunc func(ctx context.Context, url string) (entity.AttachableItemWithContent, error)
+
 	// FindAttendStatusByIDFunc mocks the FindAttendStatusByID method.
 	FindAttendStatusByIDFunc func(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error)
 
@@ -551,6 +692,12 @@ type ManagerInterfaceMock struct {
 
 	// FindAttendanceTypeByKeyFunc mocks the FindAttendanceTypeByKey method.
 	FindAttendanceTypeByKeyFunc func(ctx context.Context, key string) (entity.AttendanceType, error)
+
+	// FindChatRoomByIDFunc mocks the FindChatRoomByID method.
+	FindChatRoomByIDFunc func(ctx context.Context, id uuid.UUID) (entity.ChatRoom, error)
+
+	// FindChatRoomByIDWithCoverImageFunc mocks the FindChatRoomByIDWithCoverImage method.
+	FindChatRoomByIDWithCoverImageFunc func(ctx context.Context, id uuid.UUID) (entity.ChatRoomWithCoverImage, error)
 
 	// FindEventTypeByIDFunc mocks the FindEventTypeByID method.
 	FindEventTypeByIDFunc func(ctx context.Context, id uuid.UUID) (entity.EventType, error)
@@ -639,6 +786,36 @@ type ManagerInterfaceMock struct {
 	// GetEventTypesCountFunc mocks the GetEventTypesCount method.
 	GetEventTypesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
 
+	// GetFilesFunc mocks the GetFiles method.
+	GetFilesFunc func(ctx context.Context, order parameter.FileOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.File], error)
+
+	// GetFilesCountFunc mocks the GetFilesCount method.
+	GetFilesCountFunc func(ctx context.Context) (int64, error)
+
+	// GetGradesFunc mocks the GetGrades method.
+	GetGradesFunc func(ctx context.Context, order parameter.GradeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Grade], error)
+
+	// GetGradesCountFunc mocks the GetGradesCount method.
+	GetGradesCountFunc func(ctx context.Context) (int64, error)
+
+	// GetGradesWithOrganizationFunc mocks the GetGradesWithOrganization method.
+	GetGradesWithOrganizationFunc func(ctx context.Context, order parameter.GradeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.GradeWithOrganization], error)
+
+	// GetGroupsFunc mocks the GetGroups method.
+	GetGroupsFunc func(ctx context.Context, order parameter.GroupOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Group], error)
+
+	// GetGroupsCountFunc mocks the GetGroupsCount method.
+	GetGroupsCountFunc func(ctx context.Context) (int64, error)
+
+	// GetGroupsWithOrganizationFunc mocks the GetGroupsWithOrganization method.
+	GetGroupsWithOrganizationFunc func(ctx context.Context, order parameter.GroupOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.GroupWithOrganization], error)
+
+	// GetImagesFunc mocks the GetImages method.
+	GetImagesFunc func(ctx context.Context, order parameter.ImageOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Image], error)
+
+	// GetImagesCountFunc mocks the GetImagesCount method.
+	GetImagesCountFunc func(ctx context.Context) (int64, error)
+
 	// GetMimeTypesFunc mocks the GetMimeTypes method.
 	GetMimeTypesFunc func(ctx context.Context, whereSearchName string, order parameter.MimeTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MimeType], error)
 
@@ -723,6 +900,15 @@ type ManagerInterfaceMock struct {
 	// PluralDeleteEventTypesFunc mocks the PluralDeleteEventTypes method.
 	PluralDeleteEventTypesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
+	// PluralDeleteFilesFunc mocks the PluralDeleteFiles method.
+	PluralDeleteFilesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
+
+	// PluralDeleteGradesFunc mocks the PluralDeleteGrades method.
+	PluralDeleteGradesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
+
+	// PluralDeleteGroupsFunc mocks the PluralDeleteGroups method.
+	PluralDeleteGroupsFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
+
 	// PluralDeleteImagesFunc mocks the PluralDeleteImages method.
 	PluralDeleteImagesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
@@ -761,6 +947,12 @@ type ManagerInterfaceMock struct {
 
 	// UpdateEventTypeFunc mocks the UpdateEventType method.
 	UpdateEventTypeFunc func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.EventType, error)
+
+	// UpdateGradeFunc mocks the UpdateGrade method.
+	UpdateGradeFunc func(ctx context.Context, id uuid.UUID, name string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Grade, error)
+
+	// UpdateGroupFunc mocks the UpdateGroup method.
+	UpdateGroupFunc func(ctx context.Context, id uuid.UUID, name string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Group, error)
 
 	// UpdateMimeTypeFunc mocks the UpdateMimeType method.
 	UpdateMimeTypeFunc func(ctx context.Context, id uuid.UUID, name string, key string, kind string) (entity.MimeType, error)
@@ -846,6 +1038,116 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// Ps is the ps argument value.
 			Ps []parameter.CreateEventTypeParam
+		}
+		// CreateFile holds details about calls to the CreateFile method.
+		CreateFile []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Origin is the origin argument value.
+			Origin io.Reader
+			// Alias is the alias argument value.
+			Alias string
+			// OwnerID is the ownerID argument value.
+			OwnerID entity.UUID
+		}
+		// CreateFileFromOuter holds details about calls to the CreateFileFromOuter method.
+		CreateFileFromOuter []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// URL is the url argument value.
+			URL string
+			// Alias is the alias argument value.
+			Alias string
+			// Size is the size argument value.
+			Size entity.Float
+			// OwnerID is the ownerID argument value.
+			OwnerID entity.UUID
+			// MimeTypeID is the mimeTypeID argument value.
+			MimeTypeID uuid.UUID
+		}
+		// CreateFileSpecifyFilename holds details about calls to the CreateFileSpecifyFilename method.
+		CreateFileSpecifyFilename []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Origin is the origin argument value.
+			Origin io.Reader
+			// Alias is the alias argument value.
+			Alias string
+			// OwnerID is the ownerID argument value.
+			OwnerID entity.UUID
+			// Filename is the filename argument value.
+			Filename string
+		}
+		// CreateFiles holds details about calls to the CreateFiles method.
+		CreateFiles []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OwnerID is the ownerID argument value.
+			OwnerID entity.UUID
+			// Params is the params argument value.
+			Params []parameter.CreateFileServiceParam
+		}
+		// CreateFilesFromOuter holds details about calls to the CreateFilesFromOuter method.
+		CreateFilesFromOuter []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OwnerID is the ownerID argument value.
+			OwnerID entity.UUID
+			// Params is the params argument value.
+			Params []parameter.CreateFileFromOuterServiceParam
+		}
+		// CreateFilesSpecifyFilename holds details about calls to the CreateFilesSpecifyFilename method.
+		CreateFilesSpecifyFilename []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OwnerID is the ownerID argument value.
+			OwnerID entity.UUID
+			// Params is the params argument value.
+			Params []parameter.CreateFileSpecifyFilenameServiceParam
+		}
+		// CreateGrade holds details about calls to the CreateGrade method.
+		CreateGrade []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Name is the name argument value.
+			Name string
+			// Key is the key argument value.
+			Key string
+			// Description is the description argument value.
+			Description entity.String
+			// Color is the color argument value.
+			Color entity.String
+			// CoverImageID is the coverImageID argument value.
+			CoverImageID entity.UUID
+		}
+		// CreateGrades holds details about calls to the CreateGrades method.
+		CreateGrades []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ps is the ps argument value.
+			Ps []parameter.CreateGradeServiceParam
+		}
+		// CreateGroup holds details about calls to the CreateGroup method.
+		CreateGroup []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Name is the name argument value.
+			Name string
+			// Key is the key argument value.
+			Key string
+			// Description is the description argument value.
+			Description entity.String
+			// Color is the color argument value.
+			Color entity.String
+			// CoverImageID is the coverImageID argument value.
+			CoverImageID entity.UUID
+		}
+		// CreateGroups holds details about calls to the CreateGroups method.
+		CreateGroups []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ps is the ps argument value.
+			Ps []parameter.CreateGroupServiceParam
 		}
 		// CreateImage holds details about calls to the CreateImage method.
 		CreateImage []struct {
@@ -1075,6 +1377,27 @@ type ManagerInterfaceMock struct {
 			// ID is the id argument value.
 			ID uuid.UUID
 		}
+		// DeleteFile holds details about calls to the DeleteFile method.
+		DeleteFile []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// DeleteGrade holds details about calls to the DeleteGrade method.
+		DeleteGrade []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// DeleteGroup holds details about calls to the DeleteGroup method.
+		DeleteGroup []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
 		// DeleteImage holds details about calls to the DeleteImage method.
 		DeleteImage []struct {
 			// Ctx is the ctx argument value.
@@ -1166,6 +1489,20 @@ type ManagerInterfaceMock struct {
 			// PolicyID is the policyID argument value.
 			PolicyID uuid.UUID
 		}
+		// FindAttachableItemByID holds details about calls to the FindAttachableItemByID method.
+		FindAttachableItemByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// FindAttachableItemByURL holds details about calls to the FindAttachableItemByURL method.
+		FindAttachableItemByURL []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// URL is the url argument value.
+			URL string
+		}
 		// FindAttendStatusByID holds details about calls to the FindAttendStatusByID method.
 		FindAttendStatusByID []struct {
 			// Ctx is the ctx argument value.
@@ -1193,6 +1530,20 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// Key is the key argument value.
 			Key string
+		}
+		// FindChatRoomByID holds details about calls to the FindChatRoomByID method.
+		FindChatRoomByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// FindChatRoomByIDWithCoverImage holds details about calls to the FindChatRoomByIDWithCoverImage method.
+		FindChatRoomByIDWithCoverImage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
 		}
 		// FindEventTypeByID holds details about calls to the FindEventTypeByID method.
 		FindEventTypeByID []struct {
@@ -1432,6 +1783,128 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// WhereSearchName is the whereSearchName argument value.
 			WhereSearchName string
+		}
+		// GetFiles holds details about calls to the GetFiles method.
+		GetFiles []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Order is the order argument value.
+			Order parameter.FileOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetFilesCount holds details about calls to the GetFilesCount method.
+		GetFilesCount []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+		}
+		// GetGrades holds details about calls to the GetGrades method.
+		GetGrades []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Order is the order argument value.
+			Order parameter.GradeOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetGradesCount holds details about calls to the GetGradesCount method.
+		GetGradesCount []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+		}
+		// GetGradesWithOrganization holds details about calls to the GetGradesWithOrganization method.
+		GetGradesWithOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Order is the order argument value.
+			Order parameter.GradeOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetGroups holds details about calls to the GetGroups method.
+		GetGroups []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Order is the order argument value.
+			Order parameter.GroupOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetGroupsCount holds details about calls to the GetGroupsCount method.
+		GetGroupsCount []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+		}
+		// GetGroupsWithOrganization holds details about calls to the GetGroupsWithOrganization method.
+		GetGroupsWithOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Order is the order argument value.
+			Order parameter.GroupOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetImages holds details about calls to the GetImages method.
+		GetImages []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Order is the order argument value.
+			Order parameter.ImageOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetImagesCount holds details about calls to the GetImagesCount method.
+		GetImagesCount []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
 		}
 		// GetMimeTypes holds details about calls to the GetMimeTypes method.
 		GetMimeTypes []struct {
@@ -1849,6 +2322,27 @@ type ManagerInterfaceMock struct {
 			// Ids is the ids argument value.
 			Ids []uuid.UUID
 		}
+		// PluralDeleteFiles holds details about calls to the PluralDeleteFiles method.
+		PluralDeleteFiles []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ids is the ids argument value.
+			Ids []uuid.UUID
+		}
+		// PluralDeleteGrades holds details about calls to the PluralDeleteGrades method.
+		PluralDeleteGrades []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ids is the ids argument value.
+			Ids []uuid.UUID
+		}
+		// PluralDeleteGroups holds details about calls to the PluralDeleteGroups method.
+		PluralDeleteGroups []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ids is the ids argument value.
+			Ids []uuid.UUID
+		}
 		// PluralDeleteImages holds details about calls to the PluralDeleteImages method.
 		PluralDeleteImages []struct {
 			// Ctx is the ctx argument value.
@@ -1959,6 +2453,36 @@ type ManagerInterfaceMock struct {
 			Key string
 			// Color is the color argument value.
 			Color string
+		}
+		// UpdateGrade holds details about calls to the UpdateGrade method.
+		UpdateGrade []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+			// Name is the name argument value.
+			Name string
+			// Description is the description argument value.
+			Description entity.String
+			// Color is the color argument value.
+			Color entity.String
+			// CoverImageID is the coverImageID argument value.
+			CoverImageID entity.UUID
+		}
+		// UpdateGroup holds details about calls to the UpdateGroup method.
+		UpdateGroup []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+			// Name is the name argument value.
+			Name string
+			// Description is the description argument value.
+			Description entity.String
+			// Color is the color argument value.
+			Color entity.String
+			// CoverImageID is the coverImageID argument value.
+			CoverImageID entity.UUID
 		}
 		// UpdateMimeType holds details about calls to the UpdateMimeType method.
 		UpdateMimeType []struct {
@@ -2072,6 +2596,16 @@ type ManagerInterfaceMock struct {
 	lockCreateAttendanceTypes                 sync.RWMutex
 	lockCreateEventType                       sync.RWMutex
 	lockCreateEventTypes                      sync.RWMutex
+	lockCreateFile                            sync.RWMutex
+	lockCreateFileFromOuter                   sync.RWMutex
+	lockCreateFileSpecifyFilename             sync.RWMutex
+	lockCreateFiles                           sync.RWMutex
+	lockCreateFilesFromOuter                  sync.RWMutex
+	lockCreateFilesSpecifyFilename            sync.RWMutex
+	lockCreateGrade                           sync.RWMutex
+	lockCreateGrades                          sync.RWMutex
+	lockCreateGroup                           sync.RWMutex
+	lockCreateGroups                          sync.RWMutex
 	lockCreateImage                           sync.RWMutex
 	lockCreateImageFromOuter                  sync.RWMutex
 	lockCreateImageSpecifyFilename            sync.RWMutex
@@ -2096,6 +2630,9 @@ type ManagerInterfaceMock struct {
 	lockDeleteAttendStatus                    sync.RWMutex
 	lockDeleteAttendanceType                  sync.RWMutex
 	lockDeleteEventType                       sync.RWMutex
+	lockDeleteFile                            sync.RWMutex
+	lockDeleteGrade                           sync.RWMutex
+	lockDeleteGroup                           sync.RWMutex
 	lockDeleteImage                           sync.RWMutex
 	lockDeleteMimeType                        sync.RWMutex
 	lockDeleteOrganization                    sync.RWMutex
@@ -2109,10 +2646,14 @@ type ManagerInterfaceMock struct {
 	lockDisassociatePolicyOnRoles             sync.RWMutex
 	lockDisassociateRoleOnPolicies            sync.RWMutex
 	lockDisassociateRoleOnPolicy              sync.RWMutex
+	lockFindAttachableItemByID                sync.RWMutex
+	lockFindAttachableItemByURL               sync.RWMutex
 	lockFindAttendStatusByID                  sync.RWMutex
 	lockFindAttendStatusByKey                 sync.RWMutex
 	lockFindAttendanceTypeByID                sync.RWMutex
 	lockFindAttendanceTypeByKey               sync.RWMutex
+	lockFindChatRoomByID                      sync.RWMutex
+	lockFindChatRoomByIDWithCoverImage        sync.RWMutex
 	lockFindEventTypeByID                     sync.RWMutex
 	lockFindEventTypeByKey                    sync.RWMutex
 	lockFindMimeTypeByID                      sync.RWMutex
@@ -2142,6 +2683,16 @@ type ManagerInterfaceMock struct {
 	lockGetAttendanceTypesCount               sync.RWMutex
 	lockGetEventTypes                         sync.RWMutex
 	lockGetEventTypesCount                    sync.RWMutex
+	lockGetFiles                              sync.RWMutex
+	lockGetFilesCount                         sync.RWMutex
+	lockGetGrades                             sync.RWMutex
+	lockGetGradesCount                        sync.RWMutex
+	lockGetGradesWithOrganization             sync.RWMutex
+	lockGetGroups                             sync.RWMutex
+	lockGetGroupsCount                        sync.RWMutex
+	lockGetGroupsWithOrganization             sync.RWMutex
+	lockGetImages                             sync.RWMutex
+	lockGetImagesCount                        sync.RWMutex
 	lockGetMimeTypes                          sync.RWMutex
 	lockGetMimeTypesCount                     sync.RWMutex
 	lockGetOrganizations                      sync.RWMutex
@@ -2170,6 +2721,9 @@ type ManagerInterfaceMock struct {
 	lockPluralDeleteAttendStatuses            sync.RWMutex
 	lockPluralDeleteAttendanceTypes           sync.RWMutex
 	lockPluralDeleteEventTypes                sync.RWMutex
+	lockPluralDeleteFiles                     sync.RWMutex
+	lockPluralDeleteGrades                    sync.RWMutex
+	lockPluralDeleteGroups                    sync.RWMutex
 	lockPluralDeleteImages                    sync.RWMutex
 	lockPluralDeleteMimeTypes                 sync.RWMutex
 	lockPluralDeletePermissionCategories      sync.RWMutex
@@ -2183,6 +2737,8 @@ type ManagerInterfaceMock struct {
 	lockUpdateAttendStatus                    sync.RWMutex
 	lockUpdateAttendanceType                  sync.RWMutex
 	lockUpdateEventType                       sync.RWMutex
+	lockUpdateGrade                           sync.RWMutex
+	lockUpdateGroup                           sync.RWMutex
 	lockUpdateMimeType                        sync.RWMutex
 	lockUpdateOrganization                    sync.RWMutex
 	lockUpdatePermission                      sync.RWMutex
@@ -2462,6 +3018,446 @@ func (mock *ManagerInterfaceMock) CreateEventTypesCalls() []struct {
 	mock.lockCreateEventTypes.RLock()
 	calls = mock.calls.CreateEventTypes
 	mock.lockCreateEventTypes.RUnlock()
+	return calls
+}
+
+// CreateFile calls CreateFileFunc.
+func (mock *ManagerInterfaceMock) CreateFile(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.File, error) {
+	if mock.CreateFileFunc == nil {
+		panic("ManagerInterfaceMock.CreateFileFunc: method is nil but ManagerInterface.CreateFile was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		Origin  io.Reader
+		Alias   string
+		OwnerID entity.UUID
+	}{
+		Ctx:     ctx,
+		Origin:  origin,
+		Alias:   alias,
+		OwnerID: ownerID,
+	}
+	mock.lockCreateFile.Lock()
+	mock.calls.CreateFile = append(mock.calls.CreateFile, callInfo)
+	mock.lockCreateFile.Unlock()
+	return mock.CreateFileFunc(ctx, origin, alias, ownerID)
+}
+
+// CreateFileCalls gets all the calls that were made to CreateFile.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateFileCalls())
+func (mock *ManagerInterfaceMock) CreateFileCalls() []struct {
+	Ctx     context.Context
+	Origin  io.Reader
+	Alias   string
+	OwnerID entity.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		Origin  io.Reader
+		Alias   string
+		OwnerID entity.UUID
+	}
+	mock.lockCreateFile.RLock()
+	calls = mock.calls.CreateFile
+	mock.lockCreateFile.RUnlock()
+	return calls
+}
+
+// CreateFileFromOuter calls CreateFileFromOuterFunc.
+func (mock *ManagerInterfaceMock) CreateFileFromOuter(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID) (entity.File, error) {
+	if mock.CreateFileFromOuterFunc == nil {
+		panic("ManagerInterfaceMock.CreateFileFromOuterFunc: method is nil but ManagerInterface.CreateFileFromOuter was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		URL        string
+		Alias      string
+		Size       entity.Float
+		OwnerID    entity.UUID
+		MimeTypeID uuid.UUID
+	}{
+		Ctx:        ctx,
+		URL:        url,
+		Alias:      alias,
+		Size:       size,
+		OwnerID:    ownerID,
+		MimeTypeID: mimeTypeID,
+	}
+	mock.lockCreateFileFromOuter.Lock()
+	mock.calls.CreateFileFromOuter = append(mock.calls.CreateFileFromOuter, callInfo)
+	mock.lockCreateFileFromOuter.Unlock()
+	return mock.CreateFileFromOuterFunc(ctx, url, alias, size, ownerID, mimeTypeID)
+}
+
+// CreateFileFromOuterCalls gets all the calls that were made to CreateFileFromOuter.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateFileFromOuterCalls())
+func (mock *ManagerInterfaceMock) CreateFileFromOuterCalls() []struct {
+	Ctx        context.Context
+	URL        string
+	Alias      string
+	Size       entity.Float
+	OwnerID    entity.UUID
+	MimeTypeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		URL        string
+		Alias      string
+		Size       entity.Float
+		OwnerID    entity.UUID
+		MimeTypeID uuid.UUID
+	}
+	mock.lockCreateFileFromOuter.RLock()
+	calls = mock.calls.CreateFileFromOuter
+	mock.lockCreateFileFromOuter.RUnlock()
+	return calls
+}
+
+// CreateFileSpecifyFilename calls CreateFileSpecifyFilenameFunc.
+func (mock *ManagerInterfaceMock) CreateFileSpecifyFilename(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.File, error) {
+	if mock.CreateFileSpecifyFilenameFunc == nil {
+		panic("ManagerInterfaceMock.CreateFileSpecifyFilenameFunc: method is nil but ManagerInterface.CreateFileSpecifyFilename was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Origin   io.Reader
+		Alias    string
+		OwnerID  entity.UUID
+		Filename string
+	}{
+		Ctx:      ctx,
+		Origin:   origin,
+		Alias:    alias,
+		OwnerID:  ownerID,
+		Filename: filename,
+	}
+	mock.lockCreateFileSpecifyFilename.Lock()
+	mock.calls.CreateFileSpecifyFilename = append(mock.calls.CreateFileSpecifyFilename, callInfo)
+	mock.lockCreateFileSpecifyFilename.Unlock()
+	return mock.CreateFileSpecifyFilenameFunc(ctx, origin, alias, ownerID, filename)
+}
+
+// CreateFileSpecifyFilenameCalls gets all the calls that were made to CreateFileSpecifyFilename.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateFileSpecifyFilenameCalls())
+func (mock *ManagerInterfaceMock) CreateFileSpecifyFilenameCalls() []struct {
+	Ctx      context.Context
+	Origin   io.Reader
+	Alias    string
+	OwnerID  entity.UUID
+	Filename string
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Origin   io.Reader
+		Alias    string
+		OwnerID  entity.UUID
+		Filename string
+	}
+	mock.lockCreateFileSpecifyFilename.RLock()
+	calls = mock.calls.CreateFileSpecifyFilename
+	mock.lockCreateFileSpecifyFilename.RUnlock()
+	return calls
+}
+
+// CreateFiles calls CreateFilesFunc.
+func (mock *ManagerInterfaceMock) CreateFiles(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileServiceParam) ([]entity.File, error) {
+	if mock.CreateFilesFunc == nil {
+		panic("ManagerInterfaceMock.CreateFilesFunc: method is nil but ManagerInterface.CreateFiles was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		OwnerID entity.UUID
+		Params  []parameter.CreateFileServiceParam
+	}{
+		Ctx:     ctx,
+		OwnerID: ownerID,
+		Params:  params,
+	}
+	mock.lockCreateFiles.Lock()
+	mock.calls.CreateFiles = append(mock.calls.CreateFiles, callInfo)
+	mock.lockCreateFiles.Unlock()
+	return mock.CreateFilesFunc(ctx, ownerID, params)
+}
+
+// CreateFilesCalls gets all the calls that were made to CreateFiles.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateFilesCalls())
+func (mock *ManagerInterfaceMock) CreateFilesCalls() []struct {
+	Ctx     context.Context
+	OwnerID entity.UUID
+	Params  []parameter.CreateFileServiceParam
+} {
+	var calls []struct {
+		Ctx     context.Context
+		OwnerID entity.UUID
+		Params  []parameter.CreateFileServiceParam
+	}
+	mock.lockCreateFiles.RLock()
+	calls = mock.calls.CreateFiles
+	mock.lockCreateFiles.RUnlock()
+	return calls
+}
+
+// CreateFilesFromOuter calls CreateFilesFromOuterFunc.
+func (mock *ManagerInterfaceMock) CreateFilesFromOuter(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileFromOuterServiceParam) ([]entity.File, error) {
+	if mock.CreateFilesFromOuterFunc == nil {
+		panic("ManagerInterfaceMock.CreateFilesFromOuterFunc: method is nil but ManagerInterface.CreateFilesFromOuter was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		OwnerID entity.UUID
+		Params  []parameter.CreateFileFromOuterServiceParam
+	}{
+		Ctx:     ctx,
+		OwnerID: ownerID,
+		Params:  params,
+	}
+	mock.lockCreateFilesFromOuter.Lock()
+	mock.calls.CreateFilesFromOuter = append(mock.calls.CreateFilesFromOuter, callInfo)
+	mock.lockCreateFilesFromOuter.Unlock()
+	return mock.CreateFilesFromOuterFunc(ctx, ownerID, params)
+}
+
+// CreateFilesFromOuterCalls gets all the calls that were made to CreateFilesFromOuter.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateFilesFromOuterCalls())
+func (mock *ManagerInterfaceMock) CreateFilesFromOuterCalls() []struct {
+	Ctx     context.Context
+	OwnerID entity.UUID
+	Params  []parameter.CreateFileFromOuterServiceParam
+} {
+	var calls []struct {
+		Ctx     context.Context
+		OwnerID entity.UUID
+		Params  []parameter.CreateFileFromOuterServiceParam
+	}
+	mock.lockCreateFilesFromOuter.RLock()
+	calls = mock.calls.CreateFilesFromOuter
+	mock.lockCreateFilesFromOuter.RUnlock()
+	return calls
+}
+
+// CreateFilesSpecifyFilename calls CreateFilesSpecifyFilenameFunc.
+func (mock *ManagerInterfaceMock) CreateFilesSpecifyFilename(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileSpecifyFilenameServiceParam) ([]entity.File, error) {
+	if mock.CreateFilesSpecifyFilenameFunc == nil {
+		panic("ManagerInterfaceMock.CreateFilesSpecifyFilenameFunc: method is nil but ManagerInterface.CreateFilesSpecifyFilename was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		OwnerID entity.UUID
+		Params  []parameter.CreateFileSpecifyFilenameServiceParam
+	}{
+		Ctx:     ctx,
+		OwnerID: ownerID,
+		Params:  params,
+	}
+	mock.lockCreateFilesSpecifyFilename.Lock()
+	mock.calls.CreateFilesSpecifyFilename = append(mock.calls.CreateFilesSpecifyFilename, callInfo)
+	mock.lockCreateFilesSpecifyFilename.Unlock()
+	return mock.CreateFilesSpecifyFilenameFunc(ctx, ownerID, params)
+}
+
+// CreateFilesSpecifyFilenameCalls gets all the calls that were made to CreateFilesSpecifyFilename.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateFilesSpecifyFilenameCalls())
+func (mock *ManagerInterfaceMock) CreateFilesSpecifyFilenameCalls() []struct {
+	Ctx     context.Context
+	OwnerID entity.UUID
+	Params  []parameter.CreateFileSpecifyFilenameServiceParam
+} {
+	var calls []struct {
+		Ctx     context.Context
+		OwnerID entity.UUID
+		Params  []parameter.CreateFileSpecifyFilenameServiceParam
+	}
+	mock.lockCreateFilesSpecifyFilename.RLock()
+	calls = mock.calls.CreateFilesSpecifyFilename
+	mock.lockCreateFilesSpecifyFilename.RUnlock()
+	return calls
+}
+
+// CreateGrade calls CreateGradeFunc.
+func (mock *ManagerInterfaceMock) CreateGrade(ctx context.Context, name string, key string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Grade, error) {
+	if mock.CreateGradeFunc == nil {
+		panic("ManagerInterfaceMock.CreateGradeFunc: method is nil but ManagerInterface.CreateGrade was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		Name         string
+		Key          string
+		Description  entity.String
+		Color        entity.String
+		CoverImageID entity.UUID
+	}{
+		Ctx:          ctx,
+		Name:         name,
+		Key:          key,
+		Description:  description,
+		Color:        color,
+		CoverImageID: coverImageID,
+	}
+	mock.lockCreateGrade.Lock()
+	mock.calls.CreateGrade = append(mock.calls.CreateGrade, callInfo)
+	mock.lockCreateGrade.Unlock()
+	return mock.CreateGradeFunc(ctx, name, key, description, color, coverImageID)
+}
+
+// CreateGradeCalls gets all the calls that were made to CreateGrade.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateGradeCalls())
+func (mock *ManagerInterfaceMock) CreateGradeCalls() []struct {
+	Ctx          context.Context
+	Name         string
+	Key          string
+	Description  entity.String
+	Color        entity.String
+	CoverImageID entity.UUID
+} {
+	var calls []struct {
+		Ctx          context.Context
+		Name         string
+		Key          string
+		Description  entity.String
+		Color        entity.String
+		CoverImageID entity.UUID
+	}
+	mock.lockCreateGrade.RLock()
+	calls = mock.calls.CreateGrade
+	mock.lockCreateGrade.RUnlock()
+	return calls
+}
+
+// CreateGrades calls CreateGradesFunc.
+func (mock *ManagerInterfaceMock) CreateGrades(ctx context.Context, ps []parameter.CreateGradeServiceParam) (int64, error) {
+	if mock.CreateGradesFunc == nil {
+		panic("ManagerInterfaceMock.CreateGradesFunc: method is nil but ManagerInterface.CreateGrades was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ps  []parameter.CreateGradeServiceParam
+	}{
+		Ctx: ctx,
+		Ps:  ps,
+	}
+	mock.lockCreateGrades.Lock()
+	mock.calls.CreateGrades = append(mock.calls.CreateGrades, callInfo)
+	mock.lockCreateGrades.Unlock()
+	return mock.CreateGradesFunc(ctx, ps)
+}
+
+// CreateGradesCalls gets all the calls that were made to CreateGrades.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateGradesCalls())
+func (mock *ManagerInterfaceMock) CreateGradesCalls() []struct {
+	Ctx context.Context
+	Ps  []parameter.CreateGradeServiceParam
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ps  []parameter.CreateGradeServiceParam
+	}
+	mock.lockCreateGrades.RLock()
+	calls = mock.calls.CreateGrades
+	mock.lockCreateGrades.RUnlock()
+	return calls
+}
+
+// CreateGroup calls CreateGroupFunc.
+func (mock *ManagerInterfaceMock) CreateGroup(ctx context.Context, name string, key string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Group, error) {
+	if mock.CreateGroupFunc == nil {
+		panic("ManagerInterfaceMock.CreateGroupFunc: method is nil but ManagerInterface.CreateGroup was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		Name         string
+		Key          string
+		Description  entity.String
+		Color        entity.String
+		CoverImageID entity.UUID
+	}{
+		Ctx:          ctx,
+		Name:         name,
+		Key:          key,
+		Description:  description,
+		Color:        color,
+		CoverImageID: coverImageID,
+	}
+	mock.lockCreateGroup.Lock()
+	mock.calls.CreateGroup = append(mock.calls.CreateGroup, callInfo)
+	mock.lockCreateGroup.Unlock()
+	return mock.CreateGroupFunc(ctx, name, key, description, color, coverImageID)
+}
+
+// CreateGroupCalls gets all the calls that were made to CreateGroup.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateGroupCalls())
+func (mock *ManagerInterfaceMock) CreateGroupCalls() []struct {
+	Ctx          context.Context
+	Name         string
+	Key          string
+	Description  entity.String
+	Color        entity.String
+	CoverImageID entity.UUID
+} {
+	var calls []struct {
+		Ctx          context.Context
+		Name         string
+		Key          string
+		Description  entity.String
+		Color        entity.String
+		CoverImageID entity.UUID
+	}
+	mock.lockCreateGroup.RLock()
+	calls = mock.calls.CreateGroup
+	mock.lockCreateGroup.RUnlock()
+	return calls
+}
+
+// CreateGroups calls CreateGroupsFunc.
+func (mock *ManagerInterfaceMock) CreateGroups(ctx context.Context, ps []parameter.CreateGroupServiceParam) (int64, error) {
+	if mock.CreateGroupsFunc == nil {
+		panic("ManagerInterfaceMock.CreateGroupsFunc: method is nil but ManagerInterface.CreateGroups was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ps  []parameter.CreateGroupServiceParam
+	}{
+		Ctx: ctx,
+		Ps:  ps,
+	}
+	mock.lockCreateGroups.Lock()
+	mock.calls.CreateGroups = append(mock.calls.CreateGroups, callInfo)
+	mock.lockCreateGroups.Unlock()
+	return mock.CreateGroupsFunc(ctx, ps)
+}
+
+// CreateGroupsCalls gets all the calls that were made to CreateGroups.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateGroupsCalls())
+func (mock *ManagerInterfaceMock) CreateGroupsCalls() []struct {
+	Ctx context.Context
+	Ps  []parameter.CreateGroupServiceParam
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ps  []parameter.CreateGroupServiceParam
+	}
+	mock.lockCreateGroups.RLock()
+	calls = mock.calls.CreateGroups
+	mock.lockCreateGroups.RUnlock()
 	return calls
 }
 
@@ -3449,6 +4445,114 @@ func (mock *ManagerInterfaceMock) DeleteEventTypeCalls() []struct {
 	return calls
 }
 
+// DeleteFile calls DeleteFileFunc.
+func (mock *ManagerInterfaceMock) DeleteFile(ctx context.Context, id uuid.UUID) (int64, error) {
+	if mock.DeleteFileFunc == nil {
+		panic("ManagerInterfaceMock.DeleteFileFunc: method is nil but ManagerInterface.DeleteFile was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockDeleteFile.Lock()
+	mock.calls.DeleteFile = append(mock.calls.DeleteFile, callInfo)
+	mock.lockDeleteFile.Unlock()
+	return mock.DeleteFileFunc(ctx, id)
+}
+
+// DeleteFileCalls gets all the calls that were made to DeleteFile.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeleteFileCalls())
+func (mock *ManagerInterfaceMock) DeleteFileCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockDeleteFile.RLock()
+	calls = mock.calls.DeleteFile
+	mock.lockDeleteFile.RUnlock()
+	return calls
+}
+
+// DeleteGrade calls DeleteGradeFunc.
+func (mock *ManagerInterfaceMock) DeleteGrade(ctx context.Context, id uuid.UUID) (int64, error) {
+	if mock.DeleteGradeFunc == nil {
+		panic("ManagerInterfaceMock.DeleteGradeFunc: method is nil but ManagerInterface.DeleteGrade was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockDeleteGrade.Lock()
+	mock.calls.DeleteGrade = append(mock.calls.DeleteGrade, callInfo)
+	mock.lockDeleteGrade.Unlock()
+	return mock.DeleteGradeFunc(ctx, id)
+}
+
+// DeleteGradeCalls gets all the calls that were made to DeleteGrade.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeleteGradeCalls())
+func (mock *ManagerInterfaceMock) DeleteGradeCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockDeleteGrade.RLock()
+	calls = mock.calls.DeleteGrade
+	mock.lockDeleteGrade.RUnlock()
+	return calls
+}
+
+// DeleteGroup calls DeleteGroupFunc.
+func (mock *ManagerInterfaceMock) DeleteGroup(ctx context.Context, id uuid.UUID) (int64, error) {
+	if mock.DeleteGroupFunc == nil {
+		panic("ManagerInterfaceMock.DeleteGroupFunc: method is nil but ManagerInterface.DeleteGroup was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockDeleteGroup.Lock()
+	mock.calls.DeleteGroup = append(mock.calls.DeleteGroup, callInfo)
+	mock.lockDeleteGroup.Unlock()
+	return mock.DeleteGroupFunc(ctx, id)
+}
+
+// DeleteGroupCalls gets all the calls that were made to DeleteGroup.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeleteGroupCalls())
+func (mock *ManagerInterfaceMock) DeleteGroupCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockDeleteGroup.RLock()
+	calls = mock.calls.DeleteGroup
+	mock.lockDeleteGroup.RUnlock()
+	return calls
+}
+
 // DeleteImage calls DeleteImageFunc.
 func (mock *ManagerInterfaceMock) DeleteImage(ctx context.Context, id uuid.UUID) (int64, error) {
 	if mock.DeleteImageFunc == nil {
@@ -3917,6 +5021,78 @@ func (mock *ManagerInterfaceMock) DisassociateRoleOnPolicyCalls() []struct {
 	return calls
 }
 
+// FindAttachableItemByID calls FindAttachableItemByIDFunc.
+func (mock *ManagerInterfaceMock) FindAttachableItemByID(ctx context.Context, id uuid.UUID) (entity.AttachableItemWithContent, error) {
+	if mock.FindAttachableItemByIDFunc == nil {
+		panic("ManagerInterfaceMock.FindAttachableItemByIDFunc: method is nil but ManagerInterface.FindAttachableItemByID was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockFindAttachableItemByID.Lock()
+	mock.calls.FindAttachableItemByID = append(mock.calls.FindAttachableItemByID, callInfo)
+	mock.lockFindAttachableItemByID.Unlock()
+	return mock.FindAttachableItemByIDFunc(ctx, id)
+}
+
+// FindAttachableItemByIDCalls gets all the calls that were made to FindAttachableItemByID.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindAttachableItemByIDCalls())
+func (mock *ManagerInterfaceMock) FindAttachableItemByIDCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockFindAttachableItemByID.RLock()
+	calls = mock.calls.FindAttachableItemByID
+	mock.lockFindAttachableItemByID.RUnlock()
+	return calls
+}
+
+// FindAttachableItemByURL calls FindAttachableItemByURLFunc.
+func (mock *ManagerInterfaceMock) FindAttachableItemByURL(ctx context.Context, url string) (entity.AttachableItemWithContent, error) {
+	if mock.FindAttachableItemByURLFunc == nil {
+		panic("ManagerInterfaceMock.FindAttachableItemByURLFunc: method is nil but ManagerInterface.FindAttachableItemByURL was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		URL string
+	}{
+		Ctx: ctx,
+		URL: url,
+	}
+	mock.lockFindAttachableItemByURL.Lock()
+	mock.calls.FindAttachableItemByURL = append(mock.calls.FindAttachableItemByURL, callInfo)
+	mock.lockFindAttachableItemByURL.Unlock()
+	return mock.FindAttachableItemByURLFunc(ctx, url)
+}
+
+// FindAttachableItemByURLCalls gets all the calls that were made to FindAttachableItemByURL.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindAttachableItemByURLCalls())
+func (mock *ManagerInterfaceMock) FindAttachableItemByURLCalls() []struct {
+	Ctx context.Context
+	URL string
+} {
+	var calls []struct {
+		Ctx context.Context
+		URL string
+	}
+	mock.lockFindAttachableItemByURL.RLock()
+	calls = mock.calls.FindAttachableItemByURL
+	mock.lockFindAttachableItemByURL.RUnlock()
+	return calls
+}
+
 // FindAttendStatusByID calls FindAttendStatusByIDFunc.
 func (mock *ManagerInterfaceMock) FindAttendStatusByID(ctx context.Context, id uuid.UUID) (entity.AttendStatus, error) {
 	if mock.FindAttendStatusByIDFunc == nil {
@@ -4058,6 +5234,78 @@ func (mock *ManagerInterfaceMock) FindAttendanceTypeByKeyCalls() []struct {
 	mock.lockFindAttendanceTypeByKey.RLock()
 	calls = mock.calls.FindAttendanceTypeByKey
 	mock.lockFindAttendanceTypeByKey.RUnlock()
+	return calls
+}
+
+// FindChatRoomByID calls FindChatRoomByIDFunc.
+func (mock *ManagerInterfaceMock) FindChatRoomByID(ctx context.Context, id uuid.UUID) (entity.ChatRoom, error) {
+	if mock.FindChatRoomByIDFunc == nil {
+		panic("ManagerInterfaceMock.FindChatRoomByIDFunc: method is nil but ManagerInterface.FindChatRoomByID was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockFindChatRoomByID.Lock()
+	mock.calls.FindChatRoomByID = append(mock.calls.FindChatRoomByID, callInfo)
+	mock.lockFindChatRoomByID.Unlock()
+	return mock.FindChatRoomByIDFunc(ctx, id)
+}
+
+// FindChatRoomByIDCalls gets all the calls that were made to FindChatRoomByID.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindChatRoomByIDCalls())
+func (mock *ManagerInterfaceMock) FindChatRoomByIDCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockFindChatRoomByID.RLock()
+	calls = mock.calls.FindChatRoomByID
+	mock.lockFindChatRoomByID.RUnlock()
+	return calls
+}
+
+// FindChatRoomByIDWithCoverImage calls FindChatRoomByIDWithCoverImageFunc.
+func (mock *ManagerInterfaceMock) FindChatRoomByIDWithCoverImage(ctx context.Context, id uuid.UUID) (entity.ChatRoomWithCoverImage, error) {
+	if mock.FindChatRoomByIDWithCoverImageFunc == nil {
+		panic("ManagerInterfaceMock.FindChatRoomByIDWithCoverImageFunc: method is nil but ManagerInterface.FindChatRoomByIDWithCoverImage was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockFindChatRoomByIDWithCoverImage.Lock()
+	mock.calls.FindChatRoomByIDWithCoverImage = append(mock.calls.FindChatRoomByIDWithCoverImage, callInfo)
+	mock.lockFindChatRoomByIDWithCoverImage.Unlock()
+	return mock.FindChatRoomByIDWithCoverImageFunc(ctx, id)
+}
+
+// FindChatRoomByIDWithCoverImageCalls gets all the calls that were made to FindChatRoomByIDWithCoverImage.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindChatRoomByIDWithCoverImageCalls())
+func (mock *ManagerInterfaceMock) FindChatRoomByIDWithCoverImageCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockFindChatRoomByIDWithCoverImage.RLock()
+	calls = mock.calls.FindChatRoomByIDWithCoverImage
+	mock.lockFindChatRoomByIDWithCoverImage.RUnlock()
 	return calls
 }
 
@@ -5174,6 +6422,470 @@ func (mock *ManagerInterfaceMock) GetEventTypesCountCalls() []struct {
 	mock.lockGetEventTypesCount.RLock()
 	calls = mock.calls.GetEventTypesCount
 	mock.lockGetEventTypesCount.RUnlock()
+	return calls
+}
+
+// GetFiles calls GetFilesFunc.
+func (mock *ManagerInterfaceMock) GetFiles(ctx context.Context, order parameter.FileOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.File], error) {
+	if mock.GetFilesFunc == nil {
+		panic("ManagerInterfaceMock.GetFilesFunc: method is nil but ManagerInterface.GetFiles was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Order     parameter.FileOrderMethod
+		Pg        parameter.Pagination
+		Limit     parameter.Limit
+		Cursor    parameter.Cursor
+		Offset    parameter.Offset
+		WithCount parameter.WithCount
+	}{
+		Ctx:       ctx,
+		Order:     order,
+		Pg:        pg,
+		Limit:     limit,
+		Cursor:    cursor,
+		Offset:    offset,
+		WithCount: withCount,
+	}
+	mock.lockGetFiles.Lock()
+	mock.calls.GetFiles = append(mock.calls.GetFiles, callInfo)
+	mock.lockGetFiles.Unlock()
+	return mock.GetFilesFunc(ctx, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetFilesCalls gets all the calls that were made to GetFiles.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetFilesCalls())
+func (mock *ManagerInterfaceMock) GetFilesCalls() []struct {
+	Ctx       context.Context
+	Order     parameter.FileOrderMethod
+	Pg        parameter.Pagination
+	Limit     parameter.Limit
+	Cursor    parameter.Cursor
+	Offset    parameter.Offset
+	WithCount parameter.WithCount
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Order     parameter.FileOrderMethod
+		Pg        parameter.Pagination
+		Limit     parameter.Limit
+		Cursor    parameter.Cursor
+		Offset    parameter.Offset
+		WithCount parameter.WithCount
+	}
+	mock.lockGetFiles.RLock()
+	calls = mock.calls.GetFiles
+	mock.lockGetFiles.RUnlock()
+	return calls
+}
+
+// GetFilesCount calls GetFilesCountFunc.
+func (mock *ManagerInterfaceMock) GetFilesCount(ctx context.Context) (int64, error) {
+	if mock.GetFilesCountFunc == nil {
+		panic("ManagerInterfaceMock.GetFilesCountFunc: method is nil but ManagerInterface.GetFilesCount was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+	}{
+		Ctx: ctx,
+	}
+	mock.lockGetFilesCount.Lock()
+	mock.calls.GetFilesCount = append(mock.calls.GetFilesCount, callInfo)
+	mock.lockGetFilesCount.Unlock()
+	return mock.GetFilesCountFunc(ctx)
+}
+
+// GetFilesCountCalls gets all the calls that were made to GetFilesCount.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetFilesCountCalls())
+func (mock *ManagerInterfaceMock) GetFilesCountCalls() []struct {
+	Ctx context.Context
+} {
+	var calls []struct {
+		Ctx context.Context
+	}
+	mock.lockGetFilesCount.RLock()
+	calls = mock.calls.GetFilesCount
+	mock.lockGetFilesCount.RUnlock()
+	return calls
+}
+
+// GetGrades calls GetGradesFunc.
+func (mock *ManagerInterfaceMock) GetGrades(ctx context.Context, order parameter.GradeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Grade], error) {
+	if mock.GetGradesFunc == nil {
+		panic("ManagerInterfaceMock.GetGradesFunc: method is nil but ManagerInterface.GetGrades was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Order     parameter.GradeOrderMethod
+		Pg        parameter.Pagination
+		Limit     parameter.Limit
+		Cursor    parameter.Cursor
+		Offset    parameter.Offset
+		WithCount parameter.WithCount
+	}{
+		Ctx:       ctx,
+		Order:     order,
+		Pg:        pg,
+		Limit:     limit,
+		Cursor:    cursor,
+		Offset:    offset,
+		WithCount: withCount,
+	}
+	mock.lockGetGrades.Lock()
+	mock.calls.GetGrades = append(mock.calls.GetGrades, callInfo)
+	mock.lockGetGrades.Unlock()
+	return mock.GetGradesFunc(ctx, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetGradesCalls gets all the calls that were made to GetGrades.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetGradesCalls())
+func (mock *ManagerInterfaceMock) GetGradesCalls() []struct {
+	Ctx       context.Context
+	Order     parameter.GradeOrderMethod
+	Pg        parameter.Pagination
+	Limit     parameter.Limit
+	Cursor    parameter.Cursor
+	Offset    parameter.Offset
+	WithCount parameter.WithCount
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Order     parameter.GradeOrderMethod
+		Pg        parameter.Pagination
+		Limit     parameter.Limit
+		Cursor    parameter.Cursor
+		Offset    parameter.Offset
+		WithCount parameter.WithCount
+	}
+	mock.lockGetGrades.RLock()
+	calls = mock.calls.GetGrades
+	mock.lockGetGrades.RUnlock()
+	return calls
+}
+
+// GetGradesCount calls GetGradesCountFunc.
+func (mock *ManagerInterfaceMock) GetGradesCount(ctx context.Context) (int64, error) {
+	if mock.GetGradesCountFunc == nil {
+		panic("ManagerInterfaceMock.GetGradesCountFunc: method is nil but ManagerInterface.GetGradesCount was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+	}{
+		Ctx: ctx,
+	}
+	mock.lockGetGradesCount.Lock()
+	mock.calls.GetGradesCount = append(mock.calls.GetGradesCount, callInfo)
+	mock.lockGetGradesCount.Unlock()
+	return mock.GetGradesCountFunc(ctx)
+}
+
+// GetGradesCountCalls gets all the calls that were made to GetGradesCount.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetGradesCountCalls())
+func (mock *ManagerInterfaceMock) GetGradesCountCalls() []struct {
+	Ctx context.Context
+} {
+	var calls []struct {
+		Ctx context.Context
+	}
+	mock.lockGetGradesCount.RLock()
+	calls = mock.calls.GetGradesCount
+	mock.lockGetGradesCount.RUnlock()
+	return calls
+}
+
+// GetGradesWithOrganization calls GetGradesWithOrganizationFunc.
+func (mock *ManagerInterfaceMock) GetGradesWithOrganization(ctx context.Context, order parameter.GradeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.GradeWithOrganization], error) {
+	if mock.GetGradesWithOrganizationFunc == nil {
+		panic("ManagerInterfaceMock.GetGradesWithOrganizationFunc: method is nil but ManagerInterface.GetGradesWithOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Order     parameter.GradeOrderMethod
+		Pg        parameter.Pagination
+		Limit     parameter.Limit
+		Cursor    parameter.Cursor
+		Offset    parameter.Offset
+		WithCount parameter.WithCount
+	}{
+		Ctx:       ctx,
+		Order:     order,
+		Pg:        pg,
+		Limit:     limit,
+		Cursor:    cursor,
+		Offset:    offset,
+		WithCount: withCount,
+	}
+	mock.lockGetGradesWithOrganization.Lock()
+	mock.calls.GetGradesWithOrganization = append(mock.calls.GetGradesWithOrganization, callInfo)
+	mock.lockGetGradesWithOrganization.Unlock()
+	return mock.GetGradesWithOrganizationFunc(ctx, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetGradesWithOrganizationCalls gets all the calls that were made to GetGradesWithOrganization.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetGradesWithOrganizationCalls())
+func (mock *ManagerInterfaceMock) GetGradesWithOrganizationCalls() []struct {
+	Ctx       context.Context
+	Order     parameter.GradeOrderMethod
+	Pg        parameter.Pagination
+	Limit     parameter.Limit
+	Cursor    parameter.Cursor
+	Offset    parameter.Offset
+	WithCount parameter.WithCount
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Order     parameter.GradeOrderMethod
+		Pg        parameter.Pagination
+		Limit     parameter.Limit
+		Cursor    parameter.Cursor
+		Offset    parameter.Offset
+		WithCount parameter.WithCount
+	}
+	mock.lockGetGradesWithOrganization.RLock()
+	calls = mock.calls.GetGradesWithOrganization
+	mock.lockGetGradesWithOrganization.RUnlock()
+	return calls
+}
+
+// GetGroups calls GetGroupsFunc.
+func (mock *ManagerInterfaceMock) GetGroups(ctx context.Context, order parameter.GroupOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Group], error) {
+	if mock.GetGroupsFunc == nil {
+		panic("ManagerInterfaceMock.GetGroupsFunc: method is nil but ManagerInterface.GetGroups was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Order     parameter.GroupOrderMethod
+		Pg        parameter.Pagination
+		Limit     parameter.Limit
+		Cursor    parameter.Cursor
+		Offset    parameter.Offset
+		WithCount parameter.WithCount
+	}{
+		Ctx:       ctx,
+		Order:     order,
+		Pg:        pg,
+		Limit:     limit,
+		Cursor:    cursor,
+		Offset:    offset,
+		WithCount: withCount,
+	}
+	mock.lockGetGroups.Lock()
+	mock.calls.GetGroups = append(mock.calls.GetGroups, callInfo)
+	mock.lockGetGroups.Unlock()
+	return mock.GetGroupsFunc(ctx, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetGroupsCalls gets all the calls that were made to GetGroups.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetGroupsCalls())
+func (mock *ManagerInterfaceMock) GetGroupsCalls() []struct {
+	Ctx       context.Context
+	Order     parameter.GroupOrderMethod
+	Pg        parameter.Pagination
+	Limit     parameter.Limit
+	Cursor    parameter.Cursor
+	Offset    parameter.Offset
+	WithCount parameter.WithCount
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Order     parameter.GroupOrderMethod
+		Pg        parameter.Pagination
+		Limit     parameter.Limit
+		Cursor    parameter.Cursor
+		Offset    parameter.Offset
+		WithCount parameter.WithCount
+	}
+	mock.lockGetGroups.RLock()
+	calls = mock.calls.GetGroups
+	mock.lockGetGroups.RUnlock()
+	return calls
+}
+
+// GetGroupsCount calls GetGroupsCountFunc.
+func (mock *ManagerInterfaceMock) GetGroupsCount(ctx context.Context) (int64, error) {
+	if mock.GetGroupsCountFunc == nil {
+		panic("ManagerInterfaceMock.GetGroupsCountFunc: method is nil but ManagerInterface.GetGroupsCount was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+	}{
+		Ctx: ctx,
+	}
+	mock.lockGetGroupsCount.Lock()
+	mock.calls.GetGroupsCount = append(mock.calls.GetGroupsCount, callInfo)
+	mock.lockGetGroupsCount.Unlock()
+	return mock.GetGroupsCountFunc(ctx)
+}
+
+// GetGroupsCountCalls gets all the calls that were made to GetGroupsCount.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetGroupsCountCalls())
+func (mock *ManagerInterfaceMock) GetGroupsCountCalls() []struct {
+	Ctx context.Context
+} {
+	var calls []struct {
+		Ctx context.Context
+	}
+	mock.lockGetGroupsCount.RLock()
+	calls = mock.calls.GetGroupsCount
+	mock.lockGetGroupsCount.RUnlock()
+	return calls
+}
+
+// GetGroupsWithOrganization calls GetGroupsWithOrganizationFunc.
+func (mock *ManagerInterfaceMock) GetGroupsWithOrganization(ctx context.Context, order parameter.GroupOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.GroupWithOrganization], error) {
+	if mock.GetGroupsWithOrganizationFunc == nil {
+		panic("ManagerInterfaceMock.GetGroupsWithOrganizationFunc: method is nil but ManagerInterface.GetGroupsWithOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Order     parameter.GroupOrderMethod
+		Pg        parameter.Pagination
+		Limit     parameter.Limit
+		Cursor    parameter.Cursor
+		Offset    parameter.Offset
+		WithCount parameter.WithCount
+	}{
+		Ctx:       ctx,
+		Order:     order,
+		Pg:        pg,
+		Limit:     limit,
+		Cursor:    cursor,
+		Offset:    offset,
+		WithCount: withCount,
+	}
+	mock.lockGetGroupsWithOrganization.Lock()
+	mock.calls.GetGroupsWithOrganization = append(mock.calls.GetGroupsWithOrganization, callInfo)
+	mock.lockGetGroupsWithOrganization.Unlock()
+	return mock.GetGroupsWithOrganizationFunc(ctx, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetGroupsWithOrganizationCalls gets all the calls that were made to GetGroupsWithOrganization.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetGroupsWithOrganizationCalls())
+func (mock *ManagerInterfaceMock) GetGroupsWithOrganizationCalls() []struct {
+	Ctx       context.Context
+	Order     parameter.GroupOrderMethod
+	Pg        parameter.Pagination
+	Limit     parameter.Limit
+	Cursor    parameter.Cursor
+	Offset    parameter.Offset
+	WithCount parameter.WithCount
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Order     parameter.GroupOrderMethod
+		Pg        parameter.Pagination
+		Limit     parameter.Limit
+		Cursor    parameter.Cursor
+		Offset    parameter.Offset
+		WithCount parameter.WithCount
+	}
+	mock.lockGetGroupsWithOrganization.RLock()
+	calls = mock.calls.GetGroupsWithOrganization
+	mock.lockGetGroupsWithOrganization.RUnlock()
+	return calls
+}
+
+// GetImages calls GetImagesFunc.
+func (mock *ManagerInterfaceMock) GetImages(ctx context.Context, order parameter.ImageOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Image], error) {
+	if mock.GetImagesFunc == nil {
+		panic("ManagerInterfaceMock.GetImagesFunc: method is nil but ManagerInterface.GetImages was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Order     parameter.ImageOrderMethod
+		Pg        parameter.Pagination
+		Limit     parameter.Limit
+		Cursor    parameter.Cursor
+		Offset    parameter.Offset
+		WithCount parameter.WithCount
+	}{
+		Ctx:       ctx,
+		Order:     order,
+		Pg:        pg,
+		Limit:     limit,
+		Cursor:    cursor,
+		Offset:    offset,
+		WithCount: withCount,
+	}
+	mock.lockGetImages.Lock()
+	mock.calls.GetImages = append(mock.calls.GetImages, callInfo)
+	mock.lockGetImages.Unlock()
+	return mock.GetImagesFunc(ctx, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetImagesCalls gets all the calls that were made to GetImages.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetImagesCalls())
+func (mock *ManagerInterfaceMock) GetImagesCalls() []struct {
+	Ctx       context.Context
+	Order     parameter.ImageOrderMethod
+	Pg        parameter.Pagination
+	Limit     parameter.Limit
+	Cursor    parameter.Cursor
+	Offset    parameter.Offset
+	WithCount parameter.WithCount
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Order     parameter.ImageOrderMethod
+		Pg        parameter.Pagination
+		Limit     parameter.Limit
+		Cursor    parameter.Cursor
+		Offset    parameter.Offset
+		WithCount parameter.WithCount
+	}
+	mock.lockGetImages.RLock()
+	calls = mock.calls.GetImages
+	mock.lockGetImages.RUnlock()
+	return calls
+}
+
+// GetImagesCount calls GetImagesCountFunc.
+func (mock *ManagerInterfaceMock) GetImagesCount(ctx context.Context) (int64, error) {
+	if mock.GetImagesCountFunc == nil {
+		panic("ManagerInterfaceMock.GetImagesCountFunc: method is nil but ManagerInterface.GetImagesCount was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+	}{
+		Ctx: ctx,
+	}
+	mock.lockGetImagesCount.Lock()
+	mock.calls.GetImagesCount = append(mock.calls.GetImagesCount, callInfo)
+	mock.lockGetImagesCount.Unlock()
+	return mock.GetImagesCountFunc(ctx)
+}
+
+// GetImagesCountCalls gets all the calls that were made to GetImagesCount.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetImagesCountCalls())
+func (mock *ManagerInterfaceMock) GetImagesCountCalls() []struct {
+	Ctx context.Context
+} {
+	var calls []struct {
+		Ctx context.Context
+	}
+	mock.lockGetImagesCount.RLock()
+	calls = mock.calls.GetImagesCount
+	mock.lockGetImagesCount.RUnlock()
 	return calls
 }
 
@@ -6625,6 +8337,114 @@ func (mock *ManagerInterfaceMock) PluralDeleteEventTypesCalls() []struct {
 	return calls
 }
 
+// PluralDeleteFiles calls PluralDeleteFilesFunc.
+func (mock *ManagerInterfaceMock) PluralDeleteFiles(ctx context.Context, ids []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteFilesFunc == nil {
+		panic("ManagerInterfaceMock.PluralDeleteFilesFunc: method is nil but ManagerInterface.PluralDeleteFiles was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}{
+		Ctx: ctx,
+		Ids: ids,
+	}
+	mock.lockPluralDeleteFiles.Lock()
+	mock.calls.PluralDeleteFiles = append(mock.calls.PluralDeleteFiles, callInfo)
+	mock.lockPluralDeleteFiles.Unlock()
+	return mock.PluralDeleteFilesFunc(ctx, ids)
+}
+
+// PluralDeleteFilesCalls gets all the calls that were made to PluralDeleteFiles.
+// Check the length with:
+//
+//	len(mockedManagerInterface.PluralDeleteFilesCalls())
+func (mock *ManagerInterfaceMock) PluralDeleteFilesCalls() []struct {
+	Ctx context.Context
+	Ids []uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}
+	mock.lockPluralDeleteFiles.RLock()
+	calls = mock.calls.PluralDeleteFiles
+	mock.lockPluralDeleteFiles.RUnlock()
+	return calls
+}
+
+// PluralDeleteGrades calls PluralDeleteGradesFunc.
+func (mock *ManagerInterfaceMock) PluralDeleteGrades(ctx context.Context, ids []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteGradesFunc == nil {
+		panic("ManagerInterfaceMock.PluralDeleteGradesFunc: method is nil but ManagerInterface.PluralDeleteGrades was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}{
+		Ctx: ctx,
+		Ids: ids,
+	}
+	mock.lockPluralDeleteGrades.Lock()
+	mock.calls.PluralDeleteGrades = append(mock.calls.PluralDeleteGrades, callInfo)
+	mock.lockPluralDeleteGrades.Unlock()
+	return mock.PluralDeleteGradesFunc(ctx, ids)
+}
+
+// PluralDeleteGradesCalls gets all the calls that were made to PluralDeleteGrades.
+// Check the length with:
+//
+//	len(mockedManagerInterface.PluralDeleteGradesCalls())
+func (mock *ManagerInterfaceMock) PluralDeleteGradesCalls() []struct {
+	Ctx context.Context
+	Ids []uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}
+	mock.lockPluralDeleteGrades.RLock()
+	calls = mock.calls.PluralDeleteGrades
+	mock.lockPluralDeleteGrades.RUnlock()
+	return calls
+}
+
+// PluralDeleteGroups calls PluralDeleteGroupsFunc.
+func (mock *ManagerInterfaceMock) PluralDeleteGroups(ctx context.Context, ids []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteGroupsFunc == nil {
+		panic("ManagerInterfaceMock.PluralDeleteGroupsFunc: method is nil but ManagerInterface.PluralDeleteGroups was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}{
+		Ctx: ctx,
+		Ids: ids,
+	}
+	mock.lockPluralDeleteGroups.Lock()
+	mock.calls.PluralDeleteGroups = append(mock.calls.PluralDeleteGroups, callInfo)
+	mock.lockPluralDeleteGroups.Unlock()
+	return mock.PluralDeleteGroupsFunc(ctx, ids)
+}
+
+// PluralDeleteGroupsCalls gets all the calls that were made to PluralDeleteGroups.
+// Check the length with:
+//
+//	len(mockedManagerInterface.PluralDeleteGroupsCalls())
+func (mock *ManagerInterfaceMock) PluralDeleteGroupsCalls() []struct {
+	Ctx context.Context
+	Ids []uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}
+	mock.lockPluralDeleteGroups.RLock()
+	calls = mock.calls.PluralDeleteGroups
+	mock.lockPluralDeleteGroups.RUnlock()
+	return calls
+}
+
 // PluralDeleteImages calls PluralDeleteImagesFunc.
 func (mock *ManagerInterfaceMock) PluralDeleteImages(ctx context.Context, ids []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteImagesFunc == nil {
@@ -7130,6 +8950,110 @@ func (mock *ManagerInterfaceMock) UpdateEventTypeCalls() []struct {
 	mock.lockUpdateEventType.RLock()
 	calls = mock.calls.UpdateEventType
 	mock.lockUpdateEventType.RUnlock()
+	return calls
+}
+
+// UpdateGrade calls UpdateGradeFunc.
+func (mock *ManagerInterfaceMock) UpdateGrade(ctx context.Context, id uuid.UUID, name string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Grade, error) {
+	if mock.UpdateGradeFunc == nil {
+		panic("ManagerInterfaceMock.UpdateGradeFunc: method is nil but ManagerInterface.UpdateGrade was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		ID           uuid.UUID
+		Name         string
+		Description  entity.String
+		Color        entity.String
+		CoverImageID entity.UUID
+	}{
+		Ctx:          ctx,
+		ID:           id,
+		Name:         name,
+		Description:  description,
+		Color:        color,
+		CoverImageID: coverImageID,
+	}
+	mock.lockUpdateGrade.Lock()
+	mock.calls.UpdateGrade = append(mock.calls.UpdateGrade, callInfo)
+	mock.lockUpdateGrade.Unlock()
+	return mock.UpdateGradeFunc(ctx, id, name, description, color, coverImageID)
+}
+
+// UpdateGradeCalls gets all the calls that were made to UpdateGrade.
+// Check the length with:
+//
+//	len(mockedManagerInterface.UpdateGradeCalls())
+func (mock *ManagerInterfaceMock) UpdateGradeCalls() []struct {
+	Ctx          context.Context
+	ID           uuid.UUID
+	Name         string
+	Description  entity.String
+	Color        entity.String
+	CoverImageID entity.UUID
+} {
+	var calls []struct {
+		Ctx          context.Context
+		ID           uuid.UUID
+		Name         string
+		Description  entity.String
+		Color        entity.String
+		CoverImageID entity.UUID
+	}
+	mock.lockUpdateGrade.RLock()
+	calls = mock.calls.UpdateGrade
+	mock.lockUpdateGrade.RUnlock()
+	return calls
+}
+
+// UpdateGroup calls UpdateGroupFunc.
+func (mock *ManagerInterfaceMock) UpdateGroup(ctx context.Context, id uuid.UUID, name string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Group, error) {
+	if mock.UpdateGroupFunc == nil {
+		panic("ManagerInterfaceMock.UpdateGroupFunc: method is nil but ManagerInterface.UpdateGroup was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		ID           uuid.UUID
+		Name         string
+		Description  entity.String
+		Color        entity.String
+		CoverImageID entity.UUID
+	}{
+		Ctx:          ctx,
+		ID:           id,
+		Name:         name,
+		Description:  description,
+		Color:        color,
+		CoverImageID: coverImageID,
+	}
+	mock.lockUpdateGroup.Lock()
+	mock.calls.UpdateGroup = append(mock.calls.UpdateGroup, callInfo)
+	mock.lockUpdateGroup.Unlock()
+	return mock.UpdateGroupFunc(ctx, id, name, description, color, coverImageID)
+}
+
+// UpdateGroupCalls gets all the calls that were made to UpdateGroup.
+// Check the length with:
+//
+//	len(mockedManagerInterface.UpdateGroupCalls())
+func (mock *ManagerInterfaceMock) UpdateGroupCalls() []struct {
+	Ctx          context.Context
+	ID           uuid.UUID
+	Name         string
+	Description  entity.String
+	Color        entity.String
+	CoverImageID entity.UUID
+} {
+	var calls []struct {
+		Ctx          context.Context
+		ID           uuid.UUID
+		Name         string
+		Description  entity.String
+		Color        entity.String
+		CoverImageID entity.UUID
+	}
+	mock.lockUpdateGroup.RLock()
+	calls = mock.calls.UpdateGroup
+	mock.lockUpdateGroup.RUnlock()
 	return calls
 }
 

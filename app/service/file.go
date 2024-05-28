@@ -599,3 +599,53 @@ func (m *ManageFile) PluralDeleteFiles(
 	}
 	return c, nil
 }
+
+// GetFiles ファイルを取得する。
+func (m *ManageFile) GetFiles(
+	ctx context.Context,
+	order parameter.FileOrderMethod,
+	pg parameter.Pagination,
+	limit parameter.Limit,
+	cursor parameter.Cursor,
+	offset parameter.Offset,
+	withCount parameter.WithCount,
+) (store.ListResult[entity.File], error) {
+	wc := store.WithCountParam{
+		Valid: bool(withCount),
+	}
+	var np store.NumberedPaginationParam
+	var cp store.CursorPaginationParam
+	where := parameter.WhereFileParam{}
+	switch pg {
+	case parameter.NumberedPagination:
+		np = store.NumberedPaginationParam{
+			Valid:  true,
+			Offset: entity.Int{Int64: int64(offset)},
+			Limit:  entity.Int{Int64: int64(limit)},
+		}
+	case parameter.CursorPagination:
+		cp = store.CursorPaginationParam{
+			Valid:  true,
+			Cursor: string(cursor),
+			Limit:  entity.Int{Int64: int64(limit)},
+		}
+	case parameter.NonePagination:
+	}
+	r, err := m.DB.GetFiles(ctx, where, order, np, cp, wc)
+	if err != nil {
+		return store.ListResult[entity.File]{}, fmt.Errorf("failed to get images: %w", err)
+	}
+	return r, nil
+}
+
+// GetFilesCount ファイルの数を取得する。
+func (m *ManageFile) GetFilesCount(
+	ctx context.Context,
+) (int64, error) {
+	p := parameter.WhereFileParam{}
+	c, err := m.DB.CountFiles(ctx, p)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get images count: %w", err)
+	}
+	return c, nil
+}

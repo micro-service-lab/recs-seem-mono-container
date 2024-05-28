@@ -12,7 +12,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/batch"
-	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 )
 
 var (
@@ -121,6 +120,12 @@ var seedPoliciesCmd *cobra.Command
 // seedDefaultImagesCmd inserts default images.
 var seedDefaultImagesCmd *cobra.Command
 
+// seedGradesCmd inserts grades.
+var seedGradesCmd *cobra.Command
+
+// seedGroupsCmd inserts groups.
+var seedGroupsCmd *cobra.Command
+
 // seedAllCmd inserts all seed data.
 var seedAllCmd = &cobra.Command{
 	Use:   "all",
@@ -146,6 +151,8 @@ The seed command is executed when the application is started for the first time.
 			func(cmd *cobra.Command, args []string) {
 				seedMimeTypesCmd.Run(cmd, args)
 				seedDefaultImagesCmd.Run(cmd, args)
+				seedGradesCmd.Run(cmd, args)
+				seedGroupsCmd.Run(cmd, args)
 			},
 			seedRecordTypesCmd.Run,
 		}
@@ -270,10 +277,34 @@ func seedInit() {
 		"default images",
 		"Default Images",
 		func(ctx context.Context) (int64, error) {
-			return AppContainer.Store.CountImages(ctx, parameter.WhereImageParam{})
+			return AppContainer.ServiceManager.GetImagesCount(ctx)
 		},
 		&batch.InitDefaultImages{
 			Manager: &AppContainer.ServiceManager,
+		},
+	)
+	seedGradesCmd = seedCmdGenerator(
+		"grade",
+		"grades",
+		"Grades",
+		func(ctx context.Context) (int64, error) {
+			return AppContainer.ServiceManager.GetGradesCount(ctx)
+		},
+		&batch.InitGrades{
+			Manager: &AppContainer.ServiceManager,
+			Storage: AppContainer.Storage,
+		},
+	)
+	seedGroupsCmd = seedCmdGenerator(
+		"group",
+		"groups",
+		"Groups",
+		func(ctx context.Context) (int64, error) {
+			return AppContainer.ServiceManager.GetGroupsCount(ctx)
+		},
+		&batch.InitGroups{
+			Manager: &AppContainer.ServiceManager,
+			Storage: AppContainer.Storage,
 		},
 	)
 
@@ -289,6 +320,8 @@ func seedInit() {
 	seedCmd.AddCommand(seedPermissionsCmd)
 	seedCmd.AddCommand(seedPoliciesCmd)
 	seedCmd.AddCommand(seedDefaultImagesCmd)
+	seedCmd.AddCommand(seedGradesCmd)
+	seedCmd.AddCommand(seedGroupsCmd)
 
 	seedCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "Force seed")
 	seedCmd.PersistentFlags().BoolVarP(&diff, "diff", "d", false, "Seed only if there is a difference")

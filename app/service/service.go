@@ -30,6 +30,11 @@ type Manager struct {
 	ManageRoleAssociation
 	ManageOrganization
 	ManageImage
+	ManageFile
+	ManageAttachableItem
+	ManageGrade
+	ManageGroup
+	ManageChatRoom
 }
 
 // NewManager creates a new Manager.
@@ -49,6 +54,11 @@ func NewManager(db store.Store, _ i18n.Translation, stg storage.Storage) *Manage
 		ManageRoleAssociation:    ManageRoleAssociation{DB: db},
 		ManageOrganization:       ManageOrganization{DB: db},
 		ManageImage:              ManageImage{DB: db, Storage: stg},
+		ManageFile:               ManageFile{DB: db, Storage: stg},
+		ManageAttachableItem:     ManageAttachableItem{DB: db},
+		ManageGrade:              ManageGrade{DB: db},
+		ManageGroup:              ManageGroup{DB: db},
+		ManageChatRoom:           ManageChatRoom{DB: db, Storage: stg},
 	}
 }
 
@@ -69,6 +79,11 @@ type ManagerInterface interface {
 	RoleAssociationManager
 	OrganizationManager
 	ImageManager
+	FileManager
+	AttachableItemManager
+	GradeManager
+	GroupManager
+	ChatRoomManager
 }
 
 // AttendStatusManager is a interface for attend status service.
@@ -509,6 +524,182 @@ type ImageManager interface {
 	PluralDeleteImages(
 		ctx context.Context, ids []uuid.UUID,
 	) (int64, error)
+	GetImages(
+		ctx context.Context,
+		order parameter.ImageOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.Image], error)
+	GetImagesCount(
+		ctx context.Context,
+	) (int64, error)
+}
+
+// FileManager is a interface for file service.
+type FileManager interface {
+	CreateFile(
+		ctx context.Context,
+		origin io.Reader,
+		alias string,
+		ownerID entity.UUID,
+	) (entity.File, error)
+	CreateFiles(
+		ctx context.Context,
+		ownerID entity.UUID,
+		params []parameter.CreateFileServiceParam,
+	) ([]entity.File, error)
+	CreateFileSpecifyFilename(
+		ctx context.Context,
+		origin io.Reader,
+		alias string,
+		ownerID entity.UUID,
+		filename string,
+	) (entity.File, error)
+	CreateFilesSpecifyFilename(
+		ctx context.Context,
+		ownerID entity.UUID,
+		params []parameter.CreateFileSpecifyFilenameServiceParam,
+	) ([]entity.File, error)
+	CreateFileFromOuter(
+		ctx context.Context,
+		url,
+		alias string,
+		size entity.Float,
+		ownerID entity.UUID,
+		mimeTypeID uuid.UUID,
+	) (entity.File, error)
+	CreateFilesFromOuter(
+		ctx context.Context,
+		ownerID entity.UUID,
+		params []parameter.CreateFileFromOuterServiceParam,
+	) ([]entity.File, error)
+	DeleteFile(ctx context.Context, id uuid.UUID) (int64, error)
+	PluralDeleteFiles(
+		ctx context.Context, ids []uuid.UUID,
+	) (int64, error)
+	GetFiles(
+		ctx context.Context,
+		order parameter.FileOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.File], error)
+	GetFilesCount(
+		ctx context.Context,
+	) (int64, error)
+}
+
+// GradeManager is a interface for grade service.
+type GradeManager interface {
+	CreateGrade(
+		ctx context.Context,
+		name, key string,
+		description, color entity.String,
+		coverImageID entity.UUID,
+	) (e entity.Grade, err error)
+	CreateGrades(
+		ctx context.Context, ps []parameter.CreateGradeServiceParam,
+	) (c int64, err error)
+	DeleteGrade(ctx context.Context, id uuid.UUID) (c int64, err error)
+	PluralDeleteGrades(
+		ctx context.Context, ids []uuid.UUID,
+	) (c int64, err error)
+	UpdateGrade(
+		ctx context.Context,
+		id uuid.UUID,
+		name string,
+		description, color entity.String,
+		coverImageID entity.UUID,
+	) (e entity.Grade, err error)
+	GetGrades(
+		ctx context.Context,
+		order parameter.GradeOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.Grade], error)
+	GetGradesWithOrganization(
+		ctx context.Context,
+		order parameter.GradeOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.GradeWithOrganization], error)
+	GetGradesCount(
+		ctx context.Context,
+	) (int64, error)
+}
+
+// GroupManager is a interface for group service.
+type GroupManager interface {
+	CreateGroup(
+		ctx context.Context,
+		name, key string,
+		description, color entity.String,
+		coverImageID entity.UUID,
+	) (e entity.Group, err error)
+	CreateGroups(
+		ctx context.Context, ps []parameter.CreateGroupServiceParam,
+	) (c int64, err error)
+	DeleteGroup(ctx context.Context, id uuid.UUID) (c int64, err error)
+	PluralDeleteGroups(
+		ctx context.Context, ids []uuid.UUID,
+	) (c int64, err error)
+	UpdateGroup(
+		ctx context.Context,
+		id uuid.UUID,
+		name string,
+		description, color entity.String,
+		coverImageID entity.UUID,
+	) (e entity.Group, err error)
+	GetGroups(
+		ctx context.Context,
+		order parameter.GroupOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.Group], error)
+	GetGroupsWithOrganization(
+		ctx context.Context,
+		order parameter.GroupOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.GroupWithOrganization], error)
+	GetGroupsCount(
+		ctx context.Context,
+	) (int64, error)
+}
+
+// ChatRoomManager is a interface for chat room service.
+type ChatRoomManager interface {
+	FindChatRoomByID(
+		ctx context.Context,
+		id uuid.UUID,
+	) (entity.ChatRoom, error)
+	FindChatRoomByIDWithCoverImage(
+		ctx context.Context,
+		id uuid.UUID,
+	) (entity.ChatRoomWithCoverImage, error)
+}
+
+// AttachableItemManager is a interface for attachable item service.
+type AttachableItemManager interface {
+	FindAttachableItemByID(ctx context.Context, id uuid.UUID) (entity.AttachableItemWithContent, error)
+	FindAttachableItemByURL(ctx context.Context, url string) (entity.AttachableItemWithContent, error)
 }
 
 var _ ManagerInterface = (*Manager)(nil)

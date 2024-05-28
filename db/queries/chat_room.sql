@@ -16,6 +16,15 @@ DELETE FROM m_chat_rooms WHERE chat_room_id = ANY(@chat_room_ids::uuid[]);
 -- name: FindChatRoomByID :one
 SELECT * FROM m_chat_rooms WHERE chat_room_id = $1;
 
+-- name: FindChatRoomByIDWithCoverImage :one
+SELECT m_chat_rooms.*, t_images.height cover_image_height, t_images.width cover_image_width, t_images.attachable_item_id cover_image_attachable_item_id,
+t_attachable_items.owner_id cover_image_owner_id, t_attachable_items.from_outer cover_image_from_outer, t_attachable_items.alias cover_image_alias,
+t_attachable_items.url cover_image_url, t_attachable_items.size cover_image_size, t_attachable_items.mime_type_id cover_image_mime_type_id
+FROM m_chat_rooms
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE chat_room_id = $1;
+
 -- name: FindChatRoomOnPrivate :one
 SELECT * FROM m_chat_rooms
 WHERE (SELECT COUNT(chat_room_id) FROM m_chat_room_belongings WHERE chat_room_id = m_chat_rooms.chat_room_id AND
@@ -96,6 +105,93 @@ ORDER BY
 
 -- name: GetPluralChatRoomsUseNumberedPaginate :many
 SELECT * FROM m_chat_rooms
+WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
+ORDER BY
+	m_chat_rooms_pkey ASC
+LIMIT $1 OFFSET $2;
+
+-- name: GetChatRoomsWithCoverImage :many
+SELECT m_chat_rooms.*, t_images.height cover_image_height, t_images.width cover_image_width, t_images.attachable_item_id cover_image_attachable_item_id,
+t_attachable_items.owner_id cover_image_owner_id, t_attachable_items.from_outer cover_image_from_outer, t_attachable_items.alias cover_image_alias,
+t_attachable_items.url cover_image_url, t_attachable_items.size cover_image_size, t_attachable_items.mime_type_id cover_image_mime_type_id
+FROM m_chat_rooms
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE
+	CASE WHEN @where_in_owner::boolean = true THEN owner_id = ANY(@in_owner::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_is_private::boolean = true THEN is_private = @is_private ELSE TRUE END
+AND
+	CASE WHEN @where_is_from_organization::boolean = true THEN from_organization = @is_from_organization ELSE TRUE END
+AND
+	CASE WHEN @where_from_organizations::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY(@from_organizations::uuid[])) = chat_room_id ELSE TRUE END
+ORDER BY
+	m_chat_rooms_pkey ASC;
+
+-- name: GetChatRoomsWithCoverImageUseNumberedPaginate :many
+SELECT m_chat_rooms.*, t_images.height cover_image_height, t_images.width cover_image_width, t_images.attachable_item_id cover_image_attachable_item_id,
+t_attachable_items.owner_id cover_image_owner_id, t_attachable_items.from_outer cover_image_from_outer, t_attachable_items.alias cover_image_alias,
+t_attachable_items.url cover_image_url, t_attachable_items.size cover_image_size, t_attachable_items.mime_type_id cover_image_mime_type_id
+FROM m_chat_rooms
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE
+	CASE WHEN @where_in_owner::boolean = true THEN owner_id = ANY(@in_owner::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_is_private::boolean = true THEN is_private = @is_private ELSE TRUE END
+AND
+	CASE WHEN @where_is_from_organization::boolean = true THEN from_organization = @is_from_organization ELSE TRUE END
+AND
+	CASE WHEN @where_from_organizations::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY(@from_organizations::uuid[])) = chat_room_id ELSE TRUE END
+ORDER BY
+	m_chat_rooms_pkey ASC
+LIMIT $1 OFFSET $2;
+
+-- name: GetChatRoomsWithCoverImageUseKeysetPaginate :many
+SELECT m_chat_rooms.*, t_images.height cover_image_height, t_images.width cover_image_width, t_images.attachable_item_id cover_image_attachable_item_id,
+t_attachable_items.owner_id cover_image_owner_id, t_attachable_items.from_outer cover_image_from_outer, t_attachable_items.alias cover_image_alias,
+t_attachable_items.url cover_image_url, t_attachable_items.size cover_image_size, t_attachable_items.mime_type_id cover_image_mime_type_id
+FROM m_chat_rooms
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE
+	CASE WHEN @where_in_owner::boolean = true THEN owner_id = ANY(@in_owner::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_is_private::boolean = true THEN is_private = @is_private ELSE TRUE END
+AND
+	CASE WHEN @where_is_from_organization::boolean = true THEN from_organization = @is_from_organization ELSE TRUE END
+AND
+	CASE WHEN @where_from_organizations::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY(@from_organizations::uuid[])) = chat_room_id ELSE TRUE END
+AND
+	CASE @cursor_direction::text
+		WHEN 'next' THEN
+			m_chat_rooms_pkey > @cursor::int
+		WHEN 'prev' THEN
+			m_chat_rooms_pkey < @cursor::int
+	END
+ORDER BY
+	CASE WHEN @cursor_direction::text = 'next' THEN m_chat_rooms_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN m_chat_rooms_pkey END DESC
+LIMIT $1;
+
+-- name: GetPluralChatRoomsWithCoverImage :many
+SELECT m_chat_rooms.*, t_images.height cover_image_height, t_images.width cover_image_width, t_images.attachable_item_id cover_image_attachable_item_id,
+t_attachable_items.owner_id cover_image_owner_id, t_attachable_items.from_outer cover_image_from_outer, t_attachable_items.alias cover_image_alias,
+t_attachable_items.url cover_image_url, t_attachable_items.size cover_image_size, t_attachable_items.mime_type_id cover_image_mime_type_id
+FROM m_chat_rooms
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
+ORDER BY
+	m_chat_rooms_pkey ASC;
+
+-- name: GetPluralChatRoomsWithCoverImageUseNumberedPaginate :many
+SELECT m_chat_rooms.*, t_images.height cover_image_height, t_images.width cover_image_width, t_images.attachable_item_id cover_image_attachable_item_id,
+t_attachable_items.owner_id cover_image_owner_id, t_attachable_items.from_outer cover_image_from_outer, t_attachable_items.alias cover_image_alias,
+t_attachable_items.url cover_image_url, t_attachable_items.size cover_image_size, t_attachable_items.mime_type_id cover_image_mime_type_id
+FROM m_chat_rooms
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
 ORDER BY
 	m_chat_rooms_pkey ASC

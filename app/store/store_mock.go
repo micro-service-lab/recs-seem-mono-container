@@ -759,6 +759,18 @@ var _ Store = &StoreMock{}
 //			DisbelongChatRoomFunc: func(ctx context.Context, memberID uuid.UUID, chatRoomID uuid.UUID) (int64, error) {
 //				panic("mock out the DisbelongChatRoom method")
 //			},
+//			DisbelongChatRoomOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongChatRoomOnChatRoom method")
+//			},
+//			DisbelongChatRoomOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongChatRoomOnChatRoomWithSd method")
+//			},
+//			DisbelongChatRoomOnChatRoomsFunc: func(ctx context.Context, chatRoomIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongChatRoomOnChatRooms method")
+//			},
+//			DisbelongChatRoomOnChatRoomsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongChatRoomOnChatRoomsWithSd method")
+//			},
 //			DisbelongChatRoomOnMemberFunc: func(ctx context.Context, memberID uuid.UUID) (int64, error) {
 //				panic("mock out the DisbelongChatRoomOnMember method")
 //			},
@@ -788,6 +800,18 @@ var _ Store = &StoreMock{}
 //			},
 //			DisbelongOrganizationOnMembersWithSdFunc: func(ctx context.Context, sd Sd, memberIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the DisbelongOrganizationOnMembersWithSd method")
+//			},
+//			DisbelongOrganizationOnOrganizationFunc: func(ctx context.Context, organizationID uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongOrganizationOnOrganization method")
+//			},
+//			DisbelongOrganizationOnOrganizationWithSdFunc: func(ctx context.Context, sd Sd, organizationID uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongOrganizationOnOrganizationWithSd method")
+//			},
+//			DisbelongOrganizationOnOrganizationsFunc: func(ctx context.Context, organizationIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongOrganizationOnOrganizations method")
+//			},
+//			DisbelongOrganizationOnOrganizationsWithSdFunc: func(ctx context.Context, sd Sd, organizationIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongOrganizationOnOrganizationsWithSd method")
 //			},
 //			DisbelongOrganizationWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID, organizationID uuid.UUID) (int64, error) {
 //				panic("mock out the DisbelongOrganizationWithSd method")
@@ -848,6 +872,12 @@ var _ Store = &StoreMock{}
 //			},
 //			FindChatRoomByIDFunc: func(ctx context.Context, chatRoomID uuid.UUID) (entity.ChatRoom, error) {
 //				panic("mock out the FindChatRoomByID method")
+//			},
+//			FindChatRoomByIDWithCoverImageFunc: func(ctx context.Context, chatRoomID uuid.UUID) (entity.ChatRoomWithCoverImage, error) {
+//				panic("mock out the FindChatRoomByIDWithCoverImage method")
+//			},
+//			FindChatRoomByIDWithCoverImageWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID) (entity.ChatRoomWithCoverImage, error) {
+//				panic("mock out the FindChatRoomByIDWithCoverImageWithSd method")
 //			},
 //			FindChatRoomByIDWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID) (entity.ChatRoom, error) {
 //				panic("mock out the FindChatRoomByIDWithSd method")
@@ -1203,6 +1233,12 @@ var _ Store = &StoreMock{}
 //			GetChatRoomsOnMemberWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID, where parameter.WhereChatRoomOnMemberParam, order parameter.ChatRoomOnMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomOnMember], error) {
 //				panic("mock out the GetChatRoomsOnMemberWithSd method")
 //			},
+//			GetChatRoomsWithCoverImageFunc: func(ctx context.Context, where parameter.WhereChatRoomParam, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithCoverImage], error) {
+//				panic("mock out the GetChatRoomsWithCoverImage method")
+//			},
+//			GetChatRoomsWithCoverImageWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereChatRoomParam, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithCoverImage], error) {
+//				panic("mock out the GetChatRoomsWithCoverImageWithSd method")
+//			},
 //			GetChatRoomsWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereChatRoomParam, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoom], error) {
 //				panic("mock out the GetChatRoomsWithSd method")
 //			},
@@ -1424,6 +1460,12 @@ var _ Store = &StoreMock{}
 //			},
 //			GetPluralChatRoomsOnMemberWithSdFunc: func(ctx context.Context, sd Sd, memberIDs []uuid.UUID, np NumberedPaginationParam, order parameter.ChatRoomOnMemberOrderMethod) (ListResult[entity.ChatRoomOnMember], error) {
 //				panic("mock out the GetPluralChatRoomsOnMemberWithSd method")
+//			},
+//			GetPluralChatRoomsWithCoverImageFunc: func(ctx context.Context, chatRoomIDs []uuid.UUID, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithCoverImage], error) {
+//				panic("mock out the GetPluralChatRoomsWithCoverImage method")
+//			},
+//			GetPluralChatRoomsWithCoverImageWithSdFunc: func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithCoverImage], error) {
+//				panic("mock out the GetPluralChatRoomsWithCoverImageWithSd method")
 //			},
 //			GetPluralChatRoomsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoom], error) {
 //				panic("mock out the GetPluralChatRoomsWithSd method")
@@ -2824,6 +2866,18 @@ type StoreMock struct {
 	// DisbelongChatRoomFunc mocks the DisbelongChatRoom method.
 	DisbelongChatRoomFunc func(ctx context.Context, memberID uuid.UUID, chatRoomID uuid.UUID) (int64, error)
 
+	// DisbelongChatRoomOnChatRoomFunc mocks the DisbelongChatRoomOnChatRoom method.
+	DisbelongChatRoomOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID) (int64, error)
+
+	// DisbelongChatRoomOnChatRoomWithSdFunc mocks the DisbelongChatRoomOnChatRoomWithSd method.
+	DisbelongChatRoomOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID) (int64, error)
+
+	// DisbelongChatRoomOnChatRoomsFunc mocks the DisbelongChatRoomOnChatRooms method.
+	DisbelongChatRoomOnChatRoomsFunc func(ctx context.Context, chatRoomIDs []uuid.UUID) (int64, error)
+
+	// DisbelongChatRoomOnChatRoomsWithSdFunc mocks the DisbelongChatRoomOnChatRoomsWithSd method.
+	DisbelongChatRoomOnChatRoomsWithSdFunc func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID) (int64, error)
+
 	// DisbelongChatRoomOnMemberFunc mocks the DisbelongChatRoomOnMember method.
 	DisbelongChatRoomOnMemberFunc func(ctx context.Context, memberID uuid.UUID) (int64, error)
 
@@ -2853,6 +2907,18 @@ type StoreMock struct {
 
 	// DisbelongOrganizationOnMembersWithSdFunc mocks the DisbelongOrganizationOnMembersWithSd method.
 	DisbelongOrganizationOnMembersWithSdFunc func(ctx context.Context, sd Sd, memberIDs []uuid.UUID) (int64, error)
+
+	// DisbelongOrganizationOnOrganizationFunc mocks the DisbelongOrganizationOnOrganization method.
+	DisbelongOrganizationOnOrganizationFunc func(ctx context.Context, organizationID uuid.UUID) (int64, error)
+
+	// DisbelongOrganizationOnOrganizationWithSdFunc mocks the DisbelongOrganizationOnOrganizationWithSd method.
+	DisbelongOrganizationOnOrganizationWithSdFunc func(ctx context.Context, sd Sd, organizationID uuid.UUID) (int64, error)
+
+	// DisbelongOrganizationOnOrganizationsFunc mocks the DisbelongOrganizationOnOrganizations method.
+	DisbelongOrganizationOnOrganizationsFunc func(ctx context.Context, organizationIDs []uuid.UUID) (int64, error)
+
+	// DisbelongOrganizationOnOrganizationsWithSdFunc mocks the DisbelongOrganizationOnOrganizationsWithSd method.
+	DisbelongOrganizationOnOrganizationsWithSdFunc func(ctx context.Context, sd Sd, organizationIDs []uuid.UUID) (int64, error)
 
 	// DisbelongOrganizationWithSdFunc mocks the DisbelongOrganizationWithSd method.
 	DisbelongOrganizationWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID, organizationID uuid.UUID) (int64, error)
@@ -2913,6 +2979,12 @@ type StoreMock struct {
 
 	// FindChatRoomByIDFunc mocks the FindChatRoomByID method.
 	FindChatRoomByIDFunc func(ctx context.Context, chatRoomID uuid.UUID) (entity.ChatRoom, error)
+
+	// FindChatRoomByIDWithCoverImageFunc mocks the FindChatRoomByIDWithCoverImage method.
+	FindChatRoomByIDWithCoverImageFunc func(ctx context.Context, chatRoomID uuid.UUID) (entity.ChatRoomWithCoverImage, error)
+
+	// FindChatRoomByIDWithCoverImageWithSdFunc mocks the FindChatRoomByIDWithCoverImageWithSd method.
+	FindChatRoomByIDWithCoverImageWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID) (entity.ChatRoomWithCoverImage, error)
 
 	// FindChatRoomByIDWithSdFunc mocks the FindChatRoomByIDWithSd method.
 	FindChatRoomByIDWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID) (entity.ChatRoom, error)
@@ -3268,6 +3340,12 @@ type StoreMock struct {
 	// GetChatRoomsOnMemberWithSdFunc mocks the GetChatRoomsOnMemberWithSd method.
 	GetChatRoomsOnMemberWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID, where parameter.WhereChatRoomOnMemberParam, order parameter.ChatRoomOnMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomOnMember], error)
 
+	// GetChatRoomsWithCoverImageFunc mocks the GetChatRoomsWithCoverImage method.
+	GetChatRoomsWithCoverImageFunc func(ctx context.Context, where parameter.WhereChatRoomParam, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithCoverImage], error)
+
+	// GetChatRoomsWithCoverImageWithSdFunc mocks the GetChatRoomsWithCoverImageWithSd method.
+	GetChatRoomsWithCoverImageWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereChatRoomParam, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithCoverImage], error)
+
 	// GetChatRoomsWithSdFunc mocks the GetChatRoomsWithSd method.
 	GetChatRoomsWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereChatRoomParam, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoom], error)
 
@@ -3489,6 +3567,12 @@ type StoreMock struct {
 
 	// GetPluralChatRoomsOnMemberWithSdFunc mocks the GetPluralChatRoomsOnMemberWithSd method.
 	GetPluralChatRoomsOnMemberWithSdFunc func(ctx context.Context, sd Sd, memberIDs []uuid.UUID, np NumberedPaginationParam, order parameter.ChatRoomOnMemberOrderMethod) (ListResult[entity.ChatRoomOnMember], error)
+
+	// GetPluralChatRoomsWithCoverImageFunc mocks the GetPluralChatRoomsWithCoverImage method.
+	GetPluralChatRoomsWithCoverImageFunc func(ctx context.Context, chatRoomIDs []uuid.UUID, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithCoverImage], error)
+
+	// GetPluralChatRoomsWithCoverImageWithSdFunc mocks the GetPluralChatRoomsWithCoverImageWithSd method.
+	GetPluralChatRoomsWithCoverImageWithSdFunc func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithCoverImage], error)
 
 	// GetPluralChatRoomsWithSdFunc mocks the GetPluralChatRoomsWithSd method.
 	GetPluralChatRoomsWithSdFunc func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoom], error)
@@ -6156,6 +6240,38 @@ type StoreMock struct {
 			// ChatRoomID is the chatRoomID argument value.
 			ChatRoomID uuid.UUID
 		}
+		// DisbelongChatRoomOnChatRoom holds details about calls to the DisbelongChatRoomOnChatRoom method.
+		DisbelongChatRoomOnChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+		}
+		// DisbelongChatRoomOnChatRoomWithSd holds details about calls to the DisbelongChatRoomOnChatRoomWithSd method.
+		DisbelongChatRoomOnChatRoomWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+		}
+		// DisbelongChatRoomOnChatRooms holds details about calls to the DisbelongChatRoomOnChatRooms method.
+		DisbelongChatRoomOnChatRooms []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomIDs is the chatRoomIDs argument value.
+			ChatRoomIDs []uuid.UUID
+		}
+		// DisbelongChatRoomOnChatRoomsWithSd holds details about calls to the DisbelongChatRoomOnChatRoomsWithSd method.
+		DisbelongChatRoomOnChatRoomsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomIDs is the chatRoomIDs argument value.
+			ChatRoomIDs []uuid.UUID
+		}
 		// DisbelongChatRoomOnMember holds details about calls to the DisbelongChatRoomOnMember method.
 		DisbelongChatRoomOnMember []struct {
 			// Ctx is the ctx argument value.
@@ -6239,6 +6355,38 @@ type StoreMock struct {
 			Sd Sd
 			// MemberIDs is the memberIDs argument value.
 			MemberIDs []uuid.UUID
+		}
+		// DisbelongOrganizationOnOrganization holds details about calls to the DisbelongOrganizationOnOrganization method.
+		DisbelongOrganizationOnOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+		}
+		// DisbelongOrganizationOnOrganizationWithSd holds details about calls to the DisbelongOrganizationOnOrganizationWithSd method.
+		DisbelongOrganizationOnOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+		}
+		// DisbelongOrganizationOnOrganizations holds details about calls to the DisbelongOrganizationOnOrganizations method.
+		DisbelongOrganizationOnOrganizations []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationIDs is the organizationIDs argument value.
+			OrganizationIDs []uuid.UUID
+		}
+		// DisbelongOrganizationOnOrganizationsWithSd holds details about calls to the DisbelongOrganizationOnOrganizationsWithSd method.
+		DisbelongOrganizationOnOrganizationsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// OrganizationIDs is the organizationIDs argument value.
+			OrganizationIDs []uuid.UUID
 		}
 		// DisbelongOrganizationWithSd holds details about calls to the DisbelongOrganizationWithSd method.
 		DisbelongOrganizationWithSd []struct {
@@ -6399,6 +6547,22 @@ type StoreMock struct {
 		FindChatRoomByID []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+		}
+		// FindChatRoomByIDWithCoverImage holds details about calls to the FindChatRoomByIDWithCoverImage method.
+		FindChatRoomByIDWithCoverImage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+		}
+		// FindChatRoomByIDWithCoverImageWithSd holds details about calls to the FindChatRoomByIDWithCoverImageWithSd method.
+		FindChatRoomByIDWithCoverImageWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
 			// ChatRoomID is the chatRoomID argument value.
 			ChatRoomID uuid.UUID
 		}
@@ -7443,6 +7607,38 @@ type StoreMock struct {
 			Where parameter.WhereChatRoomOnMemberParam
 			// Order is the order argument value.
 			Order parameter.ChatRoomOnMemberOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetChatRoomsWithCoverImage holds details about calls to the GetChatRoomsWithCoverImage method.
+		GetChatRoomsWithCoverImage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereChatRoomParam
+			// Order is the order argument value.
+			Order parameter.ChatRoomOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetChatRoomsWithCoverImageWithSd holds details about calls to the GetChatRoomsWithCoverImageWithSd method.
+		GetChatRoomsWithCoverImageWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereChatRoomParam
+			// Order is the order argument value.
+			Order parameter.ChatRoomOrderMethod
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 			// Cp is the cp argument value.
@@ -8593,6 +8789,30 @@ type StoreMock struct {
 			Np NumberedPaginationParam
 			// Order is the order argument value.
 			Order parameter.ChatRoomOnMemberOrderMethod
+		}
+		// GetPluralChatRoomsWithCoverImage holds details about calls to the GetPluralChatRoomsWithCoverImage method.
+		GetPluralChatRoomsWithCoverImage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomIDs is the chatRoomIDs argument value.
+			ChatRoomIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.ChatRoomOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralChatRoomsWithCoverImageWithSd holds details about calls to the GetPluralChatRoomsWithCoverImageWithSd method.
+		GetPluralChatRoomsWithCoverImageWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomIDs is the chatRoomIDs argument value.
+			ChatRoomIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.ChatRoomOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
 		}
 		// GetPluralChatRoomsWithSd holds details about calls to the GetPluralChatRoomsWithSd method.
 		GetPluralChatRoomsWithSd []struct {
@@ -11253,6 +11473,10 @@ type StoreMock struct {
 	lockDisassociateRoleOnPolicyWithSd                    sync.RWMutex
 	lockDisassociateRoleWithSd                            sync.RWMutex
 	lockDisbelongChatRoom                                 sync.RWMutex
+	lockDisbelongChatRoomOnChatRoom                       sync.RWMutex
+	lockDisbelongChatRoomOnChatRoomWithSd                 sync.RWMutex
+	lockDisbelongChatRoomOnChatRooms                      sync.RWMutex
+	lockDisbelongChatRoomOnChatRoomsWithSd                sync.RWMutex
 	lockDisbelongChatRoomOnMember                         sync.RWMutex
 	lockDisbelongChatRoomOnMemberWithSd                   sync.RWMutex
 	lockDisbelongChatRoomOnMembers                        sync.RWMutex
@@ -11263,6 +11487,10 @@ type StoreMock struct {
 	lockDisbelongOrganizationOnMemberWithSd               sync.RWMutex
 	lockDisbelongOrganizationOnMembers                    sync.RWMutex
 	lockDisbelongOrganizationOnMembersWithSd              sync.RWMutex
+	lockDisbelongOrganizationOnOrganization               sync.RWMutex
+	lockDisbelongOrganizationOnOrganizationWithSd         sync.RWMutex
+	lockDisbelongOrganizationOnOrganizations              sync.RWMutex
+	lockDisbelongOrganizationOnOrganizationsWithSd        sync.RWMutex
 	lockDisbelongOrganizationWithSd                       sync.RWMutex
 	lockFindAbsenceByID                                   sync.RWMutex
 	lockFindAbsenceByIDWithSd                             sync.RWMutex
@@ -11283,6 +11511,8 @@ type StoreMock struct {
 	lockFindAttendanceTypeByKey                           sync.RWMutex
 	lockFindAttendanceTypeByKeyWithSd                     sync.RWMutex
 	lockFindChatRoomByID                                  sync.RWMutex
+	lockFindChatRoomByIDWithCoverImage                    sync.RWMutex
+	lockFindChatRoomByIDWithCoverImageWithSd              sync.RWMutex
 	lockFindChatRoomByIDWithSd                            sync.RWMutex
 	lockFindChatRoomOnPrivate                             sync.RWMutex
 	lockFindChatRoomOnPrivateWithSd                       sync.RWMutex
@@ -11401,6 +11631,8 @@ type StoreMock struct {
 	lockGetChatRooms                                      sync.RWMutex
 	lockGetChatRoomsOnMember                              sync.RWMutex
 	lockGetChatRoomsOnMemberWithSd                        sync.RWMutex
+	lockGetChatRoomsWithCoverImage                        sync.RWMutex
+	lockGetChatRoomsWithCoverImageWithSd                  sync.RWMutex
 	lockGetChatRoomsWithSd                                sync.RWMutex
 	lockGetEventTypes                                     sync.RWMutex
 	lockGetEventTypesWithSd                               sync.RWMutex
@@ -11475,6 +11707,8 @@ type StoreMock struct {
 	lockGetPluralChatRooms                                sync.RWMutex
 	lockGetPluralChatRoomsOnMember                        sync.RWMutex
 	lockGetPluralChatRoomsOnMemberWithSd                  sync.RWMutex
+	lockGetPluralChatRoomsWithCoverImage                  sync.RWMutex
+	lockGetPluralChatRoomsWithCoverImageWithSd            sync.RWMutex
 	lockGetPluralChatRoomsWithSd                          sync.RWMutex
 	lockGetPluralEventTypes                               sync.RWMutex
 	lockGetPluralEventTypesWithSd                         sync.RWMutex
@@ -21127,6 +21361,158 @@ func (mock *StoreMock) DisbelongChatRoomCalls() []struct {
 	return calls
 }
 
+// DisbelongChatRoomOnChatRoom calls DisbelongChatRoomOnChatRoomFunc.
+func (mock *StoreMock) DisbelongChatRoomOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) (int64, error) {
+	if mock.DisbelongChatRoomOnChatRoomFunc == nil {
+		panic("StoreMock.DisbelongChatRoomOnChatRoomFunc: method is nil but Store.DisbelongChatRoomOnChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+	}{
+		Ctx:        ctx,
+		ChatRoomID: chatRoomID,
+	}
+	mock.lockDisbelongChatRoomOnChatRoom.Lock()
+	mock.calls.DisbelongChatRoomOnChatRoom = append(mock.calls.DisbelongChatRoomOnChatRoom, callInfo)
+	mock.lockDisbelongChatRoomOnChatRoom.Unlock()
+	return mock.DisbelongChatRoomOnChatRoomFunc(ctx, chatRoomID)
+}
+
+// DisbelongChatRoomOnChatRoomCalls gets all the calls that were made to DisbelongChatRoomOnChatRoom.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongChatRoomOnChatRoomCalls())
+func (mock *StoreMock) DisbelongChatRoomOnChatRoomCalls() []struct {
+	Ctx        context.Context
+	ChatRoomID uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+	}
+	mock.lockDisbelongChatRoomOnChatRoom.RLock()
+	calls = mock.calls.DisbelongChatRoomOnChatRoom
+	mock.lockDisbelongChatRoomOnChatRoom.RUnlock()
+	return calls
+}
+
+// DisbelongChatRoomOnChatRoomWithSd calls DisbelongChatRoomOnChatRoomWithSdFunc.
+func (mock *StoreMock) DisbelongChatRoomOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID) (int64, error) {
+	if mock.DisbelongChatRoomOnChatRoomWithSdFunc == nil {
+		panic("StoreMock.DisbelongChatRoomOnChatRoomWithSdFunc: method is nil but Store.DisbelongChatRoomOnChatRoomWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		ChatRoomID: chatRoomID,
+	}
+	mock.lockDisbelongChatRoomOnChatRoomWithSd.Lock()
+	mock.calls.DisbelongChatRoomOnChatRoomWithSd = append(mock.calls.DisbelongChatRoomOnChatRoomWithSd, callInfo)
+	mock.lockDisbelongChatRoomOnChatRoomWithSd.Unlock()
+	return mock.DisbelongChatRoomOnChatRoomWithSdFunc(ctx, sd, chatRoomID)
+}
+
+// DisbelongChatRoomOnChatRoomWithSdCalls gets all the calls that were made to DisbelongChatRoomOnChatRoomWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongChatRoomOnChatRoomWithSdCalls())
+func (mock *StoreMock) DisbelongChatRoomOnChatRoomWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	ChatRoomID uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+	}
+	mock.lockDisbelongChatRoomOnChatRoomWithSd.RLock()
+	calls = mock.calls.DisbelongChatRoomOnChatRoomWithSd
+	mock.lockDisbelongChatRoomOnChatRoomWithSd.RUnlock()
+	return calls
+}
+
+// DisbelongChatRoomOnChatRooms calls DisbelongChatRoomOnChatRoomsFunc.
+func (mock *StoreMock) DisbelongChatRoomOnChatRooms(ctx context.Context, chatRoomIDs []uuid.UUID) (int64, error) {
+	if mock.DisbelongChatRoomOnChatRoomsFunc == nil {
+		panic("StoreMock.DisbelongChatRoomOnChatRoomsFunc: method is nil but Store.DisbelongChatRoomOnChatRooms was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		ChatRoomIDs []uuid.UUID
+	}{
+		Ctx:         ctx,
+		ChatRoomIDs: chatRoomIDs,
+	}
+	mock.lockDisbelongChatRoomOnChatRooms.Lock()
+	mock.calls.DisbelongChatRoomOnChatRooms = append(mock.calls.DisbelongChatRoomOnChatRooms, callInfo)
+	mock.lockDisbelongChatRoomOnChatRooms.Unlock()
+	return mock.DisbelongChatRoomOnChatRoomsFunc(ctx, chatRoomIDs)
+}
+
+// DisbelongChatRoomOnChatRoomsCalls gets all the calls that were made to DisbelongChatRoomOnChatRooms.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongChatRoomOnChatRoomsCalls())
+func (mock *StoreMock) DisbelongChatRoomOnChatRoomsCalls() []struct {
+	Ctx         context.Context
+	ChatRoomIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx         context.Context
+		ChatRoomIDs []uuid.UUID
+	}
+	mock.lockDisbelongChatRoomOnChatRooms.RLock()
+	calls = mock.calls.DisbelongChatRoomOnChatRooms
+	mock.lockDisbelongChatRoomOnChatRooms.RUnlock()
+	return calls
+}
+
+// DisbelongChatRoomOnChatRoomsWithSd calls DisbelongChatRoomOnChatRoomsWithSdFunc.
+func (mock *StoreMock) DisbelongChatRoomOnChatRoomsWithSd(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID) (int64, error) {
+	if mock.DisbelongChatRoomOnChatRoomsWithSdFunc == nil {
+		panic("StoreMock.DisbelongChatRoomOnChatRoomsWithSdFunc: method is nil but Store.DisbelongChatRoomOnChatRoomsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		Sd          Sd
+		ChatRoomIDs []uuid.UUID
+	}{
+		Ctx:         ctx,
+		Sd:          sd,
+		ChatRoomIDs: chatRoomIDs,
+	}
+	mock.lockDisbelongChatRoomOnChatRoomsWithSd.Lock()
+	mock.calls.DisbelongChatRoomOnChatRoomsWithSd = append(mock.calls.DisbelongChatRoomOnChatRoomsWithSd, callInfo)
+	mock.lockDisbelongChatRoomOnChatRoomsWithSd.Unlock()
+	return mock.DisbelongChatRoomOnChatRoomsWithSdFunc(ctx, sd, chatRoomIDs)
+}
+
+// DisbelongChatRoomOnChatRoomsWithSdCalls gets all the calls that were made to DisbelongChatRoomOnChatRoomsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongChatRoomOnChatRoomsWithSdCalls())
+func (mock *StoreMock) DisbelongChatRoomOnChatRoomsWithSdCalls() []struct {
+	Ctx         context.Context
+	Sd          Sd
+	ChatRoomIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx         context.Context
+		Sd          Sd
+		ChatRoomIDs []uuid.UUID
+	}
+	mock.lockDisbelongChatRoomOnChatRoomsWithSd.RLock()
+	calls = mock.calls.DisbelongChatRoomOnChatRoomsWithSd
+	mock.lockDisbelongChatRoomOnChatRoomsWithSd.RUnlock()
+	return calls
+}
+
 // DisbelongChatRoomOnMember calls DisbelongChatRoomOnMemberFunc.
 func (mock *StoreMock) DisbelongChatRoomOnMember(ctx context.Context, memberID uuid.UUID) (int64, error) {
 	if mock.DisbelongChatRoomOnMemberFunc == nil {
@@ -21512,6 +21898,158 @@ func (mock *StoreMock) DisbelongOrganizationOnMembersWithSdCalls() []struct {
 	mock.lockDisbelongOrganizationOnMembersWithSd.RLock()
 	calls = mock.calls.DisbelongOrganizationOnMembersWithSd
 	mock.lockDisbelongOrganizationOnMembersWithSd.RUnlock()
+	return calls
+}
+
+// DisbelongOrganizationOnOrganization calls DisbelongOrganizationOnOrganizationFunc.
+func (mock *StoreMock) DisbelongOrganizationOnOrganization(ctx context.Context, organizationID uuid.UUID) (int64, error) {
+	if mock.DisbelongOrganizationOnOrganizationFunc == nil {
+		panic("StoreMock.DisbelongOrganizationOnOrganizationFunc: method is nil but Store.DisbelongOrganizationOnOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+	}{
+		Ctx:            ctx,
+		OrganizationID: organizationID,
+	}
+	mock.lockDisbelongOrganizationOnOrganization.Lock()
+	mock.calls.DisbelongOrganizationOnOrganization = append(mock.calls.DisbelongOrganizationOnOrganization, callInfo)
+	mock.lockDisbelongOrganizationOnOrganization.Unlock()
+	return mock.DisbelongOrganizationOnOrganizationFunc(ctx, organizationID)
+}
+
+// DisbelongOrganizationOnOrganizationCalls gets all the calls that were made to DisbelongOrganizationOnOrganization.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongOrganizationOnOrganizationCalls())
+func (mock *StoreMock) DisbelongOrganizationOnOrganizationCalls() []struct {
+	Ctx            context.Context
+	OrganizationID uuid.UUID
+} {
+	var calls []struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+	}
+	mock.lockDisbelongOrganizationOnOrganization.RLock()
+	calls = mock.calls.DisbelongOrganizationOnOrganization
+	mock.lockDisbelongOrganizationOnOrganization.RUnlock()
+	return calls
+}
+
+// DisbelongOrganizationOnOrganizationWithSd calls DisbelongOrganizationOnOrganizationWithSdFunc.
+func (mock *StoreMock) DisbelongOrganizationOnOrganizationWithSd(ctx context.Context, sd Sd, organizationID uuid.UUID) (int64, error) {
+	if mock.DisbelongOrganizationOnOrganizationWithSdFunc == nil {
+		panic("StoreMock.DisbelongOrganizationOnOrganizationWithSdFunc: method is nil but Store.DisbelongOrganizationOnOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+	}{
+		Ctx:            ctx,
+		Sd:             sd,
+		OrganizationID: organizationID,
+	}
+	mock.lockDisbelongOrganizationOnOrganizationWithSd.Lock()
+	mock.calls.DisbelongOrganizationOnOrganizationWithSd = append(mock.calls.DisbelongOrganizationOnOrganizationWithSd, callInfo)
+	mock.lockDisbelongOrganizationOnOrganizationWithSd.Unlock()
+	return mock.DisbelongOrganizationOnOrganizationWithSdFunc(ctx, sd, organizationID)
+}
+
+// DisbelongOrganizationOnOrganizationWithSdCalls gets all the calls that were made to DisbelongOrganizationOnOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongOrganizationOnOrganizationWithSdCalls())
+func (mock *StoreMock) DisbelongOrganizationOnOrganizationWithSdCalls() []struct {
+	Ctx            context.Context
+	Sd             Sd
+	OrganizationID uuid.UUID
+} {
+	var calls []struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+	}
+	mock.lockDisbelongOrganizationOnOrganizationWithSd.RLock()
+	calls = mock.calls.DisbelongOrganizationOnOrganizationWithSd
+	mock.lockDisbelongOrganizationOnOrganizationWithSd.RUnlock()
+	return calls
+}
+
+// DisbelongOrganizationOnOrganizations calls DisbelongOrganizationOnOrganizationsFunc.
+func (mock *StoreMock) DisbelongOrganizationOnOrganizations(ctx context.Context, organizationIDs []uuid.UUID) (int64, error) {
+	if mock.DisbelongOrganizationOnOrganizationsFunc == nil {
+		panic("StoreMock.DisbelongOrganizationOnOrganizationsFunc: method is nil but Store.DisbelongOrganizationOnOrganizations was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		OrganizationIDs []uuid.UUID
+	}{
+		Ctx:             ctx,
+		OrganizationIDs: organizationIDs,
+	}
+	mock.lockDisbelongOrganizationOnOrganizations.Lock()
+	mock.calls.DisbelongOrganizationOnOrganizations = append(mock.calls.DisbelongOrganizationOnOrganizations, callInfo)
+	mock.lockDisbelongOrganizationOnOrganizations.Unlock()
+	return mock.DisbelongOrganizationOnOrganizationsFunc(ctx, organizationIDs)
+}
+
+// DisbelongOrganizationOnOrganizationsCalls gets all the calls that were made to DisbelongOrganizationOnOrganizations.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongOrganizationOnOrganizationsCalls())
+func (mock *StoreMock) DisbelongOrganizationOnOrganizationsCalls() []struct {
+	Ctx             context.Context
+	OrganizationIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx             context.Context
+		OrganizationIDs []uuid.UUID
+	}
+	mock.lockDisbelongOrganizationOnOrganizations.RLock()
+	calls = mock.calls.DisbelongOrganizationOnOrganizations
+	mock.lockDisbelongOrganizationOnOrganizations.RUnlock()
+	return calls
+}
+
+// DisbelongOrganizationOnOrganizationsWithSd calls DisbelongOrganizationOnOrganizationsWithSdFunc.
+func (mock *StoreMock) DisbelongOrganizationOnOrganizationsWithSd(ctx context.Context, sd Sd, organizationIDs []uuid.UUID) (int64, error) {
+	if mock.DisbelongOrganizationOnOrganizationsWithSdFunc == nil {
+		panic("StoreMock.DisbelongOrganizationOnOrganizationsWithSdFunc: method is nil but Store.DisbelongOrganizationOnOrganizationsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		Sd              Sd
+		OrganizationIDs []uuid.UUID
+	}{
+		Ctx:             ctx,
+		Sd:              sd,
+		OrganizationIDs: organizationIDs,
+	}
+	mock.lockDisbelongOrganizationOnOrganizationsWithSd.Lock()
+	mock.calls.DisbelongOrganizationOnOrganizationsWithSd = append(mock.calls.DisbelongOrganizationOnOrganizationsWithSd, callInfo)
+	mock.lockDisbelongOrganizationOnOrganizationsWithSd.Unlock()
+	return mock.DisbelongOrganizationOnOrganizationsWithSdFunc(ctx, sd, organizationIDs)
+}
+
+// DisbelongOrganizationOnOrganizationsWithSdCalls gets all the calls that were made to DisbelongOrganizationOnOrganizationsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongOrganizationOnOrganizationsWithSdCalls())
+func (mock *StoreMock) DisbelongOrganizationOnOrganizationsWithSdCalls() []struct {
+	Ctx             context.Context
+	Sd              Sd
+	OrganizationIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx             context.Context
+		Sd              Sd
+		OrganizationIDs []uuid.UUID
+	}
+	mock.lockDisbelongOrganizationOnOrganizationsWithSd.RLock()
+	calls = mock.calls.DisbelongOrganizationOnOrganizationsWithSd
+	mock.lockDisbelongOrganizationOnOrganizationsWithSd.RUnlock()
 	return calls
 }
 
@@ -22276,6 +22814,82 @@ func (mock *StoreMock) FindChatRoomByIDCalls() []struct {
 	mock.lockFindChatRoomByID.RLock()
 	calls = mock.calls.FindChatRoomByID
 	mock.lockFindChatRoomByID.RUnlock()
+	return calls
+}
+
+// FindChatRoomByIDWithCoverImage calls FindChatRoomByIDWithCoverImageFunc.
+func (mock *StoreMock) FindChatRoomByIDWithCoverImage(ctx context.Context, chatRoomID uuid.UUID) (entity.ChatRoomWithCoverImage, error) {
+	if mock.FindChatRoomByIDWithCoverImageFunc == nil {
+		panic("StoreMock.FindChatRoomByIDWithCoverImageFunc: method is nil but Store.FindChatRoomByIDWithCoverImage was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+	}{
+		Ctx:        ctx,
+		ChatRoomID: chatRoomID,
+	}
+	mock.lockFindChatRoomByIDWithCoverImage.Lock()
+	mock.calls.FindChatRoomByIDWithCoverImage = append(mock.calls.FindChatRoomByIDWithCoverImage, callInfo)
+	mock.lockFindChatRoomByIDWithCoverImage.Unlock()
+	return mock.FindChatRoomByIDWithCoverImageFunc(ctx, chatRoomID)
+}
+
+// FindChatRoomByIDWithCoverImageCalls gets all the calls that were made to FindChatRoomByIDWithCoverImage.
+// Check the length with:
+//
+//	len(mockedStore.FindChatRoomByIDWithCoverImageCalls())
+func (mock *StoreMock) FindChatRoomByIDWithCoverImageCalls() []struct {
+	Ctx        context.Context
+	ChatRoomID uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+	}
+	mock.lockFindChatRoomByIDWithCoverImage.RLock()
+	calls = mock.calls.FindChatRoomByIDWithCoverImage
+	mock.lockFindChatRoomByIDWithCoverImage.RUnlock()
+	return calls
+}
+
+// FindChatRoomByIDWithCoverImageWithSd calls FindChatRoomByIDWithCoverImageWithSdFunc.
+func (mock *StoreMock) FindChatRoomByIDWithCoverImageWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID) (entity.ChatRoomWithCoverImage, error) {
+	if mock.FindChatRoomByIDWithCoverImageWithSdFunc == nil {
+		panic("StoreMock.FindChatRoomByIDWithCoverImageWithSdFunc: method is nil but Store.FindChatRoomByIDWithCoverImageWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		ChatRoomID: chatRoomID,
+	}
+	mock.lockFindChatRoomByIDWithCoverImageWithSd.Lock()
+	mock.calls.FindChatRoomByIDWithCoverImageWithSd = append(mock.calls.FindChatRoomByIDWithCoverImageWithSd, callInfo)
+	mock.lockFindChatRoomByIDWithCoverImageWithSd.Unlock()
+	return mock.FindChatRoomByIDWithCoverImageWithSdFunc(ctx, sd, chatRoomID)
+}
+
+// FindChatRoomByIDWithCoverImageWithSdCalls gets all the calls that were made to FindChatRoomByIDWithCoverImageWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindChatRoomByIDWithCoverImageWithSdCalls())
+func (mock *StoreMock) FindChatRoomByIDWithCoverImageWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	ChatRoomID uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+	}
+	mock.lockFindChatRoomByIDWithCoverImageWithSd.RLock()
+	calls = mock.calls.FindChatRoomByIDWithCoverImageWithSd
+	mock.lockFindChatRoomByIDWithCoverImageWithSd.RUnlock()
 	return calls
 }
 
@@ -26971,6 +27585,114 @@ func (mock *StoreMock) GetChatRoomsOnMemberWithSdCalls() []struct {
 	return calls
 }
 
+// GetChatRoomsWithCoverImage calls GetChatRoomsWithCoverImageFunc.
+func (mock *StoreMock) GetChatRoomsWithCoverImage(ctx context.Context, where parameter.WhereChatRoomParam, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithCoverImage], error) {
+	if mock.GetChatRoomsWithCoverImageFunc == nil {
+		panic("StoreMock.GetChatRoomsWithCoverImageFunc: method is nil but Store.GetChatRoomsWithCoverImage was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereChatRoomParam
+		Order parameter.ChatRoomOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetChatRoomsWithCoverImage.Lock()
+	mock.calls.GetChatRoomsWithCoverImage = append(mock.calls.GetChatRoomsWithCoverImage, callInfo)
+	mock.lockGetChatRoomsWithCoverImage.Unlock()
+	return mock.GetChatRoomsWithCoverImageFunc(ctx, where, order, np, cp, wc)
+}
+
+// GetChatRoomsWithCoverImageCalls gets all the calls that were made to GetChatRoomsWithCoverImage.
+// Check the length with:
+//
+//	len(mockedStore.GetChatRoomsWithCoverImageCalls())
+func (mock *StoreMock) GetChatRoomsWithCoverImageCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereChatRoomParam
+	Order parameter.ChatRoomOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereChatRoomParam
+		Order parameter.ChatRoomOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetChatRoomsWithCoverImage.RLock()
+	calls = mock.calls.GetChatRoomsWithCoverImage
+	mock.lockGetChatRoomsWithCoverImage.RUnlock()
+	return calls
+}
+
+// GetChatRoomsWithCoverImageWithSd calls GetChatRoomsWithCoverImageWithSdFunc.
+func (mock *StoreMock) GetChatRoomsWithCoverImageWithSd(ctx context.Context, sd Sd, where parameter.WhereChatRoomParam, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithCoverImage], error) {
+	if mock.GetChatRoomsWithCoverImageWithSdFunc == nil {
+		panic("StoreMock.GetChatRoomsWithCoverImageWithSdFunc: method is nil but Store.GetChatRoomsWithCoverImageWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereChatRoomParam
+		Order parameter.ChatRoomOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+		Order: order,
+		Np:    np,
+		Cp:    cp,
+		Wc:    wc,
+	}
+	mock.lockGetChatRoomsWithCoverImageWithSd.Lock()
+	mock.calls.GetChatRoomsWithCoverImageWithSd = append(mock.calls.GetChatRoomsWithCoverImageWithSd, callInfo)
+	mock.lockGetChatRoomsWithCoverImageWithSd.Unlock()
+	return mock.GetChatRoomsWithCoverImageWithSdFunc(ctx, sd, where, order, np, cp, wc)
+}
+
+// GetChatRoomsWithCoverImageWithSdCalls gets all the calls that were made to GetChatRoomsWithCoverImageWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetChatRoomsWithCoverImageWithSdCalls())
+func (mock *StoreMock) GetChatRoomsWithCoverImageWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereChatRoomParam
+	Order parameter.ChatRoomOrderMethod
+	Np    NumberedPaginationParam
+	Cp    CursorPaginationParam
+	Wc    WithCountParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereChatRoomParam
+		Order parameter.ChatRoomOrderMethod
+		Np    NumberedPaginationParam
+		Cp    CursorPaginationParam
+		Wc    WithCountParam
+	}
+	mock.lockGetChatRoomsWithCoverImageWithSd.RLock()
+	calls = mock.calls.GetChatRoomsWithCoverImageWithSd
+	mock.lockGetChatRoomsWithCoverImageWithSd.RUnlock()
+	return calls
+}
+
 // GetChatRoomsWithSd calls GetChatRoomsWithSdFunc.
 func (mock *StoreMock) GetChatRoomsWithSd(ctx context.Context, sd Sd, where parameter.WhereChatRoomParam, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoom], error) {
 	if mock.GetChatRoomsWithSdFunc == nil {
@@ -30884,6 +31606,98 @@ func (mock *StoreMock) GetPluralChatRoomsOnMemberWithSdCalls() []struct {
 	mock.lockGetPluralChatRoomsOnMemberWithSd.RLock()
 	calls = mock.calls.GetPluralChatRoomsOnMemberWithSd
 	mock.lockGetPluralChatRoomsOnMemberWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralChatRoomsWithCoverImage calls GetPluralChatRoomsWithCoverImageFunc.
+func (mock *StoreMock) GetPluralChatRoomsWithCoverImage(ctx context.Context, chatRoomIDs []uuid.UUID, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithCoverImage], error) {
+	if mock.GetPluralChatRoomsWithCoverImageFunc == nil {
+		panic("StoreMock.GetPluralChatRoomsWithCoverImageFunc: method is nil but Store.GetPluralChatRoomsWithCoverImage was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		ChatRoomIDs []uuid.UUID
+		Order       parameter.ChatRoomOrderMethod
+		Np          NumberedPaginationParam
+	}{
+		Ctx:         ctx,
+		ChatRoomIDs: chatRoomIDs,
+		Order:       order,
+		Np:          np,
+	}
+	mock.lockGetPluralChatRoomsWithCoverImage.Lock()
+	mock.calls.GetPluralChatRoomsWithCoverImage = append(mock.calls.GetPluralChatRoomsWithCoverImage, callInfo)
+	mock.lockGetPluralChatRoomsWithCoverImage.Unlock()
+	return mock.GetPluralChatRoomsWithCoverImageFunc(ctx, chatRoomIDs, order, np)
+}
+
+// GetPluralChatRoomsWithCoverImageCalls gets all the calls that were made to GetPluralChatRoomsWithCoverImage.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralChatRoomsWithCoverImageCalls())
+func (mock *StoreMock) GetPluralChatRoomsWithCoverImageCalls() []struct {
+	Ctx         context.Context
+	ChatRoomIDs []uuid.UUID
+	Order       parameter.ChatRoomOrderMethod
+	Np          NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx         context.Context
+		ChatRoomIDs []uuid.UUID
+		Order       parameter.ChatRoomOrderMethod
+		Np          NumberedPaginationParam
+	}
+	mock.lockGetPluralChatRoomsWithCoverImage.RLock()
+	calls = mock.calls.GetPluralChatRoomsWithCoverImage
+	mock.lockGetPluralChatRoomsWithCoverImage.RUnlock()
+	return calls
+}
+
+// GetPluralChatRoomsWithCoverImageWithSd calls GetPluralChatRoomsWithCoverImageWithSdFunc.
+func (mock *StoreMock) GetPluralChatRoomsWithCoverImageWithSd(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithCoverImage], error) {
+	if mock.GetPluralChatRoomsWithCoverImageWithSdFunc == nil {
+		panic("StoreMock.GetPluralChatRoomsWithCoverImageWithSdFunc: method is nil but Store.GetPluralChatRoomsWithCoverImageWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		Sd          Sd
+		ChatRoomIDs []uuid.UUID
+		Order       parameter.ChatRoomOrderMethod
+		Np          NumberedPaginationParam
+	}{
+		Ctx:         ctx,
+		Sd:          sd,
+		ChatRoomIDs: chatRoomIDs,
+		Order:       order,
+		Np:          np,
+	}
+	mock.lockGetPluralChatRoomsWithCoverImageWithSd.Lock()
+	mock.calls.GetPluralChatRoomsWithCoverImageWithSd = append(mock.calls.GetPluralChatRoomsWithCoverImageWithSd, callInfo)
+	mock.lockGetPluralChatRoomsWithCoverImageWithSd.Unlock()
+	return mock.GetPluralChatRoomsWithCoverImageWithSdFunc(ctx, sd, chatRoomIDs, order, np)
+}
+
+// GetPluralChatRoomsWithCoverImageWithSdCalls gets all the calls that were made to GetPluralChatRoomsWithCoverImageWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralChatRoomsWithCoverImageWithSdCalls())
+func (mock *StoreMock) GetPluralChatRoomsWithCoverImageWithSdCalls() []struct {
+	Ctx         context.Context
+	Sd          Sd
+	ChatRoomIDs []uuid.UUID
+	Order       parameter.ChatRoomOrderMethod
+	Np          NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx         context.Context
+		Sd          Sd
+		ChatRoomIDs []uuid.UUID
+		Order       parameter.ChatRoomOrderMethod
+		Np          NumberedPaginationParam
+	}
+	mock.lockGetPluralChatRoomsWithCoverImageWithSd.RLock()
+	calls = mock.calls.GetPluralChatRoomsWithCoverImageWithSd
+	mock.lockGetPluralChatRoomsWithCoverImageWithSd.RUnlock()
 	return calls
 }
 

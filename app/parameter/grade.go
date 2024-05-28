@@ -2,21 +2,32 @@ package parameter
 
 import (
 	"github.com/google/uuid"
+
+	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
 )
 
-// CreateGradeParam グループ作成のパラメータ。
+// CreateGradeServiceParam 年次作成のパラメータ。
+type CreateGradeServiceParam struct {
+	Name         string
+	Key          string
+	Description  entity.String
+	Color        entity.String
+	CoverImageID entity.UUID
+}
+
+// CreateGradeParam 年次作成のパラメータ。
 type CreateGradeParam struct {
 	Key            string
 	OrganizationID uuid.UUID
 }
 
-// WhereGradeParam グループ検索のパラメータ。
+// WhereGradeParam 年次検索のパラメータ。
 type WhereGradeParam struct{}
 
-// GradeOrderMethod グループの並び替え方法。
+// GradeOrderMethod 年次の並び替え方法。
 type GradeOrderMethod string
 
-// ParseGradeOrderMethod はグループの並び替え方法をパースする。
+// ParseGradeOrderMethod は年次の並び替え方法をパースする。
 func ParseGradeOrderMethod(v string) (any, error) {
 	if v == "" {
 		return GradeOrderMethodDefault, nil

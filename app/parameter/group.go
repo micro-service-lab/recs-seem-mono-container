@@ -2,7 +2,17 @@ package parameter
 
 import (
 	"github.com/google/uuid"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
 )
+
+// CreateGroupServiceParam グループ作成のパラメータ。
+type CreateGroupServiceParam struct {
+	Name         string
+	Key          string
+	Description  entity.String
+	Color        entity.String
+	CoverImageID entity.UUID
+}
 
 // CreateGroupParam グループ作成のパラメータ。
 type CreateGroupParam struct {

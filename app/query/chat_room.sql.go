@@ -134,6 +134,63 @@ func (q *Queries) FindChatRoomByID(ctx context.Context, chatRoomID uuid.UUID) (C
 	return i, err
 }
 
+const findChatRoomByIDWithCoverImage = `-- name: FindChatRoomByIDWithCoverImage :one
+SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, t_images.height cover_image_height, t_images.width cover_image_width, t_images.attachable_item_id cover_image_attachable_item_id,
+t_attachable_items.owner_id cover_image_owner_id, t_attachable_items.from_outer cover_image_from_outer, t_attachable_items.alias cover_image_alias,
+t_attachable_items.url cover_image_url, t_attachable_items.size cover_image_size, t_attachable_items.mime_type_id cover_image_mime_type_id
+FROM m_chat_rooms
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE chat_room_id = $1
+`
+
+type FindChatRoomByIDWithCoverImageRow struct {
+	MChatRoomsPkey             pgtype.Int8   `json:"m_chat_rooms_pkey"`
+	ChatRoomID                 uuid.UUID     `json:"chat_room_id"`
+	Name                       string        `json:"name"`
+	IsPrivate                  bool          `json:"is_private"`
+	CoverImageID               pgtype.UUID   `json:"cover_image_id"`
+	OwnerID                    pgtype.UUID   `json:"owner_id"`
+	FromOrganization           bool          `json:"from_organization"`
+	CreatedAt                  time.Time     `json:"created_at"`
+	UpdatedAt                  time.Time     `json:"updated_at"`
+	CoverImageHeight           pgtype.Float8 `json:"cover_image_height"`
+	CoverImageWidth            pgtype.Float8 `json:"cover_image_width"`
+	CoverImageAttachableItemID pgtype.UUID   `json:"cover_image_attachable_item_id"`
+	CoverImageOwnerID          pgtype.UUID   `json:"cover_image_owner_id"`
+	CoverImageFromOuter        pgtype.Bool   `json:"cover_image_from_outer"`
+	CoverImageAlias            pgtype.Text   `json:"cover_image_alias"`
+	CoverImageUrl              pgtype.Text   `json:"cover_image_url"`
+	CoverImageSize             pgtype.Float8 `json:"cover_image_size"`
+	CoverImageMimeTypeID       pgtype.UUID   `json:"cover_image_mime_type_id"`
+}
+
+func (q *Queries) FindChatRoomByIDWithCoverImage(ctx context.Context, chatRoomID uuid.UUID) (FindChatRoomByIDWithCoverImageRow, error) {
+	row := q.db.QueryRow(ctx, findChatRoomByIDWithCoverImage, chatRoomID)
+	var i FindChatRoomByIDWithCoverImageRow
+	err := row.Scan(
+		&i.MChatRoomsPkey,
+		&i.ChatRoomID,
+		&i.Name,
+		&i.IsPrivate,
+		&i.CoverImageID,
+		&i.OwnerID,
+		&i.FromOrganization,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.CoverImageHeight,
+		&i.CoverImageWidth,
+		&i.CoverImageAttachableItemID,
+		&i.CoverImageOwnerID,
+		&i.CoverImageFromOuter,
+		&i.CoverImageAlias,
+		&i.CoverImageUrl,
+		&i.CoverImageSize,
+		&i.CoverImageMimeTypeID,
+	)
+	return i, err
+}
+
 const findChatRoomByIDWithOwner = `-- name: FindChatRoomByIDWithOwner :one
 SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
@@ -477,6 +534,323 @@ func (q *Queries) GetChatRoomsUseNumberedPaginate(ctx context.Context, arg GetCh
 			&i.FromOrganization,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getChatRoomsWithCoverImage = `-- name: GetChatRoomsWithCoverImage :many
+SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, t_images.height cover_image_height, t_images.width cover_image_width, t_images.attachable_item_id cover_image_attachable_item_id,
+t_attachable_items.owner_id cover_image_owner_id, t_attachable_items.from_outer cover_image_from_outer, t_attachable_items.alias cover_image_alias,
+t_attachable_items.url cover_image_url, t_attachable_items.size cover_image_size, t_attachable_items.mime_type_id cover_image_mime_type_id
+FROM m_chat_rooms
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE
+	CASE WHEN $1::boolean = true THEN owner_id = ANY($2::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN is_private = $4 ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN from_organization = $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY($8::uuid[])) = chat_room_id ELSE TRUE END
+ORDER BY
+	m_chat_rooms_pkey ASC
+`
+
+type GetChatRoomsWithCoverImageParams struct {
+	WhereInOwner            bool        `json:"where_in_owner"`
+	InOwner                 []uuid.UUID `json:"in_owner"`
+	WhereIsPrivate          bool        `json:"where_is_private"`
+	IsPrivate               bool        `json:"is_private"`
+	WhereIsFromOrganization bool        `json:"where_is_from_organization"`
+	IsFromOrganization      bool        `json:"is_from_organization"`
+	WhereFromOrganizations  bool        `json:"where_from_organizations"`
+	FromOrganizations       []uuid.UUID `json:"from_organizations"`
+}
+
+type GetChatRoomsWithCoverImageRow struct {
+	MChatRoomsPkey             pgtype.Int8   `json:"m_chat_rooms_pkey"`
+	ChatRoomID                 uuid.UUID     `json:"chat_room_id"`
+	Name                       string        `json:"name"`
+	IsPrivate                  bool          `json:"is_private"`
+	CoverImageID               pgtype.UUID   `json:"cover_image_id"`
+	OwnerID                    pgtype.UUID   `json:"owner_id"`
+	FromOrganization           bool          `json:"from_organization"`
+	CreatedAt                  time.Time     `json:"created_at"`
+	UpdatedAt                  time.Time     `json:"updated_at"`
+	CoverImageHeight           pgtype.Float8 `json:"cover_image_height"`
+	CoverImageWidth            pgtype.Float8 `json:"cover_image_width"`
+	CoverImageAttachableItemID pgtype.UUID   `json:"cover_image_attachable_item_id"`
+	CoverImageOwnerID          pgtype.UUID   `json:"cover_image_owner_id"`
+	CoverImageFromOuter        pgtype.Bool   `json:"cover_image_from_outer"`
+	CoverImageAlias            pgtype.Text   `json:"cover_image_alias"`
+	CoverImageUrl              pgtype.Text   `json:"cover_image_url"`
+	CoverImageSize             pgtype.Float8 `json:"cover_image_size"`
+	CoverImageMimeTypeID       pgtype.UUID   `json:"cover_image_mime_type_id"`
+}
+
+func (q *Queries) GetChatRoomsWithCoverImage(ctx context.Context, arg GetChatRoomsWithCoverImageParams) ([]GetChatRoomsWithCoverImageRow, error) {
+	rows, err := q.db.Query(ctx, getChatRoomsWithCoverImage,
+		arg.WhereInOwner,
+		arg.InOwner,
+		arg.WhereIsPrivate,
+		arg.IsPrivate,
+		arg.WhereIsFromOrganization,
+		arg.IsFromOrganization,
+		arg.WhereFromOrganizations,
+		arg.FromOrganizations,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetChatRoomsWithCoverImageRow{}
+	for rows.Next() {
+		var i GetChatRoomsWithCoverImageRow
+		if err := rows.Scan(
+			&i.MChatRoomsPkey,
+			&i.ChatRoomID,
+			&i.Name,
+			&i.IsPrivate,
+			&i.CoverImageID,
+			&i.OwnerID,
+			&i.FromOrganization,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.CoverImageHeight,
+			&i.CoverImageWidth,
+			&i.CoverImageAttachableItemID,
+			&i.CoverImageOwnerID,
+			&i.CoverImageFromOuter,
+			&i.CoverImageAlias,
+			&i.CoverImageUrl,
+			&i.CoverImageSize,
+			&i.CoverImageMimeTypeID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getChatRoomsWithCoverImageUseKeysetPaginate = `-- name: GetChatRoomsWithCoverImageUseKeysetPaginate :many
+SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, t_images.height cover_image_height, t_images.width cover_image_width, t_images.attachable_item_id cover_image_attachable_item_id,
+t_attachable_items.owner_id cover_image_owner_id, t_attachable_items.from_outer cover_image_from_outer, t_attachable_items.alias cover_image_alias,
+t_attachable_items.url cover_image_url, t_attachable_items.size cover_image_size, t_attachable_items.mime_type_id cover_image_mime_type_id
+FROM m_chat_rooms
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE
+	CASE WHEN $2::boolean = true THEN owner_id = ANY($3::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN is_private = $5 ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN from_organization = $7 ELSE TRUE END
+AND
+	CASE WHEN $8::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY($9::uuid[])) = chat_room_id ELSE TRUE END
+AND
+	CASE $10::text
+		WHEN 'next' THEN
+			m_chat_rooms_pkey > $11::int
+		WHEN 'prev' THEN
+			m_chat_rooms_pkey < $11::int
+	END
+ORDER BY
+	CASE WHEN $10::text = 'next' THEN m_chat_rooms_pkey END ASC,
+	CASE WHEN $10::text = 'prev' THEN m_chat_rooms_pkey END DESC
+LIMIT $1
+`
+
+type GetChatRoomsWithCoverImageUseKeysetPaginateParams struct {
+	Limit                   int32       `json:"limit"`
+	WhereInOwner            bool        `json:"where_in_owner"`
+	InOwner                 []uuid.UUID `json:"in_owner"`
+	WhereIsPrivate          bool        `json:"where_is_private"`
+	IsPrivate               bool        `json:"is_private"`
+	WhereIsFromOrganization bool        `json:"where_is_from_organization"`
+	IsFromOrganization      bool        `json:"is_from_organization"`
+	WhereFromOrganizations  bool        `json:"where_from_organizations"`
+	FromOrganizations       []uuid.UUID `json:"from_organizations"`
+	CursorDirection         string      `json:"cursor_direction"`
+	Cursor                  int32       `json:"cursor"`
+}
+
+type GetChatRoomsWithCoverImageUseKeysetPaginateRow struct {
+	MChatRoomsPkey             pgtype.Int8   `json:"m_chat_rooms_pkey"`
+	ChatRoomID                 uuid.UUID     `json:"chat_room_id"`
+	Name                       string        `json:"name"`
+	IsPrivate                  bool          `json:"is_private"`
+	CoverImageID               pgtype.UUID   `json:"cover_image_id"`
+	OwnerID                    pgtype.UUID   `json:"owner_id"`
+	FromOrganization           bool          `json:"from_organization"`
+	CreatedAt                  time.Time     `json:"created_at"`
+	UpdatedAt                  time.Time     `json:"updated_at"`
+	CoverImageHeight           pgtype.Float8 `json:"cover_image_height"`
+	CoverImageWidth            pgtype.Float8 `json:"cover_image_width"`
+	CoverImageAttachableItemID pgtype.UUID   `json:"cover_image_attachable_item_id"`
+	CoverImageOwnerID          pgtype.UUID   `json:"cover_image_owner_id"`
+	CoverImageFromOuter        pgtype.Bool   `json:"cover_image_from_outer"`
+	CoverImageAlias            pgtype.Text   `json:"cover_image_alias"`
+	CoverImageUrl              pgtype.Text   `json:"cover_image_url"`
+	CoverImageSize             pgtype.Float8 `json:"cover_image_size"`
+	CoverImageMimeTypeID       pgtype.UUID   `json:"cover_image_mime_type_id"`
+}
+
+func (q *Queries) GetChatRoomsWithCoverImageUseKeysetPaginate(ctx context.Context, arg GetChatRoomsWithCoverImageUseKeysetPaginateParams) ([]GetChatRoomsWithCoverImageUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getChatRoomsWithCoverImageUseKeysetPaginate,
+		arg.Limit,
+		arg.WhereInOwner,
+		arg.InOwner,
+		arg.WhereIsPrivate,
+		arg.IsPrivate,
+		arg.WhereIsFromOrganization,
+		arg.IsFromOrganization,
+		arg.WhereFromOrganizations,
+		arg.FromOrganizations,
+		arg.CursorDirection,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetChatRoomsWithCoverImageUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetChatRoomsWithCoverImageUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.MChatRoomsPkey,
+			&i.ChatRoomID,
+			&i.Name,
+			&i.IsPrivate,
+			&i.CoverImageID,
+			&i.OwnerID,
+			&i.FromOrganization,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.CoverImageHeight,
+			&i.CoverImageWidth,
+			&i.CoverImageAttachableItemID,
+			&i.CoverImageOwnerID,
+			&i.CoverImageFromOuter,
+			&i.CoverImageAlias,
+			&i.CoverImageUrl,
+			&i.CoverImageSize,
+			&i.CoverImageMimeTypeID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getChatRoomsWithCoverImageUseNumberedPaginate = `-- name: GetChatRoomsWithCoverImageUseNumberedPaginate :many
+SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, t_images.height cover_image_height, t_images.width cover_image_width, t_images.attachable_item_id cover_image_attachable_item_id,
+t_attachable_items.owner_id cover_image_owner_id, t_attachable_items.from_outer cover_image_from_outer, t_attachable_items.alias cover_image_alias,
+t_attachable_items.url cover_image_url, t_attachable_items.size cover_image_size, t_attachable_items.mime_type_id cover_image_mime_type_id
+FROM m_chat_rooms
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE
+	CASE WHEN $3::boolean = true THEN owner_id = ANY($4::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN is_private = $6 ELSE TRUE END
+AND
+	CASE WHEN $7::boolean = true THEN from_organization = $8 ELSE TRUE END
+AND
+	CASE WHEN $9::boolean = true THEN (SELECT chat_room_id FROM m_organizations WHERE organization_id = ANY($10::uuid[])) = chat_room_id ELSE TRUE END
+ORDER BY
+	m_chat_rooms_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetChatRoomsWithCoverImageUseNumberedPaginateParams struct {
+	Limit                   int32       `json:"limit"`
+	Offset                  int32       `json:"offset"`
+	WhereInOwner            bool        `json:"where_in_owner"`
+	InOwner                 []uuid.UUID `json:"in_owner"`
+	WhereIsPrivate          bool        `json:"where_is_private"`
+	IsPrivate               bool        `json:"is_private"`
+	WhereIsFromOrganization bool        `json:"where_is_from_organization"`
+	IsFromOrganization      bool        `json:"is_from_organization"`
+	WhereFromOrganizations  bool        `json:"where_from_organizations"`
+	FromOrganizations       []uuid.UUID `json:"from_organizations"`
+}
+
+type GetChatRoomsWithCoverImageUseNumberedPaginateRow struct {
+	MChatRoomsPkey             pgtype.Int8   `json:"m_chat_rooms_pkey"`
+	ChatRoomID                 uuid.UUID     `json:"chat_room_id"`
+	Name                       string        `json:"name"`
+	IsPrivate                  bool          `json:"is_private"`
+	CoverImageID               pgtype.UUID   `json:"cover_image_id"`
+	OwnerID                    pgtype.UUID   `json:"owner_id"`
+	FromOrganization           bool          `json:"from_organization"`
+	CreatedAt                  time.Time     `json:"created_at"`
+	UpdatedAt                  time.Time     `json:"updated_at"`
+	CoverImageHeight           pgtype.Float8 `json:"cover_image_height"`
+	CoverImageWidth            pgtype.Float8 `json:"cover_image_width"`
+	CoverImageAttachableItemID pgtype.UUID   `json:"cover_image_attachable_item_id"`
+	CoverImageOwnerID          pgtype.UUID   `json:"cover_image_owner_id"`
+	CoverImageFromOuter        pgtype.Bool   `json:"cover_image_from_outer"`
+	CoverImageAlias            pgtype.Text   `json:"cover_image_alias"`
+	CoverImageUrl              pgtype.Text   `json:"cover_image_url"`
+	CoverImageSize             pgtype.Float8 `json:"cover_image_size"`
+	CoverImageMimeTypeID       pgtype.UUID   `json:"cover_image_mime_type_id"`
+}
+
+func (q *Queries) GetChatRoomsWithCoverImageUseNumberedPaginate(ctx context.Context, arg GetChatRoomsWithCoverImageUseNumberedPaginateParams) ([]GetChatRoomsWithCoverImageUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getChatRoomsWithCoverImageUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInOwner,
+		arg.InOwner,
+		arg.WhereIsPrivate,
+		arg.IsPrivate,
+		arg.WhereIsFromOrganization,
+		arg.IsFromOrganization,
+		arg.WhereFromOrganizations,
+		arg.FromOrganizations,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetChatRoomsWithCoverImageUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetChatRoomsWithCoverImageUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.MChatRoomsPkey,
+			&i.ChatRoomID,
+			&i.Name,
+			&i.IsPrivate,
+			&i.CoverImageID,
+			&i.OwnerID,
+			&i.FromOrganization,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.CoverImageHeight,
+			&i.CoverImageWidth,
+			&i.CoverImageAttachableItemID,
+			&i.CoverImageOwnerID,
+			&i.CoverImageFromOuter,
+			&i.CoverImageAlias,
+			&i.CoverImageUrl,
+			&i.CoverImageSize,
+			&i.CoverImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}
@@ -860,6 +1234,157 @@ func (q *Queries) GetPluralChatRoomsUseNumberedPaginate(ctx context.Context, arg
 			&i.FromOrganization,
 			&i.CreatedAt,
 			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralChatRoomsWithCoverImage = `-- name: GetPluralChatRoomsWithCoverImage :many
+SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, t_images.height cover_image_height, t_images.width cover_image_width, t_images.attachable_item_id cover_image_attachable_item_id,
+t_attachable_items.owner_id cover_image_owner_id, t_attachable_items.from_outer cover_image_from_outer, t_attachable_items.alias cover_image_alias,
+t_attachable_items.url cover_image_url, t_attachable_items.size cover_image_size, t_attachable_items.mime_type_id cover_image_mime_type_id
+FROM m_chat_rooms
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE chat_room_id = ANY($1::uuid[])
+ORDER BY
+	m_chat_rooms_pkey ASC
+`
+
+type GetPluralChatRoomsWithCoverImageRow struct {
+	MChatRoomsPkey             pgtype.Int8   `json:"m_chat_rooms_pkey"`
+	ChatRoomID                 uuid.UUID     `json:"chat_room_id"`
+	Name                       string        `json:"name"`
+	IsPrivate                  bool          `json:"is_private"`
+	CoverImageID               pgtype.UUID   `json:"cover_image_id"`
+	OwnerID                    pgtype.UUID   `json:"owner_id"`
+	FromOrganization           bool          `json:"from_organization"`
+	CreatedAt                  time.Time     `json:"created_at"`
+	UpdatedAt                  time.Time     `json:"updated_at"`
+	CoverImageHeight           pgtype.Float8 `json:"cover_image_height"`
+	CoverImageWidth            pgtype.Float8 `json:"cover_image_width"`
+	CoverImageAttachableItemID pgtype.UUID   `json:"cover_image_attachable_item_id"`
+	CoverImageOwnerID          pgtype.UUID   `json:"cover_image_owner_id"`
+	CoverImageFromOuter        pgtype.Bool   `json:"cover_image_from_outer"`
+	CoverImageAlias            pgtype.Text   `json:"cover_image_alias"`
+	CoverImageUrl              pgtype.Text   `json:"cover_image_url"`
+	CoverImageSize             pgtype.Float8 `json:"cover_image_size"`
+	CoverImageMimeTypeID       pgtype.UUID   `json:"cover_image_mime_type_id"`
+}
+
+func (q *Queries) GetPluralChatRoomsWithCoverImage(ctx context.Context, chatRoomIds []uuid.UUID) ([]GetPluralChatRoomsWithCoverImageRow, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomsWithCoverImage, chatRoomIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralChatRoomsWithCoverImageRow{}
+	for rows.Next() {
+		var i GetPluralChatRoomsWithCoverImageRow
+		if err := rows.Scan(
+			&i.MChatRoomsPkey,
+			&i.ChatRoomID,
+			&i.Name,
+			&i.IsPrivate,
+			&i.CoverImageID,
+			&i.OwnerID,
+			&i.FromOrganization,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.CoverImageHeight,
+			&i.CoverImageWidth,
+			&i.CoverImageAttachableItemID,
+			&i.CoverImageOwnerID,
+			&i.CoverImageFromOuter,
+			&i.CoverImageAlias,
+			&i.CoverImageUrl,
+			&i.CoverImageSize,
+			&i.CoverImageMimeTypeID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralChatRoomsWithCoverImageUseNumberedPaginate = `-- name: GetPluralChatRoomsWithCoverImageUseNumberedPaginate :many
+SELECT m_chat_rooms.m_chat_rooms_pkey, m_chat_rooms.chat_room_id, m_chat_rooms.name, m_chat_rooms.is_private, m_chat_rooms.cover_image_id, m_chat_rooms.owner_id, m_chat_rooms.from_organization, m_chat_rooms.created_at, m_chat_rooms.updated_at, t_images.height cover_image_height, t_images.width cover_image_width, t_images.attachable_item_id cover_image_attachable_item_id,
+t_attachable_items.owner_id cover_image_owner_id, t_attachable_items.from_outer cover_image_from_outer, t_attachable_items.alias cover_image_alias,
+t_attachable_items.url cover_image_url, t_attachable_items.size cover_image_size, t_attachable_items.mime_type_id cover_image_mime_type_id
+FROM m_chat_rooms
+LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE chat_room_id = ANY($3::uuid[])
+ORDER BY
+	m_chat_rooms_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralChatRoomsWithCoverImageUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	ChatRoomIds []uuid.UUID `json:"chat_room_ids"`
+}
+
+type GetPluralChatRoomsWithCoverImageUseNumberedPaginateRow struct {
+	MChatRoomsPkey             pgtype.Int8   `json:"m_chat_rooms_pkey"`
+	ChatRoomID                 uuid.UUID     `json:"chat_room_id"`
+	Name                       string        `json:"name"`
+	IsPrivate                  bool          `json:"is_private"`
+	CoverImageID               pgtype.UUID   `json:"cover_image_id"`
+	OwnerID                    pgtype.UUID   `json:"owner_id"`
+	FromOrganization           bool          `json:"from_organization"`
+	CreatedAt                  time.Time     `json:"created_at"`
+	UpdatedAt                  time.Time     `json:"updated_at"`
+	CoverImageHeight           pgtype.Float8 `json:"cover_image_height"`
+	CoverImageWidth            pgtype.Float8 `json:"cover_image_width"`
+	CoverImageAttachableItemID pgtype.UUID   `json:"cover_image_attachable_item_id"`
+	CoverImageOwnerID          pgtype.UUID   `json:"cover_image_owner_id"`
+	CoverImageFromOuter        pgtype.Bool   `json:"cover_image_from_outer"`
+	CoverImageAlias            pgtype.Text   `json:"cover_image_alias"`
+	CoverImageUrl              pgtype.Text   `json:"cover_image_url"`
+	CoverImageSize             pgtype.Float8 `json:"cover_image_size"`
+	CoverImageMimeTypeID       pgtype.UUID   `json:"cover_image_mime_type_id"`
+}
+
+func (q *Queries) GetPluralChatRoomsWithCoverImageUseNumberedPaginate(ctx context.Context, arg GetPluralChatRoomsWithCoverImageUseNumberedPaginateParams) ([]GetPluralChatRoomsWithCoverImageUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomsWithCoverImageUseNumberedPaginate, arg.Limit, arg.Offset, arg.ChatRoomIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralChatRoomsWithCoverImageUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralChatRoomsWithCoverImageUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.MChatRoomsPkey,
+			&i.ChatRoomID,
+			&i.Name,
+			&i.IsPrivate,
+			&i.CoverImageID,
+			&i.OwnerID,
+			&i.FromOrganization,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.CoverImageHeight,
+			&i.CoverImageWidth,
+			&i.CoverImageAttachableItemID,
+			&i.CoverImageOwnerID,
+			&i.CoverImageFromOuter,
+			&i.CoverImageAlias,
+			&i.CoverImageUrl,
+			&i.CoverImageSize,
+			&i.CoverImageMimeTypeID,
 		); err != nil {
 			return nil, err
 		}

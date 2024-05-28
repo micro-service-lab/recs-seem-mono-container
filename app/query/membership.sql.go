@@ -130,6 +130,30 @@ func (q *Queries) DeleteMembershipsOnMembers(ctx context.Context, memberIds []uu
 	return result.RowsAffected(), nil
 }
 
+const deleteMembershipsOnOrganization = `-- name: DeleteMembershipsOnOrganization :execrows
+DELETE FROM m_memberships WHERE organization_id = $1
+`
+
+func (q *Queries) DeleteMembershipsOnOrganization(ctx context.Context, organizationID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteMembershipsOnOrganization, organizationID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const deleteMembershipsOnOrganizations = `-- name: DeleteMembershipsOnOrganizations :execrows
+DELETE FROM m_memberships WHERE organization_id = ANY($1::uuid[])
+`
+
+func (q *Queries) DeleteMembershipsOnOrganizations(ctx context.Context, organizationIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteMembershipsOnOrganizations, organizationIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
 const getMembersOnOrganization = `-- name: GetMembersOnOrganization :many
 SELECT m_memberships.m_memberships_pkey, m_memberships.member_id, m_memberships.organization_id, m_memberships.work_position_id, m_memberships.added_at, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,

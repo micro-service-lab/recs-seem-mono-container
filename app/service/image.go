@@ -591,6 +591,49 @@ func (m *ManageImage) DeleteImage(ctx context.Context, id uuid.UUID) (c int64, e
 	return c, nil
 }
 
+func pluralDeleteImages(
+	ctx context.Context,
+	sd store.Sd,
+	db store.Store,
+	stg storage.Storage,
+	ids []uuid.UUID,
+	ownerID entity.UUID,
+) (c int64, err error) {
+	image, err := db.GetPluralImagesWithAttachableItemWithSd(
+		ctx, sd, ids, parameter.ImageOrderMethodDefault, store.NumberedPaginationParam{})
+	if err != nil {
+		return 0, fmt.Errorf("failed to get images: %w", err)
+	}
+	var keys []string
+	var attachableItemIDs []uuid.UUID
+	for _, i := range image.Data {
+		if ownerID.Valid && i.AttachableItem.OwnerID.Valid && i.AttachableItem.OwnerID.Bytes != ownerID.Bytes {
+			return 0, errhandle.NewCommonError(response.NotFileOwner, nil)
+		}
+		if !i.AttachableItem.FromOuter {
+			key, err := stg.GetKeyFromURL(ctx, i.AttachableItem.URL)
+			if err != nil {
+				return 0, fmt.Errorf("failed to get key from url: %w", err)
+			}
+			keys = append(keys, key)
+		}
+		attachableItemIDs = append(attachableItemIDs, i.AttachableItem.AttachableItemID)
+	}
+	err = stg.DeleteObjects(ctx, keys)
+	if err != nil {
+		return 0, fmt.Errorf("failed to delete objects: %w", err)
+	}
+	c, err = db.PluralDeleteImagesWithSd(ctx, sd, ids)
+	if err != nil {
+		return 0, fmt.Errorf("failed to delete policy: %w", err)
+	}
+	_, err = db.PluralDeleteAttachableItemsWithSd(ctx, sd, attachableItemIDs)
+	if err != nil {
+		return 0, fmt.Errorf("failed to delete attachable items: %w", err)
+	}
+	return c, nil
+}
+
 // PluralDeleteImages 画像を複数削除する。
 func (m *ManageImage) PluralDeleteImages(
 	ctx context.Context, ids []uuid.UUID,
@@ -610,31 +653,55 @@ func (m *ManageImage) PluralDeleteImages(
 			}
 		}
 	}()
-	image, err := m.DB.GetPluralImagesWithAttachableItemWithSd(
-		ctx, sd, ids, parameter.ImageOrderMethodDefault, store.NumberedPaginationParam{})
-	var keys []string
-	var attachableItemIDs []uuid.UUID
-	for _, i := range image.Data {
-		if !i.AttachableItem.FromOuter {
-			key, err := m.Storage.GetKeyFromURL(ctx, i.AttachableItem.URL)
-			if err != nil {
-				return 0, fmt.Errorf("failed to get key from url: %w", err)
-			}
-			keys = append(keys, key)
+	return pluralDeleteImages(ctx, sd, m.DB, m.Storage, ids, entity.UUID{})
+}
+
+// GetImages 画像を取得する。
+func (m *ManageImage) GetImages(
+	ctx context.Context,
+	order parameter.ImageOrderMethod,
+	pg parameter.Pagination,
+	limit parameter.Limit,
+	cursor parameter.Cursor,
+	offset parameter.Offset,
+	withCount parameter.WithCount,
+) (store.ListResult[entity.Image], error) {
+	wc := store.WithCountParam{
+		Valid: bool(withCount),
+	}
+	var np store.NumberedPaginationParam
+	var cp store.CursorPaginationParam
+	where := parameter.WhereImageParam{}
+	switch pg {
+	case parameter.NumberedPagination:
+		np = store.NumberedPaginationParam{
+			Valid:  true,
+			Offset: entity.Int{Int64: int64(offset)},
+			Limit:  entity.Int{Int64: int64(limit)},
 		}
-		attachableItemIDs = append(attachableItemIDs, i.AttachableItem.AttachableItemID)
+	case parameter.CursorPagination:
+		cp = store.CursorPaginationParam{
+			Valid:  true,
+			Cursor: string(cursor),
+			Limit:  entity.Int{Int64: int64(limit)},
+		}
+	case parameter.NonePagination:
 	}
-	err = m.Storage.DeleteObjects(ctx, keys)
+	r, err := m.DB.GetImages(ctx, where, order, np, cp, wc)
 	if err != nil {
-		return 0, fmt.Errorf("failed to delete objects: %w", err)
+		return store.ListResult[entity.Image]{}, fmt.Errorf("failed to get images: %w", err)
 	}
-	c, err = m.DB.PluralDeleteImagesWithSd(ctx, sd, ids)
+	return r, nil
+}
+
+// GetImagesCount 画像の数を取得する。
+func (m *ManageImage) GetImagesCount(
+	ctx context.Context,
+) (int64, error) {
+	p := parameter.WhereImageParam{}
+	c, err := m.DB.CountImages(ctx, p)
 	if err != nil {
-		return 0, fmt.Errorf("failed to delete policy: %w", err)
-	}
-	_, err = m.DB.PluralDeleteAttachableItemsWithSd(ctx, sd, attachableItemIDs)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete attachable items: %w", err)
+		return 0, fmt.Errorf("failed to get images count: %w", err)
 	}
 	return c, nil
 }

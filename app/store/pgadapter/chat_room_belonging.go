@@ -364,6 +364,68 @@ func (a *PgAdapter) DisbelongChatRoomOnMembersWithSd(
 	return disbelongChatRoomOnMembers(ctx, qtx, memberIDs)
 }
 
+func disbelongChatRoomOnChatRoom(
+	ctx context.Context,
+	qtx *query.Queries,
+	chatRoomID uuid.UUID,
+) (int64, error) {
+	b, err := qtx.DeleteChatRoomBelongingsOnChatRoom(ctx, chatRoomID)
+	if err != nil {
+		return 0, fmt.Errorf("failed to disbelong chat room on chat room: %w", err)
+	}
+	return b, nil
+}
+
+// DisbelongChatRoomOnChatRoom チャットルーム上のメンバーから所属解除する。
+func (a *PgAdapter) DisbelongChatRoomOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) (int64, error) {
+	return disbelongChatRoomOnChatRoom(ctx, a.query, chatRoomID)
+}
+
+// DisbelongChatRoomOnChatRoomWithSd SD付きでチャットルーム上のメンバーから所属解除する。
+func (a *PgAdapter) DisbelongChatRoomOnChatRoomWithSd(
+	ctx context.Context, sd store.Sd, chatRoomID uuid.UUID,
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return 0, store.ErrNotFoundDescriptor
+	}
+	return disbelongChatRoomOnChatRoom(ctx, qtx, chatRoomID)
+}
+
+func disbelongChatRoomOnChatRooms(
+	ctx context.Context,
+	qtx *query.Queries,
+	chatRoomIDs []uuid.UUID,
+) (int64, error) {
+	b, err := qtx.DeleteChatRoomBelongingsOnChatRooms(ctx, chatRoomIDs)
+	if err != nil {
+		return 0, fmt.Errorf("failed to disbelong chat room on chat rooms: %w", err)
+	}
+	return b, nil
+}
+
+// DisbelongChatRoomOnChatRooms チャットルーム上の複数のメンバーから所属解除する。
+func (a *PgAdapter) DisbelongChatRoomOnChatRooms(
+	ctx context.Context, chatRoomIDs []uuid.UUID,
+) (int64, error) {
+	return disbelongChatRoomOnChatRooms(ctx, a.query, chatRoomIDs)
+}
+
+// DisbelongChatRoomOnChatRoomsWithSd SD付きでチャットルーム上の複数のメンバーから所属解除する。
+func (a *PgAdapter) DisbelongChatRoomOnChatRoomsWithSd(
+	ctx context.Context, sd store.Sd, chatRoomIDs []uuid.UUID,
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return 0, store.ErrNotFoundDescriptor
+	}
+	return disbelongChatRoomOnChatRooms(ctx, qtx, chatRoomIDs)
+}
+
 func getChatRoomsOnMember(
 	ctx context.Context,
 	qtx *query.Queries,

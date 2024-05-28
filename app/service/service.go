@@ -402,6 +402,20 @@ type RoleAssociationManager interface {
 
 // OrganizationManager is a interface for organization service.
 type OrganizationManager interface {
+	CreateWholeOrganization(
+		ctx context.Context,
+		name string,
+		description, color entity.String,
+		coverImageID entity.UUID,
+	) (e entity.Organization, err error)
+	DeleteWholeOrganization(ctx context.Context) (c int64, err error)
+	UpdateWholeOrganization(
+		ctx context.Context,
+		name string,
+		description, color entity.String,
+		coverImageID entity.UUID,
+	) (e entity.Organization, err error)
+	FindWholeOrganization(ctx context.Context) (entity.Organization, error)
 	CreateOrganization(
 		ctx context.Context, name string, description, color entity.String,
 	) (e entity.Organization, err error)

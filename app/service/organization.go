@@ -28,16 +28,16 @@ type Organization struct {
 // WholeOrganization 全体オーガナイゼーション。
 var WholeOrganization = Organization{
 	Name:        "全体グループ",
-	Description: "研究室の全員が所属するグループです。",
-	Color:       "#FF0000",
+	Description: "研究室の全員が所属するグループです",
+	Color:       "#9e9e9e",
 }
 
 // CreateWholeOrganization 全体グループを作成する。
 func (m *ManageOrganization) CreateWholeOrganization(
 	ctx context.Context,
-	name,
-	description,
-	color string,
+	name string,
+	description, color entity.String,
+	coverImageID entity.UUID,
 ) (e entity.Organization, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
@@ -54,10 +54,16 @@ func (m *ManageOrganization) CreateWholeOrganization(
 			}
 		}
 	}()
+	if coverImageID.Valid {
+		_, err := m.DB.FindImageByIDWithSd(ctx, sd, coverImageID.Bytes)
+		if err != nil {
+			return entity.Organization{}, fmt.Errorf("failed to find image: %w", err)
+		}
+	}
 	cr, err := m.DB.CreateChatRoomWithSd(ctx, sd, parameter.CreateChatRoomParam{
-		Name:             WholeOrganization.Name,
+		Name:             name,
 		IsPrivate:        false,
-		CoverImageID:     entity.UUID{},
+		CoverImageID:     coverImageID,
 		OwnerID:          entity.UUID{},
 		FromOrganization: true,
 	})
@@ -66,8 +72,8 @@ func (m *ManageOrganization) CreateWholeOrganization(
 	}
 	p := parameter.CreateOrganizationParam{
 		Name:        name,
-		Description: entity.String{Valid: true, String: description},
-		Color:       entity.String{Valid: true, String: color},
+		Description: description,
+		Color:       color,
 		IsPersonal:  false,
 		IsWhole:     true,
 		ChatRoomID: entity.UUID{
@@ -78,6 +84,116 @@ func (m *ManageOrganization) CreateWholeOrganization(
 	e, err = m.DB.CreateOrganizationWithSd(ctx, sd, p)
 	if err != nil {
 		return entity.Organization{}, fmt.Errorf("failed to create organization: %w", err)
+	}
+	return e, nil
+}
+
+// DeleteWholeOrganization 全体グループを削除する。
+func (m *ManageOrganization) DeleteWholeOrganization(ctx context.Context) (c int64, err error) {
+	sd, err := m.DB.Begin(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			if rerr := m.DB.Rollback(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to rollback transaction: %w", rerr)
+			}
+		} else {
+			if rerr := m.DB.Commit(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to commit transaction: %w", rerr)
+			}
+		}
+	}()
+	origin, err := m.DB.FindWholeOrganizationWithSd(ctx, sd)
+	if err != nil {
+		return 0, fmt.Errorf("failed to find whole organization: %w", err)
+	}
+	_, err = m.DB.DisbelongOrganizationOnOrganizationWithSd(ctx, sd, origin.OrganizationID)
+	if err != nil {
+		return 0, fmt.Errorf("failed to disbelong organization on organization: %w", err)
+	}
+	c, err = m.DB.DeleteOrganizationWithSd(ctx, sd, origin.OrganizationID)
+	if err != nil {
+		return 0, fmt.Errorf("failed to delete organization: %w", err)
+	}
+	if origin.ChatRoomID.Valid {
+		_, err = m.DB.DisbelongChatRoomOnChatRoomWithSd(ctx, sd, origin.ChatRoomID.Bytes)
+		if err != nil {
+			return 0, fmt.Errorf("failed to disbelong chat room on chat room: %w", err)
+		}
+		_, err = m.DB.DeleteChatRoomWithSd(ctx, sd, origin.ChatRoomID.Bytes)
+		if err != nil {
+			return 0, fmt.Errorf("failed to delete chat room: %w", err)
+		}
+	}
+	return c, nil
+}
+
+// UpdateWholeOrganization 全体グループを更新する。
+func (m *ManageOrganization) UpdateWholeOrganization(
+	ctx context.Context,
+	name string,
+	description, color entity.String,
+	coverImageID entity.UUID,
+) (e entity.Organization, err error) {
+	sd, err := m.DB.Begin(ctx)
+	if err != nil {
+		return entity.Organization{}, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			if rerr := m.DB.Rollback(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to rollback transaction: %w", rerr)
+			}
+		} else {
+			if rerr := m.DB.Commit(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to commit transaction: %w", rerr)
+			}
+		}
+	}()
+	origin, err := m.DB.FindWholeOrganizationWithSd(ctx, sd)
+	if err != nil {
+		return entity.Organization{}, fmt.Errorf("failed to find whole organization: %w", err)
+	}
+	if coverImageID.Valid {
+		_, err := m.DB.FindImageByIDWithSd(ctx, sd, coverImageID.Bytes)
+		if err != nil {
+			return entity.Organization{}, fmt.Errorf("failed to find image: %w", err)
+		}
+	}
+	p := parameter.UpdateOrganizationParams{
+		Name:        name,
+		Description: description,
+		Color:       color,
+	}
+	e, err = m.DB.UpdateOrganizationWithSd(ctx, sd, origin.OrganizationID, p)
+	if err != nil {
+		return entity.Organization{}, fmt.Errorf("failed to update organization: %w", err)
+	}
+	if origin.ChatRoomID.Valid {
+		originRoom, err := m.DB.FindChatRoomByIDWithSd(ctx, sd, e.ChatRoomID.Bytes)
+		if err != nil {
+			return entity.Organization{}, fmt.Errorf("failed to find chat room by id: %w", err)
+		}
+		_, err = m.DB.UpdateChatRoomWithSd(ctx, sd, originRoom.ChatRoomID, parameter.UpdateChatRoomParams{
+			Name:         name,
+			IsPrivate:    originRoom.IsPrivate,
+			CoverImageID: coverImageID,
+			OwnerID:      originRoom.OwnerID,
+		})
+		if err != nil {
+			return entity.Organization{}, fmt.Errorf("failed to update chat room: %w", err)
+		}
+	}
+	return e, nil
+}
+
+// FindWholeOrganization 全体グループを取得する。
+func (m *ManageOrganization) FindWholeOrganization(ctx context.Context) (entity.Organization, error) {
+	e, err := m.DB.FindWholeOrganization(ctx)
+	if err != nil {
+		return entity.Organization{}, fmt.Errorf("failed to find whole organization: %w", err)
 	}
 	return e, nil
 }

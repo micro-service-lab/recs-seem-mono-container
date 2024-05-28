@@ -237,10 +237,6 @@ func (m *ManageGroup) DeleteGroup(ctx context.Context, id uuid.UUID) (c int64, e
 		return 0, fmt.Errorf("failed to delete organization: %w", err)
 	}
 	if e.Organization.ChatRoomID.Valid {
-		_, err := m.DB.FindChatRoomByIDWithCoverImage(ctx, e.Organization.ChatRoomID.Bytes)
-		if err != nil {
-			return 0, fmt.Errorf("failed to find chat room: %w", err)
-		}
 		_, err = m.DB.DisbelongChatRoomOnChatRoomWithSd(ctx, sd, e.Organization.ChatRoomID.Bytes)
 		if err != nil {
 			return 0, fmt.Errorf("failed to disbelong chat room: %w", err)
@@ -351,11 +347,15 @@ func (m *ManageGroup) UpdateGroup(
 		}
 	}
 	if fe.Organization.ChatRoomID.Valid {
+		originRoom, err := m.DB.FindChatRoomByIDWithCoverImage(ctx, fe.Organization.ChatRoomID.Bytes)
+		if err != nil {
+			return entity.Group{}, fmt.Errorf("failed to find chat room: %w", err)
+		}
 		crp := parameter.UpdateChatRoomParams{
 			Name:         name,
-			IsPrivate:    false,
+			IsPrivate:    originRoom.IsPrivate,
 			CoverImageID: coverImageID,
-			OwnerID:      entity.UUID{},
+			OwnerID:      originRoom.OwnerID,
 		}
 		_, err = m.DB.UpdateChatRoomWithSd(ctx, sd, fe.Organization.ChatRoomID.Bytes, crp)
 		if err != nil {

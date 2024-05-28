@@ -137,6 +137,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreateRolesFunc: func(ctx context.Context, ps []parameter.CreateRoleParam) (int64, error) {
 //				panic("mock out the CreateRoles method")
 //			},
+//			CreateWholeOrganizationFunc: func(ctx context.Context, name string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Organization, error) {
+//				panic("mock out the CreateWholeOrganization method")
+//			},
 //			DeleteAttendStatusFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteAttendStatus method")
 //			},
@@ -181,6 +184,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			DeleteRoleFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteRole method")
+//			},
+//			DeleteWholeOrganizationFunc: func(ctx context.Context) (int64, error) {
+//				panic("mock out the DeleteWholeOrganization method")
 //			},
 //			DisassociatePolicyOnRoleFunc: func(ctx context.Context, roleID uuid.UUID) (int64, error) {
 //				panic("mock out the DisassociatePolicyOnRole method")
@@ -286,6 +292,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			FindRoleByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.Role, error) {
 //				panic("mock out the FindRoleByID method")
+//			},
+//			FindWholeOrganizationFunc: func(ctx context.Context) (entity.Organization, error) {
+//				panic("mock out the FindWholeOrganization method")
 //			},
 //			GetAttendStatusesFunc: func(ctx context.Context, whereSearchName string, order parameter.AttendStatusOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendStatus], error) {
 //				panic("mock out the GetAttendStatuses method")
@@ -497,6 +506,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			UpdateRoleFunc: func(ctx context.Context, id uuid.UUID, name string, description string) (entity.Role, error) {
 //				panic("mock out the UpdateRole method")
 //			},
+//			UpdateWholeOrganizationFunc: func(ctx context.Context, name string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Organization, error) {
+//				panic("mock out the UpdateWholeOrganization method")
+//			},
 //		}
 //
 //		// use mockedManagerInterface in code that requires ManagerInterface
@@ -618,6 +630,9 @@ type ManagerInterfaceMock struct {
 	// CreateRolesFunc mocks the CreateRoles method.
 	CreateRolesFunc func(ctx context.Context, ps []parameter.CreateRoleParam) (int64, error)
 
+	// CreateWholeOrganizationFunc mocks the CreateWholeOrganization method.
+	CreateWholeOrganizationFunc func(ctx context.Context, name string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Organization, error)
+
 	// DeleteAttendStatusFunc mocks the DeleteAttendStatus method.
 	DeleteAttendStatusFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
@@ -662,6 +677,9 @@ type ManagerInterfaceMock struct {
 
 	// DeleteRoleFunc mocks the DeleteRole method.
 	DeleteRoleFunc func(ctx context.Context, id uuid.UUID) (int64, error)
+
+	// DeleteWholeOrganizationFunc mocks the DeleteWholeOrganization method.
+	DeleteWholeOrganizationFunc func(ctx context.Context) (int64, error)
 
 	// DisassociatePolicyOnRoleFunc mocks the DisassociatePolicyOnRole method.
 	DisassociatePolicyOnRoleFunc func(ctx context.Context, roleID uuid.UUID) (int64, error)
@@ -767,6 +785,9 @@ type ManagerInterfaceMock struct {
 
 	// FindRoleByIDFunc mocks the FindRoleByID method.
 	FindRoleByIDFunc func(ctx context.Context, id uuid.UUID) (entity.Role, error)
+
+	// FindWholeOrganizationFunc mocks the FindWholeOrganization method.
+	FindWholeOrganizationFunc func(ctx context.Context) (entity.Organization, error)
 
 	// GetAttendStatusesFunc mocks the GetAttendStatuses method.
 	GetAttendStatusesFunc func(ctx context.Context, whereSearchName string, order parameter.AttendStatusOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendStatus], error)
@@ -977,6 +998,9 @@ type ManagerInterfaceMock struct {
 
 	// UpdateRoleFunc mocks the UpdateRole method.
 	UpdateRoleFunc func(ctx context.Context, id uuid.UUID, name string, description string) (entity.Role, error)
+
+	// UpdateWholeOrganizationFunc mocks the UpdateWholeOrganization method.
+	UpdateWholeOrganizationFunc func(ctx context.Context, name string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Organization, error)
 
 	// calls tracks calls to the methods.
 	calls struct {
@@ -1356,6 +1380,19 @@ type ManagerInterfaceMock struct {
 			// Ps is the ps argument value.
 			Ps []parameter.CreateRoleParam
 		}
+		// CreateWholeOrganization holds details about calls to the CreateWholeOrganization method.
+		CreateWholeOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Name is the name argument value.
+			Name string
+			// Description is the description argument value.
+			Description entity.String
+			// Color is the color argument value.
+			Color entity.String
+			// CoverImageID is the coverImageID argument value.
+			CoverImageID entity.UUID
+		}
 		// DeleteAttendStatus holds details about calls to the DeleteAttendStatus method.
 		DeleteAttendStatus []struct {
 			// Ctx is the ctx argument value.
@@ -1460,6 +1497,11 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// ID is the id argument value.
 			ID uuid.UUID
+		}
+		// DeleteWholeOrganization holds details about calls to the DeleteWholeOrganization method.
+		DeleteWholeOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
 		}
 		// DisassociatePolicyOnRole holds details about calls to the DisassociatePolicyOnRole method.
 		DisassociatePolicyOnRole []struct {
@@ -1705,6 +1747,11 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// ID is the id argument value.
 			ID uuid.UUID
+		}
+		// FindWholeOrganization holds details about calls to the FindWholeOrganization method.
+		FindWholeOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
 		}
 		// GetAttendStatuses holds details about calls to the GetAttendStatuses method.
 		GetAttendStatuses []struct {
@@ -2588,6 +2635,19 @@ type ManagerInterfaceMock struct {
 			// Description is the description argument value.
 			Description string
 		}
+		// UpdateWholeOrganization holds details about calls to the UpdateWholeOrganization method.
+		UpdateWholeOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Name is the name argument value.
+			Name string
+			// Description is the description argument value.
+			Description entity.String
+			// Color is the color argument value.
+			Color entity.String
+			// CoverImageID is the coverImageID argument value.
+			CoverImageID entity.UUID
+		}
 	}
 	lockAssociateRoles                        sync.RWMutex
 	lockCreateAttendStatus                    sync.RWMutex
@@ -2627,6 +2687,7 @@ type ManagerInterfaceMock struct {
 	lockCreateRecordTypes                     sync.RWMutex
 	lockCreateRole                            sync.RWMutex
 	lockCreateRoles                           sync.RWMutex
+	lockCreateWholeOrganization               sync.RWMutex
 	lockDeleteAttendStatus                    sync.RWMutex
 	lockDeleteAttendanceType                  sync.RWMutex
 	lockDeleteEventType                       sync.RWMutex
@@ -2642,6 +2703,7 @@ type ManagerInterfaceMock struct {
 	lockDeletePolicyCategory                  sync.RWMutex
 	lockDeleteRecordType                      sync.RWMutex
 	lockDeleteRole                            sync.RWMutex
+	lockDeleteWholeOrganization               sync.RWMutex
 	lockDisassociatePolicyOnRole              sync.RWMutex
 	lockDisassociatePolicyOnRoles             sync.RWMutex
 	lockDisassociateRoleOnPolicies            sync.RWMutex
@@ -2677,6 +2739,7 @@ type ManagerInterfaceMock struct {
 	lockFindRecordTypeByID                    sync.RWMutex
 	lockFindRecordTypeByKey                   sync.RWMutex
 	lockFindRoleByID                          sync.RWMutex
+	lockFindWholeOrganization                 sync.RWMutex
 	lockGetAttendStatuses                     sync.RWMutex
 	lockGetAttendStatusesCount                sync.RWMutex
 	lockGetAttendanceTypes                    sync.RWMutex
@@ -2747,6 +2810,7 @@ type ManagerInterfaceMock struct {
 	lockUpdatePolicyCategory                  sync.RWMutex
 	lockUpdateRecordType                      sync.RWMutex
 	lockUpdateRole                            sync.RWMutex
+	lockUpdateWholeOrganization               sync.RWMutex
 }
 
 // AssociateRoles calls AssociateRolesFunc.
@@ -4337,6 +4401,54 @@ func (mock *ManagerInterfaceMock) CreateRolesCalls() []struct {
 	return calls
 }
 
+// CreateWholeOrganization calls CreateWholeOrganizationFunc.
+func (mock *ManagerInterfaceMock) CreateWholeOrganization(ctx context.Context, name string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Organization, error) {
+	if mock.CreateWholeOrganizationFunc == nil {
+		panic("ManagerInterfaceMock.CreateWholeOrganizationFunc: method is nil but ManagerInterface.CreateWholeOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		Name         string
+		Description  entity.String
+		Color        entity.String
+		CoverImageID entity.UUID
+	}{
+		Ctx:          ctx,
+		Name:         name,
+		Description:  description,
+		Color:        color,
+		CoverImageID: coverImageID,
+	}
+	mock.lockCreateWholeOrganization.Lock()
+	mock.calls.CreateWholeOrganization = append(mock.calls.CreateWholeOrganization, callInfo)
+	mock.lockCreateWholeOrganization.Unlock()
+	return mock.CreateWholeOrganizationFunc(ctx, name, description, color, coverImageID)
+}
+
+// CreateWholeOrganizationCalls gets all the calls that were made to CreateWholeOrganization.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateWholeOrganizationCalls())
+func (mock *ManagerInterfaceMock) CreateWholeOrganizationCalls() []struct {
+	Ctx          context.Context
+	Name         string
+	Description  entity.String
+	Color        entity.String
+	CoverImageID entity.UUID
+} {
+	var calls []struct {
+		Ctx          context.Context
+		Name         string
+		Description  entity.String
+		Color        entity.String
+		CoverImageID entity.UUID
+	}
+	mock.lockCreateWholeOrganization.RLock()
+	calls = mock.calls.CreateWholeOrganization
+	mock.lockCreateWholeOrganization.RUnlock()
+	return calls
+}
+
 // DeleteAttendStatus calls DeleteAttendStatusFunc.
 func (mock *ManagerInterfaceMock) DeleteAttendStatus(ctx context.Context, id uuid.UUID) (int64, error) {
 	if mock.DeleteAttendStatusFunc == nil {
@@ -4874,6 +4986,38 @@ func (mock *ManagerInterfaceMock) DeleteRoleCalls() []struct {
 	mock.lockDeleteRole.RLock()
 	calls = mock.calls.DeleteRole
 	mock.lockDeleteRole.RUnlock()
+	return calls
+}
+
+// DeleteWholeOrganization calls DeleteWholeOrganizationFunc.
+func (mock *ManagerInterfaceMock) DeleteWholeOrganization(ctx context.Context) (int64, error) {
+	if mock.DeleteWholeOrganizationFunc == nil {
+		panic("ManagerInterfaceMock.DeleteWholeOrganizationFunc: method is nil but ManagerInterface.DeleteWholeOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+	}{
+		Ctx: ctx,
+	}
+	mock.lockDeleteWholeOrganization.Lock()
+	mock.calls.DeleteWholeOrganization = append(mock.calls.DeleteWholeOrganization, callInfo)
+	mock.lockDeleteWholeOrganization.Unlock()
+	return mock.DeleteWholeOrganizationFunc(ctx)
+}
+
+// DeleteWholeOrganizationCalls gets all the calls that were made to DeleteWholeOrganization.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeleteWholeOrganizationCalls())
+func (mock *ManagerInterfaceMock) DeleteWholeOrganizationCalls() []struct {
+	Ctx context.Context
+} {
+	var calls []struct {
+		Ctx context.Context
+	}
+	mock.lockDeleteWholeOrganization.RLock()
+	calls = mock.calls.DeleteWholeOrganization
+	mock.lockDeleteWholeOrganization.RUnlock()
 	return calls
 }
 
@@ -6134,6 +6278,38 @@ func (mock *ManagerInterfaceMock) FindRoleByIDCalls() []struct {
 	mock.lockFindRoleByID.RLock()
 	calls = mock.calls.FindRoleByID
 	mock.lockFindRoleByID.RUnlock()
+	return calls
+}
+
+// FindWholeOrganization calls FindWholeOrganizationFunc.
+func (mock *ManagerInterfaceMock) FindWholeOrganization(ctx context.Context) (entity.Organization, error) {
+	if mock.FindWholeOrganizationFunc == nil {
+		panic("ManagerInterfaceMock.FindWholeOrganizationFunc: method is nil but ManagerInterface.FindWholeOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+	}{
+		Ctx: ctx,
+	}
+	mock.lockFindWholeOrganization.Lock()
+	mock.calls.FindWholeOrganization = append(mock.calls.FindWholeOrganization, callInfo)
+	mock.lockFindWholeOrganization.Unlock()
+	return mock.FindWholeOrganizationFunc(ctx)
+}
+
+// FindWholeOrganizationCalls gets all the calls that were made to FindWholeOrganization.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindWholeOrganizationCalls())
+func (mock *ManagerInterfaceMock) FindWholeOrganizationCalls() []struct {
+	Ctx context.Context
+} {
+	var calls []struct {
+		Ctx context.Context
+	}
+	mock.lockFindWholeOrganization.RLock()
+	calls = mock.calls.FindWholeOrganization
+	mock.lockFindWholeOrganization.RUnlock()
 	return calls
 }
 
@@ -9438,5 +9614,53 @@ func (mock *ManagerInterfaceMock) UpdateRoleCalls() []struct {
 	mock.lockUpdateRole.RLock()
 	calls = mock.calls.UpdateRole
 	mock.lockUpdateRole.RUnlock()
+	return calls
+}
+
+// UpdateWholeOrganization calls UpdateWholeOrganizationFunc.
+func (mock *ManagerInterfaceMock) UpdateWholeOrganization(ctx context.Context, name string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Organization, error) {
+	if mock.UpdateWholeOrganizationFunc == nil {
+		panic("ManagerInterfaceMock.UpdateWholeOrganizationFunc: method is nil but ManagerInterface.UpdateWholeOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		Name         string
+		Description  entity.String
+		Color        entity.String
+		CoverImageID entity.UUID
+	}{
+		Ctx:          ctx,
+		Name:         name,
+		Description:  description,
+		Color:        color,
+		CoverImageID: coverImageID,
+	}
+	mock.lockUpdateWholeOrganization.Lock()
+	mock.calls.UpdateWholeOrganization = append(mock.calls.UpdateWholeOrganization, callInfo)
+	mock.lockUpdateWholeOrganization.Unlock()
+	return mock.UpdateWholeOrganizationFunc(ctx, name, description, color, coverImageID)
+}
+
+// UpdateWholeOrganizationCalls gets all the calls that were made to UpdateWholeOrganization.
+// Check the length with:
+//
+//	len(mockedManagerInterface.UpdateWholeOrganizationCalls())
+func (mock *ManagerInterfaceMock) UpdateWholeOrganizationCalls() []struct {
+	Ctx          context.Context
+	Name         string
+	Description  entity.String
+	Color        entity.String
+	CoverImageID entity.UUID
+} {
+	var calls []struct {
+		Ctx          context.Context
+		Name         string
+		Description  entity.String
+		Color        entity.String
+		CoverImageID entity.UUID
+	}
+	mock.lockUpdateWholeOrganization.RLock()
+	calls = mock.calls.UpdateWholeOrganization
+	mock.lockUpdateWholeOrganization.RUnlock()
 	return calls
 }

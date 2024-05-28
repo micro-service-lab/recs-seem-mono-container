@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
@@ -12,6 +13,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/batch"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 )
 
 var (
@@ -126,6 +128,9 @@ var seedGradesCmd *cobra.Command
 // seedGroupsCmd inserts groups.
 var seedGroupsCmd *cobra.Command
 
+// seedWholeOrganizationCmd inserts whole organization.
+var seedWholeOrganizationCmd *cobra.Command
+
 // seedAllCmd inserts all seed data.
 var seedAllCmd = &cobra.Command{
 	Use:   "all",
@@ -153,6 +158,7 @@ The seed command is executed when the application is started for the first time.
 				seedDefaultImagesCmd.Run(cmd, args)
 				seedGradesCmd.Run(cmd, args)
 				seedGroupsCmd.Run(cmd, args)
+				seedWholeOrganizationCmd.Run(cmd, args)
 			},
 			seedRecordTypesCmd.Run,
 		}
@@ -307,6 +313,26 @@ func seedInit() {
 			Storage: AppContainer.Storage,
 		},
 	)
+	seedWholeOrganizationCmd = seedCmdGenerator(
+		"whole_organization",
+		"whole organization",
+		"Whole Organization",
+		func(ctx context.Context) (int64, error) {
+			_, err := AppContainer.ServiceManager.FindWholeOrganization(ctx)
+			if err != nil {
+				var e errhandle.ModelNotFoundError
+				if !errors.As(err, &e) {
+					return 0, err
+				}
+				return 0, nil
+			}
+			return 1, nil
+		},
+		&batch.InitWholeOrganization{
+			Manager: &AppContainer.ServiceManager,
+			Storage: AppContainer.Storage,
+		},
+	)
 
 	rootCmd.AddCommand(seedCmd)
 	seedCmd.AddCommand(seedAllCmd)
@@ -322,6 +348,7 @@ func seedInit() {
 	seedCmd.AddCommand(seedDefaultImagesCmd)
 	seedCmd.AddCommand(seedGradesCmd)
 	seedCmd.AddCommand(seedGroupsCmd)
+	seedCmd.AddCommand(seedWholeOrganizationCmd)
 
 	seedCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "Force seed")
 	seedCmd.PersistentFlags().BoolVarP(&diff, "diff", "d", false, "Seed only if there is a difference")

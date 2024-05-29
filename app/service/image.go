@@ -622,6 +622,9 @@ func pluralDeleteImages(
 		}
 		attachableItemIDs = append(attachableItemIDs, i.AttachableItem.AttachableItemID)
 	}
+	if len(keys) == 0 {
+		return 0, nil
+	}
 	err = stg.DeleteObjects(ctx, keys)
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete objects: %w", err)

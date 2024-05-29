@@ -87,7 +87,7 @@ WHERE member_id = $1;
 -- name: FindMemberByIDWithDetail :one
 SELECT m_members.*, m_students.student_id, m_professors.professor_id FROM m_members
 LEFT JOIN m_students ON m_members.member_id = m_students.member_id
-LEFT JOIN m_professors ON m_members.member_id = m_professor.member_id
+LEFT JOIN m_professors ON m_members.member_id = m_professors.member_id
 WHERE m_members.member_id = $1;
 
 -- name: FindMemberByLoginID :one

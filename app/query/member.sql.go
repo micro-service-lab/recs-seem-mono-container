@@ -320,7 +320,7 @@ func (q *Queries) FindMemberByIDWithCrew(ctx context.Context, memberID uuid.UUID
 const findMemberByIDWithDetail = `-- name: FindMemberByIDWithDetail :one
 SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_students.student_id, m_professors.professor_id FROM m_members
 LEFT JOIN m_students ON m_members.member_id = m_students.member_id
-LEFT JOIN m_professors ON m_members.member_id = m_professor.member_id
+LEFT JOIN m_professors ON m_members.member_id = m_professors.member_id
 WHERE m_members.member_id = $1
 `
 

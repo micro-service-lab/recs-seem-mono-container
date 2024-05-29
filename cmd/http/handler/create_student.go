@@ -83,7 +83,7 @@ func (h *CreateStudent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		},
 	); err != nil {
 		var ce errhandle.CommonError
-		if errors.As(err, &ce) {
+		if errors.As(err, &ce) && ce.Code.Code == response.OnlyProfessorAction.Code {
 			switch ce.Target {
 			case service.MemberTargetGrades:
 				gradeStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "GradeID", i18n.Options{

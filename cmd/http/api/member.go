@@ -16,9 +16,15 @@ func MemberHandler(svc service.ManagerInterface, vd validation.Validator, t i18n
 	deleteHandler := handler.DeleteMember{
 		Service: svc,
 	}
+	updateHandler := handler.UpdateMember{
+		Service:    svc,
+		Validator:  vd,
+		Translator: t,
+	}
 
 	r := chi.NewRouter()
 	r.Delete("/{member_id}", deleteHandler.ServeHTTP)
+	r.Put("/{member_id}", updateHandler.ServeHTTP)
 
 	return r
 }

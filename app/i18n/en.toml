@@ -14,6 +14,12 @@ other = "GradeIDs"
 other = "GroupID"
 [GroupIDs]
 other = "GroupIDs"
+[LoginID]
+other = "LoginID"
 
 [ModelNotExists]
 other = "{{.ID}} is not exists on the system"
+[ModelExists]
+other = "{{.ID}} is already exists"
+[OnlyProfessorModel]
+other = "{{.ID}} is for professors only"

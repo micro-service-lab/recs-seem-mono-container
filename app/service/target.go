@@ -13,4 +13,6 @@ const (
 	MemberTargetGrades = "MemberTargetGrades"
 	// MemberTargetProfileImages メンバーの関連付けの際のプロフィール画像ターゲット
 	MemberTargetProfileImages = "MemberTargetProfileImages"
+	// MemberTargetLoginID メンバーの関連付けの際のログイン ID ターゲット
+	MemberTargetLoginID = "MemberTargetLoginID"
 )

@@ -36,6 +36,10 @@ type Grade interface {
 	FindGradeByID(ctx context.Context, gradeID uuid.UUID) (entity.Grade, error)
 	// FindGradeByIDWithSd SD付きで学年を取得する。
 	FindGradeByIDWithSd(ctx context.Context, sd Sd, gradeID uuid.UUID) (entity.Grade, error)
+	// FindGradeByKey 学年を取得する。
+	FindGradeByKey(ctx context.Context, key string) (entity.Grade, error)
+	// FindGradeByKeyWithSd SD付きで学年を取得する。
+	FindGradeByKeyWithSd(ctx context.Context, sd Sd, key string) (entity.Grade, error)
 	// FindGradeWithOrganization 学年を取得する。
 	FindGradeWithOrganization(ctx context.Context, gradeID uuid.UUID) (entity.GradeWithOrganization, error)
 	// FindGradeWithOrganizationWithSd SD付きで学年を取得する。

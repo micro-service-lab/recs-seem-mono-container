@@ -14,7 +14,13 @@ other = "学年ID"
 other = "班ID"
 [GroupIDs]
 other = "班ID"
+[LoginID]
+other = "ログインID"
 
 
 [ModelNotExists]
 other = "指定された{{.ID}}が存在しません"
+[ModelExists]
+other = "指定された{{.ID}}は既に存在します"
+[OnlyProfessorModel]
+other = "教授専用の{{.ID}}です"

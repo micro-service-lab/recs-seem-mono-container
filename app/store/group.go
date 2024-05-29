@@ -36,6 +36,10 @@ type Group interface {
 	FindGroupByID(ctx context.Context, groupID uuid.UUID) (entity.Group, error)
 	// FindGroupByIDWithSd SD付きでグループを取得する。
 	FindGroupByIDWithSd(ctx context.Context, sd Sd, groupID uuid.UUID) (entity.Group, error)
+	// FindGroupByKey グループを取得する。
+	FindGroupByKey(ctx context.Context, key string) (entity.Group, error)
+	// FindGroupByKeyWithSd SD付きでグループを取得する。
+	FindGroupByKeyWithSd(ctx context.Context, sd Sd, key string) (entity.Group, error)
 	// FindGroupWithOrganization グループを取得する。
 	FindGroupWithOrganization(ctx context.Context, groupID uuid.UUID) (entity.GroupWithOrganization, error)
 	// FindGroupWithOrganizationWithSd SD付きでグループを取得する。

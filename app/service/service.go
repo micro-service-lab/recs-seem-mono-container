@@ -38,6 +38,8 @@ type Manager struct {
 	ManageGroup
 	ManageChatRoom
 	ManageMember
+	ManageStudent
+	ManageProfessor
 }
 
 // NewManager creates a new Manager.
@@ -68,7 +70,9 @@ func NewManager(
 		ManageGrade:              ManageGrade{DB: db},
 		ManageGroup:              ManageGroup{DB: db},
 		ManageChatRoom:           ManageChatRoom{DB: db, Storage: stg},
-		ManageMember:             ManageMember{DB: db, Hash: h, Clocker: clk},
+		ManageMember:             ManageMember{DB: db, Hash: h, Clocker: clk, Storage: stg},
+		ManageStudent:            ManageStudent{DB: db, Hash: h, Clocker: clk, Storage: stg},
+		ManageProfessor:          ManageProfessor{DB: db, Hash: h, Clocker: clk, Storage: stg},
 	}
 }
 
@@ -95,6 +99,8 @@ type ManagerInterface interface {
 	GroupManager
 	ChatRoomManager
 	MemberManager
+	StudentManager
+	ProfessorManager
 }
 
 // AttendStatusManager is a interface for attend status service.
@@ -723,19 +729,6 @@ type ChatRoomManager interface {
 
 // MemberManager is a interface for member service.
 type MemberManager interface {
-	CreateMember(
-		ctx context.Context,
-		loginID,
-		rawPassword,
-		email,
-		name string,
-		firstName,
-		lastName entity.String,
-		gradeID,
-		groupID uuid.UUID,
-		profileImageID,
-		roleID entity.UUID,
-	) (e entity.Member, err error)
 	UpdateMember(
 		ctx context.Context,
 		id uuid.UUID,
@@ -761,16 +754,48 @@ type MemberManager interface {
 		id uuid.UUID,
 		loginID string,
 	) (e entity.Member, err error)
-	UpdateMemberGrade(
+}
+
+// StudentManager is a interface for student service.
+type StudentManager interface {
+	CreateStudent(
+		ctx context.Context,
+		loginID,
+		rawPassword,
+		email,
+		name string,
+		firstName,
+		lastName entity.String,
+		gradeID,
+		groupID uuid.UUID,
+		roleID entity.UUID,
+	) (e entity.Student, err error)
+	DeleteStudent(ctx context.Context, id uuid.UUID) (c int64, err error)
+	UpdateStudentGrade(
 		ctx context.Context,
 		id uuid.UUID,
 		gradeID uuid.UUID,
-	) (e entity.Member, err error)
-	UpdateMemberGroup(
+	) (e entity.Student, err error)
+	UpdateStudentGroup(
 		ctx context.Context,
 		id uuid.UUID,
 		groupID uuid.UUID,
-	) (e entity.Member, err error)
+	) (e entity.Student, err error)
+}
+
+// ProfessorManager is a interface for professor service.
+type ProfessorManager interface {
+	CreateProfessor(
+		ctx context.Context,
+		loginID,
+		rawPassword,
+		email,
+		name string,
+		firstName,
+		lastName entity.String,
+		roleID entity.UUID,
+	) (e entity.Professor, err error)
+	DeleteProfessor(ctx context.Context, id uuid.UUID) (c int64, err error)
 }
 
 // AttachableItemManager is a interface for attachable item service.

@@ -8,21 +8,28 @@ import (
 
 // CommonError is an error for model not found.
 type CommonError struct {
-	code response.APIResponseType
-	attr any
+	Code   response.APIResponseType
+	Attr   any
+	Target string
 }
 
 // NewCommonError creates a new common error.
 func NewCommonError(code response.APIResponseType, attr response.ApplicationErrorAttributes) CommonError {
 	return CommonError{
-		code: code,
-		attr: attr,
+		Code: code,
+		Attr: attr,
 	}
+}
+
+// SetTarget sets the target.
+func (e *CommonError) SetTarget(target string) CommonError {
+	e.Target = target
+	return *e
 }
 
 // Error returns the error message.
 func (e CommonError) Error() string {
-	return fmt.Sprintf("common error: %v", e.code)
+	return fmt.Sprintf("common error: %v", e.Code)
 }
 
 // Is checks if the target is a common error.
@@ -39,5 +46,5 @@ func (e CommonError) As(target any) bool {
 
 // ResolveCodeAndAttribute resolves code and attribute.
 func (e CommonError) ResolveCodeAndAttribute() (response.APIResponseType, response.ApplicationErrorAttributes) {
-	return e.code, e.attr
+	return e.Code, e.Attr
 }

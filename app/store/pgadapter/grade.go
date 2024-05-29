@@ -244,6 +244,42 @@ func (a *PgAdapter) FindGradeByIDWithSd(
 	return findGradeByID(ctx, qtx, gradeID)
 }
 
+func findGradeByKey(
+	ctx context.Context, qtx *query.Queries, key string,
+) (entity.Grade, error) {
+	e, err := qtx.FindGradeByKey(ctx, key)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.Grade{}, errhandle.NewModelNotFoundError("grade")
+		}
+		return entity.Grade{}, fmt.Errorf("failed to find grade by key: %w", err)
+	}
+	entity := entity.Grade{
+		GradeID:        e.GradeID,
+		Key:            e.Key,
+		OrganizationID: e.OrganizationID,
+	}
+	return entity, nil
+}
+
+// FindGradeByKey は学年をキーで取得します。
+func (a *PgAdapter) FindGradeByKey(ctx context.Context, key string) (entity.Grade, error) {
+	return findGradeByKey(ctx, a.query, key)
+}
+
+// FindGradeByKeyWithSd はSD付きで学年をキーで取得します。
+func (a *PgAdapter) FindGradeByKeyWithSd(
+	ctx context.Context, sd store.Sd, key string,
+) (entity.Grade, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return entity.Grade{}, store.ErrNotFoundDescriptor
+	}
+	return findGradeByKey(ctx, qtx, key)
+}
+
 // findGradeWithOrganization は学年とオーガナイゼーションを取得する内部関数です。
 func findGradeWithOrganization(
 	ctx context.Context, qtx *query.Queries, gradeID uuid.UUID,

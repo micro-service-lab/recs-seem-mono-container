@@ -18,17 +18,17 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"
 )
 
-// CreateMember is a handler for creating member.
-type CreateMember struct {
+// CreateStudent is a handler for creating student.
+type CreateStudent struct {
 	Service    service.ManagerInterface
 	Validator  validation.Validator
 	Translator i18n.Translation
 }
 
-// CreateMemberRequest is a request for CreateMember.
+// CreateStudentRequest is a request for CreateStudent.
 //
 //nolint:lll
-type CreateMemberRequest struct {
+type CreateStudentRequest struct {
 	LoginID              string    `json:"login_id" validate:"required,max=255" ja:"ログインID" en:"LoginID"`
 	Password             string    `json:"password" validate:"required,max=255" ja:"パスワード" en:"Password"`
 	PasswordConfirmation string    `json:"password_confirmation" validate:"required,max=255,eqfield=Password" ja:"パスワード確認" en:"PasswordConfirmation"`
@@ -38,19 +38,18 @@ type CreateMemberRequest struct {
 	LastName             string    `json:"last_name" validate:"max=255" ja:"姓" en:"LastName"`
 	GradeID              uuid.UUID `json:"grade_id" validate:"required" ja:"学年ID" en:"GradeID"`
 	GroupID              uuid.UUID `json:"group_id" validate:"required" ja:"班ID" en:"GroupID"`
-	ProfileImageID       uuid.UUID `json:"profile_image_id" validate:"" ja:"プロフィール画像ID" en:"ProfileImageID"`
-	RoleID               uuid.UUID `json:"member_id" validate:"" ja:"ロールID" en:"RoleID"`
+	RoleID               uuid.UUID `json:"student_id" validate:"" ja:"ロールID" en:"RoleID"`
 }
 
-func (h *CreateMember) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *CreateStudent) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var err error
-	var memberReq CreateMemberRequest
-	if err = json.NewDecoder(r.Body).Decode(&memberReq); err == nil || errors.Is(err, io.EOF) {
+	var studentReq CreateStudentRequest
+	if err = json.NewDecoder(r.Body).Decode(&studentReq); err == nil || errors.Is(err, io.EOF) {
 		if errors.Is(err, io.EOF) {
-			memberReq = CreateMemberRequest{}
+			studentReq = CreateStudentRequest{}
 		}
-		err = h.Validator.ValidateWithLocale(ctx, &memberReq, lang.GetLocale(r.Context()))
+		err = h.Validator.ValidateWithLocale(ctx, &studentReq, lang.GetLocale(r.Context()))
 	} else {
 		err = errhandle.NewJSONFormatError()
 	}
@@ -61,32 +60,95 @@ func (h *CreateMember) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	var member entity.Member
-	if member, err = h.Service.CreateMember(
+	var student entity.Student
+	if student, err = h.Service.CreateStudent(
 		ctx,
-		memberReq.LoginID,
-		memberReq.Password,
-		memberReq.Email,
-		memberReq.Name,
+		studentReq.LoginID,
+		studentReq.Password,
+		studentReq.Email,
+		studentReq.Name,
 		entity.String{
-			Valid:  memberReq.FirstName != "",
-			String: memberReq.FirstName,
+			Valid:  studentReq.FirstName != "",
+			String: studentReq.FirstName,
 		},
 		entity.String{
-			Valid:  memberReq.LastName != "",
-			String: memberReq.LastName,
+			Valid:  studentReq.LastName != "",
+			String: studentReq.LastName,
 		},
-		memberReq.GradeID,
-		memberReq.GroupID,
+		studentReq.GradeID,
+		studentReq.GroupID,
 		entity.UUID{
-			Valid: memberReq.ProfileImageID != uuid.Nil,
-			Bytes: memberReq.ProfileImageID,
-		},
-		entity.UUID{
-			Valid: memberReq.RoleID != uuid.Nil,
-			Bytes: memberReq.RoleID,
+			Valid: studentReq.RoleID != uuid.Nil,
+			Bytes: studentReq.RoleID,
 		},
 	); err != nil {
+		var ce errhandle.CommonError
+		if errors.As(err, &ce) {
+			switch ce.Target {
+			case service.MemberTargetGrades:
+				gradeStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "GradeID", i18n.Options{
+					DefaultMessage: &i18n.Message{
+						ID:    "GradeID",
+						Other: "GradeID",
+					},
+				})
+				msgStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "OnlyProfessorModel", i18n.Options{
+					DefaultMessage: &i18n.Message{
+						ID:    "OnlyProfessorModel",
+						Other: "{{.ID}} professor only",
+					},
+					TemplateData: map[string]any{
+						"ID": gradeStr,
+					},
+				})
+				ve := errhandle.NewValidationError(nil)
+				ve.Add("grade_id", msgStr)
+				err = ve
+			case service.MemberTargetGroups:
+				groupStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "GroupID", i18n.Options{
+					DefaultMessage: &i18n.Message{
+						ID:    "GroupID",
+						Other: "GroupID",
+					},
+				})
+				msgStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "OnlyProfessorModel", i18n.Options{
+					DefaultMessage: &i18n.Message{
+						ID:    "OnlyProfessorModel",
+						Other: "{{.ID}} professor only",
+					},
+					TemplateData: map[string]any{
+						"ID": groupStr,
+					},
+				})
+				ve := errhandle.NewValidationError(nil)
+				ve.Add("group_id", msgStr)
+				err = ve
+			}
+		}
+		var de errhandle.ModelDuplicatedError
+		if errors.As(err, &de) {
+			switch de.Target() {
+			case service.MemberTargetLoginID:
+				loginIDStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "LoginID", i18n.Options{
+					DefaultMessage: &i18n.Message{
+						ID:    "LoginID",
+						Other: "LoginID",
+					},
+				})
+				msgStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "ModelExists", i18n.Options{
+					DefaultMessage: &i18n.Message{
+						ID:    "ModelExists",
+						Other: "{{.ID}} already exists",
+					},
+					TemplateData: map[string]any{
+						"ID": loginIDStr,
+					},
+				})
+				ve := errhandle.NewValidationError(nil)
+				ve.Add("login_id", msgStr)
+				err = ve
+			}
+		}
 		var e errhandle.ModelNotFoundError
 		if errors.As(err, &e) {
 			switch e.Target() {
@@ -128,25 +190,6 @@ func (h *CreateMember) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				ve := errhandle.NewValidationError(nil)
 				ve.Add("group_id", msgStr)
 				err = ve
-			case service.MemberTargetProfileImages:
-				profileImageStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "ProfileImageID", i18n.Options{
-					DefaultMessage: &i18n.Message{
-						ID:    "ProfileImageID",
-						Other: "ProfileImageID",
-					},
-				})
-				msgStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "ModelNotExists", i18n.Options{
-					DefaultMessage: &i18n.Message{
-						ID:    "ModelNotExists",
-						Other: "{{.ID}} not found",
-					},
-					TemplateData: map[string]any{
-						"ID": profileImageStr,
-					},
-				})
-				ve := errhandle.NewValidationError(nil)
-				ve.Add("profile_image_id", msgStr)
-				err = ve
 			case service.MemberTargetRoles:
 				roleStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "RoleID", i18n.Options{
 					DefaultMessage: &i18n.Message{
@@ -169,7 +212,7 @@ func (h *CreateMember) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	} else {
-		err = response.JSONResponseWriter(ctx, w, response.Success, member, nil)
+		err = response.JSONResponseWriter(ctx, w, response.Success, student, nil)
 	}
 	if err != nil {
 		handled, err := errhandle.ErrorHandle(ctx, w, err)

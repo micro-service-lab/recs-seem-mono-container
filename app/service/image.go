@@ -607,7 +607,10 @@ func pluralDeleteImages(
 	var keys []string
 	var attachableItemIDs []uuid.UUID
 	for _, i := range image.Data {
-		if ownerID.Valid && i.AttachableItem.OwnerID.Valid && i.AttachableItem.OwnerID.Bytes != ownerID.Bytes {
+		if !i.AttachableItem.OwnerID.Valid {
+			continue
+		}
+		if !ownerID.Valid || i.AttachableItem.OwnerID.Bytes != ownerID.Bytes {
 			return 0, errhandle.NewCommonError(response.NotFileOwner, nil)
 		}
 		if !i.AttachableItem.FromOuter {

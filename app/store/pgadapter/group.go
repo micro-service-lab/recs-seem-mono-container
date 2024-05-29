@@ -244,6 +244,42 @@ func (a *PgAdapter) FindGroupByIDWithSd(
 	return findGroupByID(ctx, qtx, groupID)
 }
 
+func findGroupByKey(
+	ctx context.Context, qtx *query.Queries, key string,
+) (entity.Group, error) {
+	e, err := qtx.FindGroupByKey(ctx, key)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.Group{}, errhandle.NewModelNotFoundError("group")
+		}
+		return entity.Group{}, fmt.Errorf("failed to find group: %w", err)
+	}
+	entity := entity.Group{
+		GroupID:        e.GroupID,
+		Key:            e.Key,
+		OrganizationID: e.OrganizationID,
+	}
+	return entity, nil
+}
+
+// FindGroupByKey はグループをキーで取得します。
+func (a *PgAdapter) FindGroupByKey(ctx context.Context, key string) (entity.Group, error) {
+	return findGroupByKey(ctx, a.query, key)
+}
+
+// FindGroupByKeyWithSd はSD付きでグループをキーで取得します。
+func (a *PgAdapter) FindGroupByKeyWithSd(
+	ctx context.Context, sd store.Sd, key string,
+) (entity.Group, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return entity.Group{}, store.ErrNotFoundDescriptor
+	}
+	return findGroupByKey(ctx, qtx, key)
+}
+
 // findGroupWithOrganization はグループとオーガナイゼーションを取得する内部関数です。
 func findGroupWithOrganization(
 	ctx context.Context, qtx *query.Queries, groupID uuid.UUID,

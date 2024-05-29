@@ -259,4 +259,11 @@ var (
 		Message:    "not file owner error",
 		StatusCode: http.StatusForbidden,
 	}
+
+	// OnlyProfessorAction 教授のみの操作
+	OnlyProfessorAction = APIResponseType{
+		Code:       "232",
+		Message:    "only professor action error",
+		StatusCode: http.StatusForbidden,
+	}
 )

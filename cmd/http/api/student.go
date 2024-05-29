@@ -11,14 +11,20 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"
 )
 
-// MemberHandler is a handler for roles.
-func MemberHandler(svc service.ManagerInterface, vd validation.Validator, t i18n.Translation) http.Handler {
-	deleteHandler := handler.DeleteMember{
+// StudentHandler is a handler for roles.
+func StudentHandler(svc service.ManagerInterface, vd validation.Validator, t i18n.Translation) http.Handler {
+	createHandler := handler.CreateStudent{
+		Service:    svc,
+		Validator:  vd,
+		Translator: t,
+	}
+	deleteHandler := handler.DeleteStudent{
 		Service: svc,
 	}
 
 	r := chi.NewRouter()
-	r.Delete("/{member_id}", deleteHandler.ServeHTTP)
+	r.Post("/", createHandler.ServeHTTP)
+	r.Delete("/{student_id}", deleteHandler.ServeHTTP)
 
 	return r
 }

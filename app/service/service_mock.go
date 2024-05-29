@@ -92,9 +92,6 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreateImagesSpecifyFilenameFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageSpecifyFilenameServiceParam) ([]entity.Image, error) {
 //				panic("mock out the CreateImagesSpecifyFilename method")
 //			},
-//			CreateMemberFunc: func(ctx context.Context, loginID string, rawPassword string, email string, name string, firstName entity.String, lastName entity.String, gradeID uuid.UUID, groupID uuid.UUID, profileImageID entity.UUID, roleID entity.UUID) (entity.Member, error) {
-//				panic("mock out the CreateMember method")
-//			},
 //			CreateMimeTypeFunc: func(ctx context.Context, name string, key string, kind string) (entity.MimeType, error) {
 //				panic("mock out the CreateMimeType method")
 //			},
@@ -128,6 +125,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreatePolicyCategoryFunc: func(ctx context.Context, name string, key string, description string) (entity.PolicyCategory, error) {
 //				panic("mock out the CreatePolicyCategory method")
 //			},
+//			CreateProfessorFunc: func(ctx context.Context, loginID string, rawPassword string, email string, name string, firstName entity.String, lastName entity.String, roleID entity.UUID) (entity.Professor, error) {
+//				panic("mock out the CreateProfessor method")
+//			},
 //			CreateRecordTypeFunc: func(ctx context.Context, name string, key string) (entity.RecordType, error) {
 //				panic("mock out the CreateRecordType method")
 //			},
@@ -139,6 +139,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			CreateRolesFunc: func(ctx context.Context, ps []parameter.CreateRoleParam) (int64, error) {
 //				panic("mock out the CreateRoles method")
+//			},
+//			CreateStudentFunc: func(ctx context.Context, loginID string, rawPassword string, email string, name string, firstName entity.String, lastName entity.String, gradeID uuid.UUID, groupID uuid.UUID, roleID entity.UUID) (entity.Student, error) {
+//				panic("mock out the CreateStudent method")
 //			},
 //			CreateWholeOrganizationFunc: func(ctx context.Context, name string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Organization, error) {
 //				panic("mock out the CreateWholeOrganization method")
@@ -185,11 +188,17 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			DeletePolicyCategoryFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeletePolicyCategory method")
 //			},
+//			DeleteProfessorFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteProfessor method")
+//			},
 //			DeleteRecordTypeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteRecordType method")
 //			},
 //			DeleteRoleFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteRole method")
+//			},
+//			DeleteStudentFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteStudent method")
 //			},
 //			DeleteWholeOrganizationFunc: func(ctx context.Context) (int64, error) {
 //				panic("mock out the DeleteWholeOrganization method")
@@ -491,12 +500,6 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			UpdateMemberFunc: func(ctx context.Context, id uuid.UUID, email string, name string, firstName entity.String, lastName entity.String, profileImageID entity.UUID) (entity.Member, error) {
 //				panic("mock out the UpdateMember method")
 //			},
-//			UpdateMemberGradeFunc: func(ctx context.Context, id uuid.UUID, gradeID uuid.UUID) (entity.Member, error) {
-//				panic("mock out the UpdateMemberGrade method")
-//			},
-//			UpdateMemberGroupFunc: func(ctx context.Context, id uuid.UUID, groupID uuid.UUID) (entity.Member, error) {
-//				panic("mock out the UpdateMemberGroup method")
-//			},
 //			UpdateMemberLoginIDFunc: func(ctx context.Context, id uuid.UUID, loginID string) (entity.Member, error) {
 //				panic("mock out the UpdateMemberLoginID method")
 //			},
@@ -529,6 +532,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			UpdateRoleFunc: func(ctx context.Context, id uuid.UUID, name string, description string) (entity.Role, error) {
 //				panic("mock out the UpdateRole method")
+//			},
+//			UpdateStudentGradeFunc: func(ctx context.Context, id uuid.UUID, gradeID uuid.UUID) (entity.Student, error) {
+//				panic("mock out the UpdateStudentGrade method")
+//			},
+//			UpdateStudentGroupFunc: func(ctx context.Context, id uuid.UUID, groupID uuid.UUID) (entity.Student, error) {
+//				panic("mock out the UpdateStudentGroup method")
 //			},
 //			UpdateWholeOrganizationFunc: func(ctx context.Context, name string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Organization, error) {
 //				panic("mock out the UpdateWholeOrganization method")
@@ -609,9 +618,6 @@ type ManagerInterfaceMock struct {
 	// CreateImagesSpecifyFilenameFunc mocks the CreateImagesSpecifyFilename method.
 	CreateImagesSpecifyFilenameFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageSpecifyFilenameServiceParam) ([]entity.Image, error)
 
-	// CreateMemberFunc mocks the CreateMember method.
-	CreateMemberFunc func(ctx context.Context, loginID string, rawPassword string, email string, name string, firstName entity.String, lastName entity.String, gradeID uuid.UUID, groupID uuid.UUID, profileImageID entity.UUID, roleID entity.UUID) (entity.Member, error)
-
 	// CreateMimeTypeFunc mocks the CreateMimeType method.
 	CreateMimeTypeFunc func(ctx context.Context, name string, key string, kind string) (entity.MimeType, error)
 
@@ -645,6 +651,9 @@ type ManagerInterfaceMock struct {
 	// CreatePolicyCategoryFunc mocks the CreatePolicyCategory method.
 	CreatePolicyCategoryFunc func(ctx context.Context, name string, key string, description string) (entity.PolicyCategory, error)
 
+	// CreateProfessorFunc mocks the CreateProfessor method.
+	CreateProfessorFunc func(ctx context.Context, loginID string, rawPassword string, email string, name string, firstName entity.String, lastName entity.String, roleID entity.UUID) (entity.Professor, error)
+
 	// CreateRecordTypeFunc mocks the CreateRecordType method.
 	CreateRecordTypeFunc func(ctx context.Context, name string, key string) (entity.RecordType, error)
 
@@ -656,6 +665,9 @@ type ManagerInterfaceMock struct {
 
 	// CreateRolesFunc mocks the CreateRoles method.
 	CreateRolesFunc func(ctx context.Context, ps []parameter.CreateRoleParam) (int64, error)
+
+	// CreateStudentFunc mocks the CreateStudent method.
+	CreateStudentFunc func(ctx context.Context, loginID string, rawPassword string, email string, name string, firstName entity.String, lastName entity.String, gradeID uuid.UUID, groupID uuid.UUID, roleID entity.UUID) (entity.Student, error)
 
 	// CreateWholeOrganizationFunc mocks the CreateWholeOrganization method.
 	CreateWholeOrganizationFunc func(ctx context.Context, name string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Organization, error)
@@ -702,11 +714,17 @@ type ManagerInterfaceMock struct {
 	// DeletePolicyCategoryFunc mocks the DeletePolicyCategory method.
 	DeletePolicyCategoryFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
+	// DeleteProfessorFunc mocks the DeleteProfessor method.
+	DeleteProfessorFunc func(ctx context.Context, id uuid.UUID) (int64, error)
+
 	// DeleteRecordTypeFunc mocks the DeleteRecordType method.
 	DeleteRecordTypeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
 	// DeleteRoleFunc mocks the DeleteRole method.
 	DeleteRoleFunc func(ctx context.Context, id uuid.UUID) (int64, error)
+
+	// DeleteStudentFunc mocks the DeleteStudent method.
+	DeleteStudentFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
 	// DeleteWholeOrganizationFunc mocks the DeleteWholeOrganization method.
 	DeleteWholeOrganizationFunc func(ctx context.Context) (int64, error)
@@ -1008,12 +1026,6 @@ type ManagerInterfaceMock struct {
 	// UpdateMemberFunc mocks the UpdateMember method.
 	UpdateMemberFunc func(ctx context.Context, id uuid.UUID, email string, name string, firstName entity.String, lastName entity.String, profileImageID entity.UUID) (entity.Member, error)
 
-	// UpdateMemberGradeFunc mocks the UpdateMemberGrade method.
-	UpdateMemberGradeFunc func(ctx context.Context, id uuid.UUID, gradeID uuid.UUID) (entity.Member, error)
-
-	// UpdateMemberGroupFunc mocks the UpdateMemberGroup method.
-	UpdateMemberGroupFunc func(ctx context.Context, id uuid.UUID, groupID uuid.UUID) (entity.Member, error)
-
 	// UpdateMemberLoginIDFunc mocks the UpdateMemberLoginID method.
 	UpdateMemberLoginIDFunc func(ctx context.Context, id uuid.UUID, loginID string) (entity.Member, error)
 
@@ -1046,6 +1058,12 @@ type ManagerInterfaceMock struct {
 
 	// UpdateRoleFunc mocks the UpdateRole method.
 	UpdateRoleFunc func(ctx context.Context, id uuid.UUID, name string, description string) (entity.Role, error)
+
+	// UpdateStudentGradeFunc mocks the UpdateStudentGrade method.
+	UpdateStudentGradeFunc func(ctx context.Context, id uuid.UUID, gradeID uuid.UUID) (entity.Student, error)
+
+	// UpdateStudentGroupFunc mocks the UpdateStudentGroup method.
+	UpdateStudentGroupFunc func(ctx context.Context, id uuid.UUID, groupID uuid.UUID) (entity.Student, error)
 
 	// UpdateWholeOrganizationFunc mocks the UpdateWholeOrganization method.
 	UpdateWholeOrganizationFunc func(ctx context.Context, name string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Organization, error)
@@ -1291,31 +1309,6 @@ type ManagerInterfaceMock struct {
 			// Params is the params argument value.
 			Params []parameter.CreateImageSpecifyFilenameServiceParam
 		}
-		// CreateMember holds details about calls to the CreateMember method.
-		CreateMember []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
-			// LoginID is the loginID argument value.
-			LoginID string
-			// RawPassword is the rawPassword argument value.
-			RawPassword string
-			// Email is the email argument value.
-			Email string
-			// Name is the name argument value.
-			Name string
-			// FirstName is the firstName argument value.
-			FirstName entity.String
-			// LastName is the lastName argument value.
-			LastName entity.String
-			// GradeID is the gradeID argument value.
-			GradeID uuid.UUID
-			// GroupID is the groupID argument value.
-			GroupID uuid.UUID
-			// ProfileImageID is the profileImageID argument value.
-			ProfileImageID entity.UUID
-			// RoleID is the roleID argument value.
-			RoleID entity.UUID
-		}
 		// CreateMimeType holds details about calls to the CreateMimeType method.
 		CreateMimeType []struct {
 			// Ctx is the ctx argument value.
@@ -1421,6 +1414,25 @@ type ManagerInterfaceMock struct {
 			// Description is the description argument value.
 			Description string
 		}
+		// CreateProfessor holds details about calls to the CreateProfessor method.
+		CreateProfessor []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// LoginID is the loginID argument value.
+			LoginID string
+			// RawPassword is the rawPassword argument value.
+			RawPassword string
+			// Email is the email argument value.
+			Email string
+			// Name is the name argument value.
+			Name string
+			// FirstName is the firstName argument value.
+			FirstName entity.String
+			// LastName is the lastName argument value.
+			LastName entity.String
+			// RoleID is the roleID argument value.
+			RoleID entity.UUID
+		}
 		// CreateRecordType holds details about calls to the CreateRecordType method.
 		CreateRecordType []struct {
 			// Ctx is the ctx argument value.
@@ -1452,6 +1464,29 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// Ps is the ps argument value.
 			Ps []parameter.CreateRoleParam
+		}
+		// CreateStudent holds details about calls to the CreateStudent method.
+		CreateStudent []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// LoginID is the loginID argument value.
+			LoginID string
+			// RawPassword is the rawPassword argument value.
+			RawPassword string
+			// Email is the email argument value.
+			Email string
+			// Name is the name argument value.
+			Name string
+			// FirstName is the firstName argument value.
+			FirstName entity.String
+			// LastName is the lastName argument value.
+			LastName entity.String
+			// GradeID is the gradeID argument value.
+			GradeID uuid.UUID
+			// GroupID is the groupID argument value.
+			GroupID uuid.UUID
+			// RoleID is the roleID argument value.
+			RoleID entity.UUID
 		}
 		// CreateWholeOrganization holds details about calls to the CreateWholeOrganization method.
 		CreateWholeOrganization []struct {
@@ -1564,6 +1599,13 @@ type ManagerInterfaceMock struct {
 			// ID is the id argument value.
 			ID uuid.UUID
 		}
+		// DeleteProfessor holds details about calls to the DeleteProfessor method.
+		DeleteProfessor []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
 		// DeleteRecordType holds details about calls to the DeleteRecordType method.
 		DeleteRecordType []struct {
 			// Ctx is the ctx argument value.
@@ -1573,6 +1615,13 @@ type ManagerInterfaceMock struct {
 		}
 		// DeleteRole holds details about calls to the DeleteRole method.
 		DeleteRole []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// DeleteStudent holds details about calls to the DeleteStudent method.
+		DeleteStudent []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// ID is the id argument value.
@@ -2628,24 +2677,6 @@ type ManagerInterfaceMock struct {
 			// ProfileImageID is the profileImageID argument value.
 			ProfileImageID entity.UUID
 		}
-		// UpdateMemberGrade holds details about calls to the UpdateMemberGrade method.
-		UpdateMemberGrade []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
-			// ID is the id argument value.
-			ID uuid.UUID
-			// GradeID is the gradeID argument value.
-			GradeID uuid.UUID
-		}
-		// UpdateMemberGroup holds details about calls to the UpdateMemberGroup method.
-		UpdateMemberGroup []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
-			// ID is the id argument value.
-			ID uuid.UUID
-			// GroupID is the groupID argument value.
-			GroupID uuid.UUID
-		}
 		// UpdateMemberLoginID holds details about calls to the UpdateMemberLoginID method.
 		UpdateMemberLoginID []struct {
 			// Ctx is the ctx argument value.
@@ -2777,6 +2808,24 @@ type ManagerInterfaceMock struct {
 			// Description is the description argument value.
 			Description string
 		}
+		// UpdateStudentGrade holds details about calls to the UpdateStudentGrade method.
+		UpdateStudentGrade []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+			// GradeID is the gradeID argument value.
+			GradeID uuid.UUID
+		}
+		// UpdateStudentGroup holds details about calls to the UpdateStudentGroup method.
+		UpdateStudentGroup []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+			// GroupID is the groupID argument value.
+			GroupID uuid.UUID
+		}
 		// UpdateWholeOrganization holds details about calls to the UpdateWholeOrganization method.
 		UpdateWholeOrganization []struct {
 			// Ctx is the ctx argument value.
@@ -2814,7 +2863,6 @@ type ManagerInterfaceMock struct {
 	lockCreateImages                          sync.RWMutex
 	lockCreateImagesFromOuter                 sync.RWMutex
 	lockCreateImagesSpecifyFilename           sync.RWMutex
-	lockCreateMember                          sync.RWMutex
 	lockCreateMimeType                        sync.RWMutex
 	lockCreateMimeTypes                       sync.RWMutex
 	lockCreateOrganization                    sync.RWMutex
@@ -2826,10 +2874,12 @@ type ManagerInterfaceMock struct {
 	lockCreatePolicy                          sync.RWMutex
 	lockCreatePolicyCategories                sync.RWMutex
 	lockCreatePolicyCategory                  sync.RWMutex
+	lockCreateProfessor                       sync.RWMutex
 	lockCreateRecordType                      sync.RWMutex
 	lockCreateRecordTypes                     sync.RWMutex
 	lockCreateRole                            sync.RWMutex
 	lockCreateRoles                           sync.RWMutex
+	lockCreateStudent                         sync.RWMutex
 	lockCreateWholeOrganization               sync.RWMutex
 	lockDeleteAttendStatus                    sync.RWMutex
 	lockDeleteAttendanceType                  sync.RWMutex
@@ -2845,8 +2895,10 @@ type ManagerInterfaceMock struct {
 	lockDeletePermissionCategory              sync.RWMutex
 	lockDeletePolicy                          sync.RWMutex
 	lockDeletePolicyCategory                  sync.RWMutex
+	lockDeleteProfessor                       sync.RWMutex
 	lockDeleteRecordType                      sync.RWMutex
 	lockDeleteRole                            sync.RWMutex
+	lockDeleteStudent                         sync.RWMutex
 	lockDeleteWholeOrganization               sync.RWMutex
 	lockDisassociatePolicyOnRole              sync.RWMutex
 	lockDisassociatePolicyOnRoles             sync.RWMutex
@@ -2947,8 +2999,6 @@ type ManagerInterfaceMock struct {
 	lockUpdateGrade                           sync.RWMutex
 	lockUpdateGroup                           sync.RWMutex
 	lockUpdateMember                          sync.RWMutex
-	lockUpdateMemberGrade                     sync.RWMutex
-	lockUpdateMemberGroup                     sync.RWMutex
 	lockUpdateMemberLoginID                   sync.RWMutex
 	lockUpdateMemberPassword                  sync.RWMutex
 	lockUpdateMemberRole                      sync.RWMutex
@@ -2960,6 +3010,8 @@ type ManagerInterfaceMock struct {
 	lockUpdatePolicyCategory                  sync.RWMutex
 	lockUpdateRecordType                      sync.RWMutex
 	lockUpdateRole                            sync.RWMutex
+	lockUpdateStudentGrade                    sync.RWMutex
+	lockUpdateStudentGroup                    sync.RWMutex
 	lockUpdateWholeOrganization               sync.RWMutex
 }
 
@@ -3947,78 +3999,6 @@ func (mock *ManagerInterfaceMock) CreateImagesSpecifyFilenameCalls() []struct {
 	return calls
 }
 
-// CreateMember calls CreateMemberFunc.
-func (mock *ManagerInterfaceMock) CreateMember(ctx context.Context, loginID string, rawPassword string, email string, name string, firstName entity.String, lastName entity.String, gradeID uuid.UUID, groupID uuid.UUID, profileImageID entity.UUID, roleID entity.UUID) (entity.Member, error) {
-	if mock.CreateMemberFunc == nil {
-		panic("ManagerInterfaceMock.CreateMemberFunc: method is nil but ManagerInterface.CreateMember was just called")
-	}
-	callInfo := struct {
-		Ctx            context.Context
-		LoginID        string
-		RawPassword    string
-		Email          string
-		Name           string
-		FirstName      entity.String
-		LastName       entity.String
-		GradeID        uuid.UUID
-		GroupID        uuid.UUID
-		ProfileImageID entity.UUID
-		RoleID         entity.UUID
-	}{
-		Ctx:            ctx,
-		LoginID:        loginID,
-		RawPassword:    rawPassword,
-		Email:          email,
-		Name:           name,
-		FirstName:      firstName,
-		LastName:       lastName,
-		GradeID:        gradeID,
-		GroupID:        groupID,
-		ProfileImageID: profileImageID,
-		RoleID:         roleID,
-	}
-	mock.lockCreateMember.Lock()
-	mock.calls.CreateMember = append(mock.calls.CreateMember, callInfo)
-	mock.lockCreateMember.Unlock()
-	return mock.CreateMemberFunc(ctx, loginID, rawPassword, email, name, firstName, lastName, gradeID, groupID, profileImageID, roleID)
-}
-
-// CreateMemberCalls gets all the calls that were made to CreateMember.
-// Check the length with:
-//
-//	len(mockedManagerInterface.CreateMemberCalls())
-func (mock *ManagerInterfaceMock) CreateMemberCalls() []struct {
-	Ctx            context.Context
-	LoginID        string
-	RawPassword    string
-	Email          string
-	Name           string
-	FirstName      entity.String
-	LastName       entity.String
-	GradeID        uuid.UUID
-	GroupID        uuid.UUID
-	ProfileImageID entity.UUID
-	RoleID         entity.UUID
-} {
-	var calls []struct {
-		Ctx            context.Context
-		LoginID        string
-		RawPassword    string
-		Email          string
-		Name           string
-		FirstName      entity.String
-		LastName       entity.String
-		GradeID        uuid.UUID
-		GroupID        uuid.UUID
-		ProfileImageID entity.UUID
-		RoleID         entity.UUID
-	}
-	mock.lockCreateMember.RLock()
-	calls = mock.calls.CreateMember
-	mock.lockCreateMember.RUnlock()
-	return calls
-}
-
 // CreateMimeType calls CreateMimeTypeFunc.
 func (mock *ManagerInterfaceMock) CreateMimeType(ctx context.Context, name string, key string, kind string) (entity.MimeType, error) {
 	if mock.CreateMimeTypeFunc == nil {
@@ -4471,6 +4451,66 @@ func (mock *ManagerInterfaceMock) CreatePolicyCategoryCalls() []struct {
 	return calls
 }
 
+// CreateProfessor calls CreateProfessorFunc.
+func (mock *ManagerInterfaceMock) CreateProfessor(ctx context.Context, loginID string, rawPassword string, email string, name string, firstName entity.String, lastName entity.String, roleID entity.UUID) (entity.Professor, error) {
+	if mock.CreateProfessorFunc == nil {
+		panic("ManagerInterfaceMock.CreateProfessorFunc: method is nil but ManagerInterface.CreateProfessor was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		LoginID     string
+		RawPassword string
+		Email       string
+		Name        string
+		FirstName   entity.String
+		LastName    entity.String
+		RoleID      entity.UUID
+	}{
+		Ctx:         ctx,
+		LoginID:     loginID,
+		RawPassword: rawPassword,
+		Email:       email,
+		Name:        name,
+		FirstName:   firstName,
+		LastName:    lastName,
+		RoleID:      roleID,
+	}
+	mock.lockCreateProfessor.Lock()
+	mock.calls.CreateProfessor = append(mock.calls.CreateProfessor, callInfo)
+	mock.lockCreateProfessor.Unlock()
+	return mock.CreateProfessorFunc(ctx, loginID, rawPassword, email, name, firstName, lastName, roleID)
+}
+
+// CreateProfessorCalls gets all the calls that were made to CreateProfessor.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateProfessorCalls())
+func (mock *ManagerInterfaceMock) CreateProfessorCalls() []struct {
+	Ctx         context.Context
+	LoginID     string
+	RawPassword string
+	Email       string
+	Name        string
+	FirstName   entity.String
+	LastName    entity.String
+	RoleID      entity.UUID
+} {
+	var calls []struct {
+		Ctx         context.Context
+		LoginID     string
+		RawPassword string
+		Email       string
+		Name        string
+		FirstName   entity.String
+		LastName    entity.String
+		RoleID      entity.UUID
+	}
+	mock.lockCreateProfessor.RLock()
+	calls = mock.calls.CreateProfessor
+	mock.lockCreateProfessor.RUnlock()
+	return calls
+}
+
 // CreateRecordType calls CreateRecordTypeFunc.
 func (mock *ManagerInterfaceMock) CreateRecordType(ctx context.Context, name string, key string) (entity.RecordType, error) {
 	if mock.CreateRecordTypeFunc == nil {
@@ -4620,6 +4660,74 @@ func (mock *ManagerInterfaceMock) CreateRolesCalls() []struct {
 	mock.lockCreateRoles.RLock()
 	calls = mock.calls.CreateRoles
 	mock.lockCreateRoles.RUnlock()
+	return calls
+}
+
+// CreateStudent calls CreateStudentFunc.
+func (mock *ManagerInterfaceMock) CreateStudent(ctx context.Context, loginID string, rawPassword string, email string, name string, firstName entity.String, lastName entity.String, gradeID uuid.UUID, groupID uuid.UUID, roleID entity.UUID) (entity.Student, error) {
+	if mock.CreateStudentFunc == nil {
+		panic("ManagerInterfaceMock.CreateStudentFunc: method is nil but ManagerInterface.CreateStudent was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		LoginID     string
+		RawPassword string
+		Email       string
+		Name        string
+		FirstName   entity.String
+		LastName    entity.String
+		GradeID     uuid.UUID
+		GroupID     uuid.UUID
+		RoleID      entity.UUID
+	}{
+		Ctx:         ctx,
+		LoginID:     loginID,
+		RawPassword: rawPassword,
+		Email:       email,
+		Name:        name,
+		FirstName:   firstName,
+		LastName:    lastName,
+		GradeID:     gradeID,
+		GroupID:     groupID,
+		RoleID:      roleID,
+	}
+	mock.lockCreateStudent.Lock()
+	mock.calls.CreateStudent = append(mock.calls.CreateStudent, callInfo)
+	mock.lockCreateStudent.Unlock()
+	return mock.CreateStudentFunc(ctx, loginID, rawPassword, email, name, firstName, lastName, gradeID, groupID, roleID)
+}
+
+// CreateStudentCalls gets all the calls that were made to CreateStudent.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateStudentCalls())
+func (mock *ManagerInterfaceMock) CreateStudentCalls() []struct {
+	Ctx         context.Context
+	LoginID     string
+	RawPassword string
+	Email       string
+	Name        string
+	FirstName   entity.String
+	LastName    entity.String
+	GradeID     uuid.UUID
+	GroupID     uuid.UUID
+	RoleID      entity.UUID
+} {
+	var calls []struct {
+		Ctx         context.Context
+		LoginID     string
+		RawPassword string
+		Email       string
+		Name        string
+		FirstName   entity.String
+		LastName    entity.String
+		GradeID     uuid.UUID
+		GroupID     uuid.UUID
+		RoleID      entity.UUID
+	}
+	mock.lockCreateStudent.RLock()
+	calls = mock.calls.CreateStudent
+	mock.lockCreateStudent.RUnlock()
 	return calls
 }
 
@@ -5175,6 +5283,42 @@ func (mock *ManagerInterfaceMock) DeletePolicyCategoryCalls() []struct {
 	return calls
 }
 
+// DeleteProfessor calls DeleteProfessorFunc.
+func (mock *ManagerInterfaceMock) DeleteProfessor(ctx context.Context, id uuid.UUID) (int64, error) {
+	if mock.DeleteProfessorFunc == nil {
+		panic("ManagerInterfaceMock.DeleteProfessorFunc: method is nil but ManagerInterface.DeleteProfessor was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockDeleteProfessor.Lock()
+	mock.calls.DeleteProfessor = append(mock.calls.DeleteProfessor, callInfo)
+	mock.lockDeleteProfessor.Unlock()
+	return mock.DeleteProfessorFunc(ctx, id)
+}
+
+// DeleteProfessorCalls gets all the calls that were made to DeleteProfessor.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeleteProfessorCalls())
+func (mock *ManagerInterfaceMock) DeleteProfessorCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockDeleteProfessor.RLock()
+	calls = mock.calls.DeleteProfessor
+	mock.lockDeleteProfessor.RUnlock()
+	return calls
+}
+
 // DeleteRecordType calls DeleteRecordTypeFunc.
 func (mock *ManagerInterfaceMock) DeleteRecordType(ctx context.Context, id uuid.UUID) (int64, error) {
 	if mock.DeleteRecordTypeFunc == nil {
@@ -5244,6 +5388,42 @@ func (mock *ManagerInterfaceMock) DeleteRoleCalls() []struct {
 	mock.lockDeleteRole.RLock()
 	calls = mock.calls.DeleteRole
 	mock.lockDeleteRole.RUnlock()
+	return calls
+}
+
+// DeleteStudent calls DeleteStudentFunc.
+func (mock *ManagerInterfaceMock) DeleteStudent(ctx context.Context, id uuid.UUID) (int64, error) {
+	if mock.DeleteStudentFunc == nil {
+		panic("ManagerInterfaceMock.DeleteStudentFunc: method is nil but ManagerInterface.DeleteStudent was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockDeleteStudent.Lock()
+	mock.calls.DeleteStudent = append(mock.calls.DeleteStudent, callInfo)
+	mock.lockDeleteStudent.Unlock()
+	return mock.DeleteStudentFunc(ctx, id)
+}
+
+// DeleteStudentCalls gets all the calls that were made to DeleteStudent.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeleteStudentCalls())
+func (mock *ManagerInterfaceMock) DeleteStudentCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockDeleteStudent.RLock()
+	calls = mock.calls.DeleteStudent
+	mock.lockDeleteStudent.RUnlock()
 	return calls
 }
 
@@ -9547,86 +9727,6 @@ func (mock *ManagerInterfaceMock) UpdateMemberCalls() []struct {
 	return calls
 }
 
-// UpdateMemberGrade calls UpdateMemberGradeFunc.
-func (mock *ManagerInterfaceMock) UpdateMemberGrade(ctx context.Context, id uuid.UUID, gradeID uuid.UUID) (entity.Member, error) {
-	if mock.UpdateMemberGradeFunc == nil {
-		panic("ManagerInterfaceMock.UpdateMemberGradeFunc: method is nil but ManagerInterface.UpdateMemberGrade was just called")
-	}
-	callInfo := struct {
-		Ctx     context.Context
-		ID      uuid.UUID
-		GradeID uuid.UUID
-	}{
-		Ctx:     ctx,
-		ID:      id,
-		GradeID: gradeID,
-	}
-	mock.lockUpdateMemberGrade.Lock()
-	mock.calls.UpdateMemberGrade = append(mock.calls.UpdateMemberGrade, callInfo)
-	mock.lockUpdateMemberGrade.Unlock()
-	return mock.UpdateMemberGradeFunc(ctx, id, gradeID)
-}
-
-// UpdateMemberGradeCalls gets all the calls that were made to UpdateMemberGrade.
-// Check the length with:
-//
-//	len(mockedManagerInterface.UpdateMemberGradeCalls())
-func (mock *ManagerInterfaceMock) UpdateMemberGradeCalls() []struct {
-	Ctx     context.Context
-	ID      uuid.UUID
-	GradeID uuid.UUID
-} {
-	var calls []struct {
-		Ctx     context.Context
-		ID      uuid.UUID
-		GradeID uuid.UUID
-	}
-	mock.lockUpdateMemberGrade.RLock()
-	calls = mock.calls.UpdateMemberGrade
-	mock.lockUpdateMemberGrade.RUnlock()
-	return calls
-}
-
-// UpdateMemberGroup calls UpdateMemberGroupFunc.
-func (mock *ManagerInterfaceMock) UpdateMemberGroup(ctx context.Context, id uuid.UUID, groupID uuid.UUID) (entity.Member, error) {
-	if mock.UpdateMemberGroupFunc == nil {
-		panic("ManagerInterfaceMock.UpdateMemberGroupFunc: method is nil but ManagerInterface.UpdateMemberGroup was just called")
-	}
-	callInfo := struct {
-		Ctx     context.Context
-		ID      uuid.UUID
-		GroupID uuid.UUID
-	}{
-		Ctx:     ctx,
-		ID:      id,
-		GroupID: groupID,
-	}
-	mock.lockUpdateMemberGroup.Lock()
-	mock.calls.UpdateMemberGroup = append(mock.calls.UpdateMemberGroup, callInfo)
-	mock.lockUpdateMemberGroup.Unlock()
-	return mock.UpdateMemberGroupFunc(ctx, id, groupID)
-}
-
-// UpdateMemberGroupCalls gets all the calls that were made to UpdateMemberGroup.
-// Check the length with:
-//
-//	len(mockedManagerInterface.UpdateMemberGroupCalls())
-func (mock *ManagerInterfaceMock) UpdateMemberGroupCalls() []struct {
-	Ctx     context.Context
-	ID      uuid.UUID
-	GroupID uuid.UUID
-} {
-	var calls []struct {
-		Ctx     context.Context
-		ID      uuid.UUID
-		GroupID uuid.UUID
-	}
-	mock.lockUpdateMemberGroup.RLock()
-	calls = mock.calls.UpdateMemberGroup
-	mock.lockUpdateMemberGroup.RUnlock()
-	return calls
-}
-
 // UpdateMemberLoginID calls UpdateMemberLoginIDFunc.
 func (mock *ManagerInterfaceMock) UpdateMemberLoginID(ctx context.Context, id uuid.UUID, loginID string) (entity.Member, error) {
 	if mock.UpdateMemberLoginIDFunc == nil {
@@ -10128,6 +10228,86 @@ func (mock *ManagerInterfaceMock) UpdateRoleCalls() []struct {
 	mock.lockUpdateRole.RLock()
 	calls = mock.calls.UpdateRole
 	mock.lockUpdateRole.RUnlock()
+	return calls
+}
+
+// UpdateStudentGrade calls UpdateStudentGradeFunc.
+func (mock *ManagerInterfaceMock) UpdateStudentGrade(ctx context.Context, id uuid.UUID, gradeID uuid.UUID) (entity.Student, error) {
+	if mock.UpdateStudentGradeFunc == nil {
+		panic("ManagerInterfaceMock.UpdateStudentGradeFunc: method is nil but ManagerInterface.UpdateStudentGrade was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		ID      uuid.UUID
+		GradeID uuid.UUID
+	}{
+		Ctx:     ctx,
+		ID:      id,
+		GradeID: gradeID,
+	}
+	mock.lockUpdateStudentGrade.Lock()
+	mock.calls.UpdateStudentGrade = append(mock.calls.UpdateStudentGrade, callInfo)
+	mock.lockUpdateStudentGrade.Unlock()
+	return mock.UpdateStudentGradeFunc(ctx, id, gradeID)
+}
+
+// UpdateStudentGradeCalls gets all the calls that were made to UpdateStudentGrade.
+// Check the length with:
+//
+//	len(mockedManagerInterface.UpdateStudentGradeCalls())
+func (mock *ManagerInterfaceMock) UpdateStudentGradeCalls() []struct {
+	Ctx     context.Context
+	ID      uuid.UUID
+	GradeID uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		ID      uuid.UUID
+		GradeID uuid.UUID
+	}
+	mock.lockUpdateStudentGrade.RLock()
+	calls = mock.calls.UpdateStudentGrade
+	mock.lockUpdateStudentGrade.RUnlock()
+	return calls
+}
+
+// UpdateStudentGroup calls UpdateStudentGroupFunc.
+func (mock *ManagerInterfaceMock) UpdateStudentGroup(ctx context.Context, id uuid.UUID, groupID uuid.UUID) (entity.Student, error) {
+	if mock.UpdateStudentGroupFunc == nil {
+		panic("ManagerInterfaceMock.UpdateStudentGroupFunc: method is nil but ManagerInterface.UpdateStudentGroup was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		ID      uuid.UUID
+		GroupID uuid.UUID
+	}{
+		Ctx:     ctx,
+		ID:      id,
+		GroupID: groupID,
+	}
+	mock.lockUpdateStudentGroup.Lock()
+	mock.calls.UpdateStudentGroup = append(mock.calls.UpdateStudentGroup, callInfo)
+	mock.lockUpdateStudentGroup.Unlock()
+	return mock.UpdateStudentGroupFunc(ctx, id, groupID)
+}
+
+// UpdateStudentGroupCalls gets all the calls that were made to UpdateStudentGroup.
+// Check the length with:
+//
+//	len(mockedManagerInterface.UpdateStudentGroupCalls())
+func (mock *ManagerInterfaceMock) UpdateStudentGroupCalls() []struct {
+	Ctx     context.Context
+	ID      uuid.UUID
+	GroupID uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		ID      uuid.UUID
+		GroupID uuid.UUID
+	}
+	mock.lockUpdateStudentGroup.RLock()
+	calls = mock.calls.UpdateStudentGroup
+	mock.lockUpdateStudentGroup.RUnlock()
 	return calls
 }
 

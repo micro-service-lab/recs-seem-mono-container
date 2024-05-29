@@ -918,6 +918,12 @@ var _ Store = &StoreMock{}
 //			FindGradeByIDWithSdFunc: func(ctx context.Context, sd Sd, gradeID uuid.UUID) (entity.Grade, error) {
 //				panic("mock out the FindGradeByIDWithSd method")
 //			},
+//			FindGradeByKeyFunc: func(ctx context.Context, key string) (entity.Grade, error) {
+//				panic("mock out the FindGradeByKey method")
+//			},
+//			FindGradeByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.Grade, error) {
+//				panic("mock out the FindGradeByKeyWithSd method")
+//			},
 //			FindGradeWithOrganizationFunc: func(ctx context.Context, gradeID uuid.UUID) (entity.GradeWithOrganization, error) {
 //				panic("mock out the FindGradeWithOrganization method")
 //			},
@@ -929,6 +935,12 @@ var _ Store = &StoreMock{}
 //			},
 //			FindGroupByIDWithSdFunc: func(ctx context.Context, sd Sd, groupID uuid.UUID) (entity.Group, error) {
 //				panic("mock out the FindGroupByIDWithSd method")
+//			},
+//			FindGroupByKeyFunc: func(ctx context.Context, key string) (entity.Group, error) {
+//				panic("mock out the FindGroupByKey method")
+//			},
+//			FindGroupByKeyWithSdFunc: func(ctx context.Context, sd Sd, key string) (entity.Group, error) {
+//				panic("mock out the FindGroupByKeyWithSd method")
 //			},
 //			FindGroupWithOrganizationFunc: func(ctx context.Context, groupID uuid.UUID) (entity.GroupWithOrganization, error) {
 //				panic("mock out the FindGroupWithOrganization method")
@@ -3025,6 +3037,12 @@ type StoreMock struct {
 	// FindGradeByIDWithSdFunc mocks the FindGradeByIDWithSd method.
 	FindGradeByIDWithSdFunc func(ctx context.Context, sd Sd, gradeID uuid.UUID) (entity.Grade, error)
 
+	// FindGradeByKeyFunc mocks the FindGradeByKey method.
+	FindGradeByKeyFunc func(ctx context.Context, key string) (entity.Grade, error)
+
+	// FindGradeByKeyWithSdFunc mocks the FindGradeByKeyWithSd method.
+	FindGradeByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.Grade, error)
+
 	// FindGradeWithOrganizationFunc mocks the FindGradeWithOrganization method.
 	FindGradeWithOrganizationFunc func(ctx context.Context, gradeID uuid.UUID) (entity.GradeWithOrganization, error)
 
@@ -3036,6 +3054,12 @@ type StoreMock struct {
 
 	// FindGroupByIDWithSdFunc mocks the FindGroupByIDWithSd method.
 	FindGroupByIDWithSdFunc func(ctx context.Context, sd Sd, groupID uuid.UUID) (entity.Group, error)
+
+	// FindGroupByKeyFunc mocks the FindGroupByKey method.
+	FindGroupByKeyFunc func(ctx context.Context, key string) (entity.Group, error)
+
+	// FindGroupByKeyWithSdFunc mocks the FindGroupByKeyWithSd method.
+	FindGroupByKeyWithSdFunc func(ctx context.Context, sd Sd, key string) (entity.Group, error)
 
 	// FindGroupWithOrganizationFunc mocks the FindGroupWithOrganization method.
 	FindGroupWithOrganizationFunc func(ctx context.Context, groupID uuid.UUID) (entity.GroupWithOrganization, error)
@@ -6675,6 +6699,22 @@ type StoreMock struct {
 			// GradeID is the gradeID argument value.
 			GradeID uuid.UUID
 		}
+		// FindGradeByKey holds details about calls to the FindGradeByKey method.
+		FindGradeByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// FindGradeByKeyWithSd holds details about calls to the FindGradeByKeyWithSd method.
+		FindGradeByKeyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
+		}
 		// FindGradeWithOrganization holds details about calls to the FindGradeWithOrganization method.
 		FindGradeWithOrganization []struct {
 			// Ctx is the ctx argument value.
@@ -6706,6 +6746,22 @@ type StoreMock struct {
 			Sd Sd
 			// GroupID is the groupID argument value.
 			GroupID uuid.UUID
+		}
+		// FindGroupByKey holds details about calls to the FindGroupByKey method.
+		FindGroupByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// FindGroupByKeyWithSd holds details about calls to the FindGroupByKeyWithSd method.
+		FindGroupByKeyWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Key is the key argument value.
+			Key string
 		}
 		// FindGroupWithOrganization holds details about calls to the FindGroupWithOrganization method.
 		FindGroupWithOrganization []struct {
@@ -11526,10 +11582,14 @@ type StoreMock struct {
 	lockFindFileWithAttachableItemWithSd                  sync.RWMutex
 	lockFindGradeByID                                     sync.RWMutex
 	lockFindGradeByIDWithSd                               sync.RWMutex
+	lockFindGradeByKey                                    sync.RWMutex
+	lockFindGradeByKeyWithSd                              sync.RWMutex
 	lockFindGradeWithOrganization                         sync.RWMutex
 	lockFindGradeWithOrganizationWithSd                   sync.RWMutex
 	lockFindGroupByID                                     sync.RWMutex
 	lockFindGroupByIDWithSd                               sync.RWMutex
+	lockFindGroupByKey                                    sync.RWMutex
+	lockFindGroupByKeyWithSd                              sync.RWMutex
 	lockFindGroupWithOrganization                         sync.RWMutex
 	lockFindGroupWithOrganizationWithSd                   sync.RWMutex
 	lockFindImageByID                                     sync.RWMutex
@@ -23397,6 +23457,82 @@ func (mock *StoreMock) FindGradeByIDWithSdCalls() []struct {
 	return calls
 }
 
+// FindGradeByKey calls FindGradeByKeyFunc.
+func (mock *StoreMock) FindGradeByKey(ctx context.Context, key string) (entity.Grade, error) {
+	if mock.FindGradeByKeyFunc == nil {
+		panic("StoreMock.FindGradeByKeyFunc: method is nil but Store.FindGradeByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockFindGradeByKey.Lock()
+	mock.calls.FindGradeByKey = append(mock.calls.FindGradeByKey, callInfo)
+	mock.lockFindGradeByKey.Unlock()
+	return mock.FindGradeByKeyFunc(ctx, key)
+}
+
+// FindGradeByKeyCalls gets all the calls that were made to FindGradeByKey.
+// Check the length with:
+//
+//	len(mockedStore.FindGradeByKeyCalls())
+func (mock *StoreMock) FindGradeByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockFindGradeByKey.RLock()
+	calls = mock.calls.FindGradeByKey
+	mock.lockFindGradeByKey.RUnlock()
+	return calls
+}
+
+// FindGradeByKeyWithSd calls FindGradeByKeyWithSdFunc.
+func (mock *StoreMock) FindGradeByKeyWithSd(ctx context.Context, sd Sd, key string) (entity.Grade, error) {
+	if mock.FindGradeByKeyWithSdFunc == nil {
+		panic("StoreMock.FindGradeByKeyWithSdFunc: method is nil but Store.FindGradeByKeyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}{
+		Ctx: ctx,
+		Sd:  sd,
+		Key: key,
+	}
+	mock.lockFindGradeByKeyWithSd.Lock()
+	mock.calls.FindGradeByKeyWithSd = append(mock.calls.FindGradeByKeyWithSd, callInfo)
+	mock.lockFindGradeByKeyWithSd.Unlock()
+	return mock.FindGradeByKeyWithSdFunc(ctx, sd, key)
+}
+
+// FindGradeByKeyWithSdCalls gets all the calls that were made to FindGradeByKeyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindGradeByKeyWithSdCalls())
+func (mock *StoreMock) FindGradeByKeyWithSdCalls() []struct {
+	Ctx context.Context
+	Sd  Sd
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}
+	mock.lockFindGradeByKeyWithSd.RLock()
+	calls = mock.calls.FindGradeByKeyWithSd
+	mock.lockFindGradeByKeyWithSd.RUnlock()
+	return calls
+}
+
 // FindGradeWithOrganization calls FindGradeWithOrganizationFunc.
 func (mock *StoreMock) FindGradeWithOrganization(ctx context.Context, gradeID uuid.UUID) (entity.GradeWithOrganization, error) {
 	if mock.FindGradeWithOrganizationFunc == nil {
@@ -23546,6 +23682,82 @@ func (mock *StoreMock) FindGroupByIDWithSdCalls() []struct {
 	mock.lockFindGroupByIDWithSd.RLock()
 	calls = mock.calls.FindGroupByIDWithSd
 	mock.lockFindGroupByIDWithSd.RUnlock()
+	return calls
+}
+
+// FindGroupByKey calls FindGroupByKeyFunc.
+func (mock *StoreMock) FindGroupByKey(ctx context.Context, key string) (entity.Group, error) {
+	if mock.FindGroupByKeyFunc == nil {
+		panic("StoreMock.FindGroupByKeyFunc: method is nil but Store.FindGroupByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockFindGroupByKey.Lock()
+	mock.calls.FindGroupByKey = append(mock.calls.FindGroupByKey, callInfo)
+	mock.lockFindGroupByKey.Unlock()
+	return mock.FindGroupByKeyFunc(ctx, key)
+}
+
+// FindGroupByKeyCalls gets all the calls that were made to FindGroupByKey.
+// Check the length with:
+//
+//	len(mockedStore.FindGroupByKeyCalls())
+func (mock *StoreMock) FindGroupByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockFindGroupByKey.RLock()
+	calls = mock.calls.FindGroupByKey
+	mock.lockFindGroupByKey.RUnlock()
+	return calls
+}
+
+// FindGroupByKeyWithSd calls FindGroupByKeyWithSdFunc.
+func (mock *StoreMock) FindGroupByKeyWithSd(ctx context.Context, sd Sd, key string) (entity.Group, error) {
+	if mock.FindGroupByKeyWithSdFunc == nil {
+		panic("StoreMock.FindGroupByKeyWithSdFunc: method is nil but Store.FindGroupByKeyWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}{
+		Ctx: ctx,
+		Sd:  sd,
+		Key: key,
+	}
+	mock.lockFindGroupByKeyWithSd.Lock()
+	mock.calls.FindGroupByKeyWithSd = append(mock.calls.FindGroupByKeyWithSd, callInfo)
+	mock.lockFindGroupByKeyWithSd.Unlock()
+	return mock.FindGroupByKeyWithSdFunc(ctx, sd, key)
+}
+
+// FindGroupByKeyWithSdCalls gets all the calls that were made to FindGroupByKeyWithSd.
+// Check the length with:
+//
+//	len(mockedStore.FindGroupByKeyWithSdCalls())
+func (mock *StoreMock) FindGroupByKeyWithSdCalls() []struct {
+	Ctx context.Context
+	Sd  Sd
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Sd  Sd
+		Key string
+	}
+	mock.lockFindGroupByKeyWithSd.RLock()
+	calls = mock.calls.FindGroupByKeyWithSd
+	mock.lockFindGroupByKeyWithSd.RUnlock()
 	return calls
 }
 

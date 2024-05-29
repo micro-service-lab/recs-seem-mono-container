@@ -131,6 +131,9 @@ var seedGroupsCmd *cobra.Command
 // seedWholeOrganizationCmd inserts whole organization.
 var seedWholeOrganizationCmd *cobra.Command
 
+// seedChatRoomActionTypesCmd inserts chat room action types.
+var seedChatRoomActionTypesCmd *cobra.Command
+
 // seedAllCmd inserts all seed data.
 var seedAllCmd = &cobra.Command{
 	Use:   "all",
@@ -161,6 +164,7 @@ The seed command is executed when the application is started for the first time.
 				seedWholeOrganizationCmd.Run(cmd, args)
 			},
 			seedRecordTypesCmd.Run,
+			seedChatRoomActionTypesCmd.Run,
 		}
 		var wg sync.WaitGroup
 		wg.Add(len(cmds))
@@ -333,6 +337,17 @@ func seedInit() {
 			Storage: AppContainer.Storage,
 		},
 	)
+	seedChatRoomActionTypesCmd = seedCmdGenerator(
+		"chat_room_action_type",
+		"chat room action types",
+		"Chat Room Action Types",
+		func(ctx context.Context) (int64, error) {
+			return AppContainer.ServiceManager.GetChatRoomActionTypesCount(ctx, "")
+		},
+		&batch.InitChatRoomActionTypes{
+			Manager: &AppContainer.ServiceManager,
+		},
+	)
 
 	rootCmd.AddCommand(seedCmd)
 	seedCmd.AddCommand(seedAllCmd)
@@ -349,6 +364,7 @@ func seedInit() {
 	seedCmd.AddCommand(seedGradesCmd)
 	seedCmd.AddCommand(seedGroupsCmd)
 	seedCmd.AddCommand(seedWholeOrganizationCmd)
+	seedCmd.AddCommand(seedChatRoomActionTypesCmd)
 
 	seedCmd.PersistentFlags().BoolVarP(&force, "force", "f", false, "Force seed")
 	seedCmd.PersistentFlags().BoolVarP(&diff, "diff", "d", false, "Seed only if there is a difference")

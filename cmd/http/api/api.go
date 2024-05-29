@@ -82,6 +82,7 @@ func (s *API) Handler() http.Handler {
 	r.Mount("/students", StudentHandler(s.svc, s.validator, s.translator))
 	r.Mount("/professors", ProfessorHandler(s.svc, s.validator, s.translator))
 	r.Mount("/members", MemberHandler(s.svc, s.validator, s.translator))
+	r.Mount("/chat_room_action_types", ChatRoomActionTypeHandler(s.svc))
 
 	r.NotFound(s.notFound)
 	r.MethodNotAllowed(s.methodNotAllowed)

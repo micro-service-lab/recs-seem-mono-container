@@ -40,6 +40,7 @@ type Manager struct {
 	ManageMember
 	ManageStudent
 	ManageProfessor
+	ManageChatRoomActionType
 }
 
 // NewManager creates a new Manager.
@@ -73,6 +74,7 @@ func NewManager(
 		ManageMember:             ManageMember{DB: db, Hash: h, Clocker: clk, Storage: stg},
 		ManageStudent:            ManageStudent{DB: db, Hash: h, Clocker: clk, Storage: stg},
 		ManageProfessor:          ManageProfessor{DB: db, Hash: h, Clocker: clk, Storage: stg},
+		ManageChatRoomActionType: ManageChatRoomActionType{DB: db},
 	}
 }
 
@@ -101,6 +103,7 @@ type ManagerInterface interface {
 	MemberManager
 	StudentManager
 	ProfessorManager
+	ChatRoomActionTypeManager
 }
 
 // AttendStatusManager is a interface for attend status service.
@@ -257,6 +260,28 @@ type RecordTypeManager interface {
 		withCount parameter.WithCount,
 	) (store.ListResult[entity.RecordType], error)
 	GetRecordTypesCount(ctx context.Context, whereSearchName string) (int64, error)
+}
+
+// ChatRoomActionTypeManager is a interface for chat room action type service.
+type ChatRoomActionTypeManager interface {
+	CreateChatRoomActionType(ctx context.Context, name, key string) (entity.ChatRoomActionType, error)
+	CreateChatRoomActionTypes(ctx context.Context, ps []parameter.CreateChatRoomActionTypeParam) (int64, error)
+	UpdateChatRoomActionType(ctx context.Context, id uuid.UUID, name, key string) (entity.ChatRoomActionType, error)
+	DeleteChatRoomActionType(ctx context.Context, id uuid.UUID) (int64, error)
+	PluralDeleteChatRoomActionTypes(ctx context.Context, ids []uuid.UUID) (int64, error)
+	FindChatRoomActionTypeByID(ctx context.Context, id uuid.UUID) (entity.ChatRoomActionType, error)
+	FindChatRoomActionTypeByKey(ctx context.Context, key string) (entity.ChatRoomActionType, error)
+	GetChatRoomActionTypes(
+		ctx context.Context,
+		whereSearchName string,
+		order parameter.ChatRoomActionTypeOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.ChatRoomActionType], error)
+	GetChatRoomActionTypesCount(ctx context.Context, whereSearchName string) (int64, error)
 }
 
 // PermissionManager is a interface for event type service.

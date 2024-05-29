@@ -219,6 +219,139 @@ func (q *Queries) CreateAttendances(ctx context.Context, arg []CreateAttendances
 	return q.db.CopyFrom(ctx, []string{"t_attendances"}, []string{"attendance_type_id", "member_id", "description", "date", "mail_send_flag", "send_organization_id", "posted_at", "last_edited_at"}, &iteratorForCreateAttendances{rows: arg})
 }
 
+// iteratorForCreateChatRoomActionTypes implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomActionTypes struct {
+	rows                 []CreateChatRoomActionTypesParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomActionTypes) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomActionTypes) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].Name,
+		r.rows[0].Key,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomActionTypes) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomActionTypes(ctx context.Context, arg []CreateChatRoomActionTypesParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"m_chat_room_action_types"}, []string{"name", "key"}, &iteratorForCreateChatRoomActionTypes{rows: arg})
+}
+
+// iteratorForCreateChatRoomActions implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomActions struct {
+	rows                 []CreateChatRoomActionsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomActions) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomActions) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].ChatRoomID,
+		r.rows[0].ChatRoomActionTypeID,
+		r.rows[0].ActedAt,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomActions) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomActions(ctx context.Context, arg []CreateChatRoomActionsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_actions"}, []string{"chat_room_id", "chat_room_action_type_id", "acted_at"}, &iteratorForCreateChatRoomActions{rows: arg})
+}
+
+// iteratorForCreateChatRoomAddMemberActions implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomAddMemberActions struct {
+	rows                 []CreateChatRoomAddMemberActionsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomAddMemberActions) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomAddMemberActions) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].ChatRoomActionID,
+		r.rows[0].AddedBy,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomAddMemberActions) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomAddMemberActions(ctx context.Context, arg []CreateChatRoomAddMemberActionsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_add_member_actions"}, []string{"chat_room_action_id", "added_by"}, &iteratorForCreateChatRoomAddMemberActions{rows: arg})
+}
+
+// iteratorForCreateChatRoomAddedMembers implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomAddedMembers struct {
+	rows                 []CreateChatRoomAddedMembersParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomAddedMembers) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomAddedMembers) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].MemberID,
+		r.rows[0].ChatRoomAddMemberActionID,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomAddedMembers) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomAddedMembers(ctx context.Context, arg []CreateChatRoomAddedMembersParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_added_members"}, []string{"member_id", "chat_room_add_member_action_id"}, &iteratorForCreateChatRoomAddedMembers{rows: arg})
+}
+
 // iteratorForCreateChatRoomBelongings implements pgx.CopyFromSource.
 type iteratorForCreateChatRoomBelongings struct {
 	rows                 []CreateChatRoomBelongingsParams
@@ -251,6 +384,173 @@ func (r iteratorForCreateChatRoomBelongings) Err() error {
 
 func (q *Queries) CreateChatRoomBelongings(ctx context.Context, arg []CreateChatRoomBelongingsParams) (int64, error) {
 	return q.db.CopyFrom(ctx, []string{"m_chat_room_belongings"}, []string{"member_id", "chat_room_id", "added_at"}, &iteratorForCreateChatRoomBelongings{rows: arg})
+}
+
+// iteratorForCreateChatRoomCreateActions implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomCreateActions struct {
+	rows                 []CreateChatRoomCreateActionsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomCreateActions) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomCreateActions) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].ChatRoomActionID,
+		r.rows[0].CreatedBy,
+		r.rows[0].Name,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomCreateActions) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomCreateActions(ctx context.Context, arg []CreateChatRoomCreateActionsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_create_actions"}, []string{"chat_room_action_id", "created_by", "name"}, &iteratorForCreateChatRoomCreateActions{rows: arg})
+}
+
+// iteratorForCreateChatRoomRemoveMemberActions implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomRemoveMemberActions struct {
+	rows                 []CreateChatRoomRemoveMemberActionsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomRemoveMemberActions) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomRemoveMemberActions) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].ChatRoomActionID,
+		r.rows[0].RemovedBy,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomRemoveMemberActions) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomRemoveMemberActions(ctx context.Context, arg []CreateChatRoomRemoveMemberActionsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_remove_member_actions"}, []string{"chat_room_action_id", "removed_by"}, &iteratorForCreateChatRoomRemoveMemberActions{rows: arg})
+}
+
+// iteratorForCreateChatRoomRemovedMembers implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomRemovedMembers struct {
+	rows                 []CreateChatRoomRemovedMembersParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomRemovedMembers) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomRemovedMembers) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].MemberID,
+		r.rows[0].ChatRoomRemoveMemberActionID,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomRemovedMembers) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomRemovedMembers(ctx context.Context, arg []CreateChatRoomRemovedMembersParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_removed_members"}, []string{"member_id", "chat_room_remove_member_action_id"}, &iteratorForCreateChatRoomRemovedMembers{rows: arg})
+}
+
+// iteratorForCreateChatRoomUpdateNameActions implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomUpdateNameActions struct {
+	rows                 []CreateChatRoomUpdateNameActionsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomUpdateNameActions) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomUpdateNameActions) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].ChatRoomActionID,
+		r.rows[0].UpdatedBy,
+		r.rows[0].Name,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomUpdateNameActions) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomUpdateNameActions(ctx context.Context, arg []CreateChatRoomUpdateNameActionsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_update_name_actions"}, []string{"chat_room_action_id", "updated_by", "name"}, &iteratorForCreateChatRoomUpdateNameActions{rows: arg})
+}
+
+// iteratorForCreateChatRoomWithdrawActions implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomWithdrawActions struct {
+	rows                 []CreateChatRoomWithdrawActionsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomWithdrawActions) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomWithdrawActions) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].ChatRoomActionID,
+		r.rows[0].MemberID,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomWithdrawActions) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomWithdrawActions(ctx context.Context, arg []CreateChatRoomWithdrawActionsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_withdraw_actions"}, []string{"chat_room_action_id", "member_id"}, &iteratorForCreateChatRoomWithdrawActions{rows: arg})
 }
 
 // iteratorForCreateChatRooms implements pgx.CopyFromSource.

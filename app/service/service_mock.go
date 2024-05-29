@@ -38,6 +38,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreateAttendanceTypesFunc: func(ctx context.Context, ps []parameter.CreateAttendanceTypeParam) (int64, error) {
 //				panic("mock out the CreateAttendanceTypes method")
 //			},
+//			CreateChatRoomActionTypeFunc: func(ctx context.Context, name string, key string) (entity.ChatRoomActionType, error) {
+//				panic("mock out the CreateChatRoomActionType method")
+//			},
+//			CreateChatRoomActionTypesFunc: func(ctx context.Context, ps []parameter.CreateChatRoomActionTypeParam) (int64, error) {
+//				panic("mock out the CreateChatRoomActionTypes method")
+//			},
 //			CreateEventTypeFunc: func(ctx context.Context, name string, key string, color string) (entity.EventType, error) {
 //				panic("mock out the CreateEventType method")
 //			},
@@ -152,6 +158,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			DeleteAttendanceTypeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteAttendanceType method")
 //			},
+//			DeleteChatRoomActionTypeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomActionType method")
+//			},
 //			DeleteEventTypeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteEventType method")
 //			},
@@ -232,6 +241,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			FindAttendanceTypeByKeyFunc: func(ctx context.Context, key string) (entity.AttendanceType, error) {
 //				panic("mock out the FindAttendanceTypeByKey method")
+//			},
+//			FindChatRoomActionTypeByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.ChatRoomActionType, error) {
+//				panic("mock out the FindChatRoomActionTypeByID method")
+//			},
+//			FindChatRoomActionTypeByKeyFunc: func(ctx context.Context, key string) (entity.ChatRoomActionType, error) {
+//				panic("mock out the FindChatRoomActionTypeByKey method")
 //			},
 //			FindChatRoomByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.ChatRoom, error) {
 //				panic("mock out the FindChatRoomByID method")
@@ -322,6 +337,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			GetAttendanceTypesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
 //				panic("mock out the GetAttendanceTypesCount method")
+//			},
+//			GetChatRoomActionTypesFunc: func(ctx context.Context, whereSearchName string, order parameter.ChatRoomActionTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.ChatRoomActionType], error) {
+//				panic("mock out the GetChatRoomActionTypes method")
+//			},
+//			GetChatRoomActionTypesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
+//				panic("mock out the GetChatRoomActionTypesCount method")
 //			},
 //			GetEventTypesFunc: func(ctx context.Context, whereSearchName string, order parameter.EventTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.EventType], error) {
 //				panic("mock out the GetEventTypes method")
@@ -440,6 +461,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			PluralDeleteAttendanceTypesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteAttendanceTypes method")
 //			},
+//			PluralDeleteChatRoomActionTypesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteChatRoomActionTypes method")
+//			},
 //			PluralDeleteEventTypesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteEventTypes method")
 //			},
@@ -487,6 +511,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			UpdateAttendanceTypeFunc: func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.AttendanceType, error) {
 //				panic("mock out the UpdateAttendanceType method")
+//			},
+//			UpdateChatRoomActionTypeFunc: func(ctx context.Context, id uuid.UUID, name string, key string) (entity.ChatRoomActionType, error) {
+//				panic("mock out the UpdateChatRoomActionType method")
 //			},
 //			UpdateEventTypeFunc: func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.EventType, error) {
 //				panic("mock out the UpdateEventType method")
@@ -563,6 +590,12 @@ type ManagerInterfaceMock struct {
 
 	// CreateAttendanceTypesFunc mocks the CreateAttendanceTypes method.
 	CreateAttendanceTypesFunc func(ctx context.Context, ps []parameter.CreateAttendanceTypeParam) (int64, error)
+
+	// CreateChatRoomActionTypeFunc mocks the CreateChatRoomActionType method.
+	CreateChatRoomActionTypeFunc func(ctx context.Context, name string, key string) (entity.ChatRoomActionType, error)
+
+	// CreateChatRoomActionTypesFunc mocks the CreateChatRoomActionTypes method.
+	CreateChatRoomActionTypesFunc func(ctx context.Context, ps []parameter.CreateChatRoomActionTypeParam) (int64, error)
 
 	// CreateEventTypeFunc mocks the CreateEventType method.
 	CreateEventTypeFunc func(ctx context.Context, name string, key string, color string) (entity.EventType, error)
@@ -678,6 +711,9 @@ type ManagerInterfaceMock struct {
 	// DeleteAttendanceTypeFunc mocks the DeleteAttendanceType method.
 	DeleteAttendanceTypeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
+	// DeleteChatRoomActionTypeFunc mocks the DeleteChatRoomActionType method.
+	DeleteChatRoomActionTypeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
+
 	// DeleteEventTypeFunc mocks the DeleteEventType method.
 	DeleteEventTypeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
@@ -758,6 +794,12 @@ type ManagerInterfaceMock struct {
 
 	// FindAttendanceTypeByKeyFunc mocks the FindAttendanceTypeByKey method.
 	FindAttendanceTypeByKeyFunc func(ctx context.Context, key string) (entity.AttendanceType, error)
+
+	// FindChatRoomActionTypeByIDFunc mocks the FindChatRoomActionTypeByID method.
+	FindChatRoomActionTypeByIDFunc func(ctx context.Context, id uuid.UUID) (entity.ChatRoomActionType, error)
+
+	// FindChatRoomActionTypeByKeyFunc mocks the FindChatRoomActionTypeByKey method.
+	FindChatRoomActionTypeByKeyFunc func(ctx context.Context, key string) (entity.ChatRoomActionType, error)
 
 	// FindChatRoomByIDFunc mocks the FindChatRoomByID method.
 	FindChatRoomByIDFunc func(ctx context.Context, id uuid.UUID) (entity.ChatRoom, error)
@@ -848,6 +890,12 @@ type ManagerInterfaceMock struct {
 
 	// GetAttendanceTypesCountFunc mocks the GetAttendanceTypesCount method.
 	GetAttendanceTypesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
+
+	// GetChatRoomActionTypesFunc mocks the GetChatRoomActionTypes method.
+	GetChatRoomActionTypesFunc func(ctx context.Context, whereSearchName string, order parameter.ChatRoomActionTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.ChatRoomActionType], error)
+
+	// GetChatRoomActionTypesCountFunc mocks the GetChatRoomActionTypesCount method.
+	GetChatRoomActionTypesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
 
 	// GetEventTypesFunc mocks the GetEventTypes method.
 	GetEventTypesFunc func(ctx context.Context, whereSearchName string, order parameter.EventTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.EventType], error)
@@ -966,6 +1014,9 @@ type ManagerInterfaceMock struct {
 	// PluralDeleteAttendanceTypesFunc mocks the PluralDeleteAttendanceTypes method.
 	PluralDeleteAttendanceTypesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
+	// PluralDeleteChatRoomActionTypesFunc mocks the PluralDeleteChatRoomActionTypes method.
+	PluralDeleteChatRoomActionTypesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
+
 	// PluralDeleteEventTypesFunc mocks the PluralDeleteEventTypes method.
 	PluralDeleteEventTypesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
@@ -1013,6 +1064,9 @@ type ManagerInterfaceMock struct {
 
 	// UpdateAttendanceTypeFunc mocks the UpdateAttendanceType method.
 	UpdateAttendanceTypeFunc func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.AttendanceType, error)
+
+	// UpdateChatRoomActionTypeFunc mocks the UpdateChatRoomActionType method.
+	UpdateChatRoomActionTypeFunc func(ctx context.Context, id uuid.UUID, name string, key string) (entity.ChatRoomActionType, error)
 
 	// UpdateEventTypeFunc mocks the UpdateEventType method.
 	UpdateEventTypeFunc func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.EventType, error)
@@ -1110,6 +1164,22 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// Ps is the ps argument value.
 			Ps []parameter.CreateAttendanceTypeParam
+		}
+		// CreateChatRoomActionType holds details about calls to the CreateChatRoomActionType method.
+		CreateChatRoomActionType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Name is the name argument value.
+			Name string
+			// Key is the key argument value.
+			Key string
+		}
+		// CreateChatRoomActionTypes holds details about calls to the CreateChatRoomActionTypes method.
+		CreateChatRoomActionTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ps is the ps argument value.
+			Ps []parameter.CreateChatRoomActionTypeParam
 		}
 		// CreateEventType holds details about calls to the CreateEventType method.
 		CreateEventType []struct {
@@ -1515,6 +1585,13 @@ type ManagerInterfaceMock struct {
 			// ID is the id argument value.
 			ID uuid.UUID
 		}
+		// DeleteChatRoomActionType holds details about calls to the DeleteChatRoomActionType method.
+		DeleteChatRoomActionType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
 		// DeleteEventType holds details about calls to the DeleteEventType method.
 		DeleteEventType []struct {
 			// Ctx is the ctx argument value.
@@ -1697,6 +1774,20 @@ type ManagerInterfaceMock struct {
 		}
 		// FindAttendanceTypeByKey holds details about calls to the FindAttendanceTypeByKey method.
 		FindAttendanceTypeByKey []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Key is the key argument value.
+			Key string
+		}
+		// FindChatRoomActionTypeByID holds details about calls to the FindChatRoomActionTypeByID method.
+		FindChatRoomActionTypeByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
+		// FindChatRoomActionTypeByKey holds details about calls to the FindChatRoomActionTypeByKey method.
+		FindChatRoomActionTypeByKey []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// Key is the key argument value.
@@ -1929,6 +2020,32 @@ type ManagerInterfaceMock struct {
 		}
 		// GetAttendanceTypesCount holds details about calls to the GetAttendanceTypesCount method.
 		GetAttendanceTypesCount []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+		}
+		// GetChatRoomActionTypes holds details about calls to the GetChatRoomActionTypes method.
+		GetChatRoomActionTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// Order is the order argument value.
+			Order parameter.ChatRoomActionTypeOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetChatRoomActionTypesCount holds details about calls to the GetChatRoomActionTypesCount method.
+		GetChatRoomActionTypesCount []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// WhereSearchName is the whereSearchName argument value.
@@ -2491,6 +2608,13 @@ type ManagerInterfaceMock struct {
 			// Ids is the ids argument value.
 			Ids []uuid.UUID
 		}
+		// PluralDeleteChatRoomActionTypes holds details about calls to the PluralDeleteChatRoomActionTypes method.
+		PluralDeleteChatRoomActionTypes []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Ids is the ids argument value.
+			Ids []uuid.UUID
+		}
 		// PluralDeleteEventTypes holds details about calls to the PluralDeleteEventTypes method.
 		PluralDeleteEventTypes []struct {
 			// Ctx is the ctx argument value.
@@ -2616,6 +2740,17 @@ type ManagerInterfaceMock struct {
 			Key string
 			// Color is the color argument value.
 			Color string
+		}
+		// UpdateChatRoomActionType holds details about calls to the UpdateChatRoomActionType method.
+		UpdateChatRoomActionType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+			// Name is the name argument value.
+			Name string
+			// Key is the key argument value.
+			Key string
 		}
 		// UpdateEventType holds details about calls to the UpdateEventType method.
 		UpdateEventType []struct {
@@ -2845,6 +2980,8 @@ type ManagerInterfaceMock struct {
 	lockCreateAttendStatuses                  sync.RWMutex
 	lockCreateAttendanceType                  sync.RWMutex
 	lockCreateAttendanceTypes                 sync.RWMutex
+	lockCreateChatRoomActionType              sync.RWMutex
+	lockCreateChatRoomActionTypes             sync.RWMutex
 	lockCreateEventType                       sync.RWMutex
 	lockCreateEventTypes                      sync.RWMutex
 	lockCreateFile                            sync.RWMutex
@@ -2883,6 +3020,7 @@ type ManagerInterfaceMock struct {
 	lockCreateWholeOrganization               sync.RWMutex
 	lockDeleteAttendStatus                    sync.RWMutex
 	lockDeleteAttendanceType                  sync.RWMutex
+	lockDeleteChatRoomActionType              sync.RWMutex
 	lockDeleteEventType                       sync.RWMutex
 	lockDeleteFile                            sync.RWMutex
 	lockDeleteGrade                           sync.RWMutex
@@ -2910,6 +3048,8 @@ type ManagerInterfaceMock struct {
 	lockFindAttendStatusByKey                 sync.RWMutex
 	lockFindAttendanceTypeByID                sync.RWMutex
 	lockFindAttendanceTypeByKey               sync.RWMutex
+	lockFindChatRoomActionTypeByID            sync.RWMutex
+	lockFindChatRoomActionTypeByKey           sync.RWMutex
 	lockFindChatRoomByID                      sync.RWMutex
 	lockFindChatRoomByIDWithCoverImage        sync.RWMutex
 	lockFindEventTypeByID                     sync.RWMutex
@@ -2940,6 +3080,8 @@ type ManagerInterfaceMock struct {
 	lockGetAttendStatusesCount                sync.RWMutex
 	lockGetAttendanceTypes                    sync.RWMutex
 	lockGetAttendanceTypesCount               sync.RWMutex
+	lockGetChatRoomActionTypes                sync.RWMutex
+	lockGetChatRoomActionTypesCount           sync.RWMutex
 	lockGetEventTypes                         sync.RWMutex
 	lockGetEventTypesCount                    sync.RWMutex
 	lockGetFiles                              sync.RWMutex
@@ -2979,6 +3121,7 @@ type ManagerInterfaceMock struct {
 	lockGetRolesOnPolicyCount                 sync.RWMutex
 	lockPluralDeleteAttendStatuses            sync.RWMutex
 	lockPluralDeleteAttendanceTypes           sync.RWMutex
+	lockPluralDeleteChatRoomActionTypes       sync.RWMutex
 	lockPluralDeleteEventTypes                sync.RWMutex
 	lockPluralDeleteFiles                     sync.RWMutex
 	lockPluralDeleteGrades                    sync.RWMutex
@@ -2995,6 +3138,7 @@ type ManagerInterfaceMock struct {
 	lockPluralDisassociateRoleOnPolicy        sync.RWMutex
 	lockUpdateAttendStatus                    sync.RWMutex
 	lockUpdateAttendanceType                  sync.RWMutex
+	lockUpdateChatRoomActionType              sync.RWMutex
 	lockUpdateEventType                       sync.RWMutex
 	lockUpdateGrade                           sync.RWMutex
 	lockUpdateGroup                           sync.RWMutex
@@ -3204,6 +3348,82 @@ func (mock *ManagerInterfaceMock) CreateAttendanceTypesCalls() []struct {
 	mock.lockCreateAttendanceTypes.RLock()
 	calls = mock.calls.CreateAttendanceTypes
 	mock.lockCreateAttendanceTypes.RUnlock()
+	return calls
+}
+
+// CreateChatRoomActionType calls CreateChatRoomActionTypeFunc.
+func (mock *ManagerInterfaceMock) CreateChatRoomActionType(ctx context.Context, name string, key string) (entity.ChatRoomActionType, error) {
+	if mock.CreateChatRoomActionTypeFunc == nil {
+		panic("ManagerInterfaceMock.CreateChatRoomActionTypeFunc: method is nil but ManagerInterface.CreateChatRoomActionType was just called")
+	}
+	callInfo := struct {
+		Ctx  context.Context
+		Name string
+		Key  string
+	}{
+		Ctx:  ctx,
+		Name: name,
+		Key:  key,
+	}
+	mock.lockCreateChatRoomActionType.Lock()
+	mock.calls.CreateChatRoomActionType = append(mock.calls.CreateChatRoomActionType, callInfo)
+	mock.lockCreateChatRoomActionType.Unlock()
+	return mock.CreateChatRoomActionTypeFunc(ctx, name, key)
+}
+
+// CreateChatRoomActionTypeCalls gets all the calls that were made to CreateChatRoomActionType.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateChatRoomActionTypeCalls())
+func (mock *ManagerInterfaceMock) CreateChatRoomActionTypeCalls() []struct {
+	Ctx  context.Context
+	Name string
+	Key  string
+} {
+	var calls []struct {
+		Ctx  context.Context
+		Name string
+		Key  string
+	}
+	mock.lockCreateChatRoomActionType.RLock()
+	calls = mock.calls.CreateChatRoomActionType
+	mock.lockCreateChatRoomActionType.RUnlock()
+	return calls
+}
+
+// CreateChatRoomActionTypes calls CreateChatRoomActionTypesFunc.
+func (mock *ManagerInterfaceMock) CreateChatRoomActionTypes(ctx context.Context, ps []parameter.CreateChatRoomActionTypeParam) (int64, error) {
+	if mock.CreateChatRoomActionTypesFunc == nil {
+		panic("ManagerInterfaceMock.CreateChatRoomActionTypesFunc: method is nil but ManagerInterface.CreateChatRoomActionTypes was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ps  []parameter.CreateChatRoomActionTypeParam
+	}{
+		Ctx: ctx,
+		Ps:  ps,
+	}
+	mock.lockCreateChatRoomActionTypes.Lock()
+	mock.calls.CreateChatRoomActionTypes = append(mock.calls.CreateChatRoomActionTypes, callInfo)
+	mock.lockCreateChatRoomActionTypes.Unlock()
+	return mock.CreateChatRoomActionTypesFunc(ctx, ps)
+}
+
+// CreateChatRoomActionTypesCalls gets all the calls that were made to CreateChatRoomActionTypes.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateChatRoomActionTypesCalls())
+func (mock *ManagerInterfaceMock) CreateChatRoomActionTypesCalls() []struct {
+	Ctx context.Context
+	Ps  []parameter.CreateChatRoomActionTypeParam
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ps  []parameter.CreateChatRoomActionTypeParam
+	}
+	mock.lockCreateChatRoomActionTypes.RLock()
+	calls = mock.calls.CreateChatRoomActionTypes
+	mock.lockCreateChatRoomActionTypes.RUnlock()
 	return calls
 }
 
@@ -4851,6 +5071,42 @@ func (mock *ManagerInterfaceMock) DeleteAttendanceTypeCalls() []struct {
 	return calls
 }
 
+// DeleteChatRoomActionType calls DeleteChatRoomActionTypeFunc.
+func (mock *ManagerInterfaceMock) DeleteChatRoomActionType(ctx context.Context, id uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomActionTypeFunc == nil {
+		panic("ManagerInterfaceMock.DeleteChatRoomActionTypeFunc: method is nil but ManagerInterface.DeleteChatRoomActionType was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockDeleteChatRoomActionType.Lock()
+	mock.calls.DeleteChatRoomActionType = append(mock.calls.DeleteChatRoomActionType, callInfo)
+	mock.lockDeleteChatRoomActionType.Unlock()
+	return mock.DeleteChatRoomActionTypeFunc(ctx, id)
+}
+
+// DeleteChatRoomActionTypeCalls gets all the calls that were made to DeleteChatRoomActionType.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeleteChatRoomActionTypeCalls())
+func (mock *ManagerInterfaceMock) DeleteChatRoomActionTypeCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockDeleteChatRoomActionType.RLock()
+	calls = mock.calls.DeleteChatRoomActionType
+	mock.lockDeleteChatRoomActionType.RUnlock()
+	return calls
+}
+
 // DeleteEventType calls DeleteEventTypeFunc.
 func (mock *ManagerInterfaceMock) DeleteEventType(ctx context.Context, id uuid.UUID) (int64, error) {
 	if mock.DeleteEventTypeFunc == nil {
@@ -5816,6 +6072,78 @@ func (mock *ManagerInterfaceMock) FindAttendanceTypeByKeyCalls() []struct {
 	mock.lockFindAttendanceTypeByKey.RLock()
 	calls = mock.calls.FindAttendanceTypeByKey
 	mock.lockFindAttendanceTypeByKey.RUnlock()
+	return calls
+}
+
+// FindChatRoomActionTypeByID calls FindChatRoomActionTypeByIDFunc.
+func (mock *ManagerInterfaceMock) FindChatRoomActionTypeByID(ctx context.Context, id uuid.UUID) (entity.ChatRoomActionType, error) {
+	if mock.FindChatRoomActionTypeByIDFunc == nil {
+		panic("ManagerInterfaceMock.FindChatRoomActionTypeByIDFunc: method is nil but ManagerInterface.FindChatRoomActionTypeByID was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockFindChatRoomActionTypeByID.Lock()
+	mock.calls.FindChatRoomActionTypeByID = append(mock.calls.FindChatRoomActionTypeByID, callInfo)
+	mock.lockFindChatRoomActionTypeByID.Unlock()
+	return mock.FindChatRoomActionTypeByIDFunc(ctx, id)
+}
+
+// FindChatRoomActionTypeByIDCalls gets all the calls that were made to FindChatRoomActionTypeByID.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindChatRoomActionTypeByIDCalls())
+func (mock *ManagerInterfaceMock) FindChatRoomActionTypeByIDCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockFindChatRoomActionTypeByID.RLock()
+	calls = mock.calls.FindChatRoomActionTypeByID
+	mock.lockFindChatRoomActionTypeByID.RUnlock()
+	return calls
+}
+
+// FindChatRoomActionTypeByKey calls FindChatRoomActionTypeByKeyFunc.
+func (mock *ManagerInterfaceMock) FindChatRoomActionTypeByKey(ctx context.Context, key string) (entity.ChatRoomActionType, error) {
+	if mock.FindChatRoomActionTypeByKeyFunc == nil {
+		panic("ManagerInterfaceMock.FindChatRoomActionTypeByKeyFunc: method is nil but ManagerInterface.FindChatRoomActionTypeByKey was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Key string
+	}{
+		Ctx: ctx,
+		Key: key,
+	}
+	mock.lockFindChatRoomActionTypeByKey.Lock()
+	mock.calls.FindChatRoomActionTypeByKey = append(mock.calls.FindChatRoomActionTypeByKey, callInfo)
+	mock.lockFindChatRoomActionTypeByKey.Unlock()
+	return mock.FindChatRoomActionTypeByKeyFunc(ctx, key)
+}
+
+// FindChatRoomActionTypeByKeyCalls gets all the calls that were made to FindChatRoomActionTypeByKey.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindChatRoomActionTypeByKeyCalls())
+func (mock *ManagerInterfaceMock) FindChatRoomActionTypeByKeyCalls() []struct {
+	Ctx context.Context
+	Key string
+} {
+	var calls []struct {
+		Ctx context.Context
+		Key string
+	}
+	mock.lockFindChatRoomActionTypeByKey.RLock()
+	calls = mock.calls.FindChatRoomActionTypeByKey
+	mock.lockFindChatRoomActionTypeByKey.RUnlock()
 	return calls
 }
 
@@ -6940,6 +7268,102 @@ func (mock *ManagerInterfaceMock) GetAttendanceTypesCountCalls() []struct {
 	mock.lockGetAttendanceTypesCount.RLock()
 	calls = mock.calls.GetAttendanceTypesCount
 	mock.lockGetAttendanceTypesCount.RUnlock()
+	return calls
+}
+
+// GetChatRoomActionTypes calls GetChatRoomActionTypesFunc.
+func (mock *ManagerInterfaceMock) GetChatRoomActionTypes(ctx context.Context, whereSearchName string, order parameter.ChatRoomActionTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.ChatRoomActionType], error) {
+	if mock.GetChatRoomActionTypesFunc == nil {
+		panic("ManagerInterfaceMock.GetChatRoomActionTypesFunc: method is nil but ManagerInterface.GetChatRoomActionTypes was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		WhereSearchName string
+		Order           parameter.ChatRoomActionTypeOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}{
+		Ctx:             ctx,
+		WhereSearchName: whereSearchName,
+		Order:           order,
+		Pg:              pg,
+		Limit:           limit,
+		Cursor:          cursor,
+		Offset:          offset,
+		WithCount:       withCount,
+	}
+	mock.lockGetChatRoomActionTypes.Lock()
+	mock.calls.GetChatRoomActionTypes = append(mock.calls.GetChatRoomActionTypes, callInfo)
+	mock.lockGetChatRoomActionTypes.Unlock()
+	return mock.GetChatRoomActionTypesFunc(ctx, whereSearchName, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetChatRoomActionTypesCalls gets all the calls that were made to GetChatRoomActionTypes.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetChatRoomActionTypesCalls())
+func (mock *ManagerInterfaceMock) GetChatRoomActionTypesCalls() []struct {
+	Ctx             context.Context
+	WhereSearchName string
+	Order           parameter.ChatRoomActionTypeOrderMethod
+	Pg              parameter.Pagination
+	Limit           parameter.Limit
+	Cursor          parameter.Cursor
+	Offset          parameter.Offset
+	WithCount       parameter.WithCount
+} {
+	var calls []struct {
+		Ctx             context.Context
+		WhereSearchName string
+		Order           parameter.ChatRoomActionTypeOrderMethod
+		Pg              parameter.Pagination
+		Limit           parameter.Limit
+		Cursor          parameter.Cursor
+		Offset          parameter.Offset
+		WithCount       parameter.WithCount
+	}
+	mock.lockGetChatRoomActionTypes.RLock()
+	calls = mock.calls.GetChatRoomActionTypes
+	mock.lockGetChatRoomActionTypes.RUnlock()
+	return calls
+}
+
+// GetChatRoomActionTypesCount calls GetChatRoomActionTypesCountFunc.
+func (mock *ManagerInterfaceMock) GetChatRoomActionTypesCount(ctx context.Context, whereSearchName string) (int64, error) {
+	if mock.GetChatRoomActionTypesCountFunc == nil {
+		panic("ManagerInterfaceMock.GetChatRoomActionTypesCountFunc: method is nil but ManagerInterface.GetChatRoomActionTypesCount was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		WhereSearchName string
+	}{
+		Ctx:             ctx,
+		WhereSearchName: whereSearchName,
+	}
+	mock.lockGetChatRoomActionTypesCount.Lock()
+	mock.calls.GetChatRoomActionTypesCount = append(mock.calls.GetChatRoomActionTypesCount, callInfo)
+	mock.lockGetChatRoomActionTypesCount.Unlock()
+	return mock.GetChatRoomActionTypesCountFunc(ctx, whereSearchName)
+}
+
+// GetChatRoomActionTypesCountCalls gets all the calls that were made to GetChatRoomActionTypesCount.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetChatRoomActionTypesCountCalls())
+func (mock *ManagerInterfaceMock) GetChatRoomActionTypesCountCalls() []struct {
+	Ctx             context.Context
+	WhereSearchName string
+} {
+	var calls []struct {
+		Ctx             context.Context
+		WhereSearchName string
+	}
+	mock.lockGetChatRoomActionTypesCount.RLock()
+	calls = mock.calls.GetChatRoomActionTypesCount
+	mock.lockGetChatRoomActionTypesCount.RUnlock()
 	return calls
 }
 
@@ -8915,6 +9339,42 @@ func (mock *ManagerInterfaceMock) PluralDeleteAttendanceTypesCalls() []struct {
 	return calls
 }
 
+// PluralDeleteChatRoomActionTypes calls PluralDeleteChatRoomActionTypesFunc.
+func (mock *ManagerInterfaceMock) PluralDeleteChatRoomActionTypes(ctx context.Context, ids []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteChatRoomActionTypesFunc == nil {
+		panic("ManagerInterfaceMock.PluralDeleteChatRoomActionTypesFunc: method is nil but ManagerInterface.PluralDeleteChatRoomActionTypes was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}{
+		Ctx: ctx,
+		Ids: ids,
+	}
+	mock.lockPluralDeleteChatRoomActionTypes.Lock()
+	mock.calls.PluralDeleteChatRoomActionTypes = append(mock.calls.PluralDeleteChatRoomActionTypes, callInfo)
+	mock.lockPluralDeleteChatRoomActionTypes.Unlock()
+	return mock.PluralDeleteChatRoomActionTypesFunc(ctx, ids)
+}
+
+// PluralDeleteChatRoomActionTypesCalls gets all the calls that were made to PluralDeleteChatRoomActionTypes.
+// Check the length with:
+//
+//	len(mockedManagerInterface.PluralDeleteChatRoomActionTypesCalls())
+func (mock *ManagerInterfaceMock) PluralDeleteChatRoomActionTypesCalls() []struct {
+	Ctx context.Context
+	Ids []uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		Ids []uuid.UUID
+	}
+	mock.lockPluralDeleteChatRoomActionTypes.RLock()
+	calls = mock.calls.PluralDeleteChatRoomActionTypes
+	mock.lockPluralDeleteChatRoomActionTypes.RUnlock()
+	return calls
+}
+
 // PluralDeleteEventTypes calls PluralDeleteEventTypesFunc.
 func (mock *ManagerInterfaceMock) PluralDeleteEventTypes(ctx context.Context, ids []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteEventTypesFunc == nil {
@@ -9516,6 +9976,50 @@ func (mock *ManagerInterfaceMock) UpdateAttendanceTypeCalls() []struct {
 	mock.lockUpdateAttendanceType.RLock()
 	calls = mock.calls.UpdateAttendanceType
 	mock.lockUpdateAttendanceType.RUnlock()
+	return calls
+}
+
+// UpdateChatRoomActionType calls UpdateChatRoomActionTypeFunc.
+func (mock *ManagerInterfaceMock) UpdateChatRoomActionType(ctx context.Context, id uuid.UUID, name string, key string) (entity.ChatRoomActionType, error) {
+	if mock.UpdateChatRoomActionTypeFunc == nil {
+		panic("ManagerInterfaceMock.UpdateChatRoomActionTypeFunc: method is nil but ManagerInterface.UpdateChatRoomActionType was just called")
+	}
+	callInfo := struct {
+		Ctx  context.Context
+		ID   uuid.UUID
+		Name string
+		Key  string
+	}{
+		Ctx:  ctx,
+		ID:   id,
+		Name: name,
+		Key:  key,
+	}
+	mock.lockUpdateChatRoomActionType.Lock()
+	mock.calls.UpdateChatRoomActionType = append(mock.calls.UpdateChatRoomActionType, callInfo)
+	mock.lockUpdateChatRoomActionType.Unlock()
+	return mock.UpdateChatRoomActionTypeFunc(ctx, id, name, key)
+}
+
+// UpdateChatRoomActionTypeCalls gets all the calls that were made to UpdateChatRoomActionType.
+// Check the length with:
+//
+//	len(mockedManagerInterface.UpdateChatRoomActionTypeCalls())
+func (mock *ManagerInterfaceMock) UpdateChatRoomActionTypeCalls() []struct {
+	Ctx  context.Context
+	ID   uuid.UUID
+	Name string
+	Key  string
+} {
+	var calls []struct {
+		Ctx  context.Context
+		ID   uuid.UUID
+		Name string
+		Key  string
+	}
+	mock.lockUpdateChatRoomActionType.RLock()
+	calls = mock.calls.UpdateChatRoomActionType
+	mock.lockUpdateChatRoomActionType.RUnlock()
 	return calls
 }
 

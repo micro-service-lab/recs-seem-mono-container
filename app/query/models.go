@@ -75,11 +75,75 @@ type ChatRoom struct {
 	UpdatedAt        time.Time   `json:"updated_at"`
 }
 
+type ChatRoomAction struct {
+	TChatRoomActionsPkey pgtype.Int8 `json:"t_chat_room_actions_pkey"`
+	ChatRoomActionID     uuid.UUID   `json:"chat_room_action_id"`
+	ChatRoomID           uuid.UUID   `json:"chat_room_id"`
+	ChatRoomActionTypeID uuid.UUID   `json:"chat_room_action_type_id"`
+	ActedAt              time.Time   `json:"acted_at"`
+}
+
+type ChatRoomActionType struct {
+	MChatRoomActionTypesPkey pgtype.Int8 `json:"m_chat_room_action_types_pkey"`
+	ChatRoomActionTypeID     uuid.UUID   `json:"chat_room_action_type_id"`
+	Name                     string      `json:"name"`
+	Key                      string      `json:"key"`
+}
+
+type ChatRoomAddMemberAction struct {
+	TChatRoomAddMemberActionsPkey pgtype.Int8 `json:"t_chat_room_add_member_actions_pkey"`
+	ChatRoomAddMemberActionID     uuid.UUID   `json:"chat_room_add_member_action_id"`
+	ChatRoomActionID              uuid.UUID   `json:"chat_room_action_id"`
+	AddedBy                       pgtype.UUID `json:"added_by"`
+}
+
+type ChatRoomAddedMember struct {
+	TChatRoomAddedMembersPkey pgtype.Int8 `json:"t_chat_room_added_members_pkey"`
+	ChatRoomAddMemberActionID uuid.UUID   `json:"chat_room_add_member_action_id"`
+	MemberID                  pgtype.UUID `json:"member_id"`
+}
+
 type ChatRoomBelonging struct {
 	MChatRoomBelongingsPkey pgtype.Int8 `json:"m_chat_room_belongings_pkey"`
 	MemberID                uuid.UUID   `json:"member_id"`
 	ChatRoomID              uuid.UUID   `json:"chat_room_id"`
 	AddedAt                 time.Time   `json:"added_at"`
+}
+
+type ChatRoomCreateAction struct {
+	TChatRoomCreateActionsPkey pgtype.Int8 `json:"t_chat_room_create_actions_pkey"`
+	ChatRoomCreateActionID     uuid.UUID   `json:"chat_room_create_action_id"`
+	ChatRoomActionID           uuid.UUID   `json:"chat_room_action_id"`
+	CreatedBy                  pgtype.UUID `json:"created_by"`
+	Name                       string      `json:"name"`
+}
+
+type ChatRoomRemoveMemberAction struct {
+	TChatRoomRemoveMemberActionsPkey pgtype.Int8 `json:"t_chat_room_remove_member_actions_pkey"`
+	ChatRoomRemoveMemberActionID     uuid.UUID   `json:"chat_room_remove_member_action_id"`
+	ChatRoomActionID                 uuid.UUID   `json:"chat_room_action_id"`
+	RemovedBy                        pgtype.UUID `json:"removed_by"`
+}
+
+type ChatRoomRemovedMember struct {
+	TChatRoomRemovedMembersPkey  pgtype.Int8 `json:"t_chat_room_removed_members_pkey"`
+	ChatRoomRemoveMemberActionID uuid.UUID   `json:"chat_room_remove_member_action_id"`
+	MemberID                     pgtype.UUID `json:"member_id"`
+}
+
+type ChatRoomUpdateNameAction struct {
+	TChatRoomUpdateNameActionsPkey pgtype.Int8 `json:"t_chat_room_update_name_actions_pkey"`
+	ChatRoomUpdateNameActionID     uuid.UUID   `json:"chat_room_update_name_action_id"`
+	ChatRoomActionID               uuid.UUID   `json:"chat_room_action_id"`
+	UpdatedBy                      pgtype.UUID `json:"updated_by"`
+	Name                           string      `json:"name"`
+}
+
+type ChatRoomWithdrawAction struct {
+	TChatRoomWithdrawActionsPkey pgtype.Int8 `json:"t_chat_room_withdraw_actions_pkey"`
+	ChatRoomWithdrawActionID     uuid.UUID   `json:"chat_room_withdraw_action_id"`
+	ChatRoomActionID             uuid.UUID   `json:"chat_room_action_id"`
+	MemberID                     pgtype.UUID `json:"member_id"`
 }
 
 type EarlyLeaving struct {
@@ -185,13 +249,14 @@ type Membership struct {
 }
 
 type Message struct {
-	TMessagesPkey pgtype.Int8 `json:"t_messages_pkey"`
-	MessageID     uuid.UUID   `json:"message_id"`
-	ChatRoomID    uuid.UUID   `json:"chat_room_id"`
-	SenderID      pgtype.UUID `json:"sender_id"`
-	Body          string      `json:"body"`
-	PostedAt      time.Time   `json:"posted_at"`
-	LastEditedAt  time.Time   `json:"last_edited_at"`
+	TMessagesPkey    pgtype.Int8 `json:"t_messages_pkey"`
+	MessageID        uuid.UUID   `json:"message_id"`
+	ChatRoomID       uuid.UUID   `json:"chat_room_id"`
+	SenderID         pgtype.UUID `json:"sender_id"`
+	Body             string      `json:"body"`
+	PostedAt         time.Time   `json:"posted_at"`
+	LastEditedAt     time.Time   `json:"last_edited_at"`
+	ChatRoomActionID uuid.UUID   `json:"chat_room_action_id"`
 }
 
 type MimeType struct {

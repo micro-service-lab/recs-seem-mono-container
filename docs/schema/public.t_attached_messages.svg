@@ -34,38 +34,41 @@
 <!-- public.t_messages -->
 <g id="node2" class="node">
 <title>public.t_messages</title>
-<polygon fill="#efefef" stroke="transparent" points="381,-267.5 381,-302.5 682,-302.5 682,-267.5 381,-267.5"/>
-<polygon fill="none" stroke="#000000" points="381,-267.5 381,-302.5 682,-302.5 682,-267.5 381,-267.5"/>
-<text text-anchor="start" x="393.1987" y="-280.3" font-family="Arial Bold" font-size="18.00" fill="#000000">public.t_messages</text>
-<text text-anchor="start" x="542.2333" y="-280.3" font-family="Arial" font-size="14.00" fill="#000000">    </text>
-<text text-anchor="start" x="576.4381" y="-280.3" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
-<polygon fill="none" stroke="#000000" points="381,-237.5 381,-267.5 682,-267.5 682,-237.5 381,-237.5"/>
-<text text-anchor="start" x="388" y="-248.9" font-family="Arial" font-size="14.00" fill="#000000">t_messages_pkey    </text>
-<text text-anchor="start" x="535.0168" y="-248.9" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
-<polygon fill="none" stroke="#000000" points="381,-207.5 381,-237.5 682,-237.5 682,-207.5 381,-207.5"/>
-<text text-anchor="start" x="388" y="-218.9" font-family="Arial" font-size="14.00" fill="#000000">message_id    </text>
-<text text-anchor="start" x="497.6676" y="-218.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="#000000" points="381,-177.5 381,-207.5 682,-207.5 682,-177.5 381,-177.5"/>
-<text text-anchor="start" x="388" y="-188.9" font-family="Arial" font-size="14.00" fill="#000000">chat_room_id    </text>
-<text text-anchor="start" x="507.0014" y="-188.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="#000000" points="381,-147.5 381,-177.5 682,-177.5 682,-147.5 381,-147.5"/>
-<text text-anchor="start" x="388" y="-158.9" font-family="Arial" font-size="14.00" fill="#000000">sender_id    </text>
-<text text-anchor="start" x="483.6676" y="-158.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
-<polygon fill="none" stroke="#000000" points="381,-117.5 381,-147.5 682,-147.5 682,-117.5 381,-117.5"/>
-<text text-anchor="start" x="388" y="-128.9" font-family="Arial" font-size="14.00" fill="#000000">body    </text>
-<text text-anchor="start" x="452.5526" y="-128.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
-<polygon fill="none" stroke="#000000" points="381,-87.5 381,-117.5 682,-117.5 682,-87.5 381,-87.5"/>
-<text text-anchor="start" x="388" y="-98.9" font-family="Arial" font-size="14.00" fill="#000000">posted_at    </text>
-<text text-anchor="start" x="483.6816" y="-98.9" font-family="Arial" font-size="14.00" fill="#666666">[timestamp with time zone]</text>
-<polygon fill="none" stroke="#000000" points="381,-57.5 381,-87.5 682,-87.5 682,-57.5 381,-57.5"/>
-<text text-anchor="start" x="387.9825" y="-68.9" font-family="Arial" font-size="14.00" fill="#000000">last_edited_at    </text>
-<text text-anchor="start" x="509.3331" y="-68.9" font-family="Arial" font-size="14.00" fill="#666666">[timestamp with time zone]</text>
+<polygon fill="#efefef" stroke="transparent" points="381,-282.5 381,-317.5 682,-317.5 682,-282.5 381,-282.5"/>
+<polygon fill="none" stroke="#000000" points="381,-282.5 381,-317.5 682,-317.5 682,-282.5 381,-282.5"/>
+<text text-anchor="start" x="393.1987" y="-295.3" font-family="Arial Bold" font-size="18.00" fill="#000000">public.t_messages</text>
+<text text-anchor="start" x="542.2333" y="-295.3" font-family="Arial" font-size="14.00" fill="#000000">    </text>
+<text text-anchor="start" x="576.4381" y="-295.3" font-family="Arial" font-size="14.00" fill="#666666">[BASE TABLE]</text>
+<polygon fill="none" stroke="#000000" points="381,-252.5 381,-282.5 682,-282.5 682,-252.5 381,-252.5"/>
+<text text-anchor="start" x="388" y="-263.9" font-family="Arial" font-size="14.00" fill="#000000">t_messages_pkey    </text>
+<text text-anchor="start" x="535.0168" y="-263.9" font-family="Arial" font-size="14.00" fill="#666666">[bigint]</text>
+<polygon fill="none" stroke="#000000" points="381,-222.5 381,-252.5 682,-252.5 682,-222.5 381,-222.5"/>
+<text text-anchor="start" x="388" y="-233.9" font-family="Arial" font-size="14.00" fill="#000000">message_id    </text>
+<text text-anchor="start" x="497.6676" y="-233.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="#000000" points="381,-192.5 381,-222.5 682,-222.5 682,-192.5 381,-192.5"/>
+<text text-anchor="start" x="388" y="-203.9" font-family="Arial" font-size="14.00" fill="#000000">chat_room_id    </text>
+<text text-anchor="start" x="507.0014" y="-203.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="#000000" points="381,-162.5 381,-192.5 682,-192.5 682,-162.5 381,-162.5"/>
+<text text-anchor="start" x="388" y="-173.9" font-family="Arial" font-size="14.00" fill="#000000">sender_id    </text>
+<text text-anchor="start" x="483.6676" y="-173.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
+<polygon fill="none" stroke="#000000" points="381,-132.5 381,-162.5 682,-162.5 682,-132.5 381,-132.5"/>
+<text text-anchor="start" x="388" y="-143.9" font-family="Arial" font-size="14.00" fill="#000000">body    </text>
+<text text-anchor="start" x="452.5526" y="-143.9" font-family="Arial" font-size="14.00" fill="#666666">[text]</text>
+<polygon fill="none" stroke="#000000" points="381,-102.5 381,-132.5 682,-132.5 682,-102.5 381,-102.5"/>
+<text text-anchor="start" x="388" y="-113.9" font-family="Arial" font-size="14.00" fill="#000000">posted_at    </text>
+<text text-anchor="start" x="483.6816" y="-113.9" font-family="Arial" font-size="14.00" fill="#666666">[timestamp with time zone]</text>
+<polygon fill="none" stroke="#000000" points="381,-72.5 381,-102.5 682,-102.5 682,-72.5 381,-72.5"/>
+<text text-anchor="start" x="387.9825" y="-83.9" font-family="Arial" font-size="14.00" fill="#000000">last_edited_at    </text>
+<text text-anchor="start" x="509.3331" y="-83.9" font-family="Arial" font-size="14.00" fill="#666666">[timestamp with time zone]</text>
+<polygon fill="none" stroke="#000000" points="381,-42.5 381,-72.5 682,-72.5 682,-42.5 381,-42.5"/>
+<text text-anchor="start" x="388" y="-53.9" font-family="Arial" font-size="14.00" fill="#000000">chat_room_action_id    </text>
+<text text-anchor="start" x="552.129" y="-53.9" font-family="Arial" font-size="14.00" fill="#666666">[uuid]</text>
 </g>
 <!-- public.t_attached_messages&#45;&gt;public.t_messages -->
 <g id="edge1" class="edge">
 <title>public.t_attached_messages:message_id&#45;&gt;public.t_messages:message_id</title>
-<path fill="none" stroke="#000000" d="M549.8298,-485.9437C523.3214,-476.5878 539.8851,-427.2104 560,-397 592.5709,-348.0821 649.4291,-394.9179 682,-346 712.4203,-300.312 736.8889,-222.5 682,-222.5"/>
-<polygon fill="#000000" stroke="#000000" points="550.1151,-485.9872 559.3193,-491.9482 555.0575,-486.7436 560,-487.5 560,-487.5 560,-487.5 555.0575,-486.7436 560.6807,-483.0518 550.1151,-485.9872 550.1151,-485.9872"/>
+<path fill="none" stroke="#000000" d="M549.7836,-485.911C523.0058,-476.365 538.2691,-426.0696 560,-397 593.849,-351.7198 648.151,-406.2802 682,-361 714.8643,-317.0372 736.8889,-237.5 682,-237.5"/>
+<polygon fill="#000000" stroke="#000000" points="550.1188,-485.9631 559.3084,-491.9465 555.0594,-486.7315 560,-487.5 560,-487.5 560,-487.5 555.0594,-486.7315 560.6916,-483.0535 550.1188,-485.9631 550.1188,-485.9631"/>
 <text text-anchor="start" x="6.9345" y="-497.5" font-family="Arial" font-size="10.00" fill="#000000">FOREIGN KEY (message_id) REFERENCES t_messages(message_id) ON UPDATE RESTRICT ON DELETE RESTRICT</text>
 </g>
 <!-- public.t_attachable_items -->

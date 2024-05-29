@@ -13,6 +13,7 @@
 | body | text |  | false |  |  |  |
 | posted_at | timestamp with time zone |  | false |  |  |  |
 | last_edited_at | timestamp with time zone |  | false |  |  |  |
+| chat_room_action_id | uuid |  | false |  | [public.t_chat_room_actions](public.t_chat_room_actions.md) |  |
 
 ## Constraints
 
@@ -21,6 +22,7 @@
 | fk_t_messages_sender_id | FOREIGN KEY | FOREIGN KEY (sender_id) REFERENCES m_members(member_id) ON UPDATE SET NULL ON DELETE SET NULL |
 | fk_t_messages_chat_room_id | FOREIGN KEY | FOREIGN KEY (chat_room_id) REFERENCES m_chat_rooms(chat_room_id) ON UPDATE CASCADE ON DELETE CASCADE |
 | t_messages_pkey | PRIMARY KEY | PRIMARY KEY (t_messages_pkey) |
+| fk_t_messages_chat_room_action_id | FOREIGN KEY | FOREIGN KEY (chat_room_action_id) REFERENCES t_chat_room_actions(chat_room_action_id) ON UPDATE RESTRICT ON DELETE RESTRICT |
 
 ## Indexes
 

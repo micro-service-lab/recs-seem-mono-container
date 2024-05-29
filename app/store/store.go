@@ -53,4 +53,10 @@ type Store interface {
 	Message
 	ReadReceipt
 	Membership
+	ChatRoomActionType
+	ChatRoomCreateAction
+	ChatRoomUpdateNameAction
+	ChatRoomAddMemberAction
+	ChatRoomRemoveMemberAction
+	ChatRoomWithdrawAction
 }

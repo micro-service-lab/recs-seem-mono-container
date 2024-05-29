@@ -61,4 +61,13 @@ sql:
         t_attached_message: AttachedMessage
         t_read_receipt: ReadReceipt
         m_membership: Membership
+        m_chat_room_action_type: ChatRoomActionType
+        t_chat_room_action: ChatRoomAction
+        t_chat_room_create_action: ChatRoomCreateAction
+        t_chat_room_update_name_action: ChatRoomUpdateNameAction
+        t_chat_room_add_member_action: ChatRoomAddMemberAction
+        t_chat_room_remove_member_action: ChatRoomRemoveMemberAction
+        t_chat_room_withdraw_action: ChatRoomWithdrawAction
+        t_chat_room_added_member: ChatRoomAddedMember
+        t_chat_room_removed_member: ChatRoomRemovedMember
 

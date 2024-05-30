@@ -198,8 +198,8 @@ t_messages.sender_id message_sender_id, t_messages.chat_room_action_id message_c
 FROM t_attached_messages
 LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
-WHERE message_id IN (
-	SELECT message_id FROM t_messages m WHERE m.chat_room_action_id IN (
+WHERE t_attached_messages.message_id IN (
+	SELECT m.message_id FROM t_messages m WHERE m.chat_room_action_id IN (
 		SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1
 	)
 )
@@ -220,8 +220,8 @@ t_messages.sender_id message_sender_id, t_messages.chat_room_action_id message_c
 FROM t_attached_messages
 LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
-WHERE message_id IN (
-	SELECT message_id FROM t_messages m WHERE m.chat_room_action_id IN (
+WHERE t_attached_messages.message_id IN (
+	SELECT m.message_id FROM t_messages m WHERE m.chat_room_action_id IN (
 		SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1
 	)
 )
@@ -243,8 +243,8 @@ t_messages.sender_id message_sender_id, t_messages.chat_room_action_id message_c
 FROM t_attached_messages
 LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
-WHERE message_id IN (
-	SELECT message_id FROM t_messages m WHERE m.chat_room_action_id IN (
+WHERE t_attached_messages.message_id IN (
+	SELECT m.message_id FROM t_messages m WHERE m.chat_room_action_id IN (
 		SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1
 	)
 )
@@ -268,8 +268,8 @@ LIMIT $2;
 
 -- name: CountAttachedItemsOnChatRoom :one
 SELECT COUNT(*) FROM t_attached_messages
-WHERE message_id IN (
-	SELECT message_id FROM t_messages m WHERE m.chat_room_action_id IN (
+WHERE t_attached_messages.message_id IN (
+	SELECT m.message_id FROM t_messages m WHERE m.chat_room_action_id IN (
 		SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1
 	)
 )

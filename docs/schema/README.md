@@ -33,7 +33,7 @@
 | [public.t_absences](public.t_absences.md) | 3 |  | BASE TABLE |
 | [public.t_lab_io_histories](public.t_lab_io_histories.md) | 5 |  | BASE TABLE |
 | [public.m_chat_rooms](public.m_chat_rooms.md) | 9 |  | BASE TABLE |
-| [public.t_messages](public.t_messages.md) | 8 |  | BASE TABLE |
+| [public.t_messages](public.t_messages.md) | 7 |  | BASE TABLE |
 | [public.t_position_histories](public.t_position_histories.md) | 6 |  | BASE TABLE |
 | [public.m_chat_room_belongings](public.m_chat_room_belongings.md) | 4 |  | BASE TABLE |
 | [public.m_record_types](public.m_record_types.md) | 4 |  | BASE TABLE |
@@ -42,7 +42,7 @@
 | [public.t_read_receipts](public.t_read_receipts.md) | 4 |  | BASE TABLE |
 | [public.m_memberships](public.m_memberships.md) | 5 |  | BASE TABLE |
 | [public.m_chat_room_action_types](public.m_chat_room_action_types.md) | 4 |  | BASE TABLE |
-| [public.t_chat_room_actions](public.t_chat_room_actions.md) | 4 |  | BASE TABLE |
+| [public.t_chat_room_actions](public.t_chat_room_actions.md) | 5 |  | BASE TABLE |
 | [public.t_chat_room_create_actions](public.t_chat_room_create_actions.md) | 5 |  | BASE TABLE |
 | [public.t_chat_room_update_name_actions](public.t_chat_room_update_name_actions.md) | 5 |  | BASE TABLE |
 | [public.t_chat_room_add_member_actions](public.t_chat_room_add_member_actions.md) | 4 |  | BASE TABLE |

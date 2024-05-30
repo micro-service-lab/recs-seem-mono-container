@@ -90,8 +90,8 @@ type AttachedMessage interface {
 	GetPluralAttachedItemsOnMessage(
 		ctx context.Context,
 		messageIDs []uuid.UUID,
-		np NumberedPaginationParam,
 		order parameter.AttachedItemOnMessageOrderMethod,
+		np NumberedPaginationParam,
 	) (ListResult[entity.AttachedItemOnMessage], error)
 	// GetPluralAttachedItemsOnMessageWithSd SD付きでメッセージに関連付けられた複数の添付アイテムを取得する。
 	GetPluralAttachedItemsOnMessageWithSd(

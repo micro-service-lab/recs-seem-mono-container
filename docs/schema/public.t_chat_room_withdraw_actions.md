@@ -16,7 +16,7 @@
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
 | fk_t_chat_room_withdraw_actions_member_id | FOREIGN KEY | FOREIGN KEY (member_id) REFERENCES m_members(member_id) ON UPDATE SET NULL ON DELETE SET NULL |
-| fk_t_chat_room_withdraw_actions_chat_room_action_id | FOREIGN KEY | FOREIGN KEY (chat_room_action_id) REFERENCES t_chat_room_actions(chat_room_action_id) ON UPDATE RESTRICT ON DELETE RESTRICT |
+| fk_t_chat_room_withdraw_actions_chat_room_action_id | FOREIGN KEY | FOREIGN KEY (chat_room_action_id) REFERENCES t_chat_room_actions(chat_room_action_id) ON UPDATE CASCADE ON DELETE CASCADE |
 | t_chat_room_withdraw_actions_pkey | PRIMARY KEY | PRIMARY KEY (t_chat_room_withdraw_actions_pkey) |
 
 ## Indexes

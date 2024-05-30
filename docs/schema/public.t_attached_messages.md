@@ -16,7 +16,7 @@
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
 | fk_t_attached_messages_attachable_item_id | FOREIGN KEY | FOREIGN KEY (attachable_item_id) REFERENCES t_attachable_items(attachable_item_id) ON UPDATE SET NULL ON DELETE SET NULL |
-| fk_t_attached_messages_message_id | FOREIGN KEY | FOREIGN KEY (message_id) REFERENCES t_messages(message_id) ON UPDATE RESTRICT ON DELETE RESTRICT |
+| fk_t_attached_messages_message_id | FOREIGN KEY | FOREIGN KEY (message_id) REFERENCES t_messages(message_id) ON UPDATE CASCADE ON DELETE CASCADE |
 | t_attached_messages_pkey | PRIMARY KEY | PRIMARY KEY (t_attached_messages_pkey) |
 
 ## Indexes

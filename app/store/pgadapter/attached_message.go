@@ -645,7 +645,7 @@ func (a *PgAdapter) GetAttachedItemsOnMessageWithSd(
 
 func getPluralAttachedItemsOnMessage(
 	ctx context.Context, qtx *query.Queries, messageIDs []uuid.UUID,
-	_ parameter.AttachedItemOnChatRoomOrderMethod, np store.NumberedPaginationParam,
+	_ parameter.AttachedItemOnMessageOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttachedItemOnMessage], error) {
 	var e []query.GetPluralAttachedItemsOnMessageRow
 	var err error
@@ -689,7 +689,7 @@ func getPluralAttachedItemsOnMessage(
 // GetPluralAttachedItemsOnMessage メッセージに関連付けられた複数の添付アイテムを取得する。
 func (a *PgAdapter) GetPluralAttachedItemsOnMessage(
 	ctx context.Context, messageIDs []uuid.UUID,
-	order parameter.AttachedItemOnChatRoomOrderMethod, np store.NumberedPaginationParam,
+	order parameter.AttachedItemOnMessageOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttachedItemOnMessage], error) {
 	return getPluralAttachedItemsOnMessage(ctx, a.query, messageIDs, order, np)
 }
@@ -697,7 +697,7 @@ func (a *PgAdapter) GetPluralAttachedItemsOnMessage(
 // GetPluralAttachedItemsOnMessageWithSd SD付きでメッセージに関連付けられた複数の添付アイテムを取得する。
 func (a *PgAdapter) GetPluralAttachedItemsOnMessageWithSd(
 	ctx context.Context, sd store.Sd, messageIDs []uuid.UUID,
-	order parameter.AttachedItemOnChatRoomOrderMethod, np store.NumberedPaginationParam,
+	order parameter.AttachedItemOnMessageOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.AttachedItemOnMessage], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()

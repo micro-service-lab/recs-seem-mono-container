@@ -531,6 +531,9 @@ func (m *ManageFile) DeleteFile(ctx context.Context, id uuid.UUID) (c int64, err
 	if err != nil {
 		return 0, fmt.Errorf("failed to find file: %w", err)
 	}
+	if !file.AttachableItem.OwnerID.Valid {
+		return 0, nil
+	}
 	if !file.AttachableItem.FromOuter {
 		key, err := m.Storage.GetKeyFromURL(ctx, file.AttachableItem.URL)
 		if err != nil {
@@ -548,6 +551,55 @@ func (m *ManageFile) DeleteFile(ctx context.Context, id uuid.UUID) (c int64, err
 	_, err = m.DB.DeleteAttachableItemWithSd(ctx, sd, file.AttachableItem.AttachableItemID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete attachable item: %w", err)
+	}
+	return c, nil
+}
+
+func pluralDeleteFiles(
+	ctx context.Context,
+	sd store.Sd,
+	db store.Store,
+	stg storage.Storage,
+	ids []uuid.UUID,
+	ownerID entity.UUID,
+) (c int64, err error) {
+	file, err := db.GetPluralFilesWithAttachableItemWithSd(
+		ctx, sd, ids, parameter.FileOrderMethodDefault, store.NumberedPaginationParam{})
+	if err != nil {
+		return 0, fmt.Errorf("failed to get files: %w", err)
+	}
+	var keys []string
+	var attachableItemIDs []uuid.UUID
+	for _, i := range file.Data {
+		if !i.AttachableItem.OwnerID.Valid {
+			continue
+		}
+		if !ownerID.Valid || i.AttachableItem.OwnerID.Bytes != ownerID.Bytes {
+			return 0, errhandle.NewCommonError(response.NotFileOwner, nil)
+		}
+		if !i.AttachableItem.FromOuter {
+			key, err := stg.GetKeyFromURL(ctx, i.AttachableItem.URL)
+			if err != nil {
+				return 0, fmt.Errorf("failed to get key from url: %w", err)
+			}
+			keys = append(keys, key)
+		}
+		attachableItemIDs = append(attachableItemIDs, i.AttachableItem.AttachableItemID)
+	}
+	if len(keys) == 0 {
+		return 0, nil
+	}
+	err = stg.DeleteObjects(ctx, keys)
+	if err != nil {
+		return 0, fmt.Errorf("failed to delete objects: %w", err)
+	}
+	c, err = db.PluralDeleteFilesWithSd(ctx, sd, ids)
+	if err != nil {
+		return 0, fmt.Errorf("failed to delete policy: %w", err)
+	}
+	_, err = db.PluralDeleteAttachableItemsWithSd(ctx, sd, attachableItemIDs)
+	if err != nil {
+		return 0, fmt.Errorf("failed to delete attachable items: %w", err)
 	}
 	return c, nil
 }
@@ -571,33 +623,7 @@ func (m *ManageFile) PluralDeleteFiles(
 			}
 		}
 	}()
-	file, err := m.DB.GetPluralFilesWithAttachableItemWithSd(
-		ctx, sd, ids, parameter.FileOrderMethodDefault, store.NumberedPaginationParam{})
-	var keys []string
-	var attachableItemIDs []uuid.UUID
-	for _, i := range file.Data {
-		if !i.AttachableItem.FromOuter {
-			key, err := m.Storage.GetKeyFromURL(ctx, i.AttachableItem.URL)
-			if err != nil {
-				return 0, fmt.Errorf("failed to get key from url: %w", err)
-			}
-			keys = append(keys, key)
-		}
-		attachableItemIDs = append(attachableItemIDs, i.AttachableItem.AttachableItemID)
-	}
-	err = m.Storage.DeleteObjects(ctx, keys)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete objects: %w", err)
-	}
-	c, err = m.DB.PluralDeleteFilesWithSd(ctx, sd, ids)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete policy: %w", err)
-	}
-	_, err = m.DB.PluralDeleteAttachableItemsWithSd(ctx, sd, attachableItemIDs)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete attachable items: %w", err)
-	}
-	return c, nil
+	return pluralDeleteFiles(ctx, sd, m.DB, m.Storage, ids, entity.UUID{})
 }
 
 // GetFiles ファイルを取得する。
@@ -633,7 +659,7 @@ func (m *ManageFile) GetFiles(
 	}
 	r, err := m.DB.GetFiles(ctx, where, order, np, cp, wc)
 	if err != nil {
-		return store.ListResult[entity.File]{}, fmt.Errorf("failed to get images: %w", err)
+		return store.ListResult[entity.File]{}, fmt.Errorf("failed to get files: %w", err)
 	}
 	return r, nil
 }
@@ -645,7 +671,7 @@ func (m *ManageFile) GetFilesCount(
 	p := parameter.WhereFileParam{}
 	c, err := m.DB.CountFiles(ctx, p)
 	if err != nil {
-		return 0, fmt.Errorf("failed to get images count: %w", err)
+		return 0, fmt.Errorf("failed to get files count: %w", err)
 	}
 	return c, nil
 }

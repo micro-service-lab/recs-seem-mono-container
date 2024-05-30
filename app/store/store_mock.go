@@ -45,6 +45,18 @@ var _ Store = &StoreMock{}
 //			AssociateRolesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.AssociationRoleParam) (int64, error) {
 //				panic("mock out the AssociateRolesWithSd method")
 //			},
+//			AttacheItemOnMessageFunc: func(ctx context.Context, param parameter.AttachItemMessageParam) (entity.AttachedMessage, error) {
+//				panic("mock out the AttacheItemOnMessage method")
+//			},
+//			AttacheItemOnMessageWithSdFunc: func(ctx context.Context, sd Sd, param parameter.AttachItemMessageParam) (entity.AttachedMessage, error) {
+//				panic("mock out the AttacheItemOnMessageWithSd method")
+//			},
+//			AttacheItemsOnMessagesFunc: func(ctx context.Context, params []parameter.AttachItemMessageParam) (int64, error) {
+//				panic("mock out the AttacheItemsOnMessages method")
+//			},
+//			AttacheItemsOnMessagesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.AttachItemMessageParam) (int64, error) {
+//				panic("mock out the AttacheItemsOnMessagesWithSd method")
+//			},
 //			BeginFunc: func(contextMoqParam context.Context) (Sd, error) {
 //				panic("mock out the Begin method")
 //			},
@@ -89,6 +101,18 @@ var _ Store = &StoreMock{}
 //			},
 //			CountAttachableItemsWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereAttachableItemParam) (int64, error) {
 //				panic("mock out the CountAttachableItemsWithSd method")
+//			},
+//			CountAttachedItemsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereAttachedItemOnChatRoomParam) (int64, error) {
+//				panic("mock out the CountAttachedItemsOnChatRoom method")
+//			},
+//			CountAttachedItemsOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereAttachedItemOnChatRoomParam) (int64, error) {
+//				panic("mock out the CountAttachedItemsOnChatRoomWithSd method")
+//			},
+//			CountAttachedItemsOnMessageFunc: func(ctx context.Context, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam) (int64, error) {
+//				panic("mock out the CountAttachedItemsOnMessage method")
+//			},
+//			CountAttachedItemsOnMessageWithSdFunc: func(ctx context.Context, sd Sd, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam) (int64, error) {
+//				panic("mock out the CountAttachedItemsOnMessageWithSd method")
 //			},
 //			CountAttendStatusesFunc: func(ctx context.Context, where parameter.WhereAttendStatusParam) (int64, error) {
 //				panic("mock out the CountAttendStatuses method")
@@ -984,6 +1008,24 @@ var _ Store = &StoreMock{}
 //			DeleteStudentWithSdFunc: func(ctx context.Context, sd Sd, studentID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteStudentWithSd method")
 //			},
+//			DetachAttachedMessageFunc: func(ctx context.Context, attachedMessageID uuid.UUID) (int64, error) {
+//				panic("mock out the DetachAttachedMessage method")
+//			},
+//			DetachAttachedMessageWithSdFunc: func(ctx context.Context, sd Sd, attachedMessageID uuid.UUID) (int64, error) {
+//				panic("mock out the DetachAttachedMessageWithSd method")
+//			},
+//			DetachItemsOnMessageFunc: func(ctx context.Context, messageID uuid.UUID) (int64, error) {
+//				panic("mock out the DetachItemsOnMessage method")
+//			},
+//			DetachItemsOnMessageWithSdFunc: func(ctx context.Context, sd Sd, messageID uuid.UUID) (int64, error) {
+//				panic("mock out the DetachItemsOnMessageWithSd method")
+//			},
+//			DetachItemsOnMessagesFunc: func(ctx context.Context, messageIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DetachItemsOnMessages method")
+//			},
+//			DetachItemsOnMessagesWithSdFunc: func(ctx context.Context, sd Sd, messageIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DetachItemsOnMessagesWithSd method")
+//			},
 //			DisassociatePolicyOnRoleFunc: func(ctx context.Context, roleID uuid.UUID) (int64, error) {
 //				panic("mock out the DisassociatePolicyOnRole method")
 //			},
@@ -1494,6 +1536,24 @@ var _ Store = &StoreMock{}
 //			GetAttachableItemsWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereAttachableItemParam, order parameter.AttachableItemOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachableItemWithContent], error) {
 //				panic("mock out the GetAttachableItemsWithSd method")
 //			},
+//			GetAttachedItemsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereAttachedItemOnChatRoomParam, order parameter.AttachedItemOnChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnChatRoom], error) {
+//				panic("mock out the GetAttachedItemsOnChatRoom method")
+//			},
+//			GetAttachedItemsOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereAttachedItemOnChatRoomParam, order parameter.AttachedItemOnChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnChatRoom], error) {
+//				panic("mock out the GetAttachedItemsOnChatRoomWithSd method")
+//			},
+//			GetAttachedItemsOnMessageFunc: func(ctx context.Context, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnMessage], error) {
+//				panic("mock out the GetAttachedItemsOnMessage method")
+//			},
+//			GetAttachedItemsOnMessageWithMimeTypeFunc: func(ctx context.Context, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnMessageWithMimeType], error) {
+//				panic("mock out the GetAttachedItemsOnMessageWithMimeType method")
+//			},
+//			GetAttachedItemsOnMessageWithMimeTypeWithSdFunc: func(ctx context.Context, sd Sd, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnMessageWithMimeType], error) {
+//				panic("mock out the GetAttachedItemsOnMessageWithMimeTypeWithSd method")
+//			},
+//			GetAttachedItemsOnMessageWithSdFunc: func(ctx context.Context, sd Sd, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnMessage], error) {
+//				panic("mock out the GetAttachedItemsOnMessageWithSd method")
+//			},
 //			GetAttendStatusesFunc: func(ctx context.Context, where parameter.WhereAttendStatusParam, order parameter.AttendStatusOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttendStatus], error) {
 //				panic("mock out the GetAttendStatuses method")
 //			},
@@ -1775,6 +1835,18 @@ var _ Store = &StoreMock{}
 //			},
 //			GetPluralAttachableItemsWithSdFunc: func(ctx context.Context, sd Sd, attachableItemIDs []uuid.UUID, order parameter.AttachableItemOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttachableItemWithContent], error) {
 //				panic("mock out the GetPluralAttachableItemsWithSd method")
+//			},
+//			GetPluralAttachedItemsOnMessageFunc: func(ctx context.Context, messageIDs []uuid.UUID, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttachedItemOnMessage], error) {
+//				panic("mock out the GetPluralAttachedItemsOnMessage method")
+//			},
+//			GetPluralAttachedItemsOnMessageWithMimeTypeFunc: func(ctx context.Context, messageIDs []uuid.UUID, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttachedItemOnMessageWithMimeType], error) {
+//				panic("mock out the GetPluralAttachedItemsOnMessageWithMimeType method")
+//			},
+//			GetPluralAttachedItemsOnMessageWithMimeTypeWithSdFunc: func(ctx context.Context, sd Sd, messageIDs []uuid.UUID, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttachedItemOnMessageWithMimeType], error) {
+//				panic("mock out the GetPluralAttachedItemsOnMessageWithMimeTypeWithSd method")
+//			},
+//			GetPluralAttachedItemsOnMessageWithSdFunc: func(ctx context.Context, sd Sd, messageIDs []uuid.UUID, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttachedItemOnMessage], error) {
+//				panic("mock out the GetPluralAttachedItemsOnMessageWithSd method")
 //			},
 //			GetPluralAttendStatusesFunc: func(ctx context.Context, attendStatusIDs []uuid.UUID, order parameter.AttendStatusOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error) {
 //				panic("mock out the GetPluralAttendStatuses method")
@@ -2608,6 +2680,18 @@ type StoreMock struct {
 	// AssociateRolesWithSdFunc mocks the AssociateRolesWithSd method.
 	AssociateRolesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.AssociationRoleParam) (int64, error)
 
+	// AttacheItemOnMessageFunc mocks the AttacheItemOnMessage method.
+	AttacheItemOnMessageFunc func(ctx context.Context, param parameter.AttachItemMessageParam) (entity.AttachedMessage, error)
+
+	// AttacheItemOnMessageWithSdFunc mocks the AttacheItemOnMessageWithSd method.
+	AttacheItemOnMessageWithSdFunc func(ctx context.Context, sd Sd, param parameter.AttachItemMessageParam) (entity.AttachedMessage, error)
+
+	// AttacheItemsOnMessagesFunc mocks the AttacheItemsOnMessages method.
+	AttacheItemsOnMessagesFunc func(ctx context.Context, params []parameter.AttachItemMessageParam) (int64, error)
+
+	// AttacheItemsOnMessagesWithSdFunc mocks the AttacheItemsOnMessagesWithSd method.
+	AttacheItemsOnMessagesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.AttachItemMessageParam) (int64, error)
+
 	// BeginFunc mocks the Begin method.
 	BeginFunc func(contextMoqParam context.Context) (Sd, error)
 
@@ -2652,6 +2736,18 @@ type StoreMock struct {
 
 	// CountAttachableItemsWithSdFunc mocks the CountAttachableItemsWithSd method.
 	CountAttachableItemsWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereAttachableItemParam) (int64, error)
+
+	// CountAttachedItemsOnChatRoomFunc mocks the CountAttachedItemsOnChatRoom method.
+	CountAttachedItemsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereAttachedItemOnChatRoomParam) (int64, error)
+
+	// CountAttachedItemsOnChatRoomWithSdFunc mocks the CountAttachedItemsOnChatRoomWithSd method.
+	CountAttachedItemsOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereAttachedItemOnChatRoomParam) (int64, error)
+
+	// CountAttachedItemsOnMessageFunc mocks the CountAttachedItemsOnMessage method.
+	CountAttachedItemsOnMessageFunc func(ctx context.Context, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam) (int64, error)
+
+	// CountAttachedItemsOnMessageWithSdFunc mocks the CountAttachedItemsOnMessageWithSd method.
+	CountAttachedItemsOnMessageWithSdFunc func(ctx context.Context, sd Sd, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam) (int64, error)
 
 	// CountAttendStatusesFunc mocks the CountAttendStatuses method.
 	CountAttendStatusesFunc func(ctx context.Context, where parameter.WhereAttendStatusParam) (int64, error)
@@ -3547,6 +3643,24 @@ type StoreMock struct {
 	// DeleteStudentWithSdFunc mocks the DeleteStudentWithSd method.
 	DeleteStudentWithSdFunc func(ctx context.Context, sd Sd, studentID uuid.UUID) (int64, error)
 
+	// DetachAttachedMessageFunc mocks the DetachAttachedMessage method.
+	DetachAttachedMessageFunc func(ctx context.Context, attachedMessageID uuid.UUID) (int64, error)
+
+	// DetachAttachedMessageWithSdFunc mocks the DetachAttachedMessageWithSd method.
+	DetachAttachedMessageWithSdFunc func(ctx context.Context, sd Sd, attachedMessageID uuid.UUID) (int64, error)
+
+	// DetachItemsOnMessageFunc mocks the DetachItemsOnMessage method.
+	DetachItemsOnMessageFunc func(ctx context.Context, messageID uuid.UUID) (int64, error)
+
+	// DetachItemsOnMessageWithSdFunc mocks the DetachItemsOnMessageWithSd method.
+	DetachItemsOnMessageWithSdFunc func(ctx context.Context, sd Sd, messageID uuid.UUID) (int64, error)
+
+	// DetachItemsOnMessagesFunc mocks the DetachItemsOnMessages method.
+	DetachItemsOnMessagesFunc func(ctx context.Context, messageIDs []uuid.UUID) (int64, error)
+
+	// DetachItemsOnMessagesWithSdFunc mocks the DetachItemsOnMessagesWithSd method.
+	DetachItemsOnMessagesWithSdFunc func(ctx context.Context, sd Sd, messageIDs []uuid.UUID) (int64, error)
+
 	// DisassociatePolicyOnRoleFunc mocks the DisassociatePolicyOnRole method.
 	DisassociatePolicyOnRoleFunc func(ctx context.Context, roleID uuid.UUID) (int64, error)
 
@@ -4057,6 +4171,24 @@ type StoreMock struct {
 	// GetAttachableItemsWithSdFunc mocks the GetAttachableItemsWithSd method.
 	GetAttachableItemsWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereAttachableItemParam, order parameter.AttachableItemOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachableItemWithContent], error)
 
+	// GetAttachedItemsOnChatRoomFunc mocks the GetAttachedItemsOnChatRoom method.
+	GetAttachedItemsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereAttachedItemOnChatRoomParam, order parameter.AttachedItemOnChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnChatRoom], error)
+
+	// GetAttachedItemsOnChatRoomWithSdFunc mocks the GetAttachedItemsOnChatRoomWithSd method.
+	GetAttachedItemsOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereAttachedItemOnChatRoomParam, order parameter.AttachedItemOnChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnChatRoom], error)
+
+	// GetAttachedItemsOnMessageFunc mocks the GetAttachedItemsOnMessage method.
+	GetAttachedItemsOnMessageFunc func(ctx context.Context, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnMessage], error)
+
+	// GetAttachedItemsOnMessageWithMimeTypeFunc mocks the GetAttachedItemsOnMessageWithMimeType method.
+	GetAttachedItemsOnMessageWithMimeTypeFunc func(ctx context.Context, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnMessageWithMimeType], error)
+
+	// GetAttachedItemsOnMessageWithMimeTypeWithSdFunc mocks the GetAttachedItemsOnMessageWithMimeTypeWithSd method.
+	GetAttachedItemsOnMessageWithMimeTypeWithSdFunc func(ctx context.Context, sd Sd, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnMessageWithMimeType], error)
+
+	// GetAttachedItemsOnMessageWithSdFunc mocks the GetAttachedItemsOnMessageWithSd method.
+	GetAttachedItemsOnMessageWithSdFunc func(ctx context.Context, sd Sd, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnMessage], error)
+
 	// GetAttendStatusesFunc mocks the GetAttendStatuses method.
 	GetAttendStatusesFunc func(ctx context.Context, where parameter.WhereAttendStatusParam, order parameter.AttendStatusOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttendStatus], error)
 
@@ -4338,6 +4470,18 @@ type StoreMock struct {
 
 	// GetPluralAttachableItemsWithSdFunc mocks the GetPluralAttachableItemsWithSd method.
 	GetPluralAttachableItemsWithSdFunc func(ctx context.Context, sd Sd, attachableItemIDs []uuid.UUID, order parameter.AttachableItemOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttachableItemWithContent], error)
+
+	// GetPluralAttachedItemsOnMessageFunc mocks the GetPluralAttachedItemsOnMessage method.
+	GetPluralAttachedItemsOnMessageFunc func(ctx context.Context, messageIDs []uuid.UUID, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttachedItemOnMessage], error)
+
+	// GetPluralAttachedItemsOnMessageWithMimeTypeFunc mocks the GetPluralAttachedItemsOnMessageWithMimeType method.
+	GetPluralAttachedItemsOnMessageWithMimeTypeFunc func(ctx context.Context, messageIDs []uuid.UUID, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttachedItemOnMessageWithMimeType], error)
+
+	// GetPluralAttachedItemsOnMessageWithMimeTypeWithSdFunc mocks the GetPluralAttachedItemsOnMessageWithMimeTypeWithSd method.
+	GetPluralAttachedItemsOnMessageWithMimeTypeWithSdFunc func(ctx context.Context, sd Sd, messageIDs []uuid.UUID, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttachedItemOnMessageWithMimeType], error)
+
+	// GetPluralAttachedItemsOnMessageWithSdFunc mocks the GetPluralAttachedItemsOnMessageWithSd method.
+	GetPluralAttachedItemsOnMessageWithSdFunc func(ctx context.Context, sd Sd, messageIDs []uuid.UUID, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttachedItemOnMessage], error)
 
 	// GetPluralAttendStatusesFunc mocks the GetPluralAttendStatuses method.
 	GetPluralAttendStatusesFunc func(ctx context.Context, attendStatusIDs []uuid.UUID, order parameter.AttendStatusOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttendStatus], error)
@@ -5206,6 +5350,38 @@ type StoreMock struct {
 			// Params is the params argument value.
 			Params []parameter.AssociationRoleParam
 		}
+		// AttacheItemOnMessage holds details about calls to the AttacheItemOnMessage method.
+		AttacheItemOnMessage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Param is the param argument value.
+			Param parameter.AttachItemMessageParam
+		}
+		// AttacheItemOnMessageWithSd holds details about calls to the AttacheItemOnMessageWithSd method.
+		AttacheItemOnMessageWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Param is the param argument value.
+			Param parameter.AttachItemMessageParam
+		}
+		// AttacheItemsOnMessages holds details about calls to the AttacheItemsOnMessages method.
+		AttacheItemsOnMessages []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.AttachItemMessageParam
+		}
+		// AttacheItemsOnMessagesWithSd holds details about calls to the AttacheItemsOnMessagesWithSd method.
+		AttacheItemsOnMessagesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Params is the params argument value.
+			Params []parameter.AttachItemMessageParam
+		}
 		// Begin holds details about calls to the Begin method.
 		Begin []struct {
 			// ContextMoqParam is the contextMoqParam argument value.
@@ -5314,6 +5490,46 @@ type StoreMock struct {
 			Sd Sd
 			// Where is the where argument value.
 			Where parameter.WhereAttachableItemParam
+		}
+		// CountAttachedItemsOnChatRoom holds details about calls to the CountAttachedItemsOnChatRoom method.
+		CountAttachedItemsOnChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereAttachedItemOnChatRoomParam
+		}
+		// CountAttachedItemsOnChatRoomWithSd holds details about calls to the CountAttachedItemsOnChatRoomWithSd method.
+		CountAttachedItemsOnChatRoomWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereAttachedItemOnChatRoomParam
+		}
+		// CountAttachedItemsOnMessage holds details about calls to the CountAttachedItemsOnMessage method.
+		CountAttachedItemsOnMessage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereAttachedItemOnMessageParam
+		}
+		// CountAttachedItemsOnMessageWithSd holds details about calls to the CountAttachedItemsOnMessageWithSd method.
+		CountAttachedItemsOnMessageWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereAttachedItemOnMessageParam
 		}
 		// CountAttendStatuses holds details about calls to the CountAttendStatuses method.
 		CountAttendStatuses []struct {
@@ -7763,6 +7979,54 @@ type StoreMock struct {
 			// StudentID is the studentID argument value.
 			StudentID uuid.UUID
 		}
+		// DetachAttachedMessage holds details about calls to the DetachAttachedMessage method.
+		DetachAttachedMessage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// AttachedMessageID is the attachedMessageID argument value.
+			AttachedMessageID uuid.UUID
+		}
+		// DetachAttachedMessageWithSd holds details about calls to the DetachAttachedMessageWithSd method.
+		DetachAttachedMessageWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// AttachedMessageID is the attachedMessageID argument value.
+			AttachedMessageID uuid.UUID
+		}
+		// DetachItemsOnMessage holds details about calls to the DetachItemsOnMessage method.
+		DetachItemsOnMessage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+		}
+		// DetachItemsOnMessageWithSd holds details about calls to the DetachItemsOnMessageWithSd method.
+		DetachItemsOnMessageWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+		}
+		// DetachItemsOnMessages holds details about calls to the DetachItemsOnMessages method.
+		DetachItemsOnMessages []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageIDs is the messageIDs argument value.
+			MessageIDs []uuid.UUID
+		}
+		// DetachItemsOnMessagesWithSd holds details about calls to the DetachItemsOnMessagesWithSd method.
+		DetachItemsOnMessagesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MessageIDs is the messageIDs argument value.
+			MessageIDs []uuid.UUID
+		}
 		// DisassociatePolicyOnRole holds details about calls to the DisassociatePolicyOnRole method.
 		DisassociatePolicyOnRole []struct {
 			// Ctx is the ctx argument value.
@@ -9172,6 +9436,114 @@ type StoreMock struct {
 			Where parameter.WhereAttachableItemParam
 			// Order is the order argument value.
 			Order parameter.AttachableItemOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetAttachedItemsOnChatRoom holds details about calls to the GetAttachedItemsOnChatRoom method.
+		GetAttachedItemsOnChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereAttachedItemOnChatRoomParam
+			// Order is the order argument value.
+			Order parameter.AttachedItemOnChatRoomOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetAttachedItemsOnChatRoomWithSd holds details about calls to the GetAttachedItemsOnChatRoomWithSd method.
+		GetAttachedItemsOnChatRoomWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereAttachedItemOnChatRoomParam
+			// Order is the order argument value.
+			Order parameter.AttachedItemOnChatRoomOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetAttachedItemsOnMessage holds details about calls to the GetAttachedItemsOnMessage method.
+		GetAttachedItemsOnMessage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereAttachedItemOnMessageParam
+			// Order is the order argument value.
+			Order parameter.AttachedItemOnMessageOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetAttachedItemsOnMessageWithMimeType holds details about calls to the GetAttachedItemsOnMessageWithMimeType method.
+		GetAttachedItemsOnMessageWithMimeType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereAttachedItemOnMessageParam
+			// Order is the order argument value.
+			Order parameter.AttachedItemOnMessageOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetAttachedItemsOnMessageWithMimeTypeWithSd holds details about calls to the GetAttachedItemsOnMessageWithMimeTypeWithSd method.
+		GetAttachedItemsOnMessageWithMimeTypeWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereAttachedItemOnMessageParam
+			// Order is the order argument value.
+			Order parameter.AttachedItemOnMessageOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetAttachedItemsOnMessageWithSd holds details about calls to the GetAttachedItemsOnMessageWithSd method.
+		GetAttachedItemsOnMessageWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereAttachedItemOnMessageParam
+			// Order is the order argument value.
+			Order parameter.AttachedItemOnMessageOrderMethod
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 			// Cp is the cp argument value.
@@ -10704,6 +11076,54 @@ type StoreMock struct {
 			AttachableItemIDs []uuid.UUID
 			// Order is the order argument value.
 			Order parameter.AttachableItemOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralAttachedItemsOnMessage holds details about calls to the GetPluralAttachedItemsOnMessage method.
+		GetPluralAttachedItemsOnMessage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageIDs is the messageIDs argument value.
+			MessageIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.AttachedItemOnMessageOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralAttachedItemsOnMessageWithMimeType holds details about calls to the GetPluralAttachedItemsOnMessageWithMimeType method.
+		GetPluralAttachedItemsOnMessageWithMimeType []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageIDs is the messageIDs argument value.
+			MessageIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.AttachedItemOnMessageOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralAttachedItemsOnMessageWithMimeTypeWithSd holds details about calls to the GetPluralAttachedItemsOnMessageWithMimeTypeWithSd method.
+		GetPluralAttachedItemsOnMessageWithMimeTypeWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MessageIDs is the messageIDs argument value.
+			MessageIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.AttachedItemOnMessageOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralAttachedItemsOnMessageWithSd holds details about calls to the GetPluralAttachedItemsOnMessageWithSd method.
+		GetPluralAttachedItemsOnMessageWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MessageIDs is the messageIDs argument value.
+			MessageIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.AttachedItemOnMessageOrderMethod
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 		}
@@ -13635,6 +14055,10 @@ type StoreMock struct {
 	lockAssociateRoleWithSd                                             sync.RWMutex
 	lockAssociateRoles                                                  sync.RWMutex
 	lockAssociateRolesWithSd                                            sync.RWMutex
+	lockAttacheItemOnMessage                                            sync.RWMutex
+	lockAttacheItemOnMessageWithSd                                      sync.RWMutex
+	lockAttacheItemsOnMessages                                          sync.RWMutex
+	lockAttacheItemsOnMessagesWithSd                                    sync.RWMutex
 	lockBegin                                                           sync.RWMutex
 	lockBelongChatRoom                                                  sync.RWMutex
 	lockBelongChatRoomWithSd                                            sync.RWMutex
@@ -13650,6 +14074,10 @@ type StoreMock struct {
 	lockCountAbsencesWithSd                                             sync.RWMutex
 	lockCountAttachableItems                                            sync.RWMutex
 	lockCountAttachableItemsWithSd                                      sync.RWMutex
+	lockCountAttachedItemsOnChatRoom                                    sync.RWMutex
+	lockCountAttachedItemsOnChatRoomWithSd                              sync.RWMutex
+	lockCountAttachedItemsOnMessage                                     sync.RWMutex
+	lockCountAttachedItemsOnMessageWithSd                               sync.RWMutex
 	lockCountAttendStatuses                                             sync.RWMutex
 	lockCountAttendStatusesWithSd                                       sync.RWMutex
 	lockCountAttendanceTypes                                            sync.RWMutex
@@ -13948,6 +14376,12 @@ type StoreMock struct {
 	lockDeleteRoleWithSd                                                sync.RWMutex
 	lockDeleteStudent                                                   sync.RWMutex
 	lockDeleteStudentWithSd                                             sync.RWMutex
+	lockDetachAttachedMessage                                           sync.RWMutex
+	lockDetachAttachedMessageWithSd                                     sync.RWMutex
+	lockDetachItemsOnMessage                                            sync.RWMutex
+	lockDetachItemsOnMessageWithSd                                      sync.RWMutex
+	lockDetachItemsOnMessages                                           sync.RWMutex
+	lockDetachItemsOnMessagesWithSd                                     sync.RWMutex
 	lockDisassociatePolicyOnRole                                        sync.RWMutex
 	lockDisassociatePolicyOnRoleWithSd                                  sync.RWMutex
 	lockDisassociatePolicyOnRoles                                       sync.RWMutex
@@ -14118,6 +14552,12 @@ type StoreMock struct {
 	lockGetAttachableItemsWithMimeType                                  sync.RWMutex
 	lockGetAttachableItemsWithMimeTypeWithSd                            sync.RWMutex
 	lockGetAttachableItemsWithSd                                        sync.RWMutex
+	lockGetAttachedItemsOnChatRoom                                      sync.RWMutex
+	lockGetAttachedItemsOnChatRoomWithSd                                sync.RWMutex
+	lockGetAttachedItemsOnMessage                                       sync.RWMutex
+	lockGetAttachedItemsOnMessageWithMimeType                           sync.RWMutex
+	lockGetAttachedItemsOnMessageWithMimeTypeWithSd                     sync.RWMutex
+	lockGetAttachedItemsOnMessageWithSd                                 sync.RWMutex
 	lockGetAttendStatuses                                               sync.RWMutex
 	lockGetAttendStatusesWithSd                                         sync.RWMutex
 	lockGetAttendanceTypes                                              sync.RWMutex
@@ -14212,6 +14652,10 @@ type StoreMock struct {
 	lockGetPluralAttachableItemsWithMimeType                            sync.RWMutex
 	lockGetPluralAttachableItemsWithMimeTypeWithSd                      sync.RWMutex
 	lockGetPluralAttachableItemsWithSd                                  sync.RWMutex
+	lockGetPluralAttachedItemsOnMessage                                 sync.RWMutex
+	lockGetPluralAttachedItemsOnMessageWithMimeType                     sync.RWMutex
+	lockGetPluralAttachedItemsOnMessageWithMimeTypeWithSd               sync.RWMutex
+	lockGetPluralAttachedItemsOnMessageWithSd                           sync.RWMutex
 	lockGetPluralAttendStatuses                                         sync.RWMutex
 	lockGetPluralAttendStatusesWithSd                                   sync.RWMutex
 	lockGetPluralAttendanceTypes                                        sync.RWMutex
@@ -14785,6 +15229,158 @@ func (mock *StoreMock) AssociateRolesWithSdCalls() []struct {
 	return calls
 }
 
+// AttacheItemOnMessage calls AttacheItemOnMessageFunc.
+func (mock *StoreMock) AttacheItemOnMessage(ctx context.Context, param parameter.AttachItemMessageParam) (entity.AttachedMessage, error) {
+	if mock.AttacheItemOnMessageFunc == nil {
+		panic("StoreMock.AttacheItemOnMessageFunc: method is nil but Store.AttacheItemOnMessage was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Param parameter.AttachItemMessageParam
+	}{
+		Ctx:   ctx,
+		Param: param,
+	}
+	mock.lockAttacheItemOnMessage.Lock()
+	mock.calls.AttacheItemOnMessage = append(mock.calls.AttacheItemOnMessage, callInfo)
+	mock.lockAttacheItemOnMessage.Unlock()
+	return mock.AttacheItemOnMessageFunc(ctx, param)
+}
+
+// AttacheItemOnMessageCalls gets all the calls that were made to AttacheItemOnMessage.
+// Check the length with:
+//
+//	len(mockedStore.AttacheItemOnMessageCalls())
+func (mock *StoreMock) AttacheItemOnMessageCalls() []struct {
+	Ctx   context.Context
+	Param parameter.AttachItemMessageParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Param parameter.AttachItemMessageParam
+	}
+	mock.lockAttacheItemOnMessage.RLock()
+	calls = mock.calls.AttacheItemOnMessage
+	mock.lockAttacheItemOnMessage.RUnlock()
+	return calls
+}
+
+// AttacheItemOnMessageWithSd calls AttacheItemOnMessageWithSdFunc.
+func (mock *StoreMock) AttacheItemOnMessageWithSd(ctx context.Context, sd Sd, param parameter.AttachItemMessageParam) (entity.AttachedMessage, error) {
+	if mock.AttacheItemOnMessageWithSdFunc == nil {
+		panic("StoreMock.AttacheItemOnMessageWithSdFunc: method is nil but Store.AttacheItemOnMessageWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.AttachItemMessageParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Param: param,
+	}
+	mock.lockAttacheItemOnMessageWithSd.Lock()
+	mock.calls.AttacheItemOnMessageWithSd = append(mock.calls.AttacheItemOnMessageWithSd, callInfo)
+	mock.lockAttacheItemOnMessageWithSd.Unlock()
+	return mock.AttacheItemOnMessageWithSdFunc(ctx, sd, param)
+}
+
+// AttacheItemOnMessageWithSdCalls gets all the calls that were made to AttacheItemOnMessageWithSd.
+// Check the length with:
+//
+//	len(mockedStore.AttacheItemOnMessageWithSdCalls())
+func (mock *StoreMock) AttacheItemOnMessageWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Param parameter.AttachItemMessageParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.AttachItemMessageParam
+	}
+	mock.lockAttacheItemOnMessageWithSd.RLock()
+	calls = mock.calls.AttacheItemOnMessageWithSd
+	mock.lockAttacheItemOnMessageWithSd.RUnlock()
+	return calls
+}
+
+// AttacheItemsOnMessages calls AttacheItemsOnMessagesFunc.
+func (mock *StoreMock) AttacheItemsOnMessages(ctx context.Context, params []parameter.AttachItemMessageParam) (int64, error) {
+	if mock.AttacheItemsOnMessagesFunc == nil {
+		panic("StoreMock.AttacheItemsOnMessagesFunc: method is nil but Store.AttacheItemsOnMessages was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.AttachItemMessageParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockAttacheItemsOnMessages.Lock()
+	mock.calls.AttacheItemsOnMessages = append(mock.calls.AttacheItemsOnMessages, callInfo)
+	mock.lockAttacheItemsOnMessages.Unlock()
+	return mock.AttacheItemsOnMessagesFunc(ctx, params)
+}
+
+// AttacheItemsOnMessagesCalls gets all the calls that were made to AttacheItemsOnMessages.
+// Check the length with:
+//
+//	len(mockedStore.AttacheItemsOnMessagesCalls())
+func (mock *StoreMock) AttacheItemsOnMessagesCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.AttachItemMessageParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.AttachItemMessageParam
+	}
+	mock.lockAttacheItemsOnMessages.RLock()
+	calls = mock.calls.AttacheItemsOnMessages
+	mock.lockAttacheItemsOnMessages.RUnlock()
+	return calls
+}
+
+// AttacheItemsOnMessagesWithSd calls AttacheItemsOnMessagesWithSdFunc.
+func (mock *StoreMock) AttacheItemsOnMessagesWithSd(ctx context.Context, sd Sd, params []parameter.AttachItemMessageParam) (int64, error) {
+	if mock.AttacheItemsOnMessagesWithSdFunc == nil {
+		panic("StoreMock.AttacheItemsOnMessagesWithSdFunc: method is nil but Store.AttacheItemsOnMessagesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.AttachItemMessageParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		Params: params,
+	}
+	mock.lockAttacheItemsOnMessagesWithSd.Lock()
+	mock.calls.AttacheItemsOnMessagesWithSd = append(mock.calls.AttacheItemsOnMessagesWithSd, callInfo)
+	mock.lockAttacheItemsOnMessagesWithSd.Unlock()
+	return mock.AttacheItemsOnMessagesWithSdFunc(ctx, sd, params)
+}
+
+// AttacheItemsOnMessagesWithSdCalls gets all the calls that were made to AttacheItemsOnMessagesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.AttacheItemsOnMessagesWithSdCalls())
+func (mock *StoreMock) AttacheItemsOnMessagesWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	Params []parameter.AttachItemMessageParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.AttachItemMessageParam
+	}
+	mock.lockAttacheItemsOnMessagesWithSd.RLock()
+	calls = mock.calls.AttacheItemsOnMessagesWithSd
+	mock.lockAttacheItemsOnMessagesWithSd.RUnlock()
+	return calls
+}
+
 // Begin calls BeginFunc.
 func (mock *StoreMock) Begin(contextMoqParam context.Context) (Sd, error) {
 	if mock.BeginFunc == nil {
@@ -15330,6 +15926,174 @@ func (mock *StoreMock) CountAttachableItemsWithSdCalls() []struct {
 	mock.lockCountAttachableItemsWithSd.RLock()
 	calls = mock.calls.CountAttachableItemsWithSd
 	mock.lockCountAttachableItemsWithSd.RUnlock()
+	return calls
+}
+
+// CountAttachedItemsOnChatRoom calls CountAttachedItemsOnChatRoomFunc.
+func (mock *StoreMock) CountAttachedItemsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereAttachedItemOnChatRoomParam) (int64, error) {
+	if mock.CountAttachedItemsOnChatRoomFunc == nil {
+		panic("StoreMock.CountAttachedItemsOnChatRoomFunc: method is nil but Store.CountAttachedItemsOnChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		Where      parameter.WhereAttachedItemOnChatRoomParam
+	}{
+		Ctx:        ctx,
+		ChatRoomID: chatRoomID,
+		Where:      where,
+	}
+	mock.lockCountAttachedItemsOnChatRoom.Lock()
+	mock.calls.CountAttachedItemsOnChatRoom = append(mock.calls.CountAttachedItemsOnChatRoom, callInfo)
+	mock.lockCountAttachedItemsOnChatRoom.Unlock()
+	return mock.CountAttachedItemsOnChatRoomFunc(ctx, chatRoomID, where)
+}
+
+// CountAttachedItemsOnChatRoomCalls gets all the calls that were made to CountAttachedItemsOnChatRoom.
+// Check the length with:
+//
+//	len(mockedStore.CountAttachedItemsOnChatRoomCalls())
+func (mock *StoreMock) CountAttachedItemsOnChatRoomCalls() []struct {
+	Ctx        context.Context
+	ChatRoomID uuid.UUID
+	Where      parameter.WhereAttachedItemOnChatRoomParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		Where      parameter.WhereAttachedItemOnChatRoomParam
+	}
+	mock.lockCountAttachedItemsOnChatRoom.RLock()
+	calls = mock.calls.CountAttachedItemsOnChatRoom
+	mock.lockCountAttachedItemsOnChatRoom.RUnlock()
+	return calls
+}
+
+// CountAttachedItemsOnChatRoomWithSd calls CountAttachedItemsOnChatRoomWithSdFunc.
+func (mock *StoreMock) CountAttachedItemsOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereAttachedItemOnChatRoomParam) (int64, error) {
+	if mock.CountAttachedItemsOnChatRoomWithSdFunc == nil {
+		panic("StoreMock.CountAttachedItemsOnChatRoomWithSdFunc: method is nil but Store.CountAttachedItemsOnChatRoomWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+		Where      parameter.WhereAttachedItemOnChatRoomParam
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		ChatRoomID: chatRoomID,
+		Where:      where,
+	}
+	mock.lockCountAttachedItemsOnChatRoomWithSd.Lock()
+	mock.calls.CountAttachedItemsOnChatRoomWithSd = append(mock.calls.CountAttachedItemsOnChatRoomWithSd, callInfo)
+	mock.lockCountAttachedItemsOnChatRoomWithSd.Unlock()
+	return mock.CountAttachedItemsOnChatRoomWithSdFunc(ctx, sd, chatRoomID, where)
+}
+
+// CountAttachedItemsOnChatRoomWithSdCalls gets all the calls that were made to CountAttachedItemsOnChatRoomWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountAttachedItemsOnChatRoomWithSdCalls())
+func (mock *StoreMock) CountAttachedItemsOnChatRoomWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	ChatRoomID uuid.UUID
+	Where      parameter.WhereAttachedItemOnChatRoomParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+		Where      parameter.WhereAttachedItemOnChatRoomParam
+	}
+	mock.lockCountAttachedItemsOnChatRoomWithSd.RLock()
+	calls = mock.calls.CountAttachedItemsOnChatRoomWithSd
+	mock.lockCountAttachedItemsOnChatRoomWithSd.RUnlock()
+	return calls
+}
+
+// CountAttachedItemsOnMessage calls CountAttachedItemsOnMessageFunc.
+func (mock *StoreMock) CountAttachedItemsOnMessage(ctx context.Context, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam) (int64, error) {
+	if mock.CountAttachedItemsOnMessageFunc == nil {
+		panic("StoreMock.CountAttachedItemsOnMessageFunc: method is nil but Store.CountAttachedItemsOnMessage was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+		Where     parameter.WhereAttachedItemOnMessageParam
+	}{
+		Ctx:       ctx,
+		MessageID: messageID,
+		Where:     where,
+	}
+	mock.lockCountAttachedItemsOnMessage.Lock()
+	mock.calls.CountAttachedItemsOnMessage = append(mock.calls.CountAttachedItemsOnMessage, callInfo)
+	mock.lockCountAttachedItemsOnMessage.Unlock()
+	return mock.CountAttachedItemsOnMessageFunc(ctx, messageID, where)
+}
+
+// CountAttachedItemsOnMessageCalls gets all the calls that were made to CountAttachedItemsOnMessage.
+// Check the length with:
+//
+//	len(mockedStore.CountAttachedItemsOnMessageCalls())
+func (mock *StoreMock) CountAttachedItemsOnMessageCalls() []struct {
+	Ctx       context.Context
+	MessageID uuid.UUID
+	Where     parameter.WhereAttachedItemOnMessageParam
+} {
+	var calls []struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+		Where     parameter.WhereAttachedItemOnMessageParam
+	}
+	mock.lockCountAttachedItemsOnMessage.RLock()
+	calls = mock.calls.CountAttachedItemsOnMessage
+	mock.lockCountAttachedItemsOnMessage.RUnlock()
+	return calls
+}
+
+// CountAttachedItemsOnMessageWithSd calls CountAttachedItemsOnMessageWithSdFunc.
+func (mock *StoreMock) CountAttachedItemsOnMessageWithSd(ctx context.Context, sd Sd, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam) (int64, error) {
+	if mock.CountAttachedItemsOnMessageWithSdFunc == nil {
+		panic("StoreMock.CountAttachedItemsOnMessageWithSdFunc: method is nil but Store.CountAttachedItemsOnMessageWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+		Where     parameter.WhereAttachedItemOnMessageParam
+	}{
+		Ctx:       ctx,
+		Sd:        sd,
+		MessageID: messageID,
+		Where:     where,
+	}
+	mock.lockCountAttachedItemsOnMessageWithSd.Lock()
+	mock.calls.CountAttachedItemsOnMessageWithSd = append(mock.calls.CountAttachedItemsOnMessageWithSd, callInfo)
+	mock.lockCountAttachedItemsOnMessageWithSd.Unlock()
+	return mock.CountAttachedItemsOnMessageWithSdFunc(ctx, sd, messageID, where)
+}
+
+// CountAttachedItemsOnMessageWithSdCalls gets all the calls that were made to CountAttachedItemsOnMessageWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountAttachedItemsOnMessageWithSdCalls())
+func (mock *StoreMock) CountAttachedItemsOnMessageWithSdCalls() []struct {
+	Ctx       context.Context
+	Sd        Sd
+	MessageID uuid.UUID
+	Where     parameter.WhereAttachedItemOnMessageParam
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+		Where     parameter.WhereAttachedItemOnMessageParam
+	}
+	mock.lockCountAttachedItemsOnMessageWithSd.RLock()
+	calls = mock.calls.CountAttachedItemsOnMessageWithSd
+	mock.lockCountAttachedItemsOnMessageWithSd.RUnlock()
 	return calls
 }
 
@@ -26785,6 +27549,234 @@ func (mock *StoreMock) DeleteStudentWithSdCalls() []struct {
 	return calls
 }
 
+// DetachAttachedMessage calls DetachAttachedMessageFunc.
+func (mock *StoreMock) DetachAttachedMessage(ctx context.Context, attachedMessageID uuid.UUID) (int64, error) {
+	if mock.DetachAttachedMessageFunc == nil {
+		panic("StoreMock.DetachAttachedMessageFunc: method is nil but Store.DetachAttachedMessage was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		AttachedMessageID uuid.UUID
+	}{
+		Ctx:               ctx,
+		AttachedMessageID: attachedMessageID,
+	}
+	mock.lockDetachAttachedMessage.Lock()
+	mock.calls.DetachAttachedMessage = append(mock.calls.DetachAttachedMessage, callInfo)
+	mock.lockDetachAttachedMessage.Unlock()
+	return mock.DetachAttachedMessageFunc(ctx, attachedMessageID)
+}
+
+// DetachAttachedMessageCalls gets all the calls that were made to DetachAttachedMessage.
+// Check the length with:
+//
+//	len(mockedStore.DetachAttachedMessageCalls())
+func (mock *StoreMock) DetachAttachedMessageCalls() []struct {
+	Ctx               context.Context
+	AttachedMessageID uuid.UUID
+} {
+	var calls []struct {
+		Ctx               context.Context
+		AttachedMessageID uuid.UUID
+	}
+	mock.lockDetachAttachedMessage.RLock()
+	calls = mock.calls.DetachAttachedMessage
+	mock.lockDetachAttachedMessage.RUnlock()
+	return calls
+}
+
+// DetachAttachedMessageWithSd calls DetachAttachedMessageWithSdFunc.
+func (mock *StoreMock) DetachAttachedMessageWithSd(ctx context.Context, sd Sd, attachedMessageID uuid.UUID) (int64, error) {
+	if mock.DetachAttachedMessageWithSdFunc == nil {
+		panic("StoreMock.DetachAttachedMessageWithSdFunc: method is nil but Store.DetachAttachedMessageWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		Sd                Sd
+		AttachedMessageID uuid.UUID
+	}{
+		Ctx:               ctx,
+		Sd:                sd,
+		AttachedMessageID: attachedMessageID,
+	}
+	mock.lockDetachAttachedMessageWithSd.Lock()
+	mock.calls.DetachAttachedMessageWithSd = append(mock.calls.DetachAttachedMessageWithSd, callInfo)
+	mock.lockDetachAttachedMessageWithSd.Unlock()
+	return mock.DetachAttachedMessageWithSdFunc(ctx, sd, attachedMessageID)
+}
+
+// DetachAttachedMessageWithSdCalls gets all the calls that were made to DetachAttachedMessageWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DetachAttachedMessageWithSdCalls())
+func (mock *StoreMock) DetachAttachedMessageWithSdCalls() []struct {
+	Ctx               context.Context
+	Sd                Sd
+	AttachedMessageID uuid.UUID
+} {
+	var calls []struct {
+		Ctx               context.Context
+		Sd                Sd
+		AttachedMessageID uuid.UUID
+	}
+	mock.lockDetachAttachedMessageWithSd.RLock()
+	calls = mock.calls.DetachAttachedMessageWithSd
+	mock.lockDetachAttachedMessageWithSd.RUnlock()
+	return calls
+}
+
+// DetachItemsOnMessage calls DetachItemsOnMessageFunc.
+func (mock *StoreMock) DetachItemsOnMessage(ctx context.Context, messageID uuid.UUID) (int64, error) {
+	if mock.DetachItemsOnMessageFunc == nil {
+		panic("StoreMock.DetachItemsOnMessageFunc: method is nil but Store.DetachItemsOnMessage was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+	}{
+		Ctx:       ctx,
+		MessageID: messageID,
+	}
+	mock.lockDetachItemsOnMessage.Lock()
+	mock.calls.DetachItemsOnMessage = append(mock.calls.DetachItemsOnMessage, callInfo)
+	mock.lockDetachItemsOnMessage.Unlock()
+	return mock.DetachItemsOnMessageFunc(ctx, messageID)
+}
+
+// DetachItemsOnMessageCalls gets all the calls that were made to DetachItemsOnMessage.
+// Check the length with:
+//
+//	len(mockedStore.DetachItemsOnMessageCalls())
+func (mock *StoreMock) DetachItemsOnMessageCalls() []struct {
+	Ctx       context.Context
+	MessageID uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+	}
+	mock.lockDetachItemsOnMessage.RLock()
+	calls = mock.calls.DetachItemsOnMessage
+	mock.lockDetachItemsOnMessage.RUnlock()
+	return calls
+}
+
+// DetachItemsOnMessageWithSd calls DetachItemsOnMessageWithSdFunc.
+func (mock *StoreMock) DetachItemsOnMessageWithSd(ctx context.Context, sd Sd, messageID uuid.UUID) (int64, error) {
+	if mock.DetachItemsOnMessageWithSdFunc == nil {
+		panic("StoreMock.DetachItemsOnMessageWithSdFunc: method is nil but Store.DetachItemsOnMessageWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+	}{
+		Ctx:       ctx,
+		Sd:        sd,
+		MessageID: messageID,
+	}
+	mock.lockDetachItemsOnMessageWithSd.Lock()
+	mock.calls.DetachItemsOnMessageWithSd = append(mock.calls.DetachItemsOnMessageWithSd, callInfo)
+	mock.lockDetachItemsOnMessageWithSd.Unlock()
+	return mock.DetachItemsOnMessageWithSdFunc(ctx, sd, messageID)
+}
+
+// DetachItemsOnMessageWithSdCalls gets all the calls that were made to DetachItemsOnMessageWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DetachItemsOnMessageWithSdCalls())
+func (mock *StoreMock) DetachItemsOnMessageWithSdCalls() []struct {
+	Ctx       context.Context
+	Sd        Sd
+	MessageID uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+	}
+	mock.lockDetachItemsOnMessageWithSd.RLock()
+	calls = mock.calls.DetachItemsOnMessageWithSd
+	mock.lockDetachItemsOnMessageWithSd.RUnlock()
+	return calls
+}
+
+// DetachItemsOnMessages calls DetachItemsOnMessagesFunc.
+func (mock *StoreMock) DetachItemsOnMessages(ctx context.Context, messageIDs []uuid.UUID) (int64, error) {
+	if mock.DetachItemsOnMessagesFunc == nil {
+		panic("StoreMock.DetachItemsOnMessagesFunc: method is nil but Store.DetachItemsOnMessages was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+	}{
+		Ctx:        ctx,
+		MessageIDs: messageIDs,
+	}
+	mock.lockDetachItemsOnMessages.Lock()
+	mock.calls.DetachItemsOnMessages = append(mock.calls.DetachItemsOnMessages, callInfo)
+	mock.lockDetachItemsOnMessages.Unlock()
+	return mock.DetachItemsOnMessagesFunc(ctx, messageIDs)
+}
+
+// DetachItemsOnMessagesCalls gets all the calls that were made to DetachItemsOnMessages.
+// Check the length with:
+//
+//	len(mockedStore.DetachItemsOnMessagesCalls())
+func (mock *StoreMock) DetachItemsOnMessagesCalls() []struct {
+	Ctx        context.Context
+	MessageIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+	}
+	mock.lockDetachItemsOnMessages.RLock()
+	calls = mock.calls.DetachItemsOnMessages
+	mock.lockDetachItemsOnMessages.RUnlock()
+	return calls
+}
+
+// DetachItemsOnMessagesWithSd calls DetachItemsOnMessagesWithSdFunc.
+func (mock *StoreMock) DetachItemsOnMessagesWithSd(ctx context.Context, sd Sd, messageIDs []uuid.UUID) (int64, error) {
+	if mock.DetachItemsOnMessagesWithSdFunc == nil {
+		panic("StoreMock.DetachItemsOnMessagesWithSdFunc: method is nil but Store.DetachItemsOnMessagesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		MessageIDs []uuid.UUID
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		MessageIDs: messageIDs,
+	}
+	mock.lockDetachItemsOnMessagesWithSd.Lock()
+	mock.calls.DetachItemsOnMessagesWithSd = append(mock.calls.DetachItemsOnMessagesWithSd, callInfo)
+	mock.lockDetachItemsOnMessagesWithSd.Unlock()
+	return mock.DetachItemsOnMessagesWithSdFunc(ctx, sd, messageIDs)
+}
+
+// DetachItemsOnMessagesWithSdCalls gets all the calls that were made to DetachItemsOnMessagesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DetachItemsOnMessagesWithSdCalls())
+func (mock *StoreMock) DetachItemsOnMessagesWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	MessageIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		MessageIDs []uuid.UUID
+	}
+	mock.lockDetachItemsOnMessagesWithSd.RLock()
+	calls = mock.calls.DetachItemsOnMessagesWithSd
+	mock.lockDetachItemsOnMessagesWithSd.RUnlock()
+	return calls
+}
+
 // DisassociatePolicyOnRole calls DisassociatePolicyOnRoleFunc.
 func (mock *StoreMock) DisassociatePolicyOnRole(ctx context.Context, roleID uuid.UUID) (int64, error) {
 	if mock.DisassociatePolicyOnRoleFunc == nil {
@@ -33357,6 +34349,354 @@ func (mock *StoreMock) GetAttachableItemsWithSdCalls() []struct {
 	return calls
 }
 
+// GetAttachedItemsOnChatRoom calls GetAttachedItemsOnChatRoomFunc.
+func (mock *StoreMock) GetAttachedItemsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereAttachedItemOnChatRoomParam, order parameter.AttachedItemOnChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnChatRoom], error) {
+	if mock.GetAttachedItemsOnChatRoomFunc == nil {
+		panic("StoreMock.GetAttachedItemsOnChatRoomFunc: method is nil but Store.GetAttachedItemsOnChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		Where      parameter.WhereAttachedItemOnChatRoomParam
+		Order      parameter.AttachedItemOnChatRoomOrderMethod
+		Np         NumberedPaginationParam
+		Cp         CursorPaginationParam
+		Wc         WithCountParam
+	}{
+		Ctx:        ctx,
+		ChatRoomID: chatRoomID,
+		Where:      where,
+		Order:      order,
+		Np:         np,
+		Cp:         cp,
+		Wc:         wc,
+	}
+	mock.lockGetAttachedItemsOnChatRoom.Lock()
+	mock.calls.GetAttachedItemsOnChatRoom = append(mock.calls.GetAttachedItemsOnChatRoom, callInfo)
+	mock.lockGetAttachedItemsOnChatRoom.Unlock()
+	return mock.GetAttachedItemsOnChatRoomFunc(ctx, chatRoomID, where, order, np, cp, wc)
+}
+
+// GetAttachedItemsOnChatRoomCalls gets all the calls that were made to GetAttachedItemsOnChatRoom.
+// Check the length with:
+//
+//	len(mockedStore.GetAttachedItemsOnChatRoomCalls())
+func (mock *StoreMock) GetAttachedItemsOnChatRoomCalls() []struct {
+	Ctx        context.Context
+	ChatRoomID uuid.UUID
+	Where      parameter.WhereAttachedItemOnChatRoomParam
+	Order      parameter.AttachedItemOnChatRoomOrderMethod
+	Np         NumberedPaginationParam
+	Cp         CursorPaginationParam
+	Wc         WithCountParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		Where      parameter.WhereAttachedItemOnChatRoomParam
+		Order      parameter.AttachedItemOnChatRoomOrderMethod
+		Np         NumberedPaginationParam
+		Cp         CursorPaginationParam
+		Wc         WithCountParam
+	}
+	mock.lockGetAttachedItemsOnChatRoom.RLock()
+	calls = mock.calls.GetAttachedItemsOnChatRoom
+	mock.lockGetAttachedItemsOnChatRoom.RUnlock()
+	return calls
+}
+
+// GetAttachedItemsOnChatRoomWithSd calls GetAttachedItemsOnChatRoomWithSdFunc.
+func (mock *StoreMock) GetAttachedItemsOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereAttachedItemOnChatRoomParam, order parameter.AttachedItemOnChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnChatRoom], error) {
+	if mock.GetAttachedItemsOnChatRoomWithSdFunc == nil {
+		panic("StoreMock.GetAttachedItemsOnChatRoomWithSdFunc: method is nil but Store.GetAttachedItemsOnChatRoomWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+		Where      parameter.WhereAttachedItemOnChatRoomParam
+		Order      parameter.AttachedItemOnChatRoomOrderMethod
+		Np         NumberedPaginationParam
+		Cp         CursorPaginationParam
+		Wc         WithCountParam
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		ChatRoomID: chatRoomID,
+		Where:      where,
+		Order:      order,
+		Np:         np,
+		Cp:         cp,
+		Wc:         wc,
+	}
+	mock.lockGetAttachedItemsOnChatRoomWithSd.Lock()
+	mock.calls.GetAttachedItemsOnChatRoomWithSd = append(mock.calls.GetAttachedItemsOnChatRoomWithSd, callInfo)
+	mock.lockGetAttachedItemsOnChatRoomWithSd.Unlock()
+	return mock.GetAttachedItemsOnChatRoomWithSdFunc(ctx, sd, chatRoomID, where, order, np, cp, wc)
+}
+
+// GetAttachedItemsOnChatRoomWithSdCalls gets all the calls that were made to GetAttachedItemsOnChatRoomWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetAttachedItemsOnChatRoomWithSdCalls())
+func (mock *StoreMock) GetAttachedItemsOnChatRoomWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	ChatRoomID uuid.UUID
+	Where      parameter.WhereAttachedItemOnChatRoomParam
+	Order      parameter.AttachedItemOnChatRoomOrderMethod
+	Np         NumberedPaginationParam
+	Cp         CursorPaginationParam
+	Wc         WithCountParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+		Where      parameter.WhereAttachedItemOnChatRoomParam
+		Order      parameter.AttachedItemOnChatRoomOrderMethod
+		Np         NumberedPaginationParam
+		Cp         CursorPaginationParam
+		Wc         WithCountParam
+	}
+	mock.lockGetAttachedItemsOnChatRoomWithSd.RLock()
+	calls = mock.calls.GetAttachedItemsOnChatRoomWithSd
+	mock.lockGetAttachedItemsOnChatRoomWithSd.RUnlock()
+	return calls
+}
+
+// GetAttachedItemsOnMessage calls GetAttachedItemsOnMessageFunc.
+func (mock *StoreMock) GetAttachedItemsOnMessage(ctx context.Context, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnMessage], error) {
+	if mock.GetAttachedItemsOnMessageFunc == nil {
+		panic("StoreMock.GetAttachedItemsOnMessageFunc: method is nil but Store.GetAttachedItemsOnMessage was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+		Where     parameter.WhereAttachedItemOnMessageParam
+		Order     parameter.AttachedItemOnMessageOrderMethod
+		Np        NumberedPaginationParam
+		Cp        CursorPaginationParam
+		Wc        WithCountParam
+	}{
+		Ctx:       ctx,
+		MessageID: messageID,
+		Where:     where,
+		Order:     order,
+		Np:        np,
+		Cp:        cp,
+		Wc:        wc,
+	}
+	mock.lockGetAttachedItemsOnMessage.Lock()
+	mock.calls.GetAttachedItemsOnMessage = append(mock.calls.GetAttachedItemsOnMessage, callInfo)
+	mock.lockGetAttachedItemsOnMessage.Unlock()
+	return mock.GetAttachedItemsOnMessageFunc(ctx, messageID, where, order, np, cp, wc)
+}
+
+// GetAttachedItemsOnMessageCalls gets all the calls that were made to GetAttachedItemsOnMessage.
+// Check the length with:
+//
+//	len(mockedStore.GetAttachedItemsOnMessageCalls())
+func (mock *StoreMock) GetAttachedItemsOnMessageCalls() []struct {
+	Ctx       context.Context
+	MessageID uuid.UUID
+	Where     parameter.WhereAttachedItemOnMessageParam
+	Order     parameter.AttachedItemOnMessageOrderMethod
+	Np        NumberedPaginationParam
+	Cp        CursorPaginationParam
+	Wc        WithCountParam
+} {
+	var calls []struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+		Where     parameter.WhereAttachedItemOnMessageParam
+		Order     parameter.AttachedItemOnMessageOrderMethod
+		Np        NumberedPaginationParam
+		Cp        CursorPaginationParam
+		Wc        WithCountParam
+	}
+	mock.lockGetAttachedItemsOnMessage.RLock()
+	calls = mock.calls.GetAttachedItemsOnMessage
+	mock.lockGetAttachedItemsOnMessage.RUnlock()
+	return calls
+}
+
+// GetAttachedItemsOnMessageWithMimeType calls GetAttachedItemsOnMessageWithMimeTypeFunc.
+func (mock *StoreMock) GetAttachedItemsOnMessageWithMimeType(ctx context.Context, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnMessageWithMimeType], error) {
+	if mock.GetAttachedItemsOnMessageWithMimeTypeFunc == nil {
+		panic("StoreMock.GetAttachedItemsOnMessageWithMimeTypeFunc: method is nil but Store.GetAttachedItemsOnMessageWithMimeType was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+		Where     parameter.WhereAttachedItemOnMessageParam
+		Order     parameter.AttachedItemOnMessageOrderMethod
+		Np        NumberedPaginationParam
+		Cp        CursorPaginationParam
+		Wc        WithCountParam
+	}{
+		Ctx:       ctx,
+		MessageID: messageID,
+		Where:     where,
+		Order:     order,
+		Np:        np,
+		Cp:        cp,
+		Wc:        wc,
+	}
+	mock.lockGetAttachedItemsOnMessageWithMimeType.Lock()
+	mock.calls.GetAttachedItemsOnMessageWithMimeType = append(mock.calls.GetAttachedItemsOnMessageWithMimeType, callInfo)
+	mock.lockGetAttachedItemsOnMessageWithMimeType.Unlock()
+	return mock.GetAttachedItemsOnMessageWithMimeTypeFunc(ctx, messageID, where, order, np, cp, wc)
+}
+
+// GetAttachedItemsOnMessageWithMimeTypeCalls gets all the calls that were made to GetAttachedItemsOnMessageWithMimeType.
+// Check the length with:
+//
+//	len(mockedStore.GetAttachedItemsOnMessageWithMimeTypeCalls())
+func (mock *StoreMock) GetAttachedItemsOnMessageWithMimeTypeCalls() []struct {
+	Ctx       context.Context
+	MessageID uuid.UUID
+	Where     parameter.WhereAttachedItemOnMessageParam
+	Order     parameter.AttachedItemOnMessageOrderMethod
+	Np        NumberedPaginationParam
+	Cp        CursorPaginationParam
+	Wc        WithCountParam
+} {
+	var calls []struct {
+		Ctx       context.Context
+		MessageID uuid.UUID
+		Where     parameter.WhereAttachedItemOnMessageParam
+		Order     parameter.AttachedItemOnMessageOrderMethod
+		Np        NumberedPaginationParam
+		Cp        CursorPaginationParam
+		Wc        WithCountParam
+	}
+	mock.lockGetAttachedItemsOnMessageWithMimeType.RLock()
+	calls = mock.calls.GetAttachedItemsOnMessageWithMimeType
+	mock.lockGetAttachedItemsOnMessageWithMimeType.RUnlock()
+	return calls
+}
+
+// GetAttachedItemsOnMessageWithMimeTypeWithSd calls GetAttachedItemsOnMessageWithMimeTypeWithSdFunc.
+func (mock *StoreMock) GetAttachedItemsOnMessageWithMimeTypeWithSd(ctx context.Context, sd Sd, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnMessageWithMimeType], error) {
+	if mock.GetAttachedItemsOnMessageWithMimeTypeWithSdFunc == nil {
+		panic("StoreMock.GetAttachedItemsOnMessageWithMimeTypeWithSdFunc: method is nil but Store.GetAttachedItemsOnMessageWithMimeTypeWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+		Where     parameter.WhereAttachedItemOnMessageParam
+		Order     parameter.AttachedItemOnMessageOrderMethod
+		Np        NumberedPaginationParam
+		Cp        CursorPaginationParam
+		Wc        WithCountParam
+	}{
+		Ctx:       ctx,
+		Sd:        sd,
+		MessageID: messageID,
+		Where:     where,
+		Order:     order,
+		Np:        np,
+		Cp:        cp,
+		Wc:        wc,
+	}
+	mock.lockGetAttachedItemsOnMessageWithMimeTypeWithSd.Lock()
+	mock.calls.GetAttachedItemsOnMessageWithMimeTypeWithSd = append(mock.calls.GetAttachedItemsOnMessageWithMimeTypeWithSd, callInfo)
+	mock.lockGetAttachedItemsOnMessageWithMimeTypeWithSd.Unlock()
+	return mock.GetAttachedItemsOnMessageWithMimeTypeWithSdFunc(ctx, sd, messageID, where, order, np, cp, wc)
+}
+
+// GetAttachedItemsOnMessageWithMimeTypeWithSdCalls gets all the calls that were made to GetAttachedItemsOnMessageWithMimeTypeWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetAttachedItemsOnMessageWithMimeTypeWithSdCalls())
+func (mock *StoreMock) GetAttachedItemsOnMessageWithMimeTypeWithSdCalls() []struct {
+	Ctx       context.Context
+	Sd        Sd
+	MessageID uuid.UUID
+	Where     parameter.WhereAttachedItemOnMessageParam
+	Order     parameter.AttachedItemOnMessageOrderMethod
+	Np        NumberedPaginationParam
+	Cp        CursorPaginationParam
+	Wc        WithCountParam
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+		Where     parameter.WhereAttachedItemOnMessageParam
+		Order     parameter.AttachedItemOnMessageOrderMethod
+		Np        NumberedPaginationParam
+		Cp        CursorPaginationParam
+		Wc        WithCountParam
+	}
+	mock.lockGetAttachedItemsOnMessageWithMimeTypeWithSd.RLock()
+	calls = mock.calls.GetAttachedItemsOnMessageWithMimeTypeWithSd
+	mock.lockGetAttachedItemsOnMessageWithMimeTypeWithSd.RUnlock()
+	return calls
+}
+
+// GetAttachedItemsOnMessageWithSd calls GetAttachedItemsOnMessageWithSdFunc.
+func (mock *StoreMock) GetAttachedItemsOnMessageWithSd(ctx context.Context, sd Sd, messageID uuid.UUID, where parameter.WhereAttachedItemOnMessageParam, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttachedItemOnMessage], error) {
+	if mock.GetAttachedItemsOnMessageWithSdFunc == nil {
+		panic("StoreMock.GetAttachedItemsOnMessageWithSdFunc: method is nil but Store.GetAttachedItemsOnMessageWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+		Where     parameter.WhereAttachedItemOnMessageParam
+		Order     parameter.AttachedItemOnMessageOrderMethod
+		Np        NumberedPaginationParam
+		Cp        CursorPaginationParam
+		Wc        WithCountParam
+	}{
+		Ctx:       ctx,
+		Sd:        sd,
+		MessageID: messageID,
+		Where:     where,
+		Order:     order,
+		Np:        np,
+		Cp:        cp,
+		Wc:        wc,
+	}
+	mock.lockGetAttachedItemsOnMessageWithSd.Lock()
+	mock.calls.GetAttachedItemsOnMessageWithSd = append(mock.calls.GetAttachedItemsOnMessageWithSd, callInfo)
+	mock.lockGetAttachedItemsOnMessageWithSd.Unlock()
+	return mock.GetAttachedItemsOnMessageWithSdFunc(ctx, sd, messageID, where, order, np, cp, wc)
+}
+
+// GetAttachedItemsOnMessageWithSdCalls gets all the calls that were made to GetAttachedItemsOnMessageWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetAttachedItemsOnMessageWithSdCalls())
+func (mock *StoreMock) GetAttachedItemsOnMessageWithSdCalls() []struct {
+	Ctx       context.Context
+	Sd        Sd
+	MessageID uuid.UUID
+	Where     parameter.WhereAttachedItemOnMessageParam
+	Order     parameter.AttachedItemOnMessageOrderMethod
+	Np        NumberedPaginationParam
+	Cp        CursorPaginationParam
+	Wc        WithCountParam
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+		Where     parameter.WhereAttachedItemOnMessageParam
+		Order     parameter.AttachedItemOnMessageOrderMethod
+		Np        NumberedPaginationParam
+		Cp        CursorPaginationParam
+		Wc        WithCountParam
+	}
+	mock.lockGetAttachedItemsOnMessageWithSd.RLock()
+	calls = mock.calls.GetAttachedItemsOnMessageWithSd
+	mock.lockGetAttachedItemsOnMessageWithSd.RUnlock()
+	return calls
+}
+
 // GetAttendStatuses calls GetAttendStatusesFunc.
 func (mock *StoreMock) GetAttendStatuses(ctx context.Context, where parameter.WhereAttendStatusParam, order parameter.AttendStatusOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.AttendStatus], error) {
 	if mock.GetAttendStatusesFunc == nil {
@@ -38478,6 +39818,190 @@ func (mock *StoreMock) GetPluralAttachableItemsWithSdCalls() []struct {
 	mock.lockGetPluralAttachableItemsWithSd.RLock()
 	calls = mock.calls.GetPluralAttachableItemsWithSd
 	mock.lockGetPluralAttachableItemsWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralAttachedItemsOnMessage calls GetPluralAttachedItemsOnMessageFunc.
+func (mock *StoreMock) GetPluralAttachedItemsOnMessage(ctx context.Context, messageIDs []uuid.UUID, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttachedItemOnMessage], error) {
+	if mock.GetPluralAttachedItemsOnMessageFunc == nil {
+		panic("StoreMock.GetPluralAttachedItemsOnMessageFunc: method is nil but Store.GetPluralAttachedItemsOnMessage was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+		Order      parameter.AttachedItemOnMessageOrderMethod
+		Np         NumberedPaginationParam
+	}{
+		Ctx:        ctx,
+		MessageIDs: messageIDs,
+		Order:      order,
+		Np:         np,
+	}
+	mock.lockGetPluralAttachedItemsOnMessage.Lock()
+	mock.calls.GetPluralAttachedItemsOnMessage = append(mock.calls.GetPluralAttachedItemsOnMessage, callInfo)
+	mock.lockGetPluralAttachedItemsOnMessage.Unlock()
+	return mock.GetPluralAttachedItemsOnMessageFunc(ctx, messageIDs, order, np)
+}
+
+// GetPluralAttachedItemsOnMessageCalls gets all the calls that were made to GetPluralAttachedItemsOnMessage.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralAttachedItemsOnMessageCalls())
+func (mock *StoreMock) GetPluralAttachedItemsOnMessageCalls() []struct {
+	Ctx        context.Context
+	MessageIDs []uuid.UUID
+	Order      parameter.AttachedItemOnMessageOrderMethod
+	Np         NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+		Order      parameter.AttachedItemOnMessageOrderMethod
+		Np         NumberedPaginationParam
+	}
+	mock.lockGetPluralAttachedItemsOnMessage.RLock()
+	calls = mock.calls.GetPluralAttachedItemsOnMessage
+	mock.lockGetPluralAttachedItemsOnMessage.RUnlock()
+	return calls
+}
+
+// GetPluralAttachedItemsOnMessageWithMimeType calls GetPluralAttachedItemsOnMessageWithMimeTypeFunc.
+func (mock *StoreMock) GetPluralAttachedItemsOnMessageWithMimeType(ctx context.Context, messageIDs []uuid.UUID, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttachedItemOnMessageWithMimeType], error) {
+	if mock.GetPluralAttachedItemsOnMessageWithMimeTypeFunc == nil {
+		panic("StoreMock.GetPluralAttachedItemsOnMessageWithMimeTypeFunc: method is nil but Store.GetPluralAttachedItemsOnMessageWithMimeType was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+		Order      parameter.AttachedItemOnMessageOrderMethod
+		Np         NumberedPaginationParam
+	}{
+		Ctx:        ctx,
+		MessageIDs: messageIDs,
+		Order:      order,
+		Np:         np,
+	}
+	mock.lockGetPluralAttachedItemsOnMessageWithMimeType.Lock()
+	mock.calls.GetPluralAttachedItemsOnMessageWithMimeType = append(mock.calls.GetPluralAttachedItemsOnMessageWithMimeType, callInfo)
+	mock.lockGetPluralAttachedItemsOnMessageWithMimeType.Unlock()
+	return mock.GetPluralAttachedItemsOnMessageWithMimeTypeFunc(ctx, messageIDs, order, np)
+}
+
+// GetPluralAttachedItemsOnMessageWithMimeTypeCalls gets all the calls that were made to GetPluralAttachedItemsOnMessageWithMimeType.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralAttachedItemsOnMessageWithMimeTypeCalls())
+func (mock *StoreMock) GetPluralAttachedItemsOnMessageWithMimeTypeCalls() []struct {
+	Ctx        context.Context
+	MessageIDs []uuid.UUID
+	Order      parameter.AttachedItemOnMessageOrderMethod
+	Np         NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+		Order      parameter.AttachedItemOnMessageOrderMethod
+		Np         NumberedPaginationParam
+	}
+	mock.lockGetPluralAttachedItemsOnMessageWithMimeType.RLock()
+	calls = mock.calls.GetPluralAttachedItemsOnMessageWithMimeType
+	mock.lockGetPluralAttachedItemsOnMessageWithMimeType.RUnlock()
+	return calls
+}
+
+// GetPluralAttachedItemsOnMessageWithMimeTypeWithSd calls GetPluralAttachedItemsOnMessageWithMimeTypeWithSdFunc.
+func (mock *StoreMock) GetPluralAttachedItemsOnMessageWithMimeTypeWithSd(ctx context.Context, sd Sd, messageIDs []uuid.UUID, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttachedItemOnMessageWithMimeType], error) {
+	if mock.GetPluralAttachedItemsOnMessageWithMimeTypeWithSdFunc == nil {
+		panic("StoreMock.GetPluralAttachedItemsOnMessageWithMimeTypeWithSdFunc: method is nil but Store.GetPluralAttachedItemsOnMessageWithMimeTypeWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		MessageIDs []uuid.UUID
+		Order      parameter.AttachedItemOnMessageOrderMethod
+		Np         NumberedPaginationParam
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		MessageIDs: messageIDs,
+		Order:      order,
+		Np:         np,
+	}
+	mock.lockGetPluralAttachedItemsOnMessageWithMimeTypeWithSd.Lock()
+	mock.calls.GetPluralAttachedItemsOnMessageWithMimeTypeWithSd = append(mock.calls.GetPluralAttachedItemsOnMessageWithMimeTypeWithSd, callInfo)
+	mock.lockGetPluralAttachedItemsOnMessageWithMimeTypeWithSd.Unlock()
+	return mock.GetPluralAttachedItemsOnMessageWithMimeTypeWithSdFunc(ctx, sd, messageIDs, order, np)
+}
+
+// GetPluralAttachedItemsOnMessageWithMimeTypeWithSdCalls gets all the calls that were made to GetPluralAttachedItemsOnMessageWithMimeTypeWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralAttachedItemsOnMessageWithMimeTypeWithSdCalls())
+func (mock *StoreMock) GetPluralAttachedItemsOnMessageWithMimeTypeWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	MessageIDs []uuid.UUID
+	Order      parameter.AttachedItemOnMessageOrderMethod
+	Np         NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		MessageIDs []uuid.UUID
+		Order      parameter.AttachedItemOnMessageOrderMethod
+		Np         NumberedPaginationParam
+	}
+	mock.lockGetPluralAttachedItemsOnMessageWithMimeTypeWithSd.RLock()
+	calls = mock.calls.GetPluralAttachedItemsOnMessageWithMimeTypeWithSd
+	mock.lockGetPluralAttachedItemsOnMessageWithMimeTypeWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralAttachedItemsOnMessageWithSd calls GetPluralAttachedItemsOnMessageWithSdFunc.
+func (mock *StoreMock) GetPluralAttachedItemsOnMessageWithSd(ctx context.Context, sd Sd, messageIDs []uuid.UUID, order parameter.AttachedItemOnMessageOrderMethod, np NumberedPaginationParam) (ListResult[entity.AttachedItemOnMessage], error) {
+	if mock.GetPluralAttachedItemsOnMessageWithSdFunc == nil {
+		panic("StoreMock.GetPluralAttachedItemsOnMessageWithSdFunc: method is nil but Store.GetPluralAttachedItemsOnMessageWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		MessageIDs []uuid.UUID
+		Order      parameter.AttachedItemOnMessageOrderMethod
+		Np         NumberedPaginationParam
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		MessageIDs: messageIDs,
+		Order:      order,
+		Np:         np,
+	}
+	mock.lockGetPluralAttachedItemsOnMessageWithSd.Lock()
+	mock.calls.GetPluralAttachedItemsOnMessageWithSd = append(mock.calls.GetPluralAttachedItemsOnMessageWithSd, callInfo)
+	mock.lockGetPluralAttachedItemsOnMessageWithSd.Unlock()
+	return mock.GetPluralAttachedItemsOnMessageWithSdFunc(ctx, sd, messageIDs, order, np)
+}
+
+// GetPluralAttachedItemsOnMessageWithSdCalls gets all the calls that were made to GetPluralAttachedItemsOnMessageWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralAttachedItemsOnMessageWithSdCalls())
+func (mock *StoreMock) GetPluralAttachedItemsOnMessageWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	MessageIDs []uuid.UUID
+	Order      parameter.AttachedItemOnMessageOrderMethod
+	Np         NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		MessageIDs []uuid.UUID
+		Order      parameter.AttachedItemOnMessageOrderMethod
+		Np         NumberedPaginationParam
+	}
+	mock.lockGetPluralAttachedItemsOnMessageWithSd.RLock()
+	calls = mock.calls.GetPluralAttachedItemsOnMessageWithSd
+	mock.lockGetPluralAttachedItemsOnMessageWithSd.RUnlock()
 	return calls
 }
 

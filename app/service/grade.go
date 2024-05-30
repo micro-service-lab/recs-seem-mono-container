@@ -8,7 +8,9 @@ import (
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/storage"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 )
 
 // GradeKey 年次キー。
@@ -95,7 +97,9 @@ var Grades = []Grade{
 
 // ManageGrade 年次管理サービス。
 type ManageGrade struct {
-	DB store.Store
+	DB      store.Store
+	Clocker clock.Clock
+	Storage storage.Storage
 }
 
 // CreateGrade 年次を作成する。
@@ -126,6 +130,7 @@ func (m *ManageGrade) CreateGrade(
 			return entity.Grade{}, fmt.Errorf("failed to find image: %w", err)
 		}
 	}
+	now := m.Clocker.Now()
 	crp := parameter.CreateChatRoomParam{
 		Name:             name,
 		IsPrivate:        false,
@@ -136,6 +141,26 @@ func (m *ManageGrade) CreateGrade(
 	cr, err := m.DB.CreateChatRoomWithSd(ctx, sd, crp)
 	if err != nil {
 		return entity.Grade{}, fmt.Errorf("failed to create chat room: %w", err)
+	}
+	craType, err := m.DB.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyCreate))
+	if err != nil {
+		return entity.Grade{}, fmt.Errorf("failed to find chat room action type: %w", err)
+	}
+	cra, err := m.DB.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
+		ChatRoomID:           cr.ChatRoomID,
+		ChatRoomActionTypeID: craType.ChatRoomActionTypeID,
+		ActedAt:              now,
+	})
+	if err != nil {
+		return entity.Grade{}, fmt.Errorf("failed to create chat room action: %w", err)
+	}
+	_, err = m.DB.CreateChatRoomCreateActionWithSd(ctx, sd, parameter.CreateChatRoomCreateActionParam{
+		ChatRoomActionID: cra.ChatRoomActionID,
+		CreatedBy:        entity.UUID{},
+		Name:             name,
+	})
+	if err != nil {
+		return entity.Grade{}, fmt.Errorf("failed to create chat room create action: %w", err)
 	}
 	op := parameter.CreateOrganizationParam{
 		Name:        name,
@@ -198,6 +223,11 @@ func (m *ManageGrade) CreateGrades(
 			return 0, fmt.Errorf("failed to get plural images: %w", err)
 		}
 	}
+	now := m.Clocker.Now()
+	craType, err := m.DB.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyCreate))
+	if err != nil {
+		return 0, fmt.Errorf("failed to find chat room action type: %w", err)
+	}
 	var p []parameter.CreateGradeParam
 	for _, v := range ps {
 		crp := parameter.CreateChatRoomParam{
@@ -210,6 +240,22 @@ func (m *ManageGrade) CreateGrades(
 		cr, err := m.DB.CreateChatRoomWithSd(ctx, sd, crp)
 		if err != nil {
 			return 0, fmt.Errorf("failed to create chat room: %w", err)
+		}
+		cra, err := m.DB.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
+			ChatRoomID:           cr.ChatRoomID,
+			ChatRoomActionTypeID: craType.ChatRoomActionTypeID,
+			ActedAt:              now,
+		})
+		if err != nil {
+			return 0, fmt.Errorf("failed to create chat room action: %w", err)
+		}
+		_, err = m.DB.CreateChatRoomCreateActionWithSd(ctx, sd, parameter.CreateChatRoomCreateActionParam{
+			ChatRoomActionID: cra.ChatRoomActionID,
+			CreatedBy:        entity.UUID{},
+			Name:             v.Name,
+		})
+		if err != nil {
+			return 0, fmt.Errorf("failed to create chat room create action: %w", err)
 		}
 		op := parameter.CreateOrganizationParam{
 			Name:        v.Name,
@@ -260,23 +306,54 @@ func (m *ManageGrade) DeleteGrade(ctx context.Context, id uuid.UUID) (c int64, e
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete grade: %w", err)
 	}
-	_, err = m.DB.DisbelongOrganizationOnOrganizationWithSd(ctx, sd, e.Organization.OrganizationID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to disbelong organization: %w", err)
-	}
+	// organizationMemberShipはカスケード削除される
 	_, err = m.DB.DeleteOrganization(ctx, e.Organization.OrganizationID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete organization: %w", err)
 	}
 	if e.Organization.ChatRoomID.Valid {
-		_, err := m.DB.FindChatRoomByIDWithCoverImage(ctx, e.Organization.ChatRoomID.Bytes)
+		cr, err := m.DB.FindChatRoomByIDWithCoverImage(ctx, e.Organization.ChatRoomID.Bytes)
 		if err != nil {
 			return 0, fmt.Errorf("failed to find chat room: %w", err)
 		}
-		_, err = m.DB.DisbelongChatRoomOnChatRoomWithSd(ctx, sd, e.Organization.ChatRoomID.Bytes)
+		attachableItems, err := m.DB.GetAttachedItemsOnChatRoomWithSd(
+			ctx, sd, e.Organization.ChatRoomID.Bytes,
+			parameter.WhereAttachedItemOnChatRoomParam{},
+			parameter.AttachedItemOnChatRoomOrderMethodDefault,
+			store.NumberedPaginationParam{},
+			store.CursorPaginationParam{},
+			store.WithCountParam{},
+		)
 		if err != nil {
-			return 0, fmt.Errorf("failed to disbelong chat room: %w", err)
+			return 0, fmt.Errorf("failed to get attached items on chat room: %w", err)
 		}
+		var imageIDs []uuid.UUID
+		var fileIDs []uuid.UUID
+		for _, v := range attachableItems.Data {
+			if v.AttachableItem.ImageID.Valid {
+				imageIDs = append(imageIDs, v.AttachableItem.ImageID.Bytes)
+			} else if v.AttachableItem.FileID.Valid {
+				fileIDs = append(fileIDs, v.AttachableItem.FileID.Bytes)
+			}
+		}
+		if cr.CoverImage.Valid {
+			imageIDs = append(imageIDs, cr.CoverImage.Entity.ImageID)
+		}
+
+		if len(imageIDs) > 0 {
+			_, err = pluralDeleteImages(ctx, sd, m.DB, m.Storage, imageIDs, entity.UUID{})
+			if err != nil {
+				return 0, fmt.Errorf("failed to plural delete images: %w", err)
+			}
+		}
+		if len(fileIDs) > 0 {
+			_, err = pluralDeleteFiles(ctx, sd, m.DB, m.Storage, fileIDs, entity.UUID{})
+			if err != nil {
+				return 0, fmt.Errorf("failed to plural delete files: %w", err)
+			}
+		}
+		// action, message関連はカスケード削除される
+		// chatRoomBelongingはカスケード削除される
 		_, err = m.DB.DeleteChatRoomWithSd(ctx, sd, e.Organization.ChatRoomID.Bytes)
 		if err != nil {
 			return 0, fmt.Errorf("failed to delete chat room: %w", err)
@@ -328,18 +405,53 @@ func (m *ManageGrade) PluralDeleteGrades(
 	if err != nil {
 		return 0, fmt.Errorf("failed to plural delete grades: %w", err)
 	}
-	_, err = m.DB.DisbelongOrganizationOnOrganizationsWithSd(ctx, sd, organizationIDs)
-	if err != nil {
-		return 0, fmt.Errorf("failed to disbelong organizations: %w", err)
-	}
+	// organizationMemberShipはカスケード削除される
 	_, err = m.DB.PluralDeleteOrganizationsWithSd(ctx, sd, organizationIDs)
 	if err != nil {
 		return 0, fmt.Errorf("failed to plural delete organizations: %w", err)
 	}
 	if len(chatRoomIDs) > 0 {
-		_, err := m.DB.DisbelongChatRoomOnChatRoomsWithSd(ctx, sd, chatRoomIDs)
-		if err != nil {
-			return 0, fmt.Errorf("failed to disbelong chat rooms: %w", err)
+		// chatRoomBelongingはカスケード削除される
+		var imageIDs []uuid.UUID
+		var fileIDs []uuid.UUID
+		for _, e := range es.Data {
+			attachableItems, err := m.DB.GetAttachedItemsOnChatRoomWithSd(
+				ctx, sd, e.Organization.ChatRoomID.Bytes,
+				parameter.WhereAttachedItemOnChatRoomParam{},
+				parameter.AttachedItemOnChatRoomOrderMethodDefault,
+				store.NumberedPaginationParam{},
+				store.CursorPaginationParam{},
+				store.WithCountParam{},
+			)
+			if err != nil {
+				return 0, fmt.Errorf("failed to get attached items on chat room: %w", err)
+			}
+			for _, v := range attachableItems.Data {
+				if v.AttachableItem.ImageID.Valid {
+					imageIDs = append(imageIDs, v.AttachableItem.ImageID.Bytes)
+				} else if v.AttachableItem.FileID.Valid {
+					fileIDs = append(fileIDs, v.AttachableItem.FileID.Bytes)
+				}
+			}
+			cr, err := m.DB.FindChatRoomByIDWithSd(ctx, sd, e.Organization.ChatRoomID.Bytes)
+			if err != nil {
+				return 0, fmt.Errorf("failed to find chat room: %w", err)
+			}
+			if cr.CoverImageID.Valid {
+				imageIDs = append(imageIDs, cr.CoverImageID.Bytes)
+			}
+		}
+		if len(imageIDs) > 0 {
+			_, err = pluralDeleteImages(ctx, sd, m.DB, m.Storage, imageIDs, entity.UUID{})
+			if err != nil {
+				return 0, fmt.Errorf("failed to plural delete images: %w", err)
+			}
+		}
+		if len(fileIDs) > 0 {
+			_, err = pluralDeleteFiles(ctx, sd, m.DB, m.Storage, fileIDs, entity.UUID{})
+			if err != nil {
+				return 0, fmt.Errorf("failed to plural delete files: %w", err)
+			}
 		}
 		_, err = m.DB.PluralDeleteChatRoomsWithSd(ctx, sd, chatRoomIDs)
 		if err != nil {
@@ -382,7 +494,47 @@ func (m *ManageGrade) UpdateGrade(
 			return entity.Grade{}, fmt.Errorf("failed to find image: %w", err)
 		}
 	}
+	if fe.Organization.ChatRoomID.Valid && fe.Organization.Name != name {
+		now := m.Clocker.Now()
+		craType, err := m.DB.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyUpdateName))
+		if err != nil {
+			return entity.Grade{}, fmt.Errorf("failed to find chat room action type: %w", err)
+		}
+		cra, err := m.DB.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
+			ChatRoomID:           fe.Organization.ChatRoomID.Bytes,
+			ChatRoomActionTypeID: craType.ChatRoomActionTypeID,
+			ActedAt:              now,
+		})
+		if err != nil {
+			return entity.Grade{}, fmt.Errorf("failed to create chat room action: %w", err)
+		}
+		_, err = m.DB.CreateChatRoomUpdateNameActionWithSd(ctx, sd, parameter.CreateChatRoomUpdateNameActionParam{
+			ChatRoomActionID: cra.ChatRoomActionID,
+			UpdatedBy:        entity.UUID{},
+			Name:             name,
+		})
+		if err != nil {
+			return entity.Grade{}, fmt.Errorf("failed to create chat room update name action: %w", err)
+		}
+	}
+
 	if fe.Organization.ChatRoomID.Valid {
+		cr, err := m.DB.FindChatRoomByIDWithCoverImage(ctx, fe.Organization.ChatRoomID.Bytes)
+		if err != nil {
+			return entity.Grade{}, fmt.Errorf("failed to find chat room: %w", err)
+		}
+		if cr.CoverImage.Valid && cr.CoverImage.Entity.ImageID != coverImageID.Bytes {
+			_, err = pluralDeleteImages(
+				ctx,
+				sd,
+				m.DB,
+				m.Storage,
+				[]uuid.UUID{cr.CoverImage.Entity.ImageID},
+				entity.UUID{})
+			if err != nil {
+				return entity.Grade{}, fmt.Errorf("failed to plural delete images: %w", err)
+			}
+		}
 		crp := parameter.UpdateChatRoomParams{
 			Name:         name,
 			IsPrivate:    false,

@@ -8,7 +8,6 @@
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | t_messages_pkey | bigint | nextval('t_messages_t_messages_pkey_seq'::regclass) | false |  |  |  |
 | message_id | uuid | uuid_generate_v4() | false | [public.t_attached_messages](public.t_attached_messages.md) [public.t_read_receipts](public.t_read_receipts.md) |  |  |
-| chat_room_id | uuid |  | false |  | [public.m_chat_rooms](public.m_chat_rooms.md) |  |
 | sender_id | uuid |  | true |  | [public.m_members](public.m_members.md) |  |
 | body | text |  | false |  |  |  |
 | posted_at | timestamp with time zone |  | false |  |  |  |
@@ -20,9 +19,8 @@
 | Name | Type | Definition |
 | ---- | ---- | ---------- |
 | fk_t_messages_sender_id | FOREIGN KEY | FOREIGN KEY (sender_id) REFERENCES m_members(member_id) ON UPDATE SET NULL ON DELETE SET NULL |
-| fk_t_messages_chat_room_id | FOREIGN KEY | FOREIGN KEY (chat_room_id) REFERENCES m_chat_rooms(chat_room_id) ON UPDATE CASCADE ON DELETE CASCADE |
 | t_messages_pkey | PRIMARY KEY | PRIMARY KEY (t_messages_pkey) |
-| fk_t_messages_chat_room_action_id | FOREIGN KEY | FOREIGN KEY (chat_room_action_id) REFERENCES t_chat_room_actions(chat_room_action_id) ON UPDATE RESTRICT ON DELETE RESTRICT |
+| fk_t_messages_chat_room_action_id | FOREIGN KEY | FOREIGN KEY (chat_room_action_id) REFERENCES t_chat_room_actions(chat_room_action_id) ON UPDATE CASCADE ON DELETE CASCADE |
 
 ## Indexes
 

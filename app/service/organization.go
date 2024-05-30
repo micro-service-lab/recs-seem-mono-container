@@ -9,13 +9,17 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/storage"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
+	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 )
 
 // ManageOrganization オーガナイゼーション管理サービス。
 type ManageOrganization struct {
-	DB store.Store
+	DB      store.Store
+	Clocker clock.Clock
+	Storage storage.Storage
 }
 
 // Organization オーガナイゼーション。
@@ -60,6 +64,7 @@ func (m *ManageOrganization) CreateWholeOrganization(
 			return entity.Organization{}, fmt.Errorf("failed to find image: %w", err)
 		}
 	}
+	now := m.Clocker.Now()
 	cr, err := m.DB.CreateChatRoomWithSd(ctx, sd, parameter.CreateChatRoomParam{
 		Name:             name,
 		IsPrivate:        false,
@@ -69,6 +74,26 @@ func (m *ManageOrganization) CreateWholeOrganization(
 	})
 	if err != nil {
 		return entity.Organization{}, fmt.Errorf("failed to create chat room: %w", err)
+	}
+	craType, err := m.DB.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyCreate))
+	if err != nil {
+		return entity.Organization{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
+	}
+	cra, err := m.DB.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
+		ChatRoomID:           cr.ChatRoomID,
+		ChatRoomActionTypeID: craType.ChatRoomActionTypeID,
+		ActedAt:              now,
+	})
+	if err != nil {
+		return entity.Organization{}, fmt.Errorf("failed to create chat room action: %w", err)
+	}
+	_, err = m.DB.CreateChatRoomCreateActionWithSd(ctx, sd, parameter.CreateChatRoomCreateActionParam{
+		ChatRoomActionID: cra.ChatRoomActionID,
+		CreatedBy:        entity.UUID{},
+		Name:             name,
+	})
+	if err != nil {
+		return entity.Organization{}, fmt.Errorf("failed to create chat room create action: %w", err)
 	}
 	p := parameter.CreateOrganizationParam{
 		Name:        name,
@@ -109,19 +134,54 @@ func (m *ManageOrganization) DeleteWholeOrganization(ctx context.Context) (c int
 	if err != nil {
 		return 0, fmt.Errorf("failed to find whole organization: %w", err)
 	}
-	_, err = m.DB.DisbelongOrganizationOnOrganizationWithSd(ctx, sd, origin.OrganizationID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to disbelong organization on organization: %w", err)
-	}
+	// organizationMemberShipはカスケード削除される
 	c, err = m.DB.DeleteOrganizationWithSd(ctx, sd, origin.OrganizationID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete organization: %w", err)
 	}
 	if origin.ChatRoomID.Valid {
-		_, err = m.DB.DisbelongChatRoomOnChatRoomWithSd(ctx, sd, origin.ChatRoomID.Bytes)
+		cr, err := m.DB.FindChatRoomByIDWithCoverImage(ctx, origin.ChatRoomID.Bytes)
 		if err != nil {
-			return 0, fmt.Errorf("failed to disbelong chat room on chat room: %w", err)
+			return 0, fmt.Errorf("failed to find chat room: %w", err)
 		}
+		attachableItems, err := m.DB.GetAttachedItemsOnChatRoomWithSd(
+			ctx, sd, origin.ChatRoomID.Bytes,
+			parameter.WhereAttachedItemOnChatRoomParam{},
+			parameter.AttachedItemOnChatRoomOrderMethodDefault,
+			store.NumberedPaginationParam{},
+			store.CursorPaginationParam{},
+			store.WithCountParam{},
+		)
+		if err != nil {
+			return 0, fmt.Errorf("failed to get attached items on chat room: %w", err)
+		}
+		var imageIDs []uuid.UUID
+		var fileIDs []uuid.UUID
+		for _, v := range attachableItems.Data {
+			if v.AttachableItem.ImageID.Valid {
+				imageIDs = append(imageIDs, v.AttachableItem.ImageID.Bytes)
+			} else if v.AttachableItem.FileID.Valid {
+				fileIDs = append(fileIDs, v.AttachableItem.FileID.Bytes)
+			}
+		}
+		if cr.CoverImage.Valid {
+			imageIDs = append(imageIDs, cr.CoverImage.Entity.ImageID)
+		}
+
+		if len(imageIDs) > 0 {
+			_, err = pluralDeleteImages(ctx, sd, m.DB, m.Storage, imageIDs, entity.UUID{})
+			if err != nil {
+				return 0, fmt.Errorf("failed to plural delete images: %w", err)
+			}
+		}
+		if len(fileIDs) > 0 {
+			_, err = pluralDeleteFiles(ctx, sd, m.DB, m.Storage, fileIDs, entity.UUID{})
+			if err != nil {
+				return 0, fmt.Errorf("failed to plural delete files: %w", err)
+			}
+		}
+		// action, message関連はカスケード削除される
+		// chatRoomBelongingはカスケード削除される
 		_, err = m.DB.DeleteChatRoomWithSd(ctx, sd, origin.ChatRoomID.Bytes)
 		if err != nil {
 			return 0, fmt.Errorf("failed to delete chat room: %w", err)
@@ -162,6 +222,56 @@ func (m *ManageOrganization) UpdateWholeOrganization(
 			return entity.Organization{}, fmt.Errorf("failed to find image: %w", err)
 		}
 	}
+	if origin.ChatRoomID.Valid && origin.Name != name {
+		now := m.Clocker.Now()
+		craType, err := m.DB.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyUpdateName))
+		if err != nil {
+			return entity.Organization{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
+		}
+		cra, err := m.DB.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
+			ChatRoomID:           origin.ChatRoomID.Bytes,
+			ChatRoomActionTypeID: craType.ChatRoomActionTypeID,
+			ActedAt:              now,
+		})
+		if err != nil {
+			return entity.Organization{}, fmt.Errorf("failed to create chat room action: %w", err)
+		}
+		_, err = m.DB.CreateChatRoomUpdateNameActionWithSd(ctx, sd, parameter.CreateChatRoomUpdateNameActionParam{
+			ChatRoomActionID: cra.ChatRoomActionID,
+			UpdatedBy:        entity.UUID{},
+			Name:             name,
+		})
+		if err != nil {
+			return entity.Organization{}, fmt.Errorf("failed to create chat room update name action: %w", err)
+		}
+	}
+	if origin.ChatRoomID.Valid {
+		cr, err := m.DB.FindChatRoomByIDWithCoverImage(ctx, origin.ChatRoomID.Bytes)
+		if err != nil {
+			return entity.Organization{}, fmt.Errorf("failed to find chat room: %w", err)
+		}
+		if cr.CoverImage.Valid && cr.CoverImage.Entity.ImageID != coverImageID.Bytes {
+			_, err = pluralDeleteImages(
+				ctx,
+				sd,
+				m.DB,
+				m.Storage,
+				[]uuid.UUID{cr.CoverImage.Entity.ImageID},
+				entity.UUID{})
+			if err != nil {
+				return entity.Organization{}, fmt.Errorf("failed to plural delete images: %w", err)
+			}
+		}
+		_, err = m.DB.UpdateChatRoomWithSd(ctx, sd, origin.ChatRoomID.Bytes, parameter.UpdateChatRoomParams{
+			Name:         name,
+			IsPrivate:    false,
+			CoverImageID: coverImageID,
+			OwnerID:      entity.UUID{},
+		})
+		if err != nil {
+			return entity.Organization{}, fmt.Errorf("failed to update chat room: %w", err)
+		}
+	}
 	p := parameter.UpdateOrganizationParams{
 		Name:        name,
 		Description: description,
@@ -170,21 +280,6 @@ func (m *ManageOrganization) UpdateWholeOrganization(
 	e, err = m.DB.UpdateOrganizationWithSd(ctx, sd, origin.OrganizationID, p)
 	if err != nil {
 		return entity.Organization{}, fmt.Errorf("failed to update organization: %w", err)
-	}
-	if origin.ChatRoomID.Valid {
-		originRoom, err := m.DB.FindChatRoomByIDWithSd(ctx, sd, e.ChatRoomID.Bytes)
-		if err != nil {
-			return entity.Organization{}, fmt.Errorf("failed to find chat room by id: %w", err)
-		}
-		_, err = m.DB.UpdateChatRoomWithSd(ctx, sd, originRoom.ChatRoomID, parameter.UpdateChatRoomParams{
-			Name:         name,
-			IsPrivate:    originRoom.IsPrivate,
-			CoverImageID: coverImageID,
-			OwnerID:      originRoom.OwnerID,
-		})
-		if err != nil {
-			return entity.Organization{}, fmt.Errorf("failed to update chat room: %w", err)
-		}
 	}
 	return e, nil
 }

@@ -570,6 +570,9 @@ func (m *ManageImage) DeleteImage(ctx context.Context, id uuid.UUID) (c int64, e
 	if err != nil {
 		return 0, fmt.Errorf("failed to find image: %w", err)
 	}
+	if !image.AttachableItem.OwnerID.Valid {
+		return 0, nil
+	}
 	if !image.AttachableItem.FromOuter {
 		key, err := m.Storage.GetKeyFromURL(ctx, image.AttachableItem.URL)
 		if err != nil {

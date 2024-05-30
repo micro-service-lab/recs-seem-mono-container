@@ -62,4 +62,5 @@ type Store interface {
 	ChatRoomAddedMember
 	ChatRoomRemovedMember
 	ChatRoomAction
+	AttachedMessage
 }

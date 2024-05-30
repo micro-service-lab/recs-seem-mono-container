@@ -7,7 +7,7 @@
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | m_chat_rooms_pkey | bigint | nextval('m_chat_rooms_m_chat_rooms_pkey_seq'::regclass) | false |  |  |  |
-| chat_room_id | uuid | uuid_generate_v4() | false | [public.m_organizations](public.m_organizations.md) [public.t_messages](public.t_messages.md) [public.m_chat_room_belongings](public.m_chat_room_belongings.md) |  |  |
+| chat_room_id | uuid | uuid_generate_v4() | false | [public.m_organizations](public.m_organizations.md) [public.m_chat_room_belongings](public.m_chat_room_belongings.md) [public.t_chat_room_actions](public.t_chat_room_actions.md) |  |  |
 | name | varchar(255) |  | false |  |  |  |
 | is_private | boolean |  | false |  |  |  |
 | cover_image_id | uuid |  | true |  | [public.t_images](public.t_images.md) |  |

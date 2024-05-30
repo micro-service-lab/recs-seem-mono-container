@@ -19,12 +19,12 @@ import (
 func convReadableMessageOnMember(e query.GetReadableMessagesOnMemberRow) entity.ReadableMessageOnMember {
 	return entity.ReadableMessageOnMember{
 		Message: entity.Message{
-			MessageID:    e.MessageID,
-			ChatRoomID:   e.ChatRoomID,
-			SenderID:     entity.UUID(e.SenderID),
-			Body:         e.Body,
-			PostedAt:     e.PostedAt,
-			LastEditedAt: e.LastEditedAt,
+			MessageID:        e.MessageID,
+			ChatRoomActionID: e.ChatRoomActionID,
+			SenderID:         entity.UUID(e.SenderID),
+			Body:             e.Body,
+			PostedAt:         e.PostedAt,
+			LastEditedAt:     e.LastEditedAt,
 		},
 		ReadAt: entity.Timestamptz{
 			Time:             e.ReadAt.Time,

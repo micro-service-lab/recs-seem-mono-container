@@ -194,12 +194,14 @@ AND
 SELECT t_attached_messages.*, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
 t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
-t_messages.sender_id message_sender_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
+t_messages.sender_id message_sender_id, t_messages.chat_room_action_id message_chat_room_action_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
 FROM t_attached_messages
 LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id IN (
-	SELECT message_id FROM t_messages m WHERE m.chat_room_id = $1
+	SELECT message_id FROM t_messages m WHERE m.chat_room_action_id IN (
+		SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1
+	)
 )
 AND
 	CASE WHEN @where_in_mime_type::boolean = true THEN t_attachable_items.mime_type_id = ANY(@in_mime_types::uuid[]) ELSE TRUE END
@@ -214,12 +216,14 @@ ORDER BY
 SELECT t_attached_messages.*, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
 t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
-t_messages.sender_id message_sender_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
+t_messages.sender_id message_sender_id, t_messages.chat_room_action_id message_chat_room_action_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
 FROM t_attached_messages
 LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id IN (
-	SELECT message_id FROM t_messages m WHERE m.chat_room_id = $1
+	SELECT message_id FROM t_messages m WHERE m.chat_room_action_id IN (
+		SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1
+	)
 )
 AND
 	CASE WHEN @where_in_mime_type::boolean = true THEN t_attachable_items.mime_type_id = ANY(@in_mime_types::uuid[]) ELSE TRUE END
@@ -235,12 +239,14 @@ LIMIT $2 OFFSET $3;
 SELECT t_attached_messages.*, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
 t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
-t_messages.sender_id message_sender_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
+t_messages.sender_id message_sender_id, t_messages.chat_room_action_id message_chat_room_action_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
 FROM t_attached_messages
 LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id IN (
-	SELECT message_id FROM t_messages m WHERE m.chat_room_id = $1
+	SELECT message_id FROM t_messages m WHERE m.chat_room_action_id IN (
+		SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1
+	)
 )
 AND
 	CASE WHEN @where_in_mime_type::boolean = true THEN t_attachable_items.mime_type_id = ANY(@in_mime_types::uuid[]) ELSE TRUE END
@@ -263,7 +269,9 @@ LIMIT $2;
 -- name: CountAttachedItemsOnChatRoom :one
 SELECT COUNT(*) FROM t_attached_messages
 WHERE message_id IN (
-	SELECT message_id FROM t_messages WHERE chat_room_id = $1
+	SELECT message_id FROM t_messages m WHERE m.chat_room_action_id IN (
+		SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1
+	)
 )
 AND
 	CASE WHEN @where_in_mime_type::boolean = true THEN t_attachable_items.mime_type_id = ANY(@in_mime_types::uuid[]) ELSE TRUE END

@@ -49,7 +49,7 @@ func (q *Queries) CountReadableMembersOnMessage(ctx context.Context, arg CountRe
 const countReadableMessagesOnChatRoomAndMember = `-- name: CountReadableMessagesOnChatRoomAndMember :one
 SELECT COUNT(*) FROM t_read_receipts
 LEFT JOIN t_messages ON t_read_receipts.message_id = t_messages.message_id
-WHERE t_messages.chat_room_id = $1
+WHERE t_messages.chat_room_action_id IN (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1)
 AND t_read_receipts.member_id = $2
 AND
 	CASE WHEN $3::boolean = true THEN t_read_receipts.read_at IS NOT NULL ELSE TRUE END
@@ -77,15 +77,16 @@ func (q *Queries) CountReadableMessagesOnChatRoomAndMember(ctx context.Context, 
 }
 
 const countReadableMessagesOnChatRoomsAndMember = `-- name: CountReadableMessagesOnChatRoomsAndMember :many
-SELECT t_messages.chat_room_id, COUNT(*) FROM t_read_receipts
+SELECT t_chat_room_actions.chat_room_id, COUNT(*) FROM t_read_receipts
 LEFT JOIN t_messages ON t_read_receipts.message_id = t_messages.message_id
-WHERE t_messages.chat_room_id = ANY($2::uuid[])
+LEFT JOIN t_chat_room_actions ON t_messages.chat_room_action_id = t_chat_room_actions.chat_room_action_id
+WHERE t_chat_room_actions.chat_room_id = ANY($2::uuid[])
 AND t_read_receipts.member_id = $1
 AND
 	CASE WHEN $3::boolean = true THEN t_read_receipts.read_at IS NOT NULL ELSE TRUE END
 AND
 	CASE WHEN $4::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
-GROUP BY t_messages.chat_room_id
+GROUP BY t_chat_room_actions.chat_room_id
 `
 
 type CountReadableMessagesOnChatRoomsAndMemberParams struct {
@@ -382,7 +383,7 @@ func (q *Queries) GetPluralReadableMembersOnMessageUseNumberedPaginate(ctx conte
 }
 
 const getPluralReadableMessagesOnMember = `-- name: GetPluralReadableMessagesOnMember :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, t_read_receipts.read_at read_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, t_read_receipts.read_at read_at FROM t_messages
 LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
@@ -399,7 +400,6 @@ type GetPluralReadableMessagesOnMemberParams struct {
 type GetPluralReadableMessagesOnMemberRow struct {
 	TMessagesPkey    pgtype.Int8        `json:"t_messages_pkey"`
 	MessageID        uuid.UUID          `json:"message_id"`
-	ChatRoomID       uuid.UUID          `json:"chat_room_id"`
 	SenderID         pgtype.UUID        `json:"sender_id"`
 	Body             string             `json:"body"`
 	PostedAt         time.Time          `json:"posted_at"`
@@ -420,7 +420,6 @@ func (q *Queries) GetPluralReadableMessagesOnMember(ctx context.Context, arg Get
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
@@ -439,7 +438,7 @@ func (q *Queries) GetPluralReadableMessagesOnMember(ctx context.Context, arg Get
 }
 
 const getPluralReadableMessagesOnMemberUseNumberedPaginate = `-- name: GetPluralReadableMessagesOnMemberUseNumberedPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, t_read_receipts.read_at read_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, t_read_receipts.read_at read_at FROM t_messages
 LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
@@ -459,7 +458,6 @@ type GetPluralReadableMessagesOnMemberUseNumberedPaginateParams struct {
 type GetPluralReadableMessagesOnMemberUseNumberedPaginateRow struct {
 	TMessagesPkey    pgtype.Int8        `json:"t_messages_pkey"`
 	MessageID        uuid.UUID          `json:"message_id"`
-	ChatRoomID       uuid.UUID          `json:"chat_room_id"`
 	SenderID         pgtype.UUID        `json:"sender_id"`
 	Body             string             `json:"body"`
 	PostedAt         time.Time          `json:"posted_at"`
@@ -485,7 +483,6 @@ func (q *Queries) GetPluralReadableMessagesOnMemberUseNumberedPaginate(ctx conte
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
@@ -892,7 +889,7 @@ func (q *Queries) GetReadableMembersOnMessageUseNumberedPaginate(ctx context.Con
 }
 
 const getReadableMessagesOnMember = `-- name: GetReadableMessagesOnMember :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, t_read_receipts.read_at read_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, t_read_receipts.read_at read_at FROM t_messages
 LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
 WHERE member_id = $1
 AND
@@ -915,7 +912,6 @@ type GetReadableMessagesOnMemberParams struct {
 type GetReadableMessagesOnMemberRow struct {
 	TMessagesPkey    pgtype.Int8        `json:"t_messages_pkey"`
 	MessageID        uuid.UUID          `json:"message_id"`
-	ChatRoomID       uuid.UUID          `json:"chat_room_id"`
 	SenderID         pgtype.UUID        `json:"sender_id"`
 	Body             string             `json:"body"`
 	PostedAt         time.Time          `json:"posted_at"`
@@ -941,7 +937,6 @@ func (q *Queries) GetReadableMessagesOnMember(ctx context.Context, arg GetReadab
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
@@ -960,7 +955,7 @@ func (q *Queries) GetReadableMessagesOnMember(ctx context.Context, arg GetReadab
 }
 
 const getReadableMessagesOnMemberUseKeysetPaginate = `-- name: GetReadableMessagesOnMemberUseKeysetPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, t_read_receipts.read_at read_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, t_read_receipts.read_at read_at FROM t_messages
 LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
 WHERE member_id = $1
 AND
@@ -1006,7 +1001,6 @@ type GetReadableMessagesOnMemberUseKeysetPaginateParams struct {
 type GetReadableMessagesOnMemberUseKeysetPaginateRow struct {
 	TMessagesPkey    pgtype.Int8        `json:"t_messages_pkey"`
 	MessageID        uuid.UUID          `json:"message_id"`
-	ChatRoomID       uuid.UUID          `json:"chat_room_id"`
 	SenderID         pgtype.UUID        `json:"sender_id"`
 	Body             string             `json:"body"`
 	PostedAt         time.Time          `json:"posted_at"`
@@ -1036,7 +1030,6 @@ func (q *Queries) GetReadableMessagesOnMemberUseKeysetPaginate(ctx context.Conte
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
@@ -1055,7 +1048,7 @@ func (q *Queries) GetReadableMessagesOnMemberUseKeysetPaginate(ctx context.Conte
 }
 
 const getReadableMessagesOnMemberUseNumberedPaginate = `-- name: GetReadableMessagesOnMemberUseNumberedPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, t_read_receipts.read_at read_at FROM t_messages
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, t_read_receipts.read_at read_at FROM t_messages
 LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
 WHERE member_id = $1
 AND
@@ -1081,7 +1074,6 @@ type GetReadableMessagesOnMemberUseNumberedPaginateParams struct {
 type GetReadableMessagesOnMemberUseNumberedPaginateRow struct {
 	TMessagesPkey    pgtype.Int8        `json:"t_messages_pkey"`
 	MessageID        uuid.UUID          `json:"message_id"`
-	ChatRoomID       uuid.UUID          `json:"chat_room_id"`
 	SenderID         pgtype.UUID        `json:"sender_id"`
 	Body             string             `json:"body"`
 	PostedAt         time.Time          `json:"posted_at"`
@@ -1109,7 +1101,6 @@ func (q *Queries) GetReadableMessagesOnMemberUseNumberedPaginate(ctx context.Con
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,

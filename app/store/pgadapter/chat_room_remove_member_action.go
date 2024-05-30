@@ -19,10 +19,10 @@ import (
 
 func convChatRoomRemoveMemberActionOnChatRoom(
 	e query.GetChatRoomRemoveMemberActionsOnChatRoomRow,
-) entity.ChatRoomRemoveMemberActionOnChatRoomForQuery {
-	var createdBy entity.NullableEntity[entity.SimpleMember]
+) entity.ChatRoomRemoveMemberActionWithRemovedByForQuery {
+	var removedBy entity.NullableEntity[entity.SimpleMember]
 	if e.RemovedBy.Valid {
-		createdBy = entity.NullableEntity[entity.SimpleMember]{
+		removedBy = entity.NullableEntity[entity.SimpleMember]{
 			Valid: true,
 			Entity: entity.SimpleMember{
 				MemberID:       e.RemovedBy.Bytes,
@@ -34,12 +34,12 @@ func convChatRoomRemoveMemberActionOnChatRoom(
 			},
 		}
 	}
-	return entity.ChatRoomRemoveMemberActionOnChatRoomForQuery{
+	return entity.ChatRoomRemoveMemberActionWithRemovedByForQuery{
 		Pkey: entity.Int(e.TChatRoomRemoveMemberActionsPkey),
-		ChatRoomRemoveMemberActionOnChatRoom: entity.ChatRoomRemoveMemberActionOnChatRoom{
+		ChatRoomRemoveMemberActionWithRemovedBy: entity.ChatRoomRemoveMemberActionWithRemovedBy{
 			ChatRoomRemoveMemberActionID: e.ChatRoomRemoveMemberActionID,
 			ChatRoomActionID:             e.ChatRoomActionID,
-			RemovedBy:                    createdBy,
+			RemovedBy:                    removedBy,
 		},
 	}
 }
@@ -238,11 +238,11 @@ func getChatRoomRemoveMemberActionsOnChatRoom(
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
-) (store.ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
 	eConvFunc := func(
-		e entity.ChatRoomRemoveMemberActionOnChatRoomForQuery,
-	) (entity.ChatRoomRemoveMemberActionOnChatRoom, error) {
-		return e.ChatRoomRemoveMemberActionOnChatRoom, nil
+		e entity.ChatRoomRemoveMemberActionWithRemovedByForQuery,
+	) (entity.ChatRoomRemoveMemberActionWithRemovedBy, error) {
+		return e.ChatRoomRemoveMemberActionWithRemovedBy, nil
 	}
 	runCFunc := func() (int64, error) {
 		r, err := qtx.CountChatRoomRemoveMemberActions(ctx)
@@ -251,15 +251,15 @@ func getChatRoomRemoveMemberActionsOnChatRoom(
 		}
 		return r, nil
 	}
-	runQFunc := func(_ string) ([]entity.ChatRoomRemoveMemberActionOnChatRoomForQuery, error) {
+	runQFunc := func(_ string) ([]entity.ChatRoomRemoveMemberActionWithRemovedByForQuery, error) {
 		r, err := qtx.GetChatRoomRemoveMemberActionsOnChatRoom(ctx, chatRoomID)
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
-				return []entity.ChatRoomRemoveMemberActionOnChatRoomForQuery{}, nil
+				return []entity.ChatRoomRemoveMemberActionWithRemovedByForQuery{}, nil
 			}
 			return nil, fmt.Errorf("failed to get chat room remove member actions: %w", err)
 		}
-		e := make([]entity.ChatRoomRemoveMemberActionOnChatRoomForQuery, len(r))
+		e := make([]entity.ChatRoomRemoveMemberActionWithRemovedByForQuery, len(r))
 		for i, v := range r {
 			e[i] = convChatRoomRemoveMemberActionOnChatRoom(v)
 		}
@@ -267,7 +267,7 @@ func getChatRoomRemoveMemberActionsOnChatRoom(
 	}
 	runQCPFunc := func(_, _ string,
 		limit int32, cursorDir string, cursor int32, _ any,
-	) ([]entity.ChatRoomRemoveMemberActionOnChatRoomForQuery, error) {
+	) ([]entity.ChatRoomRemoveMemberActionWithRemovedByForQuery, error) {
 		p := query.GetChatRoomRemoveMemberActionsOnChatRoomUseKeysetPaginateParams{
 			ChatRoomID:      chatRoomID,
 			Limit:           limit,
@@ -278,13 +278,13 @@ func getChatRoomRemoveMemberActionsOnChatRoom(
 		if err != nil {
 			return nil, fmt.Errorf("failed to get chat room remove member actions: %w", err)
 		}
-		e := make([]entity.ChatRoomRemoveMemberActionOnChatRoomForQuery, len(r))
+		e := make([]entity.ChatRoomRemoveMemberActionWithRemovedByForQuery, len(r))
 		for i, v := range r {
 			e[i] = convChatRoomRemoveMemberActionOnChatRoom(query.GetChatRoomRemoveMemberActionsOnChatRoomRow(v))
 		}
 		return e, nil
 	}
-	runQNPFunc := func(_ string, limit, offset int32) ([]entity.ChatRoomRemoveMemberActionOnChatRoomForQuery, error) {
+	runQNPFunc := func(_ string, limit, offset int32) ([]entity.ChatRoomRemoveMemberActionWithRemovedByForQuery, error) {
 		p := query.GetChatRoomRemoveMemberActionsOnChatRoomUseNumberedPaginateParams{
 			ChatRoomID: chatRoomID,
 			Limit:      limit,
@@ -294,13 +294,13 @@ func getChatRoomRemoveMemberActionsOnChatRoom(
 		if err != nil {
 			return nil, fmt.Errorf("failed to get chat room remove member actions: %w", err)
 		}
-		e := make([]entity.ChatRoomRemoveMemberActionOnChatRoomForQuery, len(r))
+		e := make([]entity.ChatRoomRemoveMemberActionWithRemovedByForQuery, len(r))
 		for i, v := range r {
 			e[i] = convChatRoomRemoveMemberActionOnChatRoom(query.GetChatRoomRemoveMemberActionsOnChatRoomRow(v))
 		}
 		return e, nil
 	}
-	selector := func(subCursor string, e entity.ChatRoomRemoveMemberActionOnChatRoomForQuery) (entity.Int, any) {
+	selector := func(subCursor string, e entity.ChatRoomRemoveMemberActionWithRemovedByForQuery) (entity.Int, any) {
 		switch subCursor {
 		case parameter.ChatRoomRemoveMemberActionDefaultCursorKey:
 			return e.Pkey, nil
@@ -322,7 +322,7 @@ func getChatRoomRemoveMemberActionsOnChatRoom(
 		selector,
 	)
 	if err != nil {
-		return store.ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom]{},
+		return store.ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy]{},
 			fmt.Errorf("failed to get chat room remove member actions: %w", err)
 	}
 	return res, nil
@@ -337,7 +337,7 @@ func (a *PgAdapter) GetChatRoomRemoveMemberActionsOnChatRoom(
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
-) (store.ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
 	return getChatRoomRemoveMemberActionsOnChatRoom(ctx, a.query, chatRoomID, where, order, np, cp, wc)
 }
 
@@ -351,12 +351,12 @@ func (a *PgAdapter) GetChatRoomRemoveMemberActionsOnChatRoomWithSd(
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
-) (store.ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom]{}, store.ErrNotFoundDescriptor
+		return store.ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy]{}, store.ErrNotFoundDescriptor
 	}
 	return getChatRoomRemoveMemberActionsOnChatRoom(ctx, qtx, chatRoomID, where, order, np, cp, wc)
 }
@@ -365,7 +365,7 @@ func (a *PgAdapter) GetChatRoomRemoveMemberActionsOnChatRoomWithSd(
 func getPluralChatRoomRemoveMemberActions(
 	ctx context.Context, qtx *query.Queries, chatRoomRemoveMemberActionIDs []uuid.UUID,
 	_ parameter.ChatRoomRemoveMemberActionOrderMethod, np store.NumberedPaginationParam,
-) (store.ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
 	var e []query.GetPluralChatRoomRemoveMemberActionsRow
 	var err error
 	if !np.Valid {
@@ -384,22 +384,22 @@ func getPluralChatRoomRemoveMemberActions(
 		}
 	}
 	if err != nil {
-		return store.ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom]{},
+		return store.ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy]{},
 			fmt.Errorf("failed to get chat room remove member actions: %w", err)
 	}
-	entities := make([]entity.ChatRoomRemoveMemberActionOnChatRoom, len(e))
+	entities := make([]entity.ChatRoomRemoveMemberActionWithRemovedBy, len(e))
 	for i, v := range e {
 		entities[i] = convChatRoomRemoveMemberActionOnChatRoom(
-			query.GetChatRoomRemoveMemberActionsOnChatRoomRow(v)).ChatRoomRemoveMemberActionOnChatRoom
+			query.GetChatRoomRemoveMemberActionsOnChatRoomRow(v)).ChatRoomRemoveMemberActionWithRemovedBy
 	}
-	return store.ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom]{Data: entities}, nil
+	return store.ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy]{Data: entities}, nil
 }
 
 // GetPluralChatRoomRemoveMemberActions は複数のチャットルームメンバー追放アクションを取得します。
 func (a *PgAdapter) GetPluralChatRoomRemoveMemberActions(
 	ctx context.Context, chatRoomRemoveMemberActionIDs []uuid.UUID,
 	order parameter.ChatRoomRemoveMemberActionOrderMethod, np store.NumberedPaginationParam,
-) (store.ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
 	return getPluralChatRoomRemoveMemberActions(ctx, a.query, chatRoomRemoveMemberActionIDs, order, np)
 }
 
@@ -407,12 +407,12 @@ func (a *PgAdapter) GetPluralChatRoomRemoveMemberActions(
 func (a *PgAdapter) GetPluralChatRoomRemoveMemberActionsWithSd(
 	ctx context.Context, sd store.Sd, chatRoomRemoveMemberActionIDs []uuid.UUID,
 	order parameter.ChatRoomRemoveMemberActionOrderMethod, np store.NumberedPaginationParam,
-) (store.ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom]{}, store.ErrNotFoundDescriptor
+		return store.ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy]{}, store.ErrNotFoundDescriptor
 	}
 	return getPluralChatRoomRemoveMemberActions(ctx, qtx, chatRoomRemoveMemberActionIDs, order, np)
 }

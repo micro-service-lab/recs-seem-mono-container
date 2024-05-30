@@ -19,10 +19,10 @@ import (
 
 func convChatRoomUpdateNameActionOnChatRoom(
 	e query.GetChatRoomUpdateNameActionsOnChatRoomRow,
-) entity.ChatRoomUpdateNameActionOnChatRoomForQuery {
-	var createdBy entity.NullableEntity[entity.SimpleMember]
+) entity.ChatRoomUpdateNameActionWithUpdatedByForQuery {
+	var updatedBy entity.NullableEntity[entity.SimpleMember]
 	if e.UpdatedBy.Valid {
-		createdBy = entity.NullableEntity[entity.SimpleMember]{
+		updatedBy = entity.NullableEntity[entity.SimpleMember]{
 			Valid: true,
 			Entity: entity.SimpleMember{
 				MemberID:       e.UpdatedBy.Bytes,
@@ -34,13 +34,13 @@ func convChatRoomUpdateNameActionOnChatRoom(
 			},
 		}
 	}
-	return entity.ChatRoomUpdateNameActionOnChatRoomForQuery{
+	return entity.ChatRoomUpdateNameActionWithUpdatedByForQuery{
 		Pkey: entity.Int(e.TChatRoomUpdateNameActionsPkey),
-		ChatRoomUpdateNameActionOnChatRoom: entity.ChatRoomUpdateNameActionOnChatRoom{
+		ChatRoomUpdateNameActionWithUpdatedBy: entity.ChatRoomUpdateNameActionWithUpdatedBy{
 			ChatRoomUpdateNameActionID: e.ChatRoomUpdateNameActionID,
 			ChatRoomActionID:           e.ChatRoomActionID,
 			Name:                       e.Name,
-			UpdatedBy:                  createdBy,
+			UpdatedBy:                  updatedBy,
 		},
 	}
 }
@@ -242,11 +242,11 @@ func getChatRoomUpdateNameActionsOnChatRoom(
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
-) (store.ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error) {
 	eConvFunc := func(
-		e entity.ChatRoomUpdateNameActionOnChatRoomForQuery,
-	) (entity.ChatRoomUpdateNameActionOnChatRoom, error) {
-		return e.ChatRoomUpdateNameActionOnChatRoom, nil
+		e entity.ChatRoomUpdateNameActionWithUpdatedByForQuery,
+	) (entity.ChatRoomUpdateNameActionWithUpdatedBy, error) {
+		return e.ChatRoomUpdateNameActionWithUpdatedBy, nil
 	}
 	runCFunc := func() (int64, error) {
 		r, err := qtx.CountChatRoomUpdateNameActions(ctx)
@@ -255,15 +255,15 @@ func getChatRoomUpdateNameActionsOnChatRoom(
 		}
 		return r, nil
 	}
-	runQFunc := func(_ string) ([]entity.ChatRoomUpdateNameActionOnChatRoomForQuery, error) {
+	runQFunc := func(_ string) ([]entity.ChatRoomUpdateNameActionWithUpdatedByForQuery, error) {
 		r, err := qtx.GetChatRoomUpdateNameActionsOnChatRoom(ctx, chatRoomID)
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
-				return []entity.ChatRoomUpdateNameActionOnChatRoomForQuery{}, nil
+				return []entity.ChatRoomUpdateNameActionWithUpdatedByForQuery{}, nil
 			}
 			return nil, fmt.Errorf("failed to get chat room update name actions: %w", err)
 		}
-		e := make([]entity.ChatRoomUpdateNameActionOnChatRoomForQuery, len(r))
+		e := make([]entity.ChatRoomUpdateNameActionWithUpdatedByForQuery, len(r))
 		for i, v := range r {
 			e[i] = convChatRoomUpdateNameActionOnChatRoom(v)
 		}
@@ -271,7 +271,7 @@ func getChatRoomUpdateNameActionsOnChatRoom(
 	}
 	runQCPFunc := func(_, _ string,
 		limit int32, cursorDir string, cursor int32, _ any,
-	) ([]entity.ChatRoomUpdateNameActionOnChatRoomForQuery, error) {
+	) ([]entity.ChatRoomUpdateNameActionWithUpdatedByForQuery, error) {
 		p := query.GetChatRoomUpdateNameActionsOnChatRoomUseKeysetPaginateParams{
 			ChatRoomID:      chatRoomID,
 			Limit:           limit,
@@ -282,13 +282,13 @@ func getChatRoomUpdateNameActionsOnChatRoom(
 		if err != nil {
 			return nil, fmt.Errorf("failed to get chat room update name actions: %w", err)
 		}
-		e := make([]entity.ChatRoomUpdateNameActionOnChatRoomForQuery, len(r))
+		e := make([]entity.ChatRoomUpdateNameActionWithUpdatedByForQuery, len(r))
 		for i, v := range r {
 			e[i] = convChatRoomUpdateNameActionOnChatRoom(query.GetChatRoomUpdateNameActionsOnChatRoomRow(v))
 		}
 		return e, nil
 	}
-	runQNPFunc := func(_ string, limit, offset int32) ([]entity.ChatRoomUpdateNameActionOnChatRoomForQuery, error) {
+	runQNPFunc := func(_ string, limit, offset int32) ([]entity.ChatRoomUpdateNameActionWithUpdatedByForQuery, error) {
 		p := query.GetChatRoomUpdateNameActionsOnChatRoomUseNumberedPaginateParams{
 			ChatRoomID: chatRoomID,
 			Limit:      limit,
@@ -298,13 +298,13 @@ func getChatRoomUpdateNameActionsOnChatRoom(
 		if err != nil {
 			return nil, fmt.Errorf("failed to get chat room update name actions: %w", err)
 		}
-		e := make([]entity.ChatRoomUpdateNameActionOnChatRoomForQuery, len(r))
+		e := make([]entity.ChatRoomUpdateNameActionWithUpdatedByForQuery, len(r))
 		for i, v := range r {
 			e[i] = convChatRoomUpdateNameActionOnChatRoom(query.GetChatRoomUpdateNameActionsOnChatRoomRow(v))
 		}
 		return e, nil
 	}
-	selector := func(subCursor string, e entity.ChatRoomUpdateNameActionOnChatRoomForQuery) (entity.Int, any) {
+	selector := func(subCursor string, e entity.ChatRoomUpdateNameActionWithUpdatedByForQuery) (entity.Int, any) {
 		switch subCursor {
 		case parameter.ChatRoomUpdateNameActionDefaultCursorKey:
 			return e.Pkey, nil
@@ -326,7 +326,7 @@ func getChatRoomUpdateNameActionsOnChatRoom(
 		selector,
 	)
 	if err != nil {
-		return store.ListResult[entity.ChatRoomUpdateNameActionOnChatRoom]{},
+		return store.ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy]{},
 			fmt.Errorf("failed to get chat room update name actions: %w", err)
 	}
 	return res, nil
@@ -341,7 +341,7 @@ func (a *PgAdapter) GetChatRoomUpdateNameActionsOnChatRoom(
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
-) (store.ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error) {
 	return getChatRoomUpdateNameActionsOnChatRoom(ctx, a.query, chatRoomID, where, order, np, cp, wc)
 }
 
@@ -355,12 +355,12 @@ func (a *PgAdapter) GetChatRoomUpdateNameActionsOnChatRoomWithSd(
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
-) (store.ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ListResult[entity.ChatRoomUpdateNameActionOnChatRoom]{}, store.ErrNotFoundDescriptor
+		return store.ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy]{}, store.ErrNotFoundDescriptor
 	}
 	return getChatRoomUpdateNameActionsOnChatRoom(ctx, qtx, chatRoomID, where, order, np, cp, wc)
 }
@@ -369,7 +369,7 @@ func (a *PgAdapter) GetChatRoomUpdateNameActionsOnChatRoomWithSd(
 func getPluralChatRoomUpdateNameActions(
 	ctx context.Context, qtx *query.Queries, chatRoomUpdateNameActionIDs []uuid.UUID,
 	_ parameter.ChatRoomUpdateNameActionOrderMethod, np store.NumberedPaginationParam,
-) (store.ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error) {
 	var e []query.GetPluralChatRoomUpdateNameActionsRow
 	var err error
 	if !np.Valid {
@@ -388,22 +388,22 @@ func getPluralChatRoomUpdateNameActions(
 		}
 	}
 	if err != nil {
-		return store.ListResult[entity.ChatRoomUpdateNameActionOnChatRoom]{},
+		return store.ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy]{},
 			fmt.Errorf("failed to get chat room update name actions: %w", err)
 	}
-	entities := make([]entity.ChatRoomUpdateNameActionOnChatRoom, len(e))
+	entities := make([]entity.ChatRoomUpdateNameActionWithUpdatedBy, len(e))
 	for i, v := range e {
 		entities[i] = convChatRoomUpdateNameActionOnChatRoom(
-			query.GetChatRoomUpdateNameActionsOnChatRoomRow(v)).ChatRoomUpdateNameActionOnChatRoom
+			query.GetChatRoomUpdateNameActionsOnChatRoomRow(v)).ChatRoomUpdateNameActionWithUpdatedBy
 	}
-	return store.ListResult[entity.ChatRoomUpdateNameActionOnChatRoom]{Data: entities}, nil
+	return store.ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy]{Data: entities}, nil
 }
 
 // GetPluralChatRoomUpdateNameActions は複数のチャットルーム名前更新アクションを取得します。
 func (a *PgAdapter) GetPluralChatRoomUpdateNameActions(
 	ctx context.Context, chatRoomUpdateNameActionIDs []uuid.UUID,
 	order parameter.ChatRoomUpdateNameActionOrderMethod, np store.NumberedPaginationParam,
-) (store.ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error) {
 	return getPluralChatRoomUpdateNameActions(ctx, a.query, chatRoomUpdateNameActionIDs, order, np)
 }
 
@@ -411,12 +411,12 @@ func (a *PgAdapter) GetPluralChatRoomUpdateNameActions(
 func (a *PgAdapter) GetPluralChatRoomUpdateNameActionsWithSd(
 	ctx context.Context, sd store.Sd, chatRoomUpdateNameActionIDs []uuid.UUID,
 	order parameter.ChatRoomUpdateNameActionOrderMethod, np store.NumberedPaginationParam,
-) (store.ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ListResult[entity.ChatRoomUpdateNameActionOnChatRoom]{}, store.ErrNotFoundDescriptor
+		return store.ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy]{}, store.ErrNotFoundDescriptor
 	}
 	return getPluralChatRoomUpdateNameActions(ctx, qtx, chatRoomUpdateNameActionIDs, order, np)
 }

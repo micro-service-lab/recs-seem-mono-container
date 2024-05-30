@@ -51,7 +51,7 @@ type ChatRoomAddMemberAction interface {
 		np NumberedPaginationParam,
 		cp CursorPaginationParam,
 		wc WithCountParam,
-	) (ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error)
 	// GetChatRoomAddMemberActionsOnChatRoomWithSd SD付きでチャットルームメンバー追加アクションを取得する。
 	GetChatRoomAddMemberActionsOnChatRoomWithSd(
 		ctx context.Context,
@@ -62,14 +62,14 @@ type ChatRoomAddMemberAction interface {
 		np NumberedPaginationParam,
 		cp CursorPaginationParam,
 		wc WithCountParam,
-	) (ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error)
 	// GetPluralChatRoomAddMemberActions チャットルームメンバー追加アクションを取得する。
 	GetPluralChatRoomAddMemberActions(
 		ctx context.Context,
 		chatRoomAddMemberActionIDs []uuid.UUID,
 		order parameter.ChatRoomAddMemberActionOrderMethod,
 		np NumberedPaginationParam,
-	) (ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error)
 	// GetPluralChatRoomAddMemberActionsWithSd SD付きでチャットルームメンバー追加アクションを取得する。
 	GetPluralChatRoomAddMemberActionsWithSd(
 		ctx context.Context,
@@ -77,5 +77,5 @@ type ChatRoomAddMemberAction interface {
 		chatRoomAddMemberActionIDs []uuid.UUID,
 		order parameter.ChatRoomAddMemberActionOrderMethod,
 		np NumberedPaginationParam,
-	) (ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error)
 }

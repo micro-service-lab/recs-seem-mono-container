@@ -19,7 +19,7 @@ import (
 
 func convChatRoomCreateActionOnChatRoom(
 	e query.GetChatRoomCreateActionsOnChatRoomRow,
-) entity.ChatRoomCreateActionOnChatRoomForQuery {
+) entity.ChatRoomCreateActionWithCreatedByForQuery {
 	var createdBy entity.NullableEntity[entity.SimpleMember]
 	if e.CreatedBy.Valid {
 		createdBy = entity.NullableEntity[entity.SimpleMember]{
@@ -34,9 +34,9 @@ func convChatRoomCreateActionOnChatRoom(
 			},
 		}
 	}
-	return entity.ChatRoomCreateActionOnChatRoomForQuery{
+	return entity.ChatRoomCreateActionWithCreatedByForQuery{
 		Pkey: entity.Int(e.TChatRoomCreateActionsPkey),
-		ChatRoomCreateActionOnChatRoom: entity.ChatRoomCreateActionOnChatRoom{
+		ChatRoomCreateActionWithCreatedBy: entity.ChatRoomCreateActionWithCreatedBy{
 			ChatRoomCreateActionID: e.ChatRoomCreateActionID,
 			ChatRoomActionID:       e.ChatRoomActionID,
 			Name:                   e.Name,
@@ -242,9 +242,11 @@ func getChatRoomCreateActionsOnChatRoom(
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
-) (store.ListResult[entity.ChatRoomCreateActionOnChatRoom], error) {
-	eConvFunc := func(e entity.ChatRoomCreateActionOnChatRoomForQuery) (entity.ChatRoomCreateActionOnChatRoom, error) {
-		return e.ChatRoomCreateActionOnChatRoom, nil
+) (store.ListResult[entity.ChatRoomCreateActionWithCreatedBy], error) {
+	eConvFunc := func(
+		e entity.ChatRoomCreateActionWithCreatedByForQuery,
+	) (entity.ChatRoomCreateActionWithCreatedBy, error) {
+		return e.ChatRoomCreateActionWithCreatedBy, nil
 	}
 	runCFunc := func() (int64, error) {
 		r, err := qtx.CountChatRoomCreateActions(ctx)
@@ -253,15 +255,15 @@ func getChatRoomCreateActionsOnChatRoom(
 		}
 		return r, nil
 	}
-	runQFunc := func(_ string) ([]entity.ChatRoomCreateActionOnChatRoomForQuery, error) {
+	runQFunc := func(_ string) ([]entity.ChatRoomCreateActionWithCreatedByForQuery, error) {
 		r, err := qtx.GetChatRoomCreateActionsOnChatRoom(ctx, chatRoomID)
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
-				return []entity.ChatRoomCreateActionOnChatRoomForQuery{}, nil
+				return []entity.ChatRoomCreateActionWithCreatedByForQuery{}, nil
 			}
 			return nil, fmt.Errorf("failed to get chat room create actions: %w", err)
 		}
-		e := make([]entity.ChatRoomCreateActionOnChatRoomForQuery, len(r))
+		e := make([]entity.ChatRoomCreateActionWithCreatedByForQuery, len(r))
 		for i, v := range r {
 			e[i] = convChatRoomCreateActionOnChatRoom(v)
 		}
@@ -269,7 +271,7 @@ func getChatRoomCreateActionsOnChatRoom(
 	}
 	runQCPFunc := func(_, _ string,
 		limit int32, cursorDir string, cursor int32, _ any,
-	) ([]entity.ChatRoomCreateActionOnChatRoomForQuery, error) {
+	) ([]entity.ChatRoomCreateActionWithCreatedByForQuery, error) {
 		p := query.GetChatRoomCreateActionsOnChatRoomUseKeysetPaginateParams{
 			ChatRoomID:      chatRoomID,
 			Limit:           limit,
@@ -280,13 +282,13 @@ func getChatRoomCreateActionsOnChatRoom(
 		if err != nil {
 			return nil, fmt.Errorf("failed to get chat room create actions: %w", err)
 		}
-		e := make([]entity.ChatRoomCreateActionOnChatRoomForQuery, len(r))
+		e := make([]entity.ChatRoomCreateActionWithCreatedByForQuery, len(r))
 		for i, v := range r {
 			e[i] = convChatRoomCreateActionOnChatRoom(query.GetChatRoomCreateActionsOnChatRoomRow(v))
 		}
 		return e, nil
 	}
-	runQNPFunc := func(_ string, limit, offset int32) ([]entity.ChatRoomCreateActionOnChatRoomForQuery, error) {
+	runQNPFunc := func(_ string, limit, offset int32) ([]entity.ChatRoomCreateActionWithCreatedByForQuery, error) {
 		p := query.GetChatRoomCreateActionsOnChatRoomUseNumberedPaginateParams{
 			ChatRoomID: chatRoomID,
 			Limit:      limit,
@@ -296,13 +298,13 @@ func getChatRoomCreateActionsOnChatRoom(
 		if err != nil {
 			return nil, fmt.Errorf("failed to get chat room create actions: %w", err)
 		}
-		e := make([]entity.ChatRoomCreateActionOnChatRoomForQuery, len(r))
+		e := make([]entity.ChatRoomCreateActionWithCreatedByForQuery, len(r))
 		for i, v := range r {
 			e[i] = convChatRoomCreateActionOnChatRoom(query.GetChatRoomCreateActionsOnChatRoomRow(v))
 		}
 		return e, nil
 	}
-	selector := func(subCursor string, e entity.ChatRoomCreateActionOnChatRoomForQuery) (entity.Int, any) {
+	selector := func(subCursor string, e entity.ChatRoomCreateActionWithCreatedByForQuery) (entity.Int, any) {
 		switch subCursor {
 		case parameter.ChatRoomCreateActionDefaultCursorKey:
 			return e.Pkey, nil
@@ -324,7 +326,7 @@ func getChatRoomCreateActionsOnChatRoom(
 		selector,
 	)
 	if err != nil {
-		return store.ListResult[entity.ChatRoomCreateActionOnChatRoom]{},
+		return store.ListResult[entity.ChatRoomCreateActionWithCreatedBy]{},
 			fmt.Errorf("failed to get chat room create actions: %w", err)
 	}
 	return res, nil
@@ -339,7 +341,7 @@ func (a *PgAdapter) GetChatRoomCreateActionsOnChatRoom(
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
-) (store.ListResult[entity.ChatRoomCreateActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomCreateActionWithCreatedBy], error) {
 	return getChatRoomCreateActionsOnChatRoom(ctx, a.query, chatRoomID, where, order, np, cp, wc)
 }
 
@@ -353,12 +355,12 @@ func (a *PgAdapter) GetChatRoomCreateActionsOnChatRoomWithSd(
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
-) (store.ListResult[entity.ChatRoomCreateActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomCreateActionWithCreatedBy], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ListResult[entity.ChatRoomCreateActionOnChatRoom]{}, store.ErrNotFoundDescriptor
+		return store.ListResult[entity.ChatRoomCreateActionWithCreatedBy]{}, store.ErrNotFoundDescriptor
 	}
 	return getChatRoomCreateActionsOnChatRoom(ctx, qtx, chatRoomID, where, order, np, cp, wc)
 }
@@ -367,7 +369,7 @@ func (a *PgAdapter) GetChatRoomCreateActionsOnChatRoomWithSd(
 func getPluralChatRoomCreateActions(
 	ctx context.Context, qtx *query.Queries, chatRoomCreateActionIDs []uuid.UUID,
 	_ parameter.ChatRoomCreateActionOrderMethod, np store.NumberedPaginationParam,
-) (store.ListResult[entity.ChatRoomCreateActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomCreateActionWithCreatedBy], error) {
 	var e []query.GetPluralChatRoomCreateActionsRow
 	var err error
 	if !np.Valid {
@@ -386,22 +388,22 @@ func getPluralChatRoomCreateActions(
 		}
 	}
 	if err != nil {
-		return store.ListResult[entity.ChatRoomCreateActionOnChatRoom]{},
+		return store.ListResult[entity.ChatRoomCreateActionWithCreatedBy]{},
 			fmt.Errorf("failed to get chat room create actions: %w", err)
 	}
-	entities := make([]entity.ChatRoomCreateActionOnChatRoom, len(e))
+	entities := make([]entity.ChatRoomCreateActionWithCreatedBy, len(e))
 	for i, v := range e {
 		entities[i] = convChatRoomCreateActionOnChatRoom(
-			query.GetChatRoomCreateActionsOnChatRoomRow(v)).ChatRoomCreateActionOnChatRoom
+			query.GetChatRoomCreateActionsOnChatRoomRow(v)).ChatRoomCreateActionWithCreatedBy
 	}
-	return store.ListResult[entity.ChatRoomCreateActionOnChatRoom]{Data: entities}, nil
+	return store.ListResult[entity.ChatRoomCreateActionWithCreatedBy]{Data: entities}, nil
 }
 
 // GetPluralChatRoomCreateActions は複数のチャットルーム作成アクションを取得します。
 func (a *PgAdapter) GetPluralChatRoomCreateActions(
 	ctx context.Context, chatRoomCreateActionIDs []uuid.UUID,
 	order parameter.ChatRoomCreateActionOrderMethod, np store.NumberedPaginationParam,
-) (store.ListResult[entity.ChatRoomCreateActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomCreateActionWithCreatedBy], error) {
 	return getPluralChatRoomCreateActions(ctx, a.query, chatRoomCreateActionIDs, order, np)
 }
 
@@ -409,12 +411,12 @@ func (a *PgAdapter) GetPluralChatRoomCreateActions(
 func (a *PgAdapter) GetPluralChatRoomCreateActionsWithSd(
 	ctx context.Context, sd store.Sd, chatRoomCreateActionIDs []uuid.UUID,
 	order parameter.ChatRoomCreateActionOrderMethod, np store.NumberedPaginationParam,
-) (store.ListResult[entity.ChatRoomCreateActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomCreateActionWithCreatedBy], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ListResult[entity.ChatRoomCreateActionOnChatRoom]{}, store.ErrNotFoundDescriptor
+		return store.ListResult[entity.ChatRoomCreateActionWithCreatedBy]{}, store.ErrNotFoundDescriptor
 	}
 	return getPluralChatRoomCreateActions(ctx, qtx, chatRoomCreateActionIDs, order, np)
 }

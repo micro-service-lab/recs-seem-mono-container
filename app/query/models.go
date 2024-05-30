@@ -251,7 +251,6 @@ type Membership struct {
 type Message struct {
 	TMessagesPkey    pgtype.Int8 `json:"t_messages_pkey"`
 	MessageID        uuid.UUID   `json:"message_id"`
-	ChatRoomID       uuid.UUID   `json:"chat_room_id"`
 	SenderID         pgtype.UUID `json:"sender_id"`
 	Body             string      `json:"body"`
 	PostedAt         time.Time   `json:"posted_at"`

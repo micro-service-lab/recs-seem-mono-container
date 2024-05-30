@@ -9,15 +9,15 @@ type ChatRoomAddMemberAction struct {
 	AddedBy                   UUID      `json:"added_by"`
 }
 
-// ChatRoomAddMemberActionOnChatRoom チャットルームメンバー追加アクションを表す構造体。
-type ChatRoomAddMemberActionOnChatRoom struct {
+// ChatRoomAddMemberActionWithAddedBy チャットルームメンバー追加アクションを表す構造体。
+type ChatRoomAddMemberActionWithAddedBy struct {
 	ChatRoomAddMemberActionID uuid.UUID                    `json:"chat_room_add_member_action_id"`
 	ChatRoomActionID          uuid.UUID                    `json:"chat_room_action_id"`
 	AddedBy                   NullableEntity[SimpleMember] `json:"added_by"`
 }
 
-// ChatRoomAddMemberActionOnChatRoomForQuery チャットルームメンバー追加アクションを表す構造体(クエリー用)。
-type ChatRoomAddMemberActionOnChatRoomForQuery struct {
+// ChatRoomAddMemberActionWithAddedByForQuery チャットルームメンバー追加アクションを表す構造体(クエリー用)。
+type ChatRoomAddMemberActionWithAddedByForQuery struct {
 	Pkey Int `json:"-"`
-	ChatRoomAddMemberActionOnChatRoom
+	ChatRoomAddMemberActionWithAddedBy
 }

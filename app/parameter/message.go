@@ -10,10 +10,10 @@ import (
 
 // CreateMessageParam メッセージ作成のパラメータ。
 type CreateMessageParam struct {
-	ChatRoomID uuid.UUID
-	SenderID   entity.UUID
-	Body       string
-	PostedAt   time.Time
+	ChatRoomActionID uuid.UUID
+	SenderID         entity.UUID
+	Body             string
+	PostedAt         time.Time
 }
 
 // UpdateMessageParams メッセージ更新のパラメータ。

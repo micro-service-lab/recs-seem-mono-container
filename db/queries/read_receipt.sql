@@ -240,7 +240,7 @@ AND
 -- name: CountReadableMessagesOnChatRoomAndMember :one
 SELECT COUNT(*) FROM t_read_receipts
 LEFT JOIN t_messages ON t_read_receipts.message_id = t_messages.message_id
-WHERE t_messages.chat_room_id = $1
+WHERE t_messages.chat_room_action_id IN (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1)
 AND t_read_receipts.member_id = $2
 AND
 	CASE WHEN @where_is_read::boolean = true THEN t_read_receipts.read_at IS NOT NULL ELSE TRUE END
@@ -248,12 +248,13 @@ AND
 	CASE WHEN @where_is_not_read::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END;
 
 -- name: CountReadableMessagesOnChatRoomsAndMember :many
-SELECT t_messages.chat_room_id, COUNT(*) FROM t_read_receipts
+SELECT t_chat_room_actions.chat_room_id, COUNT(*) FROM t_read_receipts
 LEFT JOIN t_messages ON t_read_receipts.message_id = t_messages.message_id
-WHERE t_messages.chat_room_id = ANY(@chat_room_ids::uuid[])
+LEFT JOIN t_chat_room_actions ON t_messages.chat_room_action_id = t_chat_room_actions.chat_room_action_id
+WHERE t_chat_room_actions.chat_room_id = ANY(@chat_room_ids::uuid[])
 AND t_read_receipts.member_id = $1
 AND
 	CASE WHEN @where_is_read::boolean = true THEN t_read_receipts.read_at IS NOT NULL ELSE TRUE END
 AND
 	CASE WHEN @where_is_not_read::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
-GROUP BY t_messages.chat_room_id;
+GROUP BY t_chat_room_actions.chat_room_id;

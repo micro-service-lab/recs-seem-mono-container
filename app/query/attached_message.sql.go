@@ -15,7 +15,9 @@ import (
 const countAttachedItemsOnChatRoom = `-- name: CountAttachedItemsOnChatRoom :one
 SELECT COUNT(*) FROM t_attached_messages
 WHERE message_id IN (
-	SELECT message_id FROM t_messages WHERE chat_room_id = $1
+	SELECT message_id FROM t_messages m WHERE m.chat_room_action_id IN (
+		SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1
+	)
 )
 AND
 	CASE WHEN $2::boolean = true THEN t_attachable_items.mime_type_id = ANY($3::uuid[]) ELSE TRUE END
@@ -143,12 +145,14 @@ const getAttachedItemsOnChatRoom = `-- name: GetAttachedItemsOnChatRoom :many
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
 t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
-t_messages.sender_id message_sender_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
+t_messages.sender_id message_sender_id, t_messages.chat_room_action_id message_chat_room_action_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
 FROM t_attached_messages
 LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id IN (
-	SELECT message_id FROM t_messages m WHERE m.chat_room_id = $1
+	SELECT message_id FROM t_messages m WHERE m.chat_room_action_id IN (
+		SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1
+	)
 )
 AND
 	CASE WHEN $2::boolean = true THEN t_attachable_items.mime_type_id = ANY($3::uuid[]) ELSE TRUE END
@@ -169,20 +173,21 @@ type GetAttachedItemsOnChatRoomParams struct {
 }
 
 type GetAttachedItemsOnChatRoomRow struct {
-	TAttachedMessagesPkey  pgtype.Int8        `json:"t_attached_messages_pkey"`
-	AttachedMessageID      uuid.UUID          `json:"attached_message_id"`
-	MessageID              uuid.UUID          `json:"message_id"`
-	AttachableItemID       pgtype.UUID        `json:"attachable_item_id"`
-	AttachedItemUrl        pgtype.Text        `json:"attached_item_url"`
-	AttachedItemAlias      pgtype.Text        `json:"attached_item_alias"`
-	AttachedItemSize       pgtype.Float8      `json:"attached_item_size"`
-	AttachedItemMimeTypeID pgtype.UUID        `json:"attached_item_mime_type_id"`
-	AttachedItemOwnerID    pgtype.UUID        `json:"attached_item_owner_id"`
-	AttachedItemFromOuter  pgtype.Bool        `json:"attached_item_from_outer"`
-	MessageSenderID        pgtype.UUID        `json:"message_sender_id"`
-	MessageBody            pgtype.Text        `json:"message_body"`
-	MessagePostedAt        pgtype.Timestamptz `json:"message_posted_at"`
-	MessageLastEditedAt    pgtype.Timestamptz `json:"message_last_edited_at"`
+	TAttachedMessagesPkey   pgtype.Int8        `json:"t_attached_messages_pkey"`
+	AttachedMessageID       uuid.UUID          `json:"attached_message_id"`
+	MessageID               uuid.UUID          `json:"message_id"`
+	AttachableItemID        pgtype.UUID        `json:"attachable_item_id"`
+	AttachedItemUrl         pgtype.Text        `json:"attached_item_url"`
+	AttachedItemAlias       pgtype.Text        `json:"attached_item_alias"`
+	AttachedItemSize        pgtype.Float8      `json:"attached_item_size"`
+	AttachedItemMimeTypeID  pgtype.UUID        `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID     pgtype.UUID        `json:"attached_item_owner_id"`
+	AttachedItemFromOuter   pgtype.Bool        `json:"attached_item_from_outer"`
+	MessageSenderID         pgtype.UUID        `json:"message_sender_id"`
+	MessageChatRoomActionID pgtype.UUID        `json:"message_chat_room_action_id"`
+	MessageBody             pgtype.Text        `json:"message_body"`
+	MessagePostedAt         pgtype.Timestamptz `json:"message_posted_at"`
+	MessageLastEditedAt     pgtype.Timestamptz `json:"message_last_edited_at"`
 }
 
 func (q *Queries) GetAttachedItemsOnChatRoom(ctx context.Context, arg GetAttachedItemsOnChatRoomParams) ([]GetAttachedItemsOnChatRoomRow, error) {
@@ -212,6 +217,7 @@ func (q *Queries) GetAttachedItemsOnChatRoom(ctx context.Context, arg GetAttache
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
 			&i.MessageSenderID,
+			&i.MessageChatRoomActionID,
 			&i.MessageBody,
 			&i.MessagePostedAt,
 			&i.MessageLastEditedAt,
@@ -230,12 +236,14 @@ const getAttachedItemsOnChatRoomUseKeysetPaginate = `-- name: GetAttachedItemsOn
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
 t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
-t_messages.sender_id message_sender_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
+t_messages.sender_id message_sender_id, t_messages.chat_room_action_id message_chat_room_action_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
 FROM t_attached_messages
 LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id IN (
-	SELECT message_id FROM t_messages m WHERE m.chat_room_id = $1
+	SELECT message_id FROM t_messages m WHERE m.chat_room_action_id IN (
+		SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1
+	)
 )
 AND
 	CASE WHEN $3::boolean = true THEN t_attachable_items.mime_type_id = ANY($4::uuid[]) ELSE TRUE END
@@ -268,20 +276,21 @@ type GetAttachedItemsOnChatRoomUseKeysetPaginateParams struct {
 }
 
 type GetAttachedItemsOnChatRoomUseKeysetPaginateRow struct {
-	TAttachedMessagesPkey  pgtype.Int8        `json:"t_attached_messages_pkey"`
-	AttachedMessageID      uuid.UUID          `json:"attached_message_id"`
-	MessageID              uuid.UUID          `json:"message_id"`
-	AttachableItemID       pgtype.UUID        `json:"attachable_item_id"`
-	AttachedItemUrl        pgtype.Text        `json:"attached_item_url"`
-	AttachedItemAlias      pgtype.Text        `json:"attached_item_alias"`
-	AttachedItemSize       pgtype.Float8      `json:"attached_item_size"`
-	AttachedItemMimeTypeID pgtype.UUID        `json:"attached_item_mime_type_id"`
-	AttachedItemOwnerID    pgtype.UUID        `json:"attached_item_owner_id"`
-	AttachedItemFromOuter  pgtype.Bool        `json:"attached_item_from_outer"`
-	MessageSenderID        pgtype.UUID        `json:"message_sender_id"`
-	MessageBody            pgtype.Text        `json:"message_body"`
-	MessagePostedAt        pgtype.Timestamptz `json:"message_posted_at"`
-	MessageLastEditedAt    pgtype.Timestamptz `json:"message_last_edited_at"`
+	TAttachedMessagesPkey   pgtype.Int8        `json:"t_attached_messages_pkey"`
+	AttachedMessageID       uuid.UUID          `json:"attached_message_id"`
+	MessageID               uuid.UUID          `json:"message_id"`
+	AttachableItemID        pgtype.UUID        `json:"attachable_item_id"`
+	AttachedItemUrl         pgtype.Text        `json:"attached_item_url"`
+	AttachedItemAlias       pgtype.Text        `json:"attached_item_alias"`
+	AttachedItemSize        pgtype.Float8      `json:"attached_item_size"`
+	AttachedItemMimeTypeID  pgtype.UUID        `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID     pgtype.UUID        `json:"attached_item_owner_id"`
+	AttachedItemFromOuter   pgtype.Bool        `json:"attached_item_from_outer"`
+	MessageSenderID         pgtype.UUID        `json:"message_sender_id"`
+	MessageChatRoomActionID pgtype.UUID        `json:"message_chat_room_action_id"`
+	MessageBody             pgtype.Text        `json:"message_body"`
+	MessagePostedAt         pgtype.Timestamptz `json:"message_posted_at"`
+	MessageLastEditedAt     pgtype.Timestamptz `json:"message_last_edited_at"`
 }
 
 func (q *Queries) GetAttachedItemsOnChatRoomUseKeysetPaginate(ctx context.Context, arg GetAttachedItemsOnChatRoomUseKeysetPaginateParams) ([]GetAttachedItemsOnChatRoomUseKeysetPaginateRow, error) {
@@ -314,6 +323,7 @@ func (q *Queries) GetAttachedItemsOnChatRoomUseKeysetPaginate(ctx context.Contex
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
 			&i.MessageSenderID,
+			&i.MessageChatRoomActionID,
 			&i.MessageBody,
 			&i.MessagePostedAt,
 			&i.MessageLastEditedAt,
@@ -332,12 +342,14 @@ const getAttachedItemsOnChatRoomUseNumberedPaginate = `-- name: GetAttachedItems
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
 t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
-t_messages.sender_id message_sender_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
+t_messages.sender_id message_sender_id, t_messages.chat_room_action_id message_chat_room_action_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
 FROM t_attached_messages
 LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id IN (
-	SELECT message_id FROM t_messages m WHERE m.chat_room_id = $1
+	SELECT message_id FROM t_messages m WHERE m.chat_room_action_id IN (
+		SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1
+	)
 )
 AND
 	CASE WHEN $4::boolean = true THEN t_attachable_items.mime_type_id = ANY($5::uuid[]) ELSE TRUE END
@@ -361,20 +373,21 @@ type GetAttachedItemsOnChatRoomUseNumberedPaginateParams struct {
 }
 
 type GetAttachedItemsOnChatRoomUseNumberedPaginateRow struct {
-	TAttachedMessagesPkey  pgtype.Int8        `json:"t_attached_messages_pkey"`
-	AttachedMessageID      uuid.UUID          `json:"attached_message_id"`
-	MessageID              uuid.UUID          `json:"message_id"`
-	AttachableItemID       pgtype.UUID        `json:"attachable_item_id"`
-	AttachedItemUrl        pgtype.Text        `json:"attached_item_url"`
-	AttachedItemAlias      pgtype.Text        `json:"attached_item_alias"`
-	AttachedItemSize       pgtype.Float8      `json:"attached_item_size"`
-	AttachedItemMimeTypeID pgtype.UUID        `json:"attached_item_mime_type_id"`
-	AttachedItemOwnerID    pgtype.UUID        `json:"attached_item_owner_id"`
-	AttachedItemFromOuter  pgtype.Bool        `json:"attached_item_from_outer"`
-	MessageSenderID        pgtype.UUID        `json:"message_sender_id"`
-	MessageBody            pgtype.Text        `json:"message_body"`
-	MessagePostedAt        pgtype.Timestamptz `json:"message_posted_at"`
-	MessageLastEditedAt    pgtype.Timestamptz `json:"message_last_edited_at"`
+	TAttachedMessagesPkey   pgtype.Int8        `json:"t_attached_messages_pkey"`
+	AttachedMessageID       uuid.UUID          `json:"attached_message_id"`
+	MessageID               uuid.UUID          `json:"message_id"`
+	AttachableItemID        pgtype.UUID        `json:"attachable_item_id"`
+	AttachedItemUrl         pgtype.Text        `json:"attached_item_url"`
+	AttachedItemAlias       pgtype.Text        `json:"attached_item_alias"`
+	AttachedItemSize        pgtype.Float8      `json:"attached_item_size"`
+	AttachedItemMimeTypeID  pgtype.UUID        `json:"attached_item_mime_type_id"`
+	AttachedItemOwnerID     pgtype.UUID        `json:"attached_item_owner_id"`
+	AttachedItemFromOuter   pgtype.Bool        `json:"attached_item_from_outer"`
+	MessageSenderID         pgtype.UUID        `json:"message_sender_id"`
+	MessageChatRoomActionID pgtype.UUID        `json:"message_chat_room_action_id"`
+	MessageBody             pgtype.Text        `json:"message_body"`
+	MessagePostedAt         pgtype.Timestamptz `json:"message_posted_at"`
+	MessageLastEditedAt     pgtype.Timestamptz `json:"message_last_edited_at"`
 }
 
 func (q *Queries) GetAttachedItemsOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetAttachedItemsOnChatRoomUseNumberedPaginateParams) ([]GetAttachedItemsOnChatRoomUseNumberedPaginateRow, error) {
@@ -406,6 +419,7 @@ func (q *Queries) GetAttachedItemsOnChatRoomUseNumberedPaginate(ctx context.Cont
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
 			&i.MessageSenderID,
+			&i.MessageChatRoomActionID,
 			&i.MessageBody,
 			&i.MessagePostedAt,
 			&i.MessageLastEditedAt,

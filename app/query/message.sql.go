@@ -16,7 +16,7 @@ import (
 const countMessages = `-- name: CountMessages :one
 SELECT COUNT(*) FROM t_messages
 WHERE
-	CASE WHEN $1::boolean = true THEN chat_room_id = ANY($2::uuid[]) ELSE TRUE END
+	CASE WHEN $1::boolean = true THEN t_chat_room_actions in (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = ANY($2::uuid[])) ELSE TRUE END
 AND
 	CASE WHEN $3::boolean = true THEN sender_id = ANY($4::uuid[]) ELSE TRUE END
 AND
@@ -71,20 +71,20 @@ func (q *Queries) CountMessages(ctx context.Context, arg CountMessagesParams) (i
 }
 
 const createMessage = `-- name: CreateMessage :one
-INSERT INTO t_messages (chat_room_id, sender_id, body, posted_at, last_edited_at) VALUES ($1, $2, $3, $4, $5) RETURNING t_messages_pkey, message_id, chat_room_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id
+INSERT INTO t_messages (chat_room_action_id, sender_id, body, posted_at, last_edited_at) VALUES ($1, $2, $3, $4, $5) RETURNING t_messages_pkey, message_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id
 `
 
 type CreateMessageParams struct {
-	ChatRoomID   uuid.UUID   `json:"chat_room_id"`
-	SenderID     pgtype.UUID `json:"sender_id"`
-	Body         string      `json:"body"`
-	PostedAt     time.Time   `json:"posted_at"`
-	LastEditedAt time.Time   `json:"last_edited_at"`
+	ChatRoomActionID uuid.UUID   `json:"chat_room_action_id"`
+	SenderID         pgtype.UUID `json:"sender_id"`
+	Body             string      `json:"body"`
+	PostedAt         time.Time   `json:"posted_at"`
+	LastEditedAt     time.Time   `json:"last_edited_at"`
 }
 
 func (q *Queries) CreateMessage(ctx context.Context, arg CreateMessageParams) (Message, error) {
 	row := q.db.QueryRow(ctx, createMessage,
-		arg.ChatRoomID,
+		arg.ChatRoomActionID,
 		arg.SenderID,
 		arg.Body,
 		arg.PostedAt,
@@ -94,7 +94,6 @@ func (q *Queries) CreateMessage(ctx context.Context, arg CreateMessageParams) (M
 	err := row.Scan(
 		&i.TMessagesPkey,
 		&i.MessageID,
-		&i.ChatRoomID,
 		&i.SenderID,
 		&i.Body,
 		&i.PostedAt,
@@ -105,11 +104,11 @@ func (q *Queries) CreateMessage(ctx context.Context, arg CreateMessageParams) (M
 }
 
 type CreateMessagesParams struct {
-	ChatRoomID   uuid.UUID   `json:"chat_room_id"`
-	SenderID     pgtype.UUID `json:"sender_id"`
-	Body         string      `json:"body"`
-	PostedAt     time.Time   `json:"posted_at"`
-	LastEditedAt time.Time   `json:"last_edited_at"`
+	ChatRoomActionID uuid.UUID   `json:"chat_room_action_id"`
+	SenderID         pgtype.UUID `json:"sender_id"`
+	Body             string      `json:"body"`
+	PostedAt         time.Time   `json:"posted_at"`
+	LastEditedAt     time.Time   `json:"last_edited_at"`
 }
 
 const deleteMessage = `-- name: DeleteMessage :execrows
@@ -125,7 +124,7 @@ func (q *Queries) DeleteMessage(ctx context.Context, messageID uuid.UUID) (int64
 }
 
 const deleteMessagesOnChatRoom = `-- name: DeleteMessagesOnChatRoom :execrows
-DELETE FROM t_messages WHERE chat_room_id = $1
+DELETE FROM t_messages WHERE (SELECT chat_room_id FROM t_chat_room_actions WHERE t_chat_room_actions.chat_room_action_id = t_messages.chat_room_action_id) = $1
 `
 
 func (q *Queries) DeleteMessagesOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) (int64, error) {
@@ -137,7 +136,7 @@ func (q *Queries) DeleteMessagesOnChatRoom(ctx context.Context, chatRoomID uuid.
 }
 
 const findMessageByID = `-- name: FindMessageByID :one
-SELECT t_messages_pkey, message_id, chat_room_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id FROM t_messages WHERE message_id = $1
+SELECT t_messages_pkey, message_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id FROM t_messages WHERE message_id = $1
 `
 
 func (q *Queries) FindMessageByID(ctx context.Context, messageID uuid.UUID) (Message, error) {
@@ -146,7 +145,6 @@ func (q *Queries) FindMessageByID(ctx context.Context, messageID uuid.UUID) (Mes
 	err := row.Scan(
 		&i.TMessagesPkey,
 		&i.MessageID,
-		&i.ChatRoomID,
 		&i.SenderID,
 		&i.Body,
 		&i.PostedAt,
@@ -157,12 +155,13 @@ func (q *Queries) FindMessageByID(ctx context.Context, messageID uuid.UUID) (Mes
 }
 
 const findMessageByIDWithChatRoom = `-- name: FindMessageByIDWithChatRoom :one
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_chat_rooms.chat_room_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id FROM t_messages
+LEFT JOIN t_chat_room_actions ON t_messages.chat_room_action_id = t_chat_room_actions.chat_room_action_id
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
@@ -172,12 +171,12 @@ WHERE message_id = $1
 type FindMessageByIDWithChatRoomRow struct {
 	TMessagesPkey                      pgtype.Int8   `json:"t_messages_pkey"`
 	MessageID                          uuid.UUID     `json:"message_id"`
-	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
 	SenderID                           pgtype.UUID   `json:"sender_id"`
 	Body                               string        `json:"body"`
 	PostedAt                           time.Time     `json:"posted_at"`
 	LastEditedAt                       time.Time     `json:"last_edited_at"`
 	ChatRoomActionID                   uuid.UUID     `json:"chat_room_action_id"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
 	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
 	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
 	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
@@ -200,12 +199,12 @@ func (q *Queries) FindMessageByIDWithChatRoom(ctx context.Context, messageID uui
 	err := row.Scan(
 		&i.TMessagesPkey,
 		&i.MessageID,
-		&i.ChatRoomID,
 		&i.SenderID,
 		&i.Body,
 		&i.PostedAt,
 		&i.LastEditedAt,
 		&i.ChatRoomActionID,
+		&i.ChatRoomID,
 		&i.ChatRoomName,
 		&i.ChatRoomIsPrivate,
 		&i.ChatRoomFromOrganization,
@@ -225,7 +224,7 @@ func (q *Queries) FindMessageByIDWithChatRoom(ctx context.Context, messageID uui
 }
 
 const findMessageByIDWithSender = `-- name: FindMessageByIDWithSender :one
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -239,7 +238,6 @@ WHERE message_id = $1
 type FindMessageByIDWithSenderRow struct {
 	TMessagesPkey                      pgtype.Int8   `json:"t_messages_pkey"`
 	MessageID                          uuid.UUID     `json:"message_id"`
-	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
 	SenderID                           pgtype.UUID   `json:"sender_id"`
 	Body                               string        `json:"body"`
 	PostedAt                           time.Time     `json:"posted_at"`
@@ -267,7 +265,6 @@ func (q *Queries) FindMessageByIDWithSender(ctx context.Context, messageID uuid.
 	err := row.Scan(
 		&i.TMessagesPkey,
 		&i.MessageID,
-		&i.ChatRoomID,
 		&i.SenderID,
 		&i.Body,
 		&i.PostedAt,
@@ -292,7 +289,7 @@ func (q *Queries) FindMessageByIDWithSender(ctx context.Context, messageID uuid.
 }
 
 const getMessages = `-- name: GetMessages :many
-SELECT t_messages_pkey, message_id, chat_room_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id FROM t_messages
+SELECT t_messages_pkey, message_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id FROM t_messages
 WHERE
 	CASE WHEN $1::boolean = true THEN chat_room_id = ANY($2::uuid[]) ELSE TRUE END
 AND
@@ -361,7 +358,6 @@ func (q *Queries) GetMessages(ctx context.Context, arg GetMessagesParams) ([]Mes
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
@@ -379,7 +375,7 @@ func (q *Queries) GetMessages(ctx context.Context, arg GetMessagesParams) ([]Mes
 }
 
 const getMessagesUseKeysetPaginate = `-- name: GetMessagesUseKeysetPaginate :many
-SELECT t_messages_pkey, message_id, chat_room_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id FROM t_messages
+SELECT t_messages_pkey, message_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id FROM t_messages
 WHERE
 	CASE WHEN $2::boolean = true THEN chat_room_id = ANY($3::uuid[]) ELSE TRUE END
 AND
@@ -483,7 +479,6 @@ func (q *Queries) GetMessagesUseKeysetPaginate(ctx context.Context, arg GetMessa
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
@@ -501,7 +496,7 @@ func (q *Queries) GetMessagesUseKeysetPaginate(ctx context.Context, arg GetMessa
 }
 
 const getMessagesUseNumberedPaginate = `-- name: GetMessagesUseNumberedPaginate :many
-SELECT t_messages_pkey, message_id, chat_room_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id FROM t_messages
+SELECT t_messages_pkey, message_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id FROM t_messages
 WHERE
 	CASE WHEN $3::boolean = true THEN chat_room_id = ANY($4::uuid[]) ELSE TRUE END
 AND
@@ -575,7 +570,6 @@ func (q *Queries) GetMessagesUseNumberedPaginate(ctx context.Context, arg GetMes
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
@@ -593,17 +587,18 @@ func (q *Queries) GetMessagesUseNumberedPaginate(ctx context.Context, arg GetMes
 }
 
 const getMessagesWithChatRoom = `-- name: GetMessagesWithChatRoom :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_chat_rooms.chat_room_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id FROM t_messages
+LEFT JOIN t_chat_room_actions ON t_messages.chat_room_action_id = t_chat_room_actions.chat_room_action_id
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN $1::boolean = true THEN t_messages.chat_room_id = ANY($2::uuid[]) ELSE TRUE END
+	CASE WHEN $1::boolean = true THEN t_chat_room_actions in (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = ANY($2::uuid[])) ELSE TRUE END
 AND
 	CASE WHEN $3::boolean = true THEN sender_id = ANY($4::uuid[]) ELSE TRUE END
 AND
@@ -645,12 +640,12 @@ type GetMessagesWithChatRoomParams struct {
 type GetMessagesWithChatRoomRow struct {
 	TMessagesPkey                      pgtype.Int8   `json:"t_messages_pkey"`
 	MessageID                          uuid.UUID     `json:"message_id"`
-	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
 	SenderID                           pgtype.UUID   `json:"sender_id"`
 	Body                               string        `json:"body"`
 	PostedAt                           time.Time     `json:"posted_at"`
 	LastEditedAt                       time.Time     `json:"last_edited_at"`
 	ChatRoomActionID                   uuid.UUID     `json:"chat_room_action_id"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
 	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
 	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
 	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
@@ -695,12 +690,12 @@ func (q *Queries) GetMessagesWithChatRoom(ctx context.Context, arg GetMessagesWi
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
 			&i.LastEditedAt,
 			&i.ChatRoomActionID,
+			&i.ChatRoomID,
 			&i.ChatRoomName,
 			&i.ChatRoomIsPrivate,
 			&i.ChatRoomFromOrganization,
@@ -727,17 +722,18 @@ func (q *Queries) GetMessagesWithChatRoom(ctx context.Context, arg GetMessagesWi
 }
 
 const getMessagesWithChatRoomUseKeysetPaginate = `-- name: GetMessagesWithChatRoomUseKeysetPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_chat_rooms.chat_room_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id FROM t_messages
+LEFT JOIN t_chat_room_actions ON t_messages.chat_room_action_id = t_chat_room_actions.chat_room_action_id
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN $2::boolean = true THEN t_messages.chat_room_id = ANY($3::uuid[]) ELSE TRUE END
+	CASE WHEN $2::boolean = true THEN t_chat_room_actions in (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = ANY($3::uuid[])) ELSE TRUE END
 AND
 	CASE WHEN $4::boolean = true THEN sender_id = ANY($5::uuid[]) ELSE TRUE END
 AND
@@ -809,12 +805,12 @@ type GetMessagesWithChatRoomUseKeysetPaginateParams struct {
 type GetMessagesWithChatRoomUseKeysetPaginateRow struct {
 	TMessagesPkey                      pgtype.Int8   `json:"t_messages_pkey"`
 	MessageID                          uuid.UUID     `json:"message_id"`
-	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
 	SenderID                           pgtype.UUID   `json:"sender_id"`
 	Body                               string        `json:"body"`
 	PostedAt                           time.Time     `json:"posted_at"`
 	LastEditedAt                       time.Time     `json:"last_edited_at"`
 	ChatRoomActionID                   uuid.UUID     `json:"chat_room_action_id"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
 	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
 	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
 	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
@@ -864,12 +860,12 @@ func (q *Queries) GetMessagesWithChatRoomUseKeysetPaginate(ctx context.Context, 
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
 			&i.LastEditedAt,
 			&i.ChatRoomActionID,
+			&i.ChatRoomID,
 			&i.ChatRoomName,
 			&i.ChatRoomIsPrivate,
 			&i.ChatRoomFromOrganization,
@@ -896,17 +892,18 @@ func (q *Queries) GetMessagesWithChatRoomUseKeysetPaginate(ctx context.Context, 
 }
 
 const getMessagesWithChatRoomUseNumberedPaginate = `-- name: GetMessagesWithChatRoomUseNumberedPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_chat_rooms.chat_room_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id FROM t_messages
+LEFT JOIN t_chat_room_actions ON t_messages.chat_room_action_id = t_chat_room_actions.chat_room_action_id
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN $3::boolean = true THEN t_messages.chat_room_id = ANY($4::uuid[]) ELSE TRUE END
+	CASE WHEN $3::boolean = true THEN t_chat_room_actions in (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = ANY($4::uuid[])) ELSE TRUE END
 AND
 	CASE WHEN $5::boolean = true THEN sender_id = ANY($6::uuid[]) ELSE TRUE END
 AND
@@ -951,12 +948,12 @@ type GetMessagesWithChatRoomUseNumberedPaginateParams struct {
 type GetMessagesWithChatRoomUseNumberedPaginateRow struct {
 	TMessagesPkey                      pgtype.Int8   `json:"t_messages_pkey"`
 	MessageID                          uuid.UUID     `json:"message_id"`
-	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
 	SenderID                           pgtype.UUID   `json:"sender_id"`
 	Body                               string        `json:"body"`
 	PostedAt                           time.Time     `json:"posted_at"`
 	LastEditedAt                       time.Time     `json:"last_edited_at"`
 	ChatRoomActionID                   uuid.UUID     `json:"chat_room_action_id"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
 	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
 	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
 	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
@@ -1003,12 +1000,12 @@ func (q *Queries) GetMessagesWithChatRoomUseNumberedPaginate(ctx context.Context
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
 			&i.LastEditedAt,
 			&i.ChatRoomActionID,
+			&i.ChatRoomID,
 			&i.ChatRoomName,
 			&i.ChatRoomIsPrivate,
 			&i.ChatRoomFromOrganization,
@@ -1035,7 +1032,7 @@ func (q *Queries) GetMessagesWithChatRoomUseNumberedPaginate(ctx context.Context
 }
 
 const getMessagesWithSender = `-- name: GetMessagesWithSender :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -1044,7 +1041,7 @@ LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN $1::boolean = true THEN t_messages.chat_room_id = ANY($2::uuid[]) ELSE TRUE END
+	CASE WHEN $1::boolean = true THEN t_chat_room_actions in (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = ANY($2::uuid[])) ELSE TRUE END
 AND
 	CASE WHEN $3::boolean = true THEN sender_id = ANY($4::uuid[]) ELSE TRUE END
 AND
@@ -1086,7 +1083,6 @@ type GetMessagesWithSenderParams struct {
 type GetMessagesWithSenderRow struct {
 	TMessagesPkey                      pgtype.Int8   `json:"t_messages_pkey"`
 	MessageID                          uuid.UUID     `json:"message_id"`
-	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
 	SenderID                           pgtype.UUID   `json:"sender_id"`
 	Body                               string        `json:"body"`
 	PostedAt                           time.Time     `json:"posted_at"`
@@ -1136,7 +1132,6 @@ func (q *Queries) GetMessagesWithSender(ctx context.Context, arg GetMessagesWith
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
@@ -1168,7 +1163,7 @@ func (q *Queries) GetMessagesWithSender(ctx context.Context, arg GetMessagesWith
 }
 
 const getMessagesWithSenderUseKeysetPaginate = `-- name: GetMessagesWithSenderUseKeysetPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -1177,7 +1172,7 @@ LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN $2::boolean = true THEN t_messages.chat_room_id = ANY($3::uuid[]) ELSE TRUE END
+	CASE WHEN $2::boolean = true THEN t_chat_room_actions in (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = ANY($3::uuid[])) ELSE TRUE END
 AND
 	CASE WHEN $4::boolean = true THEN sender_id = ANY($5::uuid[]) ELSE TRUE END
 AND
@@ -1249,7 +1244,6 @@ type GetMessagesWithSenderUseKeysetPaginateParams struct {
 type GetMessagesWithSenderUseKeysetPaginateRow struct {
 	TMessagesPkey                      pgtype.Int8   `json:"t_messages_pkey"`
 	MessageID                          uuid.UUID     `json:"message_id"`
-	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
 	SenderID                           pgtype.UUID   `json:"sender_id"`
 	Body                               string        `json:"body"`
 	PostedAt                           time.Time     `json:"posted_at"`
@@ -1304,7 +1298,6 @@ func (q *Queries) GetMessagesWithSenderUseKeysetPaginate(ctx context.Context, ar
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
@@ -1336,7 +1329,7 @@ func (q *Queries) GetMessagesWithSenderUseKeysetPaginate(ctx context.Context, ar
 }
 
 const getMessagesWithSenderUseNumberedPaginate = `-- name: GetMessagesWithSenderUseNumberedPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -1345,7 +1338,7 @@ LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE
-	CASE WHEN $3::boolean = true THEN t_messages.chat_room_id = ANY($4::uuid[]) ELSE TRUE END
+	CASE WHEN $3::boolean = true THEN t_chat_room_actions in (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = ANY($4::uuid[])) ELSE TRUE END
 AND
 	CASE WHEN $5::boolean = true THEN sender_id = ANY($6::uuid[]) ELSE TRUE END
 AND
@@ -1390,7 +1383,6 @@ type GetMessagesWithSenderUseNumberedPaginateParams struct {
 type GetMessagesWithSenderUseNumberedPaginateRow struct {
 	TMessagesPkey                      pgtype.Int8   `json:"t_messages_pkey"`
 	MessageID                          uuid.UUID     `json:"message_id"`
-	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
 	SenderID                           pgtype.UUID   `json:"sender_id"`
 	Body                               string        `json:"body"`
 	PostedAt                           time.Time     `json:"posted_at"`
@@ -1442,7 +1434,6 @@ func (q *Queries) GetMessagesWithSenderUseNumberedPaginate(ctx context.Context, 
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
@@ -1474,7 +1465,7 @@ func (q *Queries) GetMessagesWithSenderUseNumberedPaginate(ctx context.Context, 
 }
 
 const getPluralMessages = `-- name: GetPluralMessages :many
-SELECT t_messages_pkey, message_id, chat_room_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id FROM t_messages WHERE message_id = ANY($1::uuid[])
+SELECT t_messages_pkey, message_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id FROM t_messages WHERE message_id = ANY($1::uuid[])
 ORDER BY
 	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC,
 	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC,
@@ -1500,7 +1491,6 @@ func (q *Queries) GetPluralMessages(ctx context.Context, arg GetPluralMessagesPa
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
@@ -1518,7 +1508,7 @@ func (q *Queries) GetPluralMessages(ctx context.Context, arg GetPluralMessagesPa
 }
 
 const getPluralMessagesUseNumberedPaginate = `-- name: GetPluralMessagesUseNumberedPaginate :many
-SELECT t_messages_pkey, message_id, chat_room_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id FROM t_messages WHERE message_id = ANY($3::uuid[])
+SELECT t_messages_pkey, message_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id FROM t_messages WHERE message_id = ANY($3::uuid[])
 ORDER BY
 	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC,
 	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC,
@@ -1552,7 +1542,6 @@ func (q *Queries) GetPluralMessagesUseNumberedPaginate(ctx context.Context, arg 
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
@@ -1570,12 +1559,13 @@ func (q *Queries) GetPluralMessagesUseNumberedPaginate(ctx context.Context, arg 
 }
 
 const getPluralMessagesWithChatRoom = `-- name: GetPluralMessagesWithChatRoom :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_chat_rooms.chat_room_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id FROM t_messages
+LEFT JOIN t_chat_room_actions ON t_messages.chat_room_action_id = t_chat_room_actions.chat_room_action_id
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
@@ -1596,12 +1586,12 @@ type GetPluralMessagesWithChatRoomParams struct {
 type GetPluralMessagesWithChatRoomRow struct {
 	TMessagesPkey                      pgtype.Int8   `json:"t_messages_pkey"`
 	MessageID                          uuid.UUID     `json:"message_id"`
-	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
 	SenderID                           pgtype.UUID   `json:"sender_id"`
 	Body                               string        `json:"body"`
 	PostedAt                           time.Time     `json:"posted_at"`
 	LastEditedAt                       time.Time     `json:"last_edited_at"`
 	ChatRoomActionID                   uuid.UUID     `json:"chat_room_action_id"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
 	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
 	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
 	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
@@ -1630,12 +1620,12 @@ func (q *Queries) GetPluralMessagesWithChatRoom(ctx context.Context, arg GetPlur
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
 			&i.LastEditedAt,
 			&i.ChatRoomActionID,
+			&i.ChatRoomID,
 			&i.ChatRoomName,
 			&i.ChatRoomIsPrivate,
 			&i.ChatRoomFromOrganization,
@@ -1662,12 +1652,13 @@ func (q *Queries) GetPluralMessagesWithChatRoom(ctx context.Context, arg GetPlur
 }
 
 const getPluralMessagesWithChatRoomUseNumberedPaginate = `-- name: GetPluralMessagesWithChatRoomUseNumberedPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_chat_rooms.chat_room_id, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,
 m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_cover_image_height,
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id FROM t_messages
+LEFT JOIN t_chat_room_actions ON t_messages.chat_room_action_id = t_chat_room_actions.chat_room_action_id
 LEFT JOIN m_chat_rooms ON t_messages.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
@@ -1691,12 +1682,12 @@ type GetPluralMessagesWithChatRoomUseNumberedPaginateParams struct {
 type GetPluralMessagesWithChatRoomUseNumberedPaginateRow struct {
 	TMessagesPkey                      pgtype.Int8   `json:"t_messages_pkey"`
 	MessageID                          uuid.UUID     `json:"message_id"`
-	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
 	SenderID                           pgtype.UUID   `json:"sender_id"`
 	Body                               string        `json:"body"`
 	PostedAt                           time.Time     `json:"posted_at"`
 	LastEditedAt                       time.Time     `json:"last_edited_at"`
 	ChatRoomActionID                   uuid.UUID     `json:"chat_room_action_id"`
+	ChatRoomID                         pgtype.UUID   `json:"chat_room_id"`
 	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
 	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
 	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
@@ -1730,12 +1721,12 @@ func (q *Queries) GetPluralMessagesWithChatRoomUseNumberedPaginate(ctx context.C
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
 			&i.LastEditedAt,
 			&i.ChatRoomActionID,
+			&i.ChatRoomID,
 			&i.ChatRoomName,
 			&i.ChatRoomIsPrivate,
 			&i.ChatRoomFromOrganization,
@@ -1762,7 +1753,7 @@ func (q *Queries) GetPluralMessagesWithChatRoomUseNumberedPaginate(ctx context.C
 }
 
 const getPluralMessagesWithSender = `-- name: GetPluralMessagesWithSender :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -1787,7 +1778,6 @@ type GetPluralMessagesWithSenderParams struct {
 type GetPluralMessagesWithSenderRow struct {
 	TMessagesPkey                      pgtype.Int8   `json:"t_messages_pkey"`
 	MessageID                          uuid.UUID     `json:"message_id"`
-	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
 	SenderID                           pgtype.UUID   `json:"sender_id"`
 	Body                               string        `json:"body"`
 	PostedAt                           time.Time     `json:"posted_at"`
@@ -1821,7 +1811,6 @@ func (q *Queries) GetPluralMessagesWithSender(ctx context.Context, arg GetPlural
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
@@ -1853,7 +1842,7 @@ func (q *Queries) GetPluralMessagesWithSender(ctx context.Context, arg GetPlural
 }
 
 const getPluralMessagesWithSenderUseNumberedPaginate = `-- name: GetPluralMessagesWithSenderUseNumberedPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.chat_room_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -1881,7 +1870,6 @@ type GetPluralMessagesWithSenderUseNumberedPaginateParams struct {
 type GetPluralMessagesWithSenderUseNumberedPaginateRow struct {
 	TMessagesPkey                      pgtype.Int8   `json:"t_messages_pkey"`
 	MessageID                          uuid.UUID     `json:"message_id"`
-	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
 	SenderID                           pgtype.UUID   `json:"sender_id"`
 	Body                               string        `json:"body"`
 	PostedAt                           time.Time     `json:"posted_at"`
@@ -1920,7 +1908,6 @@ func (q *Queries) GetPluralMessagesWithSenderUseNumberedPaginate(ctx context.Con
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,
-			&i.ChatRoomID,
 			&i.SenderID,
 			&i.Body,
 			&i.PostedAt,
@@ -1964,7 +1951,7 @@ func (q *Queries) PluralDeleteMessages(ctx context.Context, memberIds []uuid.UUI
 }
 
 const updateMessage = `-- name: UpdateMessage :one
-UPDATE t_messages SET body = $2, last_edited_at = $3 WHERE message_id = $1 RETURNING t_messages_pkey, message_id, chat_room_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id
+UPDATE t_messages SET body = $2, last_edited_at = $3 WHERE message_id = $1 RETURNING t_messages_pkey, message_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id
 `
 
 type UpdateMessageParams struct {
@@ -1979,7 +1966,6 @@ func (q *Queries) UpdateMessage(ctx context.Context, arg UpdateMessageParams) (M
 	err := row.Scan(
 		&i.TMessagesPkey,
 		&i.MessageID,
-		&i.ChatRoomID,
 		&i.SenderID,
 		&i.Body,
 		&i.PostedAt,

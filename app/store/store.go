@@ -59,4 +59,7 @@ type Store interface {
 	ChatRoomAddMemberAction
 	ChatRoomRemoveMemberAction
 	ChatRoomWithdrawAction
+	ChatRoomAddedMember
+	ChatRoomRemovedMember
+	ChatRoomAction
 }

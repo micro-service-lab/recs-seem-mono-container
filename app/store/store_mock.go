@@ -21,6 +21,18 @@ var _ Store = &StoreMock{}
 //
 //		// make and configure a mocked Store
 //		mockedStore := &StoreMock{
+//			AddMemberToChatRoomAddMemberActionFunc: func(ctx context.Context, param parameter.CreateChatRoomAddedMemberParam) (entity.ChatRoomAddedMember, error) {
+//				panic("mock out the AddMemberToChatRoomAddMemberAction method")
+//			},
+//			AddMemberToChatRoomAddMemberActionWithSdFunc: func(ctx context.Context, sd Sd, param parameter.CreateChatRoomAddedMemberParam) (entity.ChatRoomAddedMember, error) {
+//				panic("mock out the AddMemberToChatRoomAddMemberActionWithSd method")
+//			},
+//			AddMembersToChatRoomAddMemberActionFunc: func(ctx context.Context, params []parameter.CreateChatRoomAddedMemberParam) (int64, error) {
+//				panic("mock out the AddMembersToChatRoomAddMemberAction method")
+//			},
+//			AddMembersToChatRoomAddMemberActionWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateChatRoomAddedMemberParam) (int64, error) {
+//				panic("mock out the AddMembersToChatRoomAddMemberActionWithSd method")
+//			},
 //			AssociateRoleFunc: func(ctx context.Context, param parameter.AssociationRoleParam) (entity.RoleAssociation, error) {
 //				panic("mock out the AssociateRole method")
 //			},
@@ -95,6 +107,12 @@ var _ Store = &StoreMock{}
 //			},
 //			CountChatRoomActionTypesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereChatRoomActionTypeParam) (int64, error) {
 //				panic("mock out the CountChatRoomActionTypesWithSd method")
+//			},
+//			CountChatRoomActionsFunc: func(ctx context.Context, where parameter.WhereChatRoomActionParam) (int64, error) {
+//				panic("mock out the CountChatRoomActions method")
+//			},
+//			CountChatRoomActionsWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereChatRoomActionParam) (int64, error) {
+//				panic("mock out the CountChatRoomActionsWithSd method")
 //			},
 //			CountChatRoomAddMemberActionsFunc: func(ctx context.Context, where parameter.WhereChatRoomAddMemberActionParam) (int64, error) {
 //				panic("mock out the CountChatRoomAddMemberActions method")
@@ -173,6 +191,18 @@ var _ Store = &StoreMock{}
 //			},
 //			CountMembersOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereMemberOnChatRoomParam) (int64, error) {
 //				panic("mock out the CountMembersOnChatRoom method")
+//			},
+//			CountMembersOnChatRoomAddMemberActionFunc: func(ctx context.Context, chatRoomAddMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomAddMemberActionParam) (int64, error) {
+//				panic("mock out the CountMembersOnChatRoomAddMemberAction method")
+//			},
+//			CountMembersOnChatRoomAddMemberActionWithSdFunc: func(ctx context.Context, sd Sd, chatRoomAddMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomAddMemberActionParam) (int64, error) {
+//				panic("mock out the CountMembersOnChatRoomAddMemberActionWithSd method")
+//			},
+//			CountMembersOnChatRoomRemoveMemberActionFunc: func(ctx context.Context, chatRoomRemoveMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomRemoveMemberActionParam) (int64, error) {
+//				panic("mock out the CountMembersOnChatRoomRemoveMemberAction method")
+//			},
+//			CountMembersOnChatRoomRemoveMemberActionWithSdFunc: func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomRemoveMemberActionParam) (int64, error) {
+//				panic("mock out the CountMembersOnChatRoomRemoveMemberActionWithSd method")
 //			},
 //			CountMembersOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereMemberOnChatRoomParam) (int64, error) {
 //				panic("mock out the CountMembersOnChatRoomWithSd method")
@@ -345,6 +375,9 @@ var _ Store = &StoreMock{}
 //			CreateChatRoomFunc: func(ctx context.Context, param parameter.CreateChatRoomParam) (entity.ChatRoom, error) {
 //				panic("mock out the CreateChatRoom method")
 //			},
+//			CreateChatRoomActionFunc: func(ctx context.Context, param parameter.CreateChatRoomActionParam) (entity.ChatRoomAction, error) {
+//				panic("mock out the CreateChatRoomAction method")
+//			},
 //			CreateChatRoomActionTypeFunc: func(ctx context.Context, param parameter.CreateChatRoomActionTypeParam) (entity.ChatRoomActionType, error) {
 //				panic("mock out the CreateChatRoomActionType method")
 //			},
@@ -356,6 +389,15 @@ var _ Store = &StoreMock{}
 //			},
 //			CreateChatRoomActionTypesWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateChatRoomActionTypeParam) (int64, error) {
 //				panic("mock out the CreateChatRoomActionTypesWithSd method")
+//			},
+//			CreateChatRoomActionWithSdFunc: func(ctx context.Context, sd Sd, param parameter.CreateChatRoomActionParam) (entity.ChatRoomAction, error) {
+//				panic("mock out the CreateChatRoomActionWithSd method")
+//			},
+//			CreateChatRoomActionsFunc: func(ctx context.Context, params []parameter.CreateChatRoomActionParam) (int64, error) {
+//				panic("mock out the CreateChatRoomActions method")
+//			},
+//			CreateChatRoomActionsWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateChatRoomActionParam) (int64, error) {
+//				panic("mock out the CreateChatRoomActionsWithSd method")
 //			},
 //			CreateChatRoomAddMemberActionFunc: func(ctx context.Context, param parameter.CreateChatRoomAddMemberActionParam) (entity.ChatRoomAddMemberAction, error) {
 //				panic("mock out the CreateChatRoomAddMemberAction method")
@@ -681,6 +723,9 @@ var _ Store = &StoreMock{}
 //			DeleteChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteChatRoom method")
 //			},
+//			DeleteChatRoomActionFunc: func(ctx context.Context, chatRoomActionID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomAction method")
+//			},
 //			DeleteChatRoomActionTypeFunc: func(ctx context.Context, recordTypeID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteChatRoomActionType method")
 //			},
@@ -693,11 +738,44 @@ var _ Store = &StoreMock{}
 //			DeleteChatRoomActionTypeWithSdFunc: func(ctx context.Context, sd Sd, recordTypeID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteChatRoomActionTypeWithSd method")
 //			},
+//			DeleteChatRoomActionWithSdFunc: func(ctx context.Context, sd Sd, chatRoomActionID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomActionWithSd method")
+//			},
 //			DeleteChatRoomAddMemberActionFunc: func(ctx context.Context, chatRoomAddMemberActionID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteChatRoomAddMemberAction method")
 //			},
 //			DeleteChatRoomAddMemberActionWithSdFunc: func(ctx context.Context, sd Sd, chatRoomAddMemberActionID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteChatRoomAddMemberActionWithSd method")
+//			},
+//			DeleteChatRoomAddedMemberFunc: func(ctx context.Context, chatRoomAddMemberActionID uuid.UUID, memberID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomAddedMember method")
+//			},
+//			DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSdFunc: func(ctx context.Context, sd Sd, chatRoomAddMemberActionID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSd method")
+//			},
+//			DeleteChatRoomAddedMemberWithSdFunc: func(ctx context.Context, sd Sd, chatRoomAddMemberActionID uuid.UUID, memberID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomAddedMemberWithSd method")
+//			},
+//			DeleteChatRoomAddedMembersOnChatRoomAddMemberActionFunc: func(ctx context.Context, chatRoomAddMemberActionID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomAddedMembersOnChatRoomAddMemberAction method")
+//			},
+//			DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsFunc: func(ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomAddedMembersOnChatRoomAddMemberActions method")
+//			},
+//			DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomAddMemberActionIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSd method")
+//			},
+//			DeleteChatRoomAddedMembersOnMemberFunc: func(ctx context.Context, memberID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomAddedMembersOnMember method")
+//			},
+//			DeleteChatRoomAddedMembersOnMemberWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomAddedMembersOnMemberWithSd method")
+//			},
+//			DeleteChatRoomAddedMembersOnMembersFunc: func(ctx context.Context, memberIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomAddedMembersOnMembers method")
+//			},
+//			DeleteChatRoomAddedMembersOnMembersWithSdFunc: func(ctx context.Context, sd Sd, memberIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomAddedMembersOnMembersWithSd method")
 //			},
 //			DeleteChatRoomCreateActionFunc: func(ctx context.Context, chatRoomCreateActionID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteChatRoomCreateAction method")
@@ -710,6 +788,36 @@ var _ Store = &StoreMock{}
 //			},
 //			DeleteChatRoomRemoveMemberActionWithSdFunc: func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteChatRoomRemoveMemberActionWithSd method")
+//			},
+//			DeleteChatRoomRemovedMemberFunc: func(ctx context.Context, chatRoomRemoveMemberActionID uuid.UUID, memberID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomRemovedMember method")
+//			},
+//			DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSdFunc: func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSd method")
+//			},
+//			DeleteChatRoomRemovedMemberWithSdFunc: func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionID uuid.UUID, memberID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomRemovedMemberWithSd method")
+//			},
+//			DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionFunc: func(ctx context.Context, chatRoomRemoveMemberActionID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberAction method")
+//			},
+//			DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsFunc: func(ctx context.Context, chatRoomRemoveMemberActionIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActions method")
+//			},
+//			DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSd method")
+//			},
+//			DeleteChatRoomRemovedMembersOnMemberFunc: func(ctx context.Context, memberID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomRemovedMembersOnMember method")
+//			},
+//			DeleteChatRoomRemovedMembersOnMemberWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomRemovedMembersOnMemberWithSd method")
+//			},
+//			DeleteChatRoomRemovedMembersOnMembersFunc: func(ctx context.Context, memberIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomRemovedMembersOnMembers method")
+//			},
+//			DeleteChatRoomRemovedMembersOnMembersWithSdFunc: func(ctx context.Context, sd Sd, memberIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomRemovedMembersOnMembersWithSd method")
 //			},
 //			DeleteChatRoomUpdateNameActionFunc: func(ctx context.Context, chatRoomUpdateNameActionID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteChatRoomUpdateNameAction method")
@@ -1404,34 +1512,40 @@ var _ Store = &StoreMock{}
 //			GetChatRoomActionTypesWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereChatRoomActionTypeParam, order parameter.ChatRoomActionTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomActionType], error) {
 //				panic("mock out the GetChatRoomActionTypesWithSd method")
 //			},
-//			GetChatRoomAddMemberActionsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomAddMemberActionParam, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error) {
+//			GetChatRoomActionsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomActionParam, order parameter.ChatRoomActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomActionWithDetail], error) {
+//				panic("mock out the GetChatRoomActionsOnChatRoom method")
+//			},
+//			GetChatRoomActionsOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomActionParam, order parameter.ChatRoomActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomActionWithDetail], error) {
+//				panic("mock out the GetChatRoomActionsOnChatRoomWithSd method")
+//			},
+//			GetChatRoomAddMemberActionsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomAddMemberActionParam, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error) {
 //				panic("mock out the GetChatRoomAddMemberActionsOnChatRoom method")
 //			},
-//			GetChatRoomAddMemberActionsOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomAddMemberActionParam, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error) {
+//			GetChatRoomAddMemberActionsOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomAddMemberActionParam, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error) {
 //				panic("mock out the GetChatRoomAddMemberActionsOnChatRoomWithSd method")
 //			},
-//			GetChatRoomCreateActionsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomCreateActionParam, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomCreateActionOnChatRoom], error) {
+//			GetChatRoomCreateActionsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomCreateActionParam, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error) {
 //				panic("mock out the GetChatRoomCreateActionsOnChatRoom method")
 //			},
-//			GetChatRoomCreateActionsOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomCreateActionParam, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomCreateActionOnChatRoom], error) {
+//			GetChatRoomCreateActionsOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomCreateActionParam, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error) {
 //				panic("mock out the GetChatRoomCreateActionsOnChatRoomWithSd method")
 //			},
-//			GetChatRoomRemoveMemberActionsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomRemoveMemberActionParam, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error) {
+//			GetChatRoomRemoveMemberActionsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomRemoveMemberActionParam, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
 //				panic("mock out the GetChatRoomRemoveMemberActionsOnChatRoom method")
 //			},
-//			GetChatRoomRemoveMemberActionsOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomRemoveMemberActionParam, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error) {
+//			GetChatRoomRemoveMemberActionsOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomRemoveMemberActionParam, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
 //				panic("mock out the GetChatRoomRemoveMemberActionsOnChatRoomWithSd method")
 //			},
-//			GetChatRoomUpdateNameActionsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomUpdateNameActionParam, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error) {
+//			GetChatRoomUpdateNameActionsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomUpdateNameActionParam, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error) {
 //				panic("mock out the GetChatRoomUpdateNameActionsOnChatRoom method")
 //			},
-//			GetChatRoomUpdateNameActionsOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomUpdateNameActionParam, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error) {
+//			GetChatRoomUpdateNameActionsOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomUpdateNameActionParam, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error) {
 //				panic("mock out the GetChatRoomUpdateNameActionsOnChatRoomWithSd method")
 //			},
-//			GetChatRoomWithdrawActionsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomWithdrawActionParam, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error) {
+//			GetChatRoomWithdrawActionsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomWithdrawActionParam, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithdrawActionWithMember], error) {
 //				panic("mock out the GetChatRoomWithdrawActionsOnChatRoom method")
 //			},
-//			GetChatRoomWithdrawActionsOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomWithdrawActionParam, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error) {
+//			GetChatRoomWithdrawActionsOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomWithdrawActionParam, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithdrawActionWithMember], error) {
 //				panic("mock out the GetChatRoomWithdrawActionsOnChatRoomWithSd method")
 //			},
 //			GetChatRoomsFunc: func(ctx context.Context, where parameter.WhereChatRoomParam, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoom], error) {
@@ -1511,6 +1625,18 @@ var _ Store = &StoreMock{}
 //			},
 //			GetMembersOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereMemberOnChatRoomParam, order parameter.MemberOnChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoom], error) {
 //				panic("mock out the GetMembersOnChatRoom method")
+//			},
+//			GetMembersOnChatRoomAddMemberActionFunc: func(ctx context.Context, chatRoomAddMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomAddMemberActionParam, order parameter.MemberOnChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoomAddMemberAction], error) {
+//				panic("mock out the GetMembersOnChatRoomAddMemberAction method")
+//			},
+//			GetMembersOnChatRoomAddMemberActionWithSdFunc: func(ctx context.Context, sd Sd, chatRoomAddMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomAddMemberActionParam, order parameter.MemberOnChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoomAddMemberAction], error) {
+//				panic("mock out the GetMembersOnChatRoomAddMemberActionWithSd method")
+//			},
+//			GetMembersOnChatRoomRemoveMemberActionFunc: func(ctx context.Context, chatRoomRemoveMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomRemoveMemberActionParam, order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoomRemoveMemberAction], error) {
+//				panic("mock out the GetMembersOnChatRoomRemoveMemberAction method")
+//			},
+//			GetMembersOnChatRoomRemoveMemberActionWithSdFunc: func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomRemoveMemberActionParam, order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoomRemoveMemberAction], error) {
+//				panic("mock out the GetMembersOnChatRoomRemoveMemberActionWithSd method")
 //			},
 //			GetMembersOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereMemberOnChatRoomParam, order parameter.MemberOnChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoom], error) {
 //				panic("mock out the GetMembersOnChatRoomWithSd method")
@@ -1668,34 +1794,40 @@ var _ Store = &StoreMock{}
 //			GetPluralChatRoomActionTypesWithSdFunc: func(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID, order parameter.ChatRoomActionTypeOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomActionType], error) {
 //				panic("mock out the GetPluralChatRoomActionTypesWithSd method")
 //			},
-//			GetPluralChatRoomAddMemberActionsFunc: func(ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error) {
+//			GetPluralChatRoomActionsFunc: func(ctx context.Context, chatRoomActionIDs []uuid.UUID, order parameter.ChatRoomActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomActionWithDetail], error) {
+//				panic("mock out the GetPluralChatRoomActions method")
+//			},
+//			GetPluralChatRoomActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomActionIDs []uuid.UUID, order parameter.ChatRoomActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomActionWithDetail], error) {
+//				panic("mock out the GetPluralChatRoomActionsWithSd method")
+//			},
+//			GetPluralChatRoomAddMemberActionsFunc: func(ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error) {
 //				panic("mock out the GetPluralChatRoomAddMemberActions method")
 //			},
-//			GetPluralChatRoomAddMemberActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error) {
+//			GetPluralChatRoomAddMemberActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error) {
 //				panic("mock out the GetPluralChatRoomAddMemberActionsWithSd method")
 //			},
-//			GetPluralChatRoomCreateActionsFunc: func(ctx context.Context, chatRoomCreateActionIDs []uuid.UUID, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomCreateActionOnChatRoom], error) {
+//			GetPluralChatRoomCreateActionsFunc: func(ctx context.Context, chatRoomCreateActionIDs []uuid.UUID, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error) {
 //				panic("mock out the GetPluralChatRoomCreateActions method")
 //			},
-//			GetPluralChatRoomCreateActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomCreateActionIDs []uuid.UUID, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomCreateActionOnChatRoom], error) {
+//			GetPluralChatRoomCreateActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomCreateActionIDs []uuid.UUID, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error) {
 //				panic("mock out the GetPluralChatRoomCreateActionsWithSd method")
 //			},
-//			GetPluralChatRoomRemoveMemberActionsFunc: func(ctx context.Context, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error) {
+//			GetPluralChatRoomRemoveMemberActionsFunc: func(ctx context.Context, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
 //				panic("mock out the GetPluralChatRoomRemoveMemberActions method")
 //			},
-//			GetPluralChatRoomRemoveMemberActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error) {
+//			GetPluralChatRoomRemoveMemberActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
 //				panic("mock out the GetPluralChatRoomRemoveMemberActionsWithSd method")
 //			},
-//			GetPluralChatRoomUpdateNameActionsFunc: func(ctx context.Context, chatRoomUpdateNameActionIDs []uuid.UUID, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error) {
+//			GetPluralChatRoomUpdateNameActionsFunc: func(ctx context.Context, chatRoomUpdateNameActionIDs []uuid.UUID, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error) {
 //				panic("mock out the GetPluralChatRoomUpdateNameActions method")
 //			},
-//			GetPluralChatRoomUpdateNameActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomUpdateNameActionIDs []uuid.UUID, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error) {
+//			GetPluralChatRoomUpdateNameActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomUpdateNameActionIDs []uuid.UUID, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error) {
 //				panic("mock out the GetPluralChatRoomUpdateNameActionsWithSd method")
 //			},
-//			GetPluralChatRoomWithdrawActionsFunc: func(ctx context.Context, chatRoomWithdrawActionIDs []uuid.UUID, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error) {
+//			GetPluralChatRoomWithdrawActionsFunc: func(ctx context.Context, chatRoomWithdrawActionIDs []uuid.UUID, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithdrawActionWithMember], error) {
 //				panic("mock out the GetPluralChatRoomWithdrawActions method")
 //			},
-//			GetPluralChatRoomWithdrawActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomWithdrawActionIDs []uuid.UUID, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error) {
+//			GetPluralChatRoomWithdrawActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomWithdrawActionIDs []uuid.UUID, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithdrawActionWithMember], error) {
 //				panic("mock out the GetPluralChatRoomWithdrawActionsWithSd method")
 //			},
 //			GetPluralChatRoomsFunc: func(ctx context.Context, chatRoomIDs []uuid.UUID, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoom], error) {
@@ -1775,6 +1907,18 @@ var _ Store = &StoreMock{}
 //			},
 //			GetPluralMembersOnChatRoomFunc: func(ctx context.Context, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoom], error) {
 //				panic("mock out the GetPluralMembersOnChatRoom method")
+//			},
+//			GetPluralMembersOnChatRoomAddMemberActionFunc: func(ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.MemberOnChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberOnChatRoomAddMemberAction], error) {
+//				panic("mock out the GetPluralMembersOnChatRoomAddMemberAction method")
+//			},
+//			GetPluralMembersOnChatRoomAddMemberActionWithSdFunc: func(ctx context.Context, sd Sd, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.MemberOnChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberOnChatRoomAddMemberAction], error) {
+//				panic("mock out the GetPluralMembersOnChatRoomAddMemberActionWithSd method")
+//			},
+//			GetPluralMembersOnChatRoomRemoveMemberActionFunc: func(ctx context.Context, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberOnChatRoomRemoveMemberAction], error) {
+//				panic("mock out the GetPluralMembersOnChatRoomRemoveMemberAction method")
+//			},
+//			GetPluralMembersOnChatRoomRemoveMemberActionWithSdFunc: func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberOnChatRoomRemoveMemberAction], error) {
+//				panic("mock out the GetPluralMembersOnChatRoomRemoveMemberActionWithSd method")
 //			},
 //			GetPluralMembersOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoom], error) {
 //				panic("mock out the GetPluralMembersOnChatRoomWithSd method")
@@ -2058,6 +2202,12 @@ var _ Store = &StoreMock{}
 //			PluralDeleteChatRoomActionTypesWithSdFunc: func(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteChatRoomActionTypesWithSd method")
 //			},
+//			PluralDeleteChatRoomActionsFunc: func(ctx context.Context, chatRoomActionIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteChatRoomActions method")
+//			},
+//			PluralDeleteChatRoomActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomActionIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteChatRoomActionsWithSd method")
+//			},
 //			PluralDeleteChatRoomAddMemberActionsFunc: func(ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteChatRoomAddMemberActions method")
 //			},
@@ -2219,6 +2369,18 @@ var _ Store = &StoreMock{}
 //			},
 //			ReadReceiptsWithSdFunc: func(ctx context.Context, sd Sd, param parameter.ReadReceiptsParam) (int64, error) {
 //				panic("mock out the ReadReceiptsWithSd method")
+//			},
+//			RemoveMemberToChatRoomRemoveMemberActionFunc: func(ctx context.Context, param parameter.CreateChatRoomRemovedMemberParam) (entity.ChatRoomRemovedMember, error) {
+//				panic("mock out the RemoveMemberToChatRoomRemoveMemberAction method")
+//			},
+//			RemoveMemberToChatRoomRemoveMemberActionWithSdFunc: func(ctx context.Context, sd Sd, param parameter.CreateChatRoomRemovedMemberParam) (entity.ChatRoomRemovedMember, error) {
+//				panic("mock out the RemoveMemberToChatRoomRemoveMemberActionWithSd method")
+//			},
+//			RemoveMembersToChatRoomRemoveMemberActionFunc: func(ctx context.Context, params []parameter.CreateChatRoomRemovedMemberParam) (int64, error) {
+//				panic("mock out the RemoveMembersToChatRoomRemoveMemberAction method")
+//			},
+//			RemoveMembersToChatRoomRemoveMemberActionWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateChatRoomRemovedMemberParam) (int64, error) {
+//				panic("mock out the RemoveMembersToChatRoomRemoveMemberActionWithSd method")
 //			},
 //			RollbackFunc: func(contextMoqParam context.Context, sd Sd) error {
 //				panic("mock out the Rollback method")
@@ -2422,6 +2584,18 @@ var _ Store = &StoreMock{}
 //
 //	}
 type StoreMock struct {
+	// AddMemberToChatRoomAddMemberActionFunc mocks the AddMemberToChatRoomAddMemberAction method.
+	AddMemberToChatRoomAddMemberActionFunc func(ctx context.Context, param parameter.CreateChatRoomAddedMemberParam) (entity.ChatRoomAddedMember, error)
+
+	// AddMemberToChatRoomAddMemberActionWithSdFunc mocks the AddMemberToChatRoomAddMemberActionWithSd method.
+	AddMemberToChatRoomAddMemberActionWithSdFunc func(ctx context.Context, sd Sd, param parameter.CreateChatRoomAddedMemberParam) (entity.ChatRoomAddedMember, error)
+
+	// AddMembersToChatRoomAddMemberActionFunc mocks the AddMembersToChatRoomAddMemberAction method.
+	AddMembersToChatRoomAddMemberActionFunc func(ctx context.Context, params []parameter.CreateChatRoomAddedMemberParam) (int64, error)
+
+	// AddMembersToChatRoomAddMemberActionWithSdFunc mocks the AddMembersToChatRoomAddMemberActionWithSd method.
+	AddMembersToChatRoomAddMemberActionWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateChatRoomAddedMemberParam) (int64, error)
+
 	// AssociateRoleFunc mocks the AssociateRole method.
 	AssociateRoleFunc func(ctx context.Context, param parameter.AssociationRoleParam) (entity.RoleAssociation, error)
 
@@ -2496,6 +2670,12 @@ type StoreMock struct {
 
 	// CountChatRoomActionTypesWithSdFunc mocks the CountChatRoomActionTypesWithSd method.
 	CountChatRoomActionTypesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereChatRoomActionTypeParam) (int64, error)
+
+	// CountChatRoomActionsFunc mocks the CountChatRoomActions method.
+	CountChatRoomActionsFunc func(ctx context.Context, where parameter.WhereChatRoomActionParam) (int64, error)
+
+	// CountChatRoomActionsWithSdFunc mocks the CountChatRoomActionsWithSd method.
+	CountChatRoomActionsWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereChatRoomActionParam) (int64, error)
 
 	// CountChatRoomAddMemberActionsFunc mocks the CountChatRoomAddMemberActions method.
 	CountChatRoomAddMemberActionsFunc func(ctx context.Context, where parameter.WhereChatRoomAddMemberActionParam) (int64, error)
@@ -2574,6 +2754,18 @@ type StoreMock struct {
 
 	// CountMembersOnChatRoomFunc mocks the CountMembersOnChatRoom method.
 	CountMembersOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereMemberOnChatRoomParam) (int64, error)
+
+	// CountMembersOnChatRoomAddMemberActionFunc mocks the CountMembersOnChatRoomAddMemberAction method.
+	CountMembersOnChatRoomAddMemberActionFunc func(ctx context.Context, chatRoomAddMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomAddMemberActionParam) (int64, error)
+
+	// CountMembersOnChatRoomAddMemberActionWithSdFunc mocks the CountMembersOnChatRoomAddMemberActionWithSd method.
+	CountMembersOnChatRoomAddMemberActionWithSdFunc func(ctx context.Context, sd Sd, chatRoomAddMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomAddMemberActionParam) (int64, error)
+
+	// CountMembersOnChatRoomRemoveMemberActionFunc mocks the CountMembersOnChatRoomRemoveMemberAction method.
+	CountMembersOnChatRoomRemoveMemberActionFunc func(ctx context.Context, chatRoomRemoveMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomRemoveMemberActionParam) (int64, error)
+
+	// CountMembersOnChatRoomRemoveMemberActionWithSdFunc mocks the CountMembersOnChatRoomRemoveMemberActionWithSd method.
+	CountMembersOnChatRoomRemoveMemberActionWithSdFunc func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomRemoveMemberActionParam) (int64, error)
 
 	// CountMembersOnChatRoomWithSdFunc mocks the CountMembersOnChatRoomWithSd method.
 	CountMembersOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereMemberOnChatRoomParam) (int64, error)
@@ -2746,6 +2938,9 @@ type StoreMock struct {
 	// CreateChatRoomFunc mocks the CreateChatRoom method.
 	CreateChatRoomFunc func(ctx context.Context, param parameter.CreateChatRoomParam) (entity.ChatRoom, error)
 
+	// CreateChatRoomActionFunc mocks the CreateChatRoomAction method.
+	CreateChatRoomActionFunc func(ctx context.Context, param parameter.CreateChatRoomActionParam) (entity.ChatRoomAction, error)
+
 	// CreateChatRoomActionTypeFunc mocks the CreateChatRoomActionType method.
 	CreateChatRoomActionTypeFunc func(ctx context.Context, param parameter.CreateChatRoomActionTypeParam) (entity.ChatRoomActionType, error)
 
@@ -2757,6 +2952,15 @@ type StoreMock struct {
 
 	// CreateChatRoomActionTypesWithSdFunc mocks the CreateChatRoomActionTypesWithSd method.
 	CreateChatRoomActionTypesWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateChatRoomActionTypeParam) (int64, error)
+
+	// CreateChatRoomActionWithSdFunc mocks the CreateChatRoomActionWithSd method.
+	CreateChatRoomActionWithSdFunc func(ctx context.Context, sd Sd, param parameter.CreateChatRoomActionParam) (entity.ChatRoomAction, error)
+
+	// CreateChatRoomActionsFunc mocks the CreateChatRoomActions method.
+	CreateChatRoomActionsFunc func(ctx context.Context, params []parameter.CreateChatRoomActionParam) (int64, error)
+
+	// CreateChatRoomActionsWithSdFunc mocks the CreateChatRoomActionsWithSd method.
+	CreateChatRoomActionsWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateChatRoomActionParam) (int64, error)
 
 	// CreateChatRoomAddMemberActionFunc mocks the CreateChatRoomAddMemberAction method.
 	CreateChatRoomAddMemberActionFunc func(ctx context.Context, param parameter.CreateChatRoomAddMemberActionParam) (entity.ChatRoomAddMemberAction, error)
@@ -3082,6 +3286,9 @@ type StoreMock struct {
 	// DeleteChatRoomFunc mocks the DeleteChatRoom method.
 	DeleteChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID) (int64, error)
 
+	// DeleteChatRoomActionFunc mocks the DeleteChatRoomAction method.
+	DeleteChatRoomActionFunc func(ctx context.Context, chatRoomActionID uuid.UUID) (int64, error)
+
 	// DeleteChatRoomActionTypeFunc mocks the DeleteChatRoomActionType method.
 	DeleteChatRoomActionTypeFunc func(ctx context.Context, recordTypeID uuid.UUID) (int64, error)
 
@@ -3094,11 +3301,44 @@ type StoreMock struct {
 	// DeleteChatRoomActionTypeWithSdFunc mocks the DeleteChatRoomActionTypeWithSd method.
 	DeleteChatRoomActionTypeWithSdFunc func(ctx context.Context, sd Sd, recordTypeID uuid.UUID) (int64, error)
 
+	// DeleteChatRoomActionWithSdFunc mocks the DeleteChatRoomActionWithSd method.
+	DeleteChatRoomActionWithSdFunc func(ctx context.Context, sd Sd, chatRoomActionID uuid.UUID) (int64, error)
+
 	// DeleteChatRoomAddMemberActionFunc mocks the DeleteChatRoomAddMemberAction method.
 	DeleteChatRoomAddMemberActionFunc func(ctx context.Context, chatRoomAddMemberActionID uuid.UUID) (int64, error)
 
 	// DeleteChatRoomAddMemberActionWithSdFunc mocks the DeleteChatRoomAddMemberActionWithSd method.
 	DeleteChatRoomAddMemberActionWithSdFunc func(ctx context.Context, sd Sd, chatRoomAddMemberActionID uuid.UUID) (int64, error)
+
+	// DeleteChatRoomAddedMemberFunc mocks the DeleteChatRoomAddedMember method.
+	DeleteChatRoomAddedMemberFunc func(ctx context.Context, chatRoomAddMemberActionID uuid.UUID, memberID uuid.UUID) (int64, error)
+
+	// DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSdFunc mocks the DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSd method.
+	DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSdFunc func(ctx context.Context, sd Sd, chatRoomAddMemberActionID uuid.UUID) (int64, error)
+
+	// DeleteChatRoomAddedMemberWithSdFunc mocks the DeleteChatRoomAddedMemberWithSd method.
+	DeleteChatRoomAddedMemberWithSdFunc func(ctx context.Context, sd Sd, chatRoomAddMemberActionID uuid.UUID, memberID uuid.UUID) (int64, error)
+
+	// DeleteChatRoomAddedMembersOnChatRoomAddMemberActionFunc mocks the DeleteChatRoomAddedMembersOnChatRoomAddMemberAction method.
+	DeleteChatRoomAddedMembersOnChatRoomAddMemberActionFunc func(ctx context.Context, chatRoomAddMemberActionID uuid.UUID) (int64, error)
+
+	// DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsFunc mocks the DeleteChatRoomAddedMembersOnChatRoomAddMemberActions method.
+	DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsFunc func(ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID) (int64, error)
+
+	// DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSdFunc mocks the DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSd method.
+	DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomAddMemberActionIDs []uuid.UUID) (int64, error)
+
+	// DeleteChatRoomAddedMembersOnMemberFunc mocks the DeleteChatRoomAddedMembersOnMember method.
+	DeleteChatRoomAddedMembersOnMemberFunc func(ctx context.Context, memberID uuid.UUID) (int64, error)
+
+	// DeleteChatRoomAddedMembersOnMemberWithSdFunc mocks the DeleteChatRoomAddedMembersOnMemberWithSd method.
+	DeleteChatRoomAddedMembersOnMemberWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID) (int64, error)
+
+	// DeleteChatRoomAddedMembersOnMembersFunc mocks the DeleteChatRoomAddedMembersOnMembers method.
+	DeleteChatRoomAddedMembersOnMembersFunc func(ctx context.Context, memberIDs []uuid.UUID) (int64, error)
+
+	// DeleteChatRoomAddedMembersOnMembersWithSdFunc mocks the DeleteChatRoomAddedMembersOnMembersWithSd method.
+	DeleteChatRoomAddedMembersOnMembersWithSdFunc func(ctx context.Context, sd Sd, memberIDs []uuid.UUID) (int64, error)
 
 	// DeleteChatRoomCreateActionFunc mocks the DeleteChatRoomCreateAction method.
 	DeleteChatRoomCreateActionFunc func(ctx context.Context, chatRoomCreateActionID uuid.UUID) (int64, error)
@@ -3111,6 +3351,36 @@ type StoreMock struct {
 
 	// DeleteChatRoomRemoveMemberActionWithSdFunc mocks the DeleteChatRoomRemoveMemberActionWithSd method.
 	DeleteChatRoomRemoveMemberActionWithSdFunc func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionID uuid.UUID) (int64, error)
+
+	// DeleteChatRoomRemovedMemberFunc mocks the DeleteChatRoomRemovedMember method.
+	DeleteChatRoomRemovedMemberFunc func(ctx context.Context, chatRoomRemoveMemberActionID uuid.UUID, memberID uuid.UUID) (int64, error)
+
+	// DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSdFunc mocks the DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSd method.
+	DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSdFunc func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionID uuid.UUID) (int64, error)
+
+	// DeleteChatRoomRemovedMemberWithSdFunc mocks the DeleteChatRoomRemovedMemberWithSd method.
+	DeleteChatRoomRemovedMemberWithSdFunc func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionID uuid.UUID, memberID uuid.UUID) (int64, error)
+
+	// DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionFunc mocks the DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberAction method.
+	DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionFunc func(ctx context.Context, chatRoomRemoveMemberActionID uuid.UUID) (int64, error)
+
+	// DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsFunc mocks the DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActions method.
+	DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsFunc func(ctx context.Context, chatRoomRemoveMemberActionIDs []uuid.UUID) (int64, error)
+
+	// DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSdFunc mocks the DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSd method.
+	DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionIDs []uuid.UUID) (int64, error)
+
+	// DeleteChatRoomRemovedMembersOnMemberFunc mocks the DeleteChatRoomRemovedMembersOnMember method.
+	DeleteChatRoomRemovedMembersOnMemberFunc func(ctx context.Context, memberID uuid.UUID) (int64, error)
+
+	// DeleteChatRoomRemovedMembersOnMemberWithSdFunc mocks the DeleteChatRoomRemovedMembersOnMemberWithSd method.
+	DeleteChatRoomRemovedMembersOnMemberWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID) (int64, error)
+
+	// DeleteChatRoomRemovedMembersOnMembersFunc mocks the DeleteChatRoomRemovedMembersOnMembers method.
+	DeleteChatRoomRemovedMembersOnMembersFunc func(ctx context.Context, memberIDs []uuid.UUID) (int64, error)
+
+	// DeleteChatRoomRemovedMembersOnMembersWithSdFunc mocks the DeleteChatRoomRemovedMembersOnMembersWithSd method.
+	DeleteChatRoomRemovedMembersOnMembersWithSdFunc func(ctx context.Context, sd Sd, memberIDs []uuid.UUID) (int64, error)
 
 	// DeleteChatRoomUpdateNameActionFunc mocks the DeleteChatRoomUpdateNameAction method.
 	DeleteChatRoomUpdateNameActionFunc func(ctx context.Context, chatRoomUpdateNameActionID uuid.UUID) (int64, error)
@@ -3805,35 +4075,41 @@ type StoreMock struct {
 	// GetChatRoomActionTypesWithSdFunc mocks the GetChatRoomActionTypesWithSd method.
 	GetChatRoomActionTypesWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereChatRoomActionTypeParam, order parameter.ChatRoomActionTypeOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomActionType], error)
 
+	// GetChatRoomActionsOnChatRoomFunc mocks the GetChatRoomActionsOnChatRoom method.
+	GetChatRoomActionsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomActionParam, order parameter.ChatRoomActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomActionWithDetail], error)
+
+	// GetChatRoomActionsOnChatRoomWithSdFunc mocks the GetChatRoomActionsOnChatRoomWithSd method.
+	GetChatRoomActionsOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomActionParam, order parameter.ChatRoomActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomActionWithDetail], error)
+
 	// GetChatRoomAddMemberActionsOnChatRoomFunc mocks the GetChatRoomAddMemberActionsOnChatRoom method.
-	GetChatRoomAddMemberActionsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomAddMemberActionParam, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error)
+	GetChatRoomAddMemberActionsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomAddMemberActionParam, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error)
 
 	// GetChatRoomAddMemberActionsOnChatRoomWithSdFunc mocks the GetChatRoomAddMemberActionsOnChatRoomWithSd method.
-	GetChatRoomAddMemberActionsOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomAddMemberActionParam, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error)
+	GetChatRoomAddMemberActionsOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomAddMemberActionParam, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error)
 
 	// GetChatRoomCreateActionsOnChatRoomFunc mocks the GetChatRoomCreateActionsOnChatRoom method.
-	GetChatRoomCreateActionsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomCreateActionParam, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomCreateActionOnChatRoom], error)
+	GetChatRoomCreateActionsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomCreateActionParam, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error)
 
 	// GetChatRoomCreateActionsOnChatRoomWithSdFunc mocks the GetChatRoomCreateActionsOnChatRoomWithSd method.
-	GetChatRoomCreateActionsOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomCreateActionParam, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomCreateActionOnChatRoom], error)
+	GetChatRoomCreateActionsOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomCreateActionParam, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error)
 
 	// GetChatRoomRemoveMemberActionsOnChatRoomFunc mocks the GetChatRoomRemoveMemberActionsOnChatRoom method.
-	GetChatRoomRemoveMemberActionsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomRemoveMemberActionParam, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error)
+	GetChatRoomRemoveMemberActionsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomRemoveMemberActionParam, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error)
 
 	// GetChatRoomRemoveMemberActionsOnChatRoomWithSdFunc mocks the GetChatRoomRemoveMemberActionsOnChatRoomWithSd method.
-	GetChatRoomRemoveMemberActionsOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomRemoveMemberActionParam, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error)
+	GetChatRoomRemoveMemberActionsOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomRemoveMemberActionParam, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error)
 
 	// GetChatRoomUpdateNameActionsOnChatRoomFunc mocks the GetChatRoomUpdateNameActionsOnChatRoom method.
-	GetChatRoomUpdateNameActionsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomUpdateNameActionParam, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error)
+	GetChatRoomUpdateNameActionsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomUpdateNameActionParam, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error)
 
 	// GetChatRoomUpdateNameActionsOnChatRoomWithSdFunc mocks the GetChatRoomUpdateNameActionsOnChatRoomWithSd method.
-	GetChatRoomUpdateNameActionsOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomUpdateNameActionParam, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error)
+	GetChatRoomUpdateNameActionsOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomUpdateNameActionParam, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error)
 
 	// GetChatRoomWithdrawActionsOnChatRoomFunc mocks the GetChatRoomWithdrawActionsOnChatRoom method.
-	GetChatRoomWithdrawActionsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomWithdrawActionParam, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error)
+	GetChatRoomWithdrawActionsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomWithdrawActionParam, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithdrawActionWithMember], error)
 
 	// GetChatRoomWithdrawActionsOnChatRoomWithSdFunc mocks the GetChatRoomWithdrawActionsOnChatRoomWithSd method.
-	GetChatRoomWithdrawActionsOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomWithdrawActionParam, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error)
+	GetChatRoomWithdrawActionsOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomWithdrawActionParam, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithdrawActionWithMember], error)
 
 	// GetChatRoomsFunc mocks the GetChatRooms method.
 	GetChatRoomsFunc func(ctx context.Context, where parameter.WhereChatRoomParam, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoom], error)
@@ -3912,6 +4188,18 @@ type StoreMock struct {
 
 	// GetMembersOnChatRoomFunc mocks the GetMembersOnChatRoom method.
 	GetMembersOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereMemberOnChatRoomParam, order parameter.MemberOnChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoom], error)
+
+	// GetMembersOnChatRoomAddMemberActionFunc mocks the GetMembersOnChatRoomAddMemberAction method.
+	GetMembersOnChatRoomAddMemberActionFunc func(ctx context.Context, chatRoomAddMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomAddMemberActionParam, order parameter.MemberOnChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoomAddMemberAction], error)
+
+	// GetMembersOnChatRoomAddMemberActionWithSdFunc mocks the GetMembersOnChatRoomAddMemberActionWithSd method.
+	GetMembersOnChatRoomAddMemberActionWithSdFunc func(ctx context.Context, sd Sd, chatRoomAddMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomAddMemberActionParam, order parameter.MemberOnChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoomAddMemberAction], error)
+
+	// GetMembersOnChatRoomRemoveMemberActionFunc mocks the GetMembersOnChatRoomRemoveMemberAction method.
+	GetMembersOnChatRoomRemoveMemberActionFunc func(ctx context.Context, chatRoomRemoveMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomRemoveMemberActionParam, order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoomRemoveMemberAction], error)
+
+	// GetMembersOnChatRoomRemoveMemberActionWithSdFunc mocks the GetMembersOnChatRoomRemoveMemberActionWithSd method.
+	GetMembersOnChatRoomRemoveMemberActionWithSdFunc func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomRemoveMemberActionParam, order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoomRemoveMemberAction], error)
 
 	// GetMembersOnChatRoomWithSdFunc mocks the GetMembersOnChatRoomWithSd method.
 	GetMembersOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereMemberOnChatRoomParam, order parameter.MemberOnChatRoomOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoom], error)
@@ -4069,35 +4357,41 @@ type StoreMock struct {
 	// GetPluralChatRoomActionTypesWithSdFunc mocks the GetPluralChatRoomActionTypesWithSd method.
 	GetPluralChatRoomActionTypesWithSdFunc func(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID, order parameter.ChatRoomActionTypeOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomActionType], error)
 
+	// GetPluralChatRoomActionsFunc mocks the GetPluralChatRoomActions method.
+	GetPluralChatRoomActionsFunc func(ctx context.Context, chatRoomActionIDs []uuid.UUID, order parameter.ChatRoomActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomActionWithDetail], error)
+
+	// GetPluralChatRoomActionsWithSdFunc mocks the GetPluralChatRoomActionsWithSd method.
+	GetPluralChatRoomActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomActionIDs []uuid.UUID, order parameter.ChatRoomActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomActionWithDetail], error)
+
 	// GetPluralChatRoomAddMemberActionsFunc mocks the GetPluralChatRoomAddMemberActions method.
-	GetPluralChatRoomAddMemberActionsFunc func(ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error)
+	GetPluralChatRoomAddMemberActionsFunc func(ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error)
 
 	// GetPluralChatRoomAddMemberActionsWithSdFunc mocks the GetPluralChatRoomAddMemberActionsWithSd method.
-	GetPluralChatRoomAddMemberActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error)
+	GetPluralChatRoomAddMemberActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error)
 
 	// GetPluralChatRoomCreateActionsFunc mocks the GetPluralChatRoomCreateActions method.
-	GetPluralChatRoomCreateActionsFunc func(ctx context.Context, chatRoomCreateActionIDs []uuid.UUID, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomCreateActionOnChatRoom], error)
+	GetPluralChatRoomCreateActionsFunc func(ctx context.Context, chatRoomCreateActionIDs []uuid.UUID, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error)
 
 	// GetPluralChatRoomCreateActionsWithSdFunc mocks the GetPluralChatRoomCreateActionsWithSd method.
-	GetPluralChatRoomCreateActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomCreateActionIDs []uuid.UUID, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomCreateActionOnChatRoom], error)
+	GetPluralChatRoomCreateActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomCreateActionIDs []uuid.UUID, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error)
 
 	// GetPluralChatRoomRemoveMemberActionsFunc mocks the GetPluralChatRoomRemoveMemberActions method.
-	GetPluralChatRoomRemoveMemberActionsFunc func(ctx context.Context, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error)
+	GetPluralChatRoomRemoveMemberActionsFunc func(ctx context.Context, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error)
 
 	// GetPluralChatRoomRemoveMemberActionsWithSdFunc mocks the GetPluralChatRoomRemoveMemberActionsWithSd method.
-	GetPluralChatRoomRemoveMemberActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error)
+	GetPluralChatRoomRemoveMemberActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error)
 
 	// GetPluralChatRoomUpdateNameActionsFunc mocks the GetPluralChatRoomUpdateNameActions method.
-	GetPluralChatRoomUpdateNameActionsFunc func(ctx context.Context, chatRoomUpdateNameActionIDs []uuid.UUID, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error)
+	GetPluralChatRoomUpdateNameActionsFunc func(ctx context.Context, chatRoomUpdateNameActionIDs []uuid.UUID, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error)
 
 	// GetPluralChatRoomUpdateNameActionsWithSdFunc mocks the GetPluralChatRoomUpdateNameActionsWithSd method.
-	GetPluralChatRoomUpdateNameActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomUpdateNameActionIDs []uuid.UUID, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error)
+	GetPluralChatRoomUpdateNameActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomUpdateNameActionIDs []uuid.UUID, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error)
 
 	// GetPluralChatRoomWithdrawActionsFunc mocks the GetPluralChatRoomWithdrawActions method.
-	GetPluralChatRoomWithdrawActionsFunc func(ctx context.Context, chatRoomWithdrawActionIDs []uuid.UUID, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error)
+	GetPluralChatRoomWithdrawActionsFunc func(ctx context.Context, chatRoomWithdrawActionIDs []uuid.UUID, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithdrawActionWithMember], error)
 
 	// GetPluralChatRoomWithdrawActionsWithSdFunc mocks the GetPluralChatRoomWithdrawActionsWithSd method.
-	GetPluralChatRoomWithdrawActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomWithdrawActionIDs []uuid.UUID, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error)
+	GetPluralChatRoomWithdrawActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomWithdrawActionIDs []uuid.UUID, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithdrawActionWithMember], error)
 
 	// GetPluralChatRoomsFunc mocks the GetPluralChatRooms method.
 	GetPluralChatRoomsFunc func(ctx context.Context, chatRoomIDs []uuid.UUID, order parameter.ChatRoomOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoom], error)
@@ -4176,6 +4470,18 @@ type StoreMock struct {
 
 	// GetPluralMembersOnChatRoomFunc mocks the GetPluralMembersOnChatRoom method.
 	GetPluralMembersOnChatRoomFunc func(ctx context.Context, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoom], error)
+
+	// GetPluralMembersOnChatRoomAddMemberActionFunc mocks the GetPluralMembersOnChatRoomAddMemberAction method.
+	GetPluralMembersOnChatRoomAddMemberActionFunc func(ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.MemberOnChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberOnChatRoomAddMemberAction], error)
+
+	// GetPluralMembersOnChatRoomAddMemberActionWithSdFunc mocks the GetPluralMembersOnChatRoomAddMemberActionWithSd method.
+	GetPluralMembersOnChatRoomAddMemberActionWithSdFunc func(ctx context.Context, sd Sd, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.MemberOnChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberOnChatRoomAddMemberAction], error)
+
+	// GetPluralMembersOnChatRoomRemoveMemberActionFunc mocks the GetPluralMembersOnChatRoomRemoveMemberAction method.
+	GetPluralMembersOnChatRoomRemoveMemberActionFunc func(ctx context.Context, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberOnChatRoomRemoveMemberAction], error)
+
+	// GetPluralMembersOnChatRoomRemoveMemberActionWithSdFunc mocks the GetPluralMembersOnChatRoomRemoveMemberActionWithSd method.
+	GetPluralMembersOnChatRoomRemoveMemberActionWithSdFunc func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberOnChatRoomRemoveMemberAction], error)
 
 	// GetPluralMembersOnChatRoomWithSdFunc mocks the GetPluralMembersOnChatRoomWithSd method.
 	GetPluralMembersOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoom], error)
@@ -4459,6 +4765,12 @@ type StoreMock struct {
 	// PluralDeleteChatRoomActionTypesWithSdFunc mocks the PluralDeleteChatRoomActionTypesWithSd method.
 	PluralDeleteChatRoomActionTypesWithSdFunc func(ctx context.Context, sd Sd, recordTypeIDs []uuid.UUID) (int64, error)
 
+	// PluralDeleteChatRoomActionsFunc mocks the PluralDeleteChatRoomActions method.
+	PluralDeleteChatRoomActionsFunc func(ctx context.Context, chatRoomActionIDs []uuid.UUID) (int64, error)
+
+	// PluralDeleteChatRoomActionsWithSdFunc mocks the PluralDeleteChatRoomActionsWithSd method.
+	PluralDeleteChatRoomActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomActionIDs []uuid.UUID) (int64, error)
+
 	// PluralDeleteChatRoomAddMemberActionsFunc mocks the PluralDeleteChatRoomAddMemberActions method.
 	PluralDeleteChatRoomAddMemberActionsFunc func(ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID) (int64, error)
 
@@ -4620,6 +4932,18 @@ type StoreMock struct {
 
 	// ReadReceiptsWithSdFunc mocks the ReadReceiptsWithSd method.
 	ReadReceiptsWithSdFunc func(ctx context.Context, sd Sd, param parameter.ReadReceiptsParam) (int64, error)
+
+	// RemoveMemberToChatRoomRemoveMemberActionFunc mocks the RemoveMemberToChatRoomRemoveMemberAction method.
+	RemoveMemberToChatRoomRemoveMemberActionFunc func(ctx context.Context, param parameter.CreateChatRoomRemovedMemberParam) (entity.ChatRoomRemovedMember, error)
+
+	// RemoveMemberToChatRoomRemoveMemberActionWithSdFunc mocks the RemoveMemberToChatRoomRemoveMemberActionWithSd method.
+	RemoveMemberToChatRoomRemoveMemberActionWithSdFunc func(ctx context.Context, sd Sd, param parameter.CreateChatRoomRemovedMemberParam) (entity.ChatRoomRemovedMember, error)
+
+	// RemoveMembersToChatRoomRemoveMemberActionFunc mocks the RemoveMembersToChatRoomRemoveMemberAction method.
+	RemoveMembersToChatRoomRemoveMemberActionFunc func(ctx context.Context, params []parameter.CreateChatRoomRemovedMemberParam) (int64, error)
+
+	// RemoveMembersToChatRoomRemoveMemberActionWithSdFunc mocks the RemoveMembersToChatRoomRemoveMemberActionWithSd method.
+	RemoveMembersToChatRoomRemoveMemberActionWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateChatRoomRemovedMemberParam) (int64, error)
 
 	// RollbackFunc mocks the Rollback method.
 	RollbackFunc func(contextMoqParam context.Context, sd Sd) error
@@ -4818,6 +5142,38 @@ type StoreMock struct {
 
 	// calls tracks calls to the methods.
 	calls struct {
+		// AddMemberToChatRoomAddMemberAction holds details about calls to the AddMemberToChatRoomAddMemberAction method.
+		AddMemberToChatRoomAddMemberAction []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Param is the param argument value.
+			Param parameter.CreateChatRoomAddedMemberParam
+		}
+		// AddMemberToChatRoomAddMemberActionWithSd holds details about calls to the AddMemberToChatRoomAddMemberActionWithSd method.
+		AddMemberToChatRoomAddMemberActionWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Param is the param argument value.
+			Param parameter.CreateChatRoomAddedMemberParam
+		}
+		// AddMembersToChatRoomAddMemberAction holds details about calls to the AddMembersToChatRoomAddMemberAction method.
+		AddMembersToChatRoomAddMemberAction []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.CreateChatRoomAddedMemberParam
+		}
+		// AddMembersToChatRoomAddMemberActionWithSd holds details about calls to the AddMembersToChatRoomAddMemberActionWithSd method.
+		AddMembersToChatRoomAddMemberActionWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Params is the params argument value.
+			Params []parameter.CreateChatRoomAddedMemberParam
+		}
 		// AssociateRole holds details about calls to the AssociateRole method.
 		AssociateRole []struct {
 			// Ctx is the ctx argument value.
@@ -5006,6 +5362,22 @@ type StoreMock struct {
 			Sd Sd
 			// Where is the where argument value.
 			Where parameter.WhereChatRoomActionTypeParam
+		}
+		// CountChatRoomActions holds details about calls to the CountChatRoomActions method.
+		CountChatRoomActions []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereChatRoomActionParam
+		}
+		// CountChatRoomActionsWithSd holds details about calls to the CountChatRoomActionsWithSd method.
+		CountChatRoomActionsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereChatRoomActionParam
 		}
 		// CountChatRoomAddMemberActions holds details about calls to the CountChatRoomAddMemberActions method.
 		CountChatRoomAddMemberActions []struct {
@@ -5218,6 +5590,46 @@ type StoreMock struct {
 			ChatRoomID uuid.UUID
 			// Where is the where argument value.
 			Where parameter.WhereMemberOnChatRoomParam
+		}
+		// CountMembersOnChatRoomAddMemberAction holds details about calls to the CountMembersOnChatRoomAddMemberAction method.
+		CountMembersOnChatRoomAddMemberAction []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomAddMemberActionID is the chatRoomAddMemberActionID argument value.
+			ChatRoomAddMemberActionID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereMemberOnChatRoomAddMemberActionParam
+		}
+		// CountMembersOnChatRoomAddMemberActionWithSd holds details about calls to the CountMembersOnChatRoomAddMemberActionWithSd method.
+		CountMembersOnChatRoomAddMemberActionWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomAddMemberActionID is the chatRoomAddMemberActionID argument value.
+			ChatRoomAddMemberActionID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereMemberOnChatRoomAddMemberActionParam
+		}
+		// CountMembersOnChatRoomRemoveMemberAction holds details about calls to the CountMembersOnChatRoomRemoveMemberAction method.
+		CountMembersOnChatRoomRemoveMemberAction []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomRemoveMemberActionID is the chatRoomRemoveMemberActionID argument value.
+			ChatRoomRemoveMemberActionID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereMemberOnChatRoomRemoveMemberActionParam
+		}
+		// CountMembersOnChatRoomRemoveMemberActionWithSd holds details about calls to the CountMembersOnChatRoomRemoveMemberActionWithSd method.
+		CountMembersOnChatRoomRemoveMemberActionWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomRemoveMemberActionID is the chatRoomRemoveMemberActionID argument value.
+			ChatRoomRemoveMemberActionID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereMemberOnChatRoomRemoveMemberActionParam
 		}
 		// CountMembersOnChatRoomWithSd holds details about calls to the CountMembersOnChatRoomWithSd method.
 		CountMembersOnChatRoomWithSd []struct {
@@ -5718,6 +6130,13 @@ type StoreMock struct {
 			// Param is the param argument value.
 			Param parameter.CreateChatRoomParam
 		}
+		// CreateChatRoomAction holds details about calls to the CreateChatRoomAction method.
+		CreateChatRoomAction []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Param is the param argument value.
+			Param parameter.CreateChatRoomActionParam
+		}
 		// CreateChatRoomActionType holds details about calls to the CreateChatRoomActionType method.
 		CreateChatRoomActionType []struct {
 			// Ctx is the ctx argument value.
@@ -5749,6 +6168,31 @@ type StoreMock struct {
 			Sd Sd
 			// Params is the params argument value.
 			Params []parameter.CreateChatRoomActionTypeParam
+		}
+		// CreateChatRoomActionWithSd holds details about calls to the CreateChatRoomActionWithSd method.
+		CreateChatRoomActionWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Param is the param argument value.
+			Param parameter.CreateChatRoomActionParam
+		}
+		// CreateChatRoomActions holds details about calls to the CreateChatRoomActions method.
+		CreateChatRoomActions []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.CreateChatRoomActionParam
+		}
+		// CreateChatRoomActionsWithSd holds details about calls to the CreateChatRoomActionsWithSd method.
+		CreateChatRoomActionsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Params is the params argument value.
+			Params []parameter.CreateChatRoomActionParam
 		}
 		// CreateChatRoomAddMemberAction holds details about calls to the CreateChatRoomAddMemberAction method.
 		CreateChatRoomAddMemberAction []struct {
@@ -6614,6 +7058,13 @@ type StoreMock struct {
 			// ChatRoomID is the chatRoomID argument value.
 			ChatRoomID uuid.UUID
 		}
+		// DeleteChatRoomAction holds details about calls to the DeleteChatRoomAction method.
+		DeleteChatRoomAction []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomActionID is the chatRoomActionID argument value.
+			ChatRoomActionID uuid.UUID
+		}
 		// DeleteChatRoomActionType holds details about calls to the DeleteChatRoomActionType method.
 		DeleteChatRoomActionType []struct {
 			// Ctx is the ctx argument value.
@@ -6646,6 +7097,15 @@ type StoreMock struct {
 			// RecordTypeID is the recordTypeID argument value.
 			RecordTypeID uuid.UUID
 		}
+		// DeleteChatRoomActionWithSd holds details about calls to the DeleteChatRoomActionWithSd method.
+		DeleteChatRoomActionWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomActionID is the chatRoomActionID argument value.
+			ChatRoomActionID uuid.UUID
+		}
 		// DeleteChatRoomAddMemberAction holds details about calls to the DeleteChatRoomAddMemberAction method.
 		DeleteChatRoomAddMemberAction []struct {
 			// Ctx is the ctx argument value.
@@ -6661,6 +7121,90 @@ type StoreMock struct {
 			Sd Sd
 			// ChatRoomAddMemberActionID is the chatRoomAddMemberActionID argument value.
 			ChatRoomAddMemberActionID uuid.UUID
+		}
+		// DeleteChatRoomAddedMember holds details about calls to the DeleteChatRoomAddedMember method.
+		DeleteChatRoomAddedMember []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomAddMemberActionID is the chatRoomAddMemberActionID argument value.
+			ChatRoomAddMemberActionID uuid.UUID
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+		}
+		// DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSd holds details about calls to the DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSd method.
+		DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomAddMemberActionID is the chatRoomAddMemberActionID argument value.
+			ChatRoomAddMemberActionID uuid.UUID
+		}
+		// DeleteChatRoomAddedMemberWithSd holds details about calls to the DeleteChatRoomAddedMemberWithSd method.
+		DeleteChatRoomAddedMemberWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomAddMemberActionID is the chatRoomAddMemberActionID argument value.
+			ChatRoomAddMemberActionID uuid.UUID
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+		}
+		// DeleteChatRoomAddedMembersOnChatRoomAddMemberAction holds details about calls to the DeleteChatRoomAddedMembersOnChatRoomAddMemberAction method.
+		DeleteChatRoomAddedMembersOnChatRoomAddMemberAction []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomAddMemberActionID is the chatRoomAddMemberActionID argument value.
+			ChatRoomAddMemberActionID uuid.UUID
+		}
+		// DeleteChatRoomAddedMembersOnChatRoomAddMemberActions holds details about calls to the DeleteChatRoomAddedMembersOnChatRoomAddMemberActions method.
+		DeleteChatRoomAddedMembersOnChatRoomAddMemberActions []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomAddMemberActionIDs is the chatRoomAddMemberActionIDs argument value.
+			ChatRoomAddMemberActionIDs []uuid.UUID
+		}
+		// DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSd holds details about calls to the DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSd method.
+		DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomAddMemberActionIDs is the chatRoomAddMemberActionIDs argument value.
+			ChatRoomAddMemberActionIDs []uuid.UUID
+		}
+		// DeleteChatRoomAddedMembersOnMember holds details about calls to the DeleteChatRoomAddedMembersOnMember method.
+		DeleteChatRoomAddedMembersOnMember []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+		}
+		// DeleteChatRoomAddedMembersOnMemberWithSd holds details about calls to the DeleteChatRoomAddedMembersOnMemberWithSd method.
+		DeleteChatRoomAddedMembersOnMemberWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+		}
+		// DeleteChatRoomAddedMembersOnMembers holds details about calls to the DeleteChatRoomAddedMembersOnMembers method.
+		DeleteChatRoomAddedMembersOnMembers []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MemberIDs is the memberIDs argument value.
+			MemberIDs []uuid.UUID
+		}
+		// DeleteChatRoomAddedMembersOnMembersWithSd holds details about calls to the DeleteChatRoomAddedMembersOnMembersWithSd method.
+		DeleteChatRoomAddedMembersOnMembersWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MemberIDs is the memberIDs argument value.
+			MemberIDs []uuid.UUID
 		}
 		// DeleteChatRoomCreateAction holds details about calls to the DeleteChatRoomCreateAction method.
 		DeleteChatRoomCreateAction []struct {
@@ -6693,6 +7237,90 @@ type StoreMock struct {
 			Sd Sd
 			// ChatRoomRemoveMemberActionID is the chatRoomRemoveMemberActionID argument value.
 			ChatRoomRemoveMemberActionID uuid.UUID
+		}
+		// DeleteChatRoomRemovedMember holds details about calls to the DeleteChatRoomRemovedMember method.
+		DeleteChatRoomRemovedMember []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomRemoveMemberActionID is the chatRoomRemoveMemberActionID argument value.
+			ChatRoomRemoveMemberActionID uuid.UUID
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+		}
+		// DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSd holds details about calls to the DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSd method.
+		DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomRemoveMemberActionID is the chatRoomRemoveMemberActionID argument value.
+			ChatRoomRemoveMemberActionID uuid.UUID
+		}
+		// DeleteChatRoomRemovedMemberWithSd holds details about calls to the DeleteChatRoomRemovedMemberWithSd method.
+		DeleteChatRoomRemovedMemberWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomRemoveMemberActionID is the chatRoomRemoveMemberActionID argument value.
+			ChatRoomRemoveMemberActionID uuid.UUID
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+		}
+		// DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberAction holds details about calls to the DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberAction method.
+		DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberAction []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomRemoveMemberActionID is the chatRoomRemoveMemberActionID argument value.
+			ChatRoomRemoveMemberActionID uuid.UUID
+		}
+		// DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActions holds details about calls to the DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActions method.
+		DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActions []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomRemoveMemberActionIDs is the chatRoomRemoveMemberActionIDs argument value.
+			ChatRoomRemoveMemberActionIDs []uuid.UUID
+		}
+		// DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSd holds details about calls to the DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSd method.
+		DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomRemoveMemberActionIDs is the chatRoomRemoveMemberActionIDs argument value.
+			ChatRoomRemoveMemberActionIDs []uuid.UUID
+		}
+		// DeleteChatRoomRemovedMembersOnMember holds details about calls to the DeleteChatRoomRemovedMembersOnMember method.
+		DeleteChatRoomRemovedMembersOnMember []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+		}
+		// DeleteChatRoomRemovedMembersOnMemberWithSd holds details about calls to the DeleteChatRoomRemovedMembersOnMemberWithSd method.
+		DeleteChatRoomRemovedMembersOnMemberWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+		}
+		// DeleteChatRoomRemovedMembersOnMembers holds details about calls to the DeleteChatRoomRemovedMembersOnMembers method.
+		DeleteChatRoomRemovedMembersOnMembers []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MemberIDs is the memberIDs argument value.
+			MemberIDs []uuid.UUID
+		}
+		// DeleteChatRoomRemovedMembersOnMembersWithSd holds details about calls to the DeleteChatRoomRemovedMembersOnMembersWithSd method.
+		DeleteChatRoomRemovedMembersOnMembersWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MemberIDs is the memberIDs argument value.
+			MemberIDs []uuid.UUID
 		}
 		// DeleteChatRoomUpdateNameAction holds details about calls to the DeleteChatRoomUpdateNameAction method.
 		DeleteChatRoomUpdateNameAction []struct {
@@ -8647,6 +9275,42 @@ type StoreMock struct {
 			// Wc is the wc argument value.
 			Wc WithCountParam
 		}
+		// GetChatRoomActionsOnChatRoom holds details about calls to the GetChatRoomActionsOnChatRoom method.
+		GetChatRoomActionsOnChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereChatRoomActionParam
+			// Order is the order argument value.
+			Order parameter.ChatRoomActionOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetChatRoomActionsOnChatRoomWithSd holds details about calls to the GetChatRoomActionsOnChatRoomWithSd method.
+		GetChatRoomActionsOnChatRoomWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereChatRoomActionParam
+			// Order is the order argument value.
+			Order parameter.ChatRoomActionOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
 		// GetChatRoomAddMemberActionsOnChatRoom holds details about calls to the GetChatRoomAddMemberActionsOnChatRoom method.
 		GetChatRoomAddMemberActionsOnChatRoom []struct {
 			// Ctx is the ctx argument value.
@@ -9240,6 +9904,78 @@ type StoreMock struct {
 			Where parameter.WhereMemberOnChatRoomParam
 			// Order is the order argument value.
 			Order parameter.MemberOnChatRoomOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetMembersOnChatRoomAddMemberAction holds details about calls to the GetMembersOnChatRoomAddMemberAction method.
+		GetMembersOnChatRoomAddMemberAction []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomAddMemberActionID is the chatRoomAddMemberActionID argument value.
+			ChatRoomAddMemberActionID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereMemberOnChatRoomAddMemberActionParam
+			// Order is the order argument value.
+			Order parameter.MemberOnChatRoomAddMemberActionOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetMembersOnChatRoomAddMemberActionWithSd holds details about calls to the GetMembersOnChatRoomAddMemberActionWithSd method.
+		GetMembersOnChatRoomAddMemberActionWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomAddMemberActionID is the chatRoomAddMemberActionID argument value.
+			ChatRoomAddMemberActionID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereMemberOnChatRoomAddMemberActionParam
+			// Order is the order argument value.
+			Order parameter.MemberOnChatRoomAddMemberActionOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetMembersOnChatRoomRemoveMemberAction holds details about calls to the GetMembersOnChatRoomRemoveMemberAction method.
+		GetMembersOnChatRoomRemoveMemberAction []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomRemoveMemberActionID is the chatRoomRemoveMemberActionID argument value.
+			ChatRoomRemoveMemberActionID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereMemberOnChatRoomRemoveMemberActionParam
+			// Order is the order argument value.
+			Order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetMembersOnChatRoomRemoveMemberActionWithSd holds details about calls to the GetMembersOnChatRoomRemoveMemberActionWithSd method.
+		GetMembersOnChatRoomRemoveMemberActionWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomRemoveMemberActionID is the chatRoomRemoveMemberActionID argument value.
+			ChatRoomRemoveMemberActionID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereMemberOnChatRoomRemoveMemberActionParam
+			// Order is the order argument value.
+			Order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 			// Cp is the cp argument value.
@@ -10043,6 +10779,30 @@ type StoreMock struct {
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 		}
+		// GetPluralChatRoomActions holds details about calls to the GetPluralChatRoomActions method.
+		GetPluralChatRoomActions []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomActionIDs is the chatRoomActionIDs argument value.
+			ChatRoomActionIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.ChatRoomActionOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralChatRoomActionsWithSd holds details about calls to the GetPluralChatRoomActionsWithSd method.
+		GetPluralChatRoomActionsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomActionIDs is the chatRoomActionIDs argument value.
+			ChatRoomActionIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.ChatRoomActionOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
 		// GetPluralChatRoomAddMemberActions holds details about calls to the GetPluralChatRoomAddMemberActions method.
 		GetPluralChatRoomAddMemberActions []struct {
 			// Ctx is the ctx argument value.
@@ -10472,6 +11232,54 @@ type StoreMock struct {
 			Np NumberedPaginationParam
 			// Order is the order argument value.
 			Order parameter.MemberOnChatRoomOrderMethod
+		}
+		// GetPluralMembersOnChatRoomAddMemberAction holds details about calls to the GetPluralMembersOnChatRoomAddMemberAction method.
+		GetPluralMembersOnChatRoomAddMemberAction []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomAddMemberActionIDs is the chatRoomAddMemberActionIDs argument value.
+			ChatRoomAddMemberActionIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MemberOnChatRoomAddMemberActionOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralMembersOnChatRoomAddMemberActionWithSd holds details about calls to the GetPluralMembersOnChatRoomAddMemberActionWithSd method.
+		GetPluralMembersOnChatRoomAddMemberActionWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomAddMemberActionIDs is the chatRoomAddMemberActionIDs argument value.
+			ChatRoomAddMemberActionIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MemberOnChatRoomAddMemberActionOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralMembersOnChatRoomRemoveMemberAction holds details about calls to the GetPluralMembersOnChatRoomRemoveMemberAction method.
+		GetPluralMembersOnChatRoomRemoveMemberAction []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomRemoveMemberActionIDs is the chatRoomRemoveMemberActionIDs argument value.
+			ChatRoomRemoveMemberActionIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralMembersOnChatRoomRemoveMemberActionWithSd holds details about calls to the GetPluralMembersOnChatRoomRemoveMemberActionWithSd method.
+		GetPluralMembersOnChatRoomRemoveMemberActionWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomRemoveMemberActionIDs is the chatRoomRemoveMemberActionIDs argument value.
+			ChatRoomRemoveMemberActionIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
 		}
 		// GetPluralMembersOnChatRoomWithSd holds details about calls to the GetPluralMembersOnChatRoomWithSd method.
 		GetPluralMembersOnChatRoomWithSd []struct {
@@ -11683,6 +12491,22 @@ type StoreMock struct {
 			// RecordTypeIDs is the recordTypeIDs argument value.
 			RecordTypeIDs []uuid.UUID
 		}
+		// PluralDeleteChatRoomActions holds details about calls to the PluralDeleteChatRoomActions method.
+		PluralDeleteChatRoomActions []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomActionIDs is the chatRoomActionIDs argument value.
+			ChatRoomActionIDs []uuid.UUID
+		}
+		// PluralDeleteChatRoomActionsWithSd holds details about calls to the PluralDeleteChatRoomActionsWithSd method.
+		PluralDeleteChatRoomActionsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomActionIDs is the chatRoomActionIDs argument value.
+			ChatRoomActionIDs []uuid.UUID
+		}
 		// PluralDeleteChatRoomAddMemberActions holds details about calls to the PluralDeleteChatRoomAddMemberActions method.
 		PluralDeleteChatRoomAddMemberActions []struct {
 			// Ctx is the ctx argument value.
@@ -12122,6 +12946,38 @@ type StoreMock struct {
 			Sd Sd
 			// Param is the param argument value.
 			Param parameter.ReadReceiptsParam
+		}
+		// RemoveMemberToChatRoomRemoveMemberAction holds details about calls to the RemoveMemberToChatRoomRemoveMemberAction method.
+		RemoveMemberToChatRoomRemoveMemberAction []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Param is the param argument value.
+			Param parameter.CreateChatRoomRemovedMemberParam
+		}
+		// RemoveMemberToChatRoomRemoveMemberActionWithSd holds details about calls to the RemoveMemberToChatRoomRemoveMemberActionWithSd method.
+		RemoveMemberToChatRoomRemoveMemberActionWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Param is the param argument value.
+			Param parameter.CreateChatRoomRemovedMemberParam
+		}
+		// RemoveMembersToChatRoomRemoveMemberAction holds details about calls to the RemoveMembersToChatRoomRemoveMemberAction method.
+		RemoveMembersToChatRoomRemoveMemberAction []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.CreateChatRoomRemovedMemberParam
+		}
+		// RemoveMembersToChatRoomRemoveMemberActionWithSd holds details about calls to the RemoveMembersToChatRoomRemoveMemberActionWithSd method.
+		RemoveMembersToChatRoomRemoveMemberActionWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Params is the params argument value.
+			Params []parameter.CreateChatRoomRemovedMemberParam
 		}
 		// Rollback holds details about calls to the Rollback method.
 		Rollback []struct {
@@ -12771,804 +13627,1010 @@ type StoreMock struct {
 			Param parameter.UpdateRoleParams
 		}
 	}
-	lockAssociateRole                                     sync.RWMutex
-	lockAssociateRoleWithSd                               sync.RWMutex
-	lockAssociateRoles                                    sync.RWMutex
-	lockAssociateRolesWithSd                              sync.RWMutex
-	lockBegin                                             sync.RWMutex
-	lockBelongChatRoom                                    sync.RWMutex
-	lockBelongChatRoomWithSd                              sync.RWMutex
-	lockBelongChatRooms                                   sync.RWMutex
-	lockBelongChatRoomsWithSd                             sync.RWMutex
-	lockBelongOrganization                                sync.RWMutex
-	lockBelongOrganizationWithSd                          sync.RWMutex
-	lockBelongOrganizations                               sync.RWMutex
-	lockBelongOrganizationsWithSd                         sync.RWMutex
-	lockCleanup                                           sync.RWMutex
-	lockCommit                                            sync.RWMutex
-	lockCountAbsences                                     sync.RWMutex
-	lockCountAbsencesWithSd                               sync.RWMutex
-	lockCountAttachableItems                              sync.RWMutex
-	lockCountAttachableItemsWithSd                        sync.RWMutex
-	lockCountAttendStatuses                               sync.RWMutex
-	lockCountAttendStatusesWithSd                         sync.RWMutex
-	lockCountAttendanceTypes                              sync.RWMutex
-	lockCountAttendanceTypesWithSd                        sync.RWMutex
-	lockCountChatRoomActionTypes                          sync.RWMutex
-	lockCountChatRoomActionTypesWithSd                    sync.RWMutex
-	lockCountChatRoomAddMemberActions                     sync.RWMutex
-	lockCountChatRoomAddMemberActionsWithSd               sync.RWMutex
-	lockCountChatRoomCreateActions                        sync.RWMutex
-	lockCountChatRoomCreateActionsWithSd                  sync.RWMutex
-	lockCountChatRoomRemoveMemberActions                  sync.RWMutex
-	lockCountChatRoomRemoveMemberActionsWithSd            sync.RWMutex
-	lockCountChatRoomUpdateNameActions                    sync.RWMutex
-	lockCountChatRoomUpdateNameActionsWithSd              sync.RWMutex
-	lockCountChatRoomWithdrawActions                      sync.RWMutex
-	lockCountChatRoomWithdrawActionsWithSd                sync.RWMutex
-	lockCountChatRooms                                    sync.RWMutex
-	lockCountChatRoomsOnMember                            sync.RWMutex
-	lockCountChatRoomsOnMemberWithSd                      sync.RWMutex
-	lockCountChatRoomsWithSd                              sync.RWMutex
-	lockCountEventTypes                                   sync.RWMutex
-	lockCountEventTypesWithSd                             sync.RWMutex
-	lockCountFiles                                        sync.RWMutex
-	lockCountFilesWithSd                                  sync.RWMutex
-	lockCountGrades                                       sync.RWMutex
-	lockCountGradesWithSd                                 sync.RWMutex
-	lockCountGroups                                       sync.RWMutex
-	lockCountGroupsWithSd                                 sync.RWMutex
-	lockCountImages                                       sync.RWMutex
-	lockCountImagesWithSd                                 sync.RWMutex
-	lockCountMembers                                      sync.RWMutex
-	lockCountMembersOnChatRoom                            sync.RWMutex
-	lockCountMembersOnChatRoomWithSd                      sync.RWMutex
-	lockCountMembersOnOrganization                        sync.RWMutex
-	lockCountMembersOnOrganizationWithSd                  sync.RWMutex
-	lockCountMembersWithSd                                sync.RWMutex
-	lockCountMessages                                     sync.RWMutex
-	lockCountMessagesWithSd                               sync.RWMutex
-	lockCountMimeTypes                                    sync.RWMutex
-	lockCountMimeTypesWithSd                              sync.RWMutex
-	lockCountOrganizations                                sync.RWMutex
-	lockCountOrganizationsOnMember                        sync.RWMutex
-	lockCountOrganizationsOnMemberWithSd                  sync.RWMutex
-	lockCountOrganizationsWithSd                          sync.RWMutex
-	lockCountPermissionCategories                         sync.RWMutex
-	lockCountPermissionCategoriesWithSd                   sync.RWMutex
-	lockCountPermissions                                  sync.RWMutex
-	lockCountPermissionsWithSd                            sync.RWMutex
-	lockCountPolicies                                     sync.RWMutex
-	lockCountPoliciesOnRole                               sync.RWMutex
-	lockCountPoliciesOnRoleWithSd                         sync.RWMutex
-	lockCountPoliciesWithSd                               sync.RWMutex
-	lockCountPolicyCategories                             sync.RWMutex
-	lockCountPolicyCategoriesWithSd                       sync.RWMutex
-	lockCountProfessors                                   sync.RWMutex
-	lockCountProfessorsWithSd                             sync.RWMutex
-	lockCountReadableMembersOnMessage                     sync.RWMutex
-	lockCountReadableMembersOnMessageWithSd               sync.RWMutex
-	lockCountReadableMessagesOnChatRoomAndMember          sync.RWMutex
-	lockCountReadableMessagesOnChatRoomAndMemberWithSd    sync.RWMutex
-	lockCountReadableMessagesOnChatRoomsAndMember         sync.RWMutex
-	lockCountReadableMessagesOnChatRoomsAndMemberWithSd   sync.RWMutex
-	lockCountReadableMessagesOnMember                     sync.RWMutex
-	lockCountReadableMessagesOnMemberWithSd               sync.RWMutex
-	lockCountRecordTypes                                  sync.RWMutex
-	lockCountRecordTypesWithSd                            sync.RWMutex
-	lockCountRoles                                        sync.RWMutex
-	lockCountRolesOnPolicy                                sync.RWMutex
-	lockCountRolesOnPolicyWithSd                          sync.RWMutex
-	lockCountRolesWithSd                                  sync.RWMutex
-	lockCountStudents                                     sync.RWMutex
-	lockCountStudentsWithSd                               sync.RWMutex
-	lockCreateAbsence                                     sync.RWMutex
-	lockCreateAbsenceWithSd                               sync.RWMutex
-	lockCreateAbsences                                    sync.RWMutex
-	lockCreateAbsencesWithSd                              sync.RWMutex
-	lockCreateAttachableItem                              sync.RWMutex
-	lockCreateAttachableItemWithSd                        sync.RWMutex
-	lockCreateAttachableItems                             sync.RWMutex
-	lockCreateAttachableItemsWithSd                       sync.RWMutex
-	lockCreateAttendStatus                                sync.RWMutex
-	lockCreateAttendStatusWithSd                          sync.RWMutex
-	lockCreateAttendStatuses                              sync.RWMutex
-	lockCreateAttendStatusesWithSd                        sync.RWMutex
-	lockCreateAttendanceType                              sync.RWMutex
-	lockCreateAttendanceTypeWithSd                        sync.RWMutex
-	lockCreateAttendanceTypes                             sync.RWMutex
-	lockCreateAttendanceTypesWithSd                       sync.RWMutex
-	lockCreateChatRoom                                    sync.RWMutex
-	lockCreateChatRoomActionType                          sync.RWMutex
-	lockCreateChatRoomActionTypeWithSd                    sync.RWMutex
-	lockCreateChatRoomActionTypes                         sync.RWMutex
-	lockCreateChatRoomActionTypesWithSd                   sync.RWMutex
-	lockCreateChatRoomAddMemberAction                     sync.RWMutex
-	lockCreateChatRoomAddMemberActionWithSd               sync.RWMutex
-	lockCreateChatRoomAddMemberActions                    sync.RWMutex
-	lockCreateChatRoomAddMemberActionsWithSd              sync.RWMutex
-	lockCreateChatRoomCreateAction                        sync.RWMutex
-	lockCreateChatRoomCreateActionWithSd                  sync.RWMutex
-	lockCreateChatRoomCreateActions                       sync.RWMutex
-	lockCreateChatRoomCreateActionsWithSd                 sync.RWMutex
-	lockCreateChatRoomRemoveMemberAction                  sync.RWMutex
-	lockCreateChatRoomRemoveMemberActionWithSd            sync.RWMutex
-	lockCreateChatRoomRemoveMemberActions                 sync.RWMutex
-	lockCreateChatRoomRemoveMemberActionsWithSd           sync.RWMutex
-	lockCreateChatRoomUpdateNameAction                    sync.RWMutex
-	lockCreateChatRoomUpdateNameActionWithSd              sync.RWMutex
-	lockCreateChatRoomUpdateNameActions                   sync.RWMutex
-	lockCreateChatRoomUpdateNameActionsWithSd             sync.RWMutex
-	lockCreateChatRoomWithSd                              sync.RWMutex
-	lockCreateChatRoomWithdrawAction                      sync.RWMutex
-	lockCreateChatRoomWithdrawActionWithSd                sync.RWMutex
-	lockCreateChatRoomWithdrawActions                     sync.RWMutex
-	lockCreateChatRoomWithdrawActionsWithSd               sync.RWMutex
-	lockCreateChatRooms                                   sync.RWMutex
-	lockCreateChatRoomsWithSd                             sync.RWMutex
-	lockCreateEventType                                   sync.RWMutex
-	lockCreateEventTypeWithSd                             sync.RWMutex
-	lockCreateEventTypes                                  sync.RWMutex
-	lockCreateEventTypesWithSd                            sync.RWMutex
-	lockCreateFile                                        sync.RWMutex
-	lockCreateFileWithSd                                  sync.RWMutex
-	lockCreateFiles                                       sync.RWMutex
-	lockCreateFilesWithSd                                 sync.RWMutex
-	lockCreateGrade                                       sync.RWMutex
-	lockCreateGradeWithSd                                 sync.RWMutex
-	lockCreateGrades                                      sync.RWMutex
-	lockCreateGradesWithSd                                sync.RWMutex
-	lockCreateGroup                                       sync.RWMutex
-	lockCreateGroupWithSd                                 sync.RWMutex
-	lockCreateGroups                                      sync.RWMutex
-	lockCreateGroupsWithSd                                sync.RWMutex
-	lockCreateImage                                       sync.RWMutex
-	lockCreateImageWithSd                                 sync.RWMutex
-	lockCreateImages                                      sync.RWMutex
-	lockCreateImagesWithSd                                sync.RWMutex
-	lockCreateMember                                      sync.RWMutex
-	lockCreateMemberWithSd                                sync.RWMutex
-	lockCreateMembers                                     sync.RWMutex
-	lockCreateMembersWithSd                               sync.RWMutex
-	lockCreateMessage                                     sync.RWMutex
-	lockCreateMessageWithSd                               sync.RWMutex
-	lockCreateMessages                                    sync.RWMutex
-	lockCreateMessagesWithSd                              sync.RWMutex
-	lockCreateMimeType                                    sync.RWMutex
-	lockCreateMimeTypeWithSd                              sync.RWMutex
-	lockCreateMimeTypes                                   sync.RWMutex
-	lockCreateMimeTypesWithSd                             sync.RWMutex
-	lockCreateOrganization                                sync.RWMutex
-	lockCreateOrganizationWithSd                          sync.RWMutex
-	lockCreateOrganizations                               sync.RWMutex
-	lockCreateOrganizationsWithSd                         sync.RWMutex
-	lockCreatePermission                                  sync.RWMutex
-	lockCreatePermissionCategories                        sync.RWMutex
-	lockCreatePermissionCategoriesWithSd                  sync.RWMutex
-	lockCreatePermissionCategory                          sync.RWMutex
-	lockCreatePermissionCategoryWithSd                    sync.RWMutex
-	lockCreatePermissionWithSd                            sync.RWMutex
-	lockCreatePermissions                                 sync.RWMutex
-	lockCreatePermissionsWithSd                           sync.RWMutex
-	lockCreatePolicies                                    sync.RWMutex
-	lockCreatePoliciesWithSd                              sync.RWMutex
-	lockCreatePolicy                                      sync.RWMutex
-	lockCreatePolicyCategories                            sync.RWMutex
-	lockCreatePolicyCategoriesWithSd                      sync.RWMutex
-	lockCreatePolicyCategory                              sync.RWMutex
-	lockCreatePolicyCategoryWithSd                        sync.RWMutex
-	lockCreatePolicyWithSd                                sync.RWMutex
-	lockCreateProfessor                                   sync.RWMutex
-	lockCreateProfessorWithSd                             sync.RWMutex
-	lockCreateProfessors                                  sync.RWMutex
-	lockCreateProfessorsWithSd                            sync.RWMutex
-	lockCreateReadReceipt                                 sync.RWMutex
-	lockCreateReadReceiptWithSd                           sync.RWMutex
-	lockCreateReadReceipts                                sync.RWMutex
-	lockCreateReadReceiptsWithSd                          sync.RWMutex
-	lockCreateRecordType                                  sync.RWMutex
-	lockCreateRecordTypeWithSd                            sync.RWMutex
-	lockCreateRecordTypes                                 sync.RWMutex
-	lockCreateRecordTypesWithSd                           sync.RWMutex
-	lockCreateRole                                        sync.RWMutex
-	lockCreateRoleWithSd                                  sync.RWMutex
-	lockCreateRoles                                       sync.RWMutex
-	lockCreateRolesWithSd                                 sync.RWMutex
-	lockCreateStudent                                     sync.RWMutex
-	lockCreateStudentWithSd                               sync.RWMutex
-	lockCreateStudents                                    sync.RWMutex
-	lockCreateStudentsWithSd                              sync.RWMutex
-	lockDeleteAbsence                                     sync.RWMutex
-	lockDeleteAbsenceWithSd                               sync.RWMutex
-	lockDeleteAttachableItem                              sync.RWMutex
-	lockDeleteAttachableItemWithSd                        sync.RWMutex
-	lockDeleteAttendStatus                                sync.RWMutex
-	lockDeleteAttendStatusByKey                           sync.RWMutex
-	lockDeleteAttendStatusByKeyWithSd                     sync.RWMutex
-	lockDeleteAttendStatusWithSd                          sync.RWMutex
-	lockDeleteAttendanceType                              sync.RWMutex
-	lockDeleteAttendanceTypeByKey                         sync.RWMutex
-	lockDeleteAttendanceTypeByKeyWithSd                   sync.RWMutex
-	lockDeleteAttendanceTypeWithSd                        sync.RWMutex
-	lockDeleteChatRoom                                    sync.RWMutex
-	lockDeleteChatRoomActionType                          sync.RWMutex
-	lockDeleteChatRoomActionTypeByKey                     sync.RWMutex
-	lockDeleteChatRoomActionTypeByKeyWithSd               sync.RWMutex
-	lockDeleteChatRoomActionTypeWithSd                    sync.RWMutex
-	lockDeleteChatRoomAddMemberAction                     sync.RWMutex
-	lockDeleteChatRoomAddMemberActionWithSd               sync.RWMutex
-	lockDeleteChatRoomCreateAction                        sync.RWMutex
-	lockDeleteChatRoomCreateActionWithSd                  sync.RWMutex
-	lockDeleteChatRoomRemoveMemberAction                  sync.RWMutex
-	lockDeleteChatRoomRemoveMemberActionWithSd            sync.RWMutex
-	lockDeleteChatRoomUpdateNameAction                    sync.RWMutex
-	lockDeleteChatRoomUpdateNameActionWithSd              sync.RWMutex
-	lockDeleteChatRoomWithSd                              sync.RWMutex
-	lockDeleteChatRoomWithdrawAction                      sync.RWMutex
-	lockDeleteChatRoomWithdrawActionWithSd                sync.RWMutex
-	lockDeleteEventType                                   sync.RWMutex
-	lockDeleteEventTypeByKey                              sync.RWMutex
-	lockDeleteEventTypeByKeyWithSd                        sync.RWMutex
-	lockDeleteEventTypeWithSd                             sync.RWMutex
-	lockDeleteFile                                        sync.RWMutex
-	lockDeleteFileWithSd                                  sync.RWMutex
-	lockDeleteGrade                                       sync.RWMutex
-	lockDeleteGradeWithSd                                 sync.RWMutex
-	lockDeleteGroup                                       sync.RWMutex
-	lockDeleteGroupWithSd                                 sync.RWMutex
-	lockDeleteImage                                       sync.RWMutex
-	lockDeleteImageWithSd                                 sync.RWMutex
-	lockDeleteMember                                      sync.RWMutex
-	lockDeleteMemberWithSd                                sync.RWMutex
-	lockDeleteMessage                                     sync.RWMutex
-	lockDeleteMessageWithSd                               sync.RWMutex
-	lockDeleteMessagesOnChatRoom                          sync.RWMutex
-	lockDeleteMessagesOnChatRoomWithSd                    sync.RWMutex
-	lockDeleteMimeType                                    sync.RWMutex
-	lockDeleteMimeTypeByKey                               sync.RWMutex
-	lockDeleteMimeTypeByKeyWithSd                         sync.RWMutex
-	lockDeleteMimeTypeWithSd                              sync.RWMutex
-	lockDeleteOrganization                                sync.RWMutex
-	lockDeleteOrganizationWithSd                          sync.RWMutex
-	lockDeletePermission                                  sync.RWMutex
-	lockDeletePermissionByKey                             sync.RWMutex
-	lockDeletePermissionByKeyWithSd                       sync.RWMutex
-	lockDeletePermissionCategory                          sync.RWMutex
-	lockDeletePermissionCategoryByKey                     sync.RWMutex
-	lockDeletePermissionCategoryByKeyWithSd               sync.RWMutex
-	lockDeletePermissionCategoryWithSd                    sync.RWMutex
-	lockDeletePermissionWithSd                            sync.RWMutex
-	lockDeletePolicy                                      sync.RWMutex
-	lockDeletePolicyByKey                                 sync.RWMutex
-	lockDeletePolicyByKeyWithSd                           sync.RWMutex
-	lockDeletePolicyCategory                              sync.RWMutex
-	lockDeletePolicyCategoryByKey                         sync.RWMutex
-	lockDeletePolicyCategoryByKeyWithSd                   sync.RWMutex
-	lockDeletePolicyCategoryWithSd                        sync.RWMutex
-	lockDeletePolicyWithSd                                sync.RWMutex
-	lockDeleteProfessor                                   sync.RWMutex
-	lockDeleteProfessorWithSd                             sync.RWMutex
-	lockDeleteRecordType                                  sync.RWMutex
-	lockDeleteRecordTypeByKey                             sync.RWMutex
-	lockDeleteRecordTypeByKeyWithSd                       sync.RWMutex
-	lockDeleteRecordTypeWithSd                            sync.RWMutex
-	lockDeleteRole                                        sync.RWMutex
-	lockDeleteRoleWithSd                                  sync.RWMutex
-	lockDeleteStudent                                     sync.RWMutex
-	lockDeleteStudentWithSd                               sync.RWMutex
-	lockDisassociatePolicyOnRole                          sync.RWMutex
-	lockDisassociatePolicyOnRoleWithSd                    sync.RWMutex
-	lockDisassociatePolicyOnRoles                         sync.RWMutex
-	lockDisassociatePolicyOnRolesWithSd                   sync.RWMutex
-	lockDisassociateRole                                  sync.RWMutex
-	lockDisassociateRoleOnPolicies                        sync.RWMutex
-	lockDisassociateRoleOnPoliciesWithSd                  sync.RWMutex
-	lockDisassociateRoleOnPolicy                          sync.RWMutex
-	lockDisassociateRoleOnPolicyWithSd                    sync.RWMutex
-	lockDisassociateRoleWithSd                            sync.RWMutex
-	lockDisbelongChatRoom                                 sync.RWMutex
-	lockDisbelongChatRoomOnChatRoom                       sync.RWMutex
-	lockDisbelongChatRoomOnChatRoomWithSd                 sync.RWMutex
-	lockDisbelongChatRoomOnChatRooms                      sync.RWMutex
-	lockDisbelongChatRoomOnChatRoomsWithSd                sync.RWMutex
-	lockDisbelongChatRoomOnMember                         sync.RWMutex
-	lockDisbelongChatRoomOnMemberWithSd                   sync.RWMutex
-	lockDisbelongChatRoomOnMembers                        sync.RWMutex
-	lockDisbelongChatRoomOnMembersWithSd                  sync.RWMutex
-	lockDisbelongChatRoomWithSd                           sync.RWMutex
-	lockDisbelongOrganization                             sync.RWMutex
-	lockDisbelongOrganizationOnMember                     sync.RWMutex
-	lockDisbelongOrganizationOnMemberWithSd               sync.RWMutex
-	lockDisbelongOrganizationOnMembers                    sync.RWMutex
-	lockDisbelongOrganizationOnMembersWithSd              sync.RWMutex
-	lockDisbelongOrganizationOnOrganization               sync.RWMutex
-	lockDisbelongOrganizationOnOrganizationWithSd         sync.RWMutex
-	lockDisbelongOrganizationOnOrganizations              sync.RWMutex
-	lockDisbelongOrganizationOnOrganizationsWithSd        sync.RWMutex
-	lockDisbelongOrganizationWithSd                       sync.RWMutex
-	lockFindAbsenceByID                                   sync.RWMutex
-	lockFindAbsenceByIDWithSd                             sync.RWMutex
-	lockFindAttachableItemByID                            sync.RWMutex
-	lockFindAttachableItemByIDWithMimeType                sync.RWMutex
-	lockFindAttachableItemByIDWithMimeTypeWithSd          sync.RWMutex
-	lockFindAttachableItemByIDWithSd                      sync.RWMutex
-	lockFindAttachableItemByURL                           sync.RWMutex
-	lockFindAttachableItemByURLWithMimeType               sync.RWMutex
-	lockFindAttachableItemByURLWithMimeTypeWithSd         sync.RWMutex
-	lockFindAttachableItemByURLWithSd                     sync.RWMutex
-	lockFindAttendStatusByID                              sync.RWMutex
-	lockFindAttendStatusByIDWithSd                        sync.RWMutex
-	lockFindAttendStatusByKey                             sync.RWMutex
-	lockFindAttendStatusByKeyWithSd                       sync.RWMutex
-	lockFindAttendanceTypeByID                            sync.RWMutex
-	lockFindAttendanceTypeByIDWithSd                      sync.RWMutex
-	lockFindAttendanceTypeByKey                           sync.RWMutex
-	lockFindAttendanceTypeByKeyWithSd                     sync.RWMutex
-	lockFindChatRoomActionTypeByID                        sync.RWMutex
-	lockFindChatRoomActionTypeByIDWithSd                  sync.RWMutex
-	lockFindChatRoomActionTypeByKey                       sync.RWMutex
-	lockFindChatRoomActionTypeByKeyWithSd                 sync.RWMutex
-	lockFindChatRoomByID                                  sync.RWMutex
-	lockFindChatRoomByIDWithCoverImage                    sync.RWMutex
-	lockFindChatRoomByIDWithCoverImageWithSd              sync.RWMutex
-	lockFindChatRoomByIDWithSd                            sync.RWMutex
-	lockFindChatRoomOnPrivate                             sync.RWMutex
-	lockFindChatRoomOnPrivateWithSd                       sync.RWMutex
-	lockFindEventTypeByID                                 sync.RWMutex
-	lockFindEventTypeByIDWithSd                           sync.RWMutex
-	lockFindEventTypeByKey                                sync.RWMutex
-	lockFindEventTypeByKeyWithSd                          sync.RWMutex
-	lockFindFileByID                                      sync.RWMutex
-	lockFindFileByIDWithSd                                sync.RWMutex
-	lockFindFileWithAttachableItem                        sync.RWMutex
-	lockFindFileWithAttachableItemWithSd                  sync.RWMutex
-	lockFindGradeByID                                     sync.RWMutex
-	lockFindGradeByIDWithSd                               sync.RWMutex
-	lockFindGradeByKey                                    sync.RWMutex
-	lockFindGradeByKeyWithSd                              sync.RWMutex
-	lockFindGradeWithOrganization                         sync.RWMutex
-	lockFindGradeWithOrganizationWithSd                   sync.RWMutex
-	lockFindGroupByID                                     sync.RWMutex
-	lockFindGroupByIDWithSd                               sync.RWMutex
-	lockFindGroupByKey                                    sync.RWMutex
-	lockFindGroupByKeyWithSd                              sync.RWMutex
-	lockFindGroupWithOrganization                         sync.RWMutex
-	lockFindGroupWithOrganizationWithSd                   sync.RWMutex
-	lockFindImageByID                                     sync.RWMutex
-	lockFindImageByIDWithSd                               sync.RWMutex
-	lockFindImageWithAttachableItem                       sync.RWMutex
-	lockFindImageWithAttachableItemWithSd                 sync.RWMutex
-	lockFindMemberByID                                    sync.RWMutex
-	lockFindMemberByIDWithSd                              sync.RWMutex
-	lockFindMemberByLoginID                               sync.RWMutex
-	lockFindMemberByLoginIDWithSd                         sync.RWMutex
-	lockFindMemberCredentialsByID                         sync.RWMutex
-	lockFindMemberCredentialsByIDWithSd                   sync.RWMutex
-	lockFindMemberCredentialsByLoginID                    sync.RWMutex
-	lockFindMemberCredentialsByLoginIDWithSd              sync.RWMutex
-	lockFindMemberWithAttendStatus                        sync.RWMutex
-	lockFindMemberWithAttendStatusWithSd                  sync.RWMutex
-	lockFindMemberWithCrew                                sync.RWMutex
-	lockFindMemberWithCrewWithSd                          sync.RWMutex
-	lockFindMemberWithDetail                              sync.RWMutex
-	lockFindMemberWithDetailWithSd                        sync.RWMutex
-	lockFindMemberWithPersonalOrganization                sync.RWMutex
-	lockFindMemberWithPersonalOrganizationWithSd          sync.RWMutex
-	lockFindMemberWithProfileImage                        sync.RWMutex
-	lockFindMemberWithProfileImageWithSd                  sync.RWMutex
-	lockFindMemberWithRole                                sync.RWMutex
-	lockFindMemberWithRoleWithSd                          sync.RWMutex
-	lockFindMessageByID                                   sync.RWMutex
-	lockFindMessageByIDWithSd                             sync.RWMutex
-	lockFindMessageWithChatRoom                           sync.RWMutex
-	lockFindMessageWithChatRoomWithSd                     sync.RWMutex
-	lockFindMessageWithSender                             sync.RWMutex
-	lockFindMessageWithSenderWithSd                       sync.RWMutex
-	lockFindMimeTypeByID                                  sync.RWMutex
-	lockFindMimeTypeByIDWithSd                            sync.RWMutex
-	lockFindMimeTypeByKey                                 sync.RWMutex
-	lockFindMimeTypeByKeyWithSd                           sync.RWMutex
-	lockFindMimeTypeByKind                                sync.RWMutex
-	lockFindMimeTypeByKindWithSd                          sync.RWMutex
-	lockFindOrganizationByID                              sync.RWMutex
-	lockFindOrganizationByIDWithSd                        sync.RWMutex
-	lockFindOrganizationWithChatRoom                      sync.RWMutex
-	lockFindOrganizationWithChatRoomAndDetail             sync.RWMutex
-	lockFindOrganizationWithChatRoomAndDetailWithSd       sync.RWMutex
-	lockFindOrganizationWithChatRoomWithSd                sync.RWMutex
-	lockFindOrganizationWithDetail                        sync.RWMutex
-	lockFindOrganizationWithDetailWithSd                  sync.RWMutex
-	lockFindPermissionByID                                sync.RWMutex
-	lockFindPermissionByIDWithCategory                    sync.RWMutex
-	lockFindPermissionByIDWithCategoryWithSd              sync.RWMutex
-	lockFindPermissionByIDWithSd                          sync.RWMutex
-	lockFindPermissionByKey                               sync.RWMutex
-	lockFindPermissionByKeyWithCategory                   sync.RWMutex
-	lockFindPermissionByKeyWithCategoryWithSd             sync.RWMutex
-	lockFindPermissionByKeyWithSd                         sync.RWMutex
-	lockFindPermissionCategoryByID                        sync.RWMutex
-	lockFindPermissionCategoryByIDWithSd                  sync.RWMutex
-	lockFindPermissionCategoryByKey                       sync.RWMutex
-	lockFindPermissionCategoryByKeyWithSd                 sync.RWMutex
-	lockFindPersonalOrganization                          sync.RWMutex
-	lockFindPersonalOrganizationWithSd                    sync.RWMutex
-	lockFindPolicyByID                                    sync.RWMutex
-	lockFindPolicyByIDWithCategory                        sync.RWMutex
-	lockFindPolicyByIDWithCategoryWithSd                  sync.RWMutex
-	lockFindPolicyByIDWithSd                              sync.RWMutex
-	lockFindPolicyByKey                                   sync.RWMutex
-	lockFindPolicyByKeyWithCategory                       sync.RWMutex
-	lockFindPolicyByKeyWithCategoryWithSd                 sync.RWMutex
-	lockFindPolicyByKeyWithSd                             sync.RWMutex
-	lockFindPolicyCategoryByID                            sync.RWMutex
-	lockFindPolicyCategoryByIDWithSd                      sync.RWMutex
-	lockFindPolicyCategoryByKey                           sync.RWMutex
-	lockFindPolicyCategoryByKeyWithSd                     sync.RWMutex
-	lockFindProfessorByID                                 sync.RWMutex
-	lockFindProfessorByIDWithSd                           sync.RWMutex
-	lockFindProfessorWithMember                           sync.RWMutex
-	lockFindProfessorWithMemberWithSd                     sync.RWMutex
-	lockFindRecordTypeByID                                sync.RWMutex
-	lockFindRecordTypeByIDWithSd                          sync.RWMutex
-	lockFindRecordTypeByKey                               sync.RWMutex
-	lockFindRecordTypeByKeyWithSd                         sync.RWMutex
-	lockFindRoleByID                                      sync.RWMutex
-	lockFindRoleByIDWithSd                                sync.RWMutex
-	lockFindStudentByID                                   sync.RWMutex
-	lockFindStudentByIDWithSd                             sync.RWMutex
-	lockFindStudentWithMember                             sync.RWMutex
-	lockFindStudentWithMemberWithSd                       sync.RWMutex
-	lockFindWholeOrganization                             sync.RWMutex
-	lockFindWholeOrganizationWithSd                       sync.RWMutex
-	lockGetAbsences                                       sync.RWMutex
-	lockGetAbsencesWithSd                                 sync.RWMutex
-	lockGetAttachableItems                                sync.RWMutex
-	lockGetAttachableItemsWithMimeType                    sync.RWMutex
-	lockGetAttachableItemsWithMimeTypeWithSd              sync.RWMutex
-	lockGetAttachableItemsWithSd                          sync.RWMutex
-	lockGetAttendStatuses                                 sync.RWMutex
-	lockGetAttendStatusesWithSd                           sync.RWMutex
-	lockGetAttendanceTypes                                sync.RWMutex
-	lockGetAttendanceTypesWithSd                          sync.RWMutex
-	lockGetChatRoomActionTypes                            sync.RWMutex
-	lockGetChatRoomActionTypesWithSd                      sync.RWMutex
-	lockGetChatRoomAddMemberActionsOnChatRoom             sync.RWMutex
-	lockGetChatRoomAddMemberActionsOnChatRoomWithSd       sync.RWMutex
-	lockGetChatRoomCreateActionsOnChatRoom                sync.RWMutex
-	lockGetChatRoomCreateActionsOnChatRoomWithSd          sync.RWMutex
-	lockGetChatRoomRemoveMemberActionsOnChatRoom          sync.RWMutex
-	lockGetChatRoomRemoveMemberActionsOnChatRoomWithSd    sync.RWMutex
-	lockGetChatRoomUpdateNameActionsOnChatRoom            sync.RWMutex
-	lockGetChatRoomUpdateNameActionsOnChatRoomWithSd      sync.RWMutex
-	lockGetChatRoomWithdrawActionsOnChatRoom              sync.RWMutex
-	lockGetChatRoomWithdrawActionsOnChatRoomWithSd        sync.RWMutex
-	lockGetChatRooms                                      sync.RWMutex
-	lockGetChatRoomsOnMember                              sync.RWMutex
-	lockGetChatRoomsOnMemberWithSd                        sync.RWMutex
-	lockGetChatRoomsWithCoverImage                        sync.RWMutex
-	lockGetChatRoomsWithCoverImageWithSd                  sync.RWMutex
-	lockGetChatRoomsWithSd                                sync.RWMutex
-	lockGetEventTypes                                     sync.RWMutex
-	lockGetEventTypesWithSd                               sync.RWMutex
-	lockGetFiles                                          sync.RWMutex
-	lockGetFilesWithAttachableItem                        sync.RWMutex
-	lockGetFilesWithAttachableItemWithSd                  sync.RWMutex
-	lockGetFilesWithSd                                    sync.RWMutex
-	lockGetGrades                                         sync.RWMutex
-	lockGetGradesWithOrganization                         sync.RWMutex
-	lockGetGradesWithOrganizationWithSd                   sync.RWMutex
-	lockGetGradesWithSd                                   sync.RWMutex
-	lockGetGroups                                         sync.RWMutex
-	lockGetGroupsWithOrganization                         sync.RWMutex
-	lockGetGroupsWithOrganizationWithSd                   sync.RWMutex
-	lockGetGroupsWithSd                                   sync.RWMutex
-	lockGetImages                                         sync.RWMutex
-	lockGetImagesWithAttachableItem                       sync.RWMutex
-	lockGetImagesWithAttachableItemWithSd                 sync.RWMutex
-	lockGetImagesWithSd                                   sync.RWMutex
-	lockGetMembers                                        sync.RWMutex
-	lockGetMembersOnChatRoom                              sync.RWMutex
-	lockGetMembersOnChatRoomWithSd                        sync.RWMutex
-	lockGetMembersOnOrganization                          sync.RWMutex
-	lockGetMembersOnOrganizationWithSd                    sync.RWMutex
-	lockGetMembersWithAttendStatus                        sync.RWMutex
-	lockGetMembersWithAttendStatusWithSd                  sync.RWMutex
-	lockGetMembersWithCrew                                sync.RWMutex
-	lockGetMembersWithCrewWithSd                          sync.RWMutex
-	lockGetMembersWithDetail                              sync.RWMutex
-	lockGetMembersWithDetailWithSd                        sync.RWMutex
-	lockGetMembersWithPersonalOrganization                sync.RWMutex
-	lockGetMembersWithPersonalOrganizationWithSd          sync.RWMutex
-	lockGetMembersWithProfileImage                        sync.RWMutex
-	lockGetMembersWithProfileImageWithSd                  sync.RWMutex
-	lockGetMembersWithRole                                sync.RWMutex
-	lockGetMembersWithRoleWithSd                          sync.RWMutex
-	lockGetMembersWithSd                                  sync.RWMutex
-	lockGetMessages                                       sync.RWMutex
-	lockGetMessagesWithChatRoom                           sync.RWMutex
-	lockGetMessagesWithChatRoomWithSd                     sync.RWMutex
-	lockGetMessagesWithSd                                 sync.RWMutex
-	lockGetMessagesWithSender                             sync.RWMutex
-	lockGetMessagesWithSenderWithSd                       sync.RWMutex
-	lockGetMimeTypes                                      sync.RWMutex
-	lockGetMimeTypesWithSd                                sync.RWMutex
-	lockGetOrganizations                                  sync.RWMutex
-	lockGetOrganizationsOnMember                          sync.RWMutex
-	lockGetOrganizationsOnMemberWithSd                    sync.RWMutex
-	lockGetOrganizationsWithChatRoom                      sync.RWMutex
-	lockGetOrganizationsWithChatRoomAndDetail             sync.RWMutex
-	lockGetOrganizationsWithChatRoomAndDetailWithSd       sync.RWMutex
-	lockGetOrganizationsWithChatRoomWithSd                sync.RWMutex
-	lockGetOrganizationsWithDetail                        sync.RWMutex
-	lockGetOrganizationsWithDetailWithSd                  sync.RWMutex
-	lockGetOrganizationsWithSd                            sync.RWMutex
-	lockGetPermissionCategories                           sync.RWMutex
-	lockGetPermissionCategoriesWithSd                     sync.RWMutex
-	lockGetPermissions                                    sync.RWMutex
-	lockGetPermissionsWithCategory                        sync.RWMutex
-	lockGetPermissionsWithCategoryWithSd                  sync.RWMutex
-	lockGetPermissionsWithSd                              sync.RWMutex
-	lockGetPluralAbsences                                 sync.RWMutex
-	lockGetPluralAbsencesWithSd                           sync.RWMutex
-	lockGetPluralAttachableItems                          sync.RWMutex
-	lockGetPluralAttachableItemsWithMimeType              sync.RWMutex
-	lockGetPluralAttachableItemsWithMimeTypeWithSd        sync.RWMutex
-	lockGetPluralAttachableItemsWithSd                    sync.RWMutex
-	lockGetPluralAttendStatuses                           sync.RWMutex
-	lockGetPluralAttendStatusesWithSd                     sync.RWMutex
-	lockGetPluralAttendanceTypes                          sync.RWMutex
-	lockGetPluralAttendanceTypesWithSd                    sync.RWMutex
-	lockGetPluralChatRoomActionTypes                      sync.RWMutex
-	lockGetPluralChatRoomActionTypesWithSd                sync.RWMutex
-	lockGetPluralChatRoomAddMemberActions                 sync.RWMutex
-	lockGetPluralChatRoomAddMemberActionsWithSd           sync.RWMutex
-	lockGetPluralChatRoomCreateActions                    sync.RWMutex
-	lockGetPluralChatRoomCreateActionsWithSd              sync.RWMutex
-	lockGetPluralChatRoomRemoveMemberActions              sync.RWMutex
-	lockGetPluralChatRoomRemoveMemberActionsWithSd        sync.RWMutex
-	lockGetPluralChatRoomUpdateNameActions                sync.RWMutex
-	lockGetPluralChatRoomUpdateNameActionsWithSd          sync.RWMutex
-	lockGetPluralChatRoomWithdrawActions                  sync.RWMutex
-	lockGetPluralChatRoomWithdrawActionsWithSd            sync.RWMutex
-	lockGetPluralChatRooms                                sync.RWMutex
-	lockGetPluralChatRoomsOnMember                        sync.RWMutex
-	lockGetPluralChatRoomsOnMemberWithSd                  sync.RWMutex
-	lockGetPluralChatRoomsWithCoverImage                  sync.RWMutex
-	lockGetPluralChatRoomsWithCoverImageWithSd            sync.RWMutex
-	lockGetPluralChatRoomsWithSd                          sync.RWMutex
-	lockGetPluralEventTypes                               sync.RWMutex
-	lockGetPluralEventTypesWithSd                         sync.RWMutex
-	lockGetPluralFiles                                    sync.RWMutex
-	lockGetPluralFilesWithAttachableItem                  sync.RWMutex
-	lockGetPluralFilesWithAttachableItemWithSd            sync.RWMutex
-	lockGetPluralFilesWithSd                              sync.RWMutex
-	lockGetPluralGrades                                   sync.RWMutex
-	lockGetPluralGradesWithOrganization                   sync.RWMutex
-	lockGetPluralGradesWithOrganizationWithSd             sync.RWMutex
-	lockGetPluralGradesWithSd                             sync.RWMutex
-	lockGetPluralGroups                                   sync.RWMutex
-	lockGetPluralGroupsWithOrganization                   sync.RWMutex
-	lockGetPluralGroupsWithOrganizationWithSd             sync.RWMutex
-	lockGetPluralGroupsWithSd                             sync.RWMutex
-	lockGetPluralImages                                   sync.RWMutex
-	lockGetPluralImagesWithAttachableItem                 sync.RWMutex
-	lockGetPluralImagesWithAttachableItemWithSd           sync.RWMutex
-	lockGetPluralImagesWithSd                             sync.RWMutex
-	lockGetPluralMembers                                  sync.RWMutex
-	lockGetPluralMembersOnChatRoom                        sync.RWMutex
-	lockGetPluralMembersOnChatRoomWithSd                  sync.RWMutex
-	lockGetPluralMembersOnOrganization                    sync.RWMutex
-	lockGetPluralMembersOnOrganizationWithSd              sync.RWMutex
-	lockGetPluralMembersWithAttendStatus                  sync.RWMutex
-	lockGetPluralMembersWithAttendStatusWithSd            sync.RWMutex
-	lockGetPluralMembersWithCrew                          sync.RWMutex
-	lockGetPluralMembersWithCrewWithSd                    sync.RWMutex
-	lockGetPluralMembersWithDetail                        sync.RWMutex
-	lockGetPluralMembersWithDetailWithSd                  sync.RWMutex
-	lockGetPluralMembersWithPersonalOrganization          sync.RWMutex
-	lockGetPluralMembersWithPersonalOrganizationWithSd    sync.RWMutex
-	lockGetPluralMembersWithProfileImage                  sync.RWMutex
-	lockGetPluralMembersWithProfileImageWithSd            sync.RWMutex
-	lockGetPluralMembersWithRole                          sync.RWMutex
-	lockGetPluralMembersWithRoleWithSd                    sync.RWMutex
-	lockGetPluralMembersWithSd                            sync.RWMutex
-	lockGetPluralMessages                                 sync.RWMutex
-	lockGetPluralMessagesWithChatRoom                     sync.RWMutex
-	lockGetPluralMessagesWithChatRoomWithSd               sync.RWMutex
-	lockGetPluralMessagesWithSd                           sync.RWMutex
-	lockGetPluralMessagesWithSender                       sync.RWMutex
-	lockGetPluralMessagesWithSenderWithSd                 sync.RWMutex
-	lockGetPluralMimeTypes                                sync.RWMutex
-	lockGetPluralMimeTypesWithSd                          sync.RWMutex
-	lockGetPluralOrganizations                            sync.RWMutex
-	lockGetPluralOrganizationsOnMember                    sync.RWMutex
-	lockGetPluralOrganizationsOnMemberWithSd              sync.RWMutex
-	lockGetPluralOrganizationsWithChatRoom                sync.RWMutex
-	lockGetPluralOrganizationsWithChatRoomAndDetail       sync.RWMutex
-	lockGetPluralOrganizationsWithChatRoomAndDetailWithSd sync.RWMutex
-	lockGetPluralOrganizationsWithChatRoomWithSd          sync.RWMutex
-	lockGetPluralOrganizationsWithDetail                  sync.RWMutex
-	lockGetPluralOrganizationsWithDetailWithSd            sync.RWMutex
-	lockGetPluralOrganizationsWithSd                      sync.RWMutex
-	lockGetPluralPermissionCategories                     sync.RWMutex
-	lockGetPluralPermissionCategoriesWithSd               sync.RWMutex
-	lockGetPluralPermissions                              sync.RWMutex
-	lockGetPluralPermissionsWithSd                        sync.RWMutex
-	lockGetPluralPolicies                                 sync.RWMutex
-	lockGetPluralPoliciesWithSd                           sync.RWMutex
-	lockGetPluralPolicyCategories                         sync.RWMutex
-	lockGetPluralPolicyCategoriesWithSd                   sync.RWMutex
-	lockGetPluralProfessors                               sync.RWMutex
-	lockGetPluralProfessorsWithMember                     sync.RWMutex
-	lockGetPluralProfessorsWithMemberWithSd               sync.RWMutex
-	lockGetPluralProfessorsWithSd                         sync.RWMutex
-	lockGetPluralReadableMembersOnMessage                 sync.RWMutex
-	lockGetPluralReadableMembersOnMessageWithSd           sync.RWMutex
-	lockGetPluralReadableMessagesOnMember                 sync.RWMutex
-	lockGetPluralReadableMessagesOnMemberWithSd           sync.RWMutex
-	lockGetPluralRecordTypes                              sync.RWMutex
-	lockGetPluralRecordTypesWithSd                        sync.RWMutex
-	lockGetPluralRoles                                    sync.RWMutex
-	lockGetPluralRolesWithSd                              sync.RWMutex
-	lockGetPluralStudents                                 sync.RWMutex
-	lockGetPluralStudentsWithMember                       sync.RWMutex
-	lockGetPluralStudentsWithMemberWithSd                 sync.RWMutex
-	lockGetPluralStudentsWithSd                           sync.RWMutex
-	lockGetPolicies                                       sync.RWMutex
-	lockGetPoliciesOnRole                                 sync.RWMutex
-	lockGetPoliciesOnRoleWithSd                           sync.RWMutex
-	lockGetPoliciesWithCategory                           sync.RWMutex
-	lockGetPoliciesWithCategoryWithSd                     sync.RWMutex
-	lockGetPoliciesWithSd                                 sync.RWMutex
-	lockGetPolicyCategories                               sync.RWMutex
-	lockGetPolicyCategoriesWithSd                         sync.RWMutex
-	lockGetProfessors                                     sync.RWMutex
-	lockGetProfessorsWithMember                           sync.RWMutex
-	lockGetProfessorsWithMemberWithSd                     sync.RWMutex
-	lockGetProfessorsWithSd                               sync.RWMutex
-	lockGetReadableMembersOnMessage                       sync.RWMutex
-	lockGetReadableMembersOnMessageWithSd                 sync.RWMutex
-	lockGetReadableMessagesOnMember                       sync.RWMutex
-	lockGetReadableMessagesOnMemberWithSd                 sync.RWMutex
-	lockGetRecordTypes                                    sync.RWMutex
-	lockGetRecordTypesWithSd                              sync.RWMutex
-	lockGetRoles                                          sync.RWMutex
-	lockGetRolesOnPolicy                                  sync.RWMutex
-	lockGetRolesOnPolicyWithSd                            sync.RWMutex
-	lockGetRolesWithSd                                    sync.RWMutex
-	lockGetStudents                                       sync.RWMutex
-	lockGetStudentsWithMember                             sync.RWMutex
-	lockGetStudentsWithMemberWithSd                       sync.RWMutex
-	lockGetStudentsWithSd                                 sync.RWMutex
-	lockPluralDeleteAbsences                              sync.RWMutex
-	lockPluralDeleteAbsencesWithSd                        sync.RWMutex
-	lockPluralDeleteAttachableItems                       sync.RWMutex
-	lockPluralDeleteAttachableItemsWithSd                 sync.RWMutex
-	lockPluralDeleteAttendStatuses                        sync.RWMutex
-	lockPluralDeleteAttendStatusesWithSd                  sync.RWMutex
-	lockPluralDeleteAttendanceTypes                       sync.RWMutex
-	lockPluralDeleteAttendanceTypesWithSd                 sync.RWMutex
-	lockPluralDeleteChatRoomActionTypes                   sync.RWMutex
-	lockPluralDeleteChatRoomActionTypesWithSd             sync.RWMutex
-	lockPluralDeleteChatRoomAddMemberActions              sync.RWMutex
-	lockPluralDeleteChatRoomAddMemberActionsWithSd        sync.RWMutex
-	lockPluralDeleteChatRoomCreateActions                 sync.RWMutex
-	lockPluralDeleteChatRoomCreateActionsWithSd           sync.RWMutex
-	lockPluralDeleteChatRoomRemoveMemberActions           sync.RWMutex
-	lockPluralDeleteChatRoomRemoveMemberActionsWithSd     sync.RWMutex
-	lockPluralDeleteChatRoomUpdateNameActions             sync.RWMutex
-	lockPluralDeleteChatRoomUpdateNameActionsWithSd       sync.RWMutex
-	lockPluralDeleteChatRoomWithdrawActions               sync.RWMutex
-	lockPluralDeleteChatRoomWithdrawActionsWithSd         sync.RWMutex
-	lockPluralDeleteChatRooms                             sync.RWMutex
-	lockPluralDeleteChatRoomsWithSd                       sync.RWMutex
-	lockPluralDeleteEventTypes                            sync.RWMutex
-	lockPluralDeleteEventTypesWithSd                      sync.RWMutex
-	lockPluralDeleteFiles                                 sync.RWMutex
-	lockPluralDeleteFilesWithSd                           sync.RWMutex
-	lockPluralDeleteGrades                                sync.RWMutex
-	lockPluralDeleteGradesWithSd                          sync.RWMutex
-	lockPluralDeleteGroups                                sync.RWMutex
-	lockPluralDeleteGroupsWithSd                          sync.RWMutex
-	lockPluralDeleteImages                                sync.RWMutex
-	lockPluralDeleteImagesWithSd                          sync.RWMutex
-	lockPluralDeleteMembers                               sync.RWMutex
-	lockPluralDeleteMembersWithSd                         sync.RWMutex
-	lockPluralDeleteMessages                              sync.RWMutex
-	lockPluralDeleteMessagesWithSd                        sync.RWMutex
-	lockPluralDeleteMimeTypes                             sync.RWMutex
-	lockPluralDeleteMimeTypesWithSd                       sync.RWMutex
-	lockPluralDeleteOrganizations                         sync.RWMutex
-	lockPluralDeleteOrganizationsWithSd                   sync.RWMutex
-	lockPluralDeletePermissionCategories                  sync.RWMutex
-	lockPluralDeletePermissionCategoriesWithSd            sync.RWMutex
-	lockPluralDeletePermissions                           sync.RWMutex
-	lockPluralDeletePermissionsWithSd                     sync.RWMutex
-	lockPluralDeletePolicies                              sync.RWMutex
-	lockPluralDeletePoliciesWithSd                        sync.RWMutex
-	lockPluralDeletePolicyCategories                      sync.RWMutex
-	lockPluralDeletePolicyCategoriesWithSd                sync.RWMutex
-	lockPluralDeleteProfessors                            sync.RWMutex
-	lockPluralDeleteProfessorsWithSd                      sync.RWMutex
-	lockPluralDeleteRecordTypes                           sync.RWMutex
-	lockPluralDeleteRecordTypesWithSd                     sync.RWMutex
-	lockPluralDeleteRoles                                 sync.RWMutex
-	lockPluralDeleteRolesWithSd                           sync.RWMutex
-	lockPluralDeleteStudents                              sync.RWMutex
-	lockPluralDeleteStudentsWithSd                        sync.RWMutex
-	lockPluralDisassociatePolicyOnRole                    sync.RWMutex
-	lockPluralDisassociatePolicyOnRoleWithSd              sync.RWMutex
-	lockPluralDisassociateRoleOnPolicy                    sync.RWMutex
-	lockPluralDisassociateRoleOnPolicyWithSd              sync.RWMutex
-	lockReadReceipt                                       sync.RWMutex
-	lockReadReceiptWithSd                                 sync.RWMutex
-	lockReadReceipts                                      sync.RWMutex
-	lockReadReceiptsWithSd                                sync.RWMutex
-	lockRollback                                          sync.RWMutex
-	lockUpdateAttachableItem                              sync.RWMutex
-	lockUpdateAttachableItemWithSd                        sync.RWMutex
-	lockUpdateAttendStatus                                sync.RWMutex
-	lockUpdateAttendStatusByKey                           sync.RWMutex
-	lockUpdateAttendStatusByKeyWithSd                     sync.RWMutex
-	lockUpdateAttendStatusWithSd                          sync.RWMutex
-	lockUpdateAttendanceType                              sync.RWMutex
-	lockUpdateAttendanceTypeByKey                         sync.RWMutex
-	lockUpdateAttendanceTypeByKeyWithSd                   sync.RWMutex
-	lockUpdateAttendanceTypeWithSd                        sync.RWMutex
-	lockUpdateChatRoom                                    sync.RWMutex
-	lockUpdateChatRoomActionType                          sync.RWMutex
-	lockUpdateChatRoomActionTypeByKey                     sync.RWMutex
-	lockUpdateChatRoomActionTypeByKeyWithSd               sync.RWMutex
-	lockUpdateChatRoomActionTypeWithSd                    sync.RWMutex
-	lockUpdateChatRoomWithSd                              sync.RWMutex
-	lockUpdateEventType                                   sync.RWMutex
-	lockUpdateEventTypeByKey                              sync.RWMutex
-	lockUpdateEventTypeByKeyWithSd                        sync.RWMutex
-	lockUpdateEventTypeWithSd                             sync.RWMutex
-	lockUpdateMember                                      sync.RWMutex
-	lockUpdateMemberAttendStatus                          sync.RWMutex
-	lockUpdateMemberAttendStatusWithSd                    sync.RWMutex
-	lockUpdateMemberGrade                                 sync.RWMutex
-	lockUpdateMemberGradeWithSd                           sync.RWMutex
-	lockUpdateMemberGroup                                 sync.RWMutex
-	lockUpdateMemberGroupWithSd                           sync.RWMutex
-	lockUpdateMemberLoginID                               sync.RWMutex
-	lockUpdateMemberLoginIDWithSd                         sync.RWMutex
-	lockUpdateMemberPassword                              sync.RWMutex
-	lockUpdateMemberPasswordWithSd                        sync.RWMutex
-	lockUpdateMemberRole                                  sync.RWMutex
-	lockUpdateMemberRoleWithSd                            sync.RWMutex
-	lockUpdateMemberWithSd                                sync.RWMutex
-	lockUpdateMessage                                     sync.RWMutex
-	lockUpdateMessageWithSd                               sync.RWMutex
-	lockUpdateMimeType                                    sync.RWMutex
-	lockUpdateMimeTypeByKey                               sync.RWMutex
-	lockUpdateMimeTypeByKeyWithSd                         sync.RWMutex
-	lockUpdateMimeTypeWithSd                              sync.RWMutex
-	lockUpdateOrganization                                sync.RWMutex
-	lockUpdateOrganizationWithSd                          sync.RWMutex
-	lockUpdatePermission                                  sync.RWMutex
-	lockUpdatePermissionByKey                             sync.RWMutex
-	lockUpdatePermissionByKeyWithSd                       sync.RWMutex
-	lockUpdatePermissionCategory                          sync.RWMutex
-	lockUpdatePermissionCategoryByKey                     sync.RWMutex
-	lockUpdatePermissionCategoryByKeyWithSd               sync.RWMutex
-	lockUpdatePermissionCategoryWithSd                    sync.RWMutex
-	lockUpdatePermissionWithSd                            sync.RWMutex
-	lockUpdatePolicy                                      sync.RWMutex
-	lockUpdatePolicyByKey                                 sync.RWMutex
-	lockUpdatePolicyByKeyWithSd                           sync.RWMutex
-	lockUpdatePolicyCategory                              sync.RWMutex
-	lockUpdatePolicyCategoryByKey                         sync.RWMutex
-	lockUpdatePolicyCategoryByKeyWithSd                   sync.RWMutex
-	lockUpdatePolicyCategoryWithSd                        sync.RWMutex
-	lockUpdatePolicyWithSd                                sync.RWMutex
-	lockUpdateRecordType                                  sync.RWMutex
-	lockUpdateRecordTypeByKey                             sync.RWMutex
-	lockUpdateRecordTypeByKeyWithSd                       sync.RWMutex
-	lockUpdateRecordTypeWithSd                            sync.RWMutex
-	lockUpdateRole                                        sync.RWMutex
-	lockUpdateRoleWithSd                                  sync.RWMutex
+	lockAddMemberToChatRoomAddMemberAction                              sync.RWMutex
+	lockAddMemberToChatRoomAddMemberActionWithSd                        sync.RWMutex
+	lockAddMembersToChatRoomAddMemberAction                             sync.RWMutex
+	lockAddMembersToChatRoomAddMemberActionWithSd                       sync.RWMutex
+	lockAssociateRole                                                   sync.RWMutex
+	lockAssociateRoleWithSd                                             sync.RWMutex
+	lockAssociateRoles                                                  sync.RWMutex
+	lockAssociateRolesWithSd                                            sync.RWMutex
+	lockBegin                                                           sync.RWMutex
+	lockBelongChatRoom                                                  sync.RWMutex
+	lockBelongChatRoomWithSd                                            sync.RWMutex
+	lockBelongChatRooms                                                 sync.RWMutex
+	lockBelongChatRoomsWithSd                                           sync.RWMutex
+	lockBelongOrganization                                              sync.RWMutex
+	lockBelongOrganizationWithSd                                        sync.RWMutex
+	lockBelongOrganizations                                             sync.RWMutex
+	lockBelongOrganizationsWithSd                                       sync.RWMutex
+	lockCleanup                                                         sync.RWMutex
+	lockCommit                                                          sync.RWMutex
+	lockCountAbsences                                                   sync.RWMutex
+	lockCountAbsencesWithSd                                             sync.RWMutex
+	lockCountAttachableItems                                            sync.RWMutex
+	lockCountAttachableItemsWithSd                                      sync.RWMutex
+	lockCountAttendStatuses                                             sync.RWMutex
+	lockCountAttendStatusesWithSd                                       sync.RWMutex
+	lockCountAttendanceTypes                                            sync.RWMutex
+	lockCountAttendanceTypesWithSd                                      sync.RWMutex
+	lockCountChatRoomActionTypes                                        sync.RWMutex
+	lockCountChatRoomActionTypesWithSd                                  sync.RWMutex
+	lockCountChatRoomActions                                            sync.RWMutex
+	lockCountChatRoomActionsWithSd                                      sync.RWMutex
+	lockCountChatRoomAddMemberActions                                   sync.RWMutex
+	lockCountChatRoomAddMemberActionsWithSd                             sync.RWMutex
+	lockCountChatRoomCreateActions                                      sync.RWMutex
+	lockCountChatRoomCreateActionsWithSd                                sync.RWMutex
+	lockCountChatRoomRemoveMemberActions                                sync.RWMutex
+	lockCountChatRoomRemoveMemberActionsWithSd                          sync.RWMutex
+	lockCountChatRoomUpdateNameActions                                  sync.RWMutex
+	lockCountChatRoomUpdateNameActionsWithSd                            sync.RWMutex
+	lockCountChatRoomWithdrawActions                                    sync.RWMutex
+	lockCountChatRoomWithdrawActionsWithSd                              sync.RWMutex
+	lockCountChatRooms                                                  sync.RWMutex
+	lockCountChatRoomsOnMember                                          sync.RWMutex
+	lockCountChatRoomsOnMemberWithSd                                    sync.RWMutex
+	lockCountChatRoomsWithSd                                            sync.RWMutex
+	lockCountEventTypes                                                 sync.RWMutex
+	lockCountEventTypesWithSd                                           sync.RWMutex
+	lockCountFiles                                                      sync.RWMutex
+	lockCountFilesWithSd                                                sync.RWMutex
+	lockCountGrades                                                     sync.RWMutex
+	lockCountGradesWithSd                                               sync.RWMutex
+	lockCountGroups                                                     sync.RWMutex
+	lockCountGroupsWithSd                                               sync.RWMutex
+	lockCountImages                                                     sync.RWMutex
+	lockCountImagesWithSd                                               sync.RWMutex
+	lockCountMembers                                                    sync.RWMutex
+	lockCountMembersOnChatRoom                                          sync.RWMutex
+	lockCountMembersOnChatRoomAddMemberAction                           sync.RWMutex
+	lockCountMembersOnChatRoomAddMemberActionWithSd                     sync.RWMutex
+	lockCountMembersOnChatRoomRemoveMemberAction                        sync.RWMutex
+	lockCountMembersOnChatRoomRemoveMemberActionWithSd                  sync.RWMutex
+	lockCountMembersOnChatRoomWithSd                                    sync.RWMutex
+	lockCountMembersOnOrganization                                      sync.RWMutex
+	lockCountMembersOnOrganizationWithSd                                sync.RWMutex
+	lockCountMembersWithSd                                              sync.RWMutex
+	lockCountMessages                                                   sync.RWMutex
+	lockCountMessagesWithSd                                             sync.RWMutex
+	lockCountMimeTypes                                                  sync.RWMutex
+	lockCountMimeTypesWithSd                                            sync.RWMutex
+	lockCountOrganizations                                              sync.RWMutex
+	lockCountOrganizationsOnMember                                      sync.RWMutex
+	lockCountOrganizationsOnMemberWithSd                                sync.RWMutex
+	lockCountOrganizationsWithSd                                        sync.RWMutex
+	lockCountPermissionCategories                                       sync.RWMutex
+	lockCountPermissionCategoriesWithSd                                 sync.RWMutex
+	lockCountPermissions                                                sync.RWMutex
+	lockCountPermissionsWithSd                                          sync.RWMutex
+	lockCountPolicies                                                   sync.RWMutex
+	lockCountPoliciesOnRole                                             sync.RWMutex
+	lockCountPoliciesOnRoleWithSd                                       sync.RWMutex
+	lockCountPoliciesWithSd                                             sync.RWMutex
+	lockCountPolicyCategories                                           sync.RWMutex
+	lockCountPolicyCategoriesWithSd                                     sync.RWMutex
+	lockCountProfessors                                                 sync.RWMutex
+	lockCountProfessorsWithSd                                           sync.RWMutex
+	lockCountReadableMembersOnMessage                                   sync.RWMutex
+	lockCountReadableMembersOnMessageWithSd                             sync.RWMutex
+	lockCountReadableMessagesOnChatRoomAndMember                        sync.RWMutex
+	lockCountReadableMessagesOnChatRoomAndMemberWithSd                  sync.RWMutex
+	lockCountReadableMessagesOnChatRoomsAndMember                       sync.RWMutex
+	lockCountReadableMessagesOnChatRoomsAndMemberWithSd                 sync.RWMutex
+	lockCountReadableMessagesOnMember                                   sync.RWMutex
+	lockCountReadableMessagesOnMemberWithSd                             sync.RWMutex
+	lockCountRecordTypes                                                sync.RWMutex
+	lockCountRecordTypesWithSd                                          sync.RWMutex
+	lockCountRoles                                                      sync.RWMutex
+	lockCountRolesOnPolicy                                              sync.RWMutex
+	lockCountRolesOnPolicyWithSd                                        sync.RWMutex
+	lockCountRolesWithSd                                                sync.RWMutex
+	lockCountStudents                                                   sync.RWMutex
+	lockCountStudentsWithSd                                             sync.RWMutex
+	lockCreateAbsence                                                   sync.RWMutex
+	lockCreateAbsenceWithSd                                             sync.RWMutex
+	lockCreateAbsences                                                  sync.RWMutex
+	lockCreateAbsencesWithSd                                            sync.RWMutex
+	lockCreateAttachableItem                                            sync.RWMutex
+	lockCreateAttachableItemWithSd                                      sync.RWMutex
+	lockCreateAttachableItems                                           sync.RWMutex
+	lockCreateAttachableItemsWithSd                                     sync.RWMutex
+	lockCreateAttendStatus                                              sync.RWMutex
+	lockCreateAttendStatusWithSd                                        sync.RWMutex
+	lockCreateAttendStatuses                                            sync.RWMutex
+	lockCreateAttendStatusesWithSd                                      sync.RWMutex
+	lockCreateAttendanceType                                            sync.RWMutex
+	lockCreateAttendanceTypeWithSd                                      sync.RWMutex
+	lockCreateAttendanceTypes                                           sync.RWMutex
+	lockCreateAttendanceTypesWithSd                                     sync.RWMutex
+	lockCreateChatRoom                                                  sync.RWMutex
+	lockCreateChatRoomAction                                            sync.RWMutex
+	lockCreateChatRoomActionType                                        sync.RWMutex
+	lockCreateChatRoomActionTypeWithSd                                  sync.RWMutex
+	lockCreateChatRoomActionTypes                                       sync.RWMutex
+	lockCreateChatRoomActionTypesWithSd                                 sync.RWMutex
+	lockCreateChatRoomActionWithSd                                      sync.RWMutex
+	lockCreateChatRoomActions                                           sync.RWMutex
+	lockCreateChatRoomActionsWithSd                                     sync.RWMutex
+	lockCreateChatRoomAddMemberAction                                   sync.RWMutex
+	lockCreateChatRoomAddMemberActionWithSd                             sync.RWMutex
+	lockCreateChatRoomAddMemberActions                                  sync.RWMutex
+	lockCreateChatRoomAddMemberActionsWithSd                            sync.RWMutex
+	lockCreateChatRoomCreateAction                                      sync.RWMutex
+	lockCreateChatRoomCreateActionWithSd                                sync.RWMutex
+	lockCreateChatRoomCreateActions                                     sync.RWMutex
+	lockCreateChatRoomCreateActionsWithSd                               sync.RWMutex
+	lockCreateChatRoomRemoveMemberAction                                sync.RWMutex
+	lockCreateChatRoomRemoveMemberActionWithSd                          sync.RWMutex
+	lockCreateChatRoomRemoveMemberActions                               sync.RWMutex
+	lockCreateChatRoomRemoveMemberActionsWithSd                         sync.RWMutex
+	lockCreateChatRoomUpdateNameAction                                  sync.RWMutex
+	lockCreateChatRoomUpdateNameActionWithSd                            sync.RWMutex
+	lockCreateChatRoomUpdateNameActions                                 sync.RWMutex
+	lockCreateChatRoomUpdateNameActionsWithSd                           sync.RWMutex
+	lockCreateChatRoomWithSd                                            sync.RWMutex
+	lockCreateChatRoomWithdrawAction                                    sync.RWMutex
+	lockCreateChatRoomWithdrawActionWithSd                              sync.RWMutex
+	lockCreateChatRoomWithdrawActions                                   sync.RWMutex
+	lockCreateChatRoomWithdrawActionsWithSd                             sync.RWMutex
+	lockCreateChatRooms                                                 sync.RWMutex
+	lockCreateChatRoomsWithSd                                           sync.RWMutex
+	lockCreateEventType                                                 sync.RWMutex
+	lockCreateEventTypeWithSd                                           sync.RWMutex
+	lockCreateEventTypes                                                sync.RWMutex
+	lockCreateEventTypesWithSd                                          sync.RWMutex
+	lockCreateFile                                                      sync.RWMutex
+	lockCreateFileWithSd                                                sync.RWMutex
+	lockCreateFiles                                                     sync.RWMutex
+	lockCreateFilesWithSd                                               sync.RWMutex
+	lockCreateGrade                                                     sync.RWMutex
+	lockCreateGradeWithSd                                               sync.RWMutex
+	lockCreateGrades                                                    sync.RWMutex
+	lockCreateGradesWithSd                                              sync.RWMutex
+	lockCreateGroup                                                     sync.RWMutex
+	lockCreateGroupWithSd                                               sync.RWMutex
+	lockCreateGroups                                                    sync.RWMutex
+	lockCreateGroupsWithSd                                              sync.RWMutex
+	lockCreateImage                                                     sync.RWMutex
+	lockCreateImageWithSd                                               sync.RWMutex
+	lockCreateImages                                                    sync.RWMutex
+	lockCreateImagesWithSd                                              sync.RWMutex
+	lockCreateMember                                                    sync.RWMutex
+	lockCreateMemberWithSd                                              sync.RWMutex
+	lockCreateMembers                                                   sync.RWMutex
+	lockCreateMembersWithSd                                             sync.RWMutex
+	lockCreateMessage                                                   sync.RWMutex
+	lockCreateMessageWithSd                                             sync.RWMutex
+	lockCreateMessages                                                  sync.RWMutex
+	lockCreateMessagesWithSd                                            sync.RWMutex
+	lockCreateMimeType                                                  sync.RWMutex
+	lockCreateMimeTypeWithSd                                            sync.RWMutex
+	lockCreateMimeTypes                                                 sync.RWMutex
+	lockCreateMimeTypesWithSd                                           sync.RWMutex
+	lockCreateOrganization                                              sync.RWMutex
+	lockCreateOrganizationWithSd                                        sync.RWMutex
+	lockCreateOrganizations                                             sync.RWMutex
+	lockCreateOrganizationsWithSd                                       sync.RWMutex
+	lockCreatePermission                                                sync.RWMutex
+	lockCreatePermissionCategories                                      sync.RWMutex
+	lockCreatePermissionCategoriesWithSd                                sync.RWMutex
+	lockCreatePermissionCategory                                        sync.RWMutex
+	lockCreatePermissionCategoryWithSd                                  sync.RWMutex
+	lockCreatePermissionWithSd                                          sync.RWMutex
+	lockCreatePermissions                                               sync.RWMutex
+	lockCreatePermissionsWithSd                                         sync.RWMutex
+	lockCreatePolicies                                                  sync.RWMutex
+	lockCreatePoliciesWithSd                                            sync.RWMutex
+	lockCreatePolicy                                                    sync.RWMutex
+	lockCreatePolicyCategories                                          sync.RWMutex
+	lockCreatePolicyCategoriesWithSd                                    sync.RWMutex
+	lockCreatePolicyCategory                                            sync.RWMutex
+	lockCreatePolicyCategoryWithSd                                      sync.RWMutex
+	lockCreatePolicyWithSd                                              sync.RWMutex
+	lockCreateProfessor                                                 sync.RWMutex
+	lockCreateProfessorWithSd                                           sync.RWMutex
+	lockCreateProfessors                                                sync.RWMutex
+	lockCreateProfessorsWithSd                                          sync.RWMutex
+	lockCreateReadReceipt                                               sync.RWMutex
+	lockCreateReadReceiptWithSd                                         sync.RWMutex
+	lockCreateReadReceipts                                              sync.RWMutex
+	lockCreateReadReceiptsWithSd                                        sync.RWMutex
+	lockCreateRecordType                                                sync.RWMutex
+	lockCreateRecordTypeWithSd                                          sync.RWMutex
+	lockCreateRecordTypes                                               sync.RWMutex
+	lockCreateRecordTypesWithSd                                         sync.RWMutex
+	lockCreateRole                                                      sync.RWMutex
+	lockCreateRoleWithSd                                                sync.RWMutex
+	lockCreateRoles                                                     sync.RWMutex
+	lockCreateRolesWithSd                                               sync.RWMutex
+	lockCreateStudent                                                   sync.RWMutex
+	lockCreateStudentWithSd                                             sync.RWMutex
+	lockCreateStudents                                                  sync.RWMutex
+	lockCreateStudentsWithSd                                            sync.RWMutex
+	lockDeleteAbsence                                                   sync.RWMutex
+	lockDeleteAbsenceWithSd                                             sync.RWMutex
+	lockDeleteAttachableItem                                            sync.RWMutex
+	lockDeleteAttachableItemWithSd                                      sync.RWMutex
+	lockDeleteAttendStatus                                              sync.RWMutex
+	lockDeleteAttendStatusByKey                                         sync.RWMutex
+	lockDeleteAttendStatusByKeyWithSd                                   sync.RWMutex
+	lockDeleteAttendStatusWithSd                                        sync.RWMutex
+	lockDeleteAttendanceType                                            sync.RWMutex
+	lockDeleteAttendanceTypeByKey                                       sync.RWMutex
+	lockDeleteAttendanceTypeByKeyWithSd                                 sync.RWMutex
+	lockDeleteAttendanceTypeWithSd                                      sync.RWMutex
+	lockDeleteChatRoom                                                  sync.RWMutex
+	lockDeleteChatRoomAction                                            sync.RWMutex
+	lockDeleteChatRoomActionType                                        sync.RWMutex
+	lockDeleteChatRoomActionTypeByKey                                   sync.RWMutex
+	lockDeleteChatRoomActionTypeByKeyWithSd                             sync.RWMutex
+	lockDeleteChatRoomActionTypeWithSd                                  sync.RWMutex
+	lockDeleteChatRoomActionWithSd                                      sync.RWMutex
+	lockDeleteChatRoomAddMemberAction                                   sync.RWMutex
+	lockDeleteChatRoomAddMemberActionWithSd                             sync.RWMutex
+	lockDeleteChatRoomAddedMember                                       sync.RWMutex
+	lockDeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSd        sync.RWMutex
+	lockDeleteChatRoomAddedMemberWithSd                                 sync.RWMutex
+	lockDeleteChatRoomAddedMembersOnChatRoomAddMemberAction             sync.RWMutex
+	lockDeleteChatRoomAddedMembersOnChatRoomAddMemberActions            sync.RWMutex
+	lockDeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSd      sync.RWMutex
+	lockDeleteChatRoomAddedMembersOnMember                              sync.RWMutex
+	lockDeleteChatRoomAddedMembersOnMemberWithSd                        sync.RWMutex
+	lockDeleteChatRoomAddedMembersOnMembers                             sync.RWMutex
+	lockDeleteChatRoomAddedMembersOnMembersWithSd                       sync.RWMutex
+	lockDeleteChatRoomCreateAction                                      sync.RWMutex
+	lockDeleteChatRoomCreateActionWithSd                                sync.RWMutex
+	lockDeleteChatRoomRemoveMemberAction                                sync.RWMutex
+	lockDeleteChatRoomRemoveMemberActionWithSd                          sync.RWMutex
+	lockDeleteChatRoomRemovedMember                                     sync.RWMutex
+	lockDeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSd   sync.RWMutex
+	lockDeleteChatRoomRemovedMemberWithSd                               sync.RWMutex
+	lockDeleteChatRoomRemovedMembersOnChatRoomRemoveMemberAction        sync.RWMutex
+	lockDeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActions       sync.RWMutex
+	lockDeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSd sync.RWMutex
+	lockDeleteChatRoomRemovedMembersOnMember                            sync.RWMutex
+	lockDeleteChatRoomRemovedMembersOnMemberWithSd                      sync.RWMutex
+	lockDeleteChatRoomRemovedMembersOnMembers                           sync.RWMutex
+	lockDeleteChatRoomRemovedMembersOnMembersWithSd                     sync.RWMutex
+	lockDeleteChatRoomUpdateNameAction                                  sync.RWMutex
+	lockDeleteChatRoomUpdateNameActionWithSd                            sync.RWMutex
+	lockDeleteChatRoomWithSd                                            sync.RWMutex
+	lockDeleteChatRoomWithdrawAction                                    sync.RWMutex
+	lockDeleteChatRoomWithdrawActionWithSd                              sync.RWMutex
+	lockDeleteEventType                                                 sync.RWMutex
+	lockDeleteEventTypeByKey                                            sync.RWMutex
+	lockDeleteEventTypeByKeyWithSd                                      sync.RWMutex
+	lockDeleteEventTypeWithSd                                           sync.RWMutex
+	lockDeleteFile                                                      sync.RWMutex
+	lockDeleteFileWithSd                                                sync.RWMutex
+	lockDeleteGrade                                                     sync.RWMutex
+	lockDeleteGradeWithSd                                               sync.RWMutex
+	lockDeleteGroup                                                     sync.RWMutex
+	lockDeleteGroupWithSd                                               sync.RWMutex
+	lockDeleteImage                                                     sync.RWMutex
+	lockDeleteImageWithSd                                               sync.RWMutex
+	lockDeleteMember                                                    sync.RWMutex
+	lockDeleteMemberWithSd                                              sync.RWMutex
+	lockDeleteMessage                                                   sync.RWMutex
+	lockDeleteMessageWithSd                                             sync.RWMutex
+	lockDeleteMessagesOnChatRoom                                        sync.RWMutex
+	lockDeleteMessagesOnChatRoomWithSd                                  sync.RWMutex
+	lockDeleteMimeType                                                  sync.RWMutex
+	lockDeleteMimeTypeByKey                                             sync.RWMutex
+	lockDeleteMimeTypeByKeyWithSd                                       sync.RWMutex
+	lockDeleteMimeTypeWithSd                                            sync.RWMutex
+	lockDeleteOrganization                                              sync.RWMutex
+	lockDeleteOrganizationWithSd                                        sync.RWMutex
+	lockDeletePermission                                                sync.RWMutex
+	lockDeletePermissionByKey                                           sync.RWMutex
+	lockDeletePermissionByKeyWithSd                                     sync.RWMutex
+	lockDeletePermissionCategory                                        sync.RWMutex
+	lockDeletePermissionCategoryByKey                                   sync.RWMutex
+	lockDeletePermissionCategoryByKeyWithSd                             sync.RWMutex
+	lockDeletePermissionCategoryWithSd                                  sync.RWMutex
+	lockDeletePermissionWithSd                                          sync.RWMutex
+	lockDeletePolicy                                                    sync.RWMutex
+	lockDeletePolicyByKey                                               sync.RWMutex
+	lockDeletePolicyByKeyWithSd                                         sync.RWMutex
+	lockDeletePolicyCategory                                            sync.RWMutex
+	lockDeletePolicyCategoryByKey                                       sync.RWMutex
+	lockDeletePolicyCategoryByKeyWithSd                                 sync.RWMutex
+	lockDeletePolicyCategoryWithSd                                      sync.RWMutex
+	lockDeletePolicyWithSd                                              sync.RWMutex
+	lockDeleteProfessor                                                 sync.RWMutex
+	lockDeleteProfessorWithSd                                           sync.RWMutex
+	lockDeleteRecordType                                                sync.RWMutex
+	lockDeleteRecordTypeByKey                                           sync.RWMutex
+	lockDeleteRecordTypeByKeyWithSd                                     sync.RWMutex
+	lockDeleteRecordTypeWithSd                                          sync.RWMutex
+	lockDeleteRole                                                      sync.RWMutex
+	lockDeleteRoleWithSd                                                sync.RWMutex
+	lockDeleteStudent                                                   sync.RWMutex
+	lockDeleteStudentWithSd                                             sync.RWMutex
+	lockDisassociatePolicyOnRole                                        sync.RWMutex
+	lockDisassociatePolicyOnRoleWithSd                                  sync.RWMutex
+	lockDisassociatePolicyOnRoles                                       sync.RWMutex
+	lockDisassociatePolicyOnRolesWithSd                                 sync.RWMutex
+	lockDisassociateRole                                                sync.RWMutex
+	lockDisassociateRoleOnPolicies                                      sync.RWMutex
+	lockDisassociateRoleOnPoliciesWithSd                                sync.RWMutex
+	lockDisassociateRoleOnPolicy                                        sync.RWMutex
+	lockDisassociateRoleOnPolicyWithSd                                  sync.RWMutex
+	lockDisassociateRoleWithSd                                          sync.RWMutex
+	lockDisbelongChatRoom                                               sync.RWMutex
+	lockDisbelongChatRoomOnChatRoom                                     sync.RWMutex
+	lockDisbelongChatRoomOnChatRoomWithSd                               sync.RWMutex
+	lockDisbelongChatRoomOnChatRooms                                    sync.RWMutex
+	lockDisbelongChatRoomOnChatRoomsWithSd                              sync.RWMutex
+	lockDisbelongChatRoomOnMember                                       sync.RWMutex
+	lockDisbelongChatRoomOnMemberWithSd                                 sync.RWMutex
+	lockDisbelongChatRoomOnMembers                                      sync.RWMutex
+	lockDisbelongChatRoomOnMembersWithSd                                sync.RWMutex
+	lockDisbelongChatRoomWithSd                                         sync.RWMutex
+	lockDisbelongOrganization                                           sync.RWMutex
+	lockDisbelongOrganizationOnMember                                   sync.RWMutex
+	lockDisbelongOrganizationOnMemberWithSd                             sync.RWMutex
+	lockDisbelongOrganizationOnMembers                                  sync.RWMutex
+	lockDisbelongOrganizationOnMembersWithSd                            sync.RWMutex
+	lockDisbelongOrganizationOnOrganization                             sync.RWMutex
+	lockDisbelongOrganizationOnOrganizationWithSd                       sync.RWMutex
+	lockDisbelongOrganizationOnOrganizations                            sync.RWMutex
+	lockDisbelongOrganizationOnOrganizationsWithSd                      sync.RWMutex
+	lockDisbelongOrganizationWithSd                                     sync.RWMutex
+	lockFindAbsenceByID                                                 sync.RWMutex
+	lockFindAbsenceByIDWithSd                                           sync.RWMutex
+	lockFindAttachableItemByID                                          sync.RWMutex
+	lockFindAttachableItemByIDWithMimeType                              sync.RWMutex
+	lockFindAttachableItemByIDWithMimeTypeWithSd                        sync.RWMutex
+	lockFindAttachableItemByIDWithSd                                    sync.RWMutex
+	lockFindAttachableItemByURL                                         sync.RWMutex
+	lockFindAttachableItemByURLWithMimeType                             sync.RWMutex
+	lockFindAttachableItemByURLWithMimeTypeWithSd                       sync.RWMutex
+	lockFindAttachableItemByURLWithSd                                   sync.RWMutex
+	lockFindAttendStatusByID                                            sync.RWMutex
+	lockFindAttendStatusByIDWithSd                                      sync.RWMutex
+	lockFindAttendStatusByKey                                           sync.RWMutex
+	lockFindAttendStatusByKeyWithSd                                     sync.RWMutex
+	lockFindAttendanceTypeByID                                          sync.RWMutex
+	lockFindAttendanceTypeByIDWithSd                                    sync.RWMutex
+	lockFindAttendanceTypeByKey                                         sync.RWMutex
+	lockFindAttendanceTypeByKeyWithSd                                   sync.RWMutex
+	lockFindChatRoomActionTypeByID                                      sync.RWMutex
+	lockFindChatRoomActionTypeByIDWithSd                                sync.RWMutex
+	lockFindChatRoomActionTypeByKey                                     sync.RWMutex
+	lockFindChatRoomActionTypeByKeyWithSd                               sync.RWMutex
+	lockFindChatRoomByID                                                sync.RWMutex
+	lockFindChatRoomByIDWithCoverImage                                  sync.RWMutex
+	lockFindChatRoomByIDWithCoverImageWithSd                            sync.RWMutex
+	lockFindChatRoomByIDWithSd                                          sync.RWMutex
+	lockFindChatRoomOnPrivate                                           sync.RWMutex
+	lockFindChatRoomOnPrivateWithSd                                     sync.RWMutex
+	lockFindEventTypeByID                                               sync.RWMutex
+	lockFindEventTypeByIDWithSd                                         sync.RWMutex
+	lockFindEventTypeByKey                                              sync.RWMutex
+	lockFindEventTypeByKeyWithSd                                        sync.RWMutex
+	lockFindFileByID                                                    sync.RWMutex
+	lockFindFileByIDWithSd                                              sync.RWMutex
+	lockFindFileWithAttachableItem                                      sync.RWMutex
+	lockFindFileWithAttachableItemWithSd                                sync.RWMutex
+	lockFindGradeByID                                                   sync.RWMutex
+	lockFindGradeByIDWithSd                                             sync.RWMutex
+	lockFindGradeByKey                                                  sync.RWMutex
+	lockFindGradeByKeyWithSd                                            sync.RWMutex
+	lockFindGradeWithOrganization                                       sync.RWMutex
+	lockFindGradeWithOrganizationWithSd                                 sync.RWMutex
+	lockFindGroupByID                                                   sync.RWMutex
+	lockFindGroupByIDWithSd                                             sync.RWMutex
+	lockFindGroupByKey                                                  sync.RWMutex
+	lockFindGroupByKeyWithSd                                            sync.RWMutex
+	lockFindGroupWithOrganization                                       sync.RWMutex
+	lockFindGroupWithOrganizationWithSd                                 sync.RWMutex
+	lockFindImageByID                                                   sync.RWMutex
+	lockFindImageByIDWithSd                                             sync.RWMutex
+	lockFindImageWithAttachableItem                                     sync.RWMutex
+	lockFindImageWithAttachableItemWithSd                               sync.RWMutex
+	lockFindMemberByID                                                  sync.RWMutex
+	lockFindMemberByIDWithSd                                            sync.RWMutex
+	lockFindMemberByLoginID                                             sync.RWMutex
+	lockFindMemberByLoginIDWithSd                                       sync.RWMutex
+	lockFindMemberCredentialsByID                                       sync.RWMutex
+	lockFindMemberCredentialsByIDWithSd                                 sync.RWMutex
+	lockFindMemberCredentialsByLoginID                                  sync.RWMutex
+	lockFindMemberCredentialsByLoginIDWithSd                            sync.RWMutex
+	lockFindMemberWithAttendStatus                                      sync.RWMutex
+	lockFindMemberWithAttendStatusWithSd                                sync.RWMutex
+	lockFindMemberWithCrew                                              sync.RWMutex
+	lockFindMemberWithCrewWithSd                                        sync.RWMutex
+	lockFindMemberWithDetail                                            sync.RWMutex
+	lockFindMemberWithDetailWithSd                                      sync.RWMutex
+	lockFindMemberWithPersonalOrganization                              sync.RWMutex
+	lockFindMemberWithPersonalOrganizationWithSd                        sync.RWMutex
+	lockFindMemberWithProfileImage                                      sync.RWMutex
+	lockFindMemberWithProfileImageWithSd                                sync.RWMutex
+	lockFindMemberWithRole                                              sync.RWMutex
+	lockFindMemberWithRoleWithSd                                        sync.RWMutex
+	lockFindMessageByID                                                 sync.RWMutex
+	lockFindMessageByIDWithSd                                           sync.RWMutex
+	lockFindMessageWithChatRoom                                         sync.RWMutex
+	lockFindMessageWithChatRoomWithSd                                   sync.RWMutex
+	lockFindMessageWithSender                                           sync.RWMutex
+	lockFindMessageWithSenderWithSd                                     sync.RWMutex
+	lockFindMimeTypeByID                                                sync.RWMutex
+	lockFindMimeTypeByIDWithSd                                          sync.RWMutex
+	lockFindMimeTypeByKey                                               sync.RWMutex
+	lockFindMimeTypeByKeyWithSd                                         sync.RWMutex
+	lockFindMimeTypeByKind                                              sync.RWMutex
+	lockFindMimeTypeByKindWithSd                                        sync.RWMutex
+	lockFindOrganizationByID                                            sync.RWMutex
+	lockFindOrganizationByIDWithSd                                      sync.RWMutex
+	lockFindOrganizationWithChatRoom                                    sync.RWMutex
+	lockFindOrganizationWithChatRoomAndDetail                           sync.RWMutex
+	lockFindOrganizationWithChatRoomAndDetailWithSd                     sync.RWMutex
+	lockFindOrganizationWithChatRoomWithSd                              sync.RWMutex
+	lockFindOrganizationWithDetail                                      sync.RWMutex
+	lockFindOrganizationWithDetailWithSd                                sync.RWMutex
+	lockFindPermissionByID                                              sync.RWMutex
+	lockFindPermissionByIDWithCategory                                  sync.RWMutex
+	lockFindPermissionByIDWithCategoryWithSd                            sync.RWMutex
+	lockFindPermissionByIDWithSd                                        sync.RWMutex
+	lockFindPermissionByKey                                             sync.RWMutex
+	lockFindPermissionByKeyWithCategory                                 sync.RWMutex
+	lockFindPermissionByKeyWithCategoryWithSd                           sync.RWMutex
+	lockFindPermissionByKeyWithSd                                       sync.RWMutex
+	lockFindPermissionCategoryByID                                      sync.RWMutex
+	lockFindPermissionCategoryByIDWithSd                                sync.RWMutex
+	lockFindPermissionCategoryByKey                                     sync.RWMutex
+	lockFindPermissionCategoryByKeyWithSd                               sync.RWMutex
+	lockFindPersonalOrganization                                        sync.RWMutex
+	lockFindPersonalOrganizationWithSd                                  sync.RWMutex
+	lockFindPolicyByID                                                  sync.RWMutex
+	lockFindPolicyByIDWithCategory                                      sync.RWMutex
+	lockFindPolicyByIDWithCategoryWithSd                                sync.RWMutex
+	lockFindPolicyByIDWithSd                                            sync.RWMutex
+	lockFindPolicyByKey                                                 sync.RWMutex
+	lockFindPolicyByKeyWithCategory                                     sync.RWMutex
+	lockFindPolicyByKeyWithCategoryWithSd                               sync.RWMutex
+	lockFindPolicyByKeyWithSd                                           sync.RWMutex
+	lockFindPolicyCategoryByID                                          sync.RWMutex
+	lockFindPolicyCategoryByIDWithSd                                    sync.RWMutex
+	lockFindPolicyCategoryByKey                                         sync.RWMutex
+	lockFindPolicyCategoryByKeyWithSd                                   sync.RWMutex
+	lockFindProfessorByID                                               sync.RWMutex
+	lockFindProfessorByIDWithSd                                         sync.RWMutex
+	lockFindProfessorWithMember                                         sync.RWMutex
+	lockFindProfessorWithMemberWithSd                                   sync.RWMutex
+	lockFindRecordTypeByID                                              sync.RWMutex
+	lockFindRecordTypeByIDWithSd                                        sync.RWMutex
+	lockFindRecordTypeByKey                                             sync.RWMutex
+	lockFindRecordTypeByKeyWithSd                                       sync.RWMutex
+	lockFindRoleByID                                                    sync.RWMutex
+	lockFindRoleByIDWithSd                                              sync.RWMutex
+	lockFindStudentByID                                                 sync.RWMutex
+	lockFindStudentByIDWithSd                                           sync.RWMutex
+	lockFindStudentWithMember                                           sync.RWMutex
+	lockFindStudentWithMemberWithSd                                     sync.RWMutex
+	lockFindWholeOrganization                                           sync.RWMutex
+	lockFindWholeOrganizationWithSd                                     sync.RWMutex
+	lockGetAbsences                                                     sync.RWMutex
+	lockGetAbsencesWithSd                                               sync.RWMutex
+	lockGetAttachableItems                                              sync.RWMutex
+	lockGetAttachableItemsWithMimeType                                  sync.RWMutex
+	lockGetAttachableItemsWithMimeTypeWithSd                            sync.RWMutex
+	lockGetAttachableItemsWithSd                                        sync.RWMutex
+	lockGetAttendStatuses                                               sync.RWMutex
+	lockGetAttendStatusesWithSd                                         sync.RWMutex
+	lockGetAttendanceTypes                                              sync.RWMutex
+	lockGetAttendanceTypesWithSd                                        sync.RWMutex
+	lockGetChatRoomActionTypes                                          sync.RWMutex
+	lockGetChatRoomActionTypesWithSd                                    sync.RWMutex
+	lockGetChatRoomActionsOnChatRoom                                    sync.RWMutex
+	lockGetChatRoomActionsOnChatRoomWithSd                              sync.RWMutex
+	lockGetChatRoomAddMemberActionsOnChatRoom                           sync.RWMutex
+	lockGetChatRoomAddMemberActionsOnChatRoomWithSd                     sync.RWMutex
+	lockGetChatRoomCreateActionsOnChatRoom                              sync.RWMutex
+	lockGetChatRoomCreateActionsOnChatRoomWithSd                        sync.RWMutex
+	lockGetChatRoomRemoveMemberActionsOnChatRoom                        sync.RWMutex
+	lockGetChatRoomRemoveMemberActionsOnChatRoomWithSd                  sync.RWMutex
+	lockGetChatRoomUpdateNameActionsOnChatRoom                          sync.RWMutex
+	lockGetChatRoomUpdateNameActionsOnChatRoomWithSd                    sync.RWMutex
+	lockGetChatRoomWithdrawActionsOnChatRoom                            sync.RWMutex
+	lockGetChatRoomWithdrawActionsOnChatRoomWithSd                      sync.RWMutex
+	lockGetChatRooms                                                    sync.RWMutex
+	lockGetChatRoomsOnMember                                            sync.RWMutex
+	lockGetChatRoomsOnMemberWithSd                                      sync.RWMutex
+	lockGetChatRoomsWithCoverImage                                      sync.RWMutex
+	lockGetChatRoomsWithCoverImageWithSd                                sync.RWMutex
+	lockGetChatRoomsWithSd                                              sync.RWMutex
+	lockGetEventTypes                                                   sync.RWMutex
+	lockGetEventTypesWithSd                                             sync.RWMutex
+	lockGetFiles                                                        sync.RWMutex
+	lockGetFilesWithAttachableItem                                      sync.RWMutex
+	lockGetFilesWithAttachableItemWithSd                                sync.RWMutex
+	lockGetFilesWithSd                                                  sync.RWMutex
+	lockGetGrades                                                       sync.RWMutex
+	lockGetGradesWithOrganization                                       sync.RWMutex
+	lockGetGradesWithOrganizationWithSd                                 sync.RWMutex
+	lockGetGradesWithSd                                                 sync.RWMutex
+	lockGetGroups                                                       sync.RWMutex
+	lockGetGroupsWithOrganization                                       sync.RWMutex
+	lockGetGroupsWithOrganizationWithSd                                 sync.RWMutex
+	lockGetGroupsWithSd                                                 sync.RWMutex
+	lockGetImages                                                       sync.RWMutex
+	lockGetImagesWithAttachableItem                                     sync.RWMutex
+	lockGetImagesWithAttachableItemWithSd                               sync.RWMutex
+	lockGetImagesWithSd                                                 sync.RWMutex
+	lockGetMembers                                                      sync.RWMutex
+	lockGetMembersOnChatRoom                                            sync.RWMutex
+	lockGetMembersOnChatRoomAddMemberAction                             sync.RWMutex
+	lockGetMembersOnChatRoomAddMemberActionWithSd                       sync.RWMutex
+	lockGetMembersOnChatRoomRemoveMemberAction                          sync.RWMutex
+	lockGetMembersOnChatRoomRemoveMemberActionWithSd                    sync.RWMutex
+	lockGetMembersOnChatRoomWithSd                                      sync.RWMutex
+	lockGetMembersOnOrganization                                        sync.RWMutex
+	lockGetMembersOnOrganizationWithSd                                  sync.RWMutex
+	lockGetMembersWithAttendStatus                                      sync.RWMutex
+	lockGetMembersWithAttendStatusWithSd                                sync.RWMutex
+	lockGetMembersWithCrew                                              sync.RWMutex
+	lockGetMembersWithCrewWithSd                                        sync.RWMutex
+	lockGetMembersWithDetail                                            sync.RWMutex
+	lockGetMembersWithDetailWithSd                                      sync.RWMutex
+	lockGetMembersWithPersonalOrganization                              sync.RWMutex
+	lockGetMembersWithPersonalOrganizationWithSd                        sync.RWMutex
+	lockGetMembersWithProfileImage                                      sync.RWMutex
+	lockGetMembersWithProfileImageWithSd                                sync.RWMutex
+	lockGetMembersWithRole                                              sync.RWMutex
+	lockGetMembersWithRoleWithSd                                        sync.RWMutex
+	lockGetMembersWithSd                                                sync.RWMutex
+	lockGetMessages                                                     sync.RWMutex
+	lockGetMessagesWithChatRoom                                         sync.RWMutex
+	lockGetMessagesWithChatRoomWithSd                                   sync.RWMutex
+	lockGetMessagesWithSd                                               sync.RWMutex
+	lockGetMessagesWithSender                                           sync.RWMutex
+	lockGetMessagesWithSenderWithSd                                     sync.RWMutex
+	lockGetMimeTypes                                                    sync.RWMutex
+	lockGetMimeTypesWithSd                                              sync.RWMutex
+	lockGetOrganizations                                                sync.RWMutex
+	lockGetOrganizationsOnMember                                        sync.RWMutex
+	lockGetOrganizationsOnMemberWithSd                                  sync.RWMutex
+	lockGetOrganizationsWithChatRoom                                    sync.RWMutex
+	lockGetOrganizationsWithChatRoomAndDetail                           sync.RWMutex
+	lockGetOrganizationsWithChatRoomAndDetailWithSd                     sync.RWMutex
+	lockGetOrganizationsWithChatRoomWithSd                              sync.RWMutex
+	lockGetOrganizationsWithDetail                                      sync.RWMutex
+	lockGetOrganizationsWithDetailWithSd                                sync.RWMutex
+	lockGetOrganizationsWithSd                                          sync.RWMutex
+	lockGetPermissionCategories                                         sync.RWMutex
+	lockGetPermissionCategoriesWithSd                                   sync.RWMutex
+	lockGetPermissions                                                  sync.RWMutex
+	lockGetPermissionsWithCategory                                      sync.RWMutex
+	lockGetPermissionsWithCategoryWithSd                                sync.RWMutex
+	lockGetPermissionsWithSd                                            sync.RWMutex
+	lockGetPluralAbsences                                               sync.RWMutex
+	lockGetPluralAbsencesWithSd                                         sync.RWMutex
+	lockGetPluralAttachableItems                                        sync.RWMutex
+	lockGetPluralAttachableItemsWithMimeType                            sync.RWMutex
+	lockGetPluralAttachableItemsWithMimeTypeWithSd                      sync.RWMutex
+	lockGetPluralAttachableItemsWithSd                                  sync.RWMutex
+	lockGetPluralAttendStatuses                                         sync.RWMutex
+	lockGetPluralAttendStatusesWithSd                                   sync.RWMutex
+	lockGetPluralAttendanceTypes                                        sync.RWMutex
+	lockGetPluralAttendanceTypesWithSd                                  sync.RWMutex
+	lockGetPluralChatRoomActionTypes                                    sync.RWMutex
+	lockGetPluralChatRoomActionTypesWithSd                              sync.RWMutex
+	lockGetPluralChatRoomActions                                        sync.RWMutex
+	lockGetPluralChatRoomActionsWithSd                                  sync.RWMutex
+	lockGetPluralChatRoomAddMemberActions                               sync.RWMutex
+	lockGetPluralChatRoomAddMemberActionsWithSd                         sync.RWMutex
+	lockGetPluralChatRoomCreateActions                                  sync.RWMutex
+	lockGetPluralChatRoomCreateActionsWithSd                            sync.RWMutex
+	lockGetPluralChatRoomRemoveMemberActions                            sync.RWMutex
+	lockGetPluralChatRoomRemoveMemberActionsWithSd                      sync.RWMutex
+	lockGetPluralChatRoomUpdateNameActions                              sync.RWMutex
+	lockGetPluralChatRoomUpdateNameActionsWithSd                        sync.RWMutex
+	lockGetPluralChatRoomWithdrawActions                                sync.RWMutex
+	lockGetPluralChatRoomWithdrawActionsWithSd                          sync.RWMutex
+	lockGetPluralChatRooms                                              sync.RWMutex
+	lockGetPluralChatRoomsOnMember                                      sync.RWMutex
+	lockGetPluralChatRoomsOnMemberWithSd                                sync.RWMutex
+	lockGetPluralChatRoomsWithCoverImage                                sync.RWMutex
+	lockGetPluralChatRoomsWithCoverImageWithSd                          sync.RWMutex
+	lockGetPluralChatRoomsWithSd                                        sync.RWMutex
+	lockGetPluralEventTypes                                             sync.RWMutex
+	lockGetPluralEventTypesWithSd                                       sync.RWMutex
+	lockGetPluralFiles                                                  sync.RWMutex
+	lockGetPluralFilesWithAttachableItem                                sync.RWMutex
+	lockGetPluralFilesWithAttachableItemWithSd                          sync.RWMutex
+	lockGetPluralFilesWithSd                                            sync.RWMutex
+	lockGetPluralGrades                                                 sync.RWMutex
+	lockGetPluralGradesWithOrganization                                 sync.RWMutex
+	lockGetPluralGradesWithOrganizationWithSd                           sync.RWMutex
+	lockGetPluralGradesWithSd                                           sync.RWMutex
+	lockGetPluralGroups                                                 sync.RWMutex
+	lockGetPluralGroupsWithOrganization                                 sync.RWMutex
+	lockGetPluralGroupsWithOrganizationWithSd                           sync.RWMutex
+	lockGetPluralGroupsWithSd                                           sync.RWMutex
+	lockGetPluralImages                                                 sync.RWMutex
+	lockGetPluralImagesWithAttachableItem                               sync.RWMutex
+	lockGetPluralImagesWithAttachableItemWithSd                         sync.RWMutex
+	lockGetPluralImagesWithSd                                           sync.RWMutex
+	lockGetPluralMembers                                                sync.RWMutex
+	lockGetPluralMembersOnChatRoom                                      sync.RWMutex
+	lockGetPluralMembersOnChatRoomAddMemberAction                       sync.RWMutex
+	lockGetPluralMembersOnChatRoomAddMemberActionWithSd                 sync.RWMutex
+	lockGetPluralMembersOnChatRoomRemoveMemberAction                    sync.RWMutex
+	lockGetPluralMembersOnChatRoomRemoveMemberActionWithSd              sync.RWMutex
+	lockGetPluralMembersOnChatRoomWithSd                                sync.RWMutex
+	lockGetPluralMembersOnOrganization                                  sync.RWMutex
+	lockGetPluralMembersOnOrganizationWithSd                            sync.RWMutex
+	lockGetPluralMembersWithAttendStatus                                sync.RWMutex
+	lockGetPluralMembersWithAttendStatusWithSd                          sync.RWMutex
+	lockGetPluralMembersWithCrew                                        sync.RWMutex
+	lockGetPluralMembersWithCrewWithSd                                  sync.RWMutex
+	lockGetPluralMembersWithDetail                                      sync.RWMutex
+	lockGetPluralMembersWithDetailWithSd                                sync.RWMutex
+	lockGetPluralMembersWithPersonalOrganization                        sync.RWMutex
+	lockGetPluralMembersWithPersonalOrganizationWithSd                  sync.RWMutex
+	lockGetPluralMembersWithProfileImage                                sync.RWMutex
+	lockGetPluralMembersWithProfileImageWithSd                          sync.RWMutex
+	lockGetPluralMembersWithRole                                        sync.RWMutex
+	lockGetPluralMembersWithRoleWithSd                                  sync.RWMutex
+	lockGetPluralMembersWithSd                                          sync.RWMutex
+	lockGetPluralMessages                                               sync.RWMutex
+	lockGetPluralMessagesWithChatRoom                                   sync.RWMutex
+	lockGetPluralMessagesWithChatRoomWithSd                             sync.RWMutex
+	lockGetPluralMessagesWithSd                                         sync.RWMutex
+	lockGetPluralMessagesWithSender                                     sync.RWMutex
+	lockGetPluralMessagesWithSenderWithSd                               sync.RWMutex
+	lockGetPluralMimeTypes                                              sync.RWMutex
+	lockGetPluralMimeTypesWithSd                                        sync.RWMutex
+	lockGetPluralOrganizations                                          sync.RWMutex
+	lockGetPluralOrganizationsOnMember                                  sync.RWMutex
+	lockGetPluralOrganizationsOnMemberWithSd                            sync.RWMutex
+	lockGetPluralOrganizationsWithChatRoom                              sync.RWMutex
+	lockGetPluralOrganizationsWithChatRoomAndDetail                     sync.RWMutex
+	lockGetPluralOrganizationsWithChatRoomAndDetailWithSd               sync.RWMutex
+	lockGetPluralOrganizationsWithChatRoomWithSd                        sync.RWMutex
+	lockGetPluralOrganizationsWithDetail                                sync.RWMutex
+	lockGetPluralOrganizationsWithDetailWithSd                          sync.RWMutex
+	lockGetPluralOrganizationsWithSd                                    sync.RWMutex
+	lockGetPluralPermissionCategories                                   sync.RWMutex
+	lockGetPluralPermissionCategoriesWithSd                             sync.RWMutex
+	lockGetPluralPermissions                                            sync.RWMutex
+	lockGetPluralPermissionsWithSd                                      sync.RWMutex
+	lockGetPluralPolicies                                               sync.RWMutex
+	lockGetPluralPoliciesWithSd                                         sync.RWMutex
+	lockGetPluralPolicyCategories                                       sync.RWMutex
+	lockGetPluralPolicyCategoriesWithSd                                 sync.RWMutex
+	lockGetPluralProfessors                                             sync.RWMutex
+	lockGetPluralProfessorsWithMember                                   sync.RWMutex
+	lockGetPluralProfessorsWithMemberWithSd                             sync.RWMutex
+	lockGetPluralProfessorsWithSd                                       sync.RWMutex
+	lockGetPluralReadableMembersOnMessage                               sync.RWMutex
+	lockGetPluralReadableMembersOnMessageWithSd                         sync.RWMutex
+	lockGetPluralReadableMessagesOnMember                               sync.RWMutex
+	lockGetPluralReadableMessagesOnMemberWithSd                         sync.RWMutex
+	lockGetPluralRecordTypes                                            sync.RWMutex
+	lockGetPluralRecordTypesWithSd                                      sync.RWMutex
+	lockGetPluralRoles                                                  sync.RWMutex
+	lockGetPluralRolesWithSd                                            sync.RWMutex
+	lockGetPluralStudents                                               sync.RWMutex
+	lockGetPluralStudentsWithMember                                     sync.RWMutex
+	lockGetPluralStudentsWithMemberWithSd                               sync.RWMutex
+	lockGetPluralStudentsWithSd                                         sync.RWMutex
+	lockGetPolicies                                                     sync.RWMutex
+	lockGetPoliciesOnRole                                               sync.RWMutex
+	lockGetPoliciesOnRoleWithSd                                         sync.RWMutex
+	lockGetPoliciesWithCategory                                         sync.RWMutex
+	lockGetPoliciesWithCategoryWithSd                                   sync.RWMutex
+	lockGetPoliciesWithSd                                               sync.RWMutex
+	lockGetPolicyCategories                                             sync.RWMutex
+	lockGetPolicyCategoriesWithSd                                       sync.RWMutex
+	lockGetProfessors                                                   sync.RWMutex
+	lockGetProfessorsWithMember                                         sync.RWMutex
+	lockGetProfessorsWithMemberWithSd                                   sync.RWMutex
+	lockGetProfessorsWithSd                                             sync.RWMutex
+	lockGetReadableMembersOnMessage                                     sync.RWMutex
+	lockGetReadableMembersOnMessageWithSd                               sync.RWMutex
+	lockGetReadableMessagesOnMember                                     sync.RWMutex
+	lockGetReadableMessagesOnMemberWithSd                               sync.RWMutex
+	lockGetRecordTypes                                                  sync.RWMutex
+	lockGetRecordTypesWithSd                                            sync.RWMutex
+	lockGetRoles                                                        sync.RWMutex
+	lockGetRolesOnPolicy                                                sync.RWMutex
+	lockGetRolesOnPolicyWithSd                                          sync.RWMutex
+	lockGetRolesWithSd                                                  sync.RWMutex
+	lockGetStudents                                                     sync.RWMutex
+	lockGetStudentsWithMember                                           sync.RWMutex
+	lockGetStudentsWithMemberWithSd                                     sync.RWMutex
+	lockGetStudentsWithSd                                               sync.RWMutex
+	lockPluralDeleteAbsences                                            sync.RWMutex
+	lockPluralDeleteAbsencesWithSd                                      sync.RWMutex
+	lockPluralDeleteAttachableItems                                     sync.RWMutex
+	lockPluralDeleteAttachableItemsWithSd                               sync.RWMutex
+	lockPluralDeleteAttendStatuses                                      sync.RWMutex
+	lockPluralDeleteAttendStatusesWithSd                                sync.RWMutex
+	lockPluralDeleteAttendanceTypes                                     sync.RWMutex
+	lockPluralDeleteAttendanceTypesWithSd                               sync.RWMutex
+	lockPluralDeleteChatRoomActionTypes                                 sync.RWMutex
+	lockPluralDeleteChatRoomActionTypesWithSd                           sync.RWMutex
+	lockPluralDeleteChatRoomActions                                     sync.RWMutex
+	lockPluralDeleteChatRoomActionsWithSd                               sync.RWMutex
+	lockPluralDeleteChatRoomAddMemberActions                            sync.RWMutex
+	lockPluralDeleteChatRoomAddMemberActionsWithSd                      sync.RWMutex
+	lockPluralDeleteChatRoomCreateActions                               sync.RWMutex
+	lockPluralDeleteChatRoomCreateActionsWithSd                         sync.RWMutex
+	lockPluralDeleteChatRoomRemoveMemberActions                         sync.RWMutex
+	lockPluralDeleteChatRoomRemoveMemberActionsWithSd                   sync.RWMutex
+	lockPluralDeleteChatRoomUpdateNameActions                           sync.RWMutex
+	lockPluralDeleteChatRoomUpdateNameActionsWithSd                     sync.RWMutex
+	lockPluralDeleteChatRoomWithdrawActions                             sync.RWMutex
+	lockPluralDeleteChatRoomWithdrawActionsWithSd                       sync.RWMutex
+	lockPluralDeleteChatRooms                                           sync.RWMutex
+	lockPluralDeleteChatRoomsWithSd                                     sync.RWMutex
+	lockPluralDeleteEventTypes                                          sync.RWMutex
+	lockPluralDeleteEventTypesWithSd                                    sync.RWMutex
+	lockPluralDeleteFiles                                               sync.RWMutex
+	lockPluralDeleteFilesWithSd                                         sync.RWMutex
+	lockPluralDeleteGrades                                              sync.RWMutex
+	lockPluralDeleteGradesWithSd                                        sync.RWMutex
+	lockPluralDeleteGroups                                              sync.RWMutex
+	lockPluralDeleteGroupsWithSd                                        sync.RWMutex
+	lockPluralDeleteImages                                              sync.RWMutex
+	lockPluralDeleteImagesWithSd                                        sync.RWMutex
+	lockPluralDeleteMembers                                             sync.RWMutex
+	lockPluralDeleteMembersWithSd                                       sync.RWMutex
+	lockPluralDeleteMessages                                            sync.RWMutex
+	lockPluralDeleteMessagesWithSd                                      sync.RWMutex
+	lockPluralDeleteMimeTypes                                           sync.RWMutex
+	lockPluralDeleteMimeTypesWithSd                                     sync.RWMutex
+	lockPluralDeleteOrganizations                                       sync.RWMutex
+	lockPluralDeleteOrganizationsWithSd                                 sync.RWMutex
+	lockPluralDeletePermissionCategories                                sync.RWMutex
+	lockPluralDeletePermissionCategoriesWithSd                          sync.RWMutex
+	lockPluralDeletePermissions                                         sync.RWMutex
+	lockPluralDeletePermissionsWithSd                                   sync.RWMutex
+	lockPluralDeletePolicies                                            sync.RWMutex
+	lockPluralDeletePoliciesWithSd                                      sync.RWMutex
+	lockPluralDeletePolicyCategories                                    sync.RWMutex
+	lockPluralDeletePolicyCategoriesWithSd                              sync.RWMutex
+	lockPluralDeleteProfessors                                          sync.RWMutex
+	lockPluralDeleteProfessorsWithSd                                    sync.RWMutex
+	lockPluralDeleteRecordTypes                                         sync.RWMutex
+	lockPluralDeleteRecordTypesWithSd                                   sync.RWMutex
+	lockPluralDeleteRoles                                               sync.RWMutex
+	lockPluralDeleteRolesWithSd                                         sync.RWMutex
+	lockPluralDeleteStudents                                            sync.RWMutex
+	lockPluralDeleteStudentsWithSd                                      sync.RWMutex
+	lockPluralDisassociatePolicyOnRole                                  sync.RWMutex
+	lockPluralDisassociatePolicyOnRoleWithSd                            sync.RWMutex
+	lockPluralDisassociateRoleOnPolicy                                  sync.RWMutex
+	lockPluralDisassociateRoleOnPolicyWithSd                            sync.RWMutex
+	lockReadReceipt                                                     sync.RWMutex
+	lockReadReceiptWithSd                                               sync.RWMutex
+	lockReadReceipts                                                    sync.RWMutex
+	lockReadReceiptsWithSd                                              sync.RWMutex
+	lockRemoveMemberToChatRoomRemoveMemberAction                        sync.RWMutex
+	lockRemoveMemberToChatRoomRemoveMemberActionWithSd                  sync.RWMutex
+	lockRemoveMembersToChatRoomRemoveMemberAction                       sync.RWMutex
+	lockRemoveMembersToChatRoomRemoveMemberActionWithSd                 sync.RWMutex
+	lockRollback                                                        sync.RWMutex
+	lockUpdateAttachableItem                                            sync.RWMutex
+	lockUpdateAttachableItemWithSd                                      sync.RWMutex
+	lockUpdateAttendStatus                                              sync.RWMutex
+	lockUpdateAttendStatusByKey                                         sync.RWMutex
+	lockUpdateAttendStatusByKeyWithSd                                   sync.RWMutex
+	lockUpdateAttendStatusWithSd                                        sync.RWMutex
+	lockUpdateAttendanceType                                            sync.RWMutex
+	lockUpdateAttendanceTypeByKey                                       sync.RWMutex
+	lockUpdateAttendanceTypeByKeyWithSd                                 sync.RWMutex
+	lockUpdateAttendanceTypeWithSd                                      sync.RWMutex
+	lockUpdateChatRoom                                                  sync.RWMutex
+	lockUpdateChatRoomActionType                                        sync.RWMutex
+	lockUpdateChatRoomActionTypeByKey                                   sync.RWMutex
+	lockUpdateChatRoomActionTypeByKeyWithSd                             sync.RWMutex
+	lockUpdateChatRoomActionTypeWithSd                                  sync.RWMutex
+	lockUpdateChatRoomWithSd                                            sync.RWMutex
+	lockUpdateEventType                                                 sync.RWMutex
+	lockUpdateEventTypeByKey                                            sync.RWMutex
+	lockUpdateEventTypeByKeyWithSd                                      sync.RWMutex
+	lockUpdateEventTypeWithSd                                           sync.RWMutex
+	lockUpdateMember                                                    sync.RWMutex
+	lockUpdateMemberAttendStatus                                        sync.RWMutex
+	lockUpdateMemberAttendStatusWithSd                                  sync.RWMutex
+	lockUpdateMemberGrade                                               sync.RWMutex
+	lockUpdateMemberGradeWithSd                                         sync.RWMutex
+	lockUpdateMemberGroup                                               sync.RWMutex
+	lockUpdateMemberGroupWithSd                                         sync.RWMutex
+	lockUpdateMemberLoginID                                             sync.RWMutex
+	lockUpdateMemberLoginIDWithSd                                       sync.RWMutex
+	lockUpdateMemberPassword                                            sync.RWMutex
+	lockUpdateMemberPasswordWithSd                                      sync.RWMutex
+	lockUpdateMemberRole                                                sync.RWMutex
+	lockUpdateMemberRoleWithSd                                          sync.RWMutex
+	lockUpdateMemberWithSd                                              sync.RWMutex
+	lockUpdateMessage                                                   sync.RWMutex
+	lockUpdateMessageWithSd                                             sync.RWMutex
+	lockUpdateMimeType                                                  sync.RWMutex
+	lockUpdateMimeTypeByKey                                             sync.RWMutex
+	lockUpdateMimeTypeByKeyWithSd                                       sync.RWMutex
+	lockUpdateMimeTypeWithSd                                            sync.RWMutex
+	lockUpdateOrganization                                              sync.RWMutex
+	lockUpdateOrganizationWithSd                                        sync.RWMutex
+	lockUpdatePermission                                                sync.RWMutex
+	lockUpdatePermissionByKey                                           sync.RWMutex
+	lockUpdatePermissionByKeyWithSd                                     sync.RWMutex
+	lockUpdatePermissionCategory                                        sync.RWMutex
+	lockUpdatePermissionCategoryByKey                                   sync.RWMutex
+	lockUpdatePermissionCategoryByKeyWithSd                             sync.RWMutex
+	lockUpdatePermissionCategoryWithSd                                  sync.RWMutex
+	lockUpdatePermissionWithSd                                          sync.RWMutex
+	lockUpdatePolicy                                                    sync.RWMutex
+	lockUpdatePolicyByKey                                               sync.RWMutex
+	lockUpdatePolicyByKeyWithSd                                         sync.RWMutex
+	lockUpdatePolicyCategory                                            sync.RWMutex
+	lockUpdatePolicyCategoryByKey                                       sync.RWMutex
+	lockUpdatePolicyCategoryByKeyWithSd                                 sync.RWMutex
+	lockUpdatePolicyCategoryWithSd                                      sync.RWMutex
+	lockUpdatePolicyWithSd                                              sync.RWMutex
+	lockUpdateRecordType                                                sync.RWMutex
+	lockUpdateRecordTypeByKey                                           sync.RWMutex
+	lockUpdateRecordTypeByKeyWithSd                                     sync.RWMutex
+	lockUpdateRecordTypeWithSd                                          sync.RWMutex
+	lockUpdateRole                                                      sync.RWMutex
+	lockUpdateRoleWithSd                                                sync.RWMutex
+}
+
+// AddMemberToChatRoomAddMemberAction calls AddMemberToChatRoomAddMemberActionFunc.
+func (mock *StoreMock) AddMemberToChatRoomAddMemberAction(ctx context.Context, param parameter.CreateChatRoomAddedMemberParam) (entity.ChatRoomAddedMember, error) {
+	if mock.AddMemberToChatRoomAddMemberActionFunc == nil {
+		panic("StoreMock.AddMemberToChatRoomAddMemberActionFunc: method is nil but Store.AddMemberToChatRoomAddMemberAction was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Param parameter.CreateChatRoomAddedMemberParam
+	}{
+		Ctx:   ctx,
+		Param: param,
+	}
+	mock.lockAddMemberToChatRoomAddMemberAction.Lock()
+	mock.calls.AddMemberToChatRoomAddMemberAction = append(mock.calls.AddMemberToChatRoomAddMemberAction, callInfo)
+	mock.lockAddMemberToChatRoomAddMemberAction.Unlock()
+	return mock.AddMemberToChatRoomAddMemberActionFunc(ctx, param)
+}
+
+// AddMemberToChatRoomAddMemberActionCalls gets all the calls that were made to AddMemberToChatRoomAddMemberAction.
+// Check the length with:
+//
+//	len(mockedStore.AddMemberToChatRoomAddMemberActionCalls())
+func (mock *StoreMock) AddMemberToChatRoomAddMemberActionCalls() []struct {
+	Ctx   context.Context
+	Param parameter.CreateChatRoomAddedMemberParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Param parameter.CreateChatRoomAddedMemberParam
+	}
+	mock.lockAddMemberToChatRoomAddMemberAction.RLock()
+	calls = mock.calls.AddMemberToChatRoomAddMemberAction
+	mock.lockAddMemberToChatRoomAddMemberAction.RUnlock()
+	return calls
+}
+
+// AddMemberToChatRoomAddMemberActionWithSd calls AddMemberToChatRoomAddMemberActionWithSdFunc.
+func (mock *StoreMock) AddMemberToChatRoomAddMemberActionWithSd(ctx context.Context, sd Sd, param parameter.CreateChatRoomAddedMemberParam) (entity.ChatRoomAddedMember, error) {
+	if mock.AddMemberToChatRoomAddMemberActionWithSdFunc == nil {
+		panic("StoreMock.AddMemberToChatRoomAddMemberActionWithSdFunc: method is nil but Store.AddMemberToChatRoomAddMemberActionWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateChatRoomAddedMemberParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Param: param,
+	}
+	mock.lockAddMemberToChatRoomAddMemberActionWithSd.Lock()
+	mock.calls.AddMemberToChatRoomAddMemberActionWithSd = append(mock.calls.AddMemberToChatRoomAddMemberActionWithSd, callInfo)
+	mock.lockAddMemberToChatRoomAddMemberActionWithSd.Unlock()
+	return mock.AddMemberToChatRoomAddMemberActionWithSdFunc(ctx, sd, param)
+}
+
+// AddMemberToChatRoomAddMemberActionWithSdCalls gets all the calls that were made to AddMemberToChatRoomAddMemberActionWithSd.
+// Check the length with:
+//
+//	len(mockedStore.AddMemberToChatRoomAddMemberActionWithSdCalls())
+func (mock *StoreMock) AddMemberToChatRoomAddMemberActionWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Param parameter.CreateChatRoomAddedMemberParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateChatRoomAddedMemberParam
+	}
+	mock.lockAddMemberToChatRoomAddMemberActionWithSd.RLock()
+	calls = mock.calls.AddMemberToChatRoomAddMemberActionWithSd
+	mock.lockAddMemberToChatRoomAddMemberActionWithSd.RUnlock()
+	return calls
+}
+
+// AddMembersToChatRoomAddMemberAction calls AddMembersToChatRoomAddMemberActionFunc.
+func (mock *StoreMock) AddMembersToChatRoomAddMemberAction(ctx context.Context, params []parameter.CreateChatRoomAddedMemberParam) (int64, error) {
+	if mock.AddMembersToChatRoomAddMemberActionFunc == nil {
+		panic("StoreMock.AddMembersToChatRoomAddMemberActionFunc: method is nil but Store.AddMembersToChatRoomAddMemberAction was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.CreateChatRoomAddedMemberParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockAddMembersToChatRoomAddMemberAction.Lock()
+	mock.calls.AddMembersToChatRoomAddMemberAction = append(mock.calls.AddMembersToChatRoomAddMemberAction, callInfo)
+	mock.lockAddMembersToChatRoomAddMemberAction.Unlock()
+	return mock.AddMembersToChatRoomAddMemberActionFunc(ctx, params)
+}
+
+// AddMembersToChatRoomAddMemberActionCalls gets all the calls that were made to AddMembersToChatRoomAddMemberAction.
+// Check the length with:
+//
+//	len(mockedStore.AddMembersToChatRoomAddMemberActionCalls())
+func (mock *StoreMock) AddMembersToChatRoomAddMemberActionCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.CreateChatRoomAddedMemberParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.CreateChatRoomAddedMemberParam
+	}
+	mock.lockAddMembersToChatRoomAddMemberAction.RLock()
+	calls = mock.calls.AddMembersToChatRoomAddMemberAction
+	mock.lockAddMembersToChatRoomAddMemberAction.RUnlock()
+	return calls
+}
+
+// AddMembersToChatRoomAddMemberActionWithSd calls AddMembersToChatRoomAddMemberActionWithSdFunc.
+func (mock *StoreMock) AddMembersToChatRoomAddMemberActionWithSd(ctx context.Context, sd Sd, params []parameter.CreateChatRoomAddedMemberParam) (int64, error) {
+	if mock.AddMembersToChatRoomAddMemberActionWithSdFunc == nil {
+		panic("StoreMock.AddMembersToChatRoomAddMemberActionWithSdFunc: method is nil but Store.AddMembersToChatRoomAddMemberActionWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateChatRoomAddedMemberParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		Params: params,
+	}
+	mock.lockAddMembersToChatRoomAddMemberActionWithSd.Lock()
+	mock.calls.AddMembersToChatRoomAddMemberActionWithSd = append(mock.calls.AddMembersToChatRoomAddMemberActionWithSd, callInfo)
+	mock.lockAddMembersToChatRoomAddMemberActionWithSd.Unlock()
+	return mock.AddMembersToChatRoomAddMemberActionWithSdFunc(ctx, sd, params)
+}
+
+// AddMembersToChatRoomAddMemberActionWithSdCalls gets all the calls that were made to AddMembersToChatRoomAddMemberActionWithSd.
+// Check the length with:
+//
+//	len(mockedStore.AddMembersToChatRoomAddMemberActionWithSdCalls())
+func (mock *StoreMock) AddMembersToChatRoomAddMemberActionWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	Params []parameter.CreateChatRoomAddedMemberParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateChatRoomAddedMemberParam
+	}
+	mock.lockAddMembersToChatRoomAddMemberActionWithSd.RLock()
+	calls = mock.calls.AddMembersToChatRoomAddMemberActionWithSd
+	mock.lockAddMembersToChatRoomAddMemberActionWithSd.RUnlock()
+	return calls
 }
 
 // AssociateRole calls AssociateRoleFunc.
@@ -14496,6 +15558,82 @@ func (mock *StoreMock) CountChatRoomActionTypesWithSdCalls() []struct {
 	mock.lockCountChatRoomActionTypesWithSd.RLock()
 	calls = mock.calls.CountChatRoomActionTypesWithSd
 	mock.lockCountChatRoomActionTypesWithSd.RUnlock()
+	return calls
+}
+
+// CountChatRoomActions calls CountChatRoomActionsFunc.
+func (mock *StoreMock) CountChatRoomActions(ctx context.Context, where parameter.WhereChatRoomActionParam) (int64, error) {
+	if mock.CountChatRoomActionsFunc == nil {
+		panic("StoreMock.CountChatRoomActionsFunc: method is nil but Store.CountChatRoomActions was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereChatRoomActionParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+	}
+	mock.lockCountChatRoomActions.Lock()
+	mock.calls.CountChatRoomActions = append(mock.calls.CountChatRoomActions, callInfo)
+	mock.lockCountChatRoomActions.Unlock()
+	return mock.CountChatRoomActionsFunc(ctx, where)
+}
+
+// CountChatRoomActionsCalls gets all the calls that were made to CountChatRoomActions.
+// Check the length with:
+//
+//	len(mockedStore.CountChatRoomActionsCalls())
+func (mock *StoreMock) CountChatRoomActionsCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereChatRoomActionParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereChatRoomActionParam
+	}
+	mock.lockCountChatRoomActions.RLock()
+	calls = mock.calls.CountChatRoomActions
+	mock.lockCountChatRoomActions.RUnlock()
+	return calls
+}
+
+// CountChatRoomActionsWithSd calls CountChatRoomActionsWithSdFunc.
+func (mock *StoreMock) CountChatRoomActionsWithSd(ctx context.Context, sd Sd, where parameter.WhereChatRoomActionParam) (int64, error) {
+	if mock.CountChatRoomActionsWithSdFunc == nil {
+		panic("StoreMock.CountChatRoomActionsWithSdFunc: method is nil but Store.CountChatRoomActionsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereChatRoomActionParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+	}
+	mock.lockCountChatRoomActionsWithSd.Lock()
+	mock.calls.CountChatRoomActionsWithSd = append(mock.calls.CountChatRoomActionsWithSd, callInfo)
+	mock.lockCountChatRoomActionsWithSd.Unlock()
+	return mock.CountChatRoomActionsWithSdFunc(ctx, sd, where)
+}
+
+// CountChatRoomActionsWithSdCalls gets all the calls that were made to CountChatRoomActionsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountChatRoomActionsWithSdCalls())
+func (mock *StoreMock) CountChatRoomActionsWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereChatRoomActionParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereChatRoomActionParam
+	}
+	mock.lockCountChatRoomActionsWithSd.RLock()
+	calls = mock.calls.CountChatRoomActionsWithSd
+	mock.lockCountChatRoomActionsWithSd.RUnlock()
 	return calls
 }
 
@@ -15492,6 +16630,174 @@ func (mock *StoreMock) CountMembersOnChatRoomCalls() []struct {
 	mock.lockCountMembersOnChatRoom.RLock()
 	calls = mock.calls.CountMembersOnChatRoom
 	mock.lockCountMembersOnChatRoom.RUnlock()
+	return calls
+}
+
+// CountMembersOnChatRoomAddMemberAction calls CountMembersOnChatRoomAddMemberActionFunc.
+func (mock *StoreMock) CountMembersOnChatRoomAddMemberAction(ctx context.Context, chatRoomAddMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomAddMemberActionParam) (int64, error) {
+	if mock.CountMembersOnChatRoomAddMemberActionFunc == nil {
+		panic("StoreMock.CountMembersOnChatRoomAddMemberActionFunc: method is nil but Store.CountMembersOnChatRoomAddMemberAction was just called")
+	}
+	callInfo := struct {
+		Ctx                       context.Context
+		ChatRoomAddMemberActionID uuid.UUID
+		Where                     parameter.WhereMemberOnChatRoomAddMemberActionParam
+	}{
+		Ctx:                       ctx,
+		ChatRoomAddMemberActionID: chatRoomAddMemberActionID,
+		Where:                     where,
+	}
+	mock.lockCountMembersOnChatRoomAddMemberAction.Lock()
+	mock.calls.CountMembersOnChatRoomAddMemberAction = append(mock.calls.CountMembersOnChatRoomAddMemberAction, callInfo)
+	mock.lockCountMembersOnChatRoomAddMemberAction.Unlock()
+	return mock.CountMembersOnChatRoomAddMemberActionFunc(ctx, chatRoomAddMemberActionID, where)
+}
+
+// CountMembersOnChatRoomAddMemberActionCalls gets all the calls that were made to CountMembersOnChatRoomAddMemberAction.
+// Check the length with:
+//
+//	len(mockedStore.CountMembersOnChatRoomAddMemberActionCalls())
+func (mock *StoreMock) CountMembersOnChatRoomAddMemberActionCalls() []struct {
+	Ctx                       context.Context
+	ChatRoomAddMemberActionID uuid.UUID
+	Where                     parameter.WhereMemberOnChatRoomAddMemberActionParam
+} {
+	var calls []struct {
+		Ctx                       context.Context
+		ChatRoomAddMemberActionID uuid.UUID
+		Where                     parameter.WhereMemberOnChatRoomAddMemberActionParam
+	}
+	mock.lockCountMembersOnChatRoomAddMemberAction.RLock()
+	calls = mock.calls.CountMembersOnChatRoomAddMemberAction
+	mock.lockCountMembersOnChatRoomAddMemberAction.RUnlock()
+	return calls
+}
+
+// CountMembersOnChatRoomAddMemberActionWithSd calls CountMembersOnChatRoomAddMemberActionWithSdFunc.
+func (mock *StoreMock) CountMembersOnChatRoomAddMemberActionWithSd(ctx context.Context, sd Sd, chatRoomAddMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomAddMemberActionParam) (int64, error) {
+	if mock.CountMembersOnChatRoomAddMemberActionWithSdFunc == nil {
+		panic("StoreMock.CountMembersOnChatRoomAddMemberActionWithSdFunc: method is nil but Store.CountMembersOnChatRoomAddMemberActionWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                       context.Context
+		Sd                        Sd
+		ChatRoomAddMemberActionID uuid.UUID
+		Where                     parameter.WhereMemberOnChatRoomAddMemberActionParam
+	}{
+		Ctx:                       ctx,
+		Sd:                        sd,
+		ChatRoomAddMemberActionID: chatRoomAddMemberActionID,
+		Where:                     where,
+	}
+	mock.lockCountMembersOnChatRoomAddMemberActionWithSd.Lock()
+	mock.calls.CountMembersOnChatRoomAddMemberActionWithSd = append(mock.calls.CountMembersOnChatRoomAddMemberActionWithSd, callInfo)
+	mock.lockCountMembersOnChatRoomAddMemberActionWithSd.Unlock()
+	return mock.CountMembersOnChatRoomAddMemberActionWithSdFunc(ctx, sd, chatRoomAddMemberActionID, where)
+}
+
+// CountMembersOnChatRoomAddMemberActionWithSdCalls gets all the calls that were made to CountMembersOnChatRoomAddMemberActionWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountMembersOnChatRoomAddMemberActionWithSdCalls())
+func (mock *StoreMock) CountMembersOnChatRoomAddMemberActionWithSdCalls() []struct {
+	Ctx                       context.Context
+	Sd                        Sd
+	ChatRoomAddMemberActionID uuid.UUID
+	Where                     parameter.WhereMemberOnChatRoomAddMemberActionParam
+} {
+	var calls []struct {
+		Ctx                       context.Context
+		Sd                        Sd
+		ChatRoomAddMemberActionID uuid.UUID
+		Where                     parameter.WhereMemberOnChatRoomAddMemberActionParam
+	}
+	mock.lockCountMembersOnChatRoomAddMemberActionWithSd.RLock()
+	calls = mock.calls.CountMembersOnChatRoomAddMemberActionWithSd
+	mock.lockCountMembersOnChatRoomAddMemberActionWithSd.RUnlock()
+	return calls
+}
+
+// CountMembersOnChatRoomRemoveMemberAction calls CountMembersOnChatRoomRemoveMemberActionFunc.
+func (mock *StoreMock) CountMembersOnChatRoomRemoveMemberAction(ctx context.Context, chatRoomRemoveMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomRemoveMemberActionParam) (int64, error) {
+	if mock.CountMembersOnChatRoomRemoveMemberActionFunc == nil {
+		panic("StoreMock.CountMembersOnChatRoomRemoveMemberActionFunc: method is nil but Store.CountMembersOnChatRoomRemoveMemberAction was just called")
+	}
+	callInfo := struct {
+		Ctx                          context.Context
+		ChatRoomRemoveMemberActionID uuid.UUID
+		Where                        parameter.WhereMemberOnChatRoomRemoveMemberActionParam
+	}{
+		Ctx:                          ctx,
+		ChatRoomRemoveMemberActionID: chatRoomRemoveMemberActionID,
+		Where:                        where,
+	}
+	mock.lockCountMembersOnChatRoomRemoveMemberAction.Lock()
+	mock.calls.CountMembersOnChatRoomRemoveMemberAction = append(mock.calls.CountMembersOnChatRoomRemoveMemberAction, callInfo)
+	mock.lockCountMembersOnChatRoomRemoveMemberAction.Unlock()
+	return mock.CountMembersOnChatRoomRemoveMemberActionFunc(ctx, chatRoomRemoveMemberActionID, where)
+}
+
+// CountMembersOnChatRoomRemoveMemberActionCalls gets all the calls that were made to CountMembersOnChatRoomRemoveMemberAction.
+// Check the length with:
+//
+//	len(mockedStore.CountMembersOnChatRoomRemoveMemberActionCalls())
+func (mock *StoreMock) CountMembersOnChatRoomRemoveMemberActionCalls() []struct {
+	Ctx                          context.Context
+	ChatRoomRemoveMemberActionID uuid.UUID
+	Where                        parameter.WhereMemberOnChatRoomRemoveMemberActionParam
+} {
+	var calls []struct {
+		Ctx                          context.Context
+		ChatRoomRemoveMemberActionID uuid.UUID
+		Where                        parameter.WhereMemberOnChatRoomRemoveMemberActionParam
+	}
+	mock.lockCountMembersOnChatRoomRemoveMemberAction.RLock()
+	calls = mock.calls.CountMembersOnChatRoomRemoveMemberAction
+	mock.lockCountMembersOnChatRoomRemoveMemberAction.RUnlock()
+	return calls
+}
+
+// CountMembersOnChatRoomRemoveMemberActionWithSd calls CountMembersOnChatRoomRemoveMemberActionWithSdFunc.
+func (mock *StoreMock) CountMembersOnChatRoomRemoveMemberActionWithSd(ctx context.Context, sd Sd, chatRoomRemoveMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomRemoveMemberActionParam) (int64, error) {
+	if mock.CountMembersOnChatRoomRemoveMemberActionWithSdFunc == nil {
+		panic("StoreMock.CountMembersOnChatRoomRemoveMemberActionWithSdFunc: method is nil but Store.CountMembersOnChatRoomRemoveMemberActionWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                          context.Context
+		Sd                           Sd
+		ChatRoomRemoveMemberActionID uuid.UUID
+		Where                        parameter.WhereMemberOnChatRoomRemoveMemberActionParam
+	}{
+		Ctx:                          ctx,
+		Sd:                           sd,
+		ChatRoomRemoveMemberActionID: chatRoomRemoveMemberActionID,
+		Where:                        where,
+	}
+	mock.lockCountMembersOnChatRoomRemoveMemberActionWithSd.Lock()
+	mock.calls.CountMembersOnChatRoomRemoveMemberActionWithSd = append(mock.calls.CountMembersOnChatRoomRemoveMemberActionWithSd, callInfo)
+	mock.lockCountMembersOnChatRoomRemoveMemberActionWithSd.Unlock()
+	return mock.CountMembersOnChatRoomRemoveMemberActionWithSdFunc(ctx, sd, chatRoomRemoveMemberActionID, where)
+}
+
+// CountMembersOnChatRoomRemoveMemberActionWithSdCalls gets all the calls that were made to CountMembersOnChatRoomRemoveMemberActionWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountMembersOnChatRoomRemoveMemberActionWithSdCalls())
+func (mock *StoreMock) CountMembersOnChatRoomRemoveMemberActionWithSdCalls() []struct {
+	Ctx                          context.Context
+	Sd                           Sd
+	ChatRoomRemoveMemberActionID uuid.UUID
+	Where                        parameter.WhereMemberOnChatRoomRemoveMemberActionParam
+} {
+	var calls []struct {
+		Ctx                          context.Context
+		Sd                           Sd
+		ChatRoomRemoveMemberActionID uuid.UUID
+		Where                        parameter.WhereMemberOnChatRoomRemoveMemberActionParam
+	}
+	mock.lockCountMembersOnChatRoomRemoveMemberActionWithSd.RLock()
+	calls = mock.calls.CountMembersOnChatRoomRemoveMemberActionWithSd
+	mock.lockCountMembersOnChatRoomRemoveMemberActionWithSd.RUnlock()
 	return calls
 }
 
@@ -17747,6 +19053,42 @@ func (mock *StoreMock) CreateChatRoomCalls() []struct {
 	return calls
 }
 
+// CreateChatRoomAction calls CreateChatRoomActionFunc.
+func (mock *StoreMock) CreateChatRoomAction(ctx context.Context, param parameter.CreateChatRoomActionParam) (entity.ChatRoomAction, error) {
+	if mock.CreateChatRoomActionFunc == nil {
+		panic("StoreMock.CreateChatRoomActionFunc: method is nil but Store.CreateChatRoomAction was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Param parameter.CreateChatRoomActionParam
+	}{
+		Ctx:   ctx,
+		Param: param,
+	}
+	mock.lockCreateChatRoomAction.Lock()
+	mock.calls.CreateChatRoomAction = append(mock.calls.CreateChatRoomAction, callInfo)
+	mock.lockCreateChatRoomAction.Unlock()
+	return mock.CreateChatRoomActionFunc(ctx, param)
+}
+
+// CreateChatRoomActionCalls gets all the calls that were made to CreateChatRoomAction.
+// Check the length with:
+//
+//	len(mockedStore.CreateChatRoomActionCalls())
+func (mock *StoreMock) CreateChatRoomActionCalls() []struct {
+	Ctx   context.Context
+	Param parameter.CreateChatRoomActionParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Param parameter.CreateChatRoomActionParam
+	}
+	mock.lockCreateChatRoomAction.RLock()
+	calls = mock.calls.CreateChatRoomAction
+	mock.lockCreateChatRoomAction.RUnlock()
+	return calls
+}
+
 // CreateChatRoomActionType calls CreateChatRoomActionTypeFunc.
 func (mock *StoreMock) CreateChatRoomActionType(ctx context.Context, param parameter.CreateChatRoomActionTypeParam) (entity.ChatRoomActionType, error) {
 	if mock.CreateChatRoomActionTypeFunc == nil {
@@ -17896,6 +19238,122 @@ func (mock *StoreMock) CreateChatRoomActionTypesWithSdCalls() []struct {
 	mock.lockCreateChatRoomActionTypesWithSd.RLock()
 	calls = mock.calls.CreateChatRoomActionTypesWithSd
 	mock.lockCreateChatRoomActionTypesWithSd.RUnlock()
+	return calls
+}
+
+// CreateChatRoomActionWithSd calls CreateChatRoomActionWithSdFunc.
+func (mock *StoreMock) CreateChatRoomActionWithSd(ctx context.Context, sd Sd, param parameter.CreateChatRoomActionParam) (entity.ChatRoomAction, error) {
+	if mock.CreateChatRoomActionWithSdFunc == nil {
+		panic("StoreMock.CreateChatRoomActionWithSdFunc: method is nil but Store.CreateChatRoomActionWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateChatRoomActionParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Param: param,
+	}
+	mock.lockCreateChatRoomActionWithSd.Lock()
+	mock.calls.CreateChatRoomActionWithSd = append(mock.calls.CreateChatRoomActionWithSd, callInfo)
+	mock.lockCreateChatRoomActionWithSd.Unlock()
+	return mock.CreateChatRoomActionWithSdFunc(ctx, sd, param)
+}
+
+// CreateChatRoomActionWithSdCalls gets all the calls that were made to CreateChatRoomActionWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateChatRoomActionWithSdCalls())
+func (mock *StoreMock) CreateChatRoomActionWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Param parameter.CreateChatRoomActionParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateChatRoomActionParam
+	}
+	mock.lockCreateChatRoomActionWithSd.RLock()
+	calls = mock.calls.CreateChatRoomActionWithSd
+	mock.lockCreateChatRoomActionWithSd.RUnlock()
+	return calls
+}
+
+// CreateChatRoomActions calls CreateChatRoomActionsFunc.
+func (mock *StoreMock) CreateChatRoomActions(ctx context.Context, params []parameter.CreateChatRoomActionParam) (int64, error) {
+	if mock.CreateChatRoomActionsFunc == nil {
+		panic("StoreMock.CreateChatRoomActionsFunc: method is nil but Store.CreateChatRoomActions was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.CreateChatRoomActionParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockCreateChatRoomActions.Lock()
+	mock.calls.CreateChatRoomActions = append(mock.calls.CreateChatRoomActions, callInfo)
+	mock.lockCreateChatRoomActions.Unlock()
+	return mock.CreateChatRoomActionsFunc(ctx, params)
+}
+
+// CreateChatRoomActionsCalls gets all the calls that were made to CreateChatRoomActions.
+// Check the length with:
+//
+//	len(mockedStore.CreateChatRoomActionsCalls())
+func (mock *StoreMock) CreateChatRoomActionsCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.CreateChatRoomActionParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.CreateChatRoomActionParam
+	}
+	mock.lockCreateChatRoomActions.RLock()
+	calls = mock.calls.CreateChatRoomActions
+	mock.lockCreateChatRoomActions.RUnlock()
+	return calls
+}
+
+// CreateChatRoomActionsWithSd calls CreateChatRoomActionsWithSdFunc.
+func (mock *StoreMock) CreateChatRoomActionsWithSd(ctx context.Context, sd Sd, params []parameter.CreateChatRoomActionParam) (int64, error) {
+	if mock.CreateChatRoomActionsWithSdFunc == nil {
+		panic("StoreMock.CreateChatRoomActionsWithSdFunc: method is nil but Store.CreateChatRoomActionsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateChatRoomActionParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		Params: params,
+	}
+	mock.lockCreateChatRoomActionsWithSd.Lock()
+	mock.calls.CreateChatRoomActionsWithSd = append(mock.calls.CreateChatRoomActionsWithSd, callInfo)
+	mock.lockCreateChatRoomActionsWithSd.Unlock()
+	return mock.CreateChatRoomActionsWithSdFunc(ctx, sd, params)
+}
+
+// CreateChatRoomActionsWithSdCalls gets all the calls that were made to CreateChatRoomActionsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateChatRoomActionsWithSdCalls())
+func (mock *StoreMock) CreateChatRoomActionsWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	Params []parameter.CreateChatRoomActionParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateChatRoomActionParam
+	}
+	mock.lockCreateChatRoomActionsWithSd.RLock()
+	calls = mock.calls.CreateChatRoomActionsWithSd
+	mock.lockCreateChatRoomActionsWithSd.RUnlock()
 	return calls
 }
 
@@ -22003,6 +23461,42 @@ func (mock *StoreMock) DeleteChatRoomCalls() []struct {
 	return calls
 }
 
+// DeleteChatRoomAction calls DeleteChatRoomActionFunc.
+func (mock *StoreMock) DeleteChatRoomAction(ctx context.Context, chatRoomActionID uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomActionFunc == nil {
+		panic("StoreMock.DeleteChatRoomActionFunc: method is nil but Store.DeleteChatRoomAction was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		ChatRoomActionID uuid.UUID
+	}{
+		Ctx:              ctx,
+		ChatRoomActionID: chatRoomActionID,
+	}
+	mock.lockDeleteChatRoomAction.Lock()
+	mock.calls.DeleteChatRoomAction = append(mock.calls.DeleteChatRoomAction, callInfo)
+	mock.lockDeleteChatRoomAction.Unlock()
+	return mock.DeleteChatRoomActionFunc(ctx, chatRoomActionID)
+}
+
+// DeleteChatRoomActionCalls gets all the calls that were made to DeleteChatRoomAction.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomActionCalls())
+func (mock *StoreMock) DeleteChatRoomActionCalls() []struct {
+	Ctx              context.Context
+	ChatRoomActionID uuid.UUID
+} {
+	var calls []struct {
+		Ctx              context.Context
+		ChatRoomActionID uuid.UUID
+	}
+	mock.lockDeleteChatRoomAction.RLock()
+	calls = mock.calls.DeleteChatRoomAction
+	mock.lockDeleteChatRoomAction.RUnlock()
+	return calls
+}
+
 // DeleteChatRoomActionType calls DeleteChatRoomActionTypeFunc.
 func (mock *StoreMock) DeleteChatRoomActionType(ctx context.Context, recordTypeID uuid.UUID) (int64, error) {
 	if mock.DeleteChatRoomActionTypeFunc == nil {
@@ -22155,6 +23649,46 @@ func (mock *StoreMock) DeleteChatRoomActionTypeWithSdCalls() []struct {
 	return calls
 }
 
+// DeleteChatRoomActionWithSd calls DeleteChatRoomActionWithSdFunc.
+func (mock *StoreMock) DeleteChatRoomActionWithSd(ctx context.Context, sd Sd, chatRoomActionID uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomActionWithSdFunc == nil {
+		panic("StoreMock.DeleteChatRoomActionWithSdFunc: method is nil but Store.DeleteChatRoomActionWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx              context.Context
+		Sd               Sd
+		ChatRoomActionID uuid.UUID
+	}{
+		Ctx:              ctx,
+		Sd:               sd,
+		ChatRoomActionID: chatRoomActionID,
+	}
+	mock.lockDeleteChatRoomActionWithSd.Lock()
+	mock.calls.DeleteChatRoomActionWithSd = append(mock.calls.DeleteChatRoomActionWithSd, callInfo)
+	mock.lockDeleteChatRoomActionWithSd.Unlock()
+	return mock.DeleteChatRoomActionWithSdFunc(ctx, sd, chatRoomActionID)
+}
+
+// DeleteChatRoomActionWithSdCalls gets all the calls that were made to DeleteChatRoomActionWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomActionWithSdCalls())
+func (mock *StoreMock) DeleteChatRoomActionWithSdCalls() []struct {
+	Ctx              context.Context
+	Sd               Sd
+	ChatRoomActionID uuid.UUID
+} {
+	var calls []struct {
+		Ctx              context.Context
+		Sd               Sd
+		ChatRoomActionID uuid.UUID
+	}
+	mock.lockDeleteChatRoomActionWithSd.RLock()
+	calls = mock.calls.DeleteChatRoomActionWithSd
+	mock.lockDeleteChatRoomActionWithSd.RUnlock()
+	return calls
+}
+
 // DeleteChatRoomAddMemberAction calls DeleteChatRoomAddMemberActionFunc.
 func (mock *StoreMock) DeleteChatRoomAddMemberAction(ctx context.Context, chatRoomAddMemberActionID uuid.UUID) (int64, error) {
 	if mock.DeleteChatRoomAddMemberActionFunc == nil {
@@ -22228,6 +23762,394 @@ func (mock *StoreMock) DeleteChatRoomAddMemberActionWithSdCalls() []struct {
 	mock.lockDeleteChatRoomAddMemberActionWithSd.RLock()
 	calls = mock.calls.DeleteChatRoomAddMemberActionWithSd
 	mock.lockDeleteChatRoomAddMemberActionWithSd.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomAddedMember calls DeleteChatRoomAddedMemberFunc.
+func (mock *StoreMock) DeleteChatRoomAddedMember(ctx context.Context, chatRoomAddMemberActionID uuid.UUID, memberID uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomAddedMemberFunc == nil {
+		panic("StoreMock.DeleteChatRoomAddedMemberFunc: method is nil but Store.DeleteChatRoomAddedMember was just called")
+	}
+	callInfo := struct {
+		Ctx                       context.Context
+		ChatRoomAddMemberActionID uuid.UUID
+		MemberID                  uuid.UUID
+	}{
+		Ctx:                       ctx,
+		ChatRoomAddMemberActionID: chatRoomAddMemberActionID,
+		MemberID:                  memberID,
+	}
+	mock.lockDeleteChatRoomAddedMember.Lock()
+	mock.calls.DeleteChatRoomAddedMember = append(mock.calls.DeleteChatRoomAddedMember, callInfo)
+	mock.lockDeleteChatRoomAddedMember.Unlock()
+	return mock.DeleteChatRoomAddedMemberFunc(ctx, chatRoomAddMemberActionID, memberID)
+}
+
+// DeleteChatRoomAddedMemberCalls gets all the calls that were made to DeleteChatRoomAddedMember.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomAddedMemberCalls())
+func (mock *StoreMock) DeleteChatRoomAddedMemberCalls() []struct {
+	Ctx                       context.Context
+	ChatRoomAddMemberActionID uuid.UUID
+	MemberID                  uuid.UUID
+} {
+	var calls []struct {
+		Ctx                       context.Context
+		ChatRoomAddMemberActionID uuid.UUID
+		MemberID                  uuid.UUID
+	}
+	mock.lockDeleteChatRoomAddedMember.RLock()
+	calls = mock.calls.DeleteChatRoomAddedMember
+	mock.lockDeleteChatRoomAddedMember.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSd calls DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSdFunc.
+func (mock *StoreMock) DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSd(ctx context.Context, sd Sd, chatRoomAddMemberActionID uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSdFunc == nil {
+		panic("StoreMock.DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSdFunc: method is nil but Store.DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                       context.Context
+		Sd                        Sd
+		ChatRoomAddMemberActionID uuid.UUID
+	}{
+		Ctx:                       ctx,
+		Sd:                        sd,
+		ChatRoomAddMemberActionID: chatRoomAddMemberActionID,
+	}
+	mock.lockDeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSd.Lock()
+	mock.calls.DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSd = append(mock.calls.DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSd, callInfo)
+	mock.lockDeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSd.Unlock()
+	return mock.DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSdFunc(ctx, sd, chatRoomAddMemberActionID)
+}
+
+// DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSdCalls gets all the calls that were made to DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSdCalls())
+func (mock *StoreMock) DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSdCalls() []struct {
+	Ctx                       context.Context
+	Sd                        Sd
+	ChatRoomAddMemberActionID uuid.UUID
+} {
+	var calls []struct {
+		Ctx                       context.Context
+		Sd                        Sd
+		ChatRoomAddMemberActionID uuid.UUID
+	}
+	mock.lockDeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSd.RLock()
+	calls = mock.calls.DeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSd
+	mock.lockDeleteChatRoomAddedMemberOnChatRoomAddMemberActionWithSd.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomAddedMemberWithSd calls DeleteChatRoomAddedMemberWithSdFunc.
+func (mock *StoreMock) DeleteChatRoomAddedMemberWithSd(ctx context.Context, sd Sd, chatRoomAddMemberActionID uuid.UUID, memberID uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomAddedMemberWithSdFunc == nil {
+		panic("StoreMock.DeleteChatRoomAddedMemberWithSdFunc: method is nil but Store.DeleteChatRoomAddedMemberWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                       context.Context
+		Sd                        Sd
+		ChatRoomAddMemberActionID uuid.UUID
+		MemberID                  uuid.UUID
+	}{
+		Ctx:                       ctx,
+		Sd:                        sd,
+		ChatRoomAddMemberActionID: chatRoomAddMemberActionID,
+		MemberID:                  memberID,
+	}
+	mock.lockDeleteChatRoomAddedMemberWithSd.Lock()
+	mock.calls.DeleteChatRoomAddedMemberWithSd = append(mock.calls.DeleteChatRoomAddedMemberWithSd, callInfo)
+	mock.lockDeleteChatRoomAddedMemberWithSd.Unlock()
+	return mock.DeleteChatRoomAddedMemberWithSdFunc(ctx, sd, chatRoomAddMemberActionID, memberID)
+}
+
+// DeleteChatRoomAddedMemberWithSdCalls gets all the calls that were made to DeleteChatRoomAddedMemberWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomAddedMemberWithSdCalls())
+func (mock *StoreMock) DeleteChatRoomAddedMemberWithSdCalls() []struct {
+	Ctx                       context.Context
+	Sd                        Sd
+	ChatRoomAddMemberActionID uuid.UUID
+	MemberID                  uuid.UUID
+} {
+	var calls []struct {
+		Ctx                       context.Context
+		Sd                        Sd
+		ChatRoomAddMemberActionID uuid.UUID
+		MemberID                  uuid.UUID
+	}
+	mock.lockDeleteChatRoomAddedMemberWithSd.RLock()
+	calls = mock.calls.DeleteChatRoomAddedMemberWithSd
+	mock.lockDeleteChatRoomAddedMemberWithSd.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomAddedMembersOnChatRoomAddMemberAction calls DeleteChatRoomAddedMembersOnChatRoomAddMemberActionFunc.
+func (mock *StoreMock) DeleteChatRoomAddedMembersOnChatRoomAddMemberAction(ctx context.Context, chatRoomAddMemberActionID uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomAddedMembersOnChatRoomAddMemberActionFunc == nil {
+		panic("StoreMock.DeleteChatRoomAddedMembersOnChatRoomAddMemberActionFunc: method is nil but Store.DeleteChatRoomAddedMembersOnChatRoomAddMemberAction was just called")
+	}
+	callInfo := struct {
+		Ctx                       context.Context
+		ChatRoomAddMemberActionID uuid.UUID
+	}{
+		Ctx:                       ctx,
+		ChatRoomAddMemberActionID: chatRoomAddMemberActionID,
+	}
+	mock.lockDeleteChatRoomAddedMembersOnChatRoomAddMemberAction.Lock()
+	mock.calls.DeleteChatRoomAddedMembersOnChatRoomAddMemberAction = append(mock.calls.DeleteChatRoomAddedMembersOnChatRoomAddMemberAction, callInfo)
+	mock.lockDeleteChatRoomAddedMembersOnChatRoomAddMemberAction.Unlock()
+	return mock.DeleteChatRoomAddedMembersOnChatRoomAddMemberActionFunc(ctx, chatRoomAddMemberActionID)
+}
+
+// DeleteChatRoomAddedMembersOnChatRoomAddMemberActionCalls gets all the calls that were made to DeleteChatRoomAddedMembersOnChatRoomAddMemberAction.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomAddedMembersOnChatRoomAddMemberActionCalls())
+func (mock *StoreMock) DeleteChatRoomAddedMembersOnChatRoomAddMemberActionCalls() []struct {
+	Ctx                       context.Context
+	ChatRoomAddMemberActionID uuid.UUID
+} {
+	var calls []struct {
+		Ctx                       context.Context
+		ChatRoomAddMemberActionID uuid.UUID
+	}
+	mock.lockDeleteChatRoomAddedMembersOnChatRoomAddMemberAction.RLock()
+	calls = mock.calls.DeleteChatRoomAddedMembersOnChatRoomAddMemberAction
+	mock.lockDeleteChatRoomAddedMembersOnChatRoomAddMemberAction.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomAddedMembersOnChatRoomAddMemberActions calls DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsFunc.
+func (mock *StoreMock) DeleteChatRoomAddedMembersOnChatRoomAddMemberActions(ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsFunc == nil {
+		panic("StoreMock.DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsFunc: method is nil but Store.DeleteChatRoomAddedMembersOnChatRoomAddMemberActions was just called")
+	}
+	callInfo := struct {
+		Ctx                        context.Context
+		ChatRoomAddMemberActionIDs []uuid.UUID
+	}{
+		Ctx:                        ctx,
+		ChatRoomAddMemberActionIDs: chatRoomAddMemberActionIDs,
+	}
+	mock.lockDeleteChatRoomAddedMembersOnChatRoomAddMemberActions.Lock()
+	mock.calls.DeleteChatRoomAddedMembersOnChatRoomAddMemberActions = append(mock.calls.DeleteChatRoomAddedMembersOnChatRoomAddMemberActions, callInfo)
+	mock.lockDeleteChatRoomAddedMembersOnChatRoomAddMemberActions.Unlock()
+	return mock.DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsFunc(ctx, chatRoomAddMemberActionIDs)
+}
+
+// DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsCalls gets all the calls that were made to DeleteChatRoomAddedMembersOnChatRoomAddMemberActions.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsCalls())
+func (mock *StoreMock) DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsCalls() []struct {
+	Ctx                        context.Context
+	ChatRoomAddMemberActionIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx                        context.Context
+		ChatRoomAddMemberActionIDs []uuid.UUID
+	}
+	mock.lockDeleteChatRoomAddedMembersOnChatRoomAddMemberActions.RLock()
+	calls = mock.calls.DeleteChatRoomAddedMembersOnChatRoomAddMemberActions
+	mock.lockDeleteChatRoomAddedMembersOnChatRoomAddMemberActions.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSd calls DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSdFunc.
+func (mock *StoreMock) DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSd(ctx context.Context, sd Sd, chatRoomAddMemberActionIDs []uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSdFunc == nil {
+		panic("StoreMock.DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSdFunc: method is nil but Store.DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                        context.Context
+		Sd                         Sd
+		ChatRoomAddMemberActionIDs []uuid.UUID
+	}{
+		Ctx:                        ctx,
+		Sd:                         sd,
+		ChatRoomAddMemberActionIDs: chatRoomAddMemberActionIDs,
+	}
+	mock.lockDeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSd.Lock()
+	mock.calls.DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSd = append(mock.calls.DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSd, callInfo)
+	mock.lockDeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSd.Unlock()
+	return mock.DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSdFunc(ctx, sd, chatRoomAddMemberActionIDs)
+}
+
+// DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSdCalls gets all the calls that were made to DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSdCalls())
+func (mock *StoreMock) DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSdCalls() []struct {
+	Ctx                        context.Context
+	Sd                         Sd
+	ChatRoomAddMemberActionIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx                        context.Context
+		Sd                         Sd
+		ChatRoomAddMemberActionIDs []uuid.UUID
+	}
+	mock.lockDeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSd.RLock()
+	calls = mock.calls.DeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSd
+	mock.lockDeleteChatRoomAddedMembersOnChatRoomAddMemberActionsWithSd.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomAddedMembersOnMember calls DeleteChatRoomAddedMembersOnMemberFunc.
+func (mock *StoreMock) DeleteChatRoomAddedMembersOnMember(ctx context.Context, memberID uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomAddedMembersOnMemberFunc == nil {
+		panic("StoreMock.DeleteChatRoomAddedMembersOnMemberFunc: method is nil but Store.DeleteChatRoomAddedMembersOnMember was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+	}{
+		Ctx:      ctx,
+		MemberID: memberID,
+	}
+	mock.lockDeleteChatRoomAddedMembersOnMember.Lock()
+	mock.calls.DeleteChatRoomAddedMembersOnMember = append(mock.calls.DeleteChatRoomAddedMembersOnMember, callInfo)
+	mock.lockDeleteChatRoomAddedMembersOnMember.Unlock()
+	return mock.DeleteChatRoomAddedMembersOnMemberFunc(ctx, memberID)
+}
+
+// DeleteChatRoomAddedMembersOnMemberCalls gets all the calls that were made to DeleteChatRoomAddedMembersOnMember.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomAddedMembersOnMemberCalls())
+func (mock *StoreMock) DeleteChatRoomAddedMembersOnMemberCalls() []struct {
+	Ctx      context.Context
+	MemberID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+	}
+	mock.lockDeleteChatRoomAddedMembersOnMember.RLock()
+	calls = mock.calls.DeleteChatRoomAddedMembersOnMember
+	mock.lockDeleteChatRoomAddedMembersOnMember.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomAddedMembersOnMemberWithSd calls DeleteChatRoomAddedMembersOnMemberWithSdFunc.
+func (mock *StoreMock) DeleteChatRoomAddedMembersOnMemberWithSd(ctx context.Context, sd Sd, memberID uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomAddedMembersOnMemberWithSdFunc == nil {
+		panic("StoreMock.DeleteChatRoomAddedMembersOnMemberWithSdFunc: method is nil but Store.DeleteChatRoomAddedMembersOnMemberWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		MemberID uuid.UUID
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		MemberID: memberID,
+	}
+	mock.lockDeleteChatRoomAddedMembersOnMemberWithSd.Lock()
+	mock.calls.DeleteChatRoomAddedMembersOnMemberWithSd = append(mock.calls.DeleteChatRoomAddedMembersOnMemberWithSd, callInfo)
+	mock.lockDeleteChatRoomAddedMembersOnMemberWithSd.Unlock()
+	return mock.DeleteChatRoomAddedMembersOnMemberWithSdFunc(ctx, sd, memberID)
+}
+
+// DeleteChatRoomAddedMembersOnMemberWithSdCalls gets all the calls that were made to DeleteChatRoomAddedMembersOnMemberWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomAddedMembersOnMemberWithSdCalls())
+func (mock *StoreMock) DeleteChatRoomAddedMembersOnMemberWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	MemberID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		MemberID uuid.UUID
+	}
+	mock.lockDeleteChatRoomAddedMembersOnMemberWithSd.RLock()
+	calls = mock.calls.DeleteChatRoomAddedMembersOnMemberWithSd
+	mock.lockDeleteChatRoomAddedMembersOnMemberWithSd.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomAddedMembersOnMembers calls DeleteChatRoomAddedMembersOnMembersFunc.
+func (mock *StoreMock) DeleteChatRoomAddedMembersOnMembers(ctx context.Context, memberIDs []uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomAddedMembersOnMembersFunc == nil {
+		panic("StoreMock.DeleteChatRoomAddedMembersOnMembersFunc: method is nil but Store.DeleteChatRoomAddedMembersOnMembers was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		MemberIDs []uuid.UUID
+	}{
+		Ctx:       ctx,
+		MemberIDs: memberIDs,
+	}
+	mock.lockDeleteChatRoomAddedMembersOnMembers.Lock()
+	mock.calls.DeleteChatRoomAddedMembersOnMembers = append(mock.calls.DeleteChatRoomAddedMembersOnMembers, callInfo)
+	mock.lockDeleteChatRoomAddedMembersOnMembers.Unlock()
+	return mock.DeleteChatRoomAddedMembersOnMembersFunc(ctx, memberIDs)
+}
+
+// DeleteChatRoomAddedMembersOnMembersCalls gets all the calls that were made to DeleteChatRoomAddedMembersOnMembers.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomAddedMembersOnMembersCalls())
+func (mock *StoreMock) DeleteChatRoomAddedMembersOnMembersCalls() []struct {
+	Ctx       context.Context
+	MemberIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		MemberIDs []uuid.UUID
+	}
+	mock.lockDeleteChatRoomAddedMembersOnMembers.RLock()
+	calls = mock.calls.DeleteChatRoomAddedMembersOnMembers
+	mock.lockDeleteChatRoomAddedMembersOnMembers.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomAddedMembersOnMembersWithSd calls DeleteChatRoomAddedMembersOnMembersWithSdFunc.
+func (mock *StoreMock) DeleteChatRoomAddedMembersOnMembersWithSd(ctx context.Context, sd Sd, memberIDs []uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomAddedMembersOnMembersWithSdFunc == nil {
+		panic("StoreMock.DeleteChatRoomAddedMembersOnMembersWithSdFunc: method is nil but Store.DeleteChatRoomAddedMembersOnMembersWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Sd        Sd
+		MemberIDs []uuid.UUID
+	}{
+		Ctx:       ctx,
+		Sd:        sd,
+		MemberIDs: memberIDs,
+	}
+	mock.lockDeleteChatRoomAddedMembersOnMembersWithSd.Lock()
+	mock.calls.DeleteChatRoomAddedMembersOnMembersWithSd = append(mock.calls.DeleteChatRoomAddedMembersOnMembersWithSd, callInfo)
+	mock.lockDeleteChatRoomAddedMembersOnMembersWithSd.Unlock()
+	return mock.DeleteChatRoomAddedMembersOnMembersWithSdFunc(ctx, sd, memberIDs)
+}
+
+// DeleteChatRoomAddedMembersOnMembersWithSdCalls gets all the calls that were made to DeleteChatRoomAddedMembersOnMembersWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomAddedMembersOnMembersWithSdCalls())
+func (mock *StoreMock) DeleteChatRoomAddedMembersOnMembersWithSdCalls() []struct {
+	Ctx       context.Context
+	Sd        Sd
+	MemberIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Sd        Sd
+		MemberIDs []uuid.UUID
+	}
+	mock.lockDeleteChatRoomAddedMembersOnMembersWithSd.RLock()
+	calls = mock.calls.DeleteChatRoomAddedMembersOnMembersWithSd
+	mock.lockDeleteChatRoomAddedMembersOnMembersWithSd.RUnlock()
 	return calls
 }
 
@@ -22380,6 +24302,394 @@ func (mock *StoreMock) DeleteChatRoomRemoveMemberActionWithSdCalls() []struct {
 	mock.lockDeleteChatRoomRemoveMemberActionWithSd.RLock()
 	calls = mock.calls.DeleteChatRoomRemoveMemberActionWithSd
 	mock.lockDeleteChatRoomRemoveMemberActionWithSd.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomRemovedMember calls DeleteChatRoomRemovedMemberFunc.
+func (mock *StoreMock) DeleteChatRoomRemovedMember(ctx context.Context, chatRoomRemoveMemberActionID uuid.UUID, memberID uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomRemovedMemberFunc == nil {
+		panic("StoreMock.DeleteChatRoomRemovedMemberFunc: method is nil but Store.DeleteChatRoomRemovedMember was just called")
+	}
+	callInfo := struct {
+		Ctx                          context.Context
+		ChatRoomRemoveMemberActionID uuid.UUID
+		MemberID                     uuid.UUID
+	}{
+		Ctx:                          ctx,
+		ChatRoomRemoveMemberActionID: chatRoomRemoveMemberActionID,
+		MemberID:                     memberID,
+	}
+	mock.lockDeleteChatRoomRemovedMember.Lock()
+	mock.calls.DeleteChatRoomRemovedMember = append(mock.calls.DeleteChatRoomRemovedMember, callInfo)
+	mock.lockDeleteChatRoomRemovedMember.Unlock()
+	return mock.DeleteChatRoomRemovedMemberFunc(ctx, chatRoomRemoveMemberActionID, memberID)
+}
+
+// DeleteChatRoomRemovedMemberCalls gets all the calls that were made to DeleteChatRoomRemovedMember.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomRemovedMemberCalls())
+func (mock *StoreMock) DeleteChatRoomRemovedMemberCalls() []struct {
+	Ctx                          context.Context
+	ChatRoomRemoveMemberActionID uuid.UUID
+	MemberID                     uuid.UUID
+} {
+	var calls []struct {
+		Ctx                          context.Context
+		ChatRoomRemoveMemberActionID uuid.UUID
+		MemberID                     uuid.UUID
+	}
+	mock.lockDeleteChatRoomRemovedMember.RLock()
+	calls = mock.calls.DeleteChatRoomRemovedMember
+	mock.lockDeleteChatRoomRemovedMember.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSd calls DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSdFunc.
+func (mock *StoreMock) DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSd(ctx context.Context, sd Sd, chatRoomRemoveMemberActionID uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSdFunc == nil {
+		panic("StoreMock.DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSdFunc: method is nil but Store.DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                          context.Context
+		Sd                           Sd
+		ChatRoomRemoveMemberActionID uuid.UUID
+	}{
+		Ctx:                          ctx,
+		Sd:                           sd,
+		ChatRoomRemoveMemberActionID: chatRoomRemoveMemberActionID,
+	}
+	mock.lockDeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSd.Lock()
+	mock.calls.DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSd = append(mock.calls.DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSd, callInfo)
+	mock.lockDeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSd.Unlock()
+	return mock.DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSdFunc(ctx, sd, chatRoomRemoveMemberActionID)
+}
+
+// DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSdCalls gets all the calls that were made to DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSdCalls())
+func (mock *StoreMock) DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSdCalls() []struct {
+	Ctx                          context.Context
+	Sd                           Sd
+	ChatRoomRemoveMemberActionID uuid.UUID
+} {
+	var calls []struct {
+		Ctx                          context.Context
+		Sd                           Sd
+		ChatRoomRemoveMemberActionID uuid.UUID
+	}
+	mock.lockDeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSd.RLock()
+	calls = mock.calls.DeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSd
+	mock.lockDeleteChatRoomRemovedMemberOnChatRoomRemoveMemberActionWithSd.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomRemovedMemberWithSd calls DeleteChatRoomRemovedMemberWithSdFunc.
+func (mock *StoreMock) DeleteChatRoomRemovedMemberWithSd(ctx context.Context, sd Sd, chatRoomRemoveMemberActionID uuid.UUID, memberID uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomRemovedMemberWithSdFunc == nil {
+		panic("StoreMock.DeleteChatRoomRemovedMemberWithSdFunc: method is nil but Store.DeleteChatRoomRemovedMemberWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                          context.Context
+		Sd                           Sd
+		ChatRoomRemoveMemberActionID uuid.UUID
+		MemberID                     uuid.UUID
+	}{
+		Ctx:                          ctx,
+		Sd:                           sd,
+		ChatRoomRemoveMemberActionID: chatRoomRemoveMemberActionID,
+		MemberID:                     memberID,
+	}
+	mock.lockDeleteChatRoomRemovedMemberWithSd.Lock()
+	mock.calls.DeleteChatRoomRemovedMemberWithSd = append(mock.calls.DeleteChatRoomRemovedMemberWithSd, callInfo)
+	mock.lockDeleteChatRoomRemovedMemberWithSd.Unlock()
+	return mock.DeleteChatRoomRemovedMemberWithSdFunc(ctx, sd, chatRoomRemoveMemberActionID, memberID)
+}
+
+// DeleteChatRoomRemovedMemberWithSdCalls gets all the calls that were made to DeleteChatRoomRemovedMemberWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomRemovedMemberWithSdCalls())
+func (mock *StoreMock) DeleteChatRoomRemovedMemberWithSdCalls() []struct {
+	Ctx                          context.Context
+	Sd                           Sd
+	ChatRoomRemoveMemberActionID uuid.UUID
+	MemberID                     uuid.UUID
+} {
+	var calls []struct {
+		Ctx                          context.Context
+		Sd                           Sd
+		ChatRoomRemoveMemberActionID uuid.UUID
+		MemberID                     uuid.UUID
+	}
+	mock.lockDeleteChatRoomRemovedMemberWithSd.RLock()
+	calls = mock.calls.DeleteChatRoomRemovedMemberWithSd
+	mock.lockDeleteChatRoomRemovedMemberWithSd.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberAction calls DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionFunc.
+func (mock *StoreMock) DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberAction(ctx context.Context, chatRoomRemoveMemberActionID uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionFunc == nil {
+		panic("StoreMock.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionFunc: method is nil but Store.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberAction was just called")
+	}
+	callInfo := struct {
+		Ctx                          context.Context
+		ChatRoomRemoveMemberActionID uuid.UUID
+	}{
+		Ctx:                          ctx,
+		ChatRoomRemoveMemberActionID: chatRoomRemoveMemberActionID,
+	}
+	mock.lockDeleteChatRoomRemovedMembersOnChatRoomRemoveMemberAction.Lock()
+	mock.calls.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberAction = append(mock.calls.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberAction, callInfo)
+	mock.lockDeleteChatRoomRemovedMembersOnChatRoomRemoveMemberAction.Unlock()
+	return mock.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionFunc(ctx, chatRoomRemoveMemberActionID)
+}
+
+// DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionCalls gets all the calls that were made to DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberAction.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionCalls())
+func (mock *StoreMock) DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionCalls() []struct {
+	Ctx                          context.Context
+	ChatRoomRemoveMemberActionID uuid.UUID
+} {
+	var calls []struct {
+		Ctx                          context.Context
+		ChatRoomRemoveMemberActionID uuid.UUID
+	}
+	mock.lockDeleteChatRoomRemovedMembersOnChatRoomRemoveMemberAction.RLock()
+	calls = mock.calls.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberAction
+	mock.lockDeleteChatRoomRemovedMembersOnChatRoomRemoveMemberAction.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActions calls DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsFunc.
+func (mock *StoreMock) DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActions(ctx context.Context, chatRoomRemoveMemberActionIDs []uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsFunc == nil {
+		panic("StoreMock.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsFunc: method is nil but Store.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActions was just called")
+	}
+	callInfo := struct {
+		Ctx                           context.Context
+		ChatRoomRemoveMemberActionIDs []uuid.UUID
+	}{
+		Ctx:                           ctx,
+		ChatRoomRemoveMemberActionIDs: chatRoomRemoveMemberActionIDs,
+	}
+	mock.lockDeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActions.Lock()
+	mock.calls.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActions = append(mock.calls.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActions, callInfo)
+	mock.lockDeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActions.Unlock()
+	return mock.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsFunc(ctx, chatRoomRemoveMemberActionIDs)
+}
+
+// DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsCalls gets all the calls that were made to DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActions.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsCalls())
+func (mock *StoreMock) DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsCalls() []struct {
+	Ctx                           context.Context
+	ChatRoomRemoveMemberActionIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx                           context.Context
+		ChatRoomRemoveMemberActionIDs []uuid.UUID
+	}
+	mock.lockDeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActions.RLock()
+	calls = mock.calls.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActions
+	mock.lockDeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActions.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSd calls DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSdFunc.
+func (mock *StoreMock) DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSd(ctx context.Context, sd Sd, chatRoomRemoveMemberActionIDs []uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSdFunc == nil {
+		panic("StoreMock.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSdFunc: method is nil but Store.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                           context.Context
+		Sd                            Sd
+		ChatRoomRemoveMemberActionIDs []uuid.UUID
+	}{
+		Ctx:                           ctx,
+		Sd:                            sd,
+		ChatRoomRemoveMemberActionIDs: chatRoomRemoveMemberActionIDs,
+	}
+	mock.lockDeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSd.Lock()
+	mock.calls.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSd = append(mock.calls.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSd, callInfo)
+	mock.lockDeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSd.Unlock()
+	return mock.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSdFunc(ctx, sd, chatRoomRemoveMemberActionIDs)
+}
+
+// DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSdCalls gets all the calls that were made to DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSdCalls())
+func (mock *StoreMock) DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSdCalls() []struct {
+	Ctx                           context.Context
+	Sd                            Sd
+	ChatRoomRemoveMemberActionIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx                           context.Context
+		Sd                            Sd
+		ChatRoomRemoveMemberActionIDs []uuid.UUID
+	}
+	mock.lockDeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSd.RLock()
+	calls = mock.calls.DeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSd
+	mock.lockDeleteChatRoomRemovedMembersOnChatRoomRemoveMemberActionsWithSd.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomRemovedMembersOnMember calls DeleteChatRoomRemovedMembersOnMemberFunc.
+func (mock *StoreMock) DeleteChatRoomRemovedMembersOnMember(ctx context.Context, memberID uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomRemovedMembersOnMemberFunc == nil {
+		panic("StoreMock.DeleteChatRoomRemovedMembersOnMemberFunc: method is nil but Store.DeleteChatRoomRemovedMembersOnMember was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+	}{
+		Ctx:      ctx,
+		MemberID: memberID,
+	}
+	mock.lockDeleteChatRoomRemovedMembersOnMember.Lock()
+	mock.calls.DeleteChatRoomRemovedMembersOnMember = append(mock.calls.DeleteChatRoomRemovedMembersOnMember, callInfo)
+	mock.lockDeleteChatRoomRemovedMembersOnMember.Unlock()
+	return mock.DeleteChatRoomRemovedMembersOnMemberFunc(ctx, memberID)
+}
+
+// DeleteChatRoomRemovedMembersOnMemberCalls gets all the calls that were made to DeleteChatRoomRemovedMembersOnMember.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomRemovedMembersOnMemberCalls())
+func (mock *StoreMock) DeleteChatRoomRemovedMembersOnMemberCalls() []struct {
+	Ctx      context.Context
+	MemberID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+	}
+	mock.lockDeleteChatRoomRemovedMembersOnMember.RLock()
+	calls = mock.calls.DeleteChatRoomRemovedMembersOnMember
+	mock.lockDeleteChatRoomRemovedMembersOnMember.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomRemovedMembersOnMemberWithSd calls DeleteChatRoomRemovedMembersOnMemberWithSdFunc.
+func (mock *StoreMock) DeleteChatRoomRemovedMembersOnMemberWithSd(ctx context.Context, sd Sd, memberID uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomRemovedMembersOnMemberWithSdFunc == nil {
+		panic("StoreMock.DeleteChatRoomRemovedMembersOnMemberWithSdFunc: method is nil but Store.DeleteChatRoomRemovedMembersOnMemberWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		Sd       Sd
+		MemberID uuid.UUID
+	}{
+		Ctx:      ctx,
+		Sd:       sd,
+		MemberID: memberID,
+	}
+	mock.lockDeleteChatRoomRemovedMembersOnMemberWithSd.Lock()
+	mock.calls.DeleteChatRoomRemovedMembersOnMemberWithSd = append(mock.calls.DeleteChatRoomRemovedMembersOnMemberWithSd, callInfo)
+	mock.lockDeleteChatRoomRemovedMembersOnMemberWithSd.Unlock()
+	return mock.DeleteChatRoomRemovedMembersOnMemberWithSdFunc(ctx, sd, memberID)
+}
+
+// DeleteChatRoomRemovedMembersOnMemberWithSdCalls gets all the calls that were made to DeleteChatRoomRemovedMembersOnMemberWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomRemovedMembersOnMemberWithSdCalls())
+func (mock *StoreMock) DeleteChatRoomRemovedMembersOnMemberWithSdCalls() []struct {
+	Ctx      context.Context
+	Sd       Sd
+	MemberID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		Sd       Sd
+		MemberID uuid.UUID
+	}
+	mock.lockDeleteChatRoomRemovedMembersOnMemberWithSd.RLock()
+	calls = mock.calls.DeleteChatRoomRemovedMembersOnMemberWithSd
+	mock.lockDeleteChatRoomRemovedMembersOnMemberWithSd.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomRemovedMembersOnMembers calls DeleteChatRoomRemovedMembersOnMembersFunc.
+func (mock *StoreMock) DeleteChatRoomRemovedMembersOnMembers(ctx context.Context, memberIDs []uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomRemovedMembersOnMembersFunc == nil {
+		panic("StoreMock.DeleteChatRoomRemovedMembersOnMembersFunc: method is nil but Store.DeleteChatRoomRemovedMembersOnMembers was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		MemberIDs []uuid.UUID
+	}{
+		Ctx:       ctx,
+		MemberIDs: memberIDs,
+	}
+	mock.lockDeleteChatRoomRemovedMembersOnMembers.Lock()
+	mock.calls.DeleteChatRoomRemovedMembersOnMembers = append(mock.calls.DeleteChatRoomRemovedMembersOnMembers, callInfo)
+	mock.lockDeleteChatRoomRemovedMembersOnMembers.Unlock()
+	return mock.DeleteChatRoomRemovedMembersOnMembersFunc(ctx, memberIDs)
+}
+
+// DeleteChatRoomRemovedMembersOnMembersCalls gets all the calls that were made to DeleteChatRoomRemovedMembersOnMembers.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomRemovedMembersOnMembersCalls())
+func (mock *StoreMock) DeleteChatRoomRemovedMembersOnMembersCalls() []struct {
+	Ctx       context.Context
+	MemberIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		MemberIDs []uuid.UUID
+	}
+	mock.lockDeleteChatRoomRemovedMembersOnMembers.RLock()
+	calls = mock.calls.DeleteChatRoomRemovedMembersOnMembers
+	mock.lockDeleteChatRoomRemovedMembersOnMembers.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomRemovedMembersOnMembersWithSd calls DeleteChatRoomRemovedMembersOnMembersWithSdFunc.
+func (mock *StoreMock) DeleteChatRoomRemovedMembersOnMembersWithSd(ctx context.Context, sd Sd, memberIDs []uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomRemovedMembersOnMembersWithSdFunc == nil {
+		panic("StoreMock.DeleteChatRoomRemovedMembersOnMembersWithSdFunc: method is nil but Store.DeleteChatRoomRemovedMembersOnMembersWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx       context.Context
+		Sd        Sd
+		MemberIDs []uuid.UUID
+	}{
+		Ctx:       ctx,
+		Sd:        sd,
+		MemberIDs: memberIDs,
+	}
+	mock.lockDeleteChatRoomRemovedMembersOnMembersWithSd.Lock()
+	mock.calls.DeleteChatRoomRemovedMembersOnMembersWithSd = append(mock.calls.DeleteChatRoomRemovedMembersOnMembersWithSd, callInfo)
+	mock.lockDeleteChatRoomRemovedMembersOnMembersWithSd.Unlock()
+	return mock.DeleteChatRoomRemovedMembersOnMembersWithSdFunc(ctx, sd, memberIDs)
+}
+
+// DeleteChatRoomRemovedMembersOnMembersWithSdCalls gets all the calls that were made to DeleteChatRoomRemovedMembersOnMembersWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomRemovedMembersOnMembersWithSdCalls())
+func (mock *StoreMock) DeleteChatRoomRemovedMembersOnMembersWithSdCalls() []struct {
+	Ctx       context.Context
+	Sd        Sd
+	MemberIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx       context.Context
+		Sd        Sd
+		MemberIDs []uuid.UUID
+	}
+	mock.lockDeleteChatRoomRemovedMembersOnMembersWithSd.RLock()
+	calls = mock.calls.DeleteChatRoomRemovedMembersOnMembersWithSd
+	mock.lockDeleteChatRoomRemovedMembersOnMembersWithSd.RUnlock()
 	return calls
 }
 
@@ -31371,8 +33681,124 @@ func (mock *StoreMock) GetChatRoomActionTypesWithSdCalls() []struct {
 	return calls
 }
 
+// GetChatRoomActionsOnChatRoom calls GetChatRoomActionsOnChatRoomFunc.
+func (mock *StoreMock) GetChatRoomActionsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomActionParam, order parameter.ChatRoomActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomActionWithDetail], error) {
+	if mock.GetChatRoomActionsOnChatRoomFunc == nil {
+		panic("StoreMock.GetChatRoomActionsOnChatRoomFunc: method is nil but Store.GetChatRoomActionsOnChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		Where      parameter.WhereChatRoomActionParam
+		Order      parameter.ChatRoomActionOrderMethod
+		Np         NumberedPaginationParam
+		Cp         CursorPaginationParam
+		Wc         WithCountParam
+	}{
+		Ctx:        ctx,
+		ChatRoomID: chatRoomID,
+		Where:      where,
+		Order:      order,
+		Np:         np,
+		Cp:         cp,
+		Wc:         wc,
+	}
+	mock.lockGetChatRoomActionsOnChatRoom.Lock()
+	mock.calls.GetChatRoomActionsOnChatRoom = append(mock.calls.GetChatRoomActionsOnChatRoom, callInfo)
+	mock.lockGetChatRoomActionsOnChatRoom.Unlock()
+	return mock.GetChatRoomActionsOnChatRoomFunc(ctx, chatRoomID, where, order, np, cp, wc)
+}
+
+// GetChatRoomActionsOnChatRoomCalls gets all the calls that were made to GetChatRoomActionsOnChatRoom.
+// Check the length with:
+//
+//	len(mockedStore.GetChatRoomActionsOnChatRoomCalls())
+func (mock *StoreMock) GetChatRoomActionsOnChatRoomCalls() []struct {
+	Ctx        context.Context
+	ChatRoomID uuid.UUID
+	Where      parameter.WhereChatRoomActionParam
+	Order      parameter.ChatRoomActionOrderMethod
+	Np         NumberedPaginationParam
+	Cp         CursorPaginationParam
+	Wc         WithCountParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		Where      parameter.WhereChatRoomActionParam
+		Order      parameter.ChatRoomActionOrderMethod
+		Np         NumberedPaginationParam
+		Cp         CursorPaginationParam
+		Wc         WithCountParam
+	}
+	mock.lockGetChatRoomActionsOnChatRoom.RLock()
+	calls = mock.calls.GetChatRoomActionsOnChatRoom
+	mock.lockGetChatRoomActionsOnChatRoom.RUnlock()
+	return calls
+}
+
+// GetChatRoomActionsOnChatRoomWithSd calls GetChatRoomActionsOnChatRoomWithSdFunc.
+func (mock *StoreMock) GetChatRoomActionsOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomActionParam, order parameter.ChatRoomActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomActionWithDetail], error) {
+	if mock.GetChatRoomActionsOnChatRoomWithSdFunc == nil {
+		panic("StoreMock.GetChatRoomActionsOnChatRoomWithSdFunc: method is nil but Store.GetChatRoomActionsOnChatRoomWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+		Where      parameter.WhereChatRoomActionParam
+		Order      parameter.ChatRoomActionOrderMethod
+		Np         NumberedPaginationParam
+		Cp         CursorPaginationParam
+		Wc         WithCountParam
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		ChatRoomID: chatRoomID,
+		Where:      where,
+		Order:      order,
+		Np:         np,
+		Cp:         cp,
+		Wc:         wc,
+	}
+	mock.lockGetChatRoomActionsOnChatRoomWithSd.Lock()
+	mock.calls.GetChatRoomActionsOnChatRoomWithSd = append(mock.calls.GetChatRoomActionsOnChatRoomWithSd, callInfo)
+	mock.lockGetChatRoomActionsOnChatRoomWithSd.Unlock()
+	return mock.GetChatRoomActionsOnChatRoomWithSdFunc(ctx, sd, chatRoomID, where, order, np, cp, wc)
+}
+
+// GetChatRoomActionsOnChatRoomWithSdCalls gets all the calls that were made to GetChatRoomActionsOnChatRoomWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetChatRoomActionsOnChatRoomWithSdCalls())
+func (mock *StoreMock) GetChatRoomActionsOnChatRoomWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	ChatRoomID uuid.UUID
+	Where      parameter.WhereChatRoomActionParam
+	Order      parameter.ChatRoomActionOrderMethod
+	Np         NumberedPaginationParam
+	Cp         CursorPaginationParam
+	Wc         WithCountParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+		Where      parameter.WhereChatRoomActionParam
+		Order      parameter.ChatRoomActionOrderMethod
+		Np         NumberedPaginationParam
+		Cp         CursorPaginationParam
+		Wc         WithCountParam
+	}
+	mock.lockGetChatRoomActionsOnChatRoomWithSd.RLock()
+	calls = mock.calls.GetChatRoomActionsOnChatRoomWithSd
+	mock.lockGetChatRoomActionsOnChatRoomWithSd.RUnlock()
+	return calls
+}
+
 // GetChatRoomAddMemberActionsOnChatRoom calls GetChatRoomAddMemberActionsOnChatRoomFunc.
-func (mock *StoreMock) GetChatRoomAddMemberActionsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomAddMemberActionParam, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error) {
+func (mock *StoreMock) GetChatRoomAddMemberActionsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomAddMemberActionParam, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error) {
 	if mock.GetChatRoomAddMemberActionsOnChatRoomFunc == nil {
 		panic("StoreMock.GetChatRoomAddMemberActionsOnChatRoomFunc: method is nil but Store.GetChatRoomAddMemberActionsOnChatRoom was just called")
 	}
@@ -31428,7 +33854,7 @@ func (mock *StoreMock) GetChatRoomAddMemberActionsOnChatRoomCalls() []struct {
 }
 
 // GetChatRoomAddMemberActionsOnChatRoomWithSd calls GetChatRoomAddMemberActionsOnChatRoomWithSdFunc.
-func (mock *StoreMock) GetChatRoomAddMemberActionsOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomAddMemberActionParam, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error) {
+func (mock *StoreMock) GetChatRoomAddMemberActionsOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomAddMemberActionParam, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error) {
 	if mock.GetChatRoomAddMemberActionsOnChatRoomWithSdFunc == nil {
 		panic("StoreMock.GetChatRoomAddMemberActionsOnChatRoomWithSdFunc: method is nil but Store.GetChatRoomAddMemberActionsOnChatRoomWithSd was just called")
 	}
@@ -31488,7 +33914,7 @@ func (mock *StoreMock) GetChatRoomAddMemberActionsOnChatRoomWithSdCalls() []stru
 }
 
 // GetChatRoomCreateActionsOnChatRoom calls GetChatRoomCreateActionsOnChatRoomFunc.
-func (mock *StoreMock) GetChatRoomCreateActionsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomCreateActionParam, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomCreateActionOnChatRoom], error) {
+func (mock *StoreMock) GetChatRoomCreateActionsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomCreateActionParam, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error) {
 	if mock.GetChatRoomCreateActionsOnChatRoomFunc == nil {
 		panic("StoreMock.GetChatRoomCreateActionsOnChatRoomFunc: method is nil but Store.GetChatRoomCreateActionsOnChatRoom was just called")
 	}
@@ -31544,7 +33970,7 @@ func (mock *StoreMock) GetChatRoomCreateActionsOnChatRoomCalls() []struct {
 }
 
 // GetChatRoomCreateActionsOnChatRoomWithSd calls GetChatRoomCreateActionsOnChatRoomWithSdFunc.
-func (mock *StoreMock) GetChatRoomCreateActionsOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomCreateActionParam, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomCreateActionOnChatRoom], error) {
+func (mock *StoreMock) GetChatRoomCreateActionsOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomCreateActionParam, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error) {
 	if mock.GetChatRoomCreateActionsOnChatRoomWithSdFunc == nil {
 		panic("StoreMock.GetChatRoomCreateActionsOnChatRoomWithSdFunc: method is nil but Store.GetChatRoomCreateActionsOnChatRoomWithSd was just called")
 	}
@@ -31604,7 +34030,7 @@ func (mock *StoreMock) GetChatRoomCreateActionsOnChatRoomWithSdCalls() []struct 
 }
 
 // GetChatRoomRemoveMemberActionsOnChatRoom calls GetChatRoomRemoveMemberActionsOnChatRoomFunc.
-func (mock *StoreMock) GetChatRoomRemoveMemberActionsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomRemoveMemberActionParam, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error) {
+func (mock *StoreMock) GetChatRoomRemoveMemberActionsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomRemoveMemberActionParam, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
 	if mock.GetChatRoomRemoveMemberActionsOnChatRoomFunc == nil {
 		panic("StoreMock.GetChatRoomRemoveMemberActionsOnChatRoomFunc: method is nil but Store.GetChatRoomRemoveMemberActionsOnChatRoom was just called")
 	}
@@ -31660,7 +34086,7 @@ func (mock *StoreMock) GetChatRoomRemoveMemberActionsOnChatRoomCalls() []struct 
 }
 
 // GetChatRoomRemoveMemberActionsOnChatRoomWithSd calls GetChatRoomRemoveMemberActionsOnChatRoomWithSdFunc.
-func (mock *StoreMock) GetChatRoomRemoveMemberActionsOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomRemoveMemberActionParam, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error) {
+func (mock *StoreMock) GetChatRoomRemoveMemberActionsOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomRemoveMemberActionParam, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
 	if mock.GetChatRoomRemoveMemberActionsOnChatRoomWithSdFunc == nil {
 		panic("StoreMock.GetChatRoomRemoveMemberActionsOnChatRoomWithSdFunc: method is nil but Store.GetChatRoomRemoveMemberActionsOnChatRoomWithSd was just called")
 	}
@@ -31720,7 +34146,7 @@ func (mock *StoreMock) GetChatRoomRemoveMemberActionsOnChatRoomWithSdCalls() []s
 }
 
 // GetChatRoomUpdateNameActionsOnChatRoom calls GetChatRoomUpdateNameActionsOnChatRoomFunc.
-func (mock *StoreMock) GetChatRoomUpdateNameActionsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomUpdateNameActionParam, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error) {
+func (mock *StoreMock) GetChatRoomUpdateNameActionsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomUpdateNameActionParam, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error) {
 	if mock.GetChatRoomUpdateNameActionsOnChatRoomFunc == nil {
 		panic("StoreMock.GetChatRoomUpdateNameActionsOnChatRoomFunc: method is nil but Store.GetChatRoomUpdateNameActionsOnChatRoom was just called")
 	}
@@ -31776,7 +34202,7 @@ func (mock *StoreMock) GetChatRoomUpdateNameActionsOnChatRoomCalls() []struct {
 }
 
 // GetChatRoomUpdateNameActionsOnChatRoomWithSd calls GetChatRoomUpdateNameActionsOnChatRoomWithSdFunc.
-func (mock *StoreMock) GetChatRoomUpdateNameActionsOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomUpdateNameActionParam, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error) {
+func (mock *StoreMock) GetChatRoomUpdateNameActionsOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomUpdateNameActionParam, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error) {
 	if mock.GetChatRoomUpdateNameActionsOnChatRoomWithSdFunc == nil {
 		panic("StoreMock.GetChatRoomUpdateNameActionsOnChatRoomWithSdFunc: method is nil but Store.GetChatRoomUpdateNameActionsOnChatRoomWithSd was just called")
 	}
@@ -31836,7 +34262,7 @@ func (mock *StoreMock) GetChatRoomUpdateNameActionsOnChatRoomWithSdCalls() []str
 }
 
 // GetChatRoomWithdrawActionsOnChatRoom calls GetChatRoomWithdrawActionsOnChatRoomFunc.
-func (mock *StoreMock) GetChatRoomWithdrawActionsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomWithdrawActionParam, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error) {
+func (mock *StoreMock) GetChatRoomWithdrawActionsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomWithdrawActionParam, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithdrawActionWithMember], error) {
 	if mock.GetChatRoomWithdrawActionsOnChatRoomFunc == nil {
 		panic("StoreMock.GetChatRoomWithdrawActionsOnChatRoomFunc: method is nil but Store.GetChatRoomWithdrawActionsOnChatRoom was just called")
 	}
@@ -31892,7 +34318,7 @@ func (mock *StoreMock) GetChatRoomWithdrawActionsOnChatRoomCalls() []struct {
 }
 
 // GetChatRoomWithdrawActionsOnChatRoomWithSd calls GetChatRoomWithdrawActionsOnChatRoomWithSdFunc.
-func (mock *StoreMock) GetChatRoomWithdrawActionsOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomWithdrawActionParam, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error) {
+func (mock *StoreMock) GetChatRoomWithdrawActionsOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomWithdrawActionParam, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomWithdrawActionWithMember], error) {
 	if mock.GetChatRoomWithdrawActionsOnChatRoomWithSdFunc == nil {
 		panic("StoreMock.GetChatRoomWithdrawActionsOnChatRoomWithSdFunc: method is nil but Store.GetChatRoomWithdrawActionsOnChatRoomWithSd was just called")
 	}
@@ -33360,6 +35786,238 @@ func (mock *StoreMock) GetMembersOnChatRoomCalls() []struct {
 	mock.lockGetMembersOnChatRoom.RLock()
 	calls = mock.calls.GetMembersOnChatRoom
 	mock.lockGetMembersOnChatRoom.RUnlock()
+	return calls
+}
+
+// GetMembersOnChatRoomAddMemberAction calls GetMembersOnChatRoomAddMemberActionFunc.
+func (mock *StoreMock) GetMembersOnChatRoomAddMemberAction(ctx context.Context, chatRoomAddMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomAddMemberActionParam, order parameter.MemberOnChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoomAddMemberAction], error) {
+	if mock.GetMembersOnChatRoomAddMemberActionFunc == nil {
+		panic("StoreMock.GetMembersOnChatRoomAddMemberActionFunc: method is nil but Store.GetMembersOnChatRoomAddMemberAction was just called")
+	}
+	callInfo := struct {
+		Ctx                       context.Context
+		ChatRoomAddMemberActionID uuid.UUID
+		Where                     parameter.WhereMemberOnChatRoomAddMemberActionParam
+		Order                     parameter.MemberOnChatRoomAddMemberActionOrderMethod
+		Np                        NumberedPaginationParam
+		Cp                        CursorPaginationParam
+		Wc                        WithCountParam
+	}{
+		Ctx:                       ctx,
+		ChatRoomAddMemberActionID: chatRoomAddMemberActionID,
+		Where:                     where,
+		Order:                     order,
+		Np:                        np,
+		Cp:                        cp,
+		Wc:                        wc,
+	}
+	mock.lockGetMembersOnChatRoomAddMemberAction.Lock()
+	mock.calls.GetMembersOnChatRoomAddMemberAction = append(mock.calls.GetMembersOnChatRoomAddMemberAction, callInfo)
+	mock.lockGetMembersOnChatRoomAddMemberAction.Unlock()
+	return mock.GetMembersOnChatRoomAddMemberActionFunc(ctx, chatRoomAddMemberActionID, where, order, np, cp, wc)
+}
+
+// GetMembersOnChatRoomAddMemberActionCalls gets all the calls that were made to GetMembersOnChatRoomAddMemberAction.
+// Check the length with:
+//
+//	len(mockedStore.GetMembersOnChatRoomAddMemberActionCalls())
+func (mock *StoreMock) GetMembersOnChatRoomAddMemberActionCalls() []struct {
+	Ctx                       context.Context
+	ChatRoomAddMemberActionID uuid.UUID
+	Where                     parameter.WhereMemberOnChatRoomAddMemberActionParam
+	Order                     parameter.MemberOnChatRoomAddMemberActionOrderMethod
+	Np                        NumberedPaginationParam
+	Cp                        CursorPaginationParam
+	Wc                        WithCountParam
+} {
+	var calls []struct {
+		Ctx                       context.Context
+		ChatRoomAddMemberActionID uuid.UUID
+		Where                     parameter.WhereMemberOnChatRoomAddMemberActionParam
+		Order                     parameter.MemberOnChatRoomAddMemberActionOrderMethod
+		Np                        NumberedPaginationParam
+		Cp                        CursorPaginationParam
+		Wc                        WithCountParam
+	}
+	mock.lockGetMembersOnChatRoomAddMemberAction.RLock()
+	calls = mock.calls.GetMembersOnChatRoomAddMemberAction
+	mock.lockGetMembersOnChatRoomAddMemberAction.RUnlock()
+	return calls
+}
+
+// GetMembersOnChatRoomAddMemberActionWithSd calls GetMembersOnChatRoomAddMemberActionWithSdFunc.
+func (mock *StoreMock) GetMembersOnChatRoomAddMemberActionWithSd(ctx context.Context, sd Sd, chatRoomAddMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomAddMemberActionParam, order parameter.MemberOnChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoomAddMemberAction], error) {
+	if mock.GetMembersOnChatRoomAddMemberActionWithSdFunc == nil {
+		panic("StoreMock.GetMembersOnChatRoomAddMemberActionWithSdFunc: method is nil but Store.GetMembersOnChatRoomAddMemberActionWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                       context.Context
+		Sd                        Sd
+		ChatRoomAddMemberActionID uuid.UUID
+		Where                     parameter.WhereMemberOnChatRoomAddMemberActionParam
+		Order                     parameter.MemberOnChatRoomAddMemberActionOrderMethod
+		Np                        NumberedPaginationParam
+		Cp                        CursorPaginationParam
+		Wc                        WithCountParam
+	}{
+		Ctx:                       ctx,
+		Sd:                        sd,
+		ChatRoomAddMemberActionID: chatRoomAddMemberActionID,
+		Where:                     where,
+		Order:                     order,
+		Np:                        np,
+		Cp:                        cp,
+		Wc:                        wc,
+	}
+	mock.lockGetMembersOnChatRoomAddMemberActionWithSd.Lock()
+	mock.calls.GetMembersOnChatRoomAddMemberActionWithSd = append(mock.calls.GetMembersOnChatRoomAddMemberActionWithSd, callInfo)
+	mock.lockGetMembersOnChatRoomAddMemberActionWithSd.Unlock()
+	return mock.GetMembersOnChatRoomAddMemberActionWithSdFunc(ctx, sd, chatRoomAddMemberActionID, where, order, np, cp, wc)
+}
+
+// GetMembersOnChatRoomAddMemberActionWithSdCalls gets all the calls that were made to GetMembersOnChatRoomAddMemberActionWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetMembersOnChatRoomAddMemberActionWithSdCalls())
+func (mock *StoreMock) GetMembersOnChatRoomAddMemberActionWithSdCalls() []struct {
+	Ctx                       context.Context
+	Sd                        Sd
+	ChatRoomAddMemberActionID uuid.UUID
+	Where                     parameter.WhereMemberOnChatRoomAddMemberActionParam
+	Order                     parameter.MemberOnChatRoomAddMemberActionOrderMethod
+	Np                        NumberedPaginationParam
+	Cp                        CursorPaginationParam
+	Wc                        WithCountParam
+} {
+	var calls []struct {
+		Ctx                       context.Context
+		Sd                        Sd
+		ChatRoomAddMemberActionID uuid.UUID
+		Where                     parameter.WhereMemberOnChatRoomAddMemberActionParam
+		Order                     parameter.MemberOnChatRoomAddMemberActionOrderMethod
+		Np                        NumberedPaginationParam
+		Cp                        CursorPaginationParam
+		Wc                        WithCountParam
+	}
+	mock.lockGetMembersOnChatRoomAddMemberActionWithSd.RLock()
+	calls = mock.calls.GetMembersOnChatRoomAddMemberActionWithSd
+	mock.lockGetMembersOnChatRoomAddMemberActionWithSd.RUnlock()
+	return calls
+}
+
+// GetMembersOnChatRoomRemoveMemberAction calls GetMembersOnChatRoomRemoveMemberActionFunc.
+func (mock *StoreMock) GetMembersOnChatRoomRemoveMemberAction(ctx context.Context, chatRoomRemoveMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomRemoveMemberActionParam, order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoomRemoveMemberAction], error) {
+	if mock.GetMembersOnChatRoomRemoveMemberActionFunc == nil {
+		panic("StoreMock.GetMembersOnChatRoomRemoveMemberActionFunc: method is nil but Store.GetMembersOnChatRoomRemoveMemberAction was just called")
+	}
+	callInfo := struct {
+		Ctx                          context.Context
+		ChatRoomRemoveMemberActionID uuid.UUID
+		Where                        parameter.WhereMemberOnChatRoomRemoveMemberActionParam
+		Order                        parameter.MemberOnChatRoomRemoveMemberActionOrderMethod
+		Np                           NumberedPaginationParam
+		Cp                           CursorPaginationParam
+		Wc                           WithCountParam
+	}{
+		Ctx:                          ctx,
+		ChatRoomRemoveMemberActionID: chatRoomRemoveMemberActionID,
+		Where:                        where,
+		Order:                        order,
+		Np:                           np,
+		Cp:                           cp,
+		Wc:                           wc,
+	}
+	mock.lockGetMembersOnChatRoomRemoveMemberAction.Lock()
+	mock.calls.GetMembersOnChatRoomRemoveMemberAction = append(mock.calls.GetMembersOnChatRoomRemoveMemberAction, callInfo)
+	mock.lockGetMembersOnChatRoomRemoveMemberAction.Unlock()
+	return mock.GetMembersOnChatRoomRemoveMemberActionFunc(ctx, chatRoomRemoveMemberActionID, where, order, np, cp, wc)
+}
+
+// GetMembersOnChatRoomRemoveMemberActionCalls gets all the calls that were made to GetMembersOnChatRoomRemoveMemberAction.
+// Check the length with:
+//
+//	len(mockedStore.GetMembersOnChatRoomRemoveMemberActionCalls())
+func (mock *StoreMock) GetMembersOnChatRoomRemoveMemberActionCalls() []struct {
+	Ctx                          context.Context
+	ChatRoomRemoveMemberActionID uuid.UUID
+	Where                        parameter.WhereMemberOnChatRoomRemoveMemberActionParam
+	Order                        parameter.MemberOnChatRoomRemoveMemberActionOrderMethod
+	Np                           NumberedPaginationParam
+	Cp                           CursorPaginationParam
+	Wc                           WithCountParam
+} {
+	var calls []struct {
+		Ctx                          context.Context
+		ChatRoomRemoveMemberActionID uuid.UUID
+		Where                        parameter.WhereMemberOnChatRoomRemoveMemberActionParam
+		Order                        parameter.MemberOnChatRoomRemoveMemberActionOrderMethod
+		Np                           NumberedPaginationParam
+		Cp                           CursorPaginationParam
+		Wc                           WithCountParam
+	}
+	mock.lockGetMembersOnChatRoomRemoveMemberAction.RLock()
+	calls = mock.calls.GetMembersOnChatRoomRemoveMemberAction
+	mock.lockGetMembersOnChatRoomRemoveMemberAction.RUnlock()
+	return calls
+}
+
+// GetMembersOnChatRoomRemoveMemberActionWithSd calls GetMembersOnChatRoomRemoveMemberActionWithSdFunc.
+func (mock *StoreMock) GetMembersOnChatRoomRemoveMemberActionWithSd(ctx context.Context, sd Sd, chatRoomRemoveMemberActionID uuid.UUID, where parameter.WhereMemberOnChatRoomRemoveMemberActionParam, order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.MemberOnChatRoomRemoveMemberAction], error) {
+	if mock.GetMembersOnChatRoomRemoveMemberActionWithSdFunc == nil {
+		panic("StoreMock.GetMembersOnChatRoomRemoveMemberActionWithSdFunc: method is nil but Store.GetMembersOnChatRoomRemoveMemberActionWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                          context.Context
+		Sd                           Sd
+		ChatRoomRemoveMemberActionID uuid.UUID
+		Where                        parameter.WhereMemberOnChatRoomRemoveMemberActionParam
+		Order                        parameter.MemberOnChatRoomRemoveMemberActionOrderMethod
+		Np                           NumberedPaginationParam
+		Cp                           CursorPaginationParam
+		Wc                           WithCountParam
+	}{
+		Ctx:                          ctx,
+		Sd:                           sd,
+		ChatRoomRemoveMemberActionID: chatRoomRemoveMemberActionID,
+		Where:                        where,
+		Order:                        order,
+		Np:                           np,
+		Cp:                           cp,
+		Wc:                           wc,
+	}
+	mock.lockGetMembersOnChatRoomRemoveMemberActionWithSd.Lock()
+	mock.calls.GetMembersOnChatRoomRemoveMemberActionWithSd = append(mock.calls.GetMembersOnChatRoomRemoveMemberActionWithSd, callInfo)
+	mock.lockGetMembersOnChatRoomRemoveMemberActionWithSd.Unlock()
+	return mock.GetMembersOnChatRoomRemoveMemberActionWithSdFunc(ctx, sd, chatRoomRemoveMemberActionID, where, order, np, cp, wc)
+}
+
+// GetMembersOnChatRoomRemoveMemberActionWithSdCalls gets all the calls that were made to GetMembersOnChatRoomRemoveMemberActionWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetMembersOnChatRoomRemoveMemberActionWithSdCalls())
+func (mock *StoreMock) GetMembersOnChatRoomRemoveMemberActionWithSdCalls() []struct {
+	Ctx                          context.Context
+	Sd                           Sd
+	ChatRoomRemoveMemberActionID uuid.UUID
+	Where                        parameter.WhereMemberOnChatRoomRemoveMemberActionParam
+	Order                        parameter.MemberOnChatRoomRemoveMemberActionOrderMethod
+	Np                           NumberedPaginationParam
+	Cp                           CursorPaginationParam
+	Wc                           WithCountParam
+} {
+	var calls []struct {
+		Ctx                          context.Context
+		Sd                           Sd
+		ChatRoomRemoveMemberActionID uuid.UUID
+		Where                        parameter.WhereMemberOnChatRoomRemoveMemberActionParam
+		Order                        parameter.MemberOnChatRoomRemoveMemberActionOrderMethod
+		Np                           NumberedPaginationParam
+		Cp                           CursorPaginationParam
+		Wc                           WithCountParam
+	}
+	mock.lockGetMembersOnChatRoomRemoveMemberActionWithSd.RLock()
+	calls = mock.calls.GetMembersOnChatRoomRemoveMemberActionWithSd
+	mock.lockGetMembersOnChatRoomRemoveMemberActionWithSd.RUnlock()
 	return calls
 }
 
@@ -36099,8 +38757,100 @@ func (mock *StoreMock) GetPluralChatRoomActionTypesWithSdCalls() []struct {
 	return calls
 }
 
+// GetPluralChatRoomActions calls GetPluralChatRoomActionsFunc.
+func (mock *StoreMock) GetPluralChatRoomActions(ctx context.Context, chatRoomActionIDs []uuid.UUID, order parameter.ChatRoomActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomActionWithDetail], error) {
+	if mock.GetPluralChatRoomActionsFunc == nil {
+		panic("StoreMock.GetPluralChatRoomActionsFunc: method is nil but Store.GetPluralChatRoomActions was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		ChatRoomActionIDs []uuid.UUID
+		Order             parameter.ChatRoomActionOrderMethod
+		Np                NumberedPaginationParam
+	}{
+		Ctx:               ctx,
+		ChatRoomActionIDs: chatRoomActionIDs,
+		Order:             order,
+		Np:                np,
+	}
+	mock.lockGetPluralChatRoomActions.Lock()
+	mock.calls.GetPluralChatRoomActions = append(mock.calls.GetPluralChatRoomActions, callInfo)
+	mock.lockGetPluralChatRoomActions.Unlock()
+	return mock.GetPluralChatRoomActionsFunc(ctx, chatRoomActionIDs, order, np)
+}
+
+// GetPluralChatRoomActionsCalls gets all the calls that were made to GetPluralChatRoomActions.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralChatRoomActionsCalls())
+func (mock *StoreMock) GetPluralChatRoomActionsCalls() []struct {
+	Ctx               context.Context
+	ChatRoomActionIDs []uuid.UUID
+	Order             parameter.ChatRoomActionOrderMethod
+	Np                NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx               context.Context
+		ChatRoomActionIDs []uuid.UUID
+		Order             parameter.ChatRoomActionOrderMethod
+		Np                NumberedPaginationParam
+	}
+	mock.lockGetPluralChatRoomActions.RLock()
+	calls = mock.calls.GetPluralChatRoomActions
+	mock.lockGetPluralChatRoomActions.RUnlock()
+	return calls
+}
+
+// GetPluralChatRoomActionsWithSd calls GetPluralChatRoomActionsWithSdFunc.
+func (mock *StoreMock) GetPluralChatRoomActionsWithSd(ctx context.Context, sd Sd, chatRoomActionIDs []uuid.UUID, order parameter.ChatRoomActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomActionWithDetail], error) {
+	if mock.GetPluralChatRoomActionsWithSdFunc == nil {
+		panic("StoreMock.GetPluralChatRoomActionsWithSdFunc: method is nil but Store.GetPluralChatRoomActionsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		Sd                Sd
+		ChatRoomActionIDs []uuid.UUID
+		Order             parameter.ChatRoomActionOrderMethod
+		Np                NumberedPaginationParam
+	}{
+		Ctx:               ctx,
+		Sd:                sd,
+		ChatRoomActionIDs: chatRoomActionIDs,
+		Order:             order,
+		Np:                np,
+	}
+	mock.lockGetPluralChatRoomActionsWithSd.Lock()
+	mock.calls.GetPluralChatRoomActionsWithSd = append(mock.calls.GetPluralChatRoomActionsWithSd, callInfo)
+	mock.lockGetPluralChatRoomActionsWithSd.Unlock()
+	return mock.GetPluralChatRoomActionsWithSdFunc(ctx, sd, chatRoomActionIDs, order, np)
+}
+
+// GetPluralChatRoomActionsWithSdCalls gets all the calls that were made to GetPluralChatRoomActionsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralChatRoomActionsWithSdCalls())
+func (mock *StoreMock) GetPluralChatRoomActionsWithSdCalls() []struct {
+	Ctx               context.Context
+	Sd                Sd
+	ChatRoomActionIDs []uuid.UUID
+	Order             parameter.ChatRoomActionOrderMethod
+	Np                NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx               context.Context
+		Sd                Sd
+		ChatRoomActionIDs []uuid.UUID
+		Order             parameter.ChatRoomActionOrderMethod
+		Np                NumberedPaginationParam
+	}
+	mock.lockGetPluralChatRoomActionsWithSd.RLock()
+	calls = mock.calls.GetPluralChatRoomActionsWithSd
+	mock.lockGetPluralChatRoomActionsWithSd.RUnlock()
+	return calls
+}
+
 // GetPluralChatRoomAddMemberActions calls GetPluralChatRoomAddMemberActionsFunc.
-func (mock *StoreMock) GetPluralChatRoomAddMemberActions(ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error) {
+func (mock *StoreMock) GetPluralChatRoomAddMemberActions(ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error) {
 	if mock.GetPluralChatRoomAddMemberActionsFunc == nil {
 		panic("StoreMock.GetPluralChatRoomAddMemberActionsFunc: method is nil but Store.GetPluralChatRoomAddMemberActions was just called")
 	}
@@ -36144,7 +38894,7 @@ func (mock *StoreMock) GetPluralChatRoomAddMemberActionsCalls() []struct {
 }
 
 // GetPluralChatRoomAddMemberActionsWithSd calls GetPluralChatRoomAddMemberActionsWithSdFunc.
-func (mock *StoreMock) GetPluralChatRoomAddMemberActionsWithSd(ctx context.Context, sd Sd, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error) {
+func (mock *StoreMock) GetPluralChatRoomAddMemberActionsWithSd(ctx context.Context, sd Sd, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.ChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error) {
 	if mock.GetPluralChatRoomAddMemberActionsWithSdFunc == nil {
 		panic("StoreMock.GetPluralChatRoomAddMemberActionsWithSdFunc: method is nil but Store.GetPluralChatRoomAddMemberActionsWithSd was just called")
 	}
@@ -36192,7 +38942,7 @@ func (mock *StoreMock) GetPluralChatRoomAddMemberActionsWithSdCalls() []struct {
 }
 
 // GetPluralChatRoomCreateActions calls GetPluralChatRoomCreateActionsFunc.
-func (mock *StoreMock) GetPluralChatRoomCreateActions(ctx context.Context, chatRoomCreateActionIDs []uuid.UUID, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomCreateActionOnChatRoom], error) {
+func (mock *StoreMock) GetPluralChatRoomCreateActions(ctx context.Context, chatRoomCreateActionIDs []uuid.UUID, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error) {
 	if mock.GetPluralChatRoomCreateActionsFunc == nil {
 		panic("StoreMock.GetPluralChatRoomCreateActionsFunc: method is nil but Store.GetPluralChatRoomCreateActions was just called")
 	}
@@ -36236,7 +38986,7 @@ func (mock *StoreMock) GetPluralChatRoomCreateActionsCalls() []struct {
 }
 
 // GetPluralChatRoomCreateActionsWithSd calls GetPluralChatRoomCreateActionsWithSdFunc.
-func (mock *StoreMock) GetPluralChatRoomCreateActionsWithSd(ctx context.Context, sd Sd, chatRoomCreateActionIDs []uuid.UUID, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomCreateActionOnChatRoom], error) {
+func (mock *StoreMock) GetPluralChatRoomCreateActionsWithSd(ctx context.Context, sd Sd, chatRoomCreateActionIDs []uuid.UUID, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error) {
 	if mock.GetPluralChatRoomCreateActionsWithSdFunc == nil {
 		panic("StoreMock.GetPluralChatRoomCreateActionsWithSdFunc: method is nil but Store.GetPluralChatRoomCreateActionsWithSd was just called")
 	}
@@ -36284,7 +39034,7 @@ func (mock *StoreMock) GetPluralChatRoomCreateActionsWithSdCalls() []struct {
 }
 
 // GetPluralChatRoomRemoveMemberActions calls GetPluralChatRoomRemoveMemberActionsFunc.
-func (mock *StoreMock) GetPluralChatRoomRemoveMemberActions(ctx context.Context, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error) {
+func (mock *StoreMock) GetPluralChatRoomRemoveMemberActions(ctx context.Context, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
 	if mock.GetPluralChatRoomRemoveMemberActionsFunc == nil {
 		panic("StoreMock.GetPluralChatRoomRemoveMemberActionsFunc: method is nil but Store.GetPluralChatRoomRemoveMemberActions was just called")
 	}
@@ -36328,7 +39078,7 @@ func (mock *StoreMock) GetPluralChatRoomRemoveMemberActionsCalls() []struct {
 }
 
 // GetPluralChatRoomRemoveMemberActionsWithSd calls GetPluralChatRoomRemoveMemberActionsWithSdFunc.
-func (mock *StoreMock) GetPluralChatRoomRemoveMemberActionsWithSd(ctx context.Context, sd Sd, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error) {
+func (mock *StoreMock) GetPluralChatRoomRemoveMemberActionsWithSd(ctx context.Context, sd Sd, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
 	if mock.GetPluralChatRoomRemoveMemberActionsWithSdFunc == nil {
 		panic("StoreMock.GetPluralChatRoomRemoveMemberActionsWithSdFunc: method is nil but Store.GetPluralChatRoomRemoveMemberActionsWithSd was just called")
 	}
@@ -36376,7 +39126,7 @@ func (mock *StoreMock) GetPluralChatRoomRemoveMemberActionsWithSdCalls() []struc
 }
 
 // GetPluralChatRoomUpdateNameActions calls GetPluralChatRoomUpdateNameActionsFunc.
-func (mock *StoreMock) GetPluralChatRoomUpdateNameActions(ctx context.Context, chatRoomUpdateNameActionIDs []uuid.UUID, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error) {
+func (mock *StoreMock) GetPluralChatRoomUpdateNameActions(ctx context.Context, chatRoomUpdateNameActionIDs []uuid.UUID, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error) {
 	if mock.GetPluralChatRoomUpdateNameActionsFunc == nil {
 		panic("StoreMock.GetPluralChatRoomUpdateNameActionsFunc: method is nil but Store.GetPluralChatRoomUpdateNameActions was just called")
 	}
@@ -36420,7 +39170,7 @@ func (mock *StoreMock) GetPluralChatRoomUpdateNameActionsCalls() []struct {
 }
 
 // GetPluralChatRoomUpdateNameActionsWithSd calls GetPluralChatRoomUpdateNameActionsWithSdFunc.
-func (mock *StoreMock) GetPluralChatRoomUpdateNameActionsWithSd(ctx context.Context, sd Sd, chatRoomUpdateNameActionIDs []uuid.UUID, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error) {
+func (mock *StoreMock) GetPluralChatRoomUpdateNameActionsWithSd(ctx context.Context, sd Sd, chatRoomUpdateNameActionIDs []uuid.UUID, order parameter.ChatRoomUpdateNameActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error) {
 	if mock.GetPluralChatRoomUpdateNameActionsWithSdFunc == nil {
 		panic("StoreMock.GetPluralChatRoomUpdateNameActionsWithSdFunc: method is nil but Store.GetPluralChatRoomUpdateNameActionsWithSd was just called")
 	}
@@ -36468,7 +39218,7 @@ func (mock *StoreMock) GetPluralChatRoomUpdateNameActionsWithSdCalls() []struct 
 }
 
 // GetPluralChatRoomWithdrawActions calls GetPluralChatRoomWithdrawActionsFunc.
-func (mock *StoreMock) GetPluralChatRoomWithdrawActions(ctx context.Context, chatRoomWithdrawActionIDs []uuid.UUID, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error) {
+func (mock *StoreMock) GetPluralChatRoomWithdrawActions(ctx context.Context, chatRoomWithdrawActionIDs []uuid.UUID, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithdrawActionWithMember], error) {
 	if mock.GetPluralChatRoomWithdrawActionsFunc == nil {
 		panic("StoreMock.GetPluralChatRoomWithdrawActionsFunc: method is nil but Store.GetPluralChatRoomWithdrawActions was just called")
 	}
@@ -36512,7 +39262,7 @@ func (mock *StoreMock) GetPluralChatRoomWithdrawActionsCalls() []struct {
 }
 
 // GetPluralChatRoomWithdrawActionsWithSd calls GetPluralChatRoomWithdrawActionsWithSdFunc.
-func (mock *StoreMock) GetPluralChatRoomWithdrawActionsWithSd(ctx context.Context, sd Sd, chatRoomWithdrawActionIDs []uuid.UUID, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error) {
+func (mock *StoreMock) GetPluralChatRoomWithdrawActionsWithSd(ctx context.Context, sd Sd, chatRoomWithdrawActionIDs []uuid.UUID, order parameter.ChatRoomWithdrawActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomWithdrawActionWithMember], error) {
 	if mock.GetPluralChatRoomWithdrawActionsWithSdFunc == nil {
 		panic("StoreMock.GetPluralChatRoomWithdrawActionsWithSdFunc: method is nil but Store.GetPluralChatRoomWithdrawActionsWithSd was just called")
 	}
@@ -37748,6 +40498,190 @@ func (mock *StoreMock) GetPluralMembersOnChatRoomCalls() []struct {
 	mock.lockGetPluralMembersOnChatRoom.RLock()
 	calls = mock.calls.GetPluralMembersOnChatRoom
 	mock.lockGetPluralMembersOnChatRoom.RUnlock()
+	return calls
+}
+
+// GetPluralMembersOnChatRoomAddMemberAction calls GetPluralMembersOnChatRoomAddMemberActionFunc.
+func (mock *StoreMock) GetPluralMembersOnChatRoomAddMemberAction(ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.MemberOnChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberOnChatRoomAddMemberAction], error) {
+	if mock.GetPluralMembersOnChatRoomAddMemberActionFunc == nil {
+		panic("StoreMock.GetPluralMembersOnChatRoomAddMemberActionFunc: method is nil but Store.GetPluralMembersOnChatRoomAddMemberAction was just called")
+	}
+	callInfo := struct {
+		Ctx                        context.Context
+		ChatRoomAddMemberActionIDs []uuid.UUID
+		Order                      parameter.MemberOnChatRoomAddMemberActionOrderMethod
+		Np                         NumberedPaginationParam
+	}{
+		Ctx:                        ctx,
+		ChatRoomAddMemberActionIDs: chatRoomAddMemberActionIDs,
+		Order:                      order,
+		Np:                         np,
+	}
+	mock.lockGetPluralMembersOnChatRoomAddMemberAction.Lock()
+	mock.calls.GetPluralMembersOnChatRoomAddMemberAction = append(mock.calls.GetPluralMembersOnChatRoomAddMemberAction, callInfo)
+	mock.lockGetPluralMembersOnChatRoomAddMemberAction.Unlock()
+	return mock.GetPluralMembersOnChatRoomAddMemberActionFunc(ctx, chatRoomAddMemberActionIDs, order, np)
+}
+
+// GetPluralMembersOnChatRoomAddMemberActionCalls gets all the calls that were made to GetPluralMembersOnChatRoomAddMemberAction.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralMembersOnChatRoomAddMemberActionCalls())
+func (mock *StoreMock) GetPluralMembersOnChatRoomAddMemberActionCalls() []struct {
+	Ctx                        context.Context
+	ChatRoomAddMemberActionIDs []uuid.UUID
+	Order                      parameter.MemberOnChatRoomAddMemberActionOrderMethod
+	Np                         NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx                        context.Context
+		ChatRoomAddMemberActionIDs []uuid.UUID
+		Order                      parameter.MemberOnChatRoomAddMemberActionOrderMethod
+		Np                         NumberedPaginationParam
+	}
+	mock.lockGetPluralMembersOnChatRoomAddMemberAction.RLock()
+	calls = mock.calls.GetPluralMembersOnChatRoomAddMemberAction
+	mock.lockGetPluralMembersOnChatRoomAddMemberAction.RUnlock()
+	return calls
+}
+
+// GetPluralMembersOnChatRoomAddMemberActionWithSd calls GetPluralMembersOnChatRoomAddMemberActionWithSdFunc.
+func (mock *StoreMock) GetPluralMembersOnChatRoomAddMemberActionWithSd(ctx context.Context, sd Sd, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.MemberOnChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberOnChatRoomAddMemberAction], error) {
+	if mock.GetPluralMembersOnChatRoomAddMemberActionWithSdFunc == nil {
+		panic("StoreMock.GetPluralMembersOnChatRoomAddMemberActionWithSdFunc: method is nil but Store.GetPluralMembersOnChatRoomAddMemberActionWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                        context.Context
+		Sd                         Sd
+		ChatRoomAddMemberActionIDs []uuid.UUID
+		Order                      parameter.MemberOnChatRoomAddMemberActionOrderMethod
+		Np                         NumberedPaginationParam
+	}{
+		Ctx:                        ctx,
+		Sd:                         sd,
+		ChatRoomAddMemberActionIDs: chatRoomAddMemberActionIDs,
+		Order:                      order,
+		Np:                         np,
+	}
+	mock.lockGetPluralMembersOnChatRoomAddMemberActionWithSd.Lock()
+	mock.calls.GetPluralMembersOnChatRoomAddMemberActionWithSd = append(mock.calls.GetPluralMembersOnChatRoomAddMemberActionWithSd, callInfo)
+	mock.lockGetPluralMembersOnChatRoomAddMemberActionWithSd.Unlock()
+	return mock.GetPluralMembersOnChatRoomAddMemberActionWithSdFunc(ctx, sd, chatRoomAddMemberActionIDs, order, np)
+}
+
+// GetPluralMembersOnChatRoomAddMemberActionWithSdCalls gets all the calls that were made to GetPluralMembersOnChatRoomAddMemberActionWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralMembersOnChatRoomAddMemberActionWithSdCalls())
+func (mock *StoreMock) GetPluralMembersOnChatRoomAddMemberActionWithSdCalls() []struct {
+	Ctx                        context.Context
+	Sd                         Sd
+	ChatRoomAddMemberActionIDs []uuid.UUID
+	Order                      parameter.MemberOnChatRoomAddMemberActionOrderMethod
+	Np                         NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx                        context.Context
+		Sd                         Sd
+		ChatRoomAddMemberActionIDs []uuid.UUID
+		Order                      parameter.MemberOnChatRoomAddMemberActionOrderMethod
+		Np                         NumberedPaginationParam
+	}
+	mock.lockGetPluralMembersOnChatRoomAddMemberActionWithSd.RLock()
+	calls = mock.calls.GetPluralMembersOnChatRoomAddMemberActionWithSd
+	mock.lockGetPluralMembersOnChatRoomAddMemberActionWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralMembersOnChatRoomRemoveMemberAction calls GetPluralMembersOnChatRoomRemoveMemberActionFunc.
+func (mock *StoreMock) GetPluralMembersOnChatRoomRemoveMemberAction(ctx context.Context, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberOnChatRoomRemoveMemberAction], error) {
+	if mock.GetPluralMembersOnChatRoomRemoveMemberActionFunc == nil {
+		panic("StoreMock.GetPluralMembersOnChatRoomRemoveMemberActionFunc: method is nil but Store.GetPluralMembersOnChatRoomRemoveMemberAction was just called")
+	}
+	callInfo := struct {
+		Ctx                           context.Context
+		ChatRoomRemoveMemberActionIDs []uuid.UUID
+		Order                         parameter.MemberOnChatRoomRemoveMemberActionOrderMethod
+		Np                            NumberedPaginationParam
+	}{
+		Ctx:                           ctx,
+		ChatRoomRemoveMemberActionIDs: chatRoomRemoveMemberActionIDs,
+		Order:                         order,
+		Np:                            np,
+	}
+	mock.lockGetPluralMembersOnChatRoomRemoveMemberAction.Lock()
+	mock.calls.GetPluralMembersOnChatRoomRemoveMemberAction = append(mock.calls.GetPluralMembersOnChatRoomRemoveMemberAction, callInfo)
+	mock.lockGetPluralMembersOnChatRoomRemoveMemberAction.Unlock()
+	return mock.GetPluralMembersOnChatRoomRemoveMemberActionFunc(ctx, chatRoomRemoveMemberActionIDs, order, np)
+}
+
+// GetPluralMembersOnChatRoomRemoveMemberActionCalls gets all the calls that were made to GetPluralMembersOnChatRoomRemoveMemberAction.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralMembersOnChatRoomRemoveMemberActionCalls())
+func (mock *StoreMock) GetPluralMembersOnChatRoomRemoveMemberActionCalls() []struct {
+	Ctx                           context.Context
+	ChatRoomRemoveMemberActionIDs []uuid.UUID
+	Order                         parameter.MemberOnChatRoomRemoveMemberActionOrderMethod
+	Np                            NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx                           context.Context
+		ChatRoomRemoveMemberActionIDs []uuid.UUID
+		Order                         parameter.MemberOnChatRoomRemoveMemberActionOrderMethod
+		Np                            NumberedPaginationParam
+	}
+	mock.lockGetPluralMembersOnChatRoomRemoveMemberAction.RLock()
+	calls = mock.calls.GetPluralMembersOnChatRoomRemoveMemberAction
+	mock.lockGetPluralMembersOnChatRoomRemoveMemberAction.RUnlock()
+	return calls
+}
+
+// GetPluralMembersOnChatRoomRemoveMemberActionWithSd calls GetPluralMembersOnChatRoomRemoveMemberActionWithSdFunc.
+func (mock *StoreMock) GetPluralMembersOnChatRoomRemoveMemberActionWithSd(ctx context.Context, sd Sd, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberOnChatRoomRemoveMemberAction], error) {
+	if mock.GetPluralMembersOnChatRoomRemoveMemberActionWithSdFunc == nil {
+		panic("StoreMock.GetPluralMembersOnChatRoomRemoveMemberActionWithSdFunc: method is nil but Store.GetPluralMembersOnChatRoomRemoveMemberActionWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                           context.Context
+		Sd                            Sd
+		ChatRoomRemoveMemberActionIDs []uuid.UUID
+		Order                         parameter.MemberOnChatRoomRemoveMemberActionOrderMethod
+		Np                            NumberedPaginationParam
+	}{
+		Ctx:                           ctx,
+		Sd:                            sd,
+		ChatRoomRemoveMemberActionIDs: chatRoomRemoveMemberActionIDs,
+		Order:                         order,
+		Np:                            np,
+	}
+	mock.lockGetPluralMembersOnChatRoomRemoveMemberActionWithSd.Lock()
+	mock.calls.GetPluralMembersOnChatRoomRemoveMemberActionWithSd = append(mock.calls.GetPluralMembersOnChatRoomRemoveMemberActionWithSd, callInfo)
+	mock.lockGetPluralMembersOnChatRoomRemoveMemberActionWithSd.Unlock()
+	return mock.GetPluralMembersOnChatRoomRemoveMemberActionWithSdFunc(ctx, sd, chatRoomRemoveMemberActionIDs, order, np)
+}
+
+// GetPluralMembersOnChatRoomRemoveMemberActionWithSdCalls gets all the calls that were made to GetPluralMembersOnChatRoomRemoveMemberActionWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralMembersOnChatRoomRemoveMemberActionWithSdCalls())
+func (mock *StoreMock) GetPluralMembersOnChatRoomRemoveMemberActionWithSdCalls() []struct {
+	Ctx                           context.Context
+	Sd                            Sd
+	ChatRoomRemoveMemberActionIDs []uuid.UUID
+	Order                         parameter.MemberOnChatRoomRemoveMemberActionOrderMethod
+	Np                            NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx                           context.Context
+		Sd                            Sd
+		ChatRoomRemoveMemberActionIDs []uuid.UUID
+		Order                         parameter.MemberOnChatRoomRemoveMemberActionOrderMethod
+		Np                            NumberedPaginationParam
+	}
+	mock.lockGetPluralMembersOnChatRoomRemoveMemberActionWithSd.RLock()
+	calls = mock.calls.GetPluralMembersOnChatRoomRemoveMemberActionWithSd
+	mock.lockGetPluralMembersOnChatRoomRemoveMemberActionWithSd.RUnlock()
 	return calls
 }
 
@@ -42239,6 +45173,82 @@ func (mock *StoreMock) PluralDeleteChatRoomActionTypesWithSdCalls() []struct {
 	return calls
 }
 
+// PluralDeleteChatRoomActions calls PluralDeleteChatRoomActionsFunc.
+func (mock *StoreMock) PluralDeleteChatRoomActions(ctx context.Context, chatRoomActionIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteChatRoomActionsFunc == nil {
+		panic("StoreMock.PluralDeleteChatRoomActionsFunc: method is nil but Store.PluralDeleteChatRoomActions was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		ChatRoomActionIDs []uuid.UUID
+	}{
+		Ctx:               ctx,
+		ChatRoomActionIDs: chatRoomActionIDs,
+	}
+	mock.lockPluralDeleteChatRoomActions.Lock()
+	mock.calls.PluralDeleteChatRoomActions = append(mock.calls.PluralDeleteChatRoomActions, callInfo)
+	mock.lockPluralDeleteChatRoomActions.Unlock()
+	return mock.PluralDeleteChatRoomActionsFunc(ctx, chatRoomActionIDs)
+}
+
+// PluralDeleteChatRoomActionsCalls gets all the calls that were made to PluralDeleteChatRoomActions.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteChatRoomActionsCalls())
+func (mock *StoreMock) PluralDeleteChatRoomActionsCalls() []struct {
+	Ctx               context.Context
+	ChatRoomActionIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx               context.Context
+		ChatRoomActionIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteChatRoomActions.RLock()
+	calls = mock.calls.PluralDeleteChatRoomActions
+	mock.lockPluralDeleteChatRoomActions.RUnlock()
+	return calls
+}
+
+// PluralDeleteChatRoomActionsWithSd calls PluralDeleteChatRoomActionsWithSdFunc.
+func (mock *StoreMock) PluralDeleteChatRoomActionsWithSd(ctx context.Context, sd Sd, chatRoomActionIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteChatRoomActionsWithSdFunc == nil {
+		panic("StoreMock.PluralDeleteChatRoomActionsWithSdFunc: method is nil but Store.PluralDeleteChatRoomActionsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx               context.Context
+		Sd                Sd
+		ChatRoomActionIDs []uuid.UUID
+	}{
+		Ctx:               ctx,
+		Sd:                sd,
+		ChatRoomActionIDs: chatRoomActionIDs,
+	}
+	mock.lockPluralDeleteChatRoomActionsWithSd.Lock()
+	mock.calls.PluralDeleteChatRoomActionsWithSd = append(mock.calls.PluralDeleteChatRoomActionsWithSd, callInfo)
+	mock.lockPluralDeleteChatRoomActionsWithSd.Unlock()
+	return mock.PluralDeleteChatRoomActionsWithSdFunc(ctx, sd, chatRoomActionIDs)
+}
+
+// PluralDeleteChatRoomActionsWithSdCalls gets all the calls that were made to PluralDeleteChatRoomActionsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteChatRoomActionsWithSdCalls())
+func (mock *StoreMock) PluralDeleteChatRoomActionsWithSdCalls() []struct {
+	Ctx               context.Context
+	Sd                Sd
+	ChatRoomActionIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx               context.Context
+		Sd                Sd
+		ChatRoomActionIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteChatRoomActionsWithSd.RLock()
+	calls = mock.calls.PluralDeleteChatRoomActionsWithSd
+	mock.lockPluralDeleteChatRoomActionsWithSd.RUnlock()
+	return calls
+}
+
 // PluralDeleteChatRoomAddMemberActions calls PluralDeleteChatRoomAddMemberActionsFunc.
 func (mock *StoreMock) PluralDeleteChatRoomAddMemberActions(ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteChatRoomAddMemberActionsFunc == nil {
@@ -44304,6 +47314,158 @@ func (mock *StoreMock) ReadReceiptsWithSdCalls() []struct {
 	mock.lockReadReceiptsWithSd.RLock()
 	calls = mock.calls.ReadReceiptsWithSd
 	mock.lockReadReceiptsWithSd.RUnlock()
+	return calls
+}
+
+// RemoveMemberToChatRoomRemoveMemberAction calls RemoveMemberToChatRoomRemoveMemberActionFunc.
+func (mock *StoreMock) RemoveMemberToChatRoomRemoveMemberAction(ctx context.Context, param parameter.CreateChatRoomRemovedMemberParam) (entity.ChatRoomRemovedMember, error) {
+	if mock.RemoveMemberToChatRoomRemoveMemberActionFunc == nil {
+		panic("StoreMock.RemoveMemberToChatRoomRemoveMemberActionFunc: method is nil but Store.RemoveMemberToChatRoomRemoveMemberAction was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Param parameter.CreateChatRoomRemovedMemberParam
+	}{
+		Ctx:   ctx,
+		Param: param,
+	}
+	mock.lockRemoveMemberToChatRoomRemoveMemberAction.Lock()
+	mock.calls.RemoveMemberToChatRoomRemoveMemberAction = append(mock.calls.RemoveMemberToChatRoomRemoveMemberAction, callInfo)
+	mock.lockRemoveMemberToChatRoomRemoveMemberAction.Unlock()
+	return mock.RemoveMemberToChatRoomRemoveMemberActionFunc(ctx, param)
+}
+
+// RemoveMemberToChatRoomRemoveMemberActionCalls gets all the calls that were made to RemoveMemberToChatRoomRemoveMemberAction.
+// Check the length with:
+//
+//	len(mockedStore.RemoveMemberToChatRoomRemoveMemberActionCalls())
+func (mock *StoreMock) RemoveMemberToChatRoomRemoveMemberActionCalls() []struct {
+	Ctx   context.Context
+	Param parameter.CreateChatRoomRemovedMemberParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Param parameter.CreateChatRoomRemovedMemberParam
+	}
+	mock.lockRemoveMemberToChatRoomRemoveMemberAction.RLock()
+	calls = mock.calls.RemoveMemberToChatRoomRemoveMemberAction
+	mock.lockRemoveMemberToChatRoomRemoveMemberAction.RUnlock()
+	return calls
+}
+
+// RemoveMemberToChatRoomRemoveMemberActionWithSd calls RemoveMemberToChatRoomRemoveMemberActionWithSdFunc.
+func (mock *StoreMock) RemoveMemberToChatRoomRemoveMemberActionWithSd(ctx context.Context, sd Sd, param parameter.CreateChatRoomRemovedMemberParam) (entity.ChatRoomRemovedMember, error) {
+	if mock.RemoveMemberToChatRoomRemoveMemberActionWithSdFunc == nil {
+		panic("StoreMock.RemoveMemberToChatRoomRemoveMemberActionWithSdFunc: method is nil but Store.RemoveMemberToChatRoomRemoveMemberActionWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateChatRoomRemovedMemberParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Param: param,
+	}
+	mock.lockRemoveMemberToChatRoomRemoveMemberActionWithSd.Lock()
+	mock.calls.RemoveMemberToChatRoomRemoveMemberActionWithSd = append(mock.calls.RemoveMemberToChatRoomRemoveMemberActionWithSd, callInfo)
+	mock.lockRemoveMemberToChatRoomRemoveMemberActionWithSd.Unlock()
+	return mock.RemoveMemberToChatRoomRemoveMemberActionWithSdFunc(ctx, sd, param)
+}
+
+// RemoveMemberToChatRoomRemoveMemberActionWithSdCalls gets all the calls that were made to RemoveMemberToChatRoomRemoveMemberActionWithSd.
+// Check the length with:
+//
+//	len(mockedStore.RemoveMemberToChatRoomRemoveMemberActionWithSdCalls())
+func (mock *StoreMock) RemoveMemberToChatRoomRemoveMemberActionWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Param parameter.CreateChatRoomRemovedMemberParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateChatRoomRemovedMemberParam
+	}
+	mock.lockRemoveMemberToChatRoomRemoveMemberActionWithSd.RLock()
+	calls = mock.calls.RemoveMemberToChatRoomRemoveMemberActionWithSd
+	mock.lockRemoveMemberToChatRoomRemoveMemberActionWithSd.RUnlock()
+	return calls
+}
+
+// RemoveMembersToChatRoomRemoveMemberAction calls RemoveMembersToChatRoomRemoveMemberActionFunc.
+func (mock *StoreMock) RemoveMembersToChatRoomRemoveMemberAction(ctx context.Context, params []parameter.CreateChatRoomRemovedMemberParam) (int64, error) {
+	if mock.RemoveMembersToChatRoomRemoveMemberActionFunc == nil {
+		panic("StoreMock.RemoveMembersToChatRoomRemoveMemberActionFunc: method is nil but Store.RemoveMembersToChatRoomRemoveMemberAction was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.CreateChatRoomRemovedMemberParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockRemoveMembersToChatRoomRemoveMemberAction.Lock()
+	mock.calls.RemoveMembersToChatRoomRemoveMemberAction = append(mock.calls.RemoveMembersToChatRoomRemoveMemberAction, callInfo)
+	mock.lockRemoveMembersToChatRoomRemoveMemberAction.Unlock()
+	return mock.RemoveMembersToChatRoomRemoveMemberActionFunc(ctx, params)
+}
+
+// RemoveMembersToChatRoomRemoveMemberActionCalls gets all the calls that were made to RemoveMembersToChatRoomRemoveMemberAction.
+// Check the length with:
+//
+//	len(mockedStore.RemoveMembersToChatRoomRemoveMemberActionCalls())
+func (mock *StoreMock) RemoveMembersToChatRoomRemoveMemberActionCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.CreateChatRoomRemovedMemberParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.CreateChatRoomRemovedMemberParam
+	}
+	mock.lockRemoveMembersToChatRoomRemoveMemberAction.RLock()
+	calls = mock.calls.RemoveMembersToChatRoomRemoveMemberAction
+	mock.lockRemoveMembersToChatRoomRemoveMemberAction.RUnlock()
+	return calls
+}
+
+// RemoveMembersToChatRoomRemoveMemberActionWithSd calls RemoveMembersToChatRoomRemoveMemberActionWithSdFunc.
+func (mock *StoreMock) RemoveMembersToChatRoomRemoveMemberActionWithSd(ctx context.Context, sd Sd, params []parameter.CreateChatRoomRemovedMemberParam) (int64, error) {
+	if mock.RemoveMembersToChatRoomRemoveMemberActionWithSdFunc == nil {
+		panic("StoreMock.RemoveMembersToChatRoomRemoveMemberActionWithSdFunc: method is nil but Store.RemoveMembersToChatRoomRemoveMemberActionWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateChatRoomRemovedMemberParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		Params: params,
+	}
+	mock.lockRemoveMembersToChatRoomRemoveMemberActionWithSd.Lock()
+	mock.calls.RemoveMembersToChatRoomRemoveMemberActionWithSd = append(mock.calls.RemoveMembersToChatRoomRemoveMemberActionWithSd, callInfo)
+	mock.lockRemoveMembersToChatRoomRemoveMemberActionWithSd.Unlock()
+	return mock.RemoveMembersToChatRoomRemoveMemberActionWithSdFunc(ctx, sd, params)
+}
+
+// RemoveMembersToChatRoomRemoveMemberActionWithSdCalls gets all the calls that were made to RemoveMembersToChatRoomRemoveMemberActionWithSd.
+// Check the length with:
+//
+//	len(mockedStore.RemoveMembersToChatRoomRemoveMemberActionWithSdCalls())
+func (mock *StoreMock) RemoveMembersToChatRoomRemoveMemberActionWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	Params []parameter.CreateChatRoomRemovedMemberParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateChatRoomRemovedMemberParam
+	}
+	mock.lockRemoveMembersToChatRoomRemoveMemberActionWithSd.RLock()
+	calls = mock.calls.RemoveMembersToChatRoomRemoveMemberActionWithSd
+	mock.lockRemoveMembersToChatRoomRemoveMemberActionWithSd.RUnlock()
 	return calls
 }
 

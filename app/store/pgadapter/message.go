@@ -20,12 +20,12 @@ import (
 
 func convMessage(e query.Message) entity.Message {
 	return entity.Message{
-		MessageID:    e.MessageID,
-		ChatRoomID:   e.ChatRoomID,
-		SenderID:     entity.UUID(e.SenderID),
-		Body:         e.Body,
-		PostedAt:     e.PostedAt,
-		LastEditedAt: e.LastEditedAt,
+		MessageID:        e.MessageID,
+		ChatRoomActionID: e.ChatRoomActionID,
+		SenderID:         entity.UUID(e.SenderID),
+		Body:             e.Body,
+		PostedAt:         e.PostedAt,
+		LastEditedAt:     e.LastEditedAt,
 	}
 }
 
@@ -33,7 +33,7 @@ func convMessageWithChatRoom(e query.FindMessageByIDWithChatRoomRow) entity.Mess
 	return entity.MessageWithChatRoom{
 		MessageID: e.MessageID,
 		ChatRoom: entity.ChatRoomWithCoverImage{
-			ChatRoomID:       e.ChatRoomID,
+			ChatRoomID:       e.ChatRoomID.Bytes,
 			Name:             e.ChatRoomName.String,
 			IsPrivate:        e.ChatRoomIsPrivate.Bool,
 			FromOrganization: e.ChatRoomFromOrganization.Bool,
@@ -63,8 +63,8 @@ func convMessageWithChatRoom(e query.FindMessageByIDWithChatRoomRow) entity.Mess
 
 func convMessageWithSender(e query.FindMessageByIDWithSenderRow) entity.MessageWithSender {
 	return entity.MessageWithSender{
-		MessageID:  e.MessageID,
-		ChatRoomID: e.ChatRoomID,
+		MessageID:        e.MessageID,
+		ChatRoomActionID: e.ChatRoomActionID,
 		Sender: entity.NullableEntity[entity.MemberCard]{
 			Valid: e.SenderID.Valid,
 			Entity: entity.MemberCard{
@@ -146,11 +146,11 @@ func createMessage(
 	ctx context.Context, qtx *query.Queries, param parameter.CreateMessageParam,
 ) (entity.Message, error) {
 	p := query.CreateMessageParams{
-		ChatRoomID:   param.ChatRoomID,
-		SenderID:     pgtype.UUID(param.SenderID),
-		Body:         param.Body,
-		PostedAt:     param.PostedAt,
-		LastEditedAt: param.PostedAt,
+		ChatRoomActionID: param.ChatRoomActionID,
+		SenderID:         pgtype.UUID(param.SenderID),
+		Body:             param.Body,
+		PostedAt:         param.PostedAt,
+		LastEditedAt:     param.PostedAt,
 	}
 	e, err := qtx.CreateMessage(ctx, p)
 	if err != nil {
@@ -190,11 +190,11 @@ func createMessages(
 	param := make([]query.CreateMessagesParams, len(params))
 	for i, p := range params {
 		param[i] = query.CreateMessagesParams{
-			ChatRoomID:   p.ChatRoomID,
-			SenderID:     pgtype.UUID(p.SenderID),
-			Body:         p.Body,
-			PostedAt:     p.PostedAt,
-			LastEditedAt: p.PostedAt,
+			ChatRoomActionID: p.ChatRoomActionID,
+			SenderID:         pgtype.UUID(p.SenderID),
+			Body:             p.Body,
+			PostedAt:         p.PostedAt,
+			LastEditedAt:     p.PostedAt,
 		}
 	}
 	n, err := qtx.CreateMessages(ctx, param)

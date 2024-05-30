@@ -68,6 +68,21 @@ func (m *ManageMember) UpdateMember(
 	if err != nil {
 		return entity.Member{}, fmt.Errorf("failed to find member by id: %w", err)
 	}
+	if e.ProfileImageID.Valid && e.ProfileImageID.Bytes != profileImageID.Bytes {
+		_, err = pluralDeleteImages(
+			ctx,
+			sd,
+			m.DB,
+			m.Storage,
+			[]uuid.UUID{e.ProfileImageID.Bytes},
+			entity.UUID{
+				Valid: true,
+				Bytes: id,
+			})
+		if err != nil {
+			return entity.Member{}, fmt.Errorf("failed to delete images: %w", err)
+		}
+	}
 	if name != e.Name {
 		org, err := m.DB.FindOrganizationByIDWithSd(ctx, sd, e.PersonalOrganizationID)
 		if err != nil {
@@ -266,6 +281,7 @@ func (m *ManageMember) FindMemberByID(ctx context.Context, id uuid.UUID) (e enti
 	return e, nil
 }
 
+// FindAuthMemberByID メンバーをIDで取得する。
 func (m *ManageMember) FindAuthMemberByID(
 	ctx context.Context,
 	id uuid.UUID,

@@ -50,7 +50,7 @@ type ChatRoomCreateAction interface {
 		np NumberedPaginationParam,
 		cp CursorPaginationParam,
 		wc WithCountParam,
-	) (ListResult[entity.ChatRoomCreateActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error)
 	// GetChatRoomCreateActionsOnChatRoomWithSd SD付きでチャットルーム作成アクションを取得する。
 	GetChatRoomCreateActionsOnChatRoomWithSd(
 		ctx context.Context,
@@ -61,14 +61,14 @@ type ChatRoomCreateAction interface {
 		np NumberedPaginationParam,
 		cp CursorPaginationParam,
 		wc WithCountParam,
-	) (ListResult[entity.ChatRoomCreateActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error)
 	// GetPluralChatRoomCreateActions チャットルーム作成アクションを取得する。
 	GetPluralChatRoomCreateActions(
 		ctx context.Context,
 		chatRoomCreateActionIDs []uuid.UUID,
 		order parameter.ChatRoomCreateActionOrderMethod,
 		np NumberedPaginationParam,
-	) (ListResult[entity.ChatRoomCreateActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error)
 	// GetPluralChatRoomCreateActionsWithSd SD付きでチャットルーム作成アクションを取得する。
 	GetPluralChatRoomCreateActionsWithSd(
 		ctx context.Context,
@@ -76,5 +76,5 @@ type ChatRoomCreateAction interface {
 		chatRoomCreateActionIDs []uuid.UUID,
 		order parameter.ChatRoomCreateActionOrderMethod,
 		np NumberedPaginationParam,
-	) (ListResult[entity.ChatRoomCreateActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error)
 }

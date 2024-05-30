@@ -51,7 +51,7 @@ type ChatRoomUpdateNameAction interface {
 		np NumberedPaginationParam,
 		cp CursorPaginationParam,
 		wc WithCountParam,
-	) (ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error)
 	// GetChatRoomUpdateNameActionsOnChatRoomWithSd SD付きでチャットルーム名前更新アクションを取得する。
 	GetChatRoomUpdateNameActionsOnChatRoomWithSd(
 		ctx context.Context,
@@ -62,14 +62,14 @@ type ChatRoomUpdateNameAction interface {
 		np NumberedPaginationParam,
 		cp CursorPaginationParam,
 		wc WithCountParam,
-	) (ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error)
 	// GetPluralChatRoomUpdateNameActions チャットルーム名前更新アクションを取得する。
 	GetPluralChatRoomUpdateNameActions(
 		ctx context.Context,
 		chatRoomUpdateNameActionIDs []uuid.UUID,
 		order parameter.ChatRoomUpdateNameActionOrderMethod,
 		np NumberedPaginationParam,
-	) (ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error)
 	// GetPluralChatRoomUpdateNameActionsWithSd SD付きでチャットルーム名前更新アクションを取得する。
 	GetPluralChatRoomUpdateNameActionsWithSd(
 		ctx context.Context,
@@ -77,5 +77,5 @@ type ChatRoomUpdateNameAction interface {
 		chatRoomUpdateNameActionIDs []uuid.UUID,
 		order parameter.ChatRoomUpdateNameActionOrderMethod,
 		np NumberedPaginationParam,
-	) (ListResult[entity.ChatRoomUpdateNameActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error)
 }

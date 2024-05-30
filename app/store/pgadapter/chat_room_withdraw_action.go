@@ -19,10 +19,10 @@ import (
 
 func convChatRoomWithdrawActionOnChatRoom(
 	e query.GetChatRoomWithdrawActionsOnChatRoomRow,
-) entity.ChatRoomWithdrawActionOnChatRoomForQuery {
-	var createdBy entity.NullableEntity[entity.SimpleMember]
+) entity.ChatRoomWithdrawActionWithMemberForQuery {
+	var member entity.NullableEntity[entity.SimpleMember]
 	if e.MemberID.Valid {
-		createdBy = entity.NullableEntity[entity.SimpleMember]{
+		member = entity.NullableEntity[entity.SimpleMember]{
 			Valid: true,
 			Entity: entity.SimpleMember{
 				MemberID:       e.MemberID.Bytes,
@@ -34,12 +34,12 @@ func convChatRoomWithdrawActionOnChatRoom(
 			},
 		}
 	}
-	return entity.ChatRoomWithdrawActionOnChatRoomForQuery{
+	return entity.ChatRoomWithdrawActionWithMemberForQuery{
 		Pkey: entity.Int(e.TChatRoomWithdrawActionsPkey),
-		ChatRoomWithdrawActionOnChatRoom: entity.ChatRoomWithdrawActionOnChatRoom{
+		ChatRoomWithdrawActionWithMember: entity.ChatRoomWithdrawActionWithMember{
 			ChatRoomWithdrawActionID: e.ChatRoomWithdrawActionID,
 			ChatRoomActionID:         e.ChatRoomActionID,
-			MemberID:                 createdBy,
+			Member:                   member,
 		},
 	}
 }
@@ -238,11 +238,11 @@ func getChatRoomWithdrawActionsOnChatRoom(
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
-) (store.ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomWithdrawActionWithMember], error) {
 	eConvFunc := func(
-		e entity.ChatRoomWithdrawActionOnChatRoomForQuery,
-	) (entity.ChatRoomWithdrawActionOnChatRoom, error) {
-		return e.ChatRoomWithdrawActionOnChatRoom, nil
+		e entity.ChatRoomWithdrawActionWithMemberForQuery,
+	) (entity.ChatRoomWithdrawActionWithMember, error) {
+		return e.ChatRoomWithdrawActionWithMember, nil
 	}
 	runCFunc := func() (int64, error) {
 		r, err := qtx.CountChatRoomWithdrawActions(ctx)
@@ -251,15 +251,15 @@ func getChatRoomWithdrawActionsOnChatRoom(
 		}
 		return r, nil
 	}
-	runQFunc := func(_ string) ([]entity.ChatRoomWithdrawActionOnChatRoomForQuery, error) {
+	runQFunc := func(_ string) ([]entity.ChatRoomWithdrawActionWithMemberForQuery, error) {
 		r, err := qtx.GetChatRoomWithdrawActionsOnChatRoom(ctx, chatRoomID)
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
-				return []entity.ChatRoomWithdrawActionOnChatRoomForQuery{}, nil
+				return []entity.ChatRoomWithdrawActionWithMemberForQuery{}, nil
 			}
 			return nil, fmt.Errorf("failed to get chat room withdraw actions: %w", err)
 		}
-		e := make([]entity.ChatRoomWithdrawActionOnChatRoomForQuery, len(r))
+		e := make([]entity.ChatRoomWithdrawActionWithMemberForQuery, len(r))
 		for i, v := range r {
 			e[i] = convChatRoomWithdrawActionOnChatRoom(v)
 		}
@@ -267,7 +267,7 @@ func getChatRoomWithdrawActionsOnChatRoom(
 	}
 	runQCPFunc := func(_, _ string,
 		limit int32, cursorDir string, cursor int32, _ any,
-	) ([]entity.ChatRoomWithdrawActionOnChatRoomForQuery, error) {
+	) ([]entity.ChatRoomWithdrawActionWithMemberForQuery, error) {
 		p := query.GetChatRoomWithdrawActionsOnChatRoomUseKeysetPaginateParams{
 			ChatRoomID:      chatRoomID,
 			Limit:           limit,
@@ -278,13 +278,13 @@ func getChatRoomWithdrawActionsOnChatRoom(
 		if err != nil {
 			return nil, fmt.Errorf("failed to get chat room withdraw actions: %w", err)
 		}
-		e := make([]entity.ChatRoomWithdrawActionOnChatRoomForQuery, len(r))
+		e := make([]entity.ChatRoomWithdrawActionWithMemberForQuery, len(r))
 		for i, v := range r {
 			e[i] = convChatRoomWithdrawActionOnChatRoom(query.GetChatRoomWithdrawActionsOnChatRoomRow(v))
 		}
 		return e, nil
 	}
-	runQNPFunc := func(_ string, limit, offset int32) ([]entity.ChatRoomWithdrawActionOnChatRoomForQuery, error) {
+	runQNPFunc := func(_ string, limit, offset int32) ([]entity.ChatRoomWithdrawActionWithMemberForQuery, error) {
 		p := query.GetChatRoomWithdrawActionsOnChatRoomUseNumberedPaginateParams{
 			ChatRoomID: chatRoomID,
 			Limit:      limit,
@@ -294,13 +294,13 @@ func getChatRoomWithdrawActionsOnChatRoom(
 		if err != nil {
 			return nil, fmt.Errorf("failed to get chat room withdraw actions: %w", err)
 		}
-		e := make([]entity.ChatRoomWithdrawActionOnChatRoomForQuery, len(r))
+		e := make([]entity.ChatRoomWithdrawActionWithMemberForQuery, len(r))
 		for i, v := range r {
 			e[i] = convChatRoomWithdrawActionOnChatRoom(query.GetChatRoomWithdrawActionsOnChatRoomRow(v))
 		}
 		return e, nil
 	}
-	selector := func(subCursor string, e entity.ChatRoomWithdrawActionOnChatRoomForQuery) (entity.Int, any) {
+	selector := func(subCursor string, e entity.ChatRoomWithdrawActionWithMemberForQuery) (entity.Int, any) {
 		switch subCursor {
 		case parameter.ChatRoomWithdrawActionDefaultCursorKey:
 			return e.Pkey, nil
@@ -322,7 +322,7 @@ func getChatRoomWithdrawActionsOnChatRoom(
 		selector,
 	)
 	if err != nil {
-		return store.ListResult[entity.ChatRoomWithdrawActionOnChatRoom]{},
+		return store.ListResult[entity.ChatRoomWithdrawActionWithMember]{},
 			fmt.Errorf("failed to get chat room withdraw actions: %w", err)
 	}
 	return res, nil
@@ -337,7 +337,7 @@ func (a *PgAdapter) GetChatRoomWithdrawActionsOnChatRoom(
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
-) (store.ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomWithdrawActionWithMember], error) {
 	return getChatRoomWithdrawActionsOnChatRoom(ctx, a.query, chatRoomID, where, order, np, cp, wc)
 }
 
@@ -351,12 +351,12 @@ func (a *PgAdapter) GetChatRoomWithdrawActionsOnChatRoomWithSd(
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
-) (store.ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomWithdrawActionWithMember], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ListResult[entity.ChatRoomWithdrawActionOnChatRoom]{}, store.ErrNotFoundDescriptor
+		return store.ListResult[entity.ChatRoomWithdrawActionWithMember]{}, store.ErrNotFoundDescriptor
 	}
 	return getChatRoomWithdrawActionsOnChatRoom(ctx, qtx, chatRoomID, where, order, np, cp, wc)
 }
@@ -365,7 +365,7 @@ func (a *PgAdapter) GetChatRoomWithdrawActionsOnChatRoomWithSd(
 func getPluralChatRoomWithdrawActions(
 	ctx context.Context, qtx *query.Queries, chatRoomWithdrawActionIDs []uuid.UUID,
 	_ parameter.ChatRoomWithdrawActionOrderMethod, np store.NumberedPaginationParam,
-) (store.ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomWithdrawActionWithMember], error) {
 	var e []query.GetPluralChatRoomWithdrawActionsRow
 	var err error
 	if !np.Valid {
@@ -384,22 +384,22 @@ func getPluralChatRoomWithdrawActions(
 		}
 	}
 	if err != nil {
-		return store.ListResult[entity.ChatRoomWithdrawActionOnChatRoom]{},
+		return store.ListResult[entity.ChatRoomWithdrawActionWithMember]{},
 			fmt.Errorf("failed to get chat room withdraw actions: %w", err)
 	}
-	entities := make([]entity.ChatRoomWithdrawActionOnChatRoom, len(e))
+	entities := make([]entity.ChatRoomWithdrawActionWithMember, len(e))
 	for i, v := range e {
 		entities[i] = convChatRoomWithdrawActionOnChatRoom(
-			query.GetChatRoomWithdrawActionsOnChatRoomRow(v)).ChatRoomWithdrawActionOnChatRoom
+			query.GetChatRoomWithdrawActionsOnChatRoomRow(v)).ChatRoomWithdrawActionWithMember
 	}
-	return store.ListResult[entity.ChatRoomWithdrawActionOnChatRoom]{Data: entities}, nil
+	return store.ListResult[entity.ChatRoomWithdrawActionWithMember]{Data: entities}, nil
 }
 
 // GetPluralChatRoomWithdrawActions は複数のチャットルームメンバー脱退アクションを取得します。
 func (a *PgAdapter) GetPluralChatRoomWithdrawActions(
 	ctx context.Context, chatRoomWithdrawActionIDs []uuid.UUID,
 	order parameter.ChatRoomWithdrawActionOrderMethod, np store.NumberedPaginationParam,
-) (store.ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomWithdrawActionWithMember], error) {
 	return getPluralChatRoomWithdrawActions(ctx, a.query, chatRoomWithdrawActionIDs, order, np)
 }
 
@@ -407,12 +407,12 @@ func (a *PgAdapter) GetPluralChatRoomWithdrawActions(
 func (a *PgAdapter) GetPluralChatRoomWithdrawActionsWithSd(
 	ctx context.Context, sd store.Sd, chatRoomWithdrawActionIDs []uuid.UUID,
 	order parameter.ChatRoomWithdrawActionOrderMethod, np store.NumberedPaginationParam,
-) (store.ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomWithdrawActionWithMember], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ListResult[entity.ChatRoomWithdrawActionOnChatRoom]{}, store.ErrNotFoundDescriptor
+		return store.ListResult[entity.ChatRoomWithdrawActionWithMember]{}, store.ErrNotFoundDescriptor
 	}
 	return getPluralChatRoomWithdrawActions(ctx, qtx, chatRoomWithdrawActionIDs, order, np)
 }

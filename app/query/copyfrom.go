@@ -1000,7 +1000,7 @@ func (r *iteratorForCreateMessages) Next() bool {
 
 func (r iteratorForCreateMessages) Values() ([]interface{}, error) {
 	return []interface{}{
-		r.rows[0].ChatRoomID,
+		r.rows[0].ChatRoomActionID,
 		r.rows[0].SenderID,
 		r.rows[0].Body,
 		r.rows[0].PostedAt,
@@ -1013,7 +1013,7 @@ func (r iteratorForCreateMessages) Err() error {
 }
 
 func (q *Queries) CreateMessages(ctx context.Context, arg []CreateMessagesParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"t_messages"}, []string{"chat_room_id", "sender_id", "body", "posted_at", "last_edited_at"}, &iteratorForCreateMessages{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"t_messages"}, []string{"chat_room_action_id", "sender_id", "body", "posted_at", "last_edited_at"}, &iteratorForCreateMessages{rows: arg})
 }
 
 // iteratorForCreateMimeTypes implements pgx.CopyFromSource.

@@ -51,7 +51,7 @@ type ChatRoomWithdrawAction interface {
 		np NumberedPaginationParam,
 		cp CursorPaginationParam,
 		wc WithCountParam,
-	) (ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomWithdrawActionWithMember], error)
 	// GetChatRoomWithdrawActionsOnChatRoomWithSd SD付きでチャットルームメンバー脱退アクションを取得する。
 	GetChatRoomWithdrawActionsOnChatRoomWithSd(
 		ctx context.Context,
@@ -62,14 +62,14 @@ type ChatRoomWithdrawAction interface {
 		np NumberedPaginationParam,
 		cp CursorPaginationParam,
 		wc WithCountParam,
-	) (ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomWithdrawActionWithMember], error)
 	// GetPluralChatRoomWithdrawActions チャットルームメンバー脱退アクションを取得する。
 	GetPluralChatRoomWithdrawActions(
 		ctx context.Context,
 		chatRoomWithdrawActionIDs []uuid.UUID,
 		order parameter.ChatRoomWithdrawActionOrderMethod,
 		np NumberedPaginationParam,
-	) (ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomWithdrawActionWithMember], error)
 	// GetPluralChatRoomWithdrawActionsWithSd SD付きでチャットルームメンバー脱退アクションを取得する。
 	GetPluralChatRoomWithdrawActionsWithSd(
 		ctx context.Context,
@@ -77,5 +77,5 @@ type ChatRoomWithdrawAction interface {
 		chatRoomWithdrawActionIDs []uuid.UUID,
 		order parameter.ChatRoomWithdrawActionOrderMethod,
 		np NumberedPaginationParam,
-	) (ListResult[entity.ChatRoomWithdrawActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomWithdrawActionWithMember], error)
 }

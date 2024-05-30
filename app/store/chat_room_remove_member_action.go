@@ -51,7 +51,7 @@ type ChatRoomRemoveMemberAction interface {
 		np NumberedPaginationParam,
 		cp CursorPaginationParam,
 		wc WithCountParam,
-	) (ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error)
 	// GetChatRoomRemoveMemberActionsOnChatRoomWithSd SD付きでチャットルームメンバー追放アクションを取得する。
 	GetChatRoomRemoveMemberActionsOnChatRoomWithSd(
 		ctx context.Context,
@@ -62,14 +62,14 @@ type ChatRoomRemoveMemberAction interface {
 		np NumberedPaginationParam,
 		cp CursorPaginationParam,
 		wc WithCountParam,
-	) (ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error)
 	// GetPluralChatRoomRemoveMemberActions チャットルームメンバー追放アクションを取得する。
 	GetPluralChatRoomRemoveMemberActions(
 		ctx context.Context,
 		chatRoomRemoveMemberActionIDs []uuid.UUID,
 		order parameter.ChatRoomRemoveMemberActionOrderMethod,
 		np NumberedPaginationParam,
-	) (ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error)
 	// GetPluralChatRoomRemoveMemberActionsWithSd SD付きでチャットルームメンバー追放アクションを取得する。
 	GetPluralChatRoomRemoveMemberActionsWithSd(
 		ctx context.Context,
@@ -77,5 +77,5 @@ type ChatRoomRemoveMemberAction interface {
 		chatRoomRemoveMemberActionIDs []uuid.UUID,
 		order parameter.ChatRoomRemoveMemberActionOrderMethod,
 		np NumberedPaginationParam,
-	) (ListResult[entity.ChatRoomRemoveMemberActionOnChatRoom], error)
+	) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error)
 }

@@ -19,10 +19,10 @@ import (
 
 func convChatRoomAddMemberActionOnChatRoom(
 	e query.GetChatRoomAddMemberActionsOnChatRoomRow,
-) entity.ChatRoomAddMemberActionOnChatRoomForQuery {
-	var createdBy entity.NullableEntity[entity.SimpleMember]
+) entity.ChatRoomAddMemberActionWithAddedByForQuery {
+	var addedBy entity.NullableEntity[entity.SimpleMember]
 	if e.AddedBy.Valid {
-		createdBy = entity.NullableEntity[entity.SimpleMember]{
+		addedBy = entity.NullableEntity[entity.SimpleMember]{
 			Valid: true,
 			Entity: entity.SimpleMember{
 				MemberID:       e.AddedBy.Bytes,
@@ -34,12 +34,12 @@ func convChatRoomAddMemberActionOnChatRoom(
 			},
 		}
 	}
-	return entity.ChatRoomAddMemberActionOnChatRoomForQuery{
+	return entity.ChatRoomAddMemberActionWithAddedByForQuery{
 		Pkey: entity.Int(e.TChatRoomAddMemberActionsPkey),
-		ChatRoomAddMemberActionOnChatRoom: entity.ChatRoomAddMemberActionOnChatRoom{
+		ChatRoomAddMemberActionWithAddedBy: entity.ChatRoomAddMemberActionWithAddedBy{
 			ChatRoomAddMemberActionID: e.ChatRoomAddMemberActionID,
 			ChatRoomActionID:          e.ChatRoomActionID,
-			AddedBy:                   createdBy,
+			AddedBy:                   addedBy,
 		},
 	}
 }
@@ -238,11 +238,11 @@ func getChatRoomAddMemberActionsOnChatRoom(
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
-) (store.ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error) {
 	eConvFunc := func(
-		e entity.ChatRoomAddMemberActionOnChatRoomForQuery,
-	) (entity.ChatRoomAddMemberActionOnChatRoom, error) {
-		return e.ChatRoomAddMemberActionOnChatRoom, nil
+		e entity.ChatRoomAddMemberActionWithAddedByForQuery,
+	) (entity.ChatRoomAddMemberActionWithAddedBy, error) {
+		return e.ChatRoomAddMemberActionWithAddedBy, nil
 	}
 	runCFunc := func() (int64, error) {
 		r, err := qtx.CountChatRoomAddMemberActions(ctx)
@@ -251,15 +251,15 @@ func getChatRoomAddMemberActionsOnChatRoom(
 		}
 		return r, nil
 	}
-	runQFunc := func(_ string) ([]entity.ChatRoomAddMemberActionOnChatRoomForQuery, error) {
+	runQFunc := func(_ string) ([]entity.ChatRoomAddMemberActionWithAddedByForQuery, error) {
 		r, err := qtx.GetChatRoomAddMemberActionsOnChatRoom(ctx, chatRoomID)
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
-				return []entity.ChatRoomAddMemberActionOnChatRoomForQuery{}, nil
+				return []entity.ChatRoomAddMemberActionWithAddedByForQuery{}, nil
 			}
 			return nil, fmt.Errorf("failed to get chat room add member actions: %w", err)
 		}
-		e := make([]entity.ChatRoomAddMemberActionOnChatRoomForQuery, len(r))
+		e := make([]entity.ChatRoomAddMemberActionWithAddedByForQuery, len(r))
 		for i, v := range r {
 			e[i] = convChatRoomAddMemberActionOnChatRoom(v)
 		}
@@ -267,7 +267,7 @@ func getChatRoomAddMemberActionsOnChatRoom(
 	}
 	runQCPFunc := func(_, _ string,
 		limit int32, cursorDir string, cursor int32, _ any,
-	) ([]entity.ChatRoomAddMemberActionOnChatRoomForQuery, error) {
+	) ([]entity.ChatRoomAddMemberActionWithAddedByForQuery, error) {
 		p := query.GetChatRoomAddMemberActionsOnChatRoomUseKeysetPaginateParams{
 			ChatRoomID:      chatRoomID,
 			Limit:           limit,
@@ -278,13 +278,13 @@ func getChatRoomAddMemberActionsOnChatRoom(
 		if err != nil {
 			return nil, fmt.Errorf("failed to get chat room add member actions: %w", err)
 		}
-		e := make([]entity.ChatRoomAddMemberActionOnChatRoomForQuery, len(r))
+		e := make([]entity.ChatRoomAddMemberActionWithAddedByForQuery, len(r))
 		for i, v := range r {
 			e[i] = convChatRoomAddMemberActionOnChatRoom(query.GetChatRoomAddMemberActionsOnChatRoomRow(v))
 		}
 		return e, nil
 	}
-	runQNPFunc := func(_ string, limit, offset int32) ([]entity.ChatRoomAddMemberActionOnChatRoomForQuery, error) {
+	runQNPFunc := func(_ string, limit, offset int32) ([]entity.ChatRoomAddMemberActionWithAddedByForQuery, error) {
 		p := query.GetChatRoomAddMemberActionsOnChatRoomUseNumberedPaginateParams{
 			ChatRoomID: chatRoomID,
 			Limit:      limit,
@@ -294,13 +294,13 @@ func getChatRoomAddMemberActionsOnChatRoom(
 		if err != nil {
 			return nil, fmt.Errorf("failed to get chat room add member actions: %w", err)
 		}
-		e := make([]entity.ChatRoomAddMemberActionOnChatRoomForQuery, len(r))
+		e := make([]entity.ChatRoomAddMemberActionWithAddedByForQuery, len(r))
 		for i, v := range r {
 			e[i] = convChatRoomAddMemberActionOnChatRoom(query.GetChatRoomAddMemberActionsOnChatRoomRow(v))
 		}
 		return e, nil
 	}
-	selector := func(subCursor string, e entity.ChatRoomAddMemberActionOnChatRoomForQuery) (entity.Int, any) {
+	selector := func(subCursor string, e entity.ChatRoomAddMemberActionWithAddedByForQuery) (entity.Int, any) {
 		switch subCursor {
 		case parameter.ChatRoomAddMemberActionDefaultCursorKey:
 			return e.Pkey, nil
@@ -322,7 +322,7 @@ func getChatRoomAddMemberActionsOnChatRoom(
 		selector,
 	)
 	if err != nil {
-		return store.ListResult[entity.ChatRoomAddMemberActionOnChatRoom]{},
+		return store.ListResult[entity.ChatRoomAddMemberActionWithAddedBy]{},
 			fmt.Errorf("failed to get chat room add member actions: %w", err)
 	}
 	return res, nil
@@ -337,7 +337,7 @@ func (a *PgAdapter) GetChatRoomAddMemberActionsOnChatRoom(
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
-) (store.ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error) {
 	return getChatRoomAddMemberActionsOnChatRoom(ctx, a.query, chatRoomID, where, order, np, cp, wc)
 }
 
@@ -351,12 +351,12 @@ func (a *PgAdapter) GetChatRoomAddMemberActionsOnChatRoomWithSd(
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
-) (store.ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ListResult[entity.ChatRoomAddMemberActionOnChatRoom]{}, store.ErrNotFoundDescriptor
+		return store.ListResult[entity.ChatRoomAddMemberActionWithAddedBy]{}, store.ErrNotFoundDescriptor
 	}
 	return getChatRoomAddMemberActionsOnChatRoom(ctx, qtx, chatRoomID, where, order, np, cp, wc)
 }
@@ -365,7 +365,7 @@ func (a *PgAdapter) GetChatRoomAddMemberActionsOnChatRoomWithSd(
 func getPluralChatRoomAddMemberActions(
 	ctx context.Context, qtx *query.Queries, chatRoomAddMemberActionIDs []uuid.UUID,
 	_ parameter.ChatRoomAddMemberActionOrderMethod, np store.NumberedPaginationParam,
-) (store.ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error) {
 	var e []query.GetPluralChatRoomAddMemberActionsRow
 	var err error
 	if !np.Valid {
@@ -384,22 +384,22 @@ func getPluralChatRoomAddMemberActions(
 		}
 	}
 	if err != nil {
-		return store.ListResult[entity.ChatRoomAddMemberActionOnChatRoom]{},
+		return store.ListResult[entity.ChatRoomAddMemberActionWithAddedBy]{},
 			fmt.Errorf("failed to get chat room add member actions: %w", err)
 	}
-	entities := make([]entity.ChatRoomAddMemberActionOnChatRoom, len(e))
+	entities := make([]entity.ChatRoomAddMemberActionWithAddedBy, len(e))
 	for i, v := range e {
 		entities[i] = convChatRoomAddMemberActionOnChatRoom(
-			query.GetChatRoomAddMemberActionsOnChatRoomRow(v)).ChatRoomAddMemberActionOnChatRoom
+			query.GetChatRoomAddMemberActionsOnChatRoomRow(v)).ChatRoomAddMemberActionWithAddedBy
 	}
-	return store.ListResult[entity.ChatRoomAddMemberActionOnChatRoom]{Data: entities}, nil
+	return store.ListResult[entity.ChatRoomAddMemberActionWithAddedBy]{Data: entities}, nil
 }
 
 // GetPluralChatRoomAddMemberActions は複数のチャットルームメンバー追加アクションを取得します。
 func (a *PgAdapter) GetPluralChatRoomAddMemberActions(
 	ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID,
 	order parameter.ChatRoomAddMemberActionOrderMethod, np store.NumberedPaginationParam,
-) (store.ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error) {
 	return getPluralChatRoomAddMemberActions(ctx, a.query, chatRoomAddMemberActionIDs, order, np)
 }
 
@@ -407,12 +407,12 @@ func (a *PgAdapter) GetPluralChatRoomAddMemberActions(
 func (a *PgAdapter) GetPluralChatRoomAddMemberActionsWithSd(
 	ctx context.Context, sd store.Sd, chatRoomAddMemberActionIDs []uuid.UUID,
 	order parameter.ChatRoomAddMemberActionOrderMethod, np store.NumberedPaginationParam,
-) (store.ListResult[entity.ChatRoomAddMemberActionOnChatRoom], error) {
+) (store.ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ListResult[entity.ChatRoomAddMemberActionOnChatRoom]{}, store.ErrNotFoundDescriptor
+		return store.ListResult[entity.ChatRoomAddMemberActionWithAddedBy]{}, store.ErrNotFoundDescriptor
 	}
 	return getPluralChatRoomAddMemberActions(ctx, qtx, chatRoomAddMemberActionIDs, order, np)
 }

@@ -3,20 +3,27 @@ package session
 
 import (
 	"errors"
-	"fmt"
 	"time"
+
+	"github.com/google/uuid"
+
+	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 )
 
 // Session セッション情報を表す構造体。
 type Session struct {
 	ID         string
-	ClientType ClientType
-	ClientID   string
-	AuthedAt   time.Time
+	Type       TokenType
+	MemberType MemberType
+	entity.AuthPayload
+	AuthedAt  time.Time
+	ExpiresAt time.Time
 }
 
-// Validate セッション情報を検証する。
-func (s *Session) Validate(now time.Time) error {
+// ValidateAccessToken セッション情報を検証する。
+func (s *Session) ValidateAccessToken(now time.Time) error {
 	if s == nil {
 		return errors.New("session is nil")
 	}
@@ -25,15 +32,12 @@ func (s *Session) Validate(now time.Time) error {
 		return errors.New("session id is empty")
 	}
 
-	if !s.ClientType.IsValid() {
-		return errors.New("invalid client type")
+	if !s.MemberType.IsValid() {
+		return errors.New("invalid member type")
 	}
 
-	if s.ClientID == "" {
-		return errors.New("client id is empty")
-	}
-	if err := s.validateClientID(); err != nil {
-		return fmt.Errorf("validate client id: %w", err)
+	if s.MemberID == uuid.Nil {
+		return errors.New("member id is empty")
 	}
 
 	if s.AuthedAt.IsZero() {
@@ -42,29 +46,52 @@ func (s *Session) Validate(now time.Time) error {
 	if s.AuthedAt.After(now) {
 		return errors.New("invalid auth time")
 	}
+	if s.ExpiresAt.IsZero() {
+		return errors.New("expires time is empty")
+	}
+	if s.ExpiresAt.Before(now) {
+		return errhandle.NewCommonError(response.ExpireAccessToken, nil)
+	}
+	if s.Type != TokenTypeAccess {
+		return errors.New("invalid token type")
+	}
 
 	return nil
 }
 
-// validateClientID クライアント ID を検証する。
-func (s *Session) validateClientID() error {
-	if s.ClientType == ClientTypeUser && FromClientID(s.ClientID) == 0 {
-		return errors.New("invalid user id")
+// ValidateRefreshToken セッション情報を検証する。
+func (s *Session) ValidateRefreshToken(now time.Time) error {
+	if s == nil {
+		return errors.New("session is nil")
 	}
+
+	if s.ID == "" {
+		return errors.New("session id is empty")
+	}
+
+	if !s.MemberType.IsValid() {
+		return errors.New("invalid member type")
+	}
+
+	if s.MemberID == uuid.Nil {
+		return errors.New("member id is empty")
+	}
+
+	if s.AuthedAt.IsZero() {
+		return errors.New("auth time is empty")
+	}
+	if s.AuthedAt.After(now) {
+		return errors.New("invalid auth time")
+	}
+	if s.ExpiresAt.IsZero() {
+		return errors.New("expires time is empty")
+	}
+	if s.ExpiresAt.Before(now) {
+		return errhandle.NewCommonError(response.ExpireRefreshToken, nil)
+	}
+	if s.Type != TokenTypeRefresh {
+		return errors.New("invalid token type")
+	}
+
 	return nil
-}
-
-// AdminID 管理者アカウント ID を返す。
-// クライアント種別が管理者アカウントでない場合は空文字を返す。
-func (s *Session) AdminID() string {
-	if s.ClientType != ClientTypeAdmin {
-		return ""
-	}
-	return s.ClientID
-}
-
-// UserID ユーザー ID を返す。
-// クライアント種別がユーザーでない場合やクライアント ID が不正な場合は 0 を返す。
-func (s *Session) UserID() int32 {
-	return FromClientID(s.ClientID)
 }

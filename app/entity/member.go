@@ -19,6 +19,26 @@ type Member struct {
 	RoleID                 UUID      `json:"role_id"`
 }
 
+// AuthMember 認証済みのメンバーを表す構造体。
+type AuthMember struct {
+	MemberID               uuid.UUID                        `json:"member_id"`
+	Email                  string                           `json:"email"`
+	Name                   string                           `json:"name"`
+	FirstName              String                           `json:"first_name"`
+	LastName               String                           `json:"last_name"`
+	AttendStatusID         uuid.UUID                        `json:"attend_status_id"`
+	ProfileImageID         UUID                             `json:"profile_image_id"`
+	GradeID                uuid.UUID                        `json:"grade_id"`
+	GroupID                uuid.UUID                        `json:"group_id"`
+	PersonalOrganizationID uuid.UUID                        `json:"personal_organization_id"`
+	Role                   NullableEntity[RoleWithPolicies] `json:"role"`
+}
+
+// AuthPayload 認証情報ペイロード
+type AuthPayload struct {
+	MemberID uuid.UUID `json:"member_id"`
+}
+
 // MemberCredentials メンバーの認証情報を表す構造体。
 type MemberCredentials struct {
 	MemberID uuid.UUID `json:"member_id"`

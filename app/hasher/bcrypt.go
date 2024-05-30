@@ -24,9 +24,9 @@ func (b Bcrypt) Encrypt(text string) (string, error) {
 }
 
 // Compare ハッシュを比較する。
-func (b Bcrypt) Compare(text, hash string) error {
+func (b Bcrypt) Compare(text, hash string) (bool, error) {
 	if err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(text)); err != nil {
-		return fmt.Errorf("failed to compare hash and text: %w", err)
+		return false, fmt.Errorf("failed to compare hash and text: %w", err)
 	}
-	return nil
+	return true, nil
 }

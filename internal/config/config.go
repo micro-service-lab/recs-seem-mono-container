@@ -4,6 +4,7 @@ package config
 import (
 	"fmt"
 	"reflect"
+	"time"
 
 	"github.com/caarlos0/env/v10"
 )
@@ -36,8 +37,10 @@ type Config struct {
 	RedisPassword string `env:"REDIS_PASSWORD"`
 
 	// AuthSecret 認証トークンの署名用シークレット
-	AuthSecret   string `env:"AUTH_SECRET,required"`
-	SecretIssuer string `env:"SECRET_ISSUER,required"`
+	AuthSecret                string        `env:"AUTH_SECRET,required"`
+	SecretIssuer              string        `env:"SECRET_ISSUER,required"`
+	AuthAccessTokenExpiresIn  time.Duration `env:"AUTH_ACCESS_TOKEN_EXPIRES_IN" envDefault:"6h"`
+	AuthRefreshTokenExpiresIn time.Duration `env:"AUTH_REFRESH_TOKEN_EXPIRES_IN" envDefault:"720h"`
 
 	// ClientOrigin クライアントのオリジン
 	ClientOrigin ClientOrigin `env:"CLIENT_ORIGIN"`
@@ -60,11 +63,12 @@ type Config struct {
 }
 
 var parseFuncMap = map[reflect.Type]env.ParserFunc{
-	reflect.TypeOf(ProductionEnv):  parseEnvironmentMode,
-	reflect.TypeOf(FakeTimeMode{}): parseFakeTimeMode,
-	reflect.TypeOf(InfoLevel):      parseLogLevel,
-	reflect.TypeOf(ClientOrigin{}): parseClientOrigin,
-	reflect.TypeOf(Language("")):   parseLanguage,
+	reflect.TypeOf(ProductionEnv):    parseEnvironmentMode,
+	reflect.TypeOf(FakeTimeMode{}):   parseFakeTimeMode,
+	reflect.TypeOf(InfoLevel):        parseLogLevel,
+	reflect.TypeOf(ClientOrigin{}):   parseClientOrigin,
+	reflect.TypeOf(Language("")):     parseLanguage,
+	reflect.TypeOf(time.Duration(0)): parseTimeDuration,
 }
 
 // Get Get application settings from environment variables.
@@ -75,4 +79,9 @@ func Get() (*Config, error) {
 	}
 
 	return cfg, nil
+}
+
+// parseTimeDuration Parses the time duration setting string.
+func parseTimeDuration(v string) (any, error) {
+	return time.ParseDuration(v) //nolint:wrapcheck
 }

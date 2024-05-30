@@ -242,6 +242,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			FindAttendanceTypeByKeyFunc: func(ctx context.Context, key string) (entity.AttendanceType, error) {
 //				panic("mock out the FindAttendanceTypeByKey method")
 //			},
+//			FindAuthMemberByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.AuthMember, error) {
+//				panic("mock out the FindAuthMemberByID method")
+//			},
 //			FindChatRoomActionTypeByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.ChatRoomActionType, error) {
 //				panic("mock out the FindChatRoomActionTypeByID method")
 //			},
@@ -259,6 +262,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			FindEventTypeByKeyFunc: func(ctx context.Context, key string) (entity.EventType, error) {
 //				panic("mock out the FindEventTypeByKey method")
+//			},
+//			FindMemberByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.Member, error) {
+//				panic("mock out the FindMemberByID method")
 //			},
 //			FindMimeTypeByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.MimeType, error) {
 //				panic("mock out the FindMimeTypeByID method")
@@ -455,6 +461,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			GetRolesOnPolicyCountFunc: func(ctx context.Context, policyID uuid.UUID, whereSearchName string) (int64, error) {
 //				panic("mock out the GetRolesOnPolicyCount method")
 //			},
+//			LoginFunc: func(ctx context.Context, loginID string, password string) (entity.AuthJwt, error) {
+//				panic("mock out the Login method")
+//			},
+//			LogoutFunc: func(ctx context.Context, memberID uuid.UUID) error {
+//				panic("mock out the Logout method")
+//			},
 //			PluralDeleteAttendStatusesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteAttendStatuses method")
 //			},
@@ -505,6 +517,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			PluralDisassociateRoleOnPolicyFunc: func(ctx context.Context, policyID uuid.UUID, roleIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDisassociateRoleOnPolicy method")
+//			},
+//			RefreshTokenFunc: func(ctx context.Context, refreshToken string) (entity.AuthJwt, error) {
+//				panic("mock out the RefreshToken method")
 //			},
 //			UpdateAttendStatusFunc: func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error) {
 //				panic("mock out the UpdateAttendStatus method")
@@ -795,6 +810,9 @@ type ManagerInterfaceMock struct {
 	// FindAttendanceTypeByKeyFunc mocks the FindAttendanceTypeByKey method.
 	FindAttendanceTypeByKeyFunc func(ctx context.Context, key string) (entity.AttendanceType, error)
 
+	// FindAuthMemberByIDFunc mocks the FindAuthMemberByID method.
+	FindAuthMemberByIDFunc func(ctx context.Context, id uuid.UUID) (entity.AuthMember, error)
+
 	// FindChatRoomActionTypeByIDFunc mocks the FindChatRoomActionTypeByID method.
 	FindChatRoomActionTypeByIDFunc func(ctx context.Context, id uuid.UUID) (entity.ChatRoomActionType, error)
 
@@ -812,6 +830,9 @@ type ManagerInterfaceMock struct {
 
 	// FindEventTypeByKeyFunc mocks the FindEventTypeByKey method.
 	FindEventTypeByKeyFunc func(ctx context.Context, key string) (entity.EventType, error)
+
+	// FindMemberByIDFunc mocks the FindMemberByID method.
+	FindMemberByIDFunc func(ctx context.Context, id uuid.UUID) (entity.Member, error)
 
 	// FindMimeTypeByIDFunc mocks the FindMimeTypeByID method.
 	FindMimeTypeByIDFunc func(ctx context.Context, id uuid.UUID) (entity.MimeType, error)
@@ -1008,6 +1029,12 @@ type ManagerInterfaceMock struct {
 	// GetRolesOnPolicyCountFunc mocks the GetRolesOnPolicyCount method.
 	GetRolesOnPolicyCountFunc func(ctx context.Context, policyID uuid.UUID, whereSearchName string) (int64, error)
 
+	// LoginFunc mocks the Login method.
+	LoginFunc func(ctx context.Context, loginID string, password string) (entity.AuthJwt, error)
+
+	// LogoutFunc mocks the Logout method.
+	LogoutFunc func(ctx context.Context, memberID uuid.UUID) error
+
 	// PluralDeleteAttendStatusesFunc mocks the PluralDeleteAttendStatuses method.
 	PluralDeleteAttendStatusesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
@@ -1058,6 +1085,9 @@ type ManagerInterfaceMock struct {
 
 	// PluralDisassociateRoleOnPolicyFunc mocks the PluralDisassociateRoleOnPolicy method.
 	PluralDisassociateRoleOnPolicyFunc func(ctx context.Context, policyID uuid.UUID, roleIDs []uuid.UUID) (int64, error)
+
+	// RefreshTokenFunc mocks the RefreshToken method.
+	RefreshTokenFunc func(ctx context.Context, refreshToken string) (entity.AuthJwt, error)
 
 	// UpdateAttendStatusFunc mocks the UpdateAttendStatus method.
 	UpdateAttendStatusFunc func(ctx context.Context, id uuid.UUID, name string, key string) (entity.AttendStatus, error)
@@ -1779,6 +1809,13 @@ type ManagerInterfaceMock struct {
 			// Key is the key argument value.
 			Key string
 		}
+		// FindAuthMemberByID holds details about calls to the FindAuthMemberByID method.
+		FindAuthMemberByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+		}
 		// FindChatRoomActionTypeByID holds details about calls to the FindChatRoomActionTypeByID method.
 		FindChatRoomActionTypeByID []struct {
 			// Ctx is the ctx argument value.
@@ -1820,6 +1857,13 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// Key is the key argument value.
 			Key string
+		}
+		// FindMemberByID holds details about calls to the FindMemberByID method.
+		FindMemberByID []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
 		}
 		// FindMimeTypeByID holds details about calls to the FindMimeTypeByID method.
 		FindMimeTypeByID []struct {
@@ -2594,6 +2638,22 @@ type ManagerInterfaceMock struct {
 			// WhereSearchName is the whereSearchName argument value.
 			WhereSearchName string
 		}
+		// Login holds details about calls to the Login method.
+		Login []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// LoginID is the loginID argument value.
+			LoginID string
+			// Password is the password argument value.
+			Password string
+		}
+		// Logout holds details about calls to the Logout method.
+		Logout []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+		}
 		// PluralDeleteAttendStatuses holds details about calls to the PluralDeleteAttendStatuses method.
 		PluralDeleteAttendStatuses []struct {
 			// Ctx is the ctx argument value.
@@ -2716,6 +2776,13 @@ type ManagerInterfaceMock struct {
 			PolicyID uuid.UUID
 			// RoleIDs is the roleIDs argument value.
 			RoleIDs []uuid.UUID
+		}
+		// RefreshToken holds details about calls to the RefreshToken method.
+		RefreshToken []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// RefreshToken is the refreshToken argument value.
+			RefreshToken string
 		}
 		// UpdateAttendStatus holds details about calls to the UpdateAttendStatus method.
 		UpdateAttendStatus []struct {
@@ -3048,12 +3115,14 @@ type ManagerInterfaceMock struct {
 	lockFindAttendStatusByKey                 sync.RWMutex
 	lockFindAttendanceTypeByID                sync.RWMutex
 	lockFindAttendanceTypeByKey               sync.RWMutex
+	lockFindAuthMemberByID                    sync.RWMutex
 	lockFindChatRoomActionTypeByID            sync.RWMutex
 	lockFindChatRoomActionTypeByKey           sync.RWMutex
 	lockFindChatRoomByID                      sync.RWMutex
 	lockFindChatRoomByIDWithCoverImage        sync.RWMutex
 	lockFindEventTypeByID                     sync.RWMutex
 	lockFindEventTypeByKey                    sync.RWMutex
+	lockFindMemberByID                        sync.RWMutex
 	lockFindMimeTypeByID                      sync.RWMutex
 	lockFindMimeTypeByKey                     sync.RWMutex
 	lockFindOrganizationByID                  sync.RWMutex
@@ -3119,6 +3188,8 @@ type ManagerInterfaceMock struct {
 	lockGetRolesCount                         sync.RWMutex
 	lockGetRolesOnPolicy                      sync.RWMutex
 	lockGetRolesOnPolicyCount                 sync.RWMutex
+	lockLogin                                 sync.RWMutex
+	lockLogout                                sync.RWMutex
 	lockPluralDeleteAttendStatuses            sync.RWMutex
 	lockPluralDeleteAttendanceTypes           sync.RWMutex
 	lockPluralDeleteChatRoomActionTypes       sync.RWMutex
@@ -3136,6 +3207,7 @@ type ManagerInterfaceMock struct {
 	lockPluralDeleteRoles                     sync.RWMutex
 	lockPluralDisassociatePolicyOnRole        sync.RWMutex
 	lockPluralDisassociateRoleOnPolicy        sync.RWMutex
+	lockRefreshToken                          sync.RWMutex
 	lockUpdateAttendStatus                    sync.RWMutex
 	lockUpdateAttendanceType                  sync.RWMutex
 	lockUpdateChatRoomActionType              sync.RWMutex
@@ -6075,6 +6147,42 @@ func (mock *ManagerInterfaceMock) FindAttendanceTypeByKeyCalls() []struct {
 	return calls
 }
 
+// FindAuthMemberByID calls FindAuthMemberByIDFunc.
+func (mock *ManagerInterfaceMock) FindAuthMemberByID(ctx context.Context, id uuid.UUID) (entity.AuthMember, error) {
+	if mock.FindAuthMemberByIDFunc == nil {
+		panic("ManagerInterfaceMock.FindAuthMemberByIDFunc: method is nil but ManagerInterface.FindAuthMemberByID was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockFindAuthMemberByID.Lock()
+	mock.calls.FindAuthMemberByID = append(mock.calls.FindAuthMemberByID, callInfo)
+	mock.lockFindAuthMemberByID.Unlock()
+	return mock.FindAuthMemberByIDFunc(ctx, id)
+}
+
+// FindAuthMemberByIDCalls gets all the calls that were made to FindAuthMemberByID.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindAuthMemberByIDCalls())
+func (mock *ManagerInterfaceMock) FindAuthMemberByIDCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockFindAuthMemberByID.RLock()
+	calls = mock.calls.FindAuthMemberByID
+	mock.lockFindAuthMemberByID.RUnlock()
+	return calls
+}
+
 // FindChatRoomActionTypeByID calls FindChatRoomActionTypeByIDFunc.
 func (mock *ManagerInterfaceMock) FindChatRoomActionTypeByID(ctx context.Context, id uuid.UUID) (entity.ChatRoomActionType, error) {
 	if mock.FindChatRoomActionTypeByIDFunc == nil {
@@ -6288,6 +6396,42 @@ func (mock *ManagerInterfaceMock) FindEventTypeByKeyCalls() []struct {
 	mock.lockFindEventTypeByKey.RLock()
 	calls = mock.calls.FindEventTypeByKey
 	mock.lockFindEventTypeByKey.RUnlock()
+	return calls
+}
+
+// FindMemberByID calls FindMemberByIDFunc.
+func (mock *ManagerInterfaceMock) FindMemberByID(ctx context.Context, id uuid.UUID) (entity.Member, error) {
+	if mock.FindMemberByIDFunc == nil {
+		panic("ManagerInterfaceMock.FindMemberByIDFunc: method is nil but ManagerInterface.FindMemberByID was just called")
+	}
+	callInfo := struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}{
+		Ctx: ctx,
+		ID:  id,
+	}
+	mock.lockFindMemberByID.Lock()
+	mock.calls.FindMemberByID = append(mock.calls.FindMemberByID, callInfo)
+	mock.lockFindMemberByID.Unlock()
+	return mock.FindMemberByIDFunc(ctx, id)
+}
+
+// FindMemberByIDCalls gets all the calls that were made to FindMemberByID.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindMemberByIDCalls())
+func (mock *ManagerInterfaceMock) FindMemberByIDCalls() []struct {
+	Ctx context.Context
+	ID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx context.Context
+		ID  uuid.UUID
+	}
+	mock.lockFindMemberByID.RLock()
+	calls = mock.calls.FindMemberByID
+	mock.lockFindMemberByID.RUnlock()
 	return calls
 }
 
@@ -9267,6 +9411,82 @@ func (mock *ManagerInterfaceMock) GetRolesOnPolicyCountCalls() []struct {
 	return calls
 }
 
+// Login calls LoginFunc.
+func (mock *ManagerInterfaceMock) Login(ctx context.Context, loginID string, password string) (entity.AuthJwt, error) {
+	if mock.LoginFunc == nil {
+		panic("ManagerInterfaceMock.LoginFunc: method is nil but ManagerInterface.Login was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		LoginID  string
+		Password string
+	}{
+		Ctx:      ctx,
+		LoginID:  loginID,
+		Password: password,
+	}
+	mock.lockLogin.Lock()
+	mock.calls.Login = append(mock.calls.Login, callInfo)
+	mock.lockLogin.Unlock()
+	return mock.LoginFunc(ctx, loginID, password)
+}
+
+// LoginCalls gets all the calls that were made to Login.
+// Check the length with:
+//
+//	len(mockedManagerInterface.LoginCalls())
+func (mock *ManagerInterfaceMock) LoginCalls() []struct {
+	Ctx      context.Context
+	LoginID  string
+	Password string
+} {
+	var calls []struct {
+		Ctx      context.Context
+		LoginID  string
+		Password string
+	}
+	mock.lockLogin.RLock()
+	calls = mock.calls.Login
+	mock.lockLogin.RUnlock()
+	return calls
+}
+
+// Logout calls LogoutFunc.
+func (mock *ManagerInterfaceMock) Logout(ctx context.Context, memberID uuid.UUID) error {
+	if mock.LogoutFunc == nil {
+		panic("ManagerInterfaceMock.LogoutFunc: method is nil but ManagerInterface.Logout was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+	}{
+		Ctx:      ctx,
+		MemberID: memberID,
+	}
+	mock.lockLogout.Lock()
+	mock.calls.Logout = append(mock.calls.Logout, callInfo)
+	mock.lockLogout.Unlock()
+	return mock.LogoutFunc(ctx, memberID)
+}
+
+// LogoutCalls gets all the calls that were made to Logout.
+// Check the length with:
+//
+//	len(mockedManagerInterface.LogoutCalls())
+func (mock *ManagerInterfaceMock) LogoutCalls() []struct {
+	Ctx      context.Context
+	MemberID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+	}
+	mock.lockLogout.RLock()
+	calls = mock.calls.Logout
+	mock.lockLogout.RUnlock()
+	return calls
+}
+
 // PluralDeleteAttendStatuses calls PluralDeleteAttendStatusesFunc.
 func (mock *ManagerInterfaceMock) PluralDeleteAttendStatuses(ctx context.Context, ids []uuid.UUID) (int64, error) {
 	if mock.PluralDeleteAttendStatusesFunc == nil {
@@ -9884,6 +10104,42 @@ func (mock *ManagerInterfaceMock) PluralDisassociateRoleOnPolicyCalls() []struct
 	mock.lockPluralDisassociateRoleOnPolicy.RLock()
 	calls = mock.calls.PluralDisassociateRoleOnPolicy
 	mock.lockPluralDisassociateRoleOnPolicy.RUnlock()
+	return calls
+}
+
+// RefreshToken calls RefreshTokenFunc.
+func (mock *ManagerInterfaceMock) RefreshToken(ctx context.Context, refreshToken string) (entity.AuthJwt, error) {
+	if mock.RefreshTokenFunc == nil {
+		panic("ManagerInterfaceMock.RefreshTokenFunc: method is nil but ManagerInterface.RefreshToken was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		RefreshToken string
+	}{
+		Ctx:          ctx,
+		RefreshToken: refreshToken,
+	}
+	mock.lockRefreshToken.Lock()
+	mock.calls.RefreshToken = append(mock.calls.RefreshToken, callInfo)
+	mock.lockRefreshToken.Unlock()
+	return mock.RefreshTokenFunc(ctx, refreshToken)
+}
+
+// RefreshTokenCalls gets all the calls that were made to RefreshToken.
+// Check the length with:
+//
+//	len(mockedManagerInterface.RefreshTokenCalls())
+func (mock *ManagerInterfaceMock) RefreshTokenCalls() []struct {
+	Ctx          context.Context
+	RefreshToken string
+} {
+	var calls []struct {
+		Ctx          context.Context
+		RefreshToken string
+	}
+	mock.lockRefreshToken.RLock()
+	calls = mock.calls.RefreshToken
+	mock.lockRefreshToken.RUnlock()
 	return calls
 }
 

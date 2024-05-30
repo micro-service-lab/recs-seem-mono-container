@@ -6,5 +6,5 @@ type Hash interface {
 	// Encrypt ハッシュ化する。
 	Encrypt(text string) (string, error)
 	// Compare ハッシュを比較する。
-	Compare(text, hash string) error
+	Compare(text, hash string) (bool, error)
 }

@@ -256,3 +256,81 @@ func (m *ManageMember) UpdateMemberLoginID(
 	}
 	return e, nil
 }
+
+// FindMemberByID メンバーを ID で取得する。
+func (m *ManageMember) FindMemberByID(ctx context.Context, id uuid.UUID) (e entity.Member, err error) {
+	e, err = m.DB.FindMemberByID(ctx, id)
+	if err != nil {
+		return entity.Member{}, fmt.Errorf("failed to find member by id: %w", err)
+	}
+	return e, nil
+}
+
+func (m *ManageMember) FindAuthMemberByID(
+	ctx context.Context,
+	id uuid.UUID,
+) (e entity.AuthMember, err error) {
+	sd, err := m.DB.Begin(ctx)
+	if err != nil {
+		return entity.AuthMember{}, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			if rerr := m.DB.Rollback(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to rollback transaction: %w", rerr)
+			}
+		} else {
+			if rerr := m.DB.Commit(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to commit transaction: %w", rerr)
+			}
+		}
+	}()
+
+	member, err := m.DB.FindMemberByIDWithSd(ctx, sd, id)
+	if err != nil {
+		return entity.AuthMember{}, fmt.Errorf("failed to find member by id: %w", err)
+	}
+	var role entity.NullableEntity[entity.RoleWithPolicies]
+	if member.RoleID.Valid {
+		re, err := m.DB.GetPoliciesOnRole(
+			ctx,
+			member.RoleID.Bytes,
+			parameter.WherePolicyOnRoleParam{},
+			parameter.PolicyOnRoleOrderMethodDefault,
+			store.NumberedPaginationParam{},
+			store.CursorPaginationParam{},
+			store.WithCountParam{},
+		)
+		if err != nil {
+			return entity.AuthMember{}, fmt.Errorf("failed to get policies on role: %w", err)
+		}
+		r, err := m.DB.FindRoleByID(ctx, member.RoleID.Bytes)
+		if err != nil {
+			return entity.AuthMember{}, fmt.Errorf("failed to find role by id: %w", err)
+		}
+		role = entity.NullableEntity[entity.RoleWithPolicies]{
+			Valid: true,
+			Entity: entity.RoleWithPolicies{
+				Role: entity.Role{
+					RoleID:      r.RoleID,
+					Name:        r.Name,
+					Description: r.Description,
+				},
+				Policies: re.Data,
+			},
+		}
+	}
+	return entity.AuthMember{
+		MemberID:               id,
+		Email:                  member.Email,
+		Name:                   member.Name,
+		FirstName:              member.FirstName,
+		LastName:               member.LastName,
+		AttendStatusID:         member.AttendStatusID,
+		ProfileImageID:         member.ProfileImageID,
+		GradeID:                member.GradeID,
+		GroupID:                member.GroupID,
+		PersonalOrganizationID: member.PersonalOrganizationID,
+		Role:                   role,
+	}, nil
+}

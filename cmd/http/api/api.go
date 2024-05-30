@@ -15,6 +15,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
+	"github.com/micro-service-lab/recs-seem-mono-container/internal/session"
 )
 
 // API API を表す構造体。
@@ -33,12 +34,19 @@ type API struct {
 
 	// translator 翻訳サービス
 	translator i18n.Translation
+
+	// ssm セッションマネージャ
+	ssm session.Manager
 }
 
 // NewAPI API を生成して返す。
 func NewAPI(
-	clk clock.Clock, auth auth.Auth,
-	validator validation.Validator, svc service.ManagerInterface, translator i18n.Translation,
+	clk clock.Clock,
+	auth auth.Auth,
+	validator validation.Validator,
+	svc service.ManagerInterface,
+	translator i18n.Translation,
+	ssm session.Manager,
 ) *API {
 	return &API{
 		clk:         clk,
@@ -47,6 +55,7 @@ func NewAPI(
 		svc:         svc,
 		middlewares: make([]func(http.Handler) http.Handler, 0),
 		translator:  translator,
+		ssm:         ssm,
 	}
 }
 
@@ -68,6 +77,7 @@ func (s *API) Handler() http.Handler {
 
 	r.Post("/ping", handler.PingHandler(s.clk))
 
+	r.Mount("/auth", AuthHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
 	r.Mount("/attend_statuses", AttendStatusHandler(s.svc))
 	r.Mount("/attendance_types", AttendanceTypeHandler(s.svc))
 	r.Mount("/event_types", EventTypeHandler(s.svc))
@@ -81,7 +91,7 @@ func (s *API) Handler() http.Handler {
 	r.Mount("/organizations", OrganizationHandler(s.svc, s.validator, s.translator))
 	r.Mount("/students", StudentHandler(s.svc, s.validator, s.translator))
 	r.Mount("/professors", ProfessorHandler(s.svc, s.validator, s.translator))
-	r.Mount("/members", MemberHandler(s.svc, s.validator, s.translator))
+	r.Mount("/members", MemberHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
 	r.Mount("/chat_room_action_types", ChatRoomActionTypeHandler(s.svc))
 
 	r.NotFound(s.notFound)

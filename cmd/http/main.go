@@ -21,8 +21,6 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/lang"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/recoverer"
-	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"
-	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock/fakeclock"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/faketime"
 )
@@ -63,13 +61,7 @@ func run(ctx context.Context) error {
 		r.Mount("/faketime", faketime.NewAPI(fakeClk, "/faketime"))
 	}
 
-	auth := auth.New([]byte(ctr.Config.AuthSecret), ctr.Config.SecretIssuer)
-	vd, err := validation.NewRequestValidator()
-	if err != nil {
-		return fmt.Errorf("failed to create request validator: %w", err)
-	}
-
-	apiI := api.NewAPI(ctr.Clocker, auth, vd, ctr.ServiceManager, ctr.Translator)
+	apiI := api.NewAPI(ctr.Clocker, ctr.Auth, ctr.Validator, ctr.ServiceManager, ctr.Translator, ctr.SessionManager)
 
 	middlewares := make([]func(http.Handler) http.Handler, 0, 3) //nolint:gomnd
 	// CORS ミドルウェアを追加
@@ -86,10 +78,6 @@ func run(ctx context.Context) error {
 		}))
 	}
 	middlewares = append(middlewares, lang.Handler(string(ctr.Config.DefaultLanguage)))
-	// AuthMiddleware を追加
-	// middlewares = append(middlewares, app.AuthMiddleware(time.Now, auth, db, app.DefaultAPIBasePath))
-
-	// RateLimitMiddleware を追加
 	middlewares = append(middlewares, httprate.Limit(
 		ctr.Config.ThrottleRequestLimit,
 		1*time.Minute,

@@ -266,4 +266,32 @@ var (
 		Message:    "only professor action error",
 		StatusCode: http.StatusForbidden,
 	}
+
+	// InvalidLoginIDOrPassword ログインIDまたはパスワードが無効
+	InvalidLoginIDOrPassword = APIResponseType{
+		Code:       "233",
+		Message:    "invalid login id or password error",
+		StatusCode: http.StatusUnauthorized,
+	}
+
+	// InvalidRefreshToken リフレッシュトークンが無効
+	InvalidRefreshToken = APIResponseType{
+		Code:       "234",
+		Message:    "invalid refresh token error",
+		StatusCode: http.StatusUnauthorized,
+	}
+
+	// ExpireAccessToken アクセストークンの有効期限切れ
+	ExpireAccessToken = APIResponseType{
+		Code:       "235",
+		Message:    "expire access token error",
+		StatusCode: http.StatusUnauthorized,
+	}
+
+	// ExpireRefreshToken リフレッシュトークンの有効期限切れ
+	ExpireRefreshToken = APIResponseType{
+		Code:       "236",
+		Message:    "expire refresh token error",
+		StatusCode: http.StatusUnauthorized,
+	}
 )

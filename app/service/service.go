@@ -13,7 +13,10 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/storage"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
+	"github.com/micro-service-lab/recs-seem-mono-container/internal/config"
+	"github.com/micro-service-lab/recs-seem-mono-container/internal/session"
 )
 
 // Manager is a manager for services.
@@ -41,6 +44,7 @@ type Manager struct {
 	ManageStudent
 	ManageProfessor
 	ManageChatRoomActionType
+	ManageAuth
 }
 
 // NewManager creates a new Manager.
@@ -50,6 +54,9 @@ func NewManager(
 	stg storage.Storage,
 	h hasher.Hash,
 	clk clock.Clock,
+	auth auth.Auth,
+	ssm session.Manager,
+	cfg config.Config,
 ) *Manager {
 	return &Manager{
 		ManageAttendStatus:       ManageAttendStatus{DB: db},
@@ -75,6 +82,9 @@ func NewManager(
 		ManageStudent:            ManageStudent{DB: db, Hash: h, Clocker: clk, Storage: stg},
 		ManageProfessor:          ManageProfessor{DB: db, Hash: h, Clocker: clk, Storage: stg},
 		ManageChatRoomActionType: ManageChatRoomActionType{DB: db},
+		ManageAuth: ManageAuth{
+			DB: db, Hash: h, Auth: auth, SessionManager: ssm, Clocker: clk, Config: cfg,
+		},
 	}
 }
 
@@ -104,6 +114,14 @@ type ManagerInterface interface {
 	StudentManager
 	ProfessorManager
 	ChatRoomActionTypeManager
+	AuthManager
+}
+
+// AuthManager is a interface for auth service.
+type AuthManager interface {
+	Login(ctx context.Context, loginID, password string) (entity.AuthJwt, error)
+	RefreshToken(ctx context.Context, refreshToken string) (entity.AuthJwt, error)
+	Logout(ctx context.Context, memberID uuid.UUID) error
 }
 
 // AttendStatusManager is a interface for attend status service.
@@ -779,6 +797,14 @@ type MemberManager interface {
 		id uuid.UUID,
 		loginID string,
 	) (e entity.Member, err error)
+	FindMemberByID(
+		ctx context.Context,
+		id uuid.UUID,
+	) (entity.Member, error)
+	FindAuthMemberByID(
+		ctx context.Context,
+		id uuid.UUID,
+	) (entity.AuthMember, error)
 }
 
 // StudentManager is a interface for student service.

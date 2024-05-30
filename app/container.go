@@ -12,9 +12,12 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/storage"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store/pgadapter"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"
+	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock/fakeclock"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/config"
+	"github.com/micro-service-lab/recs-seem-mono-container/internal/session"
 )
 
 // Container is a container for the application.
@@ -26,6 +29,9 @@ type Container struct {
 	Config         *config.Config
 	Translator     i18n.Translation
 	Hash           hasher.Hash
+	SessionManager session.Manager
+	Auth           auth.Auth
+	Validator      validation.Validator
 }
 
 // NewContainer creates a new Container.
@@ -101,7 +107,28 @@ func (c *Container) Init(ctx context.Context) error {
 
 	c.Hash = h
 
-	svc := service.NewManager(str, c.Translator, s3, h, clk)
+	ssm, err := session.NewRedisManager(ctx, *cfg)
+	if err != nil {
+		return fmt.Errorf("failed to create session manager: %w", err)
+	}
+
+	c.SessionManager = ssm
+
+	auth := auth.New([]byte(
+		cfg.AuthSecret), cfg.SecretIssuer,
+		cfg.AuthAccessTokenExpiresIn, cfg.AuthRefreshTokenExpiresIn)
+	vd, err := validation.NewRequestValidator()
+	if err != nil {
+		return fmt.Errorf("failed to create request validator: %w", err)
+	}
+
+	c.Auth = auth
+
+	c.Validator = vd
+
+	svc := service.NewManager(
+		str, c.Translator, s3, h, clk, auth, ssm, *cfg,
+	)
 
 	c.ServiceManager = svc
 

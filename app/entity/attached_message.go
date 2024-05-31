@@ -14,6 +14,7 @@ type AttachedMessage struct {
 // AttachedItemOnMessage メッセージに添付された添付を表す構造体。
 type AttachedItemOnMessage struct {
 	AttachedMessageID uuid.UUID      `json:"attached_message_id"`
+	MessageID         uuid.UUID      `json:"message_id"`
 	AttachableItem    AttachableItem `json:"attachable_item"`
 }
 
@@ -26,6 +27,7 @@ type AttachedItemOnMessageForQuery struct {
 // AttachedItemOnMessageWithMimeType メッセージに添付された添付を表す構造体。
 type AttachedItemOnMessageWithMimeType struct {
 	AttachedMessageID uuid.UUID                  `json:"attached_message_id"`
+	MessageID         uuid.UUID                  `json:"message_id"`
 	AttachableItem    AttachableItemWithMimeType `json:"attachable_item"`
 }
 

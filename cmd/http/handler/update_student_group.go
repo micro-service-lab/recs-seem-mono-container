@@ -51,7 +51,7 @@ func (h *UpdateStudentGroup) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	var student entity.Student
+	var student entity.StudentWithMember
 	if student, err = h.Service.UpdateStudentGroup(
 		ctx,
 		id,

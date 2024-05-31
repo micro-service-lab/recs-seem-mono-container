@@ -41,6 +41,12 @@ type WhereReadableMessageOnChatRoomAndMemberParam struct {
 	WhereIsNotRead bool
 }
 
+// WhereReadsOnMessageParam メッセージ上の既読情報検索のパラメータ。
+type WhereReadsOnMessageParam struct {
+	WhereIsRead    bool
+	WhereIsNotRead bool
+}
+
 // ReadableMemberOnMessageOrderMethod メンバー上のメッセージの並び替え方法。
 type ReadableMemberOnMessageOrderMethod string
 

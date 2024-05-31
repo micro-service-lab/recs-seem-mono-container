@@ -64,7 +64,7 @@ func (q *Queries) DeleteChatRoomWithdrawAction(ctx context.Context, chatRoomWith
 const getChatRoomWithdrawActionsOnChatRoom = `-- name: GetChatRoomWithdrawActionsOnChatRoom :many
 SELECT t_chat_room_withdraw_actions.t_chat_room_withdraw_actions_pkey, t_chat_room_withdraw_actions.chat_room_withdraw_action_id, t_chat_room_withdraw_actions.chat_room_action_id, t_chat_room_withdraw_actions.member_id,
 m_members.name withdraw_member_name, m_members.first_name withdraw_member_first_name, m_members.last_name withdraw_member_last_name, m_members.email withdraw_member_email,
-m_members.profile_image_id withdraw_member_profile_image_id
+m_members.profile_image_id withdraw_member_profile_image_id, m_members.grade_id withdraw_member_grade_id, m_members.group_id withdraw_member_group_id
 FROM t_chat_room_withdraw_actions
 LEFT JOIN m_members ON t_chat_room_withdraw_actions.member_id = m_members.member_id
 WHERE EXISTS (
@@ -84,6 +84,8 @@ type GetChatRoomWithdrawActionsOnChatRoomRow struct {
 	WithdrawMemberLastName       pgtype.Text `json:"withdraw_member_last_name"`
 	WithdrawMemberEmail          pgtype.Text `json:"withdraw_member_email"`
 	WithdrawMemberProfileImageID pgtype.UUID `json:"withdraw_member_profile_image_id"`
+	WithdrawMemberGradeID        pgtype.UUID `json:"withdraw_member_grade_id"`
+	WithdrawMemberGroupID        pgtype.UUID `json:"withdraw_member_group_id"`
 }
 
 func (q *Queries) GetChatRoomWithdrawActionsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) ([]GetChatRoomWithdrawActionsOnChatRoomRow, error) {
@@ -105,6 +107,8 @@ func (q *Queries) GetChatRoomWithdrawActionsOnChatRoom(ctx context.Context, chat
 			&i.WithdrawMemberLastName,
 			&i.WithdrawMemberEmail,
 			&i.WithdrawMemberProfileImageID,
+			&i.WithdrawMemberGradeID,
+			&i.WithdrawMemberGroupID,
 		); err != nil {
 			return nil, err
 		}
@@ -119,7 +123,7 @@ func (q *Queries) GetChatRoomWithdrawActionsOnChatRoom(ctx context.Context, chat
 const getChatRoomWithdrawActionsOnChatRoomUseKeysetPaginate = `-- name: GetChatRoomWithdrawActionsOnChatRoomUseKeysetPaginate :many
 SELECT t_chat_room_withdraw_actions.t_chat_room_withdraw_actions_pkey, t_chat_room_withdraw_actions.chat_room_withdraw_action_id, t_chat_room_withdraw_actions.chat_room_action_id, t_chat_room_withdraw_actions.member_id,
 m_members.name withdraw_member_name, m_members.first_name withdraw_member_first_name, m_members.last_name withdraw_member_last_name, m_members.email withdraw_member_email,
-m_members.profile_image_id withdraw_member_profile_image_id
+m_members.profile_image_id withdraw_member_profile_image_id, m_members.grade_id withdraw_member_grade_id, m_members.group_id withdraw_member_group_id
 FROM t_chat_room_withdraw_actions
 LEFT JOIN m_members ON t_chat_room_withdraw_actions.member_id = m_members.member_id
 WHERE EXISTS (
@@ -155,6 +159,8 @@ type GetChatRoomWithdrawActionsOnChatRoomUseKeysetPaginateRow struct {
 	WithdrawMemberLastName       pgtype.Text `json:"withdraw_member_last_name"`
 	WithdrawMemberEmail          pgtype.Text `json:"withdraw_member_email"`
 	WithdrawMemberProfileImageID pgtype.UUID `json:"withdraw_member_profile_image_id"`
+	WithdrawMemberGradeID        pgtype.UUID `json:"withdraw_member_grade_id"`
+	WithdrawMemberGroupID        pgtype.UUID `json:"withdraw_member_group_id"`
 }
 
 func (q *Queries) GetChatRoomWithdrawActionsOnChatRoomUseKeysetPaginate(ctx context.Context, arg GetChatRoomWithdrawActionsOnChatRoomUseKeysetPaginateParams) ([]GetChatRoomWithdrawActionsOnChatRoomUseKeysetPaginateRow, error) {
@@ -181,6 +187,8 @@ func (q *Queries) GetChatRoomWithdrawActionsOnChatRoomUseKeysetPaginate(ctx cont
 			&i.WithdrawMemberLastName,
 			&i.WithdrawMemberEmail,
 			&i.WithdrawMemberProfileImageID,
+			&i.WithdrawMemberGradeID,
+			&i.WithdrawMemberGroupID,
 		); err != nil {
 			return nil, err
 		}
@@ -195,7 +203,7 @@ func (q *Queries) GetChatRoomWithdrawActionsOnChatRoomUseKeysetPaginate(ctx cont
 const getChatRoomWithdrawActionsOnChatRoomUseNumberedPaginate = `-- name: GetChatRoomWithdrawActionsOnChatRoomUseNumberedPaginate :many
 SELECT t_chat_room_withdraw_actions.t_chat_room_withdraw_actions_pkey, t_chat_room_withdraw_actions.chat_room_withdraw_action_id, t_chat_room_withdraw_actions.chat_room_action_id, t_chat_room_withdraw_actions.member_id,
 m_members.name withdraw_member_name, m_members.first_name withdraw_member_first_name, m_members.last_name withdraw_member_last_name, m_members.email withdraw_member_email,
-m_members.profile_image_id withdraw_member_profile_image_id
+m_members.profile_image_id withdraw_member_profile_image_id, m_members.grade_id withdraw_member_grade_id, m_members.group_id withdraw_member_group_id
 FROM t_chat_room_withdraw_actions
 LEFT JOIN m_members ON t_chat_room_withdraw_actions.member_id = m_members.member_id
 WHERE EXISTS (
@@ -222,6 +230,8 @@ type GetChatRoomWithdrawActionsOnChatRoomUseNumberedPaginateRow struct {
 	WithdrawMemberLastName       pgtype.Text `json:"withdraw_member_last_name"`
 	WithdrawMemberEmail          pgtype.Text `json:"withdraw_member_email"`
 	WithdrawMemberProfileImageID pgtype.UUID `json:"withdraw_member_profile_image_id"`
+	WithdrawMemberGradeID        pgtype.UUID `json:"withdraw_member_grade_id"`
+	WithdrawMemberGroupID        pgtype.UUID `json:"withdraw_member_group_id"`
 }
 
 func (q *Queries) GetChatRoomWithdrawActionsOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetChatRoomWithdrawActionsOnChatRoomUseNumberedPaginateParams) ([]GetChatRoomWithdrawActionsOnChatRoomUseNumberedPaginateRow, error) {
@@ -243,6 +253,8 @@ func (q *Queries) GetChatRoomWithdrawActionsOnChatRoomUseNumberedPaginate(ctx co
 			&i.WithdrawMemberLastName,
 			&i.WithdrawMemberEmail,
 			&i.WithdrawMemberProfileImageID,
+			&i.WithdrawMemberGradeID,
+			&i.WithdrawMemberGroupID,
 		); err != nil {
 			return nil, err
 		}
@@ -257,7 +269,7 @@ func (q *Queries) GetChatRoomWithdrawActionsOnChatRoomUseNumberedPaginate(ctx co
 const getPluralChatRoomWithdrawActions = `-- name: GetPluralChatRoomWithdrawActions :many
 SELECT t_chat_room_withdraw_actions.t_chat_room_withdraw_actions_pkey, t_chat_room_withdraw_actions.chat_room_withdraw_action_id, t_chat_room_withdraw_actions.chat_room_action_id, t_chat_room_withdraw_actions.member_id,
 m_members.name withdraw_member_name, m_members.first_name withdraw_member_first_name, m_members.last_name withdraw_member_last_name, m_members.email withdraw_member_email,
-m_members.profile_image_id withdraw_member_profile_image_id
+m_members.profile_image_id withdraw_member_profile_image_id, m_members.grade_id withdraw_member_grade_id, m_members.group_id withdraw_member_group_id
 FROM t_chat_room_withdraw_actions
 LEFT JOIN m_members ON t_chat_room_withdraw_actions.member_id = m_members.member_id
 WHERE chat_room_withdraw_action_id = ANY($1::uuid[])
@@ -275,6 +287,8 @@ type GetPluralChatRoomWithdrawActionsRow struct {
 	WithdrawMemberLastName       pgtype.Text `json:"withdraw_member_last_name"`
 	WithdrawMemberEmail          pgtype.Text `json:"withdraw_member_email"`
 	WithdrawMemberProfileImageID pgtype.UUID `json:"withdraw_member_profile_image_id"`
+	WithdrawMemberGradeID        pgtype.UUID `json:"withdraw_member_grade_id"`
+	WithdrawMemberGroupID        pgtype.UUID `json:"withdraw_member_group_id"`
 }
 
 func (q *Queries) GetPluralChatRoomWithdrawActions(ctx context.Context, chatRoomWithdrawActionIds []uuid.UUID) ([]GetPluralChatRoomWithdrawActionsRow, error) {
@@ -296,6 +310,8 @@ func (q *Queries) GetPluralChatRoomWithdrawActions(ctx context.Context, chatRoom
 			&i.WithdrawMemberLastName,
 			&i.WithdrawMemberEmail,
 			&i.WithdrawMemberProfileImageID,
+			&i.WithdrawMemberGradeID,
+			&i.WithdrawMemberGroupID,
 		); err != nil {
 			return nil, err
 		}
@@ -310,7 +326,7 @@ func (q *Queries) GetPluralChatRoomWithdrawActions(ctx context.Context, chatRoom
 const getPluralChatRoomWithdrawActionsUseNumberedPaginate = `-- name: GetPluralChatRoomWithdrawActionsUseNumberedPaginate :many
 SELECT t_chat_room_withdraw_actions.t_chat_room_withdraw_actions_pkey, t_chat_room_withdraw_actions.chat_room_withdraw_action_id, t_chat_room_withdraw_actions.chat_room_action_id, t_chat_room_withdraw_actions.member_id,
 m_members.name withdraw_member_name, m_members.first_name withdraw_member_first_name, m_members.last_name withdraw_member_last_name, m_members.email withdraw_member_email,
-m_members.profile_image_id withdraw_member_profile_image_id
+m_members.profile_image_id withdraw_member_profile_image_id, m_members.grade_id withdraw_member_grade_id, m_members.group_id withdraw_member_group_id
 FROM t_chat_room_withdraw_actions
 LEFT JOIN m_members ON t_chat_room_withdraw_actions.member_id = m_members.member_id
 WHERE chat_room_withdraw_action_id = ANY($3::uuid[])
@@ -335,6 +351,8 @@ type GetPluralChatRoomWithdrawActionsUseNumberedPaginateRow struct {
 	WithdrawMemberLastName       pgtype.Text `json:"withdraw_member_last_name"`
 	WithdrawMemberEmail          pgtype.Text `json:"withdraw_member_email"`
 	WithdrawMemberProfileImageID pgtype.UUID `json:"withdraw_member_profile_image_id"`
+	WithdrawMemberGradeID        pgtype.UUID `json:"withdraw_member_grade_id"`
+	WithdrawMemberGroupID        pgtype.UUID `json:"withdraw_member_group_id"`
 }
 
 func (q *Queries) GetPluralChatRoomWithdrawActionsUseNumberedPaginate(ctx context.Context, arg GetPluralChatRoomWithdrawActionsUseNumberedPaginateParams) ([]GetPluralChatRoomWithdrawActionsUseNumberedPaginateRow, error) {
@@ -356,6 +374,8 @@ func (q *Queries) GetPluralChatRoomWithdrawActionsUseNumberedPaginate(ctx contex
 			&i.WithdrawMemberLastName,
 			&i.WithdrawMemberEmail,
 			&i.WithdrawMemberProfileImageID,
+			&i.WithdrawMemberGradeID,
+			&i.WithdrawMemberGroupID,
 		); err != nil {
 			return nil, err
 		}

@@ -59,6 +59,8 @@ func convReadableMemberOnMessage(e query.GetReadableMembersOnMessageRow) entity.
 					},
 				},
 			},
+			GradeID: e.GradeID,
+			GroupID: e.GroupID,
 		},
 		ReadAt: entity.Timestamptz{
 			Time:             e.ReadAt.Time,
@@ -142,6 +144,93 @@ func (a *PgAdapter) CountReadableMessagesOnChatRoomAndMemberWithSd(
 		return 0, store.ErrNotFoundDescriptor
 	}
 	return countReadableMessagesOnChatRoomAndMember(ctx, qtx, chatRoomID, memberID, where)
+}
+
+func countReadsOnMessages(
+	ctx context.Context, qtx *query.Queries, messageIDs []uuid.UUID, where parameter.WhereReadsOnMessageParam,
+) ([]entity.ReadReceiptGroupByMessage, error) {
+	p := query.CountReadsOnMessagesParams{
+		MessageIds:     messageIDs,
+		WhereIsRead:    where.WhereIsRead,
+		WhereIsNotRead: where.WhereIsNotRead,
+	}
+	rs, err := qtx.CountReadsOnMessages(ctx, p)
+	if err != nil {
+		return nil, fmt.Errorf("failed to count reads on messages: %w", err)
+	}
+	res := make([]entity.ReadReceiptGroupByMessage, 0, len(rs))
+	for _, r := range rs {
+		res = append(res, entity.ReadReceiptGroupByMessage{
+			MessageID: r.MessageID,
+			Count:     r.Count,
+		})
+	}
+	return res, nil
+}
+
+// CountReadsOnMessages メッセージ上の既読数を取得する。
+func (a *PgAdapter) CountReadsOnMessages(
+	ctx context.Context, messageIDs []uuid.UUID, where parameter.WhereReadsOnMessageParam,
+) ([]entity.ReadReceiptGroupByMessage, error) {
+	return countReadsOnMessages(ctx, a.query, messageIDs, where)
+}
+
+// CountReadsOnMessagesWithSd SD付きでメッセージ上の既読数を取得する。
+func (a *PgAdapter) CountReadsOnMessagesWithSd(
+	ctx context.Context, sd store.Sd, messageIDs []uuid.UUID, where parameter.WhereReadsOnMessageParam,
+) ([]entity.ReadReceiptGroupByMessage, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return nil, store.ErrNotFoundDescriptor
+	}
+	return countReadsOnMessages(ctx, qtx, messageIDs, where)
+}
+
+func countReadableMessagesOnChatRooms(
+	ctx context.Context, qtx *query.Queries, chatRoomIDs []uuid.UUID,
+	where parameter.WhereReadableMessageOnChatRoomAndMemberParam,
+) ([]entity.ReadReceiptGroupByChatRoom, error) {
+	p := query.CountReadableMessagesOnChatRoomsParams{
+		ChatRoomIds:    chatRoomIDs,
+		WhereIsRead:    where.WhereIsRead,
+		WhereIsNotRead: where.WhereIsNotRead,
+	}
+	rs, err := qtx.CountReadableMessagesOnChatRooms(ctx, p)
+	if err != nil {
+		return nil, fmt.Errorf("failed to count readable messages on chat rooms: %w", err)
+	}
+	res := make([]entity.ReadReceiptGroupByChatRoom, 0, len(rs))
+	for _, r := range rs {
+		res = append(res, entity.ReadReceiptGroupByChatRoom{
+			ChatRoomID: r.ChatRoomID.Bytes,
+			Count:      r.Count,
+		})
+	}
+	return res, nil
+}
+
+// CountReadableMessagesOnChatRooms チャットルーム上のメッセージ数を取得する。
+func (a *PgAdapter) CountReadableMessagesOnChatRooms(
+	ctx context.Context, chatRoomIDs []uuid.UUID,
+	where parameter.WhereReadableMessageOnChatRoomAndMemberParam,
+) ([]entity.ReadReceiptGroupByChatRoom, error) {
+	return countReadableMessagesOnChatRooms(ctx, a.query, chatRoomIDs, where)
+}
+
+// CountReadableMessagesOnChatRoomsWithSd SD付きでチャットルーム上のメッセージ数を取得する。
+func (a *PgAdapter) CountReadableMessagesOnChatRoomsWithSd(
+	ctx context.Context, sd store.Sd, chatRoomIDs []uuid.UUID,
+	where parameter.WhereReadableMessageOnChatRoomAndMemberParam,
+) ([]entity.ReadReceiptGroupByChatRoom, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return nil, store.ErrNotFoundDescriptor
+	}
+	return countReadableMessagesOnChatRooms(ctx, qtx, chatRoomIDs, where)
 }
 
 func countReadableMessagesOnChatRoomsAndMember(

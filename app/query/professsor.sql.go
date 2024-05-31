@@ -58,7 +58,7 @@ func (q *Queries) FindProfessorByID(ctx context.Context, professorID uuid.UUID) 
 }
 
 const findProfessorByIDWithMember = `-- name: FindProfessorByIDWithMember :one
-SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -77,6 +77,8 @@ type FindProfessorByIDWithMemberRow struct {
 	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
 	MemberLastName                     pgtype.Text   `json:"member_last_name"`
 	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberGradeID                      pgtype.UUID   `json:"member_grade_id"`
+	MemberGroupID                      pgtype.UUID   `json:"member_group_id"`
 	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
 	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
 	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
@@ -100,6 +102,8 @@ func (q *Queries) FindProfessorByIDWithMember(ctx context.Context, professorID u
 		&i.MemberFirstName,
 		&i.MemberLastName,
 		&i.MemberEmail,
+		&i.MemberGradeID,
+		&i.MemberGroupID,
 		&i.MemberProfileImageID,
 		&i.MemberProfileImageHeight,
 		&i.MemberProfileImageWidth,
@@ -176,7 +180,7 @@ func (q *Queries) GetPluralProfessorsUseNumberedPaginate(ctx context.Context, ar
 }
 
 const getPluralProfessorsWithMember = `-- name: GetPluralProfessorsWithMember :many
-SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -197,6 +201,8 @@ type GetPluralProfessorsWithMemberRow struct {
 	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
 	MemberLastName                     pgtype.Text   `json:"member_last_name"`
 	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberGradeID                      pgtype.UUID   `json:"member_grade_id"`
+	MemberGroupID                      pgtype.UUID   `json:"member_group_id"`
 	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
 	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
 	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
@@ -226,6 +232,8 @@ func (q *Queries) GetPluralProfessorsWithMember(ctx context.Context, professorId
 			&i.MemberFirstName,
 			&i.MemberLastName,
 			&i.MemberEmail,
+			&i.MemberGradeID,
+			&i.MemberGroupID,
 			&i.MemberProfileImageID,
 			&i.MemberProfileImageHeight,
 			&i.MemberProfileImageWidth,
@@ -248,7 +256,7 @@ func (q *Queries) GetPluralProfessorsWithMember(ctx context.Context, professorId
 }
 
 const getPluralProfessorsWithMemberUseNumberedPaginate = `-- name: GetPluralProfessorsWithMemberUseNumberedPaginate :many
-SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -276,6 +284,8 @@ type GetPluralProfessorsWithMemberUseNumberedPaginateRow struct {
 	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
 	MemberLastName                     pgtype.Text   `json:"member_last_name"`
 	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberGradeID                      pgtype.UUID   `json:"member_grade_id"`
+	MemberGroupID                      pgtype.UUID   `json:"member_group_id"`
 	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
 	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
 	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
@@ -305,6 +315,8 @@ func (q *Queries) GetPluralProfessorsWithMemberUseNumberedPaginate(ctx context.C
 			&i.MemberFirstName,
 			&i.MemberLastName,
 			&i.MemberEmail,
+			&i.MemberGradeID,
+			&i.MemberGroupID,
 			&i.MemberProfileImageID,
 			&i.MemberProfileImageHeight,
 			&i.MemberProfileImageWidth,
@@ -426,7 +438,7 @@ func (q *Queries) GetProfessorsUseNumberedPaginate(ctx context.Context, arg GetP
 }
 
 const getProfessorsWithMember = `-- name: GetProfessorsWithMember :many
-SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -446,6 +458,8 @@ type GetProfessorsWithMemberRow struct {
 	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
 	MemberLastName                     pgtype.Text   `json:"member_last_name"`
 	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberGradeID                      pgtype.UUID   `json:"member_grade_id"`
+	MemberGroupID                      pgtype.UUID   `json:"member_group_id"`
 	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
 	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
 	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
@@ -475,6 +489,8 @@ func (q *Queries) GetProfessorsWithMember(ctx context.Context) ([]GetProfessorsW
 			&i.MemberFirstName,
 			&i.MemberLastName,
 			&i.MemberEmail,
+			&i.MemberGradeID,
+			&i.MemberGroupID,
 			&i.MemberProfileImageID,
 			&i.MemberProfileImageHeight,
 			&i.MemberProfileImageWidth,
@@ -497,7 +513,7 @@ func (q *Queries) GetProfessorsWithMember(ctx context.Context) ([]GetProfessorsW
 }
 
 const getProfessorsWithMemberUseKeysetPaginate = `-- name: GetProfessorsWithMemberUseKeysetPaginate :many
-SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -532,6 +548,8 @@ type GetProfessorsWithMemberUseKeysetPaginateRow struct {
 	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
 	MemberLastName                     pgtype.Text   `json:"member_last_name"`
 	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberGradeID                      pgtype.UUID   `json:"member_grade_id"`
+	MemberGroupID                      pgtype.UUID   `json:"member_group_id"`
 	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
 	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
 	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
@@ -561,6 +579,8 @@ func (q *Queries) GetProfessorsWithMemberUseKeysetPaginate(ctx context.Context, 
 			&i.MemberFirstName,
 			&i.MemberLastName,
 			&i.MemberEmail,
+			&i.MemberGradeID,
+			&i.MemberGroupID,
 			&i.MemberProfileImageID,
 			&i.MemberProfileImageHeight,
 			&i.MemberProfileImageWidth,
@@ -583,7 +603,7 @@ func (q *Queries) GetProfessorsWithMemberUseKeysetPaginate(ctx context.Context, 
 }
 
 const getProfessorsWithMemberUseNumberedPaginate = `-- name: GetProfessorsWithMemberUseNumberedPaginate :many
-SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT m_professors.m_professors_pkey, m_professors.professor_id, m_professors.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -609,6 +629,8 @@ type GetProfessorsWithMemberUseNumberedPaginateRow struct {
 	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
 	MemberLastName                     pgtype.Text   `json:"member_last_name"`
 	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberGradeID                      pgtype.UUID   `json:"member_grade_id"`
+	MemberGroupID                      pgtype.UUID   `json:"member_group_id"`
 	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
 	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
 	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
@@ -638,6 +660,8 @@ func (q *Queries) GetProfessorsWithMemberUseNumberedPaginate(ctx context.Context
 			&i.MemberFirstName,
 			&i.MemberLastName,
 			&i.MemberEmail,
+			&i.MemberGradeID,
+			&i.MemberGroupID,
 			&i.MemberProfileImageID,
 			&i.MemberProfileImageHeight,
 			&i.MemberProfileImageWidth,

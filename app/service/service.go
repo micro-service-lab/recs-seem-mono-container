@@ -45,6 +45,7 @@ type Manager struct {
 	ManageProfessor
 	ManageChatRoomActionType
 	ManageAuth
+	ManageChatRoomAction
 }
 
 // NewManager creates a new Manager.
@@ -85,6 +86,7 @@ func NewManager(
 		ManageAuth: ManageAuth{
 			DB: db, Hash: h, Auth: auth, SessionManager: ssm, Clocker: clk, Config: cfg,
 		},
+		ManageChatRoomAction: ManageChatRoomAction{DB: db},
 	}
 }
 
@@ -115,6 +117,7 @@ type ManagerInterface interface {
 	ProfessorManager
 	ChatRoomActionTypeManager
 	AuthManager
+	ChatRoomActionManager
 }
 
 // AuthManager is a interface for auth service.
@@ -826,12 +829,12 @@ type StudentManager interface {
 		ctx context.Context,
 		id uuid.UUID,
 		gradeID uuid.UUID,
-	) (e entity.Student, err error)
+	) (e entity.StudentWithMember, err error)
 	UpdateStudentGroup(
 		ctx context.Context,
 		id uuid.UUID,
 		groupID uuid.UUID,
-	) (e entity.Student, err error)
+	) (e entity.StudentWithMember, err error)
 }
 
 // ProfessorManager is a interface for professor service.
@@ -847,6 +850,21 @@ type ProfessorManager interface {
 		roleID entity.UUID,
 	) (e entity.Professor, err error)
 	DeleteProfessor(ctx context.Context, id uuid.UUID) (c int64, err error)
+}
+
+// ChatRoomActionManager is a interface for chat room action service.
+type ChatRoomActionManager interface {
+	GetChatRoomActionsOnChatRoom(
+		ctx context.Context,
+		chatRoomID uuid.UUID,
+		whereInTypes []uuid.UUID,
+		order parameter.ChatRoomActionOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (store.ListResult[entity.ChatRoomActionPractical], error)
 }
 
 // AttachableItemManager is a interface for attachable item service.

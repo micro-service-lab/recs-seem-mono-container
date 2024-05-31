@@ -40,6 +40,8 @@ func convChatRoomActionOnChatRoom(
 					FirstName:      entity.String(e.CreateMemberFirstName),
 					LastName:       entity.String(e.CreateMemberLastName),
 					ProfileImageID: entity.UUID(e.CreateMemberProfileImageID),
+					GradeID:        e.CreateMemberGradeID.Bytes,
+					GroupID:        e.CreateMemberGroupID.Bytes,
 				},
 			}
 		}
@@ -66,6 +68,8 @@ func convChatRoomActionOnChatRoom(
 					FirstName:      entity.String(e.UpdateMemberFirstName),
 					LastName:       entity.String(e.UpdateMemberLastName),
 					ProfileImageID: entity.UUID(e.UpdateMemberProfileImageID),
+					GradeID:        e.UpdateMemberGradeID.Bytes,
+					GroupID:        e.UpdateMemberGroupID.Bytes,
 				},
 			}
 		}
@@ -92,6 +96,8 @@ func convChatRoomActionOnChatRoom(
 					FirstName:      entity.String(e.AddMemberFirstName),
 					LastName:       entity.String(e.AddMemberLastName),
 					ProfileImageID: entity.UUID(e.AddMemberProfileImageID),
+					GradeID:        e.AddMemberGradeID.Bytes,
+					GroupID:        e.AddMemberGroupID.Bytes,
 				},
 			}
 		}
@@ -117,6 +123,8 @@ func convChatRoomActionOnChatRoom(
 					FirstName:      entity.String(e.RemoveMemberFirstName),
 					LastName:       entity.String(e.RemoveMemberLastName),
 					ProfileImageID: entity.UUID(e.RemoveMemberProfileImageID),
+					GradeID:        e.RemoveMemberGradeID.Bytes,
+					GroupID:        e.RemoveMemberGroupID.Bytes,
 				},
 			}
 		}
@@ -142,6 +150,8 @@ func convChatRoomActionOnChatRoom(
 					FirstName:      entity.String(e.WithdrawMemberFirstName),
 					LastName:       entity.String(e.WithdrawMemberLastName),
 					ProfileImageID: entity.UUID(e.WithdrawMemberProfileImageID),
+					GradeID:        e.WithdrawMemberGradeID.Bytes,
+					GroupID:        e.WithdrawMemberGroupID.Bytes,
 				},
 			}
 		}
@@ -167,6 +177,8 @@ func convChatRoomActionOnChatRoom(
 					FirstName:      entity.String(e.DeleteMessageMemberFirstName),
 					LastName:       entity.String(e.DeleteMessageMemberLastName),
 					ProfileImageID: entity.UUID(e.DeleteMessageMemberProfileImageID),
+					GradeID:        e.DeleteMessageMemberGradeID.Bytes,
+					GroupID:        e.DeleteMessageMemberGroupID.Bytes,
 				},
 			}
 		}
@@ -210,6 +222,8 @@ func convChatRoomActionOnChatRoom(
 					FirstName:    entity.String(e.MessageSenderFirstName),
 					LastName:     entity.String(e.MessageSenderLastName),
 					ProfileImage: profileImage,
+					GradeID:      e.MessageSenderGradeID.Bytes,
+					GroupID:      e.MessageSenderGroupID.Bytes,
 				},
 			}
 		}
@@ -451,7 +465,8 @@ func getChatRoomActionsOnChatRoom(
 		return e.ChatRoomActionWithDetail, nil
 	}
 	runCFunc := func() (int64, error) {
-		r, err := qtx.CountChatRoomActions(ctx, query.CountChatRoomActionsParams{
+		r, err := qtx.CountChatRoomActionsOnChatRoom(ctx, query.CountChatRoomActionsOnChatRoomParams{
+			ChatRoomID:                   chatRoomID,
 			WhereInChatRoomActionTypeIds: where.WhereInChatRoomActionTypeIDs,
 			InChatRoomActionTypeIds:      where.InChatRoomActionTypeIDs,
 		})

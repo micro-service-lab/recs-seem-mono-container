@@ -13,7 +13,7 @@ DELETE FROM t_chat_room_update_name_actions WHERE chat_room_update_name_action_i
 -- name: GetChatRoomUpdateNameActionsOnChatRoom :many
 SELECT t_chat_room_update_name_actions.*,
 m_members.name update_member_name, m_members.first_name update_member_first_name, m_members.last_name update_member_last_name, m_members.email update_member_email,
-m_members.profile_image_id update_member_profile_image_id
+m_members.profile_image_id update_member_profile_image_id, m_members.grade_id update_member_grade_id, m_members.group_id update_member_group_id
 FROM t_chat_room_update_name_actions
 LEFT JOIN m_members ON t_chat_room_update_name_actions.updated_by = m_members.member_id
 WHERE EXISTS (
@@ -25,7 +25,7 @@ ORDER BY
 -- name: GetChatRoomUpdateNameActionsOnChatRoomUseNumberedPaginate :many
 SELECT t_chat_room_update_name_actions.*,
 m_members.name update_member_name, m_members.first_name update_member_first_name, m_members.last_name update_member_last_name, m_members.email update_member_email,
-m_members.profile_image_id update_member_profile_image_id
+m_members.profile_image_id update_member_profile_image_id, m_members.grade_id update_member_grade_id, m_members.group_id update_member_group_id
 FROM t_chat_room_update_name_actions
 LEFT JOIN m_members ON t_chat_room_update_name_actions.updated_by = m_members.member_id
 WHERE EXISTS (
@@ -38,7 +38,7 @@ LIMIT $2 OFFSET $3;
 -- name: GetChatRoomUpdateNameActionsOnChatRoomUseKeysetPaginate :many
 SELECT t_chat_room_update_name_actions.*,
 m_members.name update_member_name, m_members.first_name update_member_first_name, m_members.last_name update_member_last_name, m_members.email update_member_email,
-m_members.profile_image_id update_member_profile_image_id
+m_members.profile_image_id update_member_profile_image_id, m_members.grade_id update_member_grade_id, m_members.group_id update_member_group_id
 FROM t_chat_room_update_name_actions
 LEFT JOIN m_members ON t_chat_room_update_name_actions.updated_by = m_members.member_id
 WHERE EXISTS (
@@ -59,7 +59,7 @@ LIMIT $2;
 -- name: GetPluralChatRoomUpdateNameActions :many
 SELECT t_chat_room_update_name_actions.*,
 m_members.name update_member_name, m_members.first_name update_member_first_name, m_members.last_name update_member_last_name, m_members.email update_member_email,
-m_members.profile_image_id update_member_profile_image_id
+m_members.profile_image_id update_member_profile_image_id, m_members.grade_id update_member_grade_id, m_members.group_id update_member_group_id
 FROM t_chat_room_update_name_actions
 LEFT JOIN m_members ON t_chat_room_update_name_actions.updated_by = m_members.member_id
 WHERE chat_room_update_name_action_id = ANY(@chat_room_update_name_action_ids::uuid[])
@@ -69,7 +69,7 @@ ORDER BY
 -- name: GetPluralChatRoomUpdateNameActionsUseNumberedPaginate :many
 SELECT t_chat_room_update_name_actions.*,
 m_members.name update_member_name, m_members.first_name update_member_first_name, m_members.last_name update_member_last_name, m_members.email update_member_email,
-m_members.profile_image_id update_member_profile_image_id
+m_members.profile_image_id update_member_profile_image_id, m_members.grade_id update_member_grade_id, m_members.group_id update_member_group_id
 FROM t_chat_room_update_name_actions
 LEFT JOIN m_members ON t_chat_room_update_name_actions.updated_by = m_members.member_id
 WHERE chat_room_update_name_action_id = ANY(@chat_room_update_name_action_ids::uuid[])

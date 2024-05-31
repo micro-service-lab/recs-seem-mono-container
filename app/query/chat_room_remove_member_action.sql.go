@@ -64,7 +64,7 @@ func (q *Queries) DeleteChatRoomRemoveMemberAction(ctx context.Context, chatRoom
 const getChatRoomRemoveMemberActionsOnChatRoom = `-- name: GetChatRoomRemoveMemberActionsOnChatRoom :many
 SELECT t_chat_room_remove_member_actions.t_chat_room_remove_member_actions_pkey, t_chat_room_remove_member_actions.chat_room_remove_member_action_id, t_chat_room_remove_member_actions.chat_room_action_id, t_chat_room_remove_member_actions.removed_by,
 m_members.name remove_member_name, m_members.first_name remove_member_first_name, m_members.last_name remove_member_last_name, m_members.email remove_member_email,
-m_members.profile_image_id remove_member_profile_image_id
+m_members.profile_image_id remove_member_profile_image_id, m_members.grade_id remove_member_grade_id, m_members.group_id remove_member_group_id
 FROM t_chat_room_remove_member_actions
 LEFT JOIN m_members ON t_chat_room_remove_member_actions.removed_by = m_members.member_id
 WHERE EXISTS (
@@ -84,6 +84,8 @@ type GetChatRoomRemoveMemberActionsOnChatRoomRow struct {
 	RemoveMemberLastName             pgtype.Text `json:"remove_member_last_name"`
 	RemoveMemberEmail                pgtype.Text `json:"remove_member_email"`
 	RemoveMemberProfileImageID       pgtype.UUID `json:"remove_member_profile_image_id"`
+	RemoveMemberGradeID              pgtype.UUID `json:"remove_member_grade_id"`
+	RemoveMemberGroupID              pgtype.UUID `json:"remove_member_group_id"`
 }
 
 func (q *Queries) GetChatRoomRemoveMemberActionsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID) ([]GetChatRoomRemoveMemberActionsOnChatRoomRow, error) {
@@ -105,6 +107,8 @@ func (q *Queries) GetChatRoomRemoveMemberActionsOnChatRoom(ctx context.Context, 
 			&i.RemoveMemberLastName,
 			&i.RemoveMemberEmail,
 			&i.RemoveMemberProfileImageID,
+			&i.RemoveMemberGradeID,
+			&i.RemoveMemberGroupID,
 		); err != nil {
 			return nil, err
 		}
@@ -119,7 +123,7 @@ func (q *Queries) GetChatRoomRemoveMemberActionsOnChatRoom(ctx context.Context, 
 const getChatRoomRemoveMemberActionsOnChatRoomUseKeysetPaginate = `-- name: GetChatRoomRemoveMemberActionsOnChatRoomUseKeysetPaginate :many
 SELECT t_chat_room_remove_member_actions.t_chat_room_remove_member_actions_pkey, t_chat_room_remove_member_actions.chat_room_remove_member_action_id, t_chat_room_remove_member_actions.chat_room_action_id, t_chat_room_remove_member_actions.removed_by,
 m_members.name remove_member_name, m_members.first_name remove_member_first_name, m_members.last_name remove_member_last_name, m_members.email remove_member_email,
-m_members.profile_image_id remove_member_profile_image_id
+m_members.profile_image_id remove_member_profile_image_id, m_members.grade_id remove_member_grade_id, m_members.group_id remove_member_group_id
 FROM t_chat_room_remove_member_actions
 LEFT JOIN m_members ON t_chat_room_remove_member_actions.removed_by = m_members.member_id
 WHERE EXISTS (
@@ -155,6 +159,8 @@ type GetChatRoomRemoveMemberActionsOnChatRoomUseKeysetPaginateRow struct {
 	RemoveMemberLastName             pgtype.Text `json:"remove_member_last_name"`
 	RemoveMemberEmail                pgtype.Text `json:"remove_member_email"`
 	RemoveMemberProfileImageID       pgtype.UUID `json:"remove_member_profile_image_id"`
+	RemoveMemberGradeID              pgtype.UUID `json:"remove_member_grade_id"`
+	RemoveMemberGroupID              pgtype.UUID `json:"remove_member_group_id"`
 }
 
 func (q *Queries) GetChatRoomRemoveMemberActionsOnChatRoomUseKeysetPaginate(ctx context.Context, arg GetChatRoomRemoveMemberActionsOnChatRoomUseKeysetPaginateParams) ([]GetChatRoomRemoveMemberActionsOnChatRoomUseKeysetPaginateRow, error) {
@@ -181,6 +187,8 @@ func (q *Queries) GetChatRoomRemoveMemberActionsOnChatRoomUseKeysetPaginate(ctx 
 			&i.RemoveMemberLastName,
 			&i.RemoveMemberEmail,
 			&i.RemoveMemberProfileImageID,
+			&i.RemoveMemberGradeID,
+			&i.RemoveMemberGroupID,
 		); err != nil {
 			return nil, err
 		}
@@ -195,7 +203,7 @@ func (q *Queries) GetChatRoomRemoveMemberActionsOnChatRoomUseKeysetPaginate(ctx 
 const getChatRoomRemoveMemberActionsOnChatRoomUseNumberedPaginate = `-- name: GetChatRoomRemoveMemberActionsOnChatRoomUseNumberedPaginate :many
 SELECT t_chat_room_remove_member_actions.t_chat_room_remove_member_actions_pkey, t_chat_room_remove_member_actions.chat_room_remove_member_action_id, t_chat_room_remove_member_actions.chat_room_action_id, t_chat_room_remove_member_actions.removed_by,
 m_members.name remove_member_name, m_members.first_name remove_member_first_name, m_members.last_name remove_member_last_name, m_members.email remove_member_email,
-m_members.profile_image_id remove_member_profile_image_id
+m_members.profile_image_id remove_member_profile_image_id, m_members.grade_id remove_member_grade_id, m_members.group_id remove_member_group_id
 FROM t_chat_room_remove_member_actions
 LEFT JOIN m_members ON t_chat_room_remove_member_actions.removed_by = m_members.member_id
 WHERE EXISTS (
@@ -222,6 +230,8 @@ type GetChatRoomRemoveMemberActionsOnChatRoomUseNumberedPaginateRow struct {
 	RemoveMemberLastName             pgtype.Text `json:"remove_member_last_name"`
 	RemoveMemberEmail                pgtype.Text `json:"remove_member_email"`
 	RemoveMemberProfileImageID       pgtype.UUID `json:"remove_member_profile_image_id"`
+	RemoveMemberGradeID              pgtype.UUID `json:"remove_member_grade_id"`
+	RemoveMemberGroupID              pgtype.UUID `json:"remove_member_group_id"`
 }
 
 func (q *Queries) GetChatRoomRemoveMemberActionsOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetChatRoomRemoveMemberActionsOnChatRoomUseNumberedPaginateParams) ([]GetChatRoomRemoveMemberActionsOnChatRoomUseNumberedPaginateRow, error) {
@@ -243,6 +253,8 @@ func (q *Queries) GetChatRoomRemoveMemberActionsOnChatRoomUseNumberedPaginate(ct
 			&i.RemoveMemberLastName,
 			&i.RemoveMemberEmail,
 			&i.RemoveMemberProfileImageID,
+			&i.RemoveMemberGradeID,
+			&i.RemoveMemberGroupID,
 		); err != nil {
 			return nil, err
 		}
@@ -257,7 +269,7 @@ func (q *Queries) GetChatRoomRemoveMemberActionsOnChatRoomUseNumberedPaginate(ct
 const getPluralChatRoomRemoveMemberActions = `-- name: GetPluralChatRoomRemoveMemberActions :many
 SELECT t_chat_room_remove_member_actions.t_chat_room_remove_member_actions_pkey, t_chat_room_remove_member_actions.chat_room_remove_member_action_id, t_chat_room_remove_member_actions.chat_room_action_id, t_chat_room_remove_member_actions.removed_by,
 m_members.name remove_member_name, m_members.first_name remove_member_first_name, m_members.last_name remove_member_last_name, m_members.email remove_member_email,
-m_members.profile_image_id remove_member_profile_image_id
+m_members.profile_image_id remove_member_profile_image_id, m_members.grade_id remove_member_grade_id, m_members.group_id remove_member_group_id
 FROM t_chat_room_remove_member_actions
 LEFT JOIN m_members ON t_chat_room_remove_member_actions.removed_by = m_members.member_id
 WHERE chat_room_remove_member_action_id = ANY($1::uuid[])
@@ -275,6 +287,8 @@ type GetPluralChatRoomRemoveMemberActionsRow struct {
 	RemoveMemberLastName             pgtype.Text `json:"remove_member_last_name"`
 	RemoveMemberEmail                pgtype.Text `json:"remove_member_email"`
 	RemoveMemberProfileImageID       pgtype.UUID `json:"remove_member_profile_image_id"`
+	RemoveMemberGradeID              pgtype.UUID `json:"remove_member_grade_id"`
+	RemoveMemberGroupID              pgtype.UUID `json:"remove_member_group_id"`
 }
 
 func (q *Queries) GetPluralChatRoomRemoveMemberActions(ctx context.Context, chatRoomRemoveMemberActionIds []uuid.UUID) ([]GetPluralChatRoomRemoveMemberActionsRow, error) {
@@ -296,6 +310,8 @@ func (q *Queries) GetPluralChatRoomRemoveMemberActions(ctx context.Context, chat
 			&i.RemoveMemberLastName,
 			&i.RemoveMemberEmail,
 			&i.RemoveMemberProfileImageID,
+			&i.RemoveMemberGradeID,
+			&i.RemoveMemberGroupID,
 		); err != nil {
 			return nil, err
 		}
@@ -310,7 +326,7 @@ func (q *Queries) GetPluralChatRoomRemoveMemberActions(ctx context.Context, chat
 const getPluralChatRoomRemoveMemberActionsUseNumberedPaginate = `-- name: GetPluralChatRoomRemoveMemberActionsUseNumberedPaginate :many
 SELECT t_chat_room_remove_member_actions.t_chat_room_remove_member_actions_pkey, t_chat_room_remove_member_actions.chat_room_remove_member_action_id, t_chat_room_remove_member_actions.chat_room_action_id, t_chat_room_remove_member_actions.removed_by,
 m_members.name remove_member_name, m_members.first_name remove_member_first_name, m_members.last_name remove_member_last_name, m_members.email remove_member_email,
-m_members.profile_image_id remove_member_profile_image_id
+m_members.profile_image_id remove_member_profile_image_id, m_members.grade_id remove_member_grade_id, m_members.group_id remove_member_group_id
 FROM t_chat_room_remove_member_actions
 LEFT JOIN m_members ON t_chat_room_remove_member_actions.removed_by = m_members.member_id
 WHERE chat_room_remove_member_action_id = ANY($3::uuid[])
@@ -335,6 +351,8 @@ type GetPluralChatRoomRemoveMemberActionsUseNumberedPaginateRow struct {
 	RemoveMemberLastName             pgtype.Text `json:"remove_member_last_name"`
 	RemoveMemberEmail                pgtype.Text `json:"remove_member_email"`
 	RemoveMemberProfileImageID       pgtype.UUID `json:"remove_member_profile_image_id"`
+	RemoveMemberGradeID              pgtype.UUID `json:"remove_member_grade_id"`
+	RemoveMemberGroupID              pgtype.UUID `json:"remove_member_group_id"`
 }
 
 func (q *Queries) GetPluralChatRoomRemoveMemberActionsUseNumberedPaginate(ctx context.Context, arg GetPluralChatRoomRemoveMemberActionsUseNumberedPaginateParams) ([]GetPluralChatRoomRemoveMemberActionsUseNumberedPaginateRow, error) {
@@ -356,6 +374,8 @@ func (q *Queries) GetPluralChatRoomRemoveMemberActionsUseNumberedPaginate(ctx co
 			&i.RemoveMemberLastName,
 			&i.RemoveMemberEmail,
 			&i.RemoveMemberProfileImageID,
+			&i.RemoveMemberGradeID,
+			&i.RemoveMemberGroupID,
 		); err != nil {
 			return nil, err
 		}

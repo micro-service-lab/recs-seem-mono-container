@@ -76,6 +76,49 @@ func (q *Queries) CountReadableMessagesOnChatRoomAndMember(ctx context.Context, 
 	return count, err
 }
 
+const countReadableMessagesOnChatRooms = `-- name: CountReadableMessagesOnChatRooms :many
+SELECT t_chat_room_actions.chat_room_id, COUNT(*) FROM t_read_receipts
+LEFT JOIN t_messages ON t_read_receipts.message_id = t_messages.message_id
+LEFT JOIN t_chat_room_actions ON t_messages.chat_room_action_id = t_chat_room_actions.chat_room_action_id
+WHERE t_chat_room_actions.chat_room_id = ANY($1::uuid[])
+AND
+	CASE WHEN $2::boolean = true THEN t_read_receipts.read_at IS NOT NULL ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
+GROUP BY t_chat_room_actions.chat_room_id
+`
+
+type CountReadableMessagesOnChatRoomsParams struct {
+	ChatRoomIds    []uuid.UUID `json:"chat_room_ids"`
+	WhereIsRead    bool        `json:"where_is_read"`
+	WhereIsNotRead bool        `json:"where_is_not_read"`
+}
+
+type CountReadableMessagesOnChatRoomsRow struct {
+	ChatRoomID pgtype.UUID `json:"chat_room_id"`
+	Count      int64       `json:"count"`
+}
+
+func (q *Queries) CountReadableMessagesOnChatRooms(ctx context.Context, arg CountReadableMessagesOnChatRoomsParams) ([]CountReadableMessagesOnChatRoomsRow, error) {
+	rows, err := q.db.Query(ctx, countReadableMessagesOnChatRooms, arg.ChatRoomIds, arg.WhereIsRead, arg.WhereIsNotRead)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []CountReadableMessagesOnChatRoomsRow{}
+	for rows.Next() {
+		var i CountReadableMessagesOnChatRoomsRow
+		if err := rows.Scan(&i.ChatRoomID, &i.Count); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const countReadableMessagesOnChatRoomsAndMember = `-- name: CountReadableMessagesOnChatRoomsAndMember :many
 SELECT t_chat_room_actions.chat_room_id, COUNT(*) FROM t_read_receipts
 LEFT JOIN t_messages ON t_read_receipts.message_id = t_messages.message_id
@@ -146,6 +189,47 @@ func (q *Queries) CountReadableMessagesOnMember(ctx context.Context, arg CountRe
 	var count int64
 	err := row.Scan(&count)
 	return count, err
+}
+
+const countReadsOnMessages = `-- name: CountReadsOnMessages :many
+SELECT message_id, COUNT(*) FROM t_read_receipts
+WHERE message_id = ANY($1::uuid[])
+AND
+	CASE WHEN $2::boolean = true THEN t_read_receipts.read_at IS NOT NULL ELSE TRUE END
+AND
+	CASE WHEN $3::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
+GROUP BY message_id
+`
+
+type CountReadsOnMessagesParams struct {
+	MessageIds     []uuid.UUID `json:"message_ids"`
+	WhereIsRead    bool        `json:"where_is_read"`
+	WhereIsNotRead bool        `json:"where_is_not_read"`
+}
+
+type CountReadsOnMessagesRow struct {
+	MessageID uuid.UUID `json:"message_id"`
+	Count     int64     `json:"count"`
+}
+
+func (q *Queries) CountReadsOnMessages(ctx context.Context, arg CountReadsOnMessagesParams) ([]CountReadsOnMessagesRow, error) {
+	rows, err := q.db.Query(ctx, countReadsOnMessages, arg.MessageIds, arg.WhereIsRead, arg.WhereIsNotRead)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []CountReadsOnMessagesRow{}
+	for rows.Next() {
+		var i CountReadsOnMessagesRow
+		if err := rows.Scan(&i.MessageID, &i.Count); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const createReadReceipt = `-- name: CreateReadReceipt :one

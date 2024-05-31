@@ -224,7 +224,7 @@ func (q *Queries) FindMessageByIDWithChatRoom(ctx context.Context, messageID uui
 }
 
 const findMessageByIDWithSender = `-- name: FindMessageByIDWithSender :one
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -247,6 +247,8 @@ type FindMessageByIDWithSenderRow struct {
 	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
 	MemberLastName                     pgtype.Text   `json:"member_last_name"`
 	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberGradeID                      pgtype.UUID   `json:"member_grade_id"`
+	MemberGroupID                      pgtype.UUID   `json:"member_group_id"`
 	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
 	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
 	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
@@ -274,6 +276,8 @@ func (q *Queries) FindMessageByIDWithSender(ctx context.Context, messageID uuid.
 		&i.MemberFirstName,
 		&i.MemberLastName,
 		&i.MemberEmail,
+		&i.MemberGradeID,
+		&i.MemberGroupID,
 		&i.MemberProfileImageID,
 		&i.MemberProfileImageHeight,
 		&i.MemberProfileImageWidth,
@@ -1032,7 +1036,7 @@ func (q *Queries) GetMessagesWithChatRoomUseNumberedPaginate(ctx context.Context
 }
 
 const getMessagesWithSender = `-- name: GetMessagesWithSender :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -1092,6 +1096,8 @@ type GetMessagesWithSenderRow struct {
 	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
 	MemberLastName                     pgtype.Text   `json:"member_last_name"`
 	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberGradeID                      pgtype.UUID   `json:"member_grade_id"`
+	MemberGroupID                      pgtype.UUID   `json:"member_group_id"`
 	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
 	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
 	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
@@ -1141,6 +1147,8 @@ func (q *Queries) GetMessagesWithSender(ctx context.Context, arg GetMessagesWith
 			&i.MemberFirstName,
 			&i.MemberLastName,
 			&i.MemberEmail,
+			&i.MemberGradeID,
+			&i.MemberGroupID,
 			&i.MemberProfileImageID,
 			&i.MemberProfileImageHeight,
 			&i.MemberProfileImageWidth,
@@ -1163,7 +1171,7 @@ func (q *Queries) GetMessagesWithSender(ctx context.Context, arg GetMessagesWith
 }
 
 const getMessagesWithSenderUseKeysetPaginate = `-- name: GetMessagesWithSenderUseKeysetPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -1253,6 +1261,8 @@ type GetMessagesWithSenderUseKeysetPaginateRow struct {
 	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
 	MemberLastName                     pgtype.Text   `json:"member_last_name"`
 	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberGradeID                      pgtype.UUID   `json:"member_grade_id"`
+	MemberGroupID                      pgtype.UUID   `json:"member_group_id"`
 	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
 	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
 	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
@@ -1307,6 +1317,8 @@ func (q *Queries) GetMessagesWithSenderUseKeysetPaginate(ctx context.Context, ar
 			&i.MemberFirstName,
 			&i.MemberLastName,
 			&i.MemberEmail,
+			&i.MemberGradeID,
+			&i.MemberGroupID,
 			&i.MemberProfileImageID,
 			&i.MemberProfileImageHeight,
 			&i.MemberProfileImageWidth,
@@ -1329,7 +1341,7 @@ func (q *Queries) GetMessagesWithSenderUseKeysetPaginate(ctx context.Context, ar
 }
 
 const getMessagesWithSenderUseNumberedPaginate = `-- name: GetMessagesWithSenderUseNumberedPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -1392,6 +1404,8 @@ type GetMessagesWithSenderUseNumberedPaginateRow struct {
 	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
 	MemberLastName                     pgtype.Text   `json:"member_last_name"`
 	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberGradeID                      pgtype.UUID   `json:"member_grade_id"`
+	MemberGroupID                      pgtype.UUID   `json:"member_group_id"`
 	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
 	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
 	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
@@ -1443,6 +1457,8 @@ func (q *Queries) GetMessagesWithSenderUseNumberedPaginate(ctx context.Context, 
 			&i.MemberFirstName,
 			&i.MemberLastName,
 			&i.MemberEmail,
+			&i.MemberGradeID,
+			&i.MemberGroupID,
 			&i.MemberProfileImageID,
 			&i.MemberProfileImageHeight,
 			&i.MemberProfileImageWidth,
@@ -1753,7 +1769,7 @@ func (q *Queries) GetPluralMessagesWithChatRoomUseNumberedPaginate(ctx context.C
 }
 
 const getPluralMessagesWithSender = `-- name: GetPluralMessagesWithSender :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -1787,6 +1803,8 @@ type GetPluralMessagesWithSenderRow struct {
 	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
 	MemberLastName                     pgtype.Text   `json:"member_last_name"`
 	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberGradeID                      pgtype.UUID   `json:"member_grade_id"`
+	MemberGroupID                      pgtype.UUID   `json:"member_group_id"`
 	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
 	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
 	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
@@ -1820,6 +1838,8 @@ func (q *Queries) GetPluralMessagesWithSender(ctx context.Context, arg GetPlural
 			&i.MemberFirstName,
 			&i.MemberLastName,
 			&i.MemberEmail,
+			&i.MemberGradeID,
+			&i.MemberGroupID,
 			&i.MemberProfileImageID,
 			&i.MemberProfileImageHeight,
 			&i.MemberProfileImageWidth,
@@ -1842,7 +1862,7 @@ func (q *Queries) GetPluralMessagesWithSender(ctx context.Context, arg GetPlural
 }
 
 const getPluralMessagesWithSenderUseNumberedPaginate = `-- name: GetPluralMessagesWithSenderUseNumberedPaginate :many
-SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
 t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
 t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
@@ -1879,6 +1899,8 @@ type GetPluralMessagesWithSenderUseNumberedPaginateRow struct {
 	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
 	MemberLastName                     pgtype.Text   `json:"member_last_name"`
 	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberGradeID                      pgtype.UUID   `json:"member_grade_id"`
+	MemberGroupID                      pgtype.UUID   `json:"member_group_id"`
 	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
 	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
 	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
@@ -1917,6 +1939,8 @@ func (q *Queries) GetPluralMessagesWithSenderUseNumberedPaginate(ctx context.Con
 			&i.MemberFirstName,
 			&i.MemberLastName,
 			&i.MemberEmail,
+			&i.MemberGradeID,
+			&i.MemberGroupID,
 			&i.MemberProfileImageID,
 			&i.MemberProfileImageHeight,
 			&i.MemberProfileImageWidth,

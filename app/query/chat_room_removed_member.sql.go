@@ -111,7 +111,7 @@ func (q *Queries) DeleteChatRoomRemovedMembersOnMembers(ctx context.Context, mem
 
 const getMembersOnChatRoomRemoveMemberAction = `-- name: GetMembersOnChatRoomRemoveMemberAction :many
 SELECT t_chat_room_removed_members.t_chat_room_removed_members_pkey, t_chat_room_removed_members.chat_room_remove_member_action_id, t_chat_room_removed_members.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
-m_members.profile_image_id member_profile_image_id
+m_members.profile_image_id member_profile_image_id, m_members.grade_id member_grade_id, m_members.group_id member_group_id
 FROM t_chat_room_removed_members
 LEFT JOIN m_members ON t_chat_room_removed_members.member_id = m_members.member_id
 WHERE chat_room_remove_member_action_id = $1
@@ -128,6 +128,8 @@ type GetMembersOnChatRoomRemoveMemberActionRow struct {
 	MemberLastName               pgtype.Text `json:"member_last_name"`
 	MemberEmail                  pgtype.Text `json:"member_email"`
 	MemberProfileImageID         pgtype.UUID `json:"member_profile_image_id"`
+	MemberGradeID                pgtype.UUID `json:"member_grade_id"`
+	MemberGroupID                pgtype.UUID `json:"member_group_id"`
 }
 
 func (q *Queries) GetMembersOnChatRoomRemoveMemberAction(ctx context.Context, chatRoomRemoveMemberActionID uuid.UUID) ([]GetMembersOnChatRoomRemoveMemberActionRow, error) {
@@ -148,6 +150,8 @@ func (q *Queries) GetMembersOnChatRoomRemoveMemberAction(ctx context.Context, ch
 			&i.MemberLastName,
 			&i.MemberEmail,
 			&i.MemberProfileImageID,
+			&i.MemberGradeID,
+			&i.MemberGroupID,
 		); err != nil {
 			return nil, err
 		}
@@ -161,7 +165,7 @@ func (q *Queries) GetMembersOnChatRoomRemoveMemberAction(ctx context.Context, ch
 
 const getMembersOnChatRoomRemoveMemberActionUseKeysetPaginate = `-- name: GetMembersOnChatRoomRemoveMemberActionUseKeysetPaginate :many
 SELECT t_chat_room_removed_members.t_chat_room_removed_members_pkey, t_chat_room_removed_members.chat_room_remove_member_action_id, t_chat_room_removed_members.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
-m_members.profile_image_id member_profile_image_id
+m_members.profile_image_id member_profile_image_id, m_members.grade_id member_grade_id, m_members.group_id member_group_id
 FROM t_chat_room_removed_members
 LEFT JOIN m_members ON t_chat_room_removed_members.member_id = m_members.member_id
 WHERE chat_room_remove_member_action_id = $1
@@ -193,6 +197,8 @@ type GetMembersOnChatRoomRemoveMemberActionUseKeysetPaginateRow struct {
 	MemberLastName               pgtype.Text `json:"member_last_name"`
 	MemberEmail                  pgtype.Text `json:"member_email"`
 	MemberProfileImageID         pgtype.UUID `json:"member_profile_image_id"`
+	MemberGradeID                pgtype.UUID `json:"member_grade_id"`
+	MemberGroupID                pgtype.UUID `json:"member_group_id"`
 }
 
 func (q *Queries) GetMembersOnChatRoomRemoveMemberActionUseKeysetPaginate(ctx context.Context, arg GetMembersOnChatRoomRemoveMemberActionUseKeysetPaginateParams) ([]GetMembersOnChatRoomRemoveMemberActionUseKeysetPaginateRow, error) {
@@ -218,6 +224,8 @@ func (q *Queries) GetMembersOnChatRoomRemoveMemberActionUseKeysetPaginate(ctx co
 			&i.MemberLastName,
 			&i.MemberEmail,
 			&i.MemberProfileImageID,
+			&i.MemberGradeID,
+			&i.MemberGroupID,
 		); err != nil {
 			return nil, err
 		}
@@ -231,7 +239,7 @@ func (q *Queries) GetMembersOnChatRoomRemoveMemberActionUseKeysetPaginate(ctx co
 
 const getMembersOnChatRoomRemoveMemberActionUseNumberedPaginate = `-- name: GetMembersOnChatRoomRemoveMemberActionUseNumberedPaginate :many
 SELECT t_chat_room_removed_members.t_chat_room_removed_members_pkey, t_chat_room_removed_members.chat_room_remove_member_action_id, t_chat_room_removed_members.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
-m_members.profile_image_id member_profile_image_id
+m_members.profile_image_id member_profile_image_id, m_members.grade_id member_grade_id, m_members.group_id member_group_id
 FROM t_chat_room_removed_members
 LEFT JOIN m_members ON t_chat_room_removed_members.member_id = m_members.member_id
 WHERE chat_room_remove_member_action_id = $1
@@ -255,6 +263,8 @@ type GetMembersOnChatRoomRemoveMemberActionUseNumberedPaginateRow struct {
 	MemberLastName               pgtype.Text `json:"member_last_name"`
 	MemberEmail                  pgtype.Text `json:"member_email"`
 	MemberProfileImageID         pgtype.UUID `json:"member_profile_image_id"`
+	MemberGradeID                pgtype.UUID `json:"member_grade_id"`
+	MemberGroupID                pgtype.UUID `json:"member_group_id"`
 }
 
 func (q *Queries) GetMembersOnChatRoomRemoveMemberActionUseNumberedPaginate(ctx context.Context, arg GetMembersOnChatRoomRemoveMemberActionUseNumberedPaginateParams) ([]GetMembersOnChatRoomRemoveMemberActionUseNumberedPaginateRow, error) {
@@ -275,6 +285,8 @@ func (q *Queries) GetMembersOnChatRoomRemoveMemberActionUseNumberedPaginate(ctx 
 			&i.MemberLastName,
 			&i.MemberEmail,
 			&i.MemberProfileImageID,
+			&i.MemberGradeID,
+			&i.MemberGroupID,
 		); err != nil {
 			return nil, err
 		}
@@ -288,7 +300,7 @@ func (q *Queries) GetMembersOnChatRoomRemoveMemberActionUseNumberedPaginate(ctx 
 
 const getPluralMembersOnChatRoomRemoveMemberAction = `-- name: GetPluralMembersOnChatRoomRemoveMemberAction :many
 SELECT t_chat_room_removed_members.t_chat_room_removed_members_pkey, t_chat_room_removed_members.chat_room_remove_member_action_id, t_chat_room_removed_members.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
-m_members.profile_image_id member_profile_image_id
+m_members.profile_image_id member_profile_image_id, m_members.grade_id member_grade_id, m_members.group_id member_group_id
 FROM t_chat_room_removed_members
 LEFT JOIN m_members ON t_chat_room_removed_members.member_id = m_members.member_id
 WHERE chat_room_remove_member_action_id = ANY($1::uuid[])
@@ -305,6 +317,8 @@ type GetPluralMembersOnChatRoomRemoveMemberActionRow struct {
 	MemberLastName               pgtype.Text `json:"member_last_name"`
 	MemberEmail                  pgtype.Text `json:"member_email"`
 	MemberProfileImageID         pgtype.UUID `json:"member_profile_image_id"`
+	MemberGradeID                pgtype.UUID `json:"member_grade_id"`
+	MemberGroupID                pgtype.UUID `json:"member_group_id"`
 }
 
 func (q *Queries) GetPluralMembersOnChatRoomRemoveMemberAction(ctx context.Context, chatRoomRemoveMemberActionIds []uuid.UUID) ([]GetPluralMembersOnChatRoomRemoveMemberActionRow, error) {
@@ -325,6 +339,8 @@ func (q *Queries) GetPluralMembersOnChatRoomRemoveMemberAction(ctx context.Conte
 			&i.MemberLastName,
 			&i.MemberEmail,
 			&i.MemberProfileImageID,
+			&i.MemberGradeID,
+			&i.MemberGroupID,
 		); err != nil {
 			return nil, err
 		}
@@ -338,7 +354,7 @@ func (q *Queries) GetPluralMembersOnChatRoomRemoveMemberAction(ctx context.Conte
 
 const getPluralMembersOnChatRoomRemoveMemberActionUseNumberedPaginate = `-- name: GetPluralMembersOnChatRoomRemoveMemberActionUseNumberedPaginate :many
 SELECT t_chat_room_removed_members.t_chat_room_removed_members_pkey, t_chat_room_removed_members.chat_room_remove_member_action_id, t_chat_room_removed_members.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
-m_members.profile_image_id member_profile_image_id
+m_members.profile_image_id member_profile_image_id, m_members.grade_id member_grade_id, m_members.group_id member_group_id
 FROM t_chat_room_removed_members
 LEFT JOIN m_members ON t_chat_room_removed_members.member_id = m_members.member_id
 WHERE chat_room_remove_member_action_id = ANY($3::uuid[])
@@ -362,6 +378,8 @@ type GetPluralMembersOnChatRoomRemoveMemberActionUseNumberedPaginateRow struct {
 	MemberLastName               pgtype.Text `json:"member_last_name"`
 	MemberEmail                  pgtype.Text `json:"member_email"`
 	MemberProfileImageID         pgtype.UUID `json:"member_profile_image_id"`
+	MemberGradeID                pgtype.UUID `json:"member_grade_id"`
+	MemberGroupID                pgtype.UUID `json:"member_group_id"`
 }
 
 func (q *Queries) GetPluralMembersOnChatRoomRemoveMemberActionUseNumberedPaginate(ctx context.Context, arg GetPluralMembersOnChatRoomRemoveMemberActionUseNumberedPaginateParams) ([]GetPluralMembersOnChatRoomRemoveMemberActionUseNumberedPaginateRow, error) {
@@ -382,6 +400,8 @@ func (q *Queries) GetPluralMembersOnChatRoomRemoveMemberActionUseNumberedPaginat
 			&i.MemberLastName,
 			&i.MemberEmail,
 			&i.MemberProfileImageID,
+			&i.MemberGradeID,
+			&i.MemberGroupID,
 		); err != nil {
 			return nil, err
 		}

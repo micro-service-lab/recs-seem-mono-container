@@ -31,6 +31,8 @@ func convChatRoomRemoveMemberActionOnChatRoom(
 				FirstName:      entity.String(e.RemoveMemberFirstName),
 				LastName:       entity.String(e.RemoveMemberLastName),
 				ProfileImageID: entity.UUID(e.RemoveMemberProfileImageID),
+				GradeID:        e.RemoveMemberGradeID.Bytes,
+				GroupID:        e.RemoveMemberGroupID.Bytes,
 			},
 		}
 	}

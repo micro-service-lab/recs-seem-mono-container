@@ -63,6 +63,8 @@ func convMemberOnOrganization(r query.GetMembersOnOrganizationRow) entity.Member
 			LastName:     entity.String(r.MemberLastName),
 			Email:        r.MemberEmail.String,
 			ProfileImage: profileImg,
+			GradeID:      r.MemberGradeID.Bytes,
+			GroupID:      r.MemberGroupID.Bytes,
 		},
 		WorkPositionID: entity.UUID(r.WorkPositionID),
 		AddedAt:        r.AddedAt,

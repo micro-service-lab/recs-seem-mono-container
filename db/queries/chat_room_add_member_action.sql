@@ -13,7 +13,7 @@ DELETE FROM t_chat_room_add_member_actions WHERE chat_room_add_member_action_id 
 -- name: GetChatRoomAddMemberActionsOnChatRoom :many
 SELECT t_chat_room_add_member_actions.*,
 m_members.name add_member_name, m_members.first_name add_member_first_name, m_members.last_name add_member_last_name, m_members.email add_member_email,
-m_members.profile_image_id add_member_profile_image_id
+m_members.profile_image_id add_member_profile_image_id, m_members.grade_id add_member_grade_id, m_members.group_id add_member_group_id
 FROM t_chat_room_add_member_actions
 LEFT JOIN m_members ON t_chat_room_add_member_actions.added_by = m_members.member_id
 WHERE EXISTS (
@@ -25,7 +25,7 @@ ORDER BY
 -- name: GetChatRoomAddMemberActionsOnChatRoomUseNumberedPaginate :many
 SELECT t_chat_room_add_member_actions.*,
 m_members.name add_member_name, m_members.first_name add_member_first_name, m_members.last_name add_member_last_name, m_members.email add_member_email,
-m_members.profile_image_id add_member_profile_image_id
+m_members.profile_image_id add_member_profile_image_id, m_members.grade_id add_member_grade_id, m_members.group_id add_member_group_id
 FROM t_chat_room_add_member_actions
 LEFT JOIN m_members ON t_chat_room_add_member_actions.added_by = m_members.member_id
 WHERE EXISTS (
@@ -38,7 +38,7 @@ LIMIT $2 OFFSET $3;
 -- name: GetChatRoomAddMemberActionsOnChatRoomUseKeysetPaginate :many
 SELECT t_chat_room_add_member_actions.*,
 m_members.name add_member_name, m_members.first_name add_member_first_name, m_members.last_name add_member_last_name, m_members.email add_member_email,
-m_members.profile_image_id add_member_profile_image_id
+m_members.profile_image_id add_member_profile_image_id, m_members.grade_id add_member_grade_id, m_members.group_id add_member_group_id
 FROM t_chat_room_add_member_actions
 LEFT JOIN m_members ON t_chat_room_add_member_actions.added_by = m_members.member_id
 WHERE EXISTS (
@@ -59,7 +59,7 @@ LIMIT $2;
 -- name: GetPluralChatRoomAddMemberActions :many
 SELECT t_chat_room_add_member_actions.*,
 m_members.name add_member_name, m_members.first_name add_member_first_name, m_members.last_name add_member_last_name, m_members.email add_member_email,
-m_members.profile_image_id add_member_profile_image_id
+m_members.profile_image_id add_member_profile_image_id, m_members.grade_id add_member_grade_id, m_members.group_id add_member_group_id
 FROM t_chat_room_add_member_actions
 LEFT JOIN m_members ON t_chat_room_add_member_actions.added_by = m_members.member_id
 WHERE chat_room_add_member_action_id = ANY(@chat_room_add_member_action_ids::uuid[])
@@ -69,7 +69,7 @@ ORDER BY
 -- name: GetPluralChatRoomAddMemberActionsUseNumberedPaginate :many
 SELECT t_chat_room_add_member_actions.*,
 m_members.name add_member_name, m_members.first_name add_member_first_name, m_members.last_name add_member_last_name, m_members.email add_member_email,
-m_members.profile_image_id add_member_profile_image_id
+m_members.profile_image_id add_member_profile_image_id, m_members.grade_id add_member_grade_id, m_members.group_id add_member_group_id
 FROM t_chat_room_add_member_actions
 LEFT JOIN m_members ON t_chat_room_add_member_actions.added_by = m_members.member_id
 WHERE chat_room_add_member_action_id = ANY(@chat_room_add_member_action_ids::uuid[])

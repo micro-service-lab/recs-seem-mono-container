@@ -7,7 +7,7 @@
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | t_chat_room_actions_pkey | bigint | nextval('t_chat_room_actions_t_chat_room_actions_pkey_seq'::regclass) | false |  |  |  |
-| chat_room_action_id | uuid | uuid_generate_v4() | false | [public.t_messages](public.t_messages.md) [public.t_chat_room_create_actions](public.t_chat_room_create_actions.md) [public.t_chat_room_update_name_actions](public.t_chat_room_update_name_actions.md) [public.t_chat_room_add_member_actions](public.t_chat_room_add_member_actions.md) [public.t_chat_room_remove_member_actions](public.t_chat_room_remove_member_actions.md) [public.t_chat_room_withdraw_actions](public.t_chat_room_withdraw_actions.md) |  |  |
+| chat_room_action_id | uuid | uuid_generate_v4() | false | [public.t_messages](public.t_messages.md) [public.t_chat_room_create_actions](public.t_chat_room_create_actions.md) [public.t_chat_room_update_name_actions](public.t_chat_room_update_name_actions.md) [public.t_chat_room_add_member_actions](public.t_chat_room_add_member_actions.md) [public.t_chat_room_remove_member_actions](public.t_chat_room_remove_member_actions.md) [public.t_chat_room_withdraw_actions](public.t_chat_room_withdraw_actions.md) [public.t_chat_room_delete_message_actions](public.t_chat_room_delete_message_actions.md) |  |  |
 | chat_room_id | uuid |  | false |  | [public.m_chat_rooms](public.m_chat_rooms.md) |  |
 | chat_room_action_type_id | uuid |  | false |  | [public.m_chat_room_action_types](public.m_chat_room_action_types.md) |  |
 | acted_at | timestamp with time zone |  | false |  |  |  |

@@ -31,6 +31,8 @@ func convChatRoomUpdateNameActionOnChatRoom(
 				FirstName:      entity.String(e.UpdateMemberFirstName),
 				LastName:       entity.String(e.UpdateMemberLastName),
 				ProfileImageID: entity.UUID(e.UpdateMemberProfileImageID),
+				GradeID:        e.UpdateMemberGradeID.Bytes,
+				GroupID:        e.UpdateMemberGroupID.Bytes,
 			},
 		}
 	}

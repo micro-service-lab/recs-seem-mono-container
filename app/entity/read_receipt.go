@@ -11,6 +11,12 @@ type ReadReceipt struct {
 	ReadAt    Timestamptz `json:"read_at"`
 }
 
+// ReadReceiptGroupByMessage メッセージごとの既読情報を表す構造体。
+type ReadReceiptGroupByMessage struct {
+	MessageID uuid.UUID `json:"message_id"`
+	Count     int64     `json:"count"`
+}
+
 // ReadReceiptGroupByChatRoom チャットルームごとの既読情報を表す構造体。
 type ReadReceiptGroupByChatRoom struct {
 	ChatRoomID uuid.UUID `json:"chat_room_id"`

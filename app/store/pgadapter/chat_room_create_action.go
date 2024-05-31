@@ -31,6 +31,8 @@ func convChatRoomCreateActionOnChatRoom(
 				FirstName:      entity.String(e.CreateMemberFirstName),
 				LastName:       entity.String(e.CreateMemberLastName),
 				ProfileImageID: entity.UUID(e.CreateMemberProfileImageID),
+				GradeID:        e.CreateMemberGradeID.Bytes,
+				GroupID:        e.CreateMemberGroupID.Bytes,
 			},
 		}
 	}

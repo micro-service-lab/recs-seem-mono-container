@@ -420,10 +420,10 @@ func (m *ManageStudent) UpdateStudentGrade(
 	ctx context.Context,
 	id uuid.UUID,
 	gradeID uuid.UUID,
-) (e entity.Student, err error) {
+) (e entity.StudentWithMember, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
-		return entity.Student{}, fmt.Errorf("failed to begin transaction: %w", err)
+		return entity.StudentWithMember{}, fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer func() {
 		if err != nil {
@@ -442,56 +442,56 @@ func (m *ManageStudent) UpdateStudentGrade(
 	if err != nil {
 		var e errhandle.ModelNotFoundError
 		if errors.As(err, &e) {
-			return entity.Student{}, errhandle.NewModelNotFoundError(MemberTargetGrades)
+			return entity.StudentWithMember{}, errhandle.NewModelNotFoundError(MemberTargetGrades)
 		}
-		return entity.Student{}, fmt.Errorf("failed to find grade by id: %w", err)
+		return entity.StudentWithMember{}, fmt.Errorf("failed to find grade by id: %w", err)
 	}
 	if grade.Key == string(GradeKeyProfessor) {
 		e := errhandle.NewCommonError(response.OnlyProfessorAction, nil)
 		e.SetTarget(MemberTargetGrades)
-		return entity.Student{}, e
+		return entity.StudentWithMember{}, e
 	}
-	e, err = m.DB.FindStudentByIDWithSd(ctx, sd, id)
+	e, err = m.DB.FindStudentWithMemberWithSd(ctx, sd, id)
 	if err != nil {
-		return entity.Student{}, fmt.Errorf("failed to find student by id: %w", err)
+		return entity.StudentWithMember{}, fmt.Errorf("failed to find student by id: %w", err)
 	}
-	member, err := m.DB.UpdateMemberGradeWithSd(ctx, sd, e.MemberID, gradeID)
-	if err != nil {
-		return entity.Student{}, fmt.Errorf("failed to update member grade: %w", err)
-	}
-	if member.GradeID == gradeID {
+	if e.Member.GradeID == gradeID {
 		return e, nil
+	}
+	member, err := m.DB.UpdateMemberGradeWithSd(ctx, sd, e.Member.MemberID, gradeID)
+	if err != nil {
+		return entity.StudentWithMember{}, fmt.Errorf("failed to update member grade: %w", err)
 	}
 	addCraType, err := m.DB.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyAddMember))
 	if err != nil {
-		return entity.Student{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
+		return entity.StudentWithMember{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
 	}
 	withdrawCraType, err := m.DB.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyWithdraw))
 	if err != nil {
-		return entity.Student{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
+		return entity.StudentWithMember{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
 	}
-	originGrade, err := m.DB.FindGradeWithOrganizationWithSd(ctx, sd, member.GradeID)
+	originGrade, err := m.DB.FindGradeWithOrganizationWithSd(ctx, sd, e.Member.GradeID)
 	if err != nil {
-		return entity.Student{}, fmt.Errorf("failed to find grade with organization: %w", err)
+		return entity.StudentWithMember{}, fmt.Errorf("failed to find grade with organization: %w", err)
 	}
 
 	_, err = m.DB.BelongOrganizationWithSd(ctx, sd, parameter.BelongOrganizationParam{
-		MemberID:       e.MemberID,
+		MemberID:       e.Member.MemberID,
 		OrganizationID: grade.Organization.OrganizationID,
 		WorkPositionID: entity.UUID{},
 		AddedAt:        now,
 	})
 	if err != nil {
-		return entity.Student{}, fmt.Errorf("failed to belong organization: %w", err)
+		return entity.StudentWithMember{}, fmt.Errorf("failed to belong organization: %w", err)
 	}
 	if grade.Organization.ChatRoomID.Valid {
 		_, err = m.DB.BelongChatRoomWithSd(ctx, sd, parameter.BelongChatRoomParam{
-			MemberID:   e.MemberID,
+			MemberID:   e.Member.MemberID,
 			ChatRoomID: grade.Organization.ChatRoomID.Bytes,
 			AddedAt:    now,
 		})
 		if err != nil {
-			return entity.Student{}, fmt.Errorf("failed to belong chat room: %w", err)
+			return entity.StudentWithMember{}, fmt.Errorf("failed to belong chat room: %w", err)
 		}
 		cra, err := m.DB.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
 			ChatRoomID:           grade.Organization.ChatRoomID.Bytes,
@@ -499,32 +499,32 @@ func (m *ManageStudent) UpdateStudentGrade(
 			ActedAt:              now,
 		})
 		if err != nil {
-			return entity.Student{}, fmt.Errorf("failed to create chat room action: %w", err)
+			return entity.StudentWithMember{}, fmt.Errorf("failed to create chat room action: %w", err)
 		}
 		craAdd, err := m.DB.CreateChatRoomAddMemberActionWithSd(ctx, sd, parameter.CreateChatRoomAddMemberActionParam{
 			ChatRoomActionID: cra.ChatRoomActionID,
 			AddedBy:          entity.UUID{},
 		})
 		if err != nil {
-			return entity.Student{}, fmt.Errorf("failed to create chat room add member actions: %w", err)
+			return entity.StudentWithMember{}, fmt.Errorf("failed to create chat room add member actions: %w", err)
 		}
 		_, err = m.DB.AddMemberToChatRoomAddMemberActionWithSd(ctx, sd, parameter.CreateChatRoomAddedMemberParam{
 			ChatRoomAddMemberActionID: craAdd.ChatRoomAddMemberActionID,
-			MemberID:                  entity.UUID{Valid: true, Bytes: e.MemberID},
+			MemberID:                  entity.UUID{Valid: true, Bytes: e.Member.MemberID},
 		})
 		if err != nil {
-			return entity.Student{}, fmt.Errorf("failed to add member to chat room add member action: %w", err)
+			return entity.StudentWithMember{}, fmt.Errorf("failed to add member to chat room add member action: %w", err)
 		}
 	}
 
-	_, err = m.DB.DisbelongOrganizationWithSd(ctx, sd, e.MemberID, originGrade.Organization.OrganizationID)
+	_, err = m.DB.DisbelongOrganizationWithSd(ctx, sd, e.Member.MemberID, originGrade.Organization.OrganizationID)
 	if err != nil {
-		return entity.Student{}, fmt.Errorf("failed to disbelong organization: %w", err)
+		return entity.StudentWithMember{}, fmt.Errorf("failed to disbelong organization: %w", err)
 	}
 	if originGrade.Organization.ChatRoomID.Valid {
-		_, err = m.DB.DisbelongChatRoomWithSd(ctx, sd, e.MemberID, originGrade.Organization.ChatRoomID.Bytes)
+		_, err = m.DB.DisbelongChatRoomWithSd(ctx, sd, e.Member.MemberID, originGrade.Organization.ChatRoomID.Bytes)
 		if err != nil {
-			return entity.Student{}, fmt.Errorf("failed to disbelong chat room: %w", err)
+			return entity.StudentWithMember{}, fmt.Errorf("failed to disbelong chat room: %w", err)
 		}
 		cra, err := m.DB.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
 			ChatRoomID:           originGrade.Organization.ChatRoomID.Bytes,
@@ -532,16 +532,18 @@ func (m *ManageStudent) UpdateStudentGrade(
 			ActedAt:              now,
 		})
 		if err != nil {
-			return entity.Student{}, fmt.Errorf("failed to create chat room action: %w", err)
+			return entity.StudentWithMember{}, fmt.Errorf("failed to create chat room action: %w", err)
 		}
 		_, err = m.DB.CreateChatRoomWithdrawActionWithSd(ctx, sd, parameter.CreateChatRoomWithdrawActionParam{
 			ChatRoomActionID: cra.ChatRoomActionID,
-			MemberID:         entity.UUID{Valid: true, Bytes: e.MemberID},
+			MemberID:         entity.UUID{Valid: true, Bytes: e.Member.MemberID},
 		})
 		if err != nil {
-			return entity.Student{}, fmt.Errorf("failed to create chat room withdraw action: %w", err)
+			return entity.StudentWithMember{}, fmt.Errorf("failed to create chat room withdraw action: %w", err)
 		}
 	}
+
+	e.Member.GradeID = member.GradeID
 
 	return e, nil
 }
@@ -551,10 +553,10 @@ func (m *ManageStudent) UpdateStudentGroup(
 	ctx context.Context,
 	id uuid.UUID,
 	groupID uuid.UUID,
-) (e entity.Student, err error) {
+) (e entity.StudentWithMember, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
-		return entity.Student{}, fmt.Errorf("failed to begin transaction: %w", err)
+		return entity.StudentWithMember{}, fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer func() {
 		if err != nil {
@@ -573,56 +575,56 @@ func (m *ManageStudent) UpdateStudentGroup(
 	if err != nil {
 		var e errhandle.ModelNotFoundError
 		if errors.As(err, &e) {
-			return entity.Student{}, errhandle.NewModelNotFoundError(MemberTargetGroups)
+			return entity.StudentWithMember{}, errhandle.NewModelNotFoundError(MemberTargetGroups)
 		}
-		return entity.Student{}, fmt.Errorf("failed to find group by id: %w", err)
+		return entity.StudentWithMember{}, fmt.Errorf("failed to find group by id: %w", err)
 	}
 	if group.Key == string(GroupKeyProfessor) {
 		e := errhandle.NewCommonError(response.OnlyProfessorAction, nil)
 		e.SetTarget(MemberTargetGroups)
-		return entity.Student{}, e
+		return entity.StudentWithMember{}, e
 	}
-	e, err = m.DB.FindStudentByIDWithSd(ctx, sd, id)
+	e, err = m.DB.FindStudentWithMemberWithSd(ctx, sd, id)
 	if err != nil {
-		return entity.Student{}, fmt.Errorf("failed to find student by id: %w", err)
+		return entity.StudentWithMember{}, fmt.Errorf("failed to find student by id: %w", err)
 	}
-	member, err := m.DB.UpdateMemberGroupWithSd(ctx, sd, e.MemberID, groupID)
-	if err != nil {
-		return entity.Student{}, fmt.Errorf("failed to update member group: %w", err)
-	}
-	if member.GroupID == groupID {
+	if e.Member.GroupID == groupID {
 		return e, nil
+	}
+	member, err := m.DB.UpdateMemberGroupWithSd(ctx, sd, e.Member.MemberID, groupID)
+	if err != nil {
+		return entity.StudentWithMember{}, fmt.Errorf("failed to update member group: %w", err)
 	}
 	addCraType, err := m.DB.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyAddMember))
 	if err != nil {
-		return entity.Student{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
+		return entity.StudentWithMember{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
 	}
 	withdrawCraType, err := m.DB.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyWithdraw))
 	if err != nil {
-		return entity.Student{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
+		return entity.StudentWithMember{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
 	}
-	originGroup, err := m.DB.FindGroupWithOrganizationWithSd(ctx, sd, member.GroupID)
+	originGroup, err := m.DB.FindGroupWithOrganizationWithSd(ctx, sd, e.Member.GroupID)
 	if err != nil {
-		return entity.Student{}, fmt.Errorf("failed to find group with organization: %w", err)
+		return entity.StudentWithMember{}, fmt.Errorf("failed to find group with organization: %w", err)
 	}
 
 	_, err = m.DB.BelongOrganizationWithSd(ctx, sd, parameter.BelongOrganizationParam{
-		MemberID:       e.MemberID,
+		MemberID:       e.Member.MemberID,
 		OrganizationID: group.Organization.OrganizationID,
 		WorkPositionID: entity.UUID{},
 		AddedAt:        now,
 	})
 	if err != nil {
-		return entity.Student{}, fmt.Errorf("failed to belong organization: %w", err)
+		return entity.StudentWithMember{}, fmt.Errorf("failed to belong organization: %w", err)
 	}
 	if group.Organization.ChatRoomID.Valid {
 		_, err = m.DB.BelongChatRoomWithSd(ctx, sd, parameter.BelongChatRoomParam{
-			MemberID:   e.MemberID,
+			MemberID:   e.Member.MemberID,
 			ChatRoomID: group.Organization.ChatRoomID.Bytes,
 			AddedAt:    now,
 		})
 		if err != nil {
-			return entity.Student{}, fmt.Errorf("failed to belong chat room: %w", err)
+			return entity.StudentWithMember{}, fmt.Errorf("failed to belong chat room: %w", err)
 		}
 		cra, err := m.DB.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
 			ChatRoomID:           group.Organization.ChatRoomID.Bytes,
@@ -630,32 +632,32 @@ func (m *ManageStudent) UpdateStudentGroup(
 			ActedAt:              now,
 		})
 		if err != nil {
-			return entity.Student{}, fmt.Errorf("failed to create chat room action: %w", err)
+			return entity.StudentWithMember{}, fmt.Errorf("failed to create chat room action: %w", err)
 		}
 		craAdd, err := m.DB.CreateChatRoomAddMemberActionWithSd(ctx, sd, parameter.CreateChatRoomAddMemberActionParam{
 			ChatRoomActionID: cra.ChatRoomActionID,
 			AddedBy:          entity.UUID{},
 		})
 		if err != nil {
-			return entity.Student{}, fmt.Errorf("failed to create chat room add member actions: %w", err)
+			return entity.StudentWithMember{}, fmt.Errorf("failed to create chat room add member actions: %w", err)
 		}
 		_, err = m.DB.AddMemberToChatRoomAddMemberActionWithSd(ctx, sd, parameter.CreateChatRoomAddedMemberParam{
 			ChatRoomAddMemberActionID: craAdd.ChatRoomAddMemberActionID,
-			MemberID:                  entity.UUID{Valid: true, Bytes: e.MemberID},
+			MemberID:                  entity.UUID{Valid: true, Bytes: e.Member.MemberID},
 		})
 		if err != nil {
-			return entity.Student{}, fmt.Errorf("failed to add member to chat room add member action: %w", err)
+			return entity.StudentWithMember{}, fmt.Errorf("failed to add member to chat room add member action: %w", err)
 		}
 	}
 
-	_, err = m.DB.DisbelongOrganizationWithSd(ctx, sd, e.MemberID, originGroup.Organization.OrganizationID)
+	_, err = m.DB.DisbelongOrganizationWithSd(ctx, sd, e.Member.MemberID, originGroup.Organization.OrganizationID)
 	if err != nil {
-		return entity.Student{}, fmt.Errorf("failed to disbelong organization: %w", err)
+		return entity.StudentWithMember{}, fmt.Errorf("failed to disbelong organization: %w", err)
 	}
 	if originGroup.Organization.ChatRoomID.Valid {
-		_, err = m.DB.DisbelongChatRoomWithSd(ctx, sd, e.MemberID, originGroup.Organization.ChatRoomID.Bytes)
+		_, err = m.DB.DisbelongChatRoomWithSd(ctx, sd, e.Member.MemberID, originGroup.Organization.ChatRoomID.Bytes)
 		if err != nil {
-			return entity.Student{}, fmt.Errorf("failed to disbelong chat room: %w", err)
+			return entity.StudentWithMember{}, fmt.Errorf("failed to disbelong chat room: %w", err)
 		}
 		cra, err := m.DB.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
 			ChatRoomID:           originGroup.Organization.ChatRoomID.Bytes,
@@ -663,16 +665,18 @@ func (m *ManageStudent) UpdateStudentGroup(
 			ActedAt:              now,
 		})
 		if err != nil {
-			return entity.Student{}, fmt.Errorf("failed to create chat room action: %w", err)
+			return entity.StudentWithMember{}, fmt.Errorf("failed to create chat room action: %w", err)
 		}
 		_, err = m.DB.CreateChatRoomWithdrawActionWithSd(ctx, sd, parameter.CreateChatRoomWithdrawActionParam{
 			ChatRoomActionID: cra.ChatRoomActionID,
-			MemberID:         entity.UUID{Valid: true, Bytes: e.MemberID},
+			MemberID:         entity.UUID{Valid: true, Bytes: e.Member.MemberID},
 		})
 		if err != nil {
-			return entity.Student{}, fmt.Errorf("failed to create chat room withdraw action: %w", err)
+			return entity.StudentWithMember{}, fmt.Errorf("failed to create chat room withdraw action: %w", err)
 		}
 	}
+
+	e.Member.GroupID = member.GradeID
 
 	return e, nil
 }

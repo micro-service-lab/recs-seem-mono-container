@@ -50,6 +50,7 @@
 | [public.t_chat_room_withdraw_actions](public.t_chat_room_withdraw_actions.md) | 4 |  | BASE TABLE |
 | [public.t_chat_room_added_members](public.t_chat_room_added_members.md) | 3 |  | BASE TABLE |
 | [public.t_chat_room_removed_members](public.t_chat_room_removed_members.md) | 3 |  | BASE TABLE |
+| [public.t_chat_room_delete_message_actions](public.t_chat_room_delete_message_actions.md) | 4 |  | BASE TABLE |
 
 ## Stored procedures and functions
 

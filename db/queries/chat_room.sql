@@ -34,7 +34,7 @@ AND m_chat_rooms_belongs.member_id <> sqlc.arg(owner_id);
 
 -- name: FindChatRoomOnPrivateWithMember :one
 SELECT m_chat_rooms.*, m_chat_room_belongings.added_at member_added_at, m_members.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
-m_members.profile_image_id member_profile_image_id
+m_members.profile_image_id member_profile_image_id, m_members.grade_id member_grade_id, m_members.group_id member_group_id
 FROM m_chat_rooms
 LEFT JOIN m_chat_room_belongings ON m_chat_rooms.chat_room_id = m_chat_room_belongings.chat_room_id
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
@@ -44,7 +44,9 @@ AND is_private = true
 AND m_chat_rooms_belongs.member_id <> sqlc.arg(owner_id);
 
 -- name: FindChatRoomByIDWithOwner :one
-SELECT m_chat_rooms.*, sqlc.embed(m_members) FROM m_chat_rooms
+SELECT m_chat_rooms.*, m_members.name owner_name, m_members.first_name owner_first_name, m_members.last_name owner_last_name, m_members.email owner_email,
+m_members.profile_image_id owner_profile_image_id, m_members.grade_id owner_grade_id, m_members.group_id owner_group_id
+FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE chat_room_id = $1;
 
@@ -198,7 +200,9 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetChatRoomsWithOwner :many
-SELECT m_chat_rooms.*, sqlc.embed(m_members) FROM m_chat_rooms
+SELECT m_chat_rooms.*, m_members.name owner_name, m_members.first_name owner_first_name, m_members.last_name owner_last_name, m_members.email owner_email,
+m_members.profile_image_id owner_profile_image_id, m_members.grade_id owner_grade_id, m_members.group_id owner_group_id
+FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE
 	CASE WHEN @where_in_owner::boolean THEN owner_id = ANY(@in_owner::uuid[]) ELSE TRUE END
@@ -212,7 +216,9 @@ ORDER BY
 	m_chat_rooms_pkey ASC;
 
 -- name: GetChatRoomsWithOwnerUseNumberedPaginate :many
-SELECT m_chat_rooms.*, sqlc.embed(m_members) FROM m_chat_rooms
+SELECT m_chat_rooms.*, m_members.name owner_name, m_members.first_name owner_first_name, m_members.last_name owner_last_name, m_members.email owner_email,
+m_members.profile_image_id owner_profile_image_id, m_members.grade_id owner_grade_id, m_members.group_id owner_group_id
+FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE
 	CASE WHEN @where_in_owner::boolean THEN owner_id = ANY(@in_owner::uuid[]) ELSE TRUE END
@@ -227,7 +233,9 @@ ORDER BY
 LIMIT $1 OFFSET $2;
 
 -- name: GetChatRoomsWithOwnerUseKeysetPaginate :many
-SELECT m_chat_rooms.*, sqlc.embed(m_members) FROM m_chat_rooms
+SELECT m_chat_rooms.*, m_members.name owner_name, m_members.first_name owner_first_name, m_members.last_name owner_last_name, m_members.email owner_email,
+m_members.profile_image_id owner_profile_image_id, m_members.grade_id owner_grade_id, m_members.group_id owner_group_id
+FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE
 	CASE WHEN @where_in_owner::boolean = true THEN owner_id = ANY(@in_owner::uuid[]) ELSE TRUE END
@@ -250,14 +258,18 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralChatRoomsWithOwner :many
-SELECT m_chat_rooms.*, sqlc.embed(m_members) FROM m_chat_rooms
+SELECT m_chat_rooms.*, m_members.name owner_name, m_members.first_name owner_first_name, m_members.last_name owner_last_name, m_members.email owner_email,
+m_members.profile_image_id owner_profile_image_id, m_members.grade_id owner_grade_id, m_members.group_id owner_group_id
+FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
 ORDER BY
 	m_chat_rooms_pkey ASC;
 
 -- name: GetPluralChatRoomsWithOwnerUseNumberedPaginate :many
-SELECT m_chat_rooms.*, sqlc.embed(m_members) FROM m_chat_rooms
+SELECT m_chat_rooms.*, m_members.name owner_name, m_members.first_name owner_first_name, m_members.last_name owner_last_name, m_members.email owner_email,
+m_members.profile_image_id owner_profile_image_id, m_members.grade_id owner_grade_id, m_members.group_id owner_group_id
+FROM m_chat_rooms
 LEFT JOIN m_members ON m_chat_rooms.owner_id = m_members.member_id
 WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
 ORDER BY

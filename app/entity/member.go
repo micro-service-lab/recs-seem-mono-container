@@ -182,6 +182,8 @@ type MemberCard struct {
 	LastName     String                                  `json:"last_name"`
 	Email        string                                  `json:"email"`
 	ProfileImage NullableEntity[ImageWithAttachableItem] `json:"profile_image"`
+	GradeID      uuid.UUID                               `json:"grade_id"`
+	GroupID      uuid.UUID                               `json:"group_id"`
 }
 
 // SimpleMember シンプルなメンバーを表す構造体。
@@ -192,4 +194,6 @@ type SimpleMember struct {
 	LastName       String    `json:"last_name"`
 	Email          string    `json:"email"`
 	ProfileImageID UUID      `json:"profile_image_id"`
+	GradeID        uuid.UUID `json:"grade_id"`
+	GroupID        uuid.UUID `json:"group_id"`
 }

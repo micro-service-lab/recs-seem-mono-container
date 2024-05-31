@@ -21,7 +21,7 @@ DELETE FROM t_chat_room_removed_members WHERE chat_room_remove_member_action_id 
 
 -- name: GetMembersOnChatRoomRemoveMemberAction :many
 SELECT t_chat_room_removed_members.*, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
-m_members.profile_image_id member_profile_image_id
+m_members.profile_image_id member_profile_image_id, m_members.grade_id member_grade_id, m_members.group_id member_group_id
 FROM t_chat_room_removed_members
 LEFT JOIN m_members ON t_chat_room_removed_members.member_id = m_members.member_id
 WHERE chat_room_remove_member_action_id = $1
@@ -30,7 +30,7 @@ ORDER BY
 
 -- name: GetMembersOnChatRoomRemoveMemberActionUseNumberedPaginate :many
 SELECT t_chat_room_removed_members.*, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
-m_members.profile_image_id member_profile_image_id
+m_members.profile_image_id member_profile_image_id, m_members.grade_id member_grade_id, m_members.group_id member_group_id
 FROM t_chat_room_removed_members
 LEFT JOIN m_members ON t_chat_room_removed_members.member_id = m_members.member_id
 WHERE chat_room_remove_member_action_id = $1
@@ -40,7 +40,7 @@ LIMIT $2 OFFSET $3;
 
 -- name: GetMembersOnChatRoomRemoveMemberActionUseKeysetPaginate :many
 SELECT t_chat_room_removed_members.*, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
-m_members.profile_image_id member_profile_image_id
+m_members.profile_image_id member_profile_image_id, m_members.grade_id member_grade_id, m_members.group_id member_group_id
 FROM t_chat_room_removed_members
 LEFT JOIN m_members ON t_chat_room_removed_members.member_id = m_members.member_id
 WHERE chat_room_remove_member_action_id = $1
@@ -57,7 +57,7 @@ LIMIT $2;
 
 -- name: GetPluralMembersOnChatRoomRemoveMemberAction :many
 SELECT t_chat_room_removed_members.*, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
-m_members.profile_image_id member_profile_image_id
+m_members.profile_image_id member_profile_image_id, m_members.grade_id member_grade_id, m_members.group_id member_group_id
 FROM t_chat_room_removed_members
 LEFT JOIN m_members ON t_chat_room_removed_members.member_id = m_members.member_id
 WHERE chat_room_remove_member_action_id = ANY(@chat_room_remove_member_action_ids::uuid[])
@@ -66,7 +66,7 @@ ORDER BY
 
 -- name: GetPluralMembersOnChatRoomRemoveMemberActionUseNumberedPaginate :many
 SELECT t_chat_room_removed_members.*, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
-m_members.profile_image_id member_profile_image_id
+m_members.profile_image_id member_profile_image_id, m_members.grade_id member_grade_id, m_members.group_id member_group_id
 FROM t_chat_room_removed_members
 LEFT JOIN m_members ON t_chat_room_removed_members.member_id = m_members.member_id
 WHERE chat_room_remove_member_action_id = ANY(@chat_room_remove_member_action_ids::uuid[])

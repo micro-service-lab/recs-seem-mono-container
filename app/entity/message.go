@@ -39,6 +39,18 @@ type MessageWithSenderForQuery struct {
 	MessageWithSender
 }
 
+// MessageWithSenderAndReadReceiptCountAndAttachments メッセージと送信者、既読情報、添付ファイルを表す構造体。
+type MessageWithSenderAndReadReceiptCountAndAttachments struct {
+	MessageID        uuid.UUID                  `json:"message_id"`
+	ChatRoomActionID uuid.UUID                  `json:"chat_room_action_id"`
+	Sender           NullableEntity[MemberCard] `json:"sender"`
+	Body             string                     `json:"body"`
+	PostedAt         time.Time                  `json:"posted_at"`
+	LastEditedAt     time.Time                  `json:"last_edited_at"`
+	ReadReceiptCount int64                      `json:"read_receipt_count"`
+	Attachments      []AttachedItemOnMessage    `json:"attachments"`
+}
+
 // MessageWithChatRoom メッセージとチャットルームを表す構造体。
 type MessageWithChatRoom struct {
 	MessageID    uuid.UUID              `json:"message_id"`

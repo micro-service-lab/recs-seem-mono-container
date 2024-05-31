@@ -42,6 +42,8 @@ func convStudentWithMember(e query.FindStudentByIDWithMemberRow) entity.StudentW
 					},
 				},
 			},
+			GradeID: e.MemberGradeID.Bytes,
+			GroupID: e.MemberGroupID.Bytes,
 		},
 	}
 }

@@ -13,7 +13,7 @@ DELETE FROM t_chat_room_withdraw_actions WHERE chat_room_withdraw_action_id = AN
 -- name: GetChatRoomWithdrawActionsOnChatRoom :many
 SELECT t_chat_room_withdraw_actions.*,
 m_members.name withdraw_member_name, m_members.first_name withdraw_member_first_name, m_members.last_name withdraw_member_last_name, m_members.email withdraw_member_email,
-m_members.profile_image_id withdraw_member_profile_image_id
+m_members.profile_image_id withdraw_member_profile_image_id, m_members.grade_id withdraw_member_grade_id, m_members.group_id withdraw_member_group_id
 FROM t_chat_room_withdraw_actions
 LEFT JOIN m_members ON t_chat_room_withdraw_actions.member_id = m_members.member_id
 WHERE EXISTS (
@@ -25,7 +25,7 @@ ORDER BY
 -- name: GetChatRoomWithdrawActionsOnChatRoomUseNumberedPaginate :many
 SELECT t_chat_room_withdraw_actions.*,
 m_members.name withdraw_member_name, m_members.first_name withdraw_member_first_name, m_members.last_name withdraw_member_last_name, m_members.email withdraw_member_email,
-m_members.profile_image_id withdraw_member_profile_image_id
+m_members.profile_image_id withdraw_member_profile_image_id, m_members.grade_id withdraw_member_grade_id, m_members.group_id withdraw_member_group_id
 FROM t_chat_room_withdraw_actions
 LEFT JOIN m_members ON t_chat_room_withdraw_actions.member_id = m_members.member_id
 WHERE EXISTS (
@@ -38,7 +38,7 @@ LIMIT $2 OFFSET $3;
 -- name: GetChatRoomWithdrawActionsOnChatRoomUseKeysetPaginate :many
 SELECT t_chat_room_withdraw_actions.*,
 m_members.name withdraw_member_name, m_members.first_name withdraw_member_first_name, m_members.last_name withdraw_member_last_name, m_members.email withdraw_member_email,
-m_members.profile_image_id withdraw_member_profile_image_id
+m_members.profile_image_id withdraw_member_profile_image_id, m_members.grade_id withdraw_member_grade_id, m_members.group_id withdraw_member_group_id
 FROM t_chat_room_withdraw_actions
 LEFT JOIN m_members ON t_chat_room_withdraw_actions.member_id = m_members.member_id
 WHERE EXISTS (
@@ -59,7 +59,7 @@ LIMIT $2;
 -- name: GetPluralChatRoomWithdrawActions :many
 SELECT t_chat_room_withdraw_actions.*,
 m_members.name withdraw_member_name, m_members.first_name withdraw_member_first_name, m_members.last_name withdraw_member_last_name, m_members.email withdraw_member_email,
-m_members.profile_image_id withdraw_member_profile_image_id
+m_members.profile_image_id withdraw_member_profile_image_id, m_members.grade_id withdraw_member_grade_id, m_members.group_id withdraw_member_group_id
 FROM t_chat_room_withdraw_actions
 LEFT JOIN m_members ON t_chat_room_withdraw_actions.member_id = m_members.member_id
 WHERE chat_room_withdraw_action_id = ANY(@chat_room_withdraw_action_ids::uuid[])
@@ -69,7 +69,7 @@ ORDER BY
 -- name: GetPluralChatRoomWithdrawActionsUseNumberedPaginate :many
 SELECT t_chat_room_withdraw_actions.*,
 m_members.name withdraw_member_name, m_members.first_name withdraw_member_first_name, m_members.last_name withdraw_member_last_name, m_members.email withdraw_member_email,
-m_members.profile_image_id withdraw_member_profile_image_id
+m_members.profile_image_id withdraw_member_profile_image_id, m_members.grade_id withdraw_member_grade_id, m_members.group_id withdraw_member_group_id
 FROM t_chat_room_withdraw_actions
 LEFT JOIN m_members ON t_chat_room_withdraw_actions.member_id = m_members.member_id
 WHERE chat_room_withdraw_action_id = ANY(@chat_room_withdraw_action_ids::uuid[])

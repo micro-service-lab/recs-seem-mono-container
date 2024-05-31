@@ -31,6 +31,8 @@ func convChatRoomWithdrawActionOnChatRoom(
 				FirstName:      entity.String(e.WithdrawMemberFirstName),
 				LastName:       entity.String(e.WithdrawMemberLastName),
 				ProfileImageID: entity.UUID(e.WithdrawMemberProfileImageID),
+				GradeID:        e.WithdrawMemberGradeID.Bytes,
+				GroupID:        e.WithdrawMemberGroupID.Bytes,
 			},
 		}
 	}

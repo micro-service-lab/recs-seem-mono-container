@@ -26,6 +26,22 @@ type ReadReceipt interface {
 		ctx context.Context, sd Sd, chatRoomID, memberID uuid.UUID,
 		where parameter.WhereReadableMessageOnChatRoomAndMemberParam,
 	) (int64, error)
+	// CountReadsOnMessages メッセージ上の既読数を取得する。
+	CountReadsOnMessages(
+		ctx context.Context, messageIDs []uuid.UUID, where parameter.WhereReadsOnMessageParam,
+	) ([]entity.ReadReceiptGroupByMessage, error)
+	// CountReadsOnMessagesWithSd SD付きでメッセージ上の既読数を取得する。
+	CountReadsOnMessagesWithSd(
+		ctx context.Context, sd Sd, messageIDs []uuid.UUID, where parameter.WhereReadsOnMessageParam,
+	) ([]entity.ReadReceiptGroupByMessage, error)
+	// CountReadableMessagesOnChatRooms チャットルーム上のメッセージ数を取得する。
+	CountReadableMessagesOnChatRooms(
+		ctx context.Context, chatRoomIDs []uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam,
+	) ([]entity.ReadReceiptGroupByChatRoom, error)
+	// CountReadableMessagesOnChatRoomsWithSd SD付きでチャットルーム上のメッセージ数を取得する。
+	CountReadableMessagesOnChatRoomsWithSd(
+		ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam,
+	) ([]entity.ReadReceiptGroupByChatRoom, error)
 	// CountReadableMessagesOnChatRoomsAndMember 複数のチャットルーム、メンバー上のメッセージ数を取得する。
 	CountReadableMessagesOnChatRoomsAndMember(
 		ctx context.Context, chatRoomIDs []uuid.UUID, memberID uuid.UUID,

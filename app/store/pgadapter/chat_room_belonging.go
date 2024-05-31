@@ -92,6 +92,8 @@ func convMemberOnChatRoom(r query.GetMembersOnChatRoomRow) entity.MemberOnChatRo
 			LastName:     entity.String(r.MemberLastName),
 			Email:        r.MemberEmail.String,
 			ProfileImage: profileImg,
+			GradeID:      r.MemberGradeID.Bytes,
+			GroupID:      r.MemberGroupID.Bytes,
 		},
 		AddedAt: r.AddedAt,
 	}

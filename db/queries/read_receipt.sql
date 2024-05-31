@@ -247,6 +247,26 @@ AND
 AND
 	CASE WHEN @where_is_not_read::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END;
 
+-- name: CountReadsOnMessages :many
+SELECT message_id, COUNT(*) FROM t_read_receipts
+WHERE message_id = ANY(@message_ids::uuid[])
+AND
+	CASE WHEN @where_is_read::boolean = true THEN t_read_receipts.read_at IS NOT NULL ELSE TRUE END
+AND
+	CASE WHEN @where_is_not_read::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
+GROUP BY message_id;
+
+-- name: CountReadableMessagesOnChatRooms :many
+SELECT t_chat_room_actions.chat_room_id, COUNT(*) FROM t_read_receipts
+LEFT JOIN t_messages ON t_read_receipts.message_id = t_messages.message_id
+LEFT JOIN t_chat_room_actions ON t_messages.chat_room_action_id = t_chat_room_actions.chat_room_action_id
+WHERE t_chat_room_actions.chat_room_id = ANY(@chat_room_ids::uuid[])
+AND
+	CASE WHEN @where_is_read::boolean = true THEN t_read_receipts.read_at IS NOT NULL ELSE TRUE END
+AND
+	CASE WHEN @where_is_not_read::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
+GROUP BY t_chat_room_actions.chat_room_id;
+
 -- name: CountReadableMessagesOnChatRoomsAndMember :many
 SELECT t_chat_room_actions.chat_room_id, COUNT(*) FROM t_read_receipts
 LEFT JOIN t_messages ON t_read_receipts.message_id = t_messages.message_id

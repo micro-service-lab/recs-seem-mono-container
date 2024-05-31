@@ -506,6 +506,7 @@ func getAttachedItemsOnMessage(
 				Pkey: entity.Int(e.TAttachedMessagesPkey),
 				AttachedItemOnMessage: entity.AttachedItemOnMessage{
 					AttachedMessageID: e.AttachedMessageID,
+					MessageID:         e.MessageID,
 					AttachableItem: entity.AttachableItem{
 						AttachableItemID: e.AttachableItemID.Bytes,
 						OwnerID:          entity.UUID(e.AttachedItemOwnerID),
@@ -543,6 +544,7 @@ func getAttachedItemsOnMessage(
 				Pkey: entity.Int(e.TAttachedMessagesPkey),
 				AttachedItemOnMessage: entity.AttachedItemOnMessage{
 					AttachedMessageID: e.AttachedMessageID,
+					MessageID:         e.MessageID,
 					AttachableItem: entity.AttachableItem{
 						AttachableItemID: e.AttachableItemID.Bytes,
 						OwnerID:          entity.UUID(e.AttachedItemOwnerID),
@@ -577,6 +579,7 @@ func getAttachedItemsOnMessage(
 				Pkey: entity.Int(e.TAttachedMessagesPkey),
 				AttachedItemOnMessage: entity.AttachedItemOnMessage{
 					AttachedMessageID: e.AttachedMessageID,
+					MessageID:         e.MessageID,
 					AttachableItem: entity.AttachableItem{
 						AttachableItemID: e.AttachableItemID.Bytes,
 						OwnerID:          entity.UUID(e.AttachedItemOwnerID),
@@ -672,6 +675,7 @@ func getPluralAttachedItemsOnMessage(
 	for i, v := range e {
 		entities[i] = entity.AttachedItemOnMessage{
 			AttachedMessageID: v.AttachedMessageID,
+			MessageID:         v.MessageID,
 			AttachableItem: entity.AttachableItem{
 				AttachableItemID: v.AttachableItemID.Bytes,
 				OwnerID:          entity.UUID(v.AttachedItemOwnerID),
@@ -749,6 +753,7 @@ func getAttachedItemsOnMessageWithMimeType(
 			Pkey: entity.Int(e.TAttachedMessagesPkey),
 			AttachedItemOnMessageWithMimeType: entity.AttachedItemOnMessageWithMimeType{
 				AttachedMessageID: e.AttachedMessageID,
+				MessageID:         e.MessageID,
 				AttachableItem: entity.AttachableItemWithMimeType{
 					AttachableItemID: e.AttachableItemID.Bytes,
 					OwnerID:          entity.UUID(e.AttachedItemOwnerID),
@@ -920,6 +925,7 @@ func getPluralAttachedItemsOnMessageWithMimeType(
 		}
 		entities[i] = entity.AttachedItemOnMessageWithMimeType{
 			AttachedMessageID: v.AttachedMessageID,
+			MessageID:         v.MessageID,
 			AttachableItem: entity.AttachableItemWithMimeType{
 				AttachableItemID: v.AttachableItemID.Bytes,
 				OwnerID:          entity.UUID(v.AttachedItemOwnerID),

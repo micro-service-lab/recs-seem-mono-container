@@ -318,17 +318,29 @@ var _ Store = &StoreMock{}
 //			CountReadableMessagesOnChatRoomAndMemberWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) (int64, error) {
 //				panic("mock out the CountReadableMessagesOnChatRoomAndMemberWithSd method")
 //			},
+//			CountReadableMessagesOnChatRoomsFunc: func(ctx context.Context, chatRoomIDs []uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) ([]entity.ReadReceiptGroupByChatRoom, error) {
+//				panic("mock out the CountReadableMessagesOnChatRooms method")
+//			},
 //			CountReadableMessagesOnChatRoomsAndMemberFunc: func(ctx context.Context, chatRoomIDs []uuid.UUID, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) ([]entity.ReadReceiptGroupByChatRoom, error) {
 //				panic("mock out the CountReadableMessagesOnChatRoomsAndMember method")
 //			},
 //			CountReadableMessagesOnChatRoomsAndMemberWithSdFunc: func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) ([]entity.ReadReceiptGroupByChatRoom, error) {
 //				panic("mock out the CountReadableMessagesOnChatRoomsAndMemberWithSd method")
 //			},
+//			CountReadableMessagesOnChatRoomsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) ([]entity.ReadReceiptGroupByChatRoom, error) {
+//				panic("mock out the CountReadableMessagesOnChatRoomsWithSd method")
+//			},
 //			CountReadableMessagesOnMemberFunc: func(ctx context.Context, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) (int64, error) {
 //				panic("mock out the CountReadableMessagesOnMember method")
 //			},
 //			CountReadableMessagesOnMemberWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) (int64, error) {
 //				panic("mock out the CountReadableMessagesOnMemberWithSd method")
+//			},
+//			CountReadsOnMessagesFunc: func(ctx context.Context, messageIDs []uuid.UUID, where parameter.WhereReadsOnMessageParam) ([]entity.ReadReceiptGroupByMessage, error) {
+//				panic("mock out the CountReadsOnMessages method")
+//			},
+//			CountReadsOnMessagesWithSdFunc: func(ctx context.Context, sd Sd, messageIDs []uuid.UUID, where parameter.WhereReadsOnMessageParam) ([]entity.ReadReceiptGroupByMessage, error) {
+//				panic("mock out the CountReadsOnMessagesWithSd method")
 //			},
 //			CountRecordTypesFunc: func(ctx context.Context, where parameter.WhereRecordTypeParam) (int64, error) {
 //				panic("mock out the CountRecordTypes method")
@@ -2995,17 +3007,29 @@ type StoreMock struct {
 	// CountReadableMessagesOnChatRoomAndMemberWithSdFunc mocks the CountReadableMessagesOnChatRoomAndMemberWithSd method.
 	CountReadableMessagesOnChatRoomAndMemberWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) (int64, error)
 
+	// CountReadableMessagesOnChatRoomsFunc mocks the CountReadableMessagesOnChatRooms method.
+	CountReadableMessagesOnChatRoomsFunc func(ctx context.Context, chatRoomIDs []uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) ([]entity.ReadReceiptGroupByChatRoom, error)
+
 	// CountReadableMessagesOnChatRoomsAndMemberFunc mocks the CountReadableMessagesOnChatRoomsAndMember method.
 	CountReadableMessagesOnChatRoomsAndMemberFunc func(ctx context.Context, chatRoomIDs []uuid.UUID, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) ([]entity.ReadReceiptGroupByChatRoom, error)
 
 	// CountReadableMessagesOnChatRoomsAndMemberWithSdFunc mocks the CountReadableMessagesOnChatRoomsAndMemberWithSd method.
 	CountReadableMessagesOnChatRoomsAndMemberWithSdFunc func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) ([]entity.ReadReceiptGroupByChatRoom, error)
 
+	// CountReadableMessagesOnChatRoomsWithSdFunc mocks the CountReadableMessagesOnChatRoomsWithSd method.
+	CountReadableMessagesOnChatRoomsWithSdFunc func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) ([]entity.ReadReceiptGroupByChatRoom, error)
+
 	// CountReadableMessagesOnMemberFunc mocks the CountReadableMessagesOnMember method.
 	CountReadableMessagesOnMemberFunc func(ctx context.Context, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) (int64, error)
 
 	// CountReadableMessagesOnMemberWithSdFunc mocks the CountReadableMessagesOnMemberWithSd method.
 	CountReadableMessagesOnMemberWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) (int64, error)
+
+	// CountReadsOnMessagesFunc mocks the CountReadsOnMessages method.
+	CountReadsOnMessagesFunc func(ctx context.Context, messageIDs []uuid.UUID, where parameter.WhereReadsOnMessageParam) ([]entity.ReadReceiptGroupByMessage, error)
+
+	// CountReadsOnMessagesWithSdFunc mocks the CountReadsOnMessagesWithSd method.
+	CountReadsOnMessagesWithSdFunc func(ctx context.Context, sd Sd, messageIDs []uuid.UUID, where parameter.WhereReadsOnMessageParam) ([]entity.ReadReceiptGroupByMessage, error)
 
 	// CountRecordTypesFunc mocks the CountRecordTypes method.
 	CountRecordTypesFunc func(ctx context.Context, where parameter.WhereRecordTypeParam) (int64, error)
@@ -6199,6 +6223,15 @@ type StoreMock struct {
 			// Where is the where argument value.
 			Where parameter.WhereReadableMessageOnChatRoomAndMemberParam
 		}
+		// CountReadableMessagesOnChatRooms holds details about calls to the CountReadableMessagesOnChatRooms method.
+		CountReadableMessagesOnChatRooms []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomIDs is the chatRoomIDs argument value.
+			ChatRoomIDs []uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereReadableMessageOnChatRoomAndMemberParam
+		}
 		// CountReadableMessagesOnChatRoomsAndMember holds details about calls to the CountReadableMessagesOnChatRoomsAndMember method.
 		CountReadableMessagesOnChatRoomsAndMember []struct {
 			// Ctx is the ctx argument value.
@@ -6223,6 +6256,17 @@ type StoreMock struct {
 			// Where is the where argument value.
 			Where parameter.WhereReadableMessageOnChatRoomAndMemberParam
 		}
+		// CountReadableMessagesOnChatRoomsWithSd holds details about calls to the CountReadableMessagesOnChatRoomsWithSd method.
+		CountReadableMessagesOnChatRoomsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomIDs is the chatRoomIDs argument value.
+			ChatRoomIDs []uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereReadableMessageOnChatRoomAndMemberParam
+		}
 		// CountReadableMessagesOnMember holds details about calls to the CountReadableMessagesOnMember method.
 		CountReadableMessagesOnMember []struct {
 			// Ctx is the ctx argument value.
@@ -6242,6 +6286,26 @@ type StoreMock struct {
 			MemberID uuid.UUID
 			// Where is the where argument value.
 			Where parameter.WhereReadableMessageOnChatRoomAndMemberParam
+		}
+		// CountReadsOnMessages holds details about calls to the CountReadsOnMessages method.
+		CountReadsOnMessages []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageIDs is the messageIDs argument value.
+			MessageIDs []uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereReadsOnMessageParam
+		}
+		// CountReadsOnMessagesWithSd holds details about calls to the CountReadsOnMessagesWithSd method.
+		CountReadsOnMessagesWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MessageIDs is the messageIDs argument value.
+			MessageIDs []uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereReadsOnMessageParam
 		}
 		// CountRecordTypes holds details about calls to the CountRecordTypes method.
 		CountRecordTypes []struct {
@@ -14370,10 +14434,14 @@ type StoreMock struct {
 	lockCountReadableMembersOnMessageWithSd                             sync.RWMutex
 	lockCountReadableMessagesOnChatRoomAndMember                        sync.RWMutex
 	lockCountReadableMessagesOnChatRoomAndMemberWithSd                  sync.RWMutex
+	lockCountReadableMessagesOnChatRooms                                sync.RWMutex
 	lockCountReadableMessagesOnChatRoomsAndMember                       sync.RWMutex
 	lockCountReadableMessagesOnChatRoomsAndMemberWithSd                 sync.RWMutex
+	lockCountReadableMessagesOnChatRoomsWithSd                          sync.RWMutex
 	lockCountReadableMessagesOnMember                                   sync.RWMutex
 	lockCountReadableMessagesOnMemberWithSd                             sync.RWMutex
+	lockCountReadsOnMessages                                            sync.RWMutex
+	lockCountReadsOnMessagesWithSd                                      sync.RWMutex
 	lockCountRecordTypes                                                sync.RWMutex
 	lockCountRecordTypesWithSd                                          sync.RWMutex
 	lockCountRoles                                                      sync.RWMutex
@@ -18999,6 +19067,46 @@ func (mock *StoreMock) CountReadableMessagesOnChatRoomAndMemberWithSdCalls() []s
 	return calls
 }
 
+// CountReadableMessagesOnChatRooms calls CountReadableMessagesOnChatRoomsFunc.
+func (mock *StoreMock) CountReadableMessagesOnChatRooms(ctx context.Context, chatRoomIDs []uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) ([]entity.ReadReceiptGroupByChatRoom, error) {
+	if mock.CountReadableMessagesOnChatRoomsFunc == nil {
+		panic("StoreMock.CountReadableMessagesOnChatRoomsFunc: method is nil but Store.CountReadableMessagesOnChatRooms was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		ChatRoomIDs []uuid.UUID
+		Where       parameter.WhereReadableMessageOnChatRoomAndMemberParam
+	}{
+		Ctx:         ctx,
+		ChatRoomIDs: chatRoomIDs,
+		Where:       where,
+	}
+	mock.lockCountReadableMessagesOnChatRooms.Lock()
+	mock.calls.CountReadableMessagesOnChatRooms = append(mock.calls.CountReadableMessagesOnChatRooms, callInfo)
+	mock.lockCountReadableMessagesOnChatRooms.Unlock()
+	return mock.CountReadableMessagesOnChatRoomsFunc(ctx, chatRoomIDs, where)
+}
+
+// CountReadableMessagesOnChatRoomsCalls gets all the calls that were made to CountReadableMessagesOnChatRooms.
+// Check the length with:
+//
+//	len(mockedStore.CountReadableMessagesOnChatRoomsCalls())
+func (mock *StoreMock) CountReadableMessagesOnChatRoomsCalls() []struct {
+	Ctx         context.Context
+	ChatRoomIDs []uuid.UUID
+	Where       parameter.WhereReadableMessageOnChatRoomAndMemberParam
+} {
+	var calls []struct {
+		Ctx         context.Context
+		ChatRoomIDs []uuid.UUID
+		Where       parameter.WhereReadableMessageOnChatRoomAndMemberParam
+	}
+	mock.lockCountReadableMessagesOnChatRooms.RLock()
+	calls = mock.calls.CountReadableMessagesOnChatRooms
+	mock.lockCountReadableMessagesOnChatRooms.RUnlock()
+	return calls
+}
+
 // CountReadableMessagesOnChatRoomsAndMember calls CountReadableMessagesOnChatRoomsAndMemberFunc.
 func (mock *StoreMock) CountReadableMessagesOnChatRoomsAndMember(ctx context.Context, chatRoomIDs []uuid.UUID, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) ([]entity.ReadReceiptGroupByChatRoom, error) {
 	if mock.CountReadableMessagesOnChatRoomsAndMemberFunc == nil {
@@ -19091,6 +19199,50 @@ func (mock *StoreMock) CountReadableMessagesOnChatRoomsAndMemberWithSdCalls() []
 	return calls
 }
 
+// CountReadableMessagesOnChatRoomsWithSd calls CountReadableMessagesOnChatRoomsWithSdFunc.
+func (mock *StoreMock) CountReadableMessagesOnChatRoomsWithSd(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) ([]entity.ReadReceiptGroupByChatRoom, error) {
+	if mock.CountReadableMessagesOnChatRoomsWithSdFunc == nil {
+		panic("StoreMock.CountReadableMessagesOnChatRoomsWithSdFunc: method is nil but Store.CountReadableMessagesOnChatRoomsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		Sd          Sd
+		ChatRoomIDs []uuid.UUID
+		Where       parameter.WhereReadableMessageOnChatRoomAndMemberParam
+	}{
+		Ctx:         ctx,
+		Sd:          sd,
+		ChatRoomIDs: chatRoomIDs,
+		Where:       where,
+	}
+	mock.lockCountReadableMessagesOnChatRoomsWithSd.Lock()
+	mock.calls.CountReadableMessagesOnChatRoomsWithSd = append(mock.calls.CountReadableMessagesOnChatRoomsWithSd, callInfo)
+	mock.lockCountReadableMessagesOnChatRoomsWithSd.Unlock()
+	return mock.CountReadableMessagesOnChatRoomsWithSdFunc(ctx, sd, chatRoomIDs, where)
+}
+
+// CountReadableMessagesOnChatRoomsWithSdCalls gets all the calls that were made to CountReadableMessagesOnChatRoomsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountReadableMessagesOnChatRoomsWithSdCalls())
+func (mock *StoreMock) CountReadableMessagesOnChatRoomsWithSdCalls() []struct {
+	Ctx         context.Context
+	Sd          Sd
+	ChatRoomIDs []uuid.UUID
+	Where       parameter.WhereReadableMessageOnChatRoomAndMemberParam
+} {
+	var calls []struct {
+		Ctx         context.Context
+		Sd          Sd
+		ChatRoomIDs []uuid.UUID
+		Where       parameter.WhereReadableMessageOnChatRoomAndMemberParam
+	}
+	mock.lockCountReadableMessagesOnChatRoomsWithSd.RLock()
+	calls = mock.calls.CountReadableMessagesOnChatRoomsWithSd
+	mock.lockCountReadableMessagesOnChatRoomsWithSd.RUnlock()
+	return calls
+}
+
 // CountReadableMessagesOnMember calls CountReadableMessagesOnMemberFunc.
 func (mock *StoreMock) CountReadableMessagesOnMember(ctx context.Context, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam) (int64, error) {
 	if mock.CountReadableMessagesOnMemberFunc == nil {
@@ -19172,6 +19324,90 @@ func (mock *StoreMock) CountReadableMessagesOnMemberWithSdCalls() []struct {
 	mock.lockCountReadableMessagesOnMemberWithSd.RLock()
 	calls = mock.calls.CountReadableMessagesOnMemberWithSd
 	mock.lockCountReadableMessagesOnMemberWithSd.RUnlock()
+	return calls
+}
+
+// CountReadsOnMessages calls CountReadsOnMessagesFunc.
+func (mock *StoreMock) CountReadsOnMessages(ctx context.Context, messageIDs []uuid.UUID, where parameter.WhereReadsOnMessageParam) ([]entity.ReadReceiptGroupByMessage, error) {
+	if mock.CountReadsOnMessagesFunc == nil {
+		panic("StoreMock.CountReadsOnMessagesFunc: method is nil but Store.CountReadsOnMessages was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+		Where      parameter.WhereReadsOnMessageParam
+	}{
+		Ctx:        ctx,
+		MessageIDs: messageIDs,
+		Where:      where,
+	}
+	mock.lockCountReadsOnMessages.Lock()
+	mock.calls.CountReadsOnMessages = append(mock.calls.CountReadsOnMessages, callInfo)
+	mock.lockCountReadsOnMessages.Unlock()
+	return mock.CountReadsOnMessagesFunc(ctx, messageIDs, where)
+}
+
+// CountReadsOnMessagesCalls gets all the calls that were made to CountReadsOnMessages.
+// Check the length with:
+//
+//	len(mockedStore.CountReadsOnMessagesCalls())
+func (mock *StoreMock) CountReadsOnMessagesCalls() []struct {
+	Ctx        context.Context
+	MessageIDs []uuid.UUID
+	Where      parameter.WhereReadsOnMessageParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+		Where      parameter.WhereReadsOnMessageParam
+	}
+	mock.lockCountReadsOnMessages.RLock()
+	calls = mock.calls.CountReadsOnMessages
+	mock.lockCountReadsOnMessages.RUnlock()
+	return calls
+}
+
+// CountReadsOnMessagesWithSd calls CountReadsOnMessagesWithSdFunc.
+func (mock *StoreMock) CountReadsOnMessagesWithSd(ctx context.Context, sd Sd, messageIDs []uuid.UUID, where parameter.WhereReadsOnMessageParam) ([]entity.ReadReceiptGroupByMessage, error) {
+	if mock.CountReadsOnMessagesWithSdFunc == nil {
+		panic("StoreMock.CountReadsOnMessagesWithSdFunc: method is nil but Store.CountReadsOnMessagesWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		MessageIDs []uuid.UUID
+		Where      parameter.WhereReadsOnMessageParam
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		MessageIDs: messageIDs,
+		Where:      where,
+	}
+	mock.lockCountReadsOnMessagesWithSd.Lock()
+	mock.calls.CountReadsOnMessagesWithSd = append(mock.calls.CountReadsOnMessagesWithSd, callInfo)
+	mock.lockCountReadsOnMessagesWithSd.Unlock()
+	return mock.CountReadsOnMessagesWithSdFunc(ctx, sd, messageIDs, where)
+}
+
+// CountReadsOnMessagesWithSdCalls gets all the calls that were made to CountReadsOnMessagesWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountReadsOnMessagesWithSdCalls())
+func (mock *StoreMock) CountReadsOnMessagesWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	MessageIDs []uuid.UUID
+	Where      parameter.WhereReadsOnMessageParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		MessageIDs []uuid.UUID
+		Where      parameter.WhereReadsOnMessageParam
+	}
+	mock.lockCountReadsOnMessagesWithSd.RLock()
+	calls = mock.calls.CountReadsOnMessagesWithSd
+	mock.lockCountReadsOnMessagesWithSd.RUnlock()
 	return calls
 }
 

@@ -88,6 +88,8 @@ func convMessageWithSender(e query.FindMessageByIDWithSenderRow) entity.MessageW
 						},
 					},
 				},
+				GradeID: e.MemberGradeID.Bytes,
+				GroupID: e.MemberGroupID.Bytes,
 			},
 		},
 		Body:         e.Body,

@@ -78,7 +78,7 @@ func NewManager(
 		ManageAttachableItem:     ManageAttachableItem{DB: db},
 		ManageGrade:              ManageGrade{DB: db, Clocker: clk, Storage: stg},
 		ManageGroup:              ManageGroup{DB: db, Clocker: clk, Storage: stg},
-		ManageChatRoom:           ManageChatRoom{DB: db, Storage: stg},
+		ManageChatRoom:           ManageChatRoom{DB: db, Storage: stg, Clocker: clk},
 		ManageMember:             ManageMember{DB: db, Hash: h, Clocker: clk, Storage: stg},
 		ManageStudent:            ManageStudent{DB: db, Hash: h, Clocker: clk, Storage: stg},
 		ManageProfessor:          ManageProfessor{DB: db, Hash: h, Clocker: clk, Storage: stg},
@@ -480,12 +480,26 @@ type OrganizationManager interface {
 	) (e entity.Organization, err error)
 	FindWholeOrganization(ctx context.Context) (entity.Organization, error)
 	CreateOrganization(
-		ctx context.Context, name string, description, color entity.String,
+		ctx context.Context,
+		name string,
+		description, color entity.String,
+		ownerID uuid.UUID,
+		members []uuid.UUID,
+		withChatRoom bool,
+		chatRoomCoverImageID entity.UUID,
 	) (e entity.Organization, err error)
 	UpdateOrganization(
-		ctx context.Context, id uuid.UUID, name string, description, color entity.String,
+		ctx context.Context,
+		id uuid.UUID,
+		name string,
+		description, color entity.String,
+		ownerID uuid.UUID,
 	) (e entity.Organization, err error)
-	DeleteOrganization(ctx context.Context, id uuid.UUID) (int64, error)
+	DeleteOrganization(
+		ctx context.Context,
+		id uuid.UUID,
+		ownerID uuid.UUID,
+	) (c int64, err error)
 	FindOrganizationByID(
 		ctx context.Context,
 		id uuid.UUID,
@@ -771,6 +785,25 @@ type ChatRoomManager interface {
 		ctx context.Context,
 		id uuid.UUID,
 	) (entity.ChatRoomWithCoverImage, error)
+	CreateChatRoom(
+		ctx context.Context,
+		name string,
+		coverImageID entity.UUID,
+		ownerID uuid.UUID,
+		members []uuid.UUID,
+	) (e entity.ChatRoom, err error)
+	UpdateChatRoom(
+		ctx context.Context,
+		id uuid.UUID,
+		name string,
+		coverImageID entity.UUID,
+		ownerID uuid.UUID,
+	) (e entity.ChatRoom, err error)
+	DeleteChatRoom(
+		ctx context.Context,
+		id uuid.UUID,
+		ownerID uuid.UUID,
+	) (c int64, err error)
 }
 
 // MemberManager is a interface for member service.

@@ -294,4 +294,53 @@ var (
 		Message:    "expire refresh token error",
 		StatusCode: http.StatusUnauthorized,
 	}
+
+	// CannotDeleteOrganizationChatRoom 組織チャットルームを削除できない
+	CannotDeleteOrganizationChatRoom = APIResponseType{
+		Code:       "237",
+		Message:    "cannot delete organization chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotDeletePrivateChatRoom プライベートチャットルームを削除できない
+	CannotDeletePrivateChatRoom = APIResponseType{
+		Code:       "238",
+		Message:    "cannot delete private chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotUpdatePrivateChatRoom プライベートチャットルームを更新できない
+	CannotUpdatePrivateChatRoom = APIResponseType{
+		Code:       "239",
+		Message:    "cannot update private chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotAddMemberToPrivateChatRoom プライベートチャットルームにメンバーを追加できない
+	CannotAddMemberToPrivateChatRoom = APIResponseType{
+		Code:       "240",
+		Message:    "cannot add member to private chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotWithdrawMemberFromPrivateChatRoom プライベートチャットルームからメンバーを退会できない
+	CannotWithdrawMemberFromPrivateChatRoom = APIResponseType{
+		Code:       "241",
+		Message:    "cannot withdraw member from private chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotAddMemberToOrganizationChatRoom 組織チャットルームにメンバーを追加できない
+	CannotAddMemberToOrganizationChatRoom = APIResponseType{
+		Code:       "242",
+		Message:    "cannot add member to organization chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotWithdrawMemberFromOrganizationChatRoom 組織チャットルームからメンバーを退会できない
+	CannotWithdrawMemberFromOrganizationChatRoom = APIResponseType{
+		Code:       "243",
+		Message:    "cannot withdraw member from organization chat room error",
+		StatusCode: http.StatusForbidden,
+	}
 )

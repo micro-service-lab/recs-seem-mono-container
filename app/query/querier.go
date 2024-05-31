@@ -864,6 +864,7 @@ type Querier interface {
 	UpdateChatRoom(ctx context.Context, arg UpdateChatRoomParams) (ChatRoom, error)
 	UpdateChatRoomActionType(ctx context.Context, arg UpdateChatRoomActionTypeParams) (ChatRoomActionType, error)
 	UpdateChatRoomActionTypeByKey(ctx context.Context, arg UpdateChatRoomActionTypeByKeyParams) (ChatRoomActionType, error)
+	UpdateChatRoomOwner(ctx context.Context, arg UpdateChatRoomOwnerParams) (ChatRoom, error)
 	UpdateEvent(ctx context.Context, arg UpdateEventParams) (Event, error)
 	UpdateEventType(ctx context.Context, arg UpdateEventTypeParams) (EventType, error)
 	UpdateEventTypeByKey(ctx context.Context, arg UpdateEventTypeByKeyParams) (EventType, error)

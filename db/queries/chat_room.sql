@@ -5,7 +5,10 @@ INSERT INTO m_chat_rooms (name, is_private, cover_image_id, owner_id, from_organ
 INSERT INTO m_chat_rooms (name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;
 
 -- name: UpdateChatRoom :one
-UPDATE m_chat_rooms SET name = $2, is_private = $3, cover_image_id = $4, owner_id = $5, updated_at = $6 WHERE chat_room_id = $1 RETURNING *;
+UPDATE m_chat_rooms SET name = $2, cover_image_id = $3, updated_at = $4 WHERE chat_room_id = $1 RETURNING *;
+
+-- name: UpdateChatRoomOwner :one
+UPDATE m_chat_rooms SET owner_id = $2, updated_at = $3 WHERE chat_room_id = $1 RETURNING *;
 
 -- name: DeleteChatRoom :execrows
 DELETE FROM m_chat_rooms WHERE chat_room_id = $1;

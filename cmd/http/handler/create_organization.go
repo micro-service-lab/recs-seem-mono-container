@@ -7,10 +7,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
-	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/lang"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"
 )
@@ -47,23 +45,28 @@ func (h *CreateOrganization) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	dsc := entity.String{
-		String: organizationReq.Description,
-		Valid:  organizationReq.Description != "",
-	}
-	col := entity.String{
-		String: organizationReq.Color,
-		Valid:  organizationReq.Color != "",
-	}
-	var organization entity.Organization
-	if organization, err = h.Service.CreateOrganization(ctx, organizationReq.Name, dsc, col); err == nil {
-		err = response.JSONResponseWriter(ctx, w, response.Success, organization, nil)
-	}
-	if err != nil {
-		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if !handled || err != nil {
-			log.Printf("failed to handle error: %v", err)
-		}
-		return
-	}
+	// dsc := entity.String{
+	// 	String: organizationReq.Description,
+	// 	Valid:  organizationReq.Description != "",
+	// }
+	// col := entity.String{
+	// 	String: organizationReq.Color,
+	// 	Valid:  organizationReq.Color != "",
+	// }
+	// var organization entity.Organization
+	// if organization, err = h.Service.CreateOrganization(
+	// 	ctx,
+	// 	organizationReq.Name,
+	// 	dsc,
+	// 	col,
+	// ); err == nil {
+	// 	err = response.JSONResponseWriter(ctx, w, response.Success, organization, nil)
+	// }
+	// if err != nil {
+	// 	handled, err := errhandle.ErrorHandle(ctx, w, err)
+	// 	if !handled || err != nil {
+	// 		log.Printf("failed to handle error: %v", err)
+	// 	}
+	// 	return
+	// }
 }

@@ -775,9 +775,7 @@ func updateChatRoom(
 	p := query.UpdateChatRoomParams{
 		ChatRoomID:   chatRoomID,
 		Name:         param.Name,
-		IsPrivate:    param.IsPrivate,
 		CoverImageID: pgtype.UUID(param.CoverImageID),
-		OwnerID:      pgtype.UUID(param.OwnerID),
 		UpdatedAt:    now,
 	}
 	e, err := qtx.UpdateChatRoom(ctx, p)

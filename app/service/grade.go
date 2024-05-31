@@ -539,9 +539,7 @@ func (m *ManageGrade) UpdateGrade(
 		}
 		crp := parameter.UpdateChatRoomParams{
 			Name:         name,
-			IsPrivate:    false,
 			CoverImageID: coverImageID,
-			OwnerID:      entity.UUID{},
 		}
 		_, err = m.DB.UpdateChatRoomWithSd(ctx, sd, fe.Organization.ChatRoomID.Bytes, crp)
 		if err != nil {

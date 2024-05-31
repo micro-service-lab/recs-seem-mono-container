@@ -1548,15 +1548,13 @@ func (q *Queries) PluralDeleteChatRooms(ctx context.Context, chatRoomIds []uuid.
 }
 
 const updateChatRoom = `-- name: UpdateChatRoom :one
-UPDATE m_chat_rooms SET name = $2, is_private = $3, cover_image_id = $4, owner_id = $5, updated_at = $6 WHERE chat_room_id = $1 RETURNING m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at
+UPDATE m_chat_rooms SET name = $2, cover_image_id = $3, updated_at = $4 WHERE chat_room_id = $1 RETURNING m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at
 `
 
 type UpdateChatRoomParams struct {
 	ChatRoomID   uuid.UUID   `json:"chat_room_id"`
 	Name         string      `json:"name"`
-	IsPrivate    bool        `json:"is_private"`
 	CoverImageID pgtype.UUID `json:"cover_image_id"`
-	OwnerID      pgtype.UUID `json:"owner_id"`
 	UpdatedAt    time.Time   `json:"updated_at"`
 }
 
@@ -1564,11 +1562,36 @@ func (q *Queries) UpdateChatRoom(ctx context.Context, arg UpdateChatRoomParams) 
 	row := q.db.QueryRow(ctx, updateChatRoom,
 		arg.ChatRoomID,
 		arg.Name,
-		arg.IsPrivate,
 		arg.CoverImageID,
-		arg.OwnerID,
 		arg.UpdatedAt,
 	)
+	var i ChatRoom
+	err := row.Scan(
+		&i.MChatRoomsPkey,
+		&i.ChatRoomID,
+		&i.Name,
+		&i.IsPrivate,
+		&i.CoverImageID,
+		&i.OwnerID,
+		&i.FromOrganization,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateChatRoomOwner = `-- name: UpdateChatRoomOwner :one
+UPDATE m_chat_rooms SET owner_id = $2, updated_at = $3 WHERE chat_room_id = $1 RETURNING m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at
+`
+
+type UpdateChatRoomOwnerParams struct {
+	ChatRoomID uuid.UUID   `json:"chat_room_id"`
+	OwnerID    pgtype.UUID `json:"owner_id"`
+	UpdatedAt  time.Time   `json:"updated_at"`
+}
+
+func (q *Queries) UpdateChatRoomOwner(ctx context.Context, arg UpdateChatRoomOwnerParams) (ChatRoom, error) {
+	row := q.db.QueryRow(ctx, updateChatRoomOwner, arg.ChatRoomID, arg.OwnerID, arg.UpdatedAt)
 	var i ChatRoom
 	err := row.Scan(
 		&i.MChatRoomsPkey,

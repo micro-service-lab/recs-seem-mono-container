@@ -38,6 +38,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreateAttendanceTypesFunc: func(ctx context.Context, ps []parameter.CreateAttendanceTypeParam) (int64, error) {
 //				panic("mock out the CreateAttendanceTypes method")
 //			},
+//			CreateChatRoomFunc: func(ctx context.Context, name string, coverImageID entity.UUID, ownerID uuid.UUID, members []uuid.UUID) (entity.ChatRoom, error) {
+//				panic("mock out the CreateChatRoom method")
+//			},
 //			CreateChatRoomActionTypeFunc: func(ctx context.Context, name string, key string) (entity.ChatRoomActionType, error) {
 //				panic("mock out the CreateChatRoomActionType method")
 //			},
@@ -104,7 +107,7 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreateMimeTypesFunc: func(ctx context.Context, ps []parameter.CreateMimeTypeParam) (int64, error) {
 //				panic("mock out the CreateMimeTypes method")
 //			},
-//			CreateOrganizationFunc: func(ctx context.Context, name string, description entity.String, color entity.String) (entity.Organization, error) {
+//			CreateOrganizationFunc: func(ctx context.Context, name string, description entity.String, color entity.String, ownerID uuid.UUID, members []uuid.UUID, withChatRoom bool, chatRoomCoverImageID entity.UUID) (entity.Organization, error) {
 //				panic("mock out the CreateOrganization method")
 //			},
 //			CreatePermissionFunc: func(ctx context.Context, name string, key string, description string, categoryID uuid.UUID) (entity.Permission, error) {
@@ -158,6 +161,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			DeleteAttendanceTypeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteAttendanceType method")
 //			},
+//			DeleteChatRoomFunc: func(ctx context.Context, id uuid.UUID, ownerID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoom method")
+//			},
 //			DeleteChatRoomActionTypeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteChatRoomActionType method")
 //			},
@@ -182,7 +188,7 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			DeleteMimeTypeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteMimeType method")
 //			},
-//			DeleteOrganizationFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
+//			DeleteOrganizationFunc: func(ctx context.Context, id uuid.UUID, ownerID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteOrganization method")
 //			},
 //			DeletePermissionFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
@@ -530,6 +536,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			UpdateAttendanceTypeFunc: func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.AttendanceType, error) {
 //				panic("mock out the UpdateAttendanceType method")
 //			},
+//			UpdateChatRoomFunc: func(ctx context.Context, id uuid.UUID, name string, coverImageID entity.UUID, ownerID uuid.UUID) (entity.ChatRoom, error) {
+//				panic("mock out the UpdateChatRoom method")
+//			},
 //			UpdateChatRoomActionTypeFunc: func(ctx context.Context, id uuid.UUID, name string, key string) (entity.ChatRoomActionType, error) {
 //				panic("mock out the UpdateChatRoomActionType method")
 //			},
@@ -557,7 +566,7 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			UpdateMimeTypeFunc: func(ctx context.Context, id uuid.UUID, name string, key string, kind string) (entity.MimeType, error) {
 //				panic("mock out the UpdateMimeType method")
 //			},
-//			UpdateOrganizationFunc: func(ctx context.Context, id uuid.UUID, name string, description entity.String, color entity.String) (entity.Organization, error) {
+//			UpdateOrganizationFunc: func(ctx context.Context, id uuid.UUID, name string, description entity.String, color entity.String, ownerID uuid.UUID) (entity.Organization, error) {
 //				panic("mock out the UpdateOrganization method")
 //			},
 //			UpdatePermissionFunc: func(ctx context.Context, id uuid.UUID, name string, key string, description string, categoryID uuid.UUID) (entity.Permission, error) {
@@ -608,6 +617,9 @@ type ManagerInterfaceMock struct {
 
 	// CreateAttendanceTypesFunc mocks the CreateAttendanceTypes method.
 	CreateAttendanceTypesFunc func(ctx context.Context, ps []parameter.CreateAttendanceTypeParam) (int64, error)
+
+	// CreateChatRoomFunc mocks the CreateChatRoom method.
+	CreateChatRoomFunc func(ctx context.Context, name string, coverImageID entity.UUID, ownerID uuid.UUID, members []uuid.UUID) (entity.ChatRoom, error)
 
 	// CreateChatRoomActionTypeFunc mocks the CreateChatRoomActionType method.
 	CreateChatRoomActionTypeFunc func(ctx context.Context, name string, key string) (entity.ChatRoomActionType, error)
@@ -676,7 +688,7 @@ type ManagerInterfaceMock struct {
 	CreateMimeTypesFunc func(ctx context.Context, ps []parameter.CreateMimeTypeParam) (int64, error)
 
 	// CreateOrganizationFunc mocks the CreateOrganization method.
-	CreateOrganizationFunc func(ctx context.Context, name string, description entity.String, color entity.String) (entity.Organization, error)
+	CreateOrganizationFunc func(ctx context.Context, name string, description entity.String, color entity.String, ownerID uuid.UUID, members []uuid.UUID, withChatRoom bool, chatRoomCoverImageID entity.UUID) (entity.Organization, error)
 
 	// CreatePermissionFunc mocks the CreatePermission method.
 	CreatePermissionFunc func(ctx context.Context, name string, key string, description string, categoryID uuid.UUID) (entity.Permission, error)
@@ -729,6 +741,9 @@ type ManagerInterfaceMock struct {
 	// DeleteAttendanceTypeFunc mocks the DeleteAttendanceType method.
 	DeleteAttendanceTypeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
+	// DeleteChatRoomFunc mocks the DeleteChatRoom method.
+	DeleteChatRoomFunc func(ctx context.Context, id uuid.UUID, ownerID uuid.UUID) (int64, error)
+
 	// DeleteChatRoomActionTypeFunc mocks the DeleteChatRoomActionType method.
 	DeleteChatRoomActionTypeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
@@ -754,7 +769,7 @@ type ManagerInterfaceMock struct {
 	DeleteMimeTypeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
 	// DeleteOrganizationFunc mocks the DeleteOrganization method.
-	DeleteOrganizationFunc func(ctx context.Context, id uuid.UUID) (int64, error)
+	DeleteOrganizationFunc func(ctx context.Context, id uuid.UUID, ownerID uuid.UUID) (int64, error)
 
 	// DeletePermissionFunc mocks the DeletePermission method.
 	DeletePermissionFunc func(ctx context.Context, id uuid.UUID) (int64, error)
@@ -1101,6 +1116,9 @@ type ManagerInterfaceMock struct {
 	// UpdateAttendanceTypeFunc mocks the UpdateAttendanceType method.
 	UpdateAttendanceTypeFunc func(ctx context.Context, id uuid.UUID, name string, key string, color string) (entity.AttendanceType, error)
 
+	// UpdateChatRoomFunc mocks the UpdateChatRoom method.
+	UpdateChatRoomFunc func(ctx context.Context, id uuid.UUID, name string, coverImageID entity.UUID, ownerID uuid.UUID) (entity.ChatRoom, error)
+
 	// UpdateChatRoomActionTypeFunc mocks the UpdateChatRoomActionType method.
 	UpdateChatRoomActionTypeFunc func(ctx context.Context, id uuid.UUID, name string, key string) (entity.ChatRoomActionType, error)
 
@@ -1129,7 +1147,7 @@ type ManagerInterfaceMock struct {
 	UpdateMimeTypeFunc func(ctx context.Context, id uuid.UUID, name string, key string, kind string) (entity.MimeType, error)
 
 	// UpdateOrganizationFunc mocks the UpdateOrganization method.
-	UpdateOrganizationFunc func(ctx context.Context, id uuid.UUID, name string, description entity.String, color entity.String) (entity.Organization, error)
+	UpdateOrganizationFunc func(ctx context.Context, id uuid.UUID, name string, description entity.String, color entity.String, ownerID uuid.UUID) (entity.Organization, error)
 
 	// UpdatePermissionFunc mocks the UpdatePermission method.
 	UpdatePermissionFunc func(ctx context.Context, id uuid.UUID, name string, key string, description string, categoryID uuid.UUID) (entity.Permission, error)
@@ -1200,6 +1218,19 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// Ps is the ps argument value.
 			Ps []parameter.CreateAttendanceTypeParam
+		}
+		// CreateChatRoom holds details about calls to the CreateChatRoom method.
+		CreateChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Name is the name argument value.
+			Name string
+			// CoverImageID is the coverImageID argument value.
+			CoverImageID entity.UUID
+			// OwnerID is the ownerID argument value.
+			OwnerID uuid.UUID
+			// Members is the members argument value.
+			Members []uuid.UUID
 		}
 		// CreateChatRoomActionType holds details about calls to the CreateChatRoomActionType method.
 		CreateChatRoomActionType []struct {
@@ -1443,6 +1474,14 @@ type ManagerInterfaceMock struct {
 			Description entity.String
 			// Color is the color argument value.
 			Color entity.String
+			// OwnerID is the ownerID argument value.
+			OwnerID uuid.UUID
+			// Members is the members argument value.
+			Members []uuid.UUID
+			// WithChatRoom is the withChatRoom argument value.
+			WithChatRoom bool
+			// ChatRoomCoverImageID is the chatRoomCoverImageID argument value.
+			ChatRoomCoverImageID entity.UUID
 		}
 		// CreatePermission holds details about calls to the CreatePermission method.
 		CreatePermission []struct {
@@ -1621,6 +1660,15 @@ type ManagerInterfaceMock struct {
 			// ID is the id argument value.
 			ID uuid.UUID
 		}
+		// DeleteChatRoom holds details about calls to the DeleteChatRoom method.
+		DeleteChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+			// OwnerID is the ownerID argument value.
+			OwnerID uuid.UUID
+		}
 		// DeleteChatRoomActionType holds details about calls to the DeleteChatRoomActionType method.
 		DeleteChatRoomActionType []struct {
 			// Ctx is the ctx argument value.
@@ -1683,6 +1731,8 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// ID is the id argument value.
 			ID uuid.UUID
+			// OwnerID is the ownerID argument value.
+			OwnerID uuid.UUID
 		}
 		// DeletePermission holds details about calls to the DeletePermission method.
 		DeletePermission []struct {
@@ -2835,6 +2885,19 @@ type ManagerInterfaceMock struct {
 			// Color is the color argument value.
 			Color string
 		}
+		// UpdateChatRoom holds details about calls to the UpdateChatRoom method.
+		UpdateChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ID is the id argument value.
+			ID uuid.UUID
+			// Name is the name argument value.
+			Name string
+			// CoverImageID is the coverImageID argument value.
+			CoverImageID entity.UUID
+			// OwnerID is the ownerID argument value.
+			OwnerID uuid.UUID
+		}
 		// UpdateChatRoomActionType holds details about calls to the UpdateChatRoomActionType method.
 		UpdateChatRoomActionType []struct {
 			// Ctx is the ctx argument value.
@@ -2958,6 +3021,8 @@ type ManagerInterfaceMock struct {
 			Description entity.String
 			// Color is the color argument value.
 			Color entity.String
+			// OwnerID is the ownerID argument value.
+			OwnerID uuid.UUID
 		}
 		// UpdatePermission holds details about calls to the UpdatePermission method.
 		UpdatePermission []struct {
@@ -3074,6 +3139,7 @@ type ManagerInterfaceMock struct {
 	lockCreateAttendStatuses                  sync.RWMutex
 	lockCreateAttendanceType                  sync.RWMutex
 	lockCreateAttendanceTypes                 sync.RWMutex
+	lockCreateChatRoom                        sync.RWMutex
 	lockCreateChatRoomActionType              sync.RWMutex
 	lockCreateChatRoomActionTypes             sync.RWMutex
 	lockCreateEventType                       sync.RWMutex
@@ -3114,6 +3180,7 @@ type ManagerInterfaceMock struct {
 	lockCreateWholeOrganization               sync.RWMutex
 	lockDeleteAttendStatus                    sync.RWMutex
 	lockDeleteAttendanceType                  sync.RWMutex
+	lockDeleteChatRoom                        sync.RWMutex
 	lockDeleteChatRoomActionType              sync.RWMutex
 	lockDeleteEventType                       sync.RWMutex
 	lockDeleteFile                            sync.RWMutex
@@ -3238,6 +3305,7 @@ type ManagerInterfaceMock struct {
 	lockRefreshToken                          sync.RWMutex
 	lockUpdateAttendStatus                    sync.RWMutex
 	lockUpdateAttendanceType                  sync.RWMutex
+	lockUpdateChatRoom                        sync.RWMutex
 	lockUpdateChatRoomActionType              sync.RWMutex
 	lockUpdateEventType                       sync.RWMutex
 	lockUpdateGrade                           sync.RWMutex
@@ -3448,6 +3516,54 @@ func (mock *ManagerInterfaceMock) CreateAttendanceTypesCalls() []struct {
 	mock.lockCreateAttendanceTypes.RLock()
 	calls = mock.calls.CreateAttendanceTypes
 	mock.lockCreateAttendanceTypes.RUnlock()
+	return calls
+}
+
+// CreateChatRoom calls CreateChatRoomFunc.
+func (mock *ManagerInterfaceMock) CreateChatRoom(ctx context.Context, name string, coverImageID entity.UUID, ownerID uuid.UUID, members []uuid.UUID) (entity.ChatRoom, error) {
+	if mock.CreateChatRoomFunc == nil {
+		panic("ManagerInterfaceMock.CreateChatRoomFunc: method is nil but ManagerInterface.CreateChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		Name         string
+		CoverImageID entity.UUID
+		OwnerID      uuid.UUID
+		Members      []uuid.UUID
+	}{
+		Ctx:          ctx,
+		Name:         name,
+		CoverImageID: coverImageID,
+		OwnerID:      ownerID,
+		Members:      members,
+	}
+	mock.lockCreateChatRoom.Lock()
+	mock.calls.CreateChatRoom = append(mock.calls.CreateChatRoom, callInfo)
+	mock.lockCreateChatRoom.Unlock()
+	return mock.CreateChatRoomFunc(ctx, name, coverImageID, ownerID, members)
+}
+
+// CreateChatRoomCalls gets all the calls that were made to CreateChatRoom.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateChatRoomCalls())
+func (mock *ManagerInterfaceMock) CreateChatRoomCalls() []struct {
+	Ctx          context.Context
+	Name         string
+	CoverImageID entity.UUID
+	OwnerID      uuid.UUID
+	Members      []uuid.UUID
+} {
+	var calls []struct {
+		Ctx          context.Context
+		Name         string
+		CoverImageID entity.UUID
+		OwnerID      uuid.UUID
+		Members      []uuid.UUID
+	}
+	mock.lockCreateChatRoom.RLock()
+	calls = mock.calls.CreateChatRoom
+	mock.lockCreateChatRoom.RUnlock()
 	return calls
 }
 
@@ -4400,25 +4516,33 @@ func (mock *ManagerInterfaceMock) CreateMimeTypesCalls() []struct {
 }
 
 // CreateOrganization calls CreateOrganizationFunc.
-func (mock *ManagerInterfaceMock) CreateOrganization(ctx context.Context, name string, description entity.String, color entity.String) (entity.Organization, error) {
+func (mock *ManagerInterfaceMock) CreateOrganization(ctx context.Context, name string, description entity.String, color entity.String, ownerID uuid.UUID, members []uuid.UUID, withChatRoom bool, chatRoomCoverImageID entity.UUID) (entity.Organization, error) {
 	if mock.CreateOrganizationFunc == nil {
 		panic("ManagerInterfaceMock.CreateOrganizationFunc: method is nil but ManagerInterface.CreateOrganization was just called")
 	}
 	callInfo := struct {
-		Ctx         context.Context
-		Name        string
-		Description entity.String
-		Color       entity.String
+		Ctx                  context.Context
+		Name                 string
+		Description          entity.String
+		Color                entity.String
+		OwnerID              uuid.UUID
+		Members              []uuid.UUID
+		WithChatRoom         bool
+		ChatRoomCoverImageID entity.UUID
 	}{
-		Ctx:         ctx,
-		Name:        name,
-		Description: description,
-		Color:       color,
+		Ctx:                  ctx,
+		Name:                 name,
+		Description:          description,
+		Color:                color,
+		OwnerID:              ownerID,
+		Members:              members,
+		WithChatRoom:         withChatRoom,
+		ChatRoomCoverImageID: chatRoomCoverImageID,
 	}
 	mock.lockCreateOrganization.Lock()
 	mock.calls.CreateOrganization = append(mock.calls.CreateOrganization, callInfo)
 	mock.lockCreateOrganization.Unlock()
-	return mock.CreateOrganizationFunc(ctx, name, description, color)
+	return mock.CreateOrganizationFunc(ctx, name, description, color, ownerID, members, withChatRoom, chatRoomCoverImageID)
 }
 
 // CreateOrganizationCalls gets all the calls that were made to CreateOrganization.
@@ -4426,16 +4550,24 @@ func (mock *ManagerInterfaceMock) CreateOrganization(ctx context.Context, name s
 //
 //	len(mockedManagerInterface.CreateOrganizationCalls())
 func (mock *ManagerInterfaceMock) CreateOrganizationCalls() []struct {
-	Ctx         context.Context
-	Name        string
-	Description entity.String
-	Color       entity.String
+	Ctx                  context.Context
+	Name                 string
+	Description          entity.String
+	Color                entity.String
+	OwnerID              uuid.UUID
+	Members              []uuid.UUID
+	WithChatRoom         bool
+	ChatRoomCoverImageID entity.UUID
 } {
 	var calls []struct {
-		Ctx         context.Context
-		Name        string
-		Description entity.String
-		Color       entity.String
+		Ctx                  context.Context
+		Name                 string
+		Description          entity.String
+		Color                entity.String
+		OwnerID              uuid.UUID
+		Members              []uuid.UUID
+		WithChatRoom         bool
+		ChatRoomCoverImageID entity.UUID
 	}
 	mock.lockCreateOrganization.RLock()
 	calls = mock.calls.CreateOrganization
@@ -5171,6 +5303,46 @@ func (mock *ManagerInterfaceMock) DeleteAttendanceTypeCalls() []struct {
 	return calls
 }
 
+// DeleteChatRoom calls DeleteChatRoomFunc.
+func (mock *ManagerInterfaceMock) DeleteChatRoom(ctx context.Context, id uuid.UUID, ownerID uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomFunc == nil {
+		panic("ManagerInterfaceMock.DeleteChatRoomFunc: method is nil but ManagerInterface.DeleteChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		ID      uuid.UUID
+		OwnerID uuid.UUID
+	}{
+		Ctx:     ctx,
+		ID:      id,
+		OwnerID: ownerID,
+	}
+	mock.lockDeleteChatRoom.Lock()
+	mock.calls.DeleteChatRoom = append(mock.calls.DeleteChatRoom, callInfo)
+	mock.lockDeleteChatRoom.Unlock()
+	return mock.DeleteChatRoomFunc(ctx, id, ownerID)
+}
+
+// DeleteChatRoomCalls gets all the calls that were made to DeleteChatRoom.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeleteChatRoomCalls())
+func (mock *ManagerInterfaceMock) DeleteChatRoomCalls() []struct {
+	Ctx     context.Context
+	ID      uuid.UUID
+	OwnerID uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		ID      uuid.UUID
+		OwnerID uuid.UUID
+	}
+	mock.lockDeleteChatRoom.RLock()
+	calls = mock.calls.DeleteChatRoom
+	mock.lockDeleteChatRoom.RUnlock()
+	return calls
+}
+
 // DeleteChatRoomActionType calls DeleteChatRoomActionTypeFunc.
 func (mock *ManagerInterfaceMock) DeleteChatRoomActionType(ctx context.Context, id uuid.UUID) (int64, error) {
 	if mock.DeleteChatRoomActionTypeFunc == nil {
@@ -5460,21 +5632,23 @@ func (mock *ManagerInterfaceMock) DeleteMimeTypeCalls() []struct {
 }
 
 // DeleteOrganization calls DeleteOrganizationFunc.
-func (mock *ManagerInterfaceMock) DeleteOrganization(ctx context.Context, id uuid.UUID) (int64, error) {
+func (mock *ManagerInterfaceMock) DeleteOrganization(ctx context.Context, id uuid.UUID, ownerID uuid.UUID) (int64, error) {
 	if mock.DeleteOrganizationFunc == nil {
 		panic("ManagerInterfaceMock.DeleteOrganizationFunc: method is nil but ManagerInterface.DeleteOrganization was just called")
 	}
 	callInfo := struct {
-		Ctx context.Context
-		ID  uuid.UUID
+		Ctx     context.Context
+		ID      uuid.UUID
+		OwnerID uuid.UUID
 	}{
-		Ctx: ctx,
-		ID:  id,
+		Ctx:     ctx,
+		ID:      id,
+		OwnerID: ownerID,
 	}
 	mock.lockDeleteOrganization.Lock()
 	mock.calls.DeleteOrganization = append(mock.calls.DeleteOrganization, callInfo)
 	mock.lockDeleteOrganization.Unlock()
-	return mock.DeleteOrganizationFunc(ctx, id)
+	return mock.DeleteOrganizationFunc(ctx, id, ownerID)
 }
 
 // DeleteOrganizationCalls gets all the calls that were made to DeleteOrganization.
@@ -5482,12 +5656,14 @@ func (mock *ManagerInterfaceMock) DeleteOrganization(ctx context.Context, id uui
 //
 //	len(mockedManagerInterface.DeleteOrganizationCalls())
 func (mock *ManagerInterfaceMock) DeleteOrganizationCalls() []struct {
-	Ctx context.Context
-	ID  uuid.UUID
+	Ctx     context.Context
+	ID      uuid.UUID
+	OwnerID uuid.UUID
 } {
 	var calls []struct {
-		Ctx context.Context
-		ID  uuid.UUID
+		Ctx     context.Context
+		ID      uuid.UUID
+		OwnerID uuid.UUID
 	}
 	mock.lockDeleteOrganization.RLock()
 	calls = mock.calls.DeleteOrganization
@@ -10327,6 +10503,54 @@ func (mock *ManagerInterfaceMock) UpdateAttendanceTypeCalls() []struct {
 	return calls
 }
 
+// UpdateChatRoom calls UpdateChatRoomFunc.
+func (mock *ManagerInterfaceMock) UpdateChatRoom(ctx context.Context, id uuid.UUID, name string, coverImageID entity.UUID, ownerID uuid.UUID) (entity.ChatRoom, error) {
+	if mock.UpdateChatRoomFunc == nil {
+		panic("ManagerInterfaceMock.UpdateChatRoomFunc: method is nil but ManagerInterface.UpdateChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx          context.Context
+		ID           uuid.UUID
+		Name         string
+		CoverImageID entity.UUID
+		OwnerID      uuid.UUID
+	}{
+		Ctx:          ctx,
+		ID:           id,
+		Name:         name,
+		CoverImageID: coverImageID,
+		OwnerID:      ownerID,
+	}
+	mock.lockUpdateChatRoom.Lock()
+	mock.calls.UpdateChatRoom = append(mock.calls.UpdateChatRoom, callInfo)
+	mock.lockUpdateChatRoom.Unlock()
+	return mock.UpdateChatRoomFunc(ctx, id, name, coverImageID, ownerID)
+}
+
+// UpdateChatRoomCalls gets all the calls that were made to UpdateChatRoom.
+// Check the length with:
+//
+//	len(mockedManagerInterface.UpdateChatRoomCalls())
+func (mock *ManagerInterfaceMock) UpdateChatRoomCalls() []struct {
+	Ctx          context.Context
+	ID           uuid.UUID
+	Name         string
+	CoverImageID entity.UUID
+	OwnerID      uuid.UUID
+} {
+	var calls []struct {
+		Ctx          context.Context
+		ID           uuid.UUID
+		Name         string
+		CoverImageID entity.UUID
+		OwnerID      uuid.UUID
+	}
+	mock.lockUpdateChatRoom.RLock()
+	calls = mock.calls.UpdateChatRoom
+	mock.lockUpdateChatRoom.RUnlock()
+	return calls
+}
+
 // UpdateChatRoomActionType calls UpdateChatRoomActionTypeFunc.
 func (mock *ManagerInterfaceMock) UpdateChatRoomActionType(ctx context.Context, id uuid.UUID, name string, key string) (entity.ChatRoomActionType, error) {
 	if mock.UpdateChatRoomActionTypeFunc == nil {
@@ -10748,7 +10972,7 @@ func (mock *ManagerInterfaceMock) UpdateMimeTypeCalls() []struct {
 }
 
 // UpdateOrganization calls UpdateOrganizationFunc.
-func (mock *ManagerInterfaceMock) UpdateOrganization(ctx context.Context, id uuid.UUID, name string, description entity.String, color entity.String) (entity.Organization, error) {
+func (mock *ManagerInterfaceMock) UpdateOrganization(ctx context.Context, id uuid.UUID, name string, description entity.String, color entity.String, ownerID uuid.UUID) (entity.Organization, error) {
 	if mock.UpdateOrganizationFunc == nil {
 		panic("ManagerInterfaceMock.UpdateOrganizationFunc: method is nil but ManagerInterface.UpdateOrganization was just called")
 	}
@@ -10758,17 +10982,19 @@ func (mock *ManagerInterfaceMock) UpdateOrganization(ctx context.Context, id uui
 		Name        string
 		Description entity.String
 		Color       entity.String
+		OwnerID     uuid.UUID
 	}{
 		Ctx:         ctx,
 		ID:          id,
 		Name:        name,
 		Description: description,
 		Color:       color,
+		OwnerID:     ownerID,
 	}
 	mock.lockUpdateOrganization.Lock()
 	mock.calls.UpdateOrganization = append(mock.calls.UpdateOrganization, callInfo)
 	mock.lockUpdateOrganization.Unlock()
-	return mock.UpdateOrganizationFunc(ctx, id, name, description, color)
+	return mock.UpdateOrganizationFunc(ctx, id, name, description, color, ownerID)
 }
 
 // UpdateOrganizationCalls gets all the calls that were made to UpdateOrganization.
@@ -10781,6 +11007,7 @@ func (mock *ManagerInterfaceMock) UpdateOrganizationCalls() []struct {
 	Name        string
 	Description entity.String
 	Color       entity.String
+	OwnerID     uuid.UUID
 } {
 	var calls []struct {
 		Ctx         context.Context
@@ -10788,6 +11015,7 @@ func (mock *ManagerInterfaceMock) UpdateOrganizationCalls() []struct {
 		Name        string
 		Description entity.String
 		Color       entity.String
+		OwnerID     uuid.UUID
 	}
 	mock.lockUpdateOrganization.RLock()
 	calls = mock.calls.UpdateOrganization

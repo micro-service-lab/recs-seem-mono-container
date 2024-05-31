@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
@@ -266,9 +267,7 @@ func (m *ManageOrganization) UpdateWholeOrganization(
 		}
 		_, err = m.DB.UpdateChatRoomWithSd(ctx, sd, origin.ChatRoomID.Bytes, parameter.UpdateChatRoomParams{
 			Name:         name,
-			IsPrivate:    false,
 			CoverImageID: coverImageID,
-			OwnerID:      entity.UUID{},
 		})
 		if err != nil {
 			return entity.Organization{}, fmt.Errorf("failed to update chat room: %w", err)
@@ -297,7 +296,13 @@ func (m *ManageOrganization) FindWholeOrganization(ctx context.Context) (entity.
 
 // CreateOrganization オーガナイゼーションを作成する。
 func (m *ManageOrganization) CreateOrganization(
-	ctx context.Context, name string, description, color entity.String,
+	ctx context.Context,
+	name string,
+	description, color entity.String,
+	ownerID uuid.UUID,
+	members []uuid.UUID,
+	withChatRoom bool,
+	chatRoomCoverImageID entity.UUID,
 ) (e entity.Organization, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
@@ -314,37 +319,109 @@ func (m *ManageOrganization) CreateOrganization(
 			}
 		}
 	}()
-	cr, err := m.DB.CreateChatRoomWithSd(ctx, sd, parameter.CreateChatRoomParam{
-		Name:             name,
-		IsPrivate:        false,
-		CoverImageID:     entity.UUID{},
-		OwnerID:          entity.UUID{},
-		FromOrganization: true,
-	})
+	now := m.Clocker.Now()
+
+	owner, err := m.DB.FindMemberByIDWithSd(ctx, sd, ownerID)
 	if err != nil {
-		return entity.Organization{}, fmt.Errorf("failed to create chat room: %w", err)
+		var e errhandle.ModelNotFoundError
+		if errors.As(err, &e) {
+			return entity.Organization{}, errhandle.NewModelNotFoundError(OrganizationTargetOwner)
+		}
+		return entity.Organization{}, fmt.Errorf("failed to find member by id: %w", err)
 	}
-	p := parameter.CreateOrganizationParam{
+	pm, err := m.DB.GetPluralMembersWithSd(
+		ctx,
+		sd,
+		members,
+		parameter.MemberOrderMethodDefault,
+		store.NumberedPaginationParam{},
+	)
+	if err != nil {
+		return entity.Organization{}, fmt.Errorf("failed to get plural members: %w", err)
+	}
+	if len(pm.Data) != len(members) {
+		return entity.Organization{}, errhandle.NewModelNotFoundError(OrganizationTargetMembers)
+	}
+	var cr entity.UUID
+	if withChatRoom {
+		var coverImage entity.NullableEntity[entity.ImageWithAttachableItem]
+		if chatRoomCoverImageID.Valid {
+			image, err := m.DB.FindImageWithAttachableItemWithSd(ctx, sd, chatRoomCoverImageID.Bytes)
+			if err != nil {
+				var e errhandle.ModelNotFoundError
+				if errors.As(err, &e) {
+					return entity.Organization{}, errhandle.NewModelNotFoundError(ChatRoomTargetCoverImages)
+				}
+				return entity.Organization{}, fmt.Errorf("failed to find image with attachable item by id: %w", err)
+			}
+			if image.AttachableItem.OwnerID.Valid && image.AttachableItem.OwnerID.Bytes != ownerID {
+				return entity.Organization{}, errhandle.NewCommonError(response.NotFileOwner, nil)
+			}
+			coverImage = entity.NullableEntity[entity.ImageWithAttachableItem]{Valid: true, Entity: image}
+		}
+		ccr, err := createChatRoom(
+			ctx,
+			sd,
+			now,
+			m.DB,
+			name,
+			coverImage,
+			owner,
+			pm.Data,
+			true,
+		)
+		if err != nil {
+			return entity.Organization{}, fmt.Errorf("failed to create chat room: %w", err)
+		}
+		cr = entity.UUID{
+			Valid: true,
+			Bytes: ccr.ChatRoomID,
+		}
+	}
+	e, err = m.DB.CreateOrganizationWithSd(ctx, sd, parameter.CreateOrganizationParam{
 		Name:        name,
 		Description: description,
 		Color:       color,
 		IsPersonal:  false,
 		IsWhole:     false,
-		ChatRoomID: entity.UUID{
-			Valid: true,
-			Bytes: cr.ChatRoomID,
-		},
-	}
-	e, err = m.DB.CreateOrganizationWithSd(ctx, sd, p)
+		ChatRoomID:  cr,
+	})
 	if err != nil {
 		return entity.Organization{}, fmt.Errorf("failed to create organization: %w", err)
+	}
+	bop := make([]parameter.BelongOrganizationParam, 0, len(members)+1)
+	bop = append(bop, parameter.BelongOrganizationParam{
+		OrganizationID: e.OrganizationID,
+		MemberID:       ownerID,
+		WorkPositionID: entity.UUID{},
+		AddedAt:        now,
+	})
+	for _, v := range members {
+		bop = append(bop, parameter.BelongOrganizationParam{
+			OrganizationID: e.OrganizationID,
+			MemberID:       v,
+			WorkPositionID: entity.UUID{},
+			AddedAt:        now,
+		})
+	}
+
+	if _, err = m.DB.BelongOrganizationsWithSd(
+		ctx,
+		sd,
+		bop,
+	); err != nil {
+		return entity.Organization{}, fmt.Errorf("failed to belong organizations: %w", err)
 	}
 	return e, nil
 }
 
 // UpdateOrganization オーガナイゼーションを更新する。
 func (m *ManageOrganization) UpdateOrganization(
-	ctx context.Context, id uuid.UUID, name string, description, color entity.String,
+	ctx context.Context,
+	id uuid.UUID,
+	name string,
+	description, color entity.String,
+	ownerID uuid.UUID,
 ) (e entity.Organization, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
@@ -361,8 +438,13 @@ func (m *ManageOrganization) UpdateOrganization(
 			}
 		}
 	}()
+	now := m.Clocker.Now()
 	origin, err := m.DB.FindOrganizationWithDetailWithSd(ctx, sd, id)
 	if err != nil {
+		var e errhandle.ModelNotFoundError
+		if errors.As(err, &e) {
+			return entity.Organization{}, errhandle.NewModelNotFoundError(OrganizationTargetOrganizations)
+		}
 		return entity.Organization{}, fmt.Errorf("failed to find organization by id: %w", err)
 	}
 	if origin.Grade.Valid {
@@ -377,6 +459,50 @@ func (m *ManageOrganization) UpdateOrganization(
 	if origin.IsWhole {
 		return entity.Organization{}, errhandle.NewCommonError(response.AttemptOperateWholeOrganization, nil)
 	}
+
+	owner, err := m.DB.FindMemberByIDWithSd(ctx, sd, ownerID)
+	if err != nil {
+		var e errhandle.ModelNotFoundError
+		if errors.As(err, &e) {
+			return entity.Organization{}, errhandle.NewModelNotFoundError(OrganizationTargetOwner)
+		}
+		return entity.Organization{}, fmt.Errorf("failed to find member by id: %w", err)
+	}
+	if origin.ChatRoomID.Valid {
+		originRoom, err := m.DB.FindChatRoomByIDWithSd(ctx, sd, e.ChatRoomID.Bytes)
+		if err != nil {
+			return entity.Organization{}, fmt.Errorf("failed to find chat room by id: %w", err)
+		}
+		var coverImage entity.NullableEntity[entity.ImageWithAttachableItem]
+		if originRoom.CoverImageID.Valid {
+			image, err := m.DB.FindImageWithAttachableItemWithSd(ctx, sd, originRoom.CoverImageID.Bytes)
+			if err != nil {
+				var e errhandle.ModelNotFoundError
+				if errors.As(err, &e) {
+					return entity.Organization{}, errhandle.NewModelNotFoundError(ChatRoomTargetCoverImages)
+				}
+				return entity.Organization{}, fmt.Errorf("failed to find image with attachable item by id: %w", err)
+			}
+			if image.AttachableItem.OwnerID.Valid && image.AttachableItem.OwnerID.Bytes != ownerID {
+				return entity.Organization{}, errhandle.NewCommonError(response.NotFileOwner, nil)
+			}
+			coverImage = entity.NullableEntity[entity.ImageWithAttachableItem]{Valid: true, Entity: image}
+		}
+		if _, err = updateChatRoom(
+			ctx,
+			sd,
+			now,
+			m.DB,
+			m.Storage,
+			originRoom,
+			name,
+			coverImage,
+			owner,
+			true,
+		); err != nil {
+			return entity.Organization{}, fmt.Errorf("failed to update chat room: %w", err)
+		}
+	}
 	p := parameter.UpdateOrganizationParams{
 		Name:        name,
 		Description: description,
@@ -386,24 +512,15 @@ func (m *ManageOrganization) UpdateOrganization(
 	if err != nil {
 		return entity.Organization{}, fmt.Errorf("failed to update organization: %w", err)
 	}
-	originRoom, err := m.DB.FindChatRoomByIDWithSd(ctx, sd, e.ChatRoomID.Bytes)
-	if err != nil {
-		return entity.Organization{}, fmt.Errorf("failed to find chat room by id: %w", err)
-	}
-	_, err = m.DB.UpdateChatRoomWithSd(ctx, sd, originRoom.ChatRoomID, parameter.UpdateChatRoomParams{
-		Name:         name,
-		IsPrivate:    originRoom.IsPrivate,
-		CoverImageID: originRoom.CoverImageID,
-		OwnerID:      originRoom.OwnerID,
-	})
-	if err != nil {
-		return entity.Organization{}, fmt.Errorf("failed to update chat room: %w", err)
-	}
 	return e, nil
 }
 
 // DeleteOrganization オーガナイゼーションを削除する。
-func (m *ManageOrganization) DeleteOrganization(ctx context.Context, id uuid.UUID) (c int64, err error) {
+func (m *ManageOrganization) DeleteOrganization(
+	ctx context.Context,
+	id uuid.UUID,
+	ownerID uuid.UUID,
+) (c int64, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return 0, fmt.Errorf("failed to begin transaction: %w", err)
@@ -421,6 +538,10 @@ func (m *ManageOrganization) DeleteOrganization(ctx context.Context, id uuid.UUI
 	}()
 	origin, err := m.DB.FindOrganizationWithDetailWithSd(ctx, sd, id)
 	if err != nil {
+		var e errhandle.ModelNotFoundError
+		if errors.As(err, &e) {
+			return 0, errhandle.NewModelNotFoundError(OrganizationTargetOrganizations)
+		}
 		return 0, fmt.Errorf("failed to find organization by id: %w", err)
 	}
 	if origin.Grade.Valid {
@@ -435,13 +556,36 @@ func (m *ManageOrganization) DeleteOrganization(ctx context.Context, id uuid.UUI
 	if origin.IsWhole {
 		return 0, errhandle.NewCommonError(response.AttemptOperateWholeOrganization, nil)
 	}
+	owner, err := m.DB.FindMemberByIDWithSd(ctx, sd, ownerID)
+	if err != nil {
+		var e errhandle.ModelNotFoundError
+		if errors.As(err, &e) {
+			return 0, errhandle.NewModelNotFoundError(OrganizationTargetOwner)
+		}
+		return 0, fmt.Errorf("failed to find member by id: %w", err)
+	}
+	// organizationMemberShipはカスケード削除される
 	c, err = m.DB.DeleteOrganizationWithSd(ctx, sd, id)
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete organization: %w", err)
 	}
-	_, err = m.DB.DeleteChatRoomWithSd(ctx, sd, origin.ChatRoomID.Bytes)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete chat room: %w", err)
+
+	if origin.ChatRoomID.Valid {
+		originRoom, err := m.DB.FindChatRoomByIDWithSd(ctx, sd, origin.ChatRoomID.Bytes)
+		if err != nil {
+			return 0, fmt.Errorf("failed to find chat room by id: %w", err)
+		}
+		if _, err = deleteChatRoom(
+			ctx,
+			sd,
+			m.DB,
+			m.Storage,
+			originRoom,
+			owner,
+			true,
+		); err != nil {
+			return 0, fmt.Errorf("failed to delete chat room: %w", err)
+		}
 	}
 	return c, nil
 }

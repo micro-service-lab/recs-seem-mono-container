@@ -18,9 +18,7 @@ type CreateChatRoomParam struct {
 // UpdateChatRoomParams チャットルーム更新のパラメータ。
 type UpdateChatRoomParams struct {
 	Name         string
-	IsPrivate    bool
 	CoverImageID entity.UUID
-	OwnerID      entity.UUID
 }
 
 // WhereChatRoomParam チャットルーム検索のパラメータ。

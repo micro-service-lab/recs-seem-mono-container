@@ -15,4 +15,18 @@ const (
 	MemberTargetProfileImages = "MemberTargetProfileImages"
 	// MemberTargetLoginID メンバーの関連付けの際のログイン ID ターゲット
 	MemberTargetLoginID = "MemberTargetLoginID"
+	// ChatRoomTargetChatRoom チャットルームの関連付けの際のチャットルームターゲット
+	ChatRoomTargetChatRoom = "ChatRoomTargetChatRoom"
+	// ChatRoomTargetCoverImages チャットルームの関連付けの際のカバー画像ターゲット
+	ChatRoomTargetCoverImages = "ChatRoomTargetCoverImages"
+	// ChatRoomTargetOwner チャットルームの関連付けの際のオーナーターゲット
+	ChatRoomTargetOwner = "ChatRoomTargetOwner"
+	// ChatRoomTargetMembers チャットルームの関連付けの際のメンバーターゲット
+	ChatRoomTargetMembers = "ChatRoomTargetMembers"
+	// OrganizationTargetOrganizations 組織の関連付けの際の組織ターゲット
+	OrganizationTargetOrganizations = "OrganizationTargetOrganizations"
+	// OrganizationTargetOwner 組織の関連付けの際のオーナーターゲット
+	OrganizationTargetOwner = "OrganizationTargetOwner"
+	// OrganizationTargetMembers 組織の関連付けの際のメンバーターゲット
+	OrganizationTargetMembers = "OrganizationTargetMembers"
 )

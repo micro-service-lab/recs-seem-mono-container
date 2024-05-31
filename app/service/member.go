@@ -78,7 +78,9 @@ func (m *ManageMember) UpdateMember(
 			entity.UUID{
 				Valid: true,
 				Bytes: id,
-			})
+			},
+			true,
+		)
 		if err != nil {
 			return entity.Member{}, fmt.Errorf("failed to delete images: %w", err)
 		}
@@ -129,23 +131,70 @@ func (m *ManageMember) DeleteMember(ctx context.Context, id uuid.UUID) (c int64,
 			}
 		}
 	}()
+	now := m.Clocker.Now()
 	ec, err := m.DB.FindMemberWithDetailWithSd(ctx, sd, id)
 	if err != nil {
 		return 0, fmt.Errorf("failed to find member with detail: %w", err)
 	}
+	var imageIDs []uuid.UUID
+	var fileIDs []uuid.UUID
+	attachableItems, err := m.DB.GetAttachableItemsWithSd(
+		ctx,
+		sd,
+		parameter.WhereAttachableItemParam{
+			WhereInOwner: true,
+			InOwners:     []uuid.UUID{id},
+		},
+		parameter.AttachableItemOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get attachable items: %w", err)
+	}
+	for _, v := range attachableItems.Data {
+		if v.Image.Valid {
+			imageIDs = append(imageIDs, v.Image.Entity.ImageID)
+		} else if v.File.Valid {
+			fileIDs = append(fileIDs, v.File.Entity.FileID)
+		}
+	}
 	if ec.ProfileImageID.Valid {
+		imageIDs = append(imageIDs, ec.ProfileImageID.Bytes)
+	}
+	if len(imageIDs) > 0 {
 		_, err = pluralDeleteImages(
 			ctx,
 			sd,
 			m.DB,
 			m.Storage,
-			[]uuid.UUID{ec.ProfileImageID.Bytes},
+			imageIDs,
 			entity.UUID{
 				Valid: true,
 				Bytes: id,
-			})
+			},
+			true,
+		)
 		if err != nil {
 			return 0, fmt.Errorf("failed to delete images: %w", err)
+		}
+	}
+	if len(fileIDs) > 0 {
+		_, err = pluralDeleteFiles(
+			ctx,
+			sd,
+			m.DB,
+			m.Storage,
+			fileIDs,
+			entity.UUID{
+				Valid: true,
+				Bytes: id,
+			},
+			true,
+		)
+		if err != nil {
+			return 0, fmt.Errorf("failed to delete files: %w", err)
 		}
 	}
 	if ec.Student.Valid {
@@ -163,6 +212,40 @@ func (m *ManageMember) DeleteMember(ctx context.Context, id uuid.UUID) (c int64,
 	e, err := m.DB.FindMemberWithPersonalOrganizationWithSd(ctx, sd, id)
 	if err != nil {
 		return 0, fmt.Errorf("failed to find member with personal organization: %w", err)
+	}
+	craType, err := m.DB.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyWithdraw))
+	if err != nil {
+		return 0, fmt.Errorf("failed to find chat room action type by key: %w", err)
+	}
+	crs, err := m.DB.GetChatRoomsOnMemberWithSd(
+		ctx,
+		sd,
+		id,
+		parameter.WhereChatRoomOnMemberParam{},
+		parameter.ChatRoomOnMemberOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get chat rooms on member: %w", err)
+	}
+	for _, v := range crs.Data {
+		cra, err := m.DB.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
+			ChatRoomID:           v.ChatRoom.ChatRoomID,
+			ChatRoomActionTypeID: craType.ChatRoomActionTypeID,
+			ActedAt:              now,
+		})
+		if err != nil {
+			return 0, fmt.Errorf("failed to create chat room action: %w", err)
+		}
+		_, err = m.DB.CreateChatRoomWithdrawActionWithSd(ctx, sd, parameter.CreateChatRoomWithdrawActionParam{
+			ChatRoomActionID: cra.ChatRoomActionID,
+			MemberID:         entity.UUID{Valid: true, Bytes: id},
+		})
+		if err != nil {
+			return 0, fmt.Errorf("failed to create chat room withdraw action: %w", err)
+		}
 	}
 	_, err = m.DB.DisbelongChatRoomOnMemberWithSd(ctx, sd, id)
 	if err != nil {

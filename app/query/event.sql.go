@@ -525,8 +525,8 @@ AND
 AND
 	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -637,10 +637,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -746,8 +746,8 @@ AND
 AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -853,8 +853,8 @@ AND
 AND
 	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -1036,10 +1036,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -1216,8 +1216,8 @@ AND
 AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1385,8 +1385,8 @@ AND
 AND
 	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -1519,10 +1519,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -1650,8 +1650,8 @@ AND
 AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1774,8 +1774,8 @@ AND
 AND
 	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -1902,10 +1902,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -2027,8 +2027,8 @@ AND
 AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2145,8 +2145,8 @@ AND
 AND
 	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -2279,10 +2279,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -2410,8 +2410,8 @@ AND
 AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2534,8 +2534,8 @@ AND
 AND
 	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -2662,10 +2662,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -2787,8 +2787,8 @@ AND
 AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2905,8 +2905,8 @@ AND
 AND
 	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -3028,10 +3028,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -3148,8 +3148,8 @@ AND
 AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3244,8 +3244,8 @@ func (q *Queries) GetEventsWithTypeUseNumberedPaginate(ctx context.Context, arg 
 const getPluralEvents = `-- name: GetPluralEvents :many
 SELECT t_events_pkey, event_id, event_type_id, title, description, organization_id, start_time, end_time, mail_send_flag, send_organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_events WHERE event_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -3292,8 +3292,8 @@ func (q *Queries) GetPluralEvents(ctx context.Context, arg GetPluralEventsParams
 const getPluralEventsUseNumberedPaginate = `-- name: GetPluralEventsUseNumberedPaginate :many
 SELECT t_events_pkey, event_id, event_type_id, title, description, organization_id, start_time, end_time, mail_send_flag, send_organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_events WHERE event_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3354,8 +3354,8 @@ LEFT JOIN m_members l ON t_events.posted_by = l.member_id
 LEFT JOIN m_members l ON t_events.last_edited_by = l.member_id
 WHERE event_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -3474,8 +3474,8 @@ LEFT JOIN m_members l ON t_events.posted_by = l.member_id
 LEFT JOIN m_members l ON t_events.last_edited_by = l.member_id
 WHERE event_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3598,8 +3598,8 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
 WHERE event_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -3669,8 +3669,8 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
 WHERE event_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3748,8 +3748,8 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
 WHERE event_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -3813,8 +3813,8 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
 WHERE event_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3886,8 +3886,8 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
 WHERE event_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -3957,8 +3957,8 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
 WHERE event_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -4036,8 +4036,8 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
 WHERE event_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -4101,8 +4101,8 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
 WHERE event_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -4174,8 +4174,8 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
 WHERE event_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -4234,8 +4234,8 @@ SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_even
 LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
 WHERE event_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `

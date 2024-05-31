@@ -71,8 +71,8 @@ AND
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC;
 
 -- name: GetEventsUseNumberedPaginate :many
@@ -94,8 +94,8 @@ AND
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -133,10 +133,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
@@ -144,15 +144,15 @@ LIMIT $1;
 -- name: GetPluralEvents :many
 SELECT * FROM t_events WHERE event_id = ANY(@event_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC;
 
 -- name: GetPluralEventsUseNumberedPaginate :many
 SELECT * FROM t_events WHERE event_id = ANY(@event_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -176,8 +176,8 @@ AND
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC;
 
 -- name: GetEventsWithTypeUseNumberedPaginate :many
@@ -200,8 +200,8 @@ AND
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -240,10 +240,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
@@ -253,8 +253,8 @@ SELECT sqlc.embed(t_events), sqlc.embed(m_event_types) FROM t_events
 LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
 WHERE event_id = ANY(@event_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC;
 
 -- name: GetPluralEventsWithTypeUseNumberedPaginate :many
@@ -262,8 +262,8 @@ SELECT sqlc.embed(t_events), sqlc.embed(m_event_types) FROM t_events
 LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
 WHERE event_id = ANY(@event_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -287,8 +287,8 @@ AND
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC;
 
 -- name: GetEventsWithOrganizationUseNumberedPaginate :many
@@ -311,8 +311,8 @@ AND
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -351,10 +351,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
@@ -364,8 +364,8 @@ SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
 LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
 WHERE event_id = ANY(@event_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC;
 
 -- name: GetPluralEventsWithOrganizationUseNumberedPaginate :many
@@ -373,8 +373,8 @@ SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
 LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
 WHERE event_id = ANY(@event_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -398,8 +398,8 @@ AND
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC;
 
 -- name: GetEventsWithSendOrganizationUseNumberedPaginate :many
@@ -422,8 +422,8 @@ AND
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -462,10 +462,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
@@ -475,8 +475,8 @@ SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
 LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
 WHERE event_id = ANY(@event_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC;
 
 -- name: GetPluralEventsWithSendOrganizationUseNumberedPaginate :many
@@ -484,8 +484,8 @@ SELECT sqlc.embed(t_events), sqlc.embed(m_organizations) FROM t_events
 LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
 WHERE event_id = ANY(@event_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -509,8 +509,8 @@ AND
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC;
 
 -- name: GetEventsWithPostUserUseNumberedPaginate :many
@@ -533,8 +533,8 @@ AND
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -573,10 +573,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
@@ -586,8 +586,8 @@ SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
 LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
 WHERE event_id = ANY(@event_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC;
 
 -- name: GetPluralEventsWithPostUserUseNumberedPaginate :many
@@ -595,8 +595,8 @@ SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
 LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
 WHERE event_id = ANY(@event_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -620,8 +620,8 @@ AND
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC;
 
 -- name: GetEventsWithLastEditUserUseNumberedPaginate :many
@@ -644,8 +644,8 @@ AND
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -684,10 +684,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
@@ -697,8 +697,8 @@ SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
 LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
 WHERE event_id = ANY(@event_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC;
 
 -- name: GetPluralEventsWithLastEditUserUseNumberedPaginate :many
@@ -706,8 +706,8 @@ SELECT sqlc.embed(t_events), sqlc.embed(m_members) FROM t_events
 LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
 WHERE event_id = ANY(@event_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -735,8 +735,8 @@ AND
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC;
 
 -- name: GetEventsWithAllUseNumberedPaginate :many
@@ -763,8 +763,8 @@ AND
 AND
 	CASE WHEN @where_later_end_time::boolean = true THEN end_time <= @later_end_time ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -807,10 +807,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC,
-	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_time' AND @cursor_direction::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' AND @cursor_direction::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1;
@@ -824,8 +824,8 @@ LEFT JOIN m_members l ON t_events.posted_by = l.member_id
 LEFT JOIN m_members l ON t_events.last_edited_by = l.member_id
 WHERE event_id = ANY(@event_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC;
 
 -- name: GetPluralEventsWithAllUseNumberedPaginate :many
@@ -837,8 +837,8 @@ LEFT JOIN m_members l ON t_events.posted_by = l.member_id
 LEFT JOIN m_members l ON t_events.last_edited_by = l.member_id
 WHERE event_id = ANY(@event_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN @order_method::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2;
 

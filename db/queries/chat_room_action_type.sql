@@ -30,8 +30,8 @@ SELECT * FROM m_chat_room_action_types
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_chat_room_action_types.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_chat_room_action_types_pkey ASC;
 
 -- name: GetChatRoomActionTypesUseNumberedPaginate :many
@@ -39,8 +39,8 @@ SELECT * FROM m_chat_room_action_types
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_chat_room_action_types.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_chat_room_action_types_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -64,10 +64,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_chat_room_action_types_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_chat_room_action_types_pkey END DESC
 LIMIT $1;
@@ -77,8 +77,8 @@ SELECT * FROM m_chat_room_action_types
 WHERE
 	chat_room_action_type_id = ANY(@chat_room_action_type_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_chat_room_action_types_pkey ASC;
 
 -- name: GetPluralChatRoomActionTypesUseNumberedPaginate :many
@@ -86,8 +86,8 @@ SELECT * FROM m_chat_room_action_types
 WHERE
 	chat_room_action_type_id = ANY(@chat_room_action_type_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_chat_room_action_types_pkey ASC
 LIMIT $1 OFFSET $2;
 

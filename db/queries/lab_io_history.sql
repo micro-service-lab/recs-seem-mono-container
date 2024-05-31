@@ -40,10 +40,10 @@ AND
 AND
 	CASE WHEN @where_later_exited_at::boolean = true THEN exited_at <= @later_exited_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC;
 
 -- name: GetLabIOHistoriesUseNumberedPaginate :many
@@ -59,10 +59,10 @@ AND
 AND
 	CASE WHEN @where_later_exited_at::boolean = true THEN exited_at <= @later_exited_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -98,14 +98,14 @@ AND
 		END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'old_enter' AND @cursor_direction::text = 'next' THEN entered_at END ASC,
-	CASE WHEN @order_method::text = 'old_enter' AND @cursor_direction::text = 'prev' THEN entered_at END DESC,
-	CASE WHEN @order_method::text = 'late_enter' AND @cursor_direction::text = 'next' THEN entered_at END DESC,
-	CASE WHEN @order_method::text = 'late_enter' AND @cursor_direction::text = 'prev' THEN entered_at END ASC,
-	CASE WHEN @order_method::text = 'old_exit' AND @cursor_direction::text = 'next' THEN exited_at END ASC,
-	CASE WHEN @order_method::text = 'old_exit' AND @cursor_direction::text = 'prev' THEN exited_at END DESC,
-	CASE WHEN @order_method::text = 'late_exit' AND @cursor_direction::text = 'next' THEN exited_at END DESC,
-	CASE WHEN @order_method::text = 'late_exit' AND @cursor_direction::text = 'prev' THEN exited_at END ASC,
+	CASE WHEN @order_method::text = 'old_enter' AND @cursor_direction::text = 'next' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_enter' AND @cursor_direction::text = 'prev' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_enter' AND @cursor_direction::text = 'next' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_enter' AND @cursor_direction::text = 'prev' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_exit' AND @cursor_direction::text = 'next' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_exit' AND @cursor_direction::text = 'prev' THEN exited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_exit' AND @cursor_direction::text = 'next' THEN exited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_exit' AND @cursor_direction::text = 'prev' THEN exited_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_lab_io_histories_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_lab_io_histories_pkey END DESC
 LIMIT $1;
@@ -113,19 +113,19 @@ LIMIT $1;
 -- name: GetPluralLabIOHistories :many
 SELECT * FROM t_lab_io_histories WHERE lab_io_history_id = ANY(@lab_io_history_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC;
 
 -- name: GetPluralLabIOHistoriesUseNumberedPaginate :many
 SELECT * FROM t_lab_io_histories WHERE lab_io_history_id = ANY(@lab_io_history_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -143,10 +143,10 @@ AND
 AND
 	CASE WHEN @where_later_exited_at::boolean = true THEN exited_at <= @later_exited_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC;
 
 -- name: GetLabIOHistoriesWithMemberUseNumberedPaginate :many
@@ -163,10 +163,10 @@ AND
 AND
 	CASE WHEN @where_later_exited_at::boolean = true THEN exited_at <= @later_exited_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -203,14 +203,14 @@ AND
 		END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'old_enter' AND @cursor_direction::text = 'next' THEN entered_at END ASC,
-	CASE WHEN @order_method::text = 'old_enter' AND @cursor_direction::text = 'prev' THEN entered_at END DESC,
-	CASE WHEN @order_method::text = 'late_enter' AND @cursor_direction::text = 'next' THEN entered_at END DESC,
-	CASE WHEN @order_method::text = 'late_enter' AND @cursor_direction::text = 'prev' THEN entered_at END ASC,
-	CASE WHEN @order_method::text = 'old_exit' AND @cursor_direction::text = 'next' THEN exited_at END ASC,
-	CASE WHEN @order_method::text = 'old_exit' AND @cursor_direction::text = 'prev' THEN exited_at END DESC,
-	CASE WHEN @order_method::text = 'late_exit' AND @cursor_direction::text = 'next' THEN exited_at END DESC,
-	CASE WHEN @order_method::text = 'late_exit' AND @cursor_direction::text = 'prev' THEN exited_at END ASC,
+	CASE WHEN @order_method::text = 'old_enter' AND @cursor_direction::text = 'next' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_enter' AND @cursor_direction::text = 'prev' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_enter' AND @cursor_direction::text = 'next' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_enter' AND @cursor_direction::text = 'prev' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_exit' AND @cursor_direction::text = 'next' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_exit' AND @cursor_direction::text = 'prev' THEN exited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_exit' AND @cursor_direction::text = 'next' THEN exited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_exit' AND @cursor_direction::text = 'prev' THEN exited_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_lab_io_histories_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_lab_io_histories_pkey END DESC
 LIMIT $1;
@@ -220,10 +220,10 @@ SELECT sqlc.embed(t_lab_io_histories), sqlc.embed(m_members) FROM t_lab_io_histo
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE lab_io_history_id = ANY(@lab_io_history_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC;
 
 -- name: GetPluralLabIOHistoriesWithMemberUseNumberedPaginate :many
@@ -231,10 +231,10 @@ SELECT sqlc.embed(t_lab_io_histories), sqlc.embed(m_members) FROM t_lab_io_histo
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE lab_io_history_id = ANY(@lab_io_history_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN @order_method::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2;
 

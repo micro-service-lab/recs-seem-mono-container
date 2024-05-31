@@ -30,8 +30,8 @@ AND
 AND
 	CASE WHEN @where_later_sent_at::boolean = true THEN sent_at <= @later_sent_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC,
-	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC,
+	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC NULLS LAST,
 	t_position_histories_pkey ASC;
 
 -- name: GetPositionHistoriesUseNumberedPaginate :many
@@ -43,8 +43,8 @@ AND
 AND
 	CASE WHEN @where_later_sent_at::boolean = true THEN sent_at <= @later_sent_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC,
-	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC,
+	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC NULLS LAST,
 	t_position_histories_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -72,10 +72,10 @@ AND
 		END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'old_send' AND @cursor_direction::text = 'next' THEN sent_at END ASC,
-	CASE WHEN @order_method::text = 'old_send' AND @cursor_direction::text = 'prev' THEN sent_at END DESC,
-	CASE WHEN @order_method::text = 'late_send' AND @cursor_direction::text = 'next' THEN sent_at END DESC,
-	CASE WHEN @order_method::text = 'late_send' AND @cursor_direction::text = 'prev' THEN sent_at END ASC,
+	CASE WHEN @order_method::text = 'old_send' AND @cursor_direction::text = 'next' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_send' AND @cursor_direction::text = 'prev' THEN sent_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_send' AND @cursor_direction::text = 'next' THEN sent_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_send' AND @cursor_direction::text = 'prev' THEN sent_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_position_histories_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_position_histories_pkey END DESC
 LIMIT $1;
@@ -83,15 +83,15 @@ LIMIT $1;
 -- name: GetPluralPositionHistories :many
 SELECT * FROM t_position_histories WHERE position_history_id = ANY(@position_history_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC,
-	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC,
+	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC NULLS LAST,
 	t_position_histories_pkey ASC;
 
 -- name: GetPluralPositionHistoriesUseNumberedPaginate :many
 SELECT * FROM t_position_histories WHERE position_history_id = ANY(@position_history_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC,
-	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC,
+	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC NULLS LAST,
 	t_position_histories_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -105,8 +105,8 @@ AND
 AND
 	CASE WHEN @where_later_sent_at::boolean = true THEN sent_at <= @later_sent_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC,
-	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC,
+	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC NULLS LAST,
 	t_position_histories_pkey ASC;
 
 -- name: GetPositionHistoriesWithMemberUseNumberedPaginate :many
@@ -119,8 +119,8 @@ AND
 AND
 	CASE WHEN @where_later_sent_at::boolean = true THEN sent_at <= @later_sent_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC,
-	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC,
+	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC NULLS LAST,
 	t_position_histories_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -149,10 +149,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'old_send' AND @cursor_direction::text = 'next' THEN sent_at END ASC,
-	CASE WHEN @order_method::text = 'old_send' AND @cursor_direction::text = 'prev' THEN sent_at END DESC,
-	CASE WHEN @order_method::text = 'late_send' AND @cursor_direction::text = 'next' THEN sent_at END DESC,
-	CASE WHEN @order_method::text = 'late_send' AND @cursor_direction::text = 'prev' THEN sent_at END ASC,
+	CASE WHEN @order_method::text = 'old_send' AND @cursor_direction::text = 'next' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_send' AND @cursor_direction::text = 'prev' THEN sent_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_send' AND @cursor_direction::text = 'next' THEN sent_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_send' AND @cursor_direction::text = 'prev' THEN sent_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_position_histories_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_position_histories_pkey END DESC
 LIMIT $1;
@@ -162,8 +162,8 @@ SELECT sqlc.embed(t_position_histories), sqlc.embed(m_members) FROM t_position_h
 LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE position_history_id = ANY(@position_history_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC,
-	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC,
+	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC NULLS LAST,
 	t_position_histories_pkey ASC;
 
 -- name: GetPluralPositionHistoriesWithMemberUseNumberedPaginate :many
@@ -171,8 +171,8 @@ SELECT sqlc.embed(t_position_histories), sqlc.embed(m_members) FROM t_position_h
 LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE position_history_id = ANY(@position_history_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC,
-	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC,
+	CASE WHEN @order_method::text = 'old_send' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_send' THEN sent_at END DESC NULLS LAST,
 	t_position_histories_pkey ASC
 LIMIT $1 OFFSET $2;
 

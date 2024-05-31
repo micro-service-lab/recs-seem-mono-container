@@ -60,10 +60,10 @@ AND
 AND
 	CASE WHEN @where_later_last_edited_at::boolean = true THEN last_edited_at <= @later_last_edited_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC;
 
 -- name: GetMessagesUseNumberedPaginate :many
@@ -83,10 +83,10 @@ AND
 AND
 	CASE WHEN @where_later_last_edited_at::boolean = true THEN last_edited_at <= @later_last_edited_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -126,14 +126,14 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END DESC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_messages_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_messages_pkey END DESC
 LIMIT $1;
@@ -141,19 +141,19 @@ LIMIT $1;
 -- name: GetPluralMessages :many
 SELECT * FROM t_messages WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC;
 
 -- name: GetPluralMessagesUseNumberedPaginate :many
 SELECT * FROM t_messages WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -183,10 +183,10 @@ AND
 AND
 	CASE WHEN @where_later_last_edited_at::boolean = true THEN last_edited_at <= @later_last_edited_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC;
 
 -- name: GetMessagesWithChatRoomUseNumberedPaginate :many
@@ -215,10 +215,10 @@ AND
 AND
 	CASE WHEN @where_later_last_edited_at::boolean = true THEN last_edited_at <= @later_last_edited_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -267,14 +267,14 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END DESC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_messages_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_messages_pkey END DESC
 LIMIT $1;
@@ -292,10 +292,10 @@ LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC;
 
 -- name: GetPluralMessagesWithChatRoomUseNumberedPaginate :many
@@ -311,10 +311,10 @@ LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -342,10 +342,10 @@ AND
 AND
 	CASE WHEN @where_later_last_edited_at::boolean = true THEN last_edited_at <= @later_last_edited_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC;
 
 -- name: GetMessagesWithSenderUseNumberedPaginate :many
@@ -372,10 +372,10 @@ AND
 AND
 	CASE WHEN @where_later_last_edited_at::boolean = true THEN last_edited_at <= @later_last_edited_at ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -422,14 +422,14 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END DESC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END ASC,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_messages_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_messages_pkey END DESC
 LIMIT $1;
@@ -445,10 +445,10 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC;
 
 -- name: GetPluralMessagesWithSenderUseNumberedPaginate :many
@@ -462,10 +462,10 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 

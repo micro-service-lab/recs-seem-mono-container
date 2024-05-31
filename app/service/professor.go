@@ -50,6 +50,7 @@ func (m *ManageProfessor) CreateProfessor(
 			}
 		}
 	}()
+	now := m.Clocker.Now()
 	// loginID check
 	_, err = m.DB.FindMemberByLoginIDWithSd(ctx, sd, loginID)
 	if err == nil {
@@ -137,8 +138,11 @@ func (m *ManageProfessor) CreateProfessor(
 	if err != nil {
 		return entity.Professor{}, fmt.Errorf("failed to find grade with organization: %w", err)
 	}
+	craType, err := m.DB.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyAddMember))
+	if err != nil {
+		return entity.Professor{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
+	}
 	// add some organization, chat room
-	now := m.Clocker.Now()
 	bop := []parameter.BelongOrganizationParam{
 		{
 			MemberID:       e.MemberID,
@@ -163,11 +167,17 @@ func (m *ManageProfessor) CreateProfessor(
 		},
 	}
 	bcrp := make([]parameter.BelongChatRoomParam, 0, len(bop))
+	crap := make([]parameter.CreateChatRoomActionParam, 0, len(bop))
 	if groupOrg.Organization.ChatRoomID.Valid {
 		bcrp = append(bcrp, parameter.BelongChatRoomParam{
 			MemberID:   e.MemberID,
 			ChatRoomID: groupOrg.Organization.ChatRoomID.Bytes,
 			AddedAt:    now,
+		})
+		crap = append(crap, parameter.CreateChatRoomActionParam{
+			ChatRoomID:           groupOrg.Organization.ChatRoomID.Bytes,
+			ChatRoomActionTypeID: craType.ChatRoomActionTypeID,
+			ActedAt:              now,
 		})
 	}
 	if gradeOrg.Organization.ChatRoomID.Valid {
@@ -176,6 +186,11 @@ func (m *ManageProfessor) CreateProfessor(
 			ChatRoomID: gradeOrg.Organization.ChatRoomID.Bytes,
 			AddedAt:    now,
 		})
+		crap = append(crap, parameter.CreateChatRoomActionParam{
+			ChatRoomID:           gradeOrg.Organization.ChatRoomID.Bytes,
+			ChatRoomActionTypeID: craType.ChatRoomActionTypeID,
+			ActedAt:              now,
+		})
 	}
 	if wholeOrg.ChatRoomID.Valid {
 		bcrp = append(bcrp, parameter.BelongChatRoomParam{
@@ -183,12 +198,22 @@ func (m *ManageProfessor) CreateProfessor(
 			ChatRoomID: wholeOrg.ChatRoomID.Bytes,
 			AddedAt:    now,
 		})
+		crap = append(crap, parameter.CreateChatRoomActionParam{
+			ChatRoomID:           wholeOrg.ChatRoomID.Bytes,
+			ChatRoomActionTypeID: craType.ChatRoomActionTypeID,
+			ActedAt:              now,
+		})
 	}
 	if org.ChatRoomID.Valid {
 		bcrp = append(bcrp, parameter.BelongChatRoomParam{
 			MemberID:   e.MemberID,
 			ChatRoomID: org.ChatRoomID.Bytes,
 			AddedAt:    now,
+		})
+		crap = append(crap, parameter.CreateChatRoomActionParam{
+			ChatRoomID:           org.ChatRoomID.Bytes,
+			ChatRoomActionTypeID: craType.ChatRoomActionTypeID,
+			ActedAt:              now,
 		})
 	}
 
@@ -200,6 +225,28 @@ func (m *ManageProfessor) CreateProfessor(
 	if err != nil {
 		return entity.Professor{}, fmt.Errorf("failed to belong chat rooms: %w", err)
 	}
+
+	for _, v := range crap {
+		cra, err := m.DB.CreateChatRoomActionWithSd(ctx, sd, v)
+		if err != nil {
+			return entity.Professor{}, fmt.Errorf("failed to create chat room actions: %w", err)
+		}
+		craAdd, err := m.DB.CreateChatRoomAddMemberActionWithSd(ctx, sd, parameter.CreateChatRoomAddMemberActionParam{
+			ChatRoomActionID: cra.ChatRoomActionID,
+			AddedBy:          entity.UUID{},
+		})
+		if err != nil {
+			return entity.Professor{}, fmt.Errorf("failed to create chat room add member actions: %w", err)
+		}
+		_, err = m.DB.AddMemberToChatRoomAddMemberActionWithSd(ctx, sd, parameter.CreateChatRoomAddedMemberParam{
+			ChatRoomAddMemberActionID: craAdd.ChatRoomAddMemberActionID,
+			MemberID:                  entity.UUID{Valid: true, Bytes: e.MemberID},
+		})
+		if err != nil {
+			return entity.Professor{}, fmt.Errorf("failed to add member to chat room add member actions: %w", err)
+		}
+	}
+
 	return e, nil
 }
 
@@ -220,23 +267,70 @@ func (m *ManageProfessor) DeleteProfessor(ctx context.Context, id uuid.UUID) (c 
 			}
 		}
 	}()
+	now := m.Clocker.Now()
 	st, err := m.DB.FindProfessorWithMemberWithSd(ctx, sd, id)
 	if err != nil {
 		return 0, fmt.Errorf("failed to find student by id: %w", err)
 	}
+	var imageIDs []uuid.UUID
+	var fileIDs []uuid.UUID
+	attachableItems, err := m.DB.GetAttachableItemsWithSd(
+		ctx,
+		sd,
+		parameter.WhereAttachableItemParam{
+			WhereInOwner: true,
+			InOwners:     []uuid.UUID{st.Member.MemberID},
+		},
+		parameter.AttachableItemOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get attachable items: %w", err)
+	}
+	for _, v := range attachableItems.Data {
+		if v.Image.Valid {
+			imageIDs = append(imageIDs, v.Image.Entity.ImageID)
+		} else if v.File.Valid {
+			fileIDs = append(fileIDs, v.File.Entity.FileID)
+		}
+	}
 	if st.Member.ProfileImage.Valid {
+		imageIDs = append(imageIDs, st.Member.ProfileImage.Entity.ImageID)
+	}
+	if len(imageIDs) > 0 {
 		_, err = pluralDeleteImages(
 			ctx,
 			sd,
 			m.DB,
 			m.Storage,
-			[]uuid.UUID{st.Member.ProfileImage.Entity.ImageID},
+			imageIDs,
 			entity.UUID{
 				Valid: true,
-				Bytes: id,
-			})
+				Bytes: st.Member.MemberID,
+			},
+			true,
+		)
 		if err != nil {
 			return 0, fmt.Errorf("failed to delete images: %w", err)
+		}
+	}
+	if len(fileIDs) > 0 {
+		_, err = pluralDeleteFiles(
+			ctx,
+			sd,
+			m.DB,
+			m.Storage,
+			fileIDs,
+			entity.UUID{
+				Valid: true,
+				Bytes: st.Member.MemberID,
+			},
+			true,
+		)
+		if err != nil {
+			return 0, fmt.Errorf("failed to delete files: %w", err)
 		}
 	}
 	c, err = m.DB.DeleteProfessorWithSd(ctx, sd, id)
@@ -246,6 +340,40 @@ func (m *ManageProfessor) DeleteProfessor(ctx context.Context, id uuid.UUID) (c 
 	e, err := m.DB.FindMemberWithPersonalOrganizationWithSd(ctx, sd, st.Member.MemberID)
 	if err != nil {
 		return 0, fmt.Errorf("failed to find member with personal organization: %w", err)
+	}
+	craType, err := m.DB.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyWithdraw))
+	if err != nil {
+		return 0, fmt.Errorf("failed to find chat room action type by key: %w", err)
+	}
+	crs, err := m.DB.GetChatRoomsOnMemberWithSd(
+		ctx,
+		sd,
+		st.Member.MemberID,
+		parameter.WhereChatRoomOnMemberParam{},
+		parameter.ChatRoomOnMemberOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get chat rooms on member: %w", err)
+	}
+	for _, v := range crs.Data {
+		cra, err := m.DB.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
+			ChatRoomID:           v.ChatRoom.ChatRoomID,
+			ChatRoomActionTypeID: craType.ChatRoomActionTypeID,
+			ActedAt:              now,
+		})
+		if err != nil {
+			return 0, fmt.Errorf("failed to create chat room action: %w", err)
+		}
+		_, err = m.DB.CreateChatRoomWithdrawActionWithSd(ctx, sd, parameter.CreateChatRoomWithdrawActionParam{
+			ChatRoomActionID: cra.ChatRoomActionID,
+			MemberID:         entity.UUID{Valid: true, Bytes: st.Member.MemberID},
+		})
+		if err != nil {
+			return 0, fmt.Errorf("failed to create chat room withdraw action: %w", err)
+		}
 	}
 	_, err = m.DB.DisbelongChatRoomOnMemberWithSd(ctx, sd, st.Member.MemberID)
 	if err != nil {

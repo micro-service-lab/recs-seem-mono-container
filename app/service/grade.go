@@ -341,13 +341,13 @@ func (m *ManageGrade) DeleteGrade(ctx context.Context, id uuid.UUID) (c int64, e
 		}
 
 		if len(imageIDs) > 0 {
-			_, err = pluralDeleteImages(ctx, sd, m.DB, m.Storage, imageIDs, entity.UUID{})
+			_, err = pluralDeleteImages(ctx, sd, m.DB, m.Storage, imageIDs, entity.UUID{}, true)
 			if err != nil {
 				return 0, fmt.Errorf("failed to plural delete images: %w", err)
 			}
 		}
 		if len(fileIDs) > 0 {
-			_, err = pluralDeleteFiles(ctx, sd, m.DB, m.Storage, fileIDs, entity.UUID{})
+			_, err = pluralDeleteFiles(ctx, sd, m.DB, m.Storage, fileIDs, entity.UUID{}, true)
 			if err != nil {
 				return 0, fmt.Errorf("failed to plural delete files: %w", err)
 			}
@@ -442,13 +442,13 @@ func (m *ManageGrade) PluralDeleteGrades(
 			}
 		}
 		if len(imageIDs) > 0 {
-			_, err = pluralDeleteImages(ctx, sd, m.DB, m.Storage, imageIDs, entity.UUID{})
+			_, err = pluralDeleteImages(ctx, sd, m.DB, m.Storage, imageIDs, entity.UUID{}, true)
 			if err != nil {
 				return 0, fmt.Errorf("failed to plural delete images: %w", err)
 			}
 		}
 		if len(fileIDs) > 0 {
-			_, err = pluralDeleteFiles(ctx, sd, m.DB, m.Storage, fileIDs, entity.UUID{})
+			_, err = pluralDeleteFiles(ctx, sd, m.DB, m.Storage, fileIDs, entity.UUID{}, true)
 			if err != nil {
 				return 0, fmt.Errorf("failed to plural delete files: %w", err)
 			}
@@ -530,7 +530,9 @@ func (m *ManageGrade) UpdateGrade(
 				m.DB,
 				m.Storage,
 				[]uuid.UUID{cr.CoverImage.Entity.ImageID},
-				entity.UUID{})
+				entity.UUID{},
+				true,
+			)
 			if err != nil {
 				return entity.Grade{}, fmt.Errorf("failed to plural delete images: %w", err)
 			}

@@ -27,10 +27,10 @@ AND
 AND
 	CASE WHEN @where_is_not_read::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
 	m_members_pkey ASC;
 
 -- name: GetReadableMembersOnMessageUseNumberedPaginate :many
@@ -50,10 +50,10 @@ AND
 AND
 	CASE WHEN @where_is_not_read::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $2 OFFSET $3;
 
@@ -93,14 +93,14 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'read_at' AND @cursor_direction::text = 'next' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN @order_method::text = 'read_at' AND @cursor_direction::text = 'prev' THEN t_read_receipts.read_at END DESC,
-	CASE WHEN @order_method::text = 'r_read_at' AND @cursor_direction::text = 'next' THEN t_read_receipts.read_at END DESC,
-	CASE WHEN @order_method::text = 'r_read_at' AND @cursor_direction::text = 'prev' THEN t_read_receipts.read_at END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'read_at' AND @cursor_direction::text = 'next' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'read_at' AND @cursor_direction::text = 'prev' THEN t_read_receipts.read_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_read_at' AND @cursor_direction::text = 'next' THEN t_read_receipts.read_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_read_at' AND @cursor_direction::text = 'prev' THEN t_read_receipts.read_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $2;
@@ -116,10 +116,10 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
 	m_members_pkey ASC;
 
 -- name: GetPluralReadableMembersOnMessageUseNumberedPaginate :many
@@ -133,10 +133,10 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = ANY(@message_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -160,8 +160,8 @@ AND
 AND
 	CASE WHEN @where_is_not_read::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
+	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
 	t_messages_pkey ASC;
 
 -- name: GetReadableMessagesOnMemberUseNumberedPaginate :many
@@ -173,8 +173,8 @@ AND
 AND
 	CASE WHEN @where_is_not_read::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
+	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 LIMIT $2 OFFSET $3;
 
@@ -202,10 +202,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'read_at' AND @cursor_direction::text = 'next' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN @order_method::text = 'read_at' AND @cursor_direction::text = 'prev' THEN t_read_receipts.read_at END DESC,
-	CASE WHEN @order_method::text = 'r_read_at' AND @cursor_direction::text = 'next' THEN t_read_receipts.read_at END DESC,
-	CASE WHEN @order_method::text = 'r_read_at' AND @cursor_direction::text = 'prev' THEN t_read_receipts.read_at END ASC,
+	CASE WHEN @order_method::text = 'read_at' AND @cursor_direction::text = 'next' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'read_at' AND @cursor_direction::text = 'prev' THEN t_read_receipts.read_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_read_at' AND @cursor_direction::text = 'next' THEN t_read_receipts.read_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_read_at' AND @cursor_direction::text = 'prev' THEN t_read_receipts.read_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_messages_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_messages_pkey END DESC
 LIMIT $2;
@@ -215,8 +215,8 @@ SELECT t_messages.*, t_read_receipts.read_at read_at FROM t_messages
 LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
+	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
 	t_messages_pkey ASC;
 
 -- name: GetPluralReadableMessagesOnMemberUseNumberedPaginate :many
@@ -224,8 +224,8 @@ SELECT t_messages.*, t_read_receipts.read_at read_at FROM t_messages
 LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
+	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 

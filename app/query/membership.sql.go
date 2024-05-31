@@ -168,10 +168,10 @@ AND CASE
 	WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%'
 END
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN $4::text = 'old_add' THEN m_memberships.added_at END ASC,
-	CASE WHEN $4::text = 'late_add' THEN m_memberships.added_at END DESC,
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $4::text = 'old_add' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_add' THEN m_memberships.added_at END DESC NULLS LAST,
 	m_memberships_pkey ASC
 `
 
@@ -281,14 +281,14 @@ AND CASE $5::text
 		END
 END
 ORDER BY
-	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_members.name END ASC,
-	CASE WHEN $6::text = 'old_add' AND $5::text = 'next' THEN m_memberships.added_at END ASC,
-	CASE WHEN $6::text = 'old_add' AND $5::text = 'prev' THEN m_memberships.added_at END DESC,
-	CASE WHEN $6::text = 'late_add' AND $5::text = 'next' THEN m_memberships.added_at END DESC,
-	CASE WHEN $6::text = 'late_add' AND $5::text = 'prev' THEN m_memberships.added_at END ASC,
+	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'old_add' AND $5::text = 'next' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'old_add' AND $5::text = 'prev' THEN m_memberships.added_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'late_add' AND $5::text = 'next' THEN m_memberships.added_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'late_add' AND $5::text = 'prev' THEN m_memberships.added_at END ASC NULLS LAST,
 	CASE WHEN $5::text = 'next' THEN m_memberships_pkey END ASC,
 	CASE WHEN $5::text = 'prev' THEN m_memberships_pkey END DESC
 LIMIT $2
@@ -392,10 +392,10 @@ AND CASE
 	WHEN $4::boolean = true THEN m_members.name LIKE '%' || $5::text || '%'
 END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN $6::text = 'old_add' THEN m_memberships.added_at END ASC,
-	CASE WHEN $6::text = 'late_add' THEN m_memberships.added_at END DESC,
+	CASE WHEN $6::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'old_add' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'late_add' THEN m_memberships.added_at END DESC NULLS LAST,
 	m_memberships_pkey ASC
 LIMIT $2 OFFSET $3
 `
@@ -489,10 +489,10 @@ AND CASE
 	WHEN $2::boolean = true THEN m_organization.name LIKE '%' || $3::text || '%'
 END
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_organizations.name END DESC,
-	CASE WHEN $4::text = 'old_add' THEN m_memberships.added_at END ASC,
-	CASE WHEN $4::text = 'late_add' THEN m_memberships.added_at END DESC,
+	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN $4::text = 'old_add' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_add' THEN m_memberships.added_at END DESC NULLS LAST,
 	m_memberships_pkey ASC
 `
 
@@ -583,14 +583,14 @@ AND CASE $5::text
 		END
 END
 ORDER BY
-	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_organizations.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_organizations.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_organizations.name END ASC,
-	CASE WHEN $6::text = 'old_add' AND $5::text = 'next' THEN m_memberships.added_at END ASC,
-	CASE WHEN $6::text = 'old_add' AND $5::text = 'prev' THEN m_memberships.added_at END DESC,
-	CASE WHEN $6::text = 'late_add' AND $5::text = 'next' THEN m_memberships.added_at END DESC,
-	CASE WHEN $6::text = 'late_add' AND $5::text = 'prev' THEN m_memberships.added_at END ASC,
+	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'old_add' AND $5::text = 'next' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'old_add' AND $5::text = 'prev' THEN m_memberships.added_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'late_add' AND $5::text = 'next' THEN m_memberships.added_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'late_add' AND $5::text = 'prev' THEN m_memberships.added_at END ASC NULLS LAST,
 	CASE WHEN $5::text = 'next' THEN m_memberships_pkey END ASC,
 	CASE WHEN $5::text = 'prev' THEN m_memberships_pkey END DESC
 LIMIT $2
@@ -675,10 +675,10 @@ AND CASE
 	WHEN $4::boolean = true THEN m_organization.name LIKE '%' || $5::text || '%'
 END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_organizations.name END DESC,
-	CASE WHEN $6::text = 'old_add' THEN m_memberships.added_at END ASC,
-	CASE WHEN $6::text = 'late_add' THEN m_memberships.added_at END DESC,
+	CASE WHEN $6::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'old_add' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'late_add' THEN m_memberships.added_at END DESC NULLS LAST,
 	m_memberships_pkey ASC
 LIMIT $2 OFFSET $3
 `
@@ -756,10 +756,10 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN $2::text = 'old_add' THEN m_memberships.added_at END ASC,
-	CASE WHEN $2::text = 'late_add' THEN m_memberships.added_at END DESC,
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $2::text = 'old_add' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'late_add' THEN m_memberships.added_at END DESC NULLS LAST,
 	m_memberships_pkey ASC
 `
 
@@ -841,10 +841,10 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN $4::text = 'old_add' THEN m_memberships.added_at END ASC,
-	CASE WHEN $4::text = 'late_add' THEN m_memberships.added_at END DESC,
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $4::text = 'old_add' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_add' THEN m_memberships.added_at END DESC NULLS LAST,
 	m_memberships_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -931,10 +931,10 @@ FROM m_memberships
 LEFT JOIN m_organizations ON m_memberships.organization_id = m_organizations.organization_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_organizations.name END DESC,
-	CASE WHEN $2::text = 'old_add' THEN m_memberships.added_at END ASC,
-	CASE WHEN $2::text = 'late_add' THEN m_memberships.added_at END DESC,
+	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN $2::text = 'old_add' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'late_add' THEN m_memberships.added_at END DESC NULLS LAST,
 	m_memberships_pkey ASC
 `
 
@@ -997,10 +997,10 @@ FROM m_memberships
 LEFT JOIN m_organizations ON m_memberships.organization_id = m_organizations.organization_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_organizations.name END DESC,
-	CASE WHEN $4::text = 'old_add' THEN m_memberships.added_at END ASC,
-	CASE WHEN $4::text = 'late_add' THEN m_memberships.added_at END DESC,
+	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN $4::text = 'old_add' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_add' THEN m_memberships.added_at END DESC NULLS LAST,
 	m_memberships_pkey ASC
 LIMIT $1 OFFSET $2
 `

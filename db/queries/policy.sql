@@ -42,8 +42,8 @@ WHERE
 AND
 	CASE WHEN @where_in_category::boolean = true THEN policy_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_policies_pkey ASC;
 
 -- name: GetPoliciesUseNumberedPaginate :many
@@ -53,8 +53,8 @@ WHERE
 AND
 	CASE WHEN @where_in_category::boolean = true THEN policy_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_policies_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -80,10 +80,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_policies.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_policies.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_policies.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_policies.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_policies.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_policies.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_policies.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_policies_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_policies_pkey END DESC
 LIMIT $1;
@@ -91,15 +91,15 @@ LIMIT $1;
 -- name: GetPluralPolicies :many
 SELECT * FROM m_policies WHERE policy_id = ANY(@policy_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_policies_pkey ASC;
 
 -- name: GetPluralPoliciesUseNumberedPaginate :many
 SELECT * FROM m_policies WHERE policy_id = ANY(@policy_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_policies_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -111,8 +111,8 @@ WHERE
 AND
 	CASE WHEN @where_in_category::boolean = true THEN m_policies.policy_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_policies_pkey ASC;
 
 -- name: GetPoliciesWithCategoryUseNumberedPaginate :many
@@ -123,8 +123,8 @@ WHERE
 AND
 	CASE WHEN @where_in_category::boolean = true THEN  m_policies.policy_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_policies_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -151,10 +151,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_policies.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_policies.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_policies.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_policies.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_policies.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_policies.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_policies.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_policies_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_policies_pkey END DESC
 LIMIT $1;
@@ -164,8 +164,8 @@ SELECT m_policies.*, m_policy_categories.name policy_category_name, m_policy_cat
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE policy_id = ANY(@policy_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_policies_pkey ASC;
 
 -- name: GetPluralPoliciesWithCategoryUseNumberedPaginate :many
@@ -173,8 +173,8 @@ SELECT m_policies.*, m_policy_categories.name policy_category_name, m_policy_cat
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE policy_id = ANY(@policy_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_policies_pkey ASC
 LIMIT $1 OFFSET $2;
 

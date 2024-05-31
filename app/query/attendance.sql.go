@@ -503,10 +503,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC,
-	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC,
-	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC,
-	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC,
+	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC NULLS LAST,
+	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC NULLS LAST,
 	CASE WHEN $14::text = 'next' THEN t_attendances_pkey END ASC,
 	CASE WHEN $14::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1
@@ -596,8 +596,8 @@ AND
 AND
 	CASE WHEN $13::boolean = true THEN t_attendances.send_organization_id = ANY($14) ELSE TRUE END
 ORDER BY
-	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -691,8 +691,8 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN t_attendances.send_organization_id = ANY($12) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 `
 
@@ -859,10 +859,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC,
-	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC,
-	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC,
-	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC,
+	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC NULLS LAST,
+	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC NULLS LAST,
 	CASE WHEN $14::text = 'next' THEN t_attendances_pkey END ASC,
 	CASE WHEN $14::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1
@@ -1024,8 +1024,8 @@ AND
 AND
 	CASE WHEN $13::boolean = true THEN t_attendances.send_organization_id = ANY($14) ELSE TRUE END
 ORDER BY
-	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1174,8 +1174,8 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN t_attendances.send_organization_id = ANY($12) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 `
 
@@ -1292,10 +1292,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC,
-	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC,
-	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC,
-	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC,
+	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC NULLS LAST,
+	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC NULLS LAST,
 	CASE WHEN $14::text = 'next' THEN t_attendances_pkey END ASC,
 	CASE WHEN $14::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1
@@ -1407,8 +1407,8 @@ AND
 AND
 	CASE WHEN $13::boolean = true THEN t_attendances.send_organization_id = ANY($14) ELSE TRUE END
 ORDER BY
-	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1517,8 +1517,8 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN t_attendances.send_organization_id = ANY($12) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 `
 
@@ -1643,10 +1643,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC,
-	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC,
-	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC,
-	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC,
+	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC NULLS LAST,
+	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC NULLS LAST,
 	CASE WHEN $14::text = 'next' THEN t_attendances_pkey END ASC,
 	CASE WHEN $14::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1
@@ -1766,8 +1766,8 @@ AND
 AND
 	CASE WHEN $13::boolean = true THEN t_attendances.send_organization_id = ANY($14) ELSE TRUE END
 ORDER BY
-	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1883,8 +1883,8 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN t_attendances.send_organization_id = ANY($12) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 `
 
@@ -2013,10 +2013,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC,
-	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC,
-	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC,
-	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC,
+	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC NULLS LAST,
+	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC NULLS LAST,
 	CASE WHEN $14::text = 'next' THEN t_attendances_pkey END ASC,
 	CASE WHEN $14::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1
@@ -2140,8 +2140,8 @@ AND
 AND
 	CASE WHEN $13::boolean = true THEN t_attendances.send_organization_id = ANY($14) ELSE TRUE END
 ORDER BY
-	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2257,8 +2257,8 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN t_attendances.send_organization_id = ANY($12) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 `
 
@@ -2378,10 +2378,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC,
-	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC,
-	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC,
-	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC,
+	CASE WHEN $15::text = 'date' AND $14::text = 'next' THEN date END ASC NULLS LAST,
+	CASE WHEN $15::text = 'date' AND $14::text = 'prev' THEN date END DESC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'next' THEN date END DESC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' AND $14::text = 'prev' THEN date END ASC NULLS LAST,
 	CASE WHEN $14::text = 'next' THEN t_attendances_pkey END ASC,
 	CASE WHEN $14::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1
@@ -2496,8 +2496,8 @@ AND
 AND
 	CASE WHEN $13::boolean = true THEN t_attendances.send_organization_id = ANY($14) ELSE TRUE END
 ORDER BY
-	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $15::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $15::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2606,8 +2606,8 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN t_attendances.send_organization_id = ANY($12) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $13::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 `
 
@@ -2685,8 +2685,8 @@ LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 `
 
@@ -2802,8 +2802,8 @@ LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2919,8 +2919,8 @@ SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendan
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE attendance_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 `
 
@@ -2986,8 +2986,8 @@ SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendan
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3063,8 +3063,8 @@ LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.atten
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 WHERE attendance_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 `
 
@@ -3138,8 +3138,8 @@ LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.atten
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3222,8 +3222,8 @@ LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE attendance_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 `
 
@@ -3301,8 +3301,8 @@ LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3385,8 +3385,8 @@ SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendan
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 `
 
@@ -3455,8 +3455,8 @@ SELECT t_attendances.t_attendances_pkey, t_attendances.attendance_id, t_attendan
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3532,8 +3532,8 @@ const getPluralAttendances = `-- name: GetPluralAttendances :many
 SELECT t_attendances_pkey, attendance_id, attendance_type_id, member_id, description, date, mail_send_flag, send_organization_id, posted_at, last_edited_at FROM t_attendances
 WHERE attendance_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $2::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 `
 
@@ -3577,8 +3577,8 @@ const getPluralAttendancesUseNumberedPaginate = `-- name: GetPluralAttendancesUs
 SELECT t_attendances_pkey, attendance_id, attendance_type_id, member_id, description, date, mail_send_flag, send_organization_id, posted_at, last_edited_at FROM t_attendances
 WHERE attendance_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC,
-	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC,
+	CASE WHEN $4::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2
 `

@@ -305,10 +305,10 @@ AND
 AND
 	CASE WHEN $13::boolean = true THEN last_edited_at <= $14 ELSE TRUE END
 ORDER BY
-	CASE WHEN $15::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $15::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $15::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $15::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $15::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $15::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $15::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $15::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 `
 
@@ -410,14 +410,14 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $17::text = 'posted_at' AND $16::text = 'next' THEN posted_at END ASC,
-	CASE WHEN $17::text = 'posted_at' AND $16::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'next' THEN posted_at END DESC,
-	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'prev' THEN posted_at END ASC,
-	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'next' THEN last_edited_at END DESC,
-	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'prev' THEN last_edited_at END ASC,
+	CASE WHEN $17::text = 'posted_at' AND $16::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $17::text = 'posted_at' AND $16::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN $16::text = 'next' THEN t_messages_pkey END ASC,
 	CASE WHEN $16::text = 'prev' THEN t_messages_pkey END DESC
 LIMIT $1
@@ -512,10 +512,10 @@ AND
 AND
 	CASE WHEN $15::boolean = true THEN last_edited_at <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $17::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -612,10 +612,10 @@ AND
 AND
 	CASE WHEN $13::boolean = true THEN last_edited_at <= $14 ELSE TRUE END
 ORDER BY
-	CASE WHEN $15::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $15::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $15::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $15::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $15::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $15::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $15::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $15::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 `
 
@@ -766,14 +766,14 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $17::text = 'posted_at' AND $16::text = 'next' THEN posted_at END ASC,
-	CASE WHEN $17::text = 'posted_at' AND $16::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'next' THEN posted_at END DESC,
-	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'prev' THEN posted_at END ASC,
-	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'next' THEN last_edited_at END DESC,
-	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'prev' THEN last_edited_at END ASC,
+	CASE WHEN $17::text = 'posted_at' AND $16::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $17::text = 'posted_at' AND $16::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN $16::text = 'next' THEN t_messages_pkey END ASC,
 	CASE WHEN $16::text = 'prev' THEN t_messages_pkey END DESC
 LIMIT $1
@@ -917,10 +917,10 @@ AND
 AND
 	CASE WHEN $15::boolean = true THEN last_edited_at <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $17::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1055,10 +1055,10 @@ AND
 AND
 	CASE WHEN $13::boolean = true THEN last_edited_at <= $14 ELSE TRUE END
 ORDER BY
-	CASE WHEN $15::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $15::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $15::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $15::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $15::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $15::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $15::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $15::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 `
 
@@ -1205,14 +1205,14 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $17::text = 'posted_at' AND $16::text = 'next' THEN posted_at END ASC,
-	CASE WHEN $17::text = 'posted_at' AND $16::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'next' THEN posted_at END DESC,
-	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'prev' THEN posted_at END ASC,
-	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'next' THEN last_edited_at END DESC,
-	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'prev' THEN last_edited_at END ASC,
+	CASE WHEN $17::text = 'posted_at' AND $16::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $17::text = 'posted_at' AND $16::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $17::text = 'r_posted_at' AND $16::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $17::text = 'last_edited_at' AND $16::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $17::text = 'r_last_edited_at' AND $16::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN $16::text = 'next' THEN t_messages_pkey END ASC,
 	CASE WHEN $16::text = 'prev' THEN t_messages_pkey END DESC
 LIMIT $1
@@ -1352,10 +1352,10 @@ AND
 AND
 	CASE WHEN $15::boolean = true THEN last_edited_at <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $17::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $17::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1467,10 +1467,10 @@ func (q *Queries) GetMessagesWithSenderUseNumberedPaginate(ctx context.Context, 
 const getPluralMessages = `-- name: GetPluralMessages :many
 SELECT t_messages_pkey, message_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id FROM t_messages WHERE message_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 `
 
@@ -1510,10 +1510,10 @@ func (q *Queries) GetPluralMessages(ctx context.Context, arg GetPluralMessagesPa
 const getPluralMessagesUseNumberedPaginate = `-- name: GetPluralMessagesUseNumberedPaginate :many
 SELECT t_messages_pkey, message_id, sender_id, body, posted_at, last_edited_at, chat_room_action_id FROM t_messages WHERE message_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1571,10 +1571,10 @@ LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 `
 
@@ -1664,10 +1664,10 @@ LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1763,10 +1763,10 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 `
 
@@ -1852,10 +1852,10 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `

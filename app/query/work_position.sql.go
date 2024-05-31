@@ -116,8 +116,8 @@ SELECT work_position_id, name FROM m_work_positions
 WHERE
 	work_position_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_work_positions_pkey ASC
 `
 
@@ -156,8 +156,8 @@ SELECT work_position_id, name FROM m_work_positions
 WHERE
 	work_position_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_work_positions_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -206,8 +206,8 @@ WHERE
 AND
 	CASE WHEN $3::boolean = true THEN m_work_positions.organization_id = ANY($4::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN $5::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_work_positions_pkey ASC
 `
 
@@ -275,10 +275,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_work_positions.name END ASC,
-	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_work_positions.name END DESC,
-	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_work_positions.name END DESC,
-	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_work_positions.name END ASC,
+	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_work_positions.name END DESC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_work_positions.name END DESC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_work_positions.name END ASC NULLS LAST,
 	CASE WHEN $6::text = 'next' THEN m_work_positions_pkey END ASC,
 	CASE WHEN $6::text = 'prev' THEN m_work_positions_pkey END DESC
 LIMIT $1
@@ -341,8 +341,8 @@ WHERE
 AND
 	CASE WHEN $5::boolean = true THEN m_work_positions.organization_id = ANY($6::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $7::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN $7::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN $7::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_work_positions_pkey ASC
 LIMIT $1 OFFSET $2
 `

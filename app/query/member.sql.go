@@ -672,8 +672,8 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $11::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
@@ -768,10 +768,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
@@ -861,8 +861,8 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -948,8 +948,8 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $11::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
@@ -1068,10 +1068,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
@@ -1185,8 +1185,8 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1303,8 +1303,8 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $11::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
@@ -1459,10 +1459,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
@@ -1612,8 +1612,8 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1751,8 +1751,8 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $11::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
@@ -1872,10 +1872,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
@@ -1990,8 +1990,8 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2102,8 +2102,8 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $11::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
@@ -2232,10 +2232,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
@@ -2359,8 +2359,8 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2482,8 +2482,8 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $11::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
@@ -2621,10 +2621,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
@@ -2757,8 +2757,8 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2881,8 +2881,8 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $11::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
@@ -3001,10 +3001,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC,
+	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
@@ -3118,8 +3118,8 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $13::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3217,8 +3217,8 @@ func (q *Queries) GetMembersWithRoleUseNumberedPaginate(ctx context.Context, arg
 const getPluralMembers = `-- name: GetPluralMembers :many
 SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE member_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
@@ -3267,8 +3267,8 @@ func (q *Queries) GetPluralMembers(ctx context.Context, arg GetPluralMembersPara
 const getPluralMembersUseNumberedPaginate = `-- name: GetPluralMembersUseNumberedPaginate :many
 SELECT m_members_pkey, member_id, login_id, password, email, name, first_name, last_name, attend_status_id, profile_image_id, grade_id, group_id, personal_organization_id, role_id, created_at, updated_at FROM m_members WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3327,8 +3327,8 @@ SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_memb
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
@@ -3402,8 +3402,8 @@ SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_memb
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3493,8 +3493,8 @@ LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_organizations grog ON m_groups.organization_id = grog.organization_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
@@ -3604,8 +3604,8 @@ LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_organizations grog ON m_groups.organization_id = grog.organization_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3716,8 +3716,8 @@ LEFT JOIN m_students ON m_members.member_id = m_students.member_id
 LEFT JOIN m_professors ON m_members.member_id = m_professors.member_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
@@ -3792,8 +3792,8 @@ LEFT JOIN m_students ON m_members.member_id = m_students.member_id
 LEFT JOIN m_professors ON m_members.member_id = m_professors.member_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3877,8 +3877,8 @@ m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id org
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
@@ -3962,8 +3962,8 @@ m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id org
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -4058,8 +4058,8 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
@@ -4152,8 +4152,8 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -4249,8 +4249,8 @@ SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_memb
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
@@ -4324,8 +4324,8 @@ SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_memb
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `

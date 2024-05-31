@@ -146,8 +146,8 @@ WHERE work_position_id = $1
 AND
 	CASE WHEN $2::boolean = true THEN m_permissions.name LIKE '%' || $3::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
 `
 
@@ -220,10 +220,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_permissions.name END ASC,
-	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_permissions.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_permissions.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_permissions.name END ASC,
+	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_permissions.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_permissions.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_permissions.name END ASC NULLS LAST,
 	CASE WHEN $5::text = 'next' THEN m_permission_associations_pkey END ASC,
 	CASE WHEN $5::text = 'prev' THEN m_permission_associations_pkey END DESC
 LIMIT $2
@@ -291,8 +291,8 @@ WHERE work_position_id = $1
 AND
 	CASE WHEN $4::boolean = true THEN m_permissions.name LIKE '%' || $5::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN $6::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
 LIMIT $2 OFFSET $3
 `
@@ -353,8 +353,8 @@ SELECT m_permission_associations.m_permission_associations_pkey, m_permission_as
 LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
 WHERE work_position_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
 `
 
@@ -403,8 +403,8 @@ SELECT m_permission_associations.m_permission_associations_pkey, m_permission_as
 LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
 WHERE work_position_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -461,8 +461,8 @@ SELECT m_permission_associations.m_permission_associations_pkey, m_permission_as
 LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
 WHERE permission_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
 `
 
@@ -512,8 +512,8 @@ SELECT m_permission_associations.m_permission_associations_pkey, m_permission_as
 LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
 WHERE permission_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -573,8 +573,8 @@ WHERE permission_id = $1
 AND
 	CASE WHEN $2::boolean = true THEN m_work_positions.name LIKE '%' || $3::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
 `
 
@@ -648,10 +648,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_work_positions.name END ASC,
-	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_work_positions.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_work_positions.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_work_positions.name END ASC,
+	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_work_positions.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_work_positions.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_work_positions.name END ASC NULLS LAST,
 	CASE WHEN $5::text = 'next' THEN m_permission_associations_pkey END ASC,
 	CASE WHEN $5::text = 'prev' THEN m_permission_associations_pkey END DESC
 LIMIT $2
@@ -720,8 +720,8 @@ WHERE permission_id = $1
 AND
 	CASE WHEN $4::boolean = true THEN m_work_positions.name LIKE '%' || $5::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN $6::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
 LIMIT $2 OFFSET $3
 `

@@ -33,8 +33,8 @@ WHERE role_id = $1
 AND
 	CASE WHEN @where_like_name::boolean = true THEN m_policies.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_role_associations_pkey ASC;
 
 -- name: GetPoliciesOnRoleUseNumberedPaginate :many
@@ -45,8 +45,8 @@ WHERE role_id = $1
 AND
 	CASE WHEN @where_like_name::boolean = true THEN m_policies.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_role_associations_pkey ASC
 LIMIT $2 OFFSET $3;
 
@@ -73,10 +73,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_policies.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_policies.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_policies.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_policies.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_policies.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_policies.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_policies.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_role_associations_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_role_associations_pkey END DESC
 LIMIT $2;
@@ -88,8 +88,8 @@ LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE
 	role_id = ANY(@role_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_role_associations_pkey ASC;
 
 -- name: GetPluralPoliciesOnRoleUseNumberedPaginate :many
@@ -99,8 +99,8 @@ LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE
 	role_id = ANY(@role_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_role_associations_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -118,8 +118,8 @@ WHERE policy_id = $1
 AND
 	CASE WHEN @where_like_name::boolean = true THEN m_roles.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_role_associations_pkey ASC;
 
 -- name: GetRolesOnPolicyUseNumberedPaginate :many
@@ -129,8 +129,8 @@ WHERE policy_id = $1
 AND
 	CASE WHEN @where_like_name::boolean = true THEN m_roles.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_role_associations_pkey ASC
 LIMIT $2 OFFSET $3;
 
@@ -156,10 +156,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_roles.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_roles.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_roles.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_roles.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_roles.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_roles.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_roles.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_role_associations_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_role_associations_pkey END DESC
 LIMIT $2;
@@ -170,8 +170,8 @@ LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE
 	policy_id = ANY(@policy_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_role_associations_pkey ASC;
 
 -- name: GetPluralRolesOnPolicyUseNumberedPaginate :many
@@ -180,8 +180,8 @@ LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE
 	policy_id = ANY(@policy_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_role_associations_pkey ASC
 LIMIT $1 OFFSET $2;
 

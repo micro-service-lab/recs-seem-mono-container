@@ -21,8 +21,8 @@ SELECT * FROM m_roles
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_roles.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_roles_pkey ASC;
 
 -- name: GetRolesUseNumberedPaginate :many
@@ -30,8 +30,8 @@ SELECT * FROM m_roles
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_roles.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_roles_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -55,10 +55,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_roles.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_roles.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_roles.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_roles.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_roles.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_roles.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_roles.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_roles_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_roles_pkey END DESC
 LIMIT $1;
@@ -68,8 +68,8 @@ SELECT * FROM m_roles
 WHERE
 	role_id = ANY(@role_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_roles_pkey ASC;
 
 -- name: GetPluralRolesUseNumberedPaginate :many
@@ -77,8 +77,8 @@ SELECT * FROM m_roles
 WHERE
 	role_id = ANY(@role_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_roles_pkey ASC
 LIMIT $1 OFFSET $2;
 

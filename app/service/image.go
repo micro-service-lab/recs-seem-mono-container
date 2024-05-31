@@ -601,6 +601,7 @@ func pluralDeleteImages(
 	stg storage.Storage,
 	ids []uuid.UUID,
 	ownerID entity.UUID,
+	force bool,
 ) (c int64, err error) {
 	image, err := db.GetPluralImagesWithAttachableItemWithSd(
 		ctx, sd, ids, parameter.ImageOrderMethodDefault, store.NumberedPaginationParam{})
@@ -613,7 +614,7 @@ func pluralDeleteImages(
 		if !i.AttachableItem.OwnerID.Valid {
 			continue
 		}
-		if !ownerID.Valid || i.AttachableItem.OwnerID.Bytes != ownerID.Bytes {
+		if !force || (!ownerID.Valid || i.AttachableItem.OwnerID.Bytes != ownerID.Bytes) {
 			return 0, errhandle.NewCommonError(response.NotFileOwner, nil)
 		}
 		if !i.AttachableItem.FromOuter {
@@ -662,7 +663,7 @@ func (m *ManageImage) PluralDeleteImages(
 			}
 		}
 	}()
-	return pluralDeleteImages(ctx, sd, m.DB, m.Storage, ids, entity.UUID{})
+	return pluralDeleteImages(ctx, sd, m.DB, m.Storage, ids, entity.UUID{}, false)
 }
 
 // GetImages 画像を取得する。

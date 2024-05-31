@@ -33,10 +33,10 @@ AND CASE
 	WHEN @where_like_name::boolean = true THEN m_members.name LIKE '%' || @search_name::text || '%'
 END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'old_add' THEN m_memberships.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' THEN m_memberships.added_at END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_memberships.added_at END DESC NULLS LAST,
 	m_memberships_pkey ASC;
 
 -- name: GetMembersOnOrganizationUseNumberedPaginate :many
@@ -53,10 +53,10 @@ AND CASE
 	WHEN @where_like_name::boolean = true THEN m_members.name LIKE '%' || @search_name::text || '%'
 END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'old_add' THEN m_memberships.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' THEN m_memberships.added_at END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_memberships.added_at END DESC NULLS LAST,
 	m_memberships_pkey ASC
 LIMIT $2 OFFSET $3;
 
@@ -92,14 +92,14 @@ AND CASE @cursor_direction::text
 		END
 END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'next' THEN m_memberships.added_at END ASC,
-	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'prev' THEN m_memberships.added_at END DESC,
-	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'next' THEN m_memberships.added_at END DESC,
-	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'prev' THEN m_memberships.added_at END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'next' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'prev' THEN m_memberships.added_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'next' THEN m_memberships.added_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'prev' THEN m_memberships.added_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_memberships_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_memberships_pkey END DESC
 LIMIT $2;
@@ -115,10 +115,10 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'old_add' THEN m_memberships.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' THEN m_memberships.added_at END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_memberships.added_at END DESC NULLS LAST,
 	m_memberships_pkey ASC;
 
 -- name: GetPluralMembersOnOrganizationUseNumberedPaginate :many
@@ -132,10 +132,10 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'old_add' THEN m_memberships.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' THEN m_memberships.added_at END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_memberships.added_at END DESC NULLS LAST,
 	m_memberships_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -156,10 +156,10 @@ AND CASE
 	WHEN @where_like_name::boolean = true THEN m_organization.name LIKE '%' || @search_name::text || '%'
 END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
-	CASE WHEN @order_method::text = 'old_add' THEN m_memberships.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' THEN m_memberships.added_at END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_memberships.added_at END DESC NULLS LAST,
 	m_memberships_pkey ASC;
 
 -- name: GetOrganizationsOnMemberUseNumberedPaginate :many
@@ -173,10 +173,10 @@ AND CASE
 	WHEN @where_like_name::boolean = true THEN m_organization.name LIKE '%' || @search_name::text || '%'
 END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
-	CASE WHEN @order_method::text = 'old_add' THEN m_memberships.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' THEN m_memberships.added_at END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_memberships.added_at END DESC NULLS LAST,
 	m_memberships_pkey ASC
 LIMIT $2 OFFSET $3;
 
@@ -209,14 +209,14 @@ AND CASE @cursor_direction::text
 		END
 END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_organizations.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'next' THEN m_memberships.added_at END ASC,
-	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'prev' THEN m_memberships.added_at END DESC,
-	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'next' THEN m_memberships.added_at END DESC,
-	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'prev' THEN m_memberships.added_at END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'next' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'prev' THEN m_memberships.added_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'next' THEN m_memberships.added_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'prev' THEN m_memberships.added_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_memberships_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_memberships_pkey END DESC
 LIMIT $2;
@@ -229,10 +229,10 @@ FROM m_memberships
 LEFT JOIN m_organizations ON m_memberships.organization_id = m_organizations.organization_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
-	CASE WHEN @order_method::text = 'old_add' THEN m_memberships.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' THEN m_memberships.added_at END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_memberships.added_at END DESC NULLS LAST,
 	m_memberships_pkey ASC;
 
 -- name: GetPluralOrganizationsOnMemberUseNumberedPaginate :many
@@ -243,10 +243,10 @@ FROM m_memberships
 LEFT JOIN m_organizations ON m_memberships.organization_id = m_organizations.organization_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
-	CASE WHEN @order_method::text = 'old_add' THEN m_memberships.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' THEN m_memberships.added_at END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_memberships.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_memberships.added_at END DESC NULLS LAST,
 	m_memberships_pkey ASC
 LIMIT $1 OFFSET $2;
 

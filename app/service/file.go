@@ -562,6 +562,7 @@ func pluralDeleteFiles(
 	stg storage.Storage,
 	ids []uuid.UUID,
 	ownerID entity.UUID,
+	force bool,
 ) (c int64, err error) {
 	file, err := db.GetPluralFilesWithAttachableItemWithSd(
 		ctx, sd, ids, parameter.FileOrderMethodDefault, store.NumberedPaginationParam{})
@@ -574,7 +575,7 @@ func pluralDeleteFiles(
 		if !i.AttachableItem.OwnerID.Valid {
 			continue
 		}
-		if !ownerID.Valid || i.AttachableItem.OwnerID.Bytes != ownerID.Bytes {
+		if !force || (!ownerID.Valid || i.AttachableItem.OwnerID.Bytes != ownerID.Bytes) {
 			return 0, errhandle.NewCommonError(response.NotFileOwner, nil)
 		}
 		if !i.AttachableItem.FromOuter {
@@ -623,7 +624,7 @@ func (m *ManageFile) PluralDeleteFiles(
 			}
 		}
 	}()
-	return pluralDeleteFiles(ctx, sd, m.DB, m.Storage, ids, entity.UUID{})
+	return pluralDeleteFiles(ctx, sd, m.DB, m.Storage, ids, entity.UUID{}, false)
 }
 
 // GetFiles ファイルを取得する。

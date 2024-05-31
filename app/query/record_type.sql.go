@@ -116,8 +116,8 @@ SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
 WHERE
 	record_type_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN name END DESC,
+	CASE WHEN $2::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_record_types_pkey ASC
 `
 
@@ -156,8 +156,8 @@ SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
 WHERE
 	record_type_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN name END DESC,
+	CASE WHEN $4::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_record_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -204,8 +204,8 @@ SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
 WHERE
 	CASE WHEN $1::boolean = true THEN m_record_types.name LIKE '%' || $2::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN name END ASC,
-	CASE WHEN $3::text = 'r_name' THEN name END DESC,
+	CASE WHEN $3::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN $3::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_record_types_pkey ASC
 `
 
@@ -260,10 +260,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN name END ASC,
-	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN name END ASC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN name END ASC NULLS LAST,
 	CASE WHEN $4::text = 'next' THEN m_record_types_pkey END ASC,
 	CASE WHEN $4::text = 'prev' THEN m_record_types_pkey END DESC
 LIMIT $1
@@ -317,8 +317,8 @@ SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
 WHERE
 	CASE WHEN $3::boolean = true THEN m_record_types.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN name END DESC,
+	CASE WHEN $5::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_record_types_pkey ASC
 LIMIT $1 OFFSET $2
 `

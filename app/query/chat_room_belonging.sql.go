@@ -153,33 +153,32 @@ m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
-t_messages.message_id, t_messages.posted_at chat_room_latest_message_posted_at, t_messages.body chat_room_latest_message_body
+latest_message.message_id chat_room_latest_message_id, latest_message.posted_at chat_room_latest_message_posted_at, latest_message.body chat_room_latest_message_body
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN t_messages ON m_chat_room_belongings.chat_room_id = t_messages.chat_room_id
-AND (
-	SELECT message_id FROM t_messages m
-	WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id
-	ORDER BY m.posted_at DESC
-	LIMIT 1
-) = t_messages.message_id
+LEFT JOIN (
+    SELECT sub.chat_room_id, sub.t_messages_pkey, sub.message_id, sub.sender_id, sub.body, sub.posted_at, sub.last_edited_at, sub.chat_room_action_id, sub.rn FROM (
+        SELECT
+            cra.chat_room_id AS chat_room_id, msg.t_messages_pkey, msg.message_id, msg.sender_id, msg.body, msg.posted_at, msg.last_edited_at, msg.chat_room_action_id, ROW_NUMBER() OVER (PARTITION BY cra.chat_room_id ORDER BY msg.posted_at DESC, msg.t_messages_pkey DESC) AS rn
+        FROM t_messages msg
+        INNER JOIN t_chat_room_actions cra ON msg.chat_room_action_id = cra.chat_room_action_id
+    ) sub
+    WHERE sub.rn = 1
+) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
 WHERE member_id = $1
 AND CASE
 	WHEN $2::boolean = true THEN m_chat_rooms.name LIKE '%' || $3::text || '%'
 END
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_chat_rooms.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_chat_rooms.name END DESC,
-	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN $4::text = 'old_chat' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
-	END ASC,
-	CASE WHEN $4::text = 'late_chat' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
-	END DESC,
+	CASE WHEN $4::text = 'name' THEN m_chat_rooms.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_chat_rooms.name END DESC NULLS LAST,
+	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'old_chat' THEN latest_message.posted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_chat' THEN latest_message.posted_at END DESC NULLS LAST,
+	latest_message.posted_at DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 `
 
@@ -191,27 +190,27 @@ type GetChatRoomsOnMemberParams struct {
 }
 
 type GetChatRoomsOnMemberRow struct {
-	MChatRoomBelongingsPkey            pgtype.Int8        `json:"m_chat_room_belongings_pkey"`
-	MemberID                           uuid.UUID          `json:"member_id"`
-	ChatRoomID                         uuid.UUID          `json:"chat_room_id"`
-	AddedAt                            time.Time          `json:"added_at"`
-	ChatRoomName                       pgtype.Text        `json:"chat_room_name"`
-	ChatRoomIsPrivate                  pgtype.Bool        `json:"chat_room_is_private"`
-	ChatRoomFromOrganization           pgtype.Bool        `json:"chat_room_from_organization"`
-	ChatRoomOwnerID                    pgtype.UUID        `json:"chat_room_owner_id"`
-	ChatRoomCoverImageID               pgtype.UUID        `json:"chat_room_cover_image_id"`
-	ChatRoomCoverImageHeight           pgtype.Float8      `json:"chat_room_cover_image_height"`
-	ChatRoomCoverImageWidth            pgtype.Float8      `json:"chat_room_cover_image_width"`
-	ChatRoomCoverImageAttachableItemID pgtype.UUID        `json:"chat_room_cover_image_attachable_item_id"`
-	ChatRoomCoverImageOwnerID          pgtype.UUID        `json:"chat_room_cover_image_owner_id"`
-	ChatRoomCoverImageFromOuter        pgtype.Bool        `json:"chat_room_cover_image_from_outer"`
-	ChatRoomCoverImageAlias            pgtype.Text        `json:"chat_room_cover_image_alias"`
-	ChatRoomCoverImageUrl              pgtype.Text        `json:"chat_room_cover_image_url"`
-	ChatRoomCoverImageSize             pgtype.Float8      `json:"chat_room_cover_image_size"`
-	ChatRoomCoverImageMimeTypeID       pgtype.UUID        `json:"chat_room_cover_image_mime_type_id"`
-	MessageID                          pgtype.UUID        `json:"message_id"`
-	ChatRoomLatestMessagePostedAt      pgtype.Timestamptz `json:"chat_room_latest_message_posted_at"`
-	ChatRoomLatestMessageBody          pgtype.Text        `json:"chat_room_latest_message_body"`
+	MChatRoomBelongingsPkey            pgtype.Int8   `json:"m_chat_room_belongings_pkey"`
+	MemberID                           uuid.UUID     `json:"member_id"`
+	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
+	AddedAt                            time.Time     `json:"added_at"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
+	ChatRoomLatestMessageID            uuid.UUID     `json:"chat_room_latest_message_id"`
+	ChatRoomLatestMessagePostedAt      time.Time     `json:"chat_room_latest_message_posted_at"`
+	ChatRoomLatestMessageBody          string        `json:"chat_room_latest_message_body"`
 }
 
 func (q *Queries) GetChatRoomsOnMember(ctx context.Context, arg GetChatRoomsOnMemberParams) ([]GetChatRoomsOnMemberRow, error) {
@@ -247,7 +246,7 @@ func (q *Queries) GetChatRoomsOnMember(ctx context.Context, arg GetChatRoomsOnMe
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
-			&i.MessageID,
+			&i.ChatRoomLatestMessageID,
 			&i.ChatRoomLatestMessagePostedAt,
 			&i.ChatRoomLatestMessageBody,
 		); err != nil {
@@ -268,18 +267,20 @@ m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
-t_messages.message_id, t_messages.posted_at chat_room_latest_message_posted_at, t_messages.body chat_room_latest_message_body
+latest_message.message_id chat_room_latest_message_id, latest_message.posted_at chat_room_latest_message_posted_at, latest_message.body chat_room_latest_message_body
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN t_messages ON m_chat_room_belongings.chat_room_id = t_messages.chat_room_id
-AND (
-	SELECT message_id FROM t_messages m
-	WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id
-	ORDER BY m.posted_at DESC
-	LIMIT 1
-) = t_messages.message_id
+LEFT JOIN (
+    SELECT sub.chat_room_id, sub.t_messages_pkey, sub.message_id, sub.sender_id, sub.body, sub.posted_at, sub.last_edited_at, sub.chat_room_action_id, sub.rn FROM (
+        SELECT
+            cra.chat_room_id AS chat_room_id, msg.t_messages_pkey, msg.message_id, msg.sender_id, msg.body, msg.posted_at, msg.last_edited_at, msg.chat_room_action_id, ROW_NUMBER() OVER (PARTITION BY cra.chat_room_id ORDER BY msg.posted_at DESC, msg.t_messages_pkey DESC) AS rn
+        FROM t_messages msg
+        INNER JOIN t_chat_room_actions cra ON msg.chat_room_action_id = cra.chat_room_action_id
+    ) sub
+    WHERE sub.rn = 1
+) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
 WHERE member_id = $1
 AND CASE
 	WHEN $3::boolean = true THEN m_chat_rooms.name LIKE '%' || $4::text || '%'
@@ -291,12 +292,8 @@ AND CASE $5::text
 			WHEN 'r_name' THEN m_chat_rooms.name < $7 OR (m_chat_rooms.name = $7 AND m_chat_room_belongings_pkey > $8::int)
 			WHEN 'old_add' THEN m_chat_room_belongings.added_at > $9 OR (m_chat_room_belongings.added_at = $9 AND m_chat_room_belongings_pkey > $8::int)
 			WHEN 'late_add' THEN m_chat_room_belongings.added_at < $9 OR (m_chat_room_belongings.added_at = $9 AND m_chat_room_belongings_pkey > $8::int)
-			WHEN 'old_chat' THEN
-				(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) > $10
-				OR ((SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = $10 AND m_chat_room_belongings_pkey > $8::int)
-			WHEN 'late_chat' THEN
-				(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) < $10
-				OR ((SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = $10 AND m_chat_room_belongings_pkey > $8::int)
+			WHEN 'old_chat' THEN latest_message.posted_at > $10::timestamptz OR (latest_message.posted_at = $10::timestamptz AND m_chat_room_belongings_pkey > $8::int)
+			WHEN 'late_chat' THEN latest_message.posted_at < $10::timestamptz OR (latest_message.posted_at = $10::timestamptz AND m_chat_room_belongings_pkey > $8::int)
 			ELSE m_chat_room_belongings_pkey > $8::int
 		END
 	WHEN 'prev' THEN
@@ -305,32 +302,24 @@ AND CASE $5::text
 			WHEN 'r_name' THEN m_chat_rooms.name > $7 OR (m_chat_rooms.name = $7 AND m_chat_room_belongings_pkey < $8::int)
 			WHEN 'old_add' THEN m_chat_room_belongings.added_at < $9 OR (m_chat_room_belongings.added_at = $9 AND m_chat_room_belongings_pkey < $8::int)
 			WHEN 'late_add' THEN m_chat_room_belongings.added_at > $9 OR (m_chat_room_belongings.added_at = $9 AND m_chat_room_belongings_pkey < $8::int)
-			WHEN 'old_chat' THEN
-				(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) < $10
-				OR ((SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = $10 AND m_chat_room_belongings_pkey < $8::int)
-			WHEN 'late_chat' THEN
-				(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) > $10
-				OR ((SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = $10 AND m_chat_room_belongings_pkey < $8::int)
+			WHEN 'old_chat' THEN latest_message.posted_at < $10::timestamptz OR (latest_message.posted_at = $10::timestamptz AND m_chat_room_belongings_pkey < $8::int)
+			WHEN 'late_chat' THEN latest_message.posted_at > $10::timestamptz OR (latest_message.posted_at = $10::timestamptz AND m_chat_room_belongings_pkey < $8::int)
 			ELSE m_chat_room_belongings_pkey < $8::int
 		END
 END
 ORDER BY
-	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_chat_rooms.name END ASC,
-	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_chat_rooms.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_chat_rooms.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_chat_rooms.name END ASC,
-	CASE WHEN $6::text = 'old_add' AND $5::text = 'next' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN $6::text = 'old_add' AND $5::text = 'prev' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN $6::text = 'late_add' AND $5::text = 'next' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN $6::text = 'late_add' AND $5::text = 'prev' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN $6::text = 'old_chat' AND $5::text = 'next' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END ASC,
-	CASE WHEN $6::text = 'old_chat' AND $5::text = 'prev' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END DESC,
-	CASE WHEN $6::text = 'late_chat' AND $5::text = 'next' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END DESC,
-	CASE WHEN $6::text = 'late_chat' AND $5::text = 'prev' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END ASC,
+	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_chat_rooms.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_chat_rooms.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_chat_rooms.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_chat_rooms.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'old_add' AND $5::text = 'next' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'old_add' AND $5::text = 'prev' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'late_add' AND $5::text = 'next' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'late_add' AND $5::text = 'prev' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'old_chat' AND $5::text = 'next' THEN latest_message.posted_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'old_chat' AND $5::text = 'prev' THEN latest_message.posted_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'late_chat' AND $5::text = 'next' THEN latest_message.posted_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'late_chat' AND $5::text = 'prev' THEN latest_message.posted_at END ASC NULLS LAST,
 	CASE WHEN $5::text = 'next' THEN m_chat_room_belongings_pkey END ASC,
 	CASE WHEN $5::text = 'prev' THEN m_chat_room_belongings_pkey END DESC
 LIMIT $2
@@ -350,27 +339,27 @@ type GetChatRoomsOnMemberUseKeysetPaginateParams struct {
 }
 
 type GetChatRoomsOnMemberUseKeysetPaginateRow struct {
-	MChatRoomBelongingsPkey            pgtype.Int8        `json:"m_chat_room_belongings_pkey"`
-	MemberID                           uuid.UUID          `json:"member_id"`
-	ChatRoomID                         uuid.UUID          `json:"chat_room_id"`
-	AddedAt                            time.Time          `json:"added_at"`
-	ChatRoomName                       pgtype.Text        `json:"chat_room_name"`
-	ChatRoomIsPrivate                  pgtype.Bool        `json:"chat_room_is_private"`
-	ChatRoomFromOrganization           pgtype.Bool        `json:"chat_room_from_organization"`
-	ChatRoomOwnerID                    pgtype.UUID        `json:"chat_room_owner_id"`
-	ChatRoomCoverImageID               pgtype.UUID        `json:"chat_room_cover_image_id"`
-	ChatRoomCoverImageHeight           pgtype.Float8      `json:"chat_room_cover_image_height"`
-	ChatRoomCoverImageWidth            pgtype.Float8      `json:"chat_room_cover_image_width"`
-	ChatRoomCoverImageAttachableItemID pgtype.UUID        `json:"chat_room_cover_image_attachable_item_id"`
-	ChatRoomCoverImageOwnerID          pgtype.UUID        `json:"chat_room_cover_image_owner_id"`
-	ChatRoomCoverImageFromOuter        pgtype.Bool        `json:"chat_room_cover_image_from_outer"`
-	ChatRoomCoverImageAlias            pgtype.Text        `json:"chat_room_cover_image_alias"`
-	ChatRoomCoverImageUrl              pgtype.Text        `json:"chat_room_cover_image_url"`
-	ChatRoomCoverImageSize             pgtype.Float8      `json:"chat_room_cover_image_size"`
-	ChatRoomCoverImageMimeTypeID       pgtype.UUID        `json:"chat_room_cover_image_mime_type_id"`
-	MessageID                          pgtype.UUID        `json:"message_id"`
-	ChatRoomLatestMessagePostedAt      pgtype.Timestamptz `json:"chat_room_latest_message_posted_at"`
-	ChatRoomLatestMessageBody          pgtype.Text        `json:"chat_room_latest_message_body"`
+	MChatRoomBelongingsPkey            pgtype.Int8   `json:"m_chat_room_belongings_pkey"`
+	MemberID                           uuid.UUID     `json:"member_id"`
+	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
+	AddedAt                            time.Time     `json:"added_at"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
+	ChatRoomLatestMessageID            uuid.UUID     `json:"chat_room_latest_message_id"`
+	ChatRoomLatestMessagePostedAt      time.Time     `json:"chat_room_latest_message_posted_at"`
+	ChatRoomLatestMessageBody          string        `json:"chat_room_latest_message_body"`
 }
 
 func (q *Queries) GetChatRoomsOnMemberUseKeysetPaginate(ctx context.Context, arg GetChatRoomsOnMemberUseKeysetPaginateParams) ([]GetChatRoomsOnMemberUseKeysetPaginateRow, error) {
@@ -412,7 +401,7 @@ func (q *Queries) GetChatRoomsOnMemberUseKeysetPaginate(ctx context.Context, arg
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
-			&i.MessageID,
+			&i.ChatRoomLatestMessageID,
 			&i.ChatRoomLatestMessagePostedAt,
 			&i.ChatRoomLatestMessageBody,
 		); err != nil {
@@ -433,33 +422,32 @@ m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
-t_messages.message_id, t_messages.posted_at chat_room_latest_message_posted_at, t_messages.body chat_room_latest_message_body
+latest_message.message_id chat_room_latest_message_id, latest_message.posted_at chat_room_latest_message_posted_at, latest_message.body chat_room_latest_message_body
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN t_messages ON m_chat_room_belongings.chat_room_id = t_messages.chat_room_id
-AND (
-	SELECT message_id FROM t_messages m
-	WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id
-	ORDER BY m.posted_at DESC
-	LIMIT 1
-) = t_messages.message_id
+LEFT JOIN (
+    SELECT sub.chat_room_id, sub.t_messages_pkey, sub.message_id, sub.sender_id, sub.body, sub.posted_at, sub.last_edited_at, sub.chat_room_action_id, sub.rn FROM (
+        SELECT
+            cra.chat_room_id AS chat_room_id, msg.t_messages_pkey, msg.message_id, msg.sender_id, msg.body, msg.posted_at, msg.last_edited_at, msg.chat_room_action_id, ROW_NUMBER() OVER (PARTITION BY cra.chat_room_id ORDER BY msg.posted_at DESC, msg.t_messages_pkey DESC) AS rn
+        FROM t_messages msg
+        INNER JOIN t_chat_room_actions cra ON msg.chat_room_action_id = cra.chat_room_action_id
+    ) sub
+    WHERE sub.rn = 1
+) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
 WHERE member_id = $1
 AND CASE
 	WHEN $4::boolean = true THEN m_chat_rooms.name LIKE '%' || $5::text || '%'
 END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_chat_rooms.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_chat_rooms.name END DESC,
-	CASE WHEN $6::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN $6::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN $6::text = 'old_chat' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
-	END ASC,
-	CASE WHEN $6::text = 'late_chat' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
-	END DESC,
+	CASE WHEN $6::text = 'name' THEN m_chat_rooms.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' THEN m_chat_rooms.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'old_chat' THEN latest_message.posted_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'late_chat' THEN latest_message.posted_at END DESC NULLS LAST,
+	latest_message.posted_at DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 LIMIT $2 OFFSET $3
 `
@@ -474,27 +462,27 @@ type GetChatRoomsOnMemberUseNumberedPaginateParams struct {
 }
 
 type GetChatRoomsOnMemberUseNumberedPaginateRow struct {
-	MChatRoomBelongingsPkey            pgtype.Int8        `json:"m_chat_room_belongings_pkey"`
-	MemberID                           uuid.UUID          `json:"member_id"`
-	ChatRoomID                         uuid.UUID          `json:"chat_room_id"`
-	AddedAt                            time.Time          `json:"added_at"`
-	ChatRoomName                       pgtype.Text        `json:"chat_room_name"`
-	ChatRoomIsPrivate                  pgtype.Bool        `json:"chat_room_is_private"`
-	ChatRoomFromOrganization           pgtype.Bool        `json:"chat_room_from_organization"`
-	ChatRoomOwnerID                    pgtype.UUID        `json:"chat_room_owner_id"`
-	ChatRoomCoverImageID               pgtype.UUID        `json:"chat_room_cover_image_id"`
-	ChatRoomCoverImageHeight           pgtype.Float8      `json:"chat_room_cover_image_height"`
-	ChatRoomCoverImageWidth            pgtype.Float8      `json:"chat_room_cover_image_width"`
-	ChatRoomCoverImageAttachableItemID pgtype.UUID        `json:"chat_room_cover_image_attachable_item_id"`
-	ChatRoomCoverImageOwnerID          pgtype.UUID        `json:"chat_room_cover_image_owner_id"`
-	ChatRoomCoverImageFromOuter        pgtype.Bool        `json:"chat_room_cover_image_from_outer"`
-	ChatRoomCoverImageAlias            pgtype.Text        `json:"chat_room_cover_image_alias"`
-	ChatRoomCoverImageUrl              pgtype.Text        `json:"chat_room_cover_image_url"`
-	ChatRoomCoverImageSize             pgtype.Float8      `json:"chat_room_cover_image_size"`
-	ChatRoomCoverImageMimeTypeID       pgtype.UUID        `json:"chat_room_cover_image_mime_type_id"`
-	MessageID                          pgtype.UUID        `json:"message_id"`
-	ChatRoomLatestMessagePostedAt      pgtype.Timestamptz `json:"chat_room_latest_message_posted_at"`
-	ChatRoomLatestMessageBody          pgtype.Text        `json:"chat_room_latest_message_body"`
+	MChatRoomBelongingsPkey            pgtype.Int8   `json:"m_chat_room_belongings_pkey"`
+	MemberID                           uuid.UUID     `json:"member_id"`
+	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
+	AddedAt                            time.Time     `json:"added_at"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
+	ChatRoomLatestMessageID            uuid.UUID     `json:"chat_room_latest_message_id"`
+	ChatRoomLatestMessagePostedAt      time.Time     `json:"chat_room_latest_message_posted_at"`
+	ChatRoomLatestMessageBody          string        `json:"chat_room_latest_message_body"`
 }
 
 func (q *Queries) GetChatRoomsOnMemberUseNumberedPaginate(ctx context.Context, arg GetChatRoomsOnMemberUseNumberedPaginateParams) ([]GetChatRoomsOnMemberUseNumberedPaginateRow, error) {
@@ -532,7 +520,7 @@ func (q *Queries) GetChatRoomsOnMemberUseNumberedPaginate(ctx context.Context, a
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
-			&i.MessageID,
+			&i.ChatRoomLatestMessageID,
 			&i.ChatRoomLatestMessagePostedAt,
 			&i.ChatRoomLatestMessageBody,
 		); err != nil {
@@ -560,10 +548,10 @@ AND CASE
 	WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%'
 END
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 `
 
@@ -671,14 +659,14 @@ AND CASE $5::text
 		END
 END
 ORDER BY
-	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_members.name END ASC,
-	CASE WHEN $6::text = 'old_add' AND $5::text = 'next' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN $6::text = 'old_add' AND $5::text = 'prev' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN $6::text = 'late_add' AND $5::text = 'next' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN $6::text = 'late_add' AND $5::text = 'prev' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'old_add' AND $5::text = 'next' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'old_add' AND $5::text = 'prev' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'late_add' AND $5::text = 'next' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'late_add' AND $5::text = 'prev' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
 	CASE WHEN $5::text = 'next' THEN m_chat_room_belongings_pkey END ASC,
 	CASE WHEN $5::text = 'prev' THEN m_chat_room_belongings_pkey END DESC
 LIMIT $2
@@ -780,10 +768,10 @@ AND CASE
 	WHEN $4::boolean = true THEN m_members.name LIKE '%' || $5::text || '%'
 END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN $6::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN $6::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN $6::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 LIMIT $2 OFFSET $3
 `
@@ -871,30 +859,28 @@ m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
-t_messages.message_id, t_messages.posted_at chat_room_latest_message_posted_at, t_messages.body chat_room_latest_message_body
+latest_message.message_id chat_room_latest_message_id, latest_message.posted_at chat_room_latest_message_posted_at, latest_message.body chat_room_latest_message_body
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN t_messages ON m_chat_room_belongings.chat_room_id = t_messages.chat_room_id
-AND (
-	SELECT message_id FROM t_messages m
-	WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id
-	ORDER BY m.posted_at DESC
-	LIMIT 1
-) = t_messages.message_id
+LEFT JOIN (
+    SELECT sub.chat_room_id, sub.t_messages_pkey, sub.message_id, sub.sender_id, sub.body, sub.posted_at, sub.last_edited_at, sub.chat_room_action_id, sub.rn FROM (
+        SELECT
+            cra.chat_room_id AS chat_room_id, msg.t_messages_pkey, msg.message_id, msg.sender_id, msg.body, msg.posted_at, msg.last_edited_at, msg.chat_room_action_id, ROW_NUMBER() OVER (PARTITION BY cra.chat_room_id ORDER BY msg.posted_at DESC, msg.t_messages_pkey DESC) AS rn
+        FROM t_messages msg
+        INNER JOIN t_chat_room_actions cra ON msg.chat_room_action_id = cra.chat_room_action_id
+    ) sub
+    WHERE sub.rn = 1
+) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_chat_rooms.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_chat_rooms.name END DESC,
-	CASE WHEN $2::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN $2::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN $2::text = 'old_chat' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
-	END ASC,
-	CASE WHEN $2::text = 'late_chat' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
-	END DESC,
+	CASE WHEN $2::text = 'name' THEN m_chat_rooms.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_chat_rooms.name END DESC NULLS LAST,
+	CASE WHEN $2::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	CASE WHEN $2::text = 'old_chat' THEN latest_message.posted_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'late_chat' THEN latest_message.posted_at END DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 `
 
@@ -904,27 +890,27 @@ type GetPluralChatRoomsOnMemberParams struct {
 }
 
 type GetPluralChatRoomsOnMemberRow struct {
-	MChatRoomBelongingsPkey            pgtype.Int8        `json:"m_chat_room_belongings_pkey"`
-	MemberID                           uuid.UUID          `json:"member_id"`
-	ChatRoomID                         uuid.UUID          `json:"chat_room_id"`
-	AddedAt                            time.Time          `json:"added_at"`
-	ChatRoomName                       pgtype.Text        `json:"chat_room_name"`
-	ChatRoomIsPrivate                  pgtype.Bool        `json:"chat_room_is_private"`
-	ChatRoomFromOrganization           pgtype.Bool        `json:"chat_room_from_organization"`
-	ChatRoomOwnerID                    pgtype.UUID        `json:"chat_room_owner_id"`
-	ChatRoomCoverImageID               pgtype.UUID        `json:"chat_room_cover_image_id"`
-	ChatRoomCoverImageHeight           pgtype.Float8      `json:"chat_room_cover_image_height"`
-	ChatRoomCoverImageWidth            pgtype.Float8      `json:"chat_room_cover_image_width"`
-	ChatRoomCoverImageAttachableItemID pgtype.UUID        `json:"chat_room_cover_image_attachable_item_id"`
-	ChatRoomCoverImageOwnerID          pgtype.UUID        `json:"chat_room_cover_image_owner_id"`
-	ChatRoomCoverImageFromOuter        pgtype.Bool        `json:"chat_room_cover_image_from_outer"`
-	ChatRoomCoverImageAlias            pgtype.Text        `json:"chat_room_cover_image_alias"`
-	ChatRoomCoverImageUrl              pgtype.Text        `json:"chat_room_cover_image_url"`
-	ChatRoomCoverImageSize             pgtype.Float8      `json:"chat_room_cover_image_size"`
-	ChatRoomCoverImageMimeTypeID       pgtype.UUID        `json:"chat_room_cover_image_mime_type_id"`
-	MessageID                          pgtype.UUID        `json:"message_id"`
-	ChatRoomLatestMessagePostedAt      pgtype.Timestamptz `json:"chat_room_latest_message_posted_at"`
-	ChatRoomLatestMessageBody          pgtype.Text        `json:"chat_room_latest_message_body"`
+	MChatRoomBelongingsPkey            pgtype.Int8   `json:"m_chat_room_belongings_pkey"`
+	MemberID                           uuid.UUID     `json:"member_id"`
+	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
+	AddedAt                            time.Time     `json:"added_at"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
+	ChatRoomLatestMessageID            uuid.UUID     `json:"chat_room_latest_message_id"`
+	ChatRoomLatestMessagePostedAt      time.Time     `json:"chat_room_latest_message_posted_at"`
+	ChatRoomLatestMessageBody          string        `json:"chat_room_latest_message_body"`
 }
 
 func (q *Queries) GetPluralChatRoomsOnMember(ctx context.Context, arg GetPluralChatRoomsOnMemberParams) ([]GetPluralChatRoomsOnMemberRow, error) {
@@ -955,7 +941,7 @@ func (q *Queries) GetPluralChatRoomsOnMember(ctx context.Context, arg GetPluralC
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
-			&i.MessageID,
+			&i.ChatRoomLatestMessageID,
 			&i.ChatRoomLatestMessagePostedAt,
 			&i.ChatRoomLatestMessageBody,
 		); err != nil {
@@ -976,30 +962,28 @@ m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
-t_messages.message_id, t_messages.posted_at chat_room_latest_message_posted_at, t_messages.body chat_room_latest_message_body
+latest_message.message_id chat_room_latest_message_id, latest_message.posted_at chat_room_latest_message_posted_at, latest_message.body chat_room_latest_message_body
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN t_messages ON m_chat_room_belongings.chat_room_id = t_messages.chat_room_id
-AND (
-	SELECT message_id FROM t_messages m
-	WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id
-	ORDER BY m.posted_at DESC
-	LIMIT 1
-) = t_messages.message_id
+LEFT JOIN (
+    SELECT sub.chat_room_id, sub.t_messages_pkey, sub.message_id, sub.sender_id, sub.body, sub.posted_at, sub.last_edited_at, sub.chat_room_action_id, sub.rn FROM (
+        SELECT
+            cra.chat_room_id AS chat_room_id, msg.t_messages_pkey, msg.message_id, msg.sender_id, msg.body, msg.posted_at, msg.last_edited_at, msg.chat_room_action_id, ROW_NUMBER() OVER (PARTITION BY cra.chat_room_id ORDER BY msg.posted_at DESC, msg.t_messages_pkey DESC) AS rn
+        FROM t_messages msg
+        INNER JOIN t_chat_room_actions cra ON msg.chat_room_action_id = cra.chat_room_action_id
+    ) sub
+    WHERE sub.rn = 1
+) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_chat_rooms.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_chat_rooms.name END DESC,
-	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN $4::text = 'old_chat' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
-	END ASC,
-	CASE WHEN $4::text = 'late_chat' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
-	END DESC,
+	CASE WHEN $4::text = 'name' THEN m_chat_rooms.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_chat_rooms.name END DESC NULLS LAST,
+	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'old_chat' THEN latest_message.posted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_chat' THEN latest_message.posted_at END DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1012,27 +996,27 @@ type GetPluralChatRoomsOnMemberUseNumberedPaginateParams struct {
 }
 
 type GetPluralChatRoomsOnMemberUseNumberedPaginateRow struct {
-	MChatRoomBelongingsPkey            pgtype.Int8        `json:"m_chat_room_belongings_pkey"`
-	MemberID                           uuid.UUID          `json:"member_id"`
-	ChatRoomID                         uuid.UUID          `json:"chat_room_id"`
-	AddedAt                            time.Time          `json:"added_at"`
-	ChatRoomName                       pgtype.Text        `json:"chat_room_name"`
-	ChatRoomIsPrivate                  pgtype.Bool        `json:"chat_room_is_private"`
-	ChatRoomFromOrganization           pgtype.Bool        `json:"chat_room_from_organization"`
-	ChatRoomOwnerID                    pgtype.UUID        `json:"chat_room_owner_id"`
-	ChatRoomCoverImageID               pgtype.UUID        `json:"chat_room_cover_image_id"`
-	ChatRoomCoverImageHeight           pgtype.Float8      `json:"chat_room_cover_image_height"`
-	ChatRoomCoverImageWidth            pgtype.Float8      `json:"chat_room_cover_image_width"`
-	ChatRoomCoverImageAttachableItemID pgtype.UUID        `json:"chat_room_cover_image_attachable_item_id"`
-	ChatRoomCoverImageOwnerID          pgtype.UUID        `json:"chat_room_cover_image_owner_id"`
-	ChatRoomCoverImageFromOuter        pgtype.Bool        `json:"chat_room_cover_image_from_outer"`
-	ChatRoomCoverImageAlias            pgtype.Text        `json:"chat_room_cover_image_alias"`
-	ChatRoomCoverImageUrl              pgtype.Text        `json:"chat_room_cover_image_url"`
-	ChatRoomCoverImageSize             pgtype.Float8      `json:"chat_room_cover_image_size"`
-	ChatRoomCoverImageMimeTypeID       pgtype.UUID        `json:"chat_room_cover_image_mime_type_id"`
-	MessageID                          pgtype.UUID        `json:"message_id"`
-	ChatRoomLatestMessagePostedAt      pgtype.Timestamptz `json:"chat_room_latest_message_posted_at"`
-	ChatRoomLatestMessageBody          pgtype.Text        `json:"chat_room_latest_message_body"`
+	MChatRoomBelongingsPkey            pgtype.Int8   `json:"m_chat_room_belongings_pkey"`
+	MemberID                           uuid.UUID     `json:"member_id"`
+	ChatRoomID                         uuid.UUID     `json:"chat_room_id"`
+	AddedAt                            time.Time     `json:"added_at"`
+	ChatRoomName                       pgtype.Text   `json:"chat_room_name"`
+	ChatRoomIsPrivate                  pgtype.Bool   `json:"chat_room_is_private"`
+	ChatRoomFromOrganization           pgtype.Bool   `json:"chat_room_from_organization"`
+	ChatRoomOwnerID                    pgtype.UUID   `json:"chat_room_owner_id"`
+	ChatRoomCoverImageID               pgtype.UUID   `json:"chat_room_cover_image_id"`
+	ChatRoomCoverImageHeight           pgtype.Float8 `json:"chat_room_cover_image_height"`
+	ChatRoomCoverImageWidth            pgtype.Float8 `json:"chat_room_cover_image_width"`
+	ChatRoomCoverImageAttachableItemID pgtype.UUID   `json:"chat_room_cover_image_attachable_item_id"`
+	ChatRoomCoverImageOwnerID          pgtype.UUID   `json:"chat_room_cover_image_owner_id"`
+	ChatRoomCoverImageFromOuter        pgtype.Bool   `json:"chat_room_cover_image_from_outer"`
+	ChatRoomCoverImageAlias            pgtype.Text   `json:"chat_room_cover_image_alias"`
+	ChatRoomCoverImageUrl              pgtype.Text   `json:"chat_room_cover_image_url"`
+	ChatRoomCoverImageSize             pgtype.Float8 `json:"chat_room_cover_image_size"`
+	ChatRoomCoverImageMimeTypeID       pgtype.UUID   `json:"chat_room_cover_image_mime_type_id"`
+	ChatRoomLatestMessageID            uuid.UUID     `json:"chat_room_latest_message_id"`
+	ChatRoomLatestMessagePostedAt      time.Time     `json:"chat_room_latest_message_posted_at"`
+	ChatRoomLatestMessageBody          string        `json:"chat_room_latest_message_body"`
 }
 
 func (q *Queries) GetPluralChatRoomsOnMemberUseNumberedPaginate(ctx context.Context, arg GetPluralChatRoomsOnMemberUseNumberedPaginateParams) ([]GetPluralChatRoomsOnMemberUseNumberedPaginateRow, error) {
@@ -1068,7 +1052,7 @@ func (q *Queries) GetPluralChatRoomsOnMemberUseNumberedPaginate(ctx context.Cont
 			&i.ChatRoomCoverImageUrl,
 			&i.ChatRoomCoverImageSize,
 			&i.ChatRoomCoverImageMimeTypeID,
-			&i.MessageID,
+			&i.ChatRoomLatestMessageID,
 			&i.ChatRoomLatestMessagePostedAt,
 			&i.ChatRoomLatestMessageBody,
 		); err != nil {
@@ -1093,10 +1077,10 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE chat_room_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN $2::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN $2::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $2::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 `
 
@@ -1176,10 +1160,10 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE chat_room_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $4::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 LIMIT $1 OFFSET $2
 `

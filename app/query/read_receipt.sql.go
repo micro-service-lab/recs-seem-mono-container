@@ -187,10 +187,10 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN $2::text = 'read_at' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN $2::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
+	CASE WHEN $2::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $2::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
@@ -286,10 +286,10 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN $4::text = 'read_at' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN $4::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
+	CASE WHEN $4::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $4::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -387,8 +387,8 @@ SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, 
 LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'read_at' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN $2::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
+	CASE WHEN $2::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 `
 
@@ -442,8 +442,8 @@ SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, 
 LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'read_at' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN $4::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
+	CASE WHEN $4::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -517,10 +517,10 @@ AND
 AND
 	CASE WHEN $5::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN $6::text = 'read_at' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN $6::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
+	CASE WHEN $6::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
@@ -652,14 +652,14 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $8::text = 'name' AND $7::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN $8::text = 'name' AND $7::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN $8::text = 'r_name' AND $7::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN $8::text = 'r_name' AND $7::text = 'prev' THEN m_members.name END ASC,
-	CASE WHEN $8::text = 'read_at' AND $7::text = 'next' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN $8::text = 'read_at' AND $7::text = 'prev' THEN t_read_receipts.read_at END DESC,
-	CASE WHEN $8::text = 'r_read_at' AND $7::text = 'next' THEN t_read_receipts.read_at END DESC,
-	CASE WHEN $8::text = 'r_read_at' AND $7::text = 'prev' THEN t_read_receipts.read_at END ASC,
+	CASE WHEN $8::text = 'name' AND $7::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $8::text = 'name' AND $7::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $8::text = 'r_name' AND $7::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $8::text = 'r_name' AND $7::text = 'prev' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $8::text = 'read_at' AND $7::text = 'next' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN $8::text = 'read_at' AND $7::text = 'prev' THEN t_read_receipts.read_at END DESC NULLS LAST,
+	CASE WHEN $8::text = 'r_read_at' AND $7::text = 'next' THEN t_read_receipts.read_at END DESC NULLS LAST,
+	CASE WHEN $8::text = 'r_read_at' AND $7::text = 'prev' THEN t_read_receipts.read_at END ASC NULLS LAST,
 	CASE WHEN $7::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN $7::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $2
@@ -784,10 +784,10 @@ AND
 AND
 	CASE WHEN $7::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
 ORDER BY
-	CASE WHEN $8::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN $8::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN $8::text = 'read_at' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN $8::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
+	CASE WHEN $8::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $8::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $8::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN $8::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $2 OFFSET $3
 `
@@ -897,8 +897,8 @@ AND
 AND
 	CASE WHEN $3::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
 ORDER BY
-	CASE WHEN $4::text = 'read_at' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN $4::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
+	CASE WHEN $4::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 `
 
@@ -978,10 +978,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $6::text = 'read_at' AND $5::text = 'next' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN $6::text = 'read_at' AND $5::text = 'prev' THEN t_read_receipts.read_at END DESC,
-	CASE WHEN $6::text = 'r_read_at' AND $5::text = 'next' THEN t_read_receipts.read_at END DESC,
-	CASE WHEN $6::text = 'r_read_at' AND $5::text = 'prev' THEN t_read_receipts.read_at END ASC,
+	CASE WHEN $6::text = 'read_at' AND $5::text = 'next' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'read_at' AND $5::text = 'prev' THEN t_read_receipts.read_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_read_at' AND $5::text = 'next' THEN t_read_receipts.read_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_read_at' AND $5::text = 'prev' THEN t_read_receipts.read_at END ASC NULLS LAST,
 	CASE WHEN $5::text = 'next' THEN t_messages_pkey END ASC,
 	CASE WHEN $5::text = 'prev' THEN t_messages_pkey END DESC
 LIMIT $2
@@ -1056,8 +1056,8 @@ AND
 AND
 	CASE WHEN $5::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
 ORDER BY
-	CASE WHEN $6::text = 'read_at' THEN t_read_receipts.read_at END ASC,
-	CASE WHEN $6::text = 'r_read_at' THEN t_read_receipts.read_at END DESC,
+	CASE WHEN $6::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
 	t_messages_pkey ASC
 LIMIT $2 OFFSET $3
 `

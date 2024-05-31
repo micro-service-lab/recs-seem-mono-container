@@ -476,8 +476,8 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
-	CASE WHEN $10::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $10::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN $10::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $10::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 `
 
@@ -564,10 +564,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $12::text = 'name' AND $11::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN $12::text = 'name' AND $11::text = 'prev' THEN m_organizations.name END DESC,
-	CASE WHEN $12::text = 'r_name' AND $11::text = 'next' THEN m_organizations.name END DESC,
-	CASE WHEN $12::text = 'r_name' AND $11::text = 'prev' THEN m_organizations.name END ASC,
+	CASE WHEN $12::text = 'name' AND $11::text = 'next' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $12::text = 'name' AND $11::text = 'prev' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN $12::text = 'r_name' AND $11::text = 'next' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN $12::text = 'r_name' AND $11::text = 'prev' THEN m_organizations.name END ASC NULLS LAST,
 	CASE WHEN $11::text = 'next' THEN m_organizations_pkey END ASC,
 	CASE WHEN $11::text = 'prev' THEN m_organizations_pkey END DESC
 LIMIT $1
@@ -649,8 +649,8 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
-	CASE WHEN $12::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $12::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN $12::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $12::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -736,8 +736,8 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
-	CASE WHEN $10::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $10::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN $10::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $10::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 `
 
@@ -861,8 +861,8 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
-	CASE WHEN $10::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $10::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN $10::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $10::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 `
 
@@ -1009,10 +1009,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $12::text = 'name' AND $11::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN $12::text = 'name' AND $11::text = 'prev' THEN m_organizations.name END DESC,
-	CASE WHEN $12::text = 'r_name' AND $11::text = 'next' THEN m_organizations.name END DESC,
-	CASE WHEN $12::text = 'r_name' AND $11::text = 'prev' THEN m_organizations.name END ASC,
+	CASE WHEN $12::text = 'name' AND $11::text = 'next' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $12::text = 'name' AND $11::text = 'prev' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN $12::text = 'r_name' AND $11::text = 'next' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN $12::text = 'r_name' AND $11::text = 'prev' THEN m_organizations.name END ASC NULLS LAST,
 	CASE WHEN $11::text = 'next' THEN m_organizations_pkey END ASC,
 	CASE WHEN $11::text = 'prev' THEN m_organizations_pkey END DESC
 LIMIT $1
@@ -1154,8 +1154,8 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
-	CASE WHEN $12::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $12::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN $12::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $12::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1305,10 +1305,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $12::text = 'name' AND $11::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN $12::text = 'name' AND $11::text = 'prev' THEN m_organizations.name END DESC,
-	CASE WHEN $12::text = 'r_name' AND $11::text = 'next' THEN m_organizations.name END DESC,
-	CASE WHEN $12::text = 'r_name' AND $11::text = 'prev' THEN m_organizations.name END ASC,
+	CASE WHEN $12::text = 'name' AND $11::text = 'next' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $12::text = 'name' AND $11::text = 'prev' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN $12::text = 'r_name' AND $11::text = 'next' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN $12::text = 'r_name' AND $11::text = 'prev' THEN m_organizations.name END ASC NULLS LAST,
 	CASE WHEN $11::text = 'next' THEN m_organizations_pkey END ASC,
 	CASE WHEN $11::text = 'prev' THEN m_organizations_pkey END DESC
 LIMIT $1
@@ -1440,8 +1440,8 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
-	CASE WHEN $12::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $12::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN $12::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $12::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1561,8 +1561,8 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
-	CASE WHEN $10::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $10::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN $10::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $10::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 `
 
@@ -1672,10 +1672,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $12::text = 'name' AND $11::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN $12::text = 'name' AND $11::text = 'prev' THEN m_organizations.name END DESC,
-	CASE WHEN $12::text = 'r_name' AND $11::text = 'next' THEN m_organizations.name END DESC,
-	CASE WHEN $12::text = 'r_name' AND $11::text = 'prev' THEN m_organizations.name END ASC,
+	CASE WHEN $12::text = 'name' AND $11::text = 'next' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $12::text = 'name' AND $11::text = 'prev' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN $12::text = 'r_name' AND $11::text = 'next' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN $12::text = 'r_name' AND $11::text = 'prev' THEN m_organizations.name END ASC NULLS LAST,
 	CASE WHEN $11::text = 'next' THEN m_organizations_pkey END ASC,
 	CASE WHEN $11::text = 'prev' THEN m_organizations_pkey END DESC
 LIMIT $1
@@ -1780,8 +1780,8 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN EXISTS (SELECT m_grades_pkey, grade_id, key, organization_id FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
-	CASE WHEN $12::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $12::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN $12::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $12::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1869,8 +1869,8 @@ func (q *Queries) GetOrganizationsWithDetailUseNumberedPaginate(ctx context.Cont
 const getPluralOrganizations = `-- name: GetPluralOrganizations :many
 SELECT m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations WHERE organization_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 `
 
@@ -1913,8 +1913,8 @@ func (q *Queries) GetPluralOrganizations(ctx context.Context, arg GetPluralOrgan
 const getPluralOrganizationsUseNumberedPaginate = `-- name: GetPluralOrganizationsUseNumberedPaginate :many
 SELECT m_organizations_pkey, organization_id, name, description, color, is_personal, is_whole, created_at, updated_at, chat_room_id FROM m_organizations WHERE organization_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1975,8 +1975,8 @@ LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 `
 
@@ -2072,8 +2072,8 @@ LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 `
 
@@ -2177,8 +2177,8 @@ LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2288,8 +2288,8 @@ LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2384,8 +2384,8 @@ LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE organization_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 `
 
@@ -2452,8 +2452,8 @@ LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE organization_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2
 `

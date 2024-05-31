@@ -106,8 +106,8 @@ AND
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC;
 
 -- name: GetMembersUseNumberedPaginate :many
@@ -123,8 +123,8 @@ AND
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -156,10 +156,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1;
@@ -167,15 +167,15 @@ LIMIT $1;
 -- name: GetPluralMembers :many
 SELECT * FROM m_members WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC;
 
 -- name: GetPluralMembersUseNumberedPaginate :many
 SELECT * FROM m_members WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -193,8 +193,8 @@ AND
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC;
 
 -- name: GetMembersWithAttendStatusUseNumberedPaginate :many
@@ -211,8 +211,8 @@ AND
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -245,10 +245,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1;
@@ -258,8 +258,8 @@ SELECT m_members.*, m_attend_statuses.name attend_status_name, m_attend_statuses
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC;
 
 -- name: GetPluralMembersWithAttendStatusUseNumberedPaginate :many
@@ -267,8 +267,8 @@ SELECT m_members.*, m_attend_statuses.name attend_status_name, m_attend_statuses
 LEFT JOIN m_attend_statuses ON m_members.attend_status_id = m_attend_statuses.attend_status_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -292,8 +292,8 @@ AND
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC;
 
 -- name: GetMembersWithProfileImageUseNumberedPaginate :many
@@ -315,8 +315,8 @@ AND
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -354,10 +354,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1;
@@ -372,8 +372,8 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC;
 
 -- name: GetPluralMembersWithProfileImageUseNumberedPaginate :many
@@ -386,8 +386,8 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -413,8 +413,8 @@ AND
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC;
 
 -- name: GetMembersWithCrewUseNumberedPaginate :many
@@ -439,8 +439,8 @@ AND
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -481,10 +481,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1;
@@ -502,8 +502,8 @@ LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_organizations grog ON m_groups.organization_id = grog.organization_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC;
 
 -- name: GetPluralMembersWithCrewUseNumberedPaginate :many
@@ -519,8 +519,8 @@ LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 LEFT JOIN m_organizations grog ON m_groups.organization_id = grog.organization_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -540,8 +540,8 @@ AND
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC;
 
 -- name: GetMembersWithPersonalOrganizationUseNumberedPaginate :many
@@ -560,8 +560,8 @@ AND
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -596,10 +596,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1;
@@ -611,8 +611,8 @@ m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id org
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC;
 
 -- name: GetPluralMembersWithPersonalOrganizationUseNumberedPaginate :many
@@ -622,8 +622,8 @@ m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id org
 LEFT JOIN m_organizations ON m_members.personal_organization_id = m_organizations.organization_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -641,8 +641,8 @@ AND
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC;
 
 -- name: GetMembersWithRoleUseNumberedPaginate :many
@@ -659,8 +659,8 @@ AND
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -693,10 +693,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1;
@@ -706,8 +706,8 @@ SELECT m_members.*, m_roles.name role_name, m_roles.description role_description
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC;
 
 -- name: GetPluralMembersWithRoleUseNumberedPaginate :many
@@ -715,8 +715,8 @@ SELECT m_members.*, m_roles.name role_name, m_roles.description role_description
 LEFT JOIN m_roles ON m_members.role_id = m_roles.role_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -735,8 +735,8 @@ AND
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC;
 
 -- name: GetMembersWithDetailUseNumberedPaginate :many
@@ -754,8 +754,8 @@ AND
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -789,10 +789,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_members_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1;
@@ -803,8 +803,8 @@ LEFT JOIN m_students ON m_members.member_id = m_students.member_id
 LEFT JOIN m_professors ON m_members.member_id = m_professors.member_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC;
 
 
@@ -814,8 +814,8 @@ LEFT JOIN m_students ON m_members.member_id = m_students.member_id
 LEFT JOIN m_professors ON m_members.member_id = m_professors.member_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2;
 

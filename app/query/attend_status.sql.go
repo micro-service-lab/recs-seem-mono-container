@@ -116,8 +116,8 @@ SELECT m_attend_statuses_pkey, attend_status_id, name, key FROM m_attend_statuse
 WHERE
 	CASE WHEN $1::boolean = true THEN m_attend_statuses.name LIKE '%' || $2::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN m_attend_statuses.name END ASC,
-	CASE WHEN $3::text = 'r_name' THEN m_attend_statuses.name END DESC,
+	CASE WHEN $3::text = 'name' THEN m_attend_statuses.name END ASC NULLS LAST,
+	CASE WHEN $3::text = 'r_name' THEN m_attend_statuses.name END DESC NULLS LAST,
 	m_attend_statuses_pkey ASC
 `
 
@@ -172,10 +172,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_attend_statuses.name END ASC,
-	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_attend_statuses.name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_attend_statuses.name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_attend_statuses.name END ASC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_attend_statuses.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_attend_statuses.name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_attend_statuses.name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_attend_statuses.name END ASC NULLS LAST,
 	CASE WHEN $4::text = 'next' THEN m_attend_statuses_pkey END ASC,
 	CASE WHEN $4::text = 'prev' THEN m_attend_statuses_pkey END DESC
 LIMIT $1
@@ -229,8 +229,8 @@ SELECT m_attend_statuses_pkey, attend_status_id, name, key FROM m_attend_statuse
 WHERE
 	CASE WHEN $3::boolean = true THEN m_attend_statuses.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN m_attend_statuses.name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN m_attend_statuses.name END DESC,
+	CASE WHEN $5::text = 'name' THEN m_attend_statuses.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' THEN m_attend_statuses.name END DESC NULLS LAST,
 	m_attend_statuses_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -278,8 +278,8 @@ const getPluralAttendStatuses = `-- name: GetPluralAttendStatuses :many
 SELECT m_attend_statuses_pkey, attend_status_id, name, key FROM m_attend_statuses
 WHERE attend_status_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_attend_statuses.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_attend_statuses.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_attend_statuses.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_attend_statuses.name END DESC NULLS LAST,
 	m_attend_statuses_pkey ASC
 `
 
@@ -317,8 +317,8 @@ const getPluralAttendStatusesUseNumberedPaginate = `-- name: GetPluralAttendStat
 SELECT m_attend_statuses_pkey, attend_status_id, name, key FROM m_attend_statuses
 WHERE attend_status_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_attend_statuses.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_attend_statuses.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_attend_statuses.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_attend_statuses.name END DESC NULLS LAST,
 	m_attend_statuses_pkey ASC
 LIMIT $1 OFFSET $2
 `

@@ -147,8 +147,8 @@ LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE
 	role_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_role_associations_pkey ASC
 `
 
@@ -202,8 +202,8 @@ LEFT JOIN m_policies ON m_role_associations.policy_id = m_policies.policy_id
 WHERE
 	role_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_role_associations_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -264,8 +264,8 @@ LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE
 	policy_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_roles.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_role_associations_pkey ASC
 `
 
@@ -314,8 +314,8 @@ LEFT JOIN m_roles ON m_role_associations.role_id = m_roles.role_id
 WHERE
 	policy_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_roles.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_role_associations_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -374,8 +374,8 @@ WHERE role_id = $1
 AND
 	CASE WHEN $2::boolean = true THEN m_policies.name LIKE '%' || $3::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_role_associations_pkey ASC
 `
 
@@ -452,10 +452,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_policies.name END ASC,
-	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_policies.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_policies.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_policies.name END ASC,
+	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_policies.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_policies.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_policies.name END ASC NULLS LAST,
 	CASE WHEN $5::text = 'next' THEN m_role_associations_pkey END ASC,
 	CASE WHEN $5::text = 'prev' THEN m_role_associations_pkey END DESC
 LIMIT $2
@@ -527,8 +527,8 @@ WHERE role_id = $1
 AND
 	CASE WHEN $4::boolean = true THEN m_policies.name LIKE '%' || $5::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN $6::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_role_associations_pkey ASC
 LIMIT $2 OFFSET $3
 `
@@ -594,8 +594,8 @@ WHERE policy_id = $1
 AND
 	CASE WHEN $2::boolean = true THEN m_roles.name LIKE '%' || $3::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_roles.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_role_associations_pkey ASC
 `
 
@@ -667,10 +667,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_roles.name END ASC,
-	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_roles.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_roles.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_roles.name END ASC,
+	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_roles.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_roles.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_roles.name END ASC NULLS LAST,
 	CASE WHEN $5::text = 'next' THEN m_role_associations_pkey END ASC,
 	CASE WHEN $5::text = 'prev' THEN m_role_associations_pkey END DESC
 LIMIT $2
@@ -737,8 +737,8 @@ WHERE policy_id = $1
 AND
 	CASE WHEN $4::boolean = true THEN m_roles.name LIKE '%' || $5::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_roles.name END DESC,
+	CASE WHEN $6::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_role_associations_pkey ASC
 LIMIT $2 OFFSET $3
 `

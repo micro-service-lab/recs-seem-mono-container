@@ -213,8 +213,8 @@ WHERE
 AND
 	CASE WHEN $3::boolean = true THEN permission_category_id = ANY($4::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN $5::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permissions_pkey ASC
 `
 
@@ -281,10 +281,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_permissions.name END ASC,
-	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_permissions.name END DESC,
-	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_permissions.name END DESC,
-	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_permissions.name END ASC,
+	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_permissions.name END DESC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_permissions.name END DESC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_permissions.name END ASC NULLS LAST,
 	CASE WHEN $6::text = 'next' THEN m_permissions_pkey END ASC,
 	CASE WHEN $6::text = 'prev' THEN m_permissions_pkey END DESC
 LIMIT $1
@@ -346,8 +346,8 @@ WHERE
 AND
 	CASE WHEN $5::boolean = true THEN permission_category_id = ANY($6::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $7::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN $7::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN $7::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -405,8 +405,8 @@ WHERE
 AND
 	CASE WHEN $3::boolean = true THEN m_permissions.permission_category_id = ANY($4::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN $5::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permissions_pkey ASC
 `
 
@@ -489,10 +489,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_permissions.name END ASC,
-	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_permissions.name END DESC,
-	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_permissions.name END DESC,
-	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_permissions.name END ASC,
+	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_permissions.name END DESC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_permissions.name END DESC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_permissions.name END ASC NULLS LAST,
 	CASE WHEN $6::text = 'next' THEN m_permissions_pkey END ASC,
 	CASE WHEN $6::text = 'prev' THEN m_permissions_pkey END DESC
 LIMIT $1
@@ -570,8 +570,8 @@ WHERE
 AND
 	CASE WHEN $5::boolean = true THEN m_permissions.permission_category_id = ANY($6::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $7::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN $7::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN $7::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -639,8 +639,8 @@ func (q *Queries) GetPermissionsWithCategoryUseNumberedPaginate(ctx context.Cont
 const getPluralPermissions = `-- name: GetPluralPermissions :many
 SELECT m_permissions_pkey, permission_id, name, description, key, permission_category_id FROM m_permissions WHERE permission_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permissions_pkey ASC
 `
 
@@ -679,8 +679,8 @@ func (q *Queries) GetPluralPermissions(ctx context.Context, arg GetPluralPermiss
 const getPluralPermissionsUseNumberedPaginate = `-- name: GetPluralPermissionsUseNumberedPaginate :many
 SELECT m_permissions_pkey, permission_id, name, description, key, permission_category_id FROM m_permissions WHERE permission_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -729,8 +729,8 @@ SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissi
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE permission_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permissions_pkey ASC
 `
 
@@ -786,8 +786,8 @@ SELECT m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissi
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE permission_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2
 `

@@ -203,10 +203,10 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN exited_at <= $10 ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN $11::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN $11::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN $11::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN $11::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $11::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
 `
 
@@ -294,14 +294,14 @@ AND
 		END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'old_enter' AND $12::text = 'next' THEN entered_at END ASC,
-	CASE WHEN $13::text = 'old_enter' AND $12::text = 'prev' THEN entered_at END DESC,
-	CASE WHEN $13::text = 'late_enter' AND $12::text = 'next' THEN entered_at END DESC,
-	CASE WHEN $13::text = 'late_enter' AND $12::text = 'prev' THEN entered_at END ASC,
-	CASE WHEN $13::text = 'old_exit' AND $12::text = 'next' THEN exited_at END ASC,
-	CASE WHEN $13::text = 'old_exit' AND $12::text = 'prev' THEN exited_at END DESC,
-	CASE WHEN $13::text = 'late_exit' AND $12::text = 'next' THEN exited_at END DESC,
-	CASE WHEN $13::text = 'late_exit' AND $12::text = 'prev' THEN exited_at END ASC,
+	CASE WHEN $13::text = 'old_enter' AND $12::text = 'next' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'old_enter' AND $12::text = 'prev' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'late_enter' AND $12::text = 'next' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'late_enter' AND $12::text = 'prev' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'old_exit' AND $12::text = 'next' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'old_exit' AND $12::text = 'prev' THEN exited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'late_exit' AND $12::text = 'next' THEN exited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'late_exit' AND $12::text = 'prev' THEN exited_at END ASC NULLS LAST,
 	CASE WHEN $12::text = 'next' THEN t_lab_io_histories_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN t_lab_io_histories_pkey END DESC
 LIMIT $1
@@ -382,10 +382,10 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN exited_at <= $12 ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN $13::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN $13::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN $13::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN $13::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -460,10 +460,10 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN exited_at <= $10 ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN $11::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN $11::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN $11::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN $11::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $11::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
 `
 
@@ -573,14 +573,14 @@ AND
 		END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'old_enter' AND $12::text = 'next' THEN entered_at END ASC,
-	CASE WHEN $13::text = 'old_enter' AND $12::text = 'prev' THEN entered_at END DESC,
-	CASE WHEN $13::text = 'late_enter' AND $12::text = 'next' THEN entered_at END DESC,
-	CASE WHEN $13::text = 'late_enter' AND $12::text = 'prev' THEN entered_at END ASC,
-	CASE WHEN $13::text = 'old_exit' AND $12::text = 'next' THEN exited_at END ASC,
-	CASE WHEN $13::text = 'old_exit' AND $12::text = 'prev' THEN exited_at END DESC,
-	CASE WHEN $13::text = 'late_exit' AND $12::text = 'next' THEN exited_at END DESC,
-	CASE WHEN $13::text = 'late_exit' AND $12::text = 'prev' THEN exited_at END ASC,
+	CASE WHEN $13::text = 'old_enter' AND $12::text = 'next' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'old_enter' AND $12::text = 'prev' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'late_enter' AND $12::text = 'next' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'late_enter' AND $12::text = 'prev' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'old_exit' AND $12::text = 'next' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'old_exit' AND $12::text = 'prev' THEN exited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'late_exit' AND $12::text = 'next' THEN exited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'late_exit' AND $12::text = 'prev' THEN exited_at END ASC NULLS LAST,
 	CASE WHEN $12::text = 'next' THEN t_lab_io_histories_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN t_lab_io_histories_pkey END DESC
 LIMIT $1
@@ -683,10 +683,10 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN exited_at <= $12 ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN $13::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN $13::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN $13::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN $13::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -771,10 +771,10 @@ func (q *Queries) GetLabIOHistoriesWithMemberUseNumberedPaginate(ctx context.Con
 const getPluralLabIOHistories = `-- name: GetPluralLabIOHistories :many
 SELECT t_lab_io_histories_pkey, lab_io_history_id, member_id, entered_at, exited_at FROM t_lab_io_histories WHERE lab_io_history_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN $2::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN $2::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN $2::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN $2::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $2::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
 `
 
@@ -812,10 +812,10 @@ func (q *Queries) GetPluralLabIOHistories(ctx context.Context, arg GetPluralLabI
 const getPluralLabIOHistoriesUseNumberedPaginate = `-- name: GetPluralLabIOHistoriesUseNumberedPaginate :many
 SELECT t_lab_io_histories_pkey, lab_io_history_id, member_id, entered_at, exited_at FROM t_lab_io_histories WHERE lab_io_history_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN $4::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN $4::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN $4::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN $4::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -863,10 +863,10 @@ SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_his
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE lab_io_history_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN $2::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN $2::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN $2::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN $2::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $2::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
 `
 
@@ -927,10 +927,10 @@ SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_his
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE lab_io_history_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN $4::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN $4::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN $4::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN $4::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `

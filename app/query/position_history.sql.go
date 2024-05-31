@@ -156,8 +156,8 @@ func (q *Queries) FindPositionHistoryByIDWithMember(ctx context.Context, positio
 const getPluralPositionHistories = `-- name: GetPluralPositionHistories :many
 SELECT t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, sent_at FROM t_position_histories WHERE position_history_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'old_send' THEN sent_at END ASC,
-	CASE WHEN $2::text = 'late_send' THEN sent_at END DESC,
+	CASE WHEN $2::text = 'old_send' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'late_send' THEN sent_at END DESC NULLS LAST,
 	t_position_histories_pkey ASC
 `
 
@@ -196,8 +196,8 @@ func (q *Queries) GetPluralPositionHistories(ctx context.Context, arg GetPluralP
 const getPluralPositionHistoriesUseNumberedPaginate = `-- name: GetPluralPositionHistoriesUseNumberedPaginate :many
 SELECT t_position_histories_pkey, position_history_id, member_id, x_pos, y_pos, sent_at FROM t_position_histories WHERE position_history_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'old_send' THEN sent_at END ASC,
-	CASE WHEN $4::text = 'late_send' THEN sent_at END DESC,
+	CASE WHEN $4::text = 'old_send' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_send' THEN sent_at END DESC NULLS LAST,
 	t_position_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -246,8 +246,8 @@ SELECT t_position_histories.t_position_histories_pkey, t_position_histories.posi
 LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE position_history_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'old_send' THEN sent_at END ASC,
-	CASE WHEN $2::text = 'late_send' THEN sent_at END DESC,
+	CASE WHEN $2::text = 'old_send' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'late_send' THEN sent_at END DESC NULLS LAST,
 	t_position_histories_pkey ASC
 `
 
@@ -309,8 +309,8 @@ SELECT t_position_histories.t_position_histories_pkey, t_position_histories.posi
 LEFT JOIN m_members ON t_position_histories.member_id = m_members.member_id
 WHERE position_history_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'old_send' THEN sent_at END ASC,
-	CASE WHEN $4::text = 'late_send' THEN sent_at END DESC,
+	CASE WHEN $4::text = 'old_send' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_send' THEN sent_at END DESC NULLS LAST,
 	t_position_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -384,8 +384,8 @@ AND
 AND
 	CASE WHEN $5::boolean = true THEN sent_at <= $6 ELSE TRUE END
 ORDER BY
-	CASE WHEN $7::text = 'old_send' THEN sent_at END ASC,
-	CASE WHEN $7::text = 'late_send' THEN sent_at END DESC,
+	CASE WHEN $7::text = 'old_send' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN $7::text = 'late_send' THEN sent_at END DESC NULLS LAST,
 	t_position_histories_pkey ASC
 `
 
@@ -458,10 +458,10 @@ AND
 		END
 	END
 ORDER BY
-	CASE WHEN $9::text = 'old_send' AND $8::text = 'next' THEN sent_at END ASC,
-	CASE WHEN $9::text = 'old_send' AND $8::text = 'prev' THEN sent_at END DESC,
-	CASE WHEN $9::text = 'late_send' AND $8::text = 'next' THEN sent_at END DESC,
-	CASE WHEN $9::text = 'late_send' AND $8::text = 'prev' THEN sent_at END ASC,
+	CASE WHEN $9::text = 'old_send' AND $8::text = 'next' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN $9::text = 'old_send' AND $8::text = 'prev' THEN sent_at END DESC NULLS LAST,
+	CASE WHEN $9::text = 'late_send' AND $8::text = 'next' THEN sent_at END DESC NULLS LAST,
+	CASE WHEN $9::text = 'late_send' AND $8::text = 'prev' THEN sent_at END ASC NULLS LAST,
 	CASE WHEN $8::text = 'next' THEN t_position_histories_pkey END ASC,
 	CASE WHEN $8::text = 'prev' THEN t_position_histories_pkey END DESC
 LIMIT $1
@@ -529,8 +529,8 @@ AND
 AND
 	CASE WHEN $7::boolean = true THEN sent_at <= $8 ELSE TRUE END
 ORDER BY
-	CASE WHEN $9::text = 'old_send' THEN sent_at END ASC,
-	CASE WHEN $9::text = 'late_send' THEN sent_at END DESC,
+	CASE WHEN $9::text = 'old_send' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN $9::text = 'late_send' THEN sent_at END DESC NULLS LAST,
 	t_position_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -594,8 +594,8 @@ AND
 AND
 	CASE WHEN $5::boolean = true THEN sent_at <= $6 ELSE TRUE END
 ORDER BY
-	CASE WHEN $7::text = 'old_send' THEN sent_at END ASC,
-	CASE WHEN $7::text = 'late_send' THEN sent_at END DESC,
+	CASE WHEN $7::text = 'old_send' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN $7::text = 'late_send' THEN sent_at END DESC NULLS LAST,
 	t_position_histories_pkey ASC
 `
 
@@ -690,10 +690,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $9::text = 'old_send' AND $8::text = 'next' THEN sent_at END ASC,
-	CASE WHEN $9::text = 'old_send' AND $8::text = 'prev' THEN sent_at END DESC,
-	CASE WHEN $9::text = 'late_send' AND $8::text = 'next' THEN sent_at END DESC,
-	CASE WHEN $9::text = 'late_send' AND $8::text = 'prev' THEN sent_at END ASC,
+	CASE WHEN $9::text = 'old_send' AND $8::text = 'next' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN $9::text = 'old_send' AND $8::text = 'prev' THEN sent_at END DESC NULLS LAST,
+	CASE WHEN $9::text = 'late_send' AND $8::text = 'next' THEN sent_at END DESC NULLS LAST,
+	CASE WHEN $9::text = 'late_send' AND $8::text = 'prev' THEN sent_at END ASC NULLS LAST,
 	CASE WHEN $8::text = 'next' THEN t_position_histories_pkey END ASC,
 	CASE WHEN $8::text = 'prev' THEN t_position_histories_pkey END DESC
 LIMIT $1
@@ -783,8 +783,8 @@ AND
 AND
 	CASE WHEN $7::boolean = true THEN sent_at <= $8 ELSE TRUE END
 ORDER BY
-	CASE WHEN $9::text = 'old_send' THEN sent_at END ASC,
-	CASE WHEN $9::text = 'late_send' THEN sent_at END DESC,
+	CASE WHEN $9::text = 'old_send' THEN sent_at END ASC NULLS LAST,
+	CASE WHEN $9::text = 'late_send' THEN sent_at END DESC NULLS LAST,
 	t_position_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `

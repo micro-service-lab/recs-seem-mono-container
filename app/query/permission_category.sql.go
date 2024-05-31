@@ -121,8 +121,8 @@ SELECT m_permission_categories_pkey, permission_category_id, name, description, 
 WHERE
 	CASE WHEN $1::boolean = true THEN m_permission_categories.name LIKE '%' || $2::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN m_permission_categories.name END ASC,
-	CASE WHEN $3::text = 'r_name' THEN m_permission_categories.name END DESC,
+	CASE WHEN $3::text = 'name' THEN m_permission_categories.name END ASC NULLS LAST,
+	CASE WHEN $3::text = 'r_name' THEN m_permission_categories.name END DESC NULLS LAST,
 	m_permission_categories_pkey ASC
 `
 
@@ -178,10 +178,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_permission_categories.name END ASC,
-	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_permission_categories.name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_permission_categories.name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_permission_categories.name END ASC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_permission_categories.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_permission_categories.name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_permission_categories.name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_permission_categories.name END ASC NULLS LAST,
 	CASE WHEN $4::text = 'next' THEN m_permission_categories_pkey END ASC,
 	CASE WHEN $4::text = 'prev' THEN m_permission_categories_pkey END DESC
 LIMIT $1
@@ -236,8 +236,8 @@ SELECT m_permission_categories_pkey, permission_category_id, name, description, 
 WHERE
 	CASE WHEN $3::boolean = true THEN m_permission_categories.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN m_permission_categories.name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN m_permission_categories.name END DESC,
+	CASE WHEN $5::text = 'name' THEN m_permission_categories.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' THEN m_permission_categories.name END DESC NULLS LAST,
 	m_permission_categories_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -286,8 +286,8 @@ const getPluralPermissionCategories = `-- name: GetPluralPermissionCategories :m
 SELECT m_permission_categories_pkey, permission_category_id, name, description, key FROM m_permission_categories
 WHERE permission_category_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_permission_categories.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_permission_categories.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_permission_categories.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_permission_categories.name END DESC NULLS LAST,
 	m_permission_categories_pkey ASC
 `
 
@@ -326,8 +326,8 @@ const getPluralPermissionCategoriesUseNumberedPaginate = `-- name: GetPluralPerm
 SELECT m_permission_categories_pkey, permission_category_id, name, description, key FROM m_permission_categories
 WHERE permission_category_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_permission_categories.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_permission_categories.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_permission_categories.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_permission_categories.name END DESC NULLS LAST,
 	m_permission_categories_pkey ASC
 LIMIT $1 OFFSET $2
 `

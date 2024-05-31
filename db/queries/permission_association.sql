@@ -32,8 +32,8 @@ WHERE permission_id = $1
 AND
 	CASE WHEN @where_like_name::boolean = true THEN m_work_positions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC;
 
 -- name: GetWorkPositionsOnPermissionUseNumberedPaginate :many
@@ -43,8 +43,8 @@ WHERE permission_id = $1
 AND
 	CASE WHEN @where_like_name::boolean = true THEN m_work_positions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
 LIMIT $2 OFFSET $3;
 
@@ -70,10 +70,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_work_positions.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_work_positions.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_work_positions.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_work_positions.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_work_positions.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_work_positions.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_work_positions.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_permission_associations_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_permission_associations_pkey END DESC
 LIMIT $2;
@@ -83,8 +83,8 @@ SELECT sqlc.embed(m_permission_associations), sqlc.embed(m_work_positions) FROM 
 LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
 WHERE permission_id = ANY(@permission_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC;
 
 -- name: GetPluralWorkPositionsOnPermissionUseNumberedPaginate :many
@@ -92,8 +92,8 @@ SELECT sqlc.embed(m_permission_associations), sqlc.embed(m_work_positions) FROM 
 LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
 WHERE permission_id = ANY(@permission_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -111,8 +111,8 @@ WHERE work_position_id = $1
 AND
 	CASE WHEN @where_like_name::boolean = true THEN m_permissions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC;
 
 -- name: GetPermissionsOnWorkPositionUseNumberedPaginate :many
@@ -122,8 +122,8 @@ WHERE work_position_id = $1
 AND
 	CASE WHEN @where_like_name::boolean = true THEN m_permissions.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
 LIMIT $2 OFFSET $3;
 
@@ -149,10 +149,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_permissions.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_permissions.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_permissions.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_permissions.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_permissions.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_permissions.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_permissions.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_permission_associations_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_permission_associations_pkey END DESC
 LIMIT $2;
@@ -162,8 +162,8 @@ SELECT sqlc.embed(m_permission_associations), sqlc.embed(m_permissions) FROM m_p
 LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
 WHERE work_position_id = ANY(@work_position_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC;
 
 -- name: GetPluralPermissionsOnWorkPositionUseNumberedPaginate :many
@@ -171,8 +171,8 @@ SELECT sqlc.embed(m_permission_associations), sqlc.embed(m_permissions) FROM m_p
 LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
 WHERE work_position_id = ANY(@work_position_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
 LIMIT $1 OFFSET $2;
 

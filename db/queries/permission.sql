@@ -42,8 +42,8 @@ WHERE
 AND
 	CASE WHEN @where_in_category::boolean = true THEN permission_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permissions_pkey ASC;
 
 -- name: GetPermissionsUseNumberedPaginate :many
@@ -53,8 +53,8 @@ WHERE
 AND
 	CASE WHEN @where_in_category::boolean = true THEN permission_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -80,10 +80,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_permissions.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_permissions.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_permissions.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_permissions.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_permissions.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_permissions.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_permissions.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_permissions_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_permissions_pkey END DESC
 LIMIT $1;
@@ -91,15 +91,15 @@ LIMIT $1;
 -- name: GetPluralPermissions :many
 SELECT * FROM m_permissions WHERE permission_id = ANY(@permission_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permissions_pkey ASC;
 
 -- name: GetPluralPermissionsUseNumberedPaginate :many
 SELECT * FROM m_permissions WHERE permission_id = ANY(@permission_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -111,8 +111,8 @@ WHERE
 AND
 	CASE WHEN @where_in_category::boolean = true THEN m_permissions.permission_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permissions_pkey ASC;
 
 -- name: GetPermissionsWithCategoryUseNumberedPaginate :many
@@ -123,8 +123,8 @@ WHERE
 AND
 	CASE WHEN @where_in_category::boolean = true THEN m_permissions.permission_category_id = ANY(@in_categories::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -151,10 +151,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_permissions.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_permissions.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_permissions.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_permissions.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_permissions.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_permissions.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_permissions.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_permissions_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_permissions_pkey END DESC
 LIMIT $1;
@@ -164,8 +164,8 @@ SELECT m_permissions.*,  m_permission_categories.name permission_category_name, 
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE permission_id = ANY(@permission_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permissions_pkey ASC;
 
 -- name: GetPluralPermissionsWithCategoryUseNumberedPaginate :many
@@ -173,8 +173,8 @@ SELECT m_permissions.*,  m_permission_categories.name permission_category_name, 
 JOIN m_permission_categories ON m_permissions.permission_category_id = m_permission_categories.permission_category_id
 WHERE permission_id = ANY(@permission_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permissions_pkey ASC
 LIMIT $1 OFFSET $2;
 

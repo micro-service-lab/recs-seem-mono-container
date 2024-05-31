@@ -209,8 +209,8 @@ func (q *Queries) FindPolicyByKeyWithCategory(ctx context.Context, key string) (
 const getPluralPolicies = `-- name: GetPluralPolicies :many
 SELECT m_policies_pkey, policy_id, name, description, key, policy_category_id FROM m_policies WHERE policy_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_policies_pkey ASC
 `
 
@@ -249,8 +249,8 @@ func (q *Queries) GetPluralPolicies(ctx context.Context, arg GetPluralPoliciesPa
 const getPluralPoliciesUseNumberedPaginate = `-- name: GetPluralPoliciesUseNumberedPaginate :many
 SELECT m_policies_pkey, policy_id, name, description, key, policy_category_id FROM m_policies WHERE policy_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_policies_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -299,8 +299,8 @@ SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_poli
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE policy_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_policies_pkey ASC
 `
 
@@ -356,8 +356,8 @@ SELECT m_policies.m_policies_pkey, m_policies.policy_id, m_policies.name, m_poli
 JOIN m_policy_categories ON m_policies.policy_category_id = m_policy_categories.policy_category_id
 WHERE policy_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_policies_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -423,8 +423,8 @@ WHERE
 AND
 	CASE WHEN $3::boolean = true THEN policy_category_id = ANY($4::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN $5::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_policies_pkey ASC
 `
 
@@ -491,10 +491,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_policies.name END ASC,
-	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_policies.name END DESC,
-	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_policies.name END DESC,
-	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_policies.name END ASC,
+	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_policies.name END DESC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_policies.name END DESC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_policies.name END ASC NULLS LAST,
 	CASE WHEN $6::text = 'next' THEN m_policies_pkey END ASC,
 	CASE WHEN $6::text = 'prev' THEN m_policies_pkey END DESC
 LIMIT $1
@@ -556,8 +556,8 @@ WHERE
 AND
 	CASE WHEN $5::boolean = true THEN policy_category_id = ANY($6::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $7::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN $7::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN $7::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_policies_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -615,8 +615,8 @@ WHERE
 AND
 	CASE WHEN $3::boolean = true THEN m_policies.policy_category_id = ANY($4::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN $5::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_policies_pkey ASC
 `
 
@@ -699,10 +699,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_policies.name END ASC,
-	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_policies.name END DESC,
-	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_policies.name END DESC,
-	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_policies.name END ASC,
+	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_policies.name END DESC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_policies.name END DESC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_policies.name END ASC NULLS LAST,
 	CASE WHEN $6::text = 'next' THEN m_policies_pkey END ASC,
 	CASE WHEN $6::text = 'prev' THEN m_policies_pkey END DESC
 LIMIT $1
@@ -780,8 +780,8 @@ WHERE
 AND
 	CASE WHEN $5::boolean = true THEN  m_policies.policy_category_id = ANY($6::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $7::text = 'name' THEN m_policies.name END ASC,
-	CASE WHEN $7::text = 'r_name' THEN m_policies.name END DESC,
+	CASE WHEN $7::text = 'name' THEN m_policies.name END ASC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' THEN m_policies.name END DESC NULLS LAST,
 	m_policies_pkey ASC
 LIMIT $1 OFFSET $2
 `

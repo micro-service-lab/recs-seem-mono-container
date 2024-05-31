@@ -33,10 +33,10 @@ AND CASE
 	WHEN @where_like_name::boolean = true THEN m_members.name LIKE '%' || @search_name::text || '%'
 END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC;
 
 -- name: GetMembersOnChatRoomUseNumberedPaginate :many
@@ -53,10 +53,10 @@ AND CASE
 	WHEN @where_like_name::boolean = true THEN m_members.name LIKE '%' || @search_name::text || '%'
 END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 LIMIT $2 OFFSET $3;
 
@@ -92,14 +92,14 @@ AND CASE @cursor_direction::text
 		END
 END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'next' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'prev' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'next' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'prev' THEN m_chat_room_belongings.added_at END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'next' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'prev' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'next' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'prev' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_chat_room_belongings_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_chat_room_belongings_pkey END DESC
 LIMIT $2;
@@ -115,10 +115,10 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC;
 
 -- name: GetPluralMembersOnChatRoomUseNumberedPaginate :many
@@ -132,10 +132,10 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC,
-	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -152,33 +152,32 @@ m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
-t_messages.message_id, t_messages.posted_at chat_room_latest_message_posted_at, t_messages.body chat_room_latest_message_body
+latest_message.message_id chat_room_latest_message_id, latest_message.posted_at chat_room_latest_message_posted_at, latest_message.body chat_room_latest_message_body
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN t_messages ON m_chat_room_belongings.chat_room_id = t_messages.chat_room_id
-AND (
-	SELECT message_id FROM t_messages m
-	WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id
-	ORDER BY m.posted_at DESC
-	LIMIT 1
-) = t_messages.message_id
+LEFT JOIN (
+    SELECT sub.* FROM (
+        SELECT
+            cra.chat_room_id AS chat_room_id, msg.*, ROW_NUMBER() OVER (PARTITION BY cra.chat_room_id ORDER BY msg.posted_at DESC, msg.t_messages_pkey DESC) AS rn
+        FROM t_messages msg
+        INNER JOIN t_chat_room_actions cra ON msg.chat_room_action_id = cra.chat_room_action_id
+    ) sub
+    WHERE sub.rn = 1
+) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
 WHERE member_id = $1
 AND CASE
 	WHEN @where_like_name::boolean = true THEN m_chat_rooms.name LIKE '%' || @search_name::text || '%'
 END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_chat_rooms.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_chat_rooms.name END DESC,
-	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN @order_method::text = 'old_chat' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
-	END ASC,
-	CASE WHEN @order_method::text = 'late_chat' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
-	END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_chat_rooms.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_chat_rooms.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_chat' THEN latest_message.posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_chat' THEN latest_message.posted_at END DESC NULLS LAST,
+	latest_message.posted_at DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC;
 
 -- name: GetChatRoomsOnMemberUseNumberedPaginate :many
@@ -188,33 +187,32 @@ m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
-t_messages.message_id, t_messages.posted_at chat_room_latest_message_posted_at, t_messages.body chat_room_latest_message_body
+latest_message.message_id chat_room_latest_message_id, latest_message.posted_at chat_room_latest_message_posted_at, latest_message.body chat_room_latest_message_body
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN t_messages ON m_chat_room_belongings.chat_room_id = t_messages.chat_room_id
-AND (
-	SELECT message_id FROM t_messages m
-	WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id
-	ORDER BY m.posted_at DESC
-	LIMIT 1
-) = t_messages.message_id
+LEFT JOIN (
+    SELECT sub.* FROM (
+        SELECT
+            cra.chat_room_id AS chat_room_id, msg.*, ROW_NUMBER() OVER (PARTITION BY cra.chat_room_id ORDER BY msg.posted_at DESC, msg.t_messages_pkey DESC) AS rn
+        FROM t_messages msg
+        INNER JOIN t_chat_room_actions cra ON msg.chat_room_action_id = cra.chat_room_action_id
+    ) sub
+    WHERE sub.rn = 1
+) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
 WHERE member_id = $1
 AND CASE
 	WHEN @where_like_name::boolean = true THEN m_chat_rooms.name LIKE '%' || @search_name::text || '%'
 END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_chat_rooms.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_chat_rooms.name END DESC,
-	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN @order_method::text = 'old_chat' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
-	END ASC,
-	CASE WHEN @order_method::text = 'late_chat' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
-	END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_chat_rooms.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_chat_rooms.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_chat' THEN latest_message.posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_chat' THEN latest_message.posted_at END DESC NULLS LAST,
+	latest_message.posted_at DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 LIMIT $2 OFFSET $3;
 
@@ -225,18 +223,20 @@ m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
-t_messages.message_id, t_messages.posted_at chat_room_latest_message_posted_at, t_messages.body chat_room_latest_message_body
+latest_message.message_id chat_room_latest_message_id, latest_message.posted_at chat_room_latest_message_posted_at, latest_message.body chat_room_latest_message_body
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN t_messages ON m_chat_room_belongings.chat_room_id = t_messages.chat_room_id
-AND (
-	SELECT message_id FROM t_messages m
-	WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id
-	ORDER BY m.posted_at DESC
-	LIMIT 1
-) = t_messages.message_id
+LEFT JOIN (
+    SELECT sub.* FROM (
+        SELECT
+            cra.chat_room_id AS chat_room_id, msg.*, ROW_NUMBER() OVER (PARTITION BY cra.chat_room_id ORDER BY msg.posted_at DESC, msg.t_messages_pkey DESC) AS rn
+        FROM t_messages msg
+        INNER JOIN t_chat_room_actions cra ON msg.chat_room_action_id = cra.chat_room_action_id
+    ) sub
+    WHERE sub.rn = 1
+) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
 WHERE member_id = $1
 AND CASE
 	WHEN @where_like_name::boolean = true THEN m_chat_rooms.name LIKE '%' || @search_name::text || '%'
@@ -248,12 +248,8 @@ AND CASE @cursor_direction::text
 			WHEN 'r_name' THEN m_chat_rooms.name < @name_cursor OR (m_chat_rooms.name = @name_cursor AND m_chat_room_belongings_pkey > @cursor::int)
 			WHEN 'old_add' THEN m_chat_room_belongings.added_at > @add_cursor OR (m_chat_room_belongings.added_at = @add_cursor AND m_chat_room_belongings_pkey > @cursor::int)
 			WHEN 'late_add' THEN m_chat_room_belongings.added_at < @add_cursor OR (m_chat_room_belongings.added_at = @add_cursor AND m_chat_room_belongings_pkey > @cursor::int)
-			WHEN 'old_chat' THEN
-				(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) > @chat_cursor
-				OR ((SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = @chat_cursor AND m_chat_room_belongings_pkey > @cursor::int)
-			WHEN 'late_chat' THEN
-				(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) < @chat_cursor
-				OR ((SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = @chat_cursor AND m_chat_room_belongings_pkey > @cursor::int)
+			WHEN 'old_chat' THEN latest_message.posted_at > @chat_cursor::timestamptz OR (latest_message.posted_at = @chat_cursor::timestamptz AND m_chat_room_belongings_pkey > @cursor::int)
+			WHEN 'late_chat' THEN latest_message.posted_at < @chat_cursor::timestamptz OR (latest_message.posted_at = @chat_cursor::timestamptz AND m_chat_room_belongings_pkey > @cursor::int)
 			ELSE m_chat_room_belongings_pkey > @cursor::int
 		END
 	WHEN 'prev' THEN
@@ -262,32 +258,24 @@ AND CASE @cursor_direction::text
 			WHEN 'r_name' THEN m_chat_rooms.name > @name_cursor OR (m_chat_rooms.name = @name_cursor AND m_chat_room_belongings_pkey < @cursor::int)
 			WHEN 'old_add' THEN m_chat_room_belongings.added_at < @add_cursor OR (m_chat_room_belongings.added_at = @add_cursor AND m_chat_room_belongings_pkey < @cursor::int)
 			WHEN 'late_add' THEN m_chat_room_belongings.added_at > @add_cursor OR (m_chat_room_belongings.added_at = @add_cursor AND m_chat_room_belongings_pkey < @cursor::int)
-			WHEN 'old_chat' THEN
-				(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) < @chat_cursor
-				OR ((SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = @chat_cursor AND m_chat_room_belongings_pkey < @cursor::int)
-			WHEN 'late_chat' THEN
-				(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) > @chat_cursor
-				OR ((SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) = @chat_cursor AND m_chat_room_belongings_pkey < @cursor::int)
+			WHEN 'old_chat' THEN latest_message.posted_at < @chat_cursor::timestamptz OR (latest_message.posted_at = @chat_cursor::timestamptz AND m_chat_room_belongings_pkey < @cursor::int)
+			WHEN 'late_chat' THEN latest_message.posted_at > @chat_cursor::timestamptz OR (latest_message.posted_at = @chat_cursor::timestamptz AND m_chat_room_belongings_pkey < @cursor::int)
 			ELSE m_chat_room_belongings_pkey < @cursor::int
 		END
 END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_chat_rooms.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_chat_rooms.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_chat_rooms.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_chat_rooms.name END ASC,
-	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'next' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'prev' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'next' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'prev' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN @order_method::text = 'old_chat' AND @cursor_direction::text = 'next' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END ASC,
-	CASE WHEN @order_method::text = 'old_chat' AND @cursor_direction::text = 'prev' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END DESC,
-	CASE WHEN @order_method::text = 'late_chat' AND @cursor_direction::text = 'next' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END DESC,
-	CASE WHEN @order_method::text = 'late_chat' AND @cursor_direction::text = 'prev' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id) END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_chat_rooms.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_chat_rooms.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_chat_rooms.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_chat_rooms.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'next' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' AND @cursor_direction::text = 'prev' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'next' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' AND @cursor_direction::text = 'prev' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_chat' AND @cursor_direction::text = 'next' THEN latest_message.posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_chat' AND @cursor_direction::text = 'prev' THEN latest_message.posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_chat' AND @cursor_direction::text = 'next' THEN latest_message.posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_chat' AND @cursor_direction::text = 'prev' THEN latest_message.posted_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_chat_room_belongings_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_chat_room_belongings_pkey END DESC
 LIMIT $2;
@@ -299,30 +287,28 @@ m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
-t_messages.message_id, t_messages.posted_at chat_room_latest_message_posted_at, t_messages.body chat_room_latest_message_body
+latest_message.message_id chat_room_latest_message_id, latest_message.posted_at chat_room_latest_message_posted_at, latest_message.body chat_room_latest_message_body
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN t_messages ON m_chat_room_belongings.chat_room_id = t_messages.chat_room_id
-AND (
-	SELECT message_id FROM t_messages m
-	WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id
-	ORDER BY m.posted_at DESC
-	LIMIT 1
-) = t_messages.message_id
+LEFT JOIN (
+    SELECT sub.* FROM (
+        SELECT
+            cra.chat_room_id AS chat_room_id, msg.*, ROW_NUMBER() OVER (PARTITION BY cra.chat_room_id ORDER BY msg.posted_at DESC, msg.t_messages_pkey DESC) AS rn
+        FROM t_messages msg
+        INNER JOIN t_chat_room_actions cra ON msg.chat_room_action_id = cra.chat_room_action_id
+    ) sub
+    WHERE sub.rn = 1
+) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_chat_rooms.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_chat_rooms.name END DESC,
-	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN @order_method::text = 'old_chat' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
-	END ASC,
-	CASE WHEN @order_method::text = 'late_chat' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
-	END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_chat_rooms.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_chat_rooms.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_chat' THEN latest_message.posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_chat' THEN latest_message.posted_at END DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC;
 
 -- name: GetPluralChatRoomsOnMemberUseNumberedPaginate :many
@@ -332,30 +318,28 @@ m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
-t_messages.message_id, t_messages.posted_at chat_room_latest_message_posted_at, t_messages.body chat_room_latest_message_body
+latest_message.message_id chat_room_latest_message_id, latest_message.posted_at chat_room_latest_message_posted_at, latest_message.body chat_room_latest_message_body
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
-LEFT JOIN t_messages ON m_chat_room_belongings.chat_room_id = t_messages.chat_room_id
-AND (
-	SELECT message_id FROM t_messages m
-	WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id
-	ORDER BY m.posted_at DESC
-	LIMIT 1
-) = t_messages.message_id
+LEFT JOIN (
+    SELECT sub.* FROM (
+        SELECT
+            cra.chat_room_id AS chat_room_id, msg.*, ROW_NUMBER() OVER (PARTITION BY cra.chat_room_id ORDER BY msg.posted_at DESC, msg.t_messages_pkey DESC) AS rn
+        FROM t_messages msg
+        INNER JOIN t_chat_room_actions cra ON msg.chat_room_action_id = cra.chat_room_action_id
+    ) sub
+    WHERE sub.rn = 1
+) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
 WHERE member_id = ANY(@member_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_chat_rooms.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_chat_rooms.name END DESC,
-	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC,
-	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC,
-	CASE WHEN @order_method::text = 'old_chat' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
-	END ASC,
-	CASE WHEN @order_method::text = 'late_chat' THEN
-		(SELECT MAX(m.posted_at) FROM t_messages m WHERE m.chat_room_id = m_chat_room_belongings.chat_room_id)
-	END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_chat_rooms.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_chat_rooms.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_chat' THEN latest_message.posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_chat' THEN latest_message.posted_at END DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 LIMIT $1 OFFSET $2;
 

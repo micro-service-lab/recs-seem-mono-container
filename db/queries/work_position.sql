@@ -23,8 +23,8 @@ WHERE
 AND
 	CASE WHEN @where_in_organization_id::boolean = true THEN m_work_positions.organization_id = ANY(@organization_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_work_positions_pkey ASC;
 
 -- name: GetWorkPositionsUseNumberedPaginate :many
@@ -34,8 +34,8 @@ WHERE
 AND
 	CASE WHEN @where_in_organization_id::boolean = true THEN m_work_positions.organization_id = ANY(@organization_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_work_positions_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -61,10 +61,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_work_positions.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_work_positions.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_work_positions.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_work_positions.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_work_positions.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_work_positions.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_work_positions.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_work_positions_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_work_positions_pkey END DESC
 LIMIT $1;
@@ -74,8 +74,8 @@ SELECT work_position_id, name FROM m_work_positions
 WHERE
 	work_position_id = ANY(@work_position_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_work_positions_pkey ASC;
 
 -- name: GetPluralWorkPositionsUseNumberedPaginate :many
@@ -83,8 +83,8 @@ SELECT work_position_id, name FROM m_work_positions
 WHERE
 	work_position_id = ANY(@work_position_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_work_positions_pkey ASC
 LIMIT $1 OFFSET $2;
 

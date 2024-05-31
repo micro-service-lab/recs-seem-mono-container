@@ -83,8 +83,8 @@ AND
 AND
 	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC;
 
 -- name: GetOrganizationsUseNumberedPaginate :many
@@ -100,8 +100,8 @@ AND
 AND
 	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -133,10 +133,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_organizations.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_organizations_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_organizations_pkey END DESC
 LIMIT $1;
@@ -144,15 +144,15 @@ LIMIT $1;
 -- name: GetPluralOrganizations :many
 SELECT * FROM m_organizations WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC;
 
 -- name: GetPluralOrganizationsUseNumberedPaginate :many
 SELECT * FROM m_organizations WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -171,8 +171,8 @@ AND
 AND
 	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC;
 
 -- name: GetOrganizationsWithDetailUseNumberedPaginate :many
@@ -190,8 +190,8 @@ AND
 AND
 	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -225,10 +225,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_organizations.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_organizations_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_organizations_pkey END DESC
 LIMIT $1;
@@ -239,8 +239,8 @@ LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC;
 
 -- name: GetPluralOrganizationsWithDetailUseNumberedPaginate :many
@@ -249,8 +249,8 @@ LEFT JOIN m_groups ON m_organizations.organization_id = m_groups.organization_id
 LEFT JOIN m_grades ON m_organizations.organization_id = m_grades.organization_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -276,8 +276,8 @@ AND
 AND
 	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC;
 
 -- name: GetOrganizationsWithChatRoomUseNumberedPaginate :many
@@ -302,8 +302,8 @@ AND
 AND
 	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -344,10 +344,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_organizations.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_organizations_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_organizations_pkey END DESC
 LIMIT $1;
@@ -365,8 +365,8 @@ LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC;
 
 -- name: GetPluralOrganizationsWithChatRoomUseNumberedPaginate :many
@@ -382,8 +382,8 @@ LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -411,8 +411,8 @@ AND
 AND
 	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC;
 
 -- name: GetOrganizationsWithChatRoomAndDetailUseNumberedPaginate :many
@@ -439,8 +439,8 @@ AND
 AND
 	CASE WHEN @where_is_grade::boolean = true THEN EXISTS (SELECT * FROM m_grades WHERE m_grades.organization_id = m_organizations.organization_id) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -483,10 +483,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_organizations.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_organizations.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_organizations_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_organizations_pkey END DESC
 LIMIT $1;
@@ -506,8 +506,8 @@ LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC;
 
 -- name: GetPluralOrganizationsWithChatRoomAndDetailUseNumberedPaginate :many
@@ -525,8 +525,8 @@ LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = ANY(@organization_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC NULLS LAST,
 	m_organizations_pkey ASC
 LIMIT $1 OFFSET $2;
 

@@ -120,8 +120,8 @@ const getPluralPolicyCategories = `-- name: GetPluralPolicyCategories :many
 SELECT m_policy_categories_pkey, policy_category_id, name, description, key FROM m_policy_categories
 WHERE policy_category_id = ANY($1::uuid[])
 ORDER BY
-	CASE WHEN $2::text = 'name' THEN m_policy_categories.name END ASC,
-	CASE WHEN $2::text = 'r_name' THEN m_policy_categories.name END DESC,
+	CASE WHEN $2::text = 'name' THEN m_policy_categories.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_policy_categories.name END DESC NULLS LAST,
 	m_policy_categories_pkey ASC
 `
 
@@ -160,8 +160,8 @@ const getPluralPolicyCategoriesUseNumberedPaginate = `-- name: GetPluralPolicyCa
 SELECT m_policy_categories_pkey, policy_category_id, name, description, key FROM m_policy_categories
 WHERE policy_category_id = ANY($3::uuid[])
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_policy_categories.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_policy_categories.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_policy_categories.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_policy_categories.name END DESC NULLS LAST,
 	m_policy_categories_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -209,8 +209,8 @@ SELECT m_policy_categories_pkey, policy_category_id, name, description, key FROM
 WHERE
 	CASE WHEN $1::boolean = true THEN m_policy_categories.name LIKE '%' || $2::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN m_policy_categories.name END ASC,
-	CASE WHEN $3::text = 'r_name' THEN m_policy_categories.name END DESC,
+	CASE WHEN $3::text = 'name' THEN m_policy_categories.name END ASC NULLS LAST,
+	CASE WHEN $3::text = 'r_name' THEN m_policy_categories.name END DESC NULLS LAST,
 	m_policy_categories_pkey ASC
 `
 
@@ -266,10 +266,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_policy_categories.name END ASC,
-	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_policy_categories.name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_policy_categories.name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_policy_categories.name END ASC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_policy_categories.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_policy_categories.name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_policy_categories.name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_policy_categories.name END ASC NULLS LAST,
 	CASE WHEN $4::text = 'next' THEN m_policy_categories_pkey END ASC,
 	CASE WHEN $4::text = 'prev' THEN m_policy_categories_pkey END DESC
 LIMIT $1
@@ -324,8 +324,8 @@ SELECT m_policy_categories_pkey, policy_category_id, name, description, key FROM
 WHERE
 	CASE WHEN $3::boolean = true THEN m_policy_categories.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN m_policy_categories.name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN m_policy_categories.name END DESC,
+	CASE WHEN $5::text = 'name' THEN m_policy_categories.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' THEN m_policy_categories.name END DESC NULLS LAST,
 	m_policy_categories_pkey ASC
 LIMIT $1 OFFSET $2
 `

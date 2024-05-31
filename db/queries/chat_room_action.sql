@@ -41,8 +41,8 @@ WHERE t_chat_room_actions.chat_room_id = $1
 AND
 	CASE WHEN @where_in_chat_room_action_type_ids::boolean = true THEN chat_room_action_type_id = ANY(@in_chat_room_action_type_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'acted_at' THEN acted_at END ASC,
-	CASE WHEN @order_method::text = 'r_acted_at' THEN acted_at END DESC,
+	CASE WHEN @order_method::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
 	t_chat_room_actions_pkey ASC;
 
 -- name: GetChatRoomActionsOnChatRoomUseNumberedPaginate :many
@@ -76,8 +76,8 @@ WHERE t_chat_room_actions.chat_room_id = $1
 AND
 	CASE WHEN @where_in_chat_room_action_type_ids::boolean = true THEN chat_room_action_type_id = ANY(@in_chat_room_action_type_ids::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'acted_at' THEN acted_at END ASC,
-	CASE WHEN @order_method::text = 'r_acted_at' THEN acted_at END DESC,
+	CASE WHEN @order_method::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
 	t_chat_room_actions_pkey ASC
 LIMIT $2 OFFSET $3;
 
@@ -127,10 +127,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'acted_at' AND @cursor_direction::text = 'next' THEN acted_at END ASC,
-	CASE WHEN @order_method::text = 'acted_at' AND @cursor_direction::text = 'prev' THEN acted_at END DESC,
-	CASE WHEN @order_method::text = 'r_acted_at' AND @cursor_direction::text = 'next' THEN acted_at END DESC,
-	CASE WHEN @order_method::text = 'r_acted_at' AND @cursor_direction::text = 'prev' THEN acted_at END ASC,
+	CASE WHEN @order_method::text = 'acted_at' AND @cursor_direction::text = 'next' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'acted_at' AND @cursor_direction::text = 'prev' THEN acted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_acted_at' AND @cursor_direction::text = 'next' THEN acted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_acted_at' AND @cursor_direction::text = 'prev' THEN acted_at END ASC NULLS LAST,
 	t_chat_room_actions_pkey ASC
 LIMIT $2;
 
@@ -163,8 +163,8 @@ LEFT JOIN t_images ON mm.chat_room_action_id = t_images.chat_room_action_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE chat_room_action_id = ANY(@chat_room_action_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'acted_at' THEN acted_at END ASC,
-	CASE WHEN @order_method::text = 'r_acted_at' THEN acted_at END DESC,
+	CASE WHEN @order_method::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
 	t_chat_room_actions_pkey ASC;
 
 -- name: GetPluralChatRoomActionsUseNumberedPaginate :many
@@ -196,8 +196,8 @@ LEFT JOIN t_images ON mm.chat_room_action_id = t_images.chat_room_action_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE chat_room_action_id = ANY(@chat_room_action_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'acted_at' THEN acted_at END ASC,
-	CASE WHEN @order_method::text = 'r_acted_at' THEN acted_at END DESC,
+	CASE WHEN @order_method::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
 	t_chat_room_actions_pkey ASC
 LIMIT $1 OFFSET $2;
 

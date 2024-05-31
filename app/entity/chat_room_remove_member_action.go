@@ -23,7 +23,7 @@ type ChatRoomRemoveMemberActionWithRemovedByForQuery struct {
 }
 
 // ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers チャットルームメンバー強制退会アクションを表す構造体。
-type ChatRoomRemoveMemberActionWithRemovedByAndRemoveMember struct {
+type ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers struct {
 	ChatRoomRemoveMemberActionID uuid.UUID                            `json:"chat_room_remove_member_action_id"`
 	ChatRoomActionID             uuid.UUID                            `json:"chat_room_action_id"`
 	RemovedBy                    NullableEntity[SimpleMember]         `json:"removed_by"`

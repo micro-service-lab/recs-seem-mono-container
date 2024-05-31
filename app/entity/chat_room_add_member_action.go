@@ -23,7 +23,7 @@ type ChatRoomAddMemberActionWithAddedByForQuery struct {
 }
 
 // ChatRoomAddMemberActionWithAddedByAndAddMembers チャットルームメンバー追加アクションを表す構造体。
-type ChatRoomAddMemberActionWithAddedByAndAddMember struct {
+type ChatRoomAddMemberActionWithAddedByAndAddMembers struct {
 	ChatRoomAddMemberActionID uuid.UUID                         `json:"chat_room_add_member_action_id"`
 	ChatRoomActionID          uuid.UUID                         `json:"chat_room_action_id"`
 	AddedBy                   NullableEntity[SimpleMember]      `json:"added_by"`

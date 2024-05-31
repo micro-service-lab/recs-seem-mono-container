@@ -160,8 +160,8 @@ func (m *ManageChatRoomAction) GetChatRoomActionsOnChatRoom(
 
 	de := make([]entity.ChatRoomActionPractical, len(r.Data))
 	for i, v := range r.Data {
-		var addMemberAction entity.NullableEntity[entity.ChatRoomAddMemberActionWithAddedByAndAddMember]
-		var removeMemberAction entity.NullableEntity[entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMember]
+		var addMemberAction entity.NullableEntity[entity.ChatRoomAddMemberActionWithAddedByAndAddMembers]
+		var removeMemberAction entity.NullableEntity[entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers]
 		var message entity.NullableEntity[entity.MessageWithSenderAndReadReceiptCountAndAttachments]
 
 		if v.ChatRoomAddMemberAction.Valid {
@@ -169,9 +169,9 @@ func (m *ManageChatRoomAction) GetChatRoomActionsOnChatRoom(
 			if !ok {
 				attr = []entity.MemberOnChatRoomAddMemberAction{}
 			}
-			addMemberAction = entity.NullableEntity[entity.ChatRoomAddMemberActionWithAddedByAndAddMember]{
+			addMemberAction = entity.NullableEntity[entity.ChatRoomAddMemberActionWithAddedByAndAddMembers]{
 				Valid: true,
-				Entity: entity.ChatRoomAddMemberActionWithAddedByAndAddMember{
+				Entity: entity.ChatRoomAddMemberActionWithAddedByAndAddMembers{
 					ChatRoomAddMemberActionID: v.ChatRoomAddMemberAction.Entity.ChatRoomAddMemberActionID,
 					ChatRoomActionID:          v.ChatRoomAddMemberAction.Entity.ChatRoomActionID,
 					AddedBy:                   v.ChatRoomAddMemberAction.Entity.AddedBy,
@@ -185,9 +185,9 @@ func (m *ManageChatRoomAction) GetChatRoomActionsOnChatRoom(
 			if !ok {
 				attr = []entity.MemberOnChatRoomRemoveMemberAction{}
 			}
-			removeMemberAction = entity.NullableEntity[entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMember]{
+			removeMemberAction = entity.NullableEntity[entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers]{
 				Valid: true,
-				Entity: entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMember{
+				Entity: entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers{
 					ChatRoomRemoveMemberActionID: v.ChatRoomRemoveMemberAction.Entity.ChatRoomRemoveMemberActionID,
 					ChatRoomActionID:             v.ChatRoomRemoveMemberAction.Entity.ChatRoomActionID,
 					RemovedBy:                    v.ChatRoomRemoveMemberAction.Entity.RemovedBy,

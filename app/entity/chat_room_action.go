@@ -41,15 +41,15 @@ type ChatRoomActionWithDetailForQuery struct {
 //
 //nolint:lll
 type ChatRoomActionPractical struct {
-	ChatRoomActionID            uuid.UUID                                                              `json:"chat_room_action_id"`
-	ChatRoomID                  uuid.UUID                                                              `json:"chat_room_id"`
-	ChatRoomActionTypeID        uuid.UUID                                                              `json:"chat_room_action_type_id"`
-	ActedAt                     time.Time                                                              `json:"acted_at"`
-	ChatRoomCreateAction        NullableEntity[ChatRoomCreateActionWithCreatedBy]                      `json:"chat_room_create_action,omitempty"`
-	ChatRoomUpdateNameAction    NullableEntity[ChatRoomUpdateNameActionWithUpdatedBy]                  `json:"chat_room_update_name_action,omitempty"`
-	ChatRoomAddMemberAction     NullableEntity[ChatRoomAddMemberActionWithAddedByAndAddMember]         `json:"chat_room_add_member_action,omitempty"`
-	ChatRoomRemoveMemberAction  NullableEntity[ChatRoomRemoveMemberActionWithRemovedByAndRemoveMember] `json:"chat_room_remove_member_action,omitempty"`
-	ChatRoomWithdrawAction      NullableEntity[ChatRoomWithdrawActionWithMember]                       `json:"chat_room_withdraw_action,omitempty"`
-	ChatRoomDeleteMessageAction NullableEntity[ChatRoomDeleteMessageActionWithDeletedBy]               `json:"chat_room_delete_message_action,omitempty"`
-	Message                     NullableEntity[MessageWithSenderAndReadReceiptCountAndAttachments]     `json:"message,omitempty"`
+	ChatRoomActionID            uuid.UUID                                                               `json:"chat_room_action_id"`
+	ChatRoomID                  uuid.UUID                                                               `json:"chat_room_id"`
+	ChatRoomActionTypeID        uuid.UUID                                                               `json:"chat_room_action_type_id"`
+	ActedAt                     time.Time                                                               `json:"acted_at"`
+	ChatRoomCreateAction        NullableEntity[ChatRoomCreateActionWithCreatedBy]                       `json:"chat_room_create_action,omitempty"`
+	ChatRoomUpdateNameAction    NullableEntity[ChatRoomUpdateNameActionWithUpdatedBy]                   `json:"chat_room_update_name_action,omitempty"`
+	ChatRoomAddMemberAction     NullableEntity[ChatRoomAddMemberActionWithAddedByAndAddMembers]         `json:"chat_room_add_member_action,omitempty"`
+	ChatRoomRemoveMemberAction  NullableEntity[ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers] `json:"chat_room_remove_member_action,omitempty"`
+	ChatRoomWithdrawAction      NullableEntity[ChatRoomWithdrawActionWithMember]                        `json:"chat_room_withdraw_action,omitempty"`
+	ChatRoomDeleteMessageAction NullableEntity[ChatRoomDeleteMessageActionWithDeletedBy]                `json:"chat_room_delete_message_action,omitempty"`
+	Message                     NullableEntity[MessageWithSenderAndReadReceiptCountAndAttachments]      `json:"message,omitempty"`
 }

@@ -150,6 +150,12 @@ var _ Store = &StoreMock{}
 //			CountChatRoomCreateActionsWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereChatRoomCreateActionParam) (int64, error) {
 //				panic("mock out the CountChatRoomCreateActionsWithSd method")
 //			},
+//			CountChatRoomDeleteMessageActionsFunc: func(ctx context.Context, where parameter.WhereChatRoomDeleteMessageActionParam) (int64, error) {
+//				panic("mock out the CountChatRoomDeleteMessageActions method")
+//			},
+//			CountChatRoomDeleteMessageActionsWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereChatRoomDeleteMessageActionParam) (int64, error) {
+//				panic("mock out the CountChatRoomDeleteMessageActionsWithSd method")
+//			},
 //			CountChatRoomRemoveMemberActionsFunc: func(ctx context.Context, where parameter.WhereChatRoomRemoveMemberActionParam) (int64, error) {
 //				panic("mock out the CountChatRoomRemoveMemberActions method")
 //			},
@@ -446,6 +452,18 @@ var _ Store = &StoreMock{}
 //			},
 //			CreateChatRoomCreateActionsWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateChatRoomCreateActionParam) (int64, error) {
 //				panic("mock out the CreateChatRoomCreateActionsWithSd method")
+//			},
+//			CreateChatRoomDeleteMessageActionFunc: func(ctx context.Context, param parameter.CreateChatRoomDeleteMessageActionParam) (entity.ChatRoomDeleteMessageAction, error) {
+//				panic("mock out the CreateChatRoomDeleteMessageAction method")
+//			},
+//			CreateChatRoomDeleteMessageActionWithSdFunc: func(ctx context.Context, sd Sd, param parameter.CreateChatRoomDeleteMessageActionParam) (entity.ChatRoomDeleteMessageAction, error) {
+//				panic("mock out the CreateChatRoomDeleteMessageActionWithSd method")
+//			},
+//			CreateChatRoomDeleteMessageActionsFunc: func(ctx context.Context, params []parameter.CreateChatRoomDeleteMessageActionParam) (int64, error) {
+//				panic("mock out the CreateChatRoomDeleteMessageActions method")
+//			},
+//			CreateChatRoomDeleteMessageActionsWithSdFunc: func(ctx context.Context, sd Sd, params []parameter.CreateChatRoomDeleteMessageActionParam) (int64, error) {
+//				panic("mock out the CreateChatRoomDeleteMessageActionsWithSd method")
 //			},
 //			CreateChatRoomRemoveMemberActionFunc: func(ctx context.Context, param parameter.CreateChatRoomRemoveMemberActionParam) (entity.ChatRoomRemoveMemberAction, error) {
 //				panic("mock out the CreateChatRoomRemoveMemberAction method")
@@ -806,6 +824,12 @@ var _ Store = &StoreMock{}
 //			},
 //			DeleteChatRoomCreateActionWithSdFunc: func(ctx context.Context, sd Sd, chatRoomCreateActionID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteChatRoomCreateActionWithSd method")
+//			},
+//			DeleteChatRoomDeleteMessageActionFunc: func(ctx context.Context, chatRoomDeleteMessageActionID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomDeleteMessageAction method")
+//			},
+//			DeleteChatRoomDeleteMessageActionWithSdFunc: func(ctx context.Context, sd Sd, chatRoomDeleteMessageActionID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteChatRoomDeleteMessageActionWithSd method")
 //			},
 //			DeleteChatRoomRemoveMemberActionFunc: func(ctx context.Context, chatRoomRemoveMemberActionID uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteChatRoomRemoveMemberAction method")
@@ -1590,6 +1614,12 @@ var _ Store = &StoreMock{}
 //			GetChatRoomCreateActionsOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomCreateActionParam, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error) {
 //				panic("mock out the GetChatRoomCreateActionsOnChatRoomWithSd method")
 //			},
+//			GetChatRoomDeleteMessageActionsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomDeleteMessageActionParam, order parameter.ChatRoomDeleteMessageActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error) {
+//				panic("mock out the GetChatRoomDeleteMessageActionsOnChatRoom method")
+//			},
+//			GetChatRoomDeleteMessageActionsOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomDeleteMessageActionParam, order parameter.ChatRoomDeleteMessageActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error) {
+//				panic("mock out the GetChatRoomDeleteMessageActionsOnChatRoomWithSd method")
+//			},
 //			GetChatRoomRemoveMemberActionsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomRemoveMemberActionParam, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
 //				panic("mock out the GetChatRoomRemoveMemberActionsOnChatRoom method")
 //			},
@@ -1883,6 +1913,12 @@ var _ Store = &StoreMock{}
 //			},
 //			GetPluralChatRoomCreateActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomCreateActionIDs []uuid.UUID, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error) {
 //				panic("mock out the GetPluralChatRoomCreateActionsWithSd method")
+//			},
+//			GetPluralChatRoomDeleteMessageActionsFunc: func(ctx context.Context, chatRoomDeleteMessageActionIDs []uuid.UUID, order parameter.ChatRoomDeleteMessageActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error) {
+//				panic("mock out the GetPluralChatRoomDeleteMessageActions method")
+//			},
+//			GetPluralChatRoomDeleteMessageActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomDeleteMessageActionIDs []uuid.UUID, order parameter.ChatRoomDeleteMessageActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error) {
+//				panic("mock out the GetPluralChatRoomDeleteMessageActionsWithSd method")
 //			},
 //			GetPluralChatRoomRemoveMemberActionsFunc: func(ctx context.Context, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
 //				panic("mock out the GetPluralChatRoomRemoveMemberActions method")
@@ -2291,6 +2327,12 @@ var _ Store = &StoreMock{}
 //			},
 //			PluralDeleteChatRoomCreateActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomCreateActionIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteChatRoomCreateActionsWithSd method")
+//			},
+//			PluralDeleteChatRoomDeleteMessageActionsFunc: func(ctx context.Context, chatRoomDeleteMessageActionIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteChatRoomDeleteMessageActions method")
+//			},
+//			PluralDeleteChatRoomDeleteMessageActionsWithSdFunc: func(ctx context.Context, sd Sd, chatRoomDeleteMessageActionIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the PluralDeleteChatRoomDeleteMessageActionsWithSd method")
 //			},
 //			PluralDeleteChatRoomRemoveMemberActionsFunc: func(ctx context.Context, chatRoomRemoveMemberActionIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteChatRoomRemoveMemberActions method")
@@ -2785,6 +2827,12 @@ type StoreMock struct {
 	// CountChatRoomCreateActionsWithSdFunc mocks the CountChatRoomCreateActionsWithSd method.
 	CountChatRoomCreateActionsWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereChatRoomCreateActionParam) (int64, error)
 
+	// CountChatRoomDeleteMessageActionsFunc mocks the CountChatRoomDeleteMessageActions method.
+	CountChatRoomDeleteMessageActionsFunc func(ctx context.Context, where parameter.WhereChatRoomDeleteMessageActionParam) (int64, error)
+
+	// CountChatRoomDeleteMessageActionsWithSdFunc mocks the CountChatRoomDeleteMessageActionsWithSd method.
+	CountChatRoomDeleteMessageActionsWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereChatRoomDeleteMessageActionParam) (int64, error)
+
 	// CountChatRoomRemoveMemberActionsFunc mocks the CountChatRoomRemoveMemberActions method.
 	CountChatRoomRemoveMemberActionsFunc func(ctx context.Context, where parameter.WhereChatRoomRemoveMemberActionParam) (int64, error)
 
@@ -3081,6 +3129,18 @@ type StoreMock struct {
 
 	// CreateChatRoomCreateActionsWithSdFunc mocks the CreateChatRoomCreateActionsWithSd method.
 	CreateChatRoomCreateActionsWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateChatRoomCreateActionParam) (int64, error)
+
+	// CreateChatRoomDeleteMessageActionFunc mocks the CreateChatRoomDeleteMessageAction method.
+	CreateChatRoomDeleteMessageActionFunc func(ctx context.Context, param parameter.CreateChatRoomDeleteMessageActionParam) (entity.ChatRoomDeleteMessageAction, error)
+
+	// CreateChatRoomDeleteMessageActionWithSdFunc mocks the CreateChatRoomDeleteMessageActionWithSd method.
+	CreateChatRoomDeleteMessageActionWithSdFunc func(ctx context.Context, sd Sd, param parameter.CreateChatRoomDeleteMessageActionParam) (entity.ChatRoomDeleteMessageAction, error)
+
+	// CreateChatRoomDeleteMessageActionsFunc mocks the CreateChatRoomDeleteMessageActions method.
+	CreateChatRoomDeleteMessageActionsFunc func(ctx context.Context, params []parameter.CreateChatRoomDeleteMessageActionParam) (int64, error)
+
+	// CreateChatRoomDeleteMessageActionsWithSdFunc mocks the CreateChatRoomDeleteMessageActionsWithSd method.
+	CreateChatRoomDeleteMessageActionsWithSdFunc func(ctx context.Context, sd Sd, params []parameter.CreateChatRoomDeleteMessageActionParam) (int64, error)
 
 	// CreateChatRoomRemoveMemberActionFunc mocks the CreateChatRoomRemoveMemberAction method.
 	CreateChatRoomRemoveMemberActionFunc func(ctx context.Context, param parameter.CreateChatRoomRemoveMemberActionParam) (entity.ChatRoomRemoveMemberAction, error)
@@ -3441,6 +3501,12 @@ type StoreMock struct {
 
 	// DeleteChatRoomCreateActionWithSdFunc mocks the DeleteChatRoomCreateActionWithSd method.
 	DeleteChatRoomCreateActionWithSdFunc func(ctx context.Context, sd Sd, chatRoomCreateActionID uuid.UUID) (int64, error)
+
+	// DeleteChatRoomDeleteMessageActionFunc mocks the DeleteChatRoomDeleteMessageAction method.
+	DeleteChatRoomDeleteMessageActionFunc func(ctx context.Context, chatRoomDeleteMessageActionID uuid.UUID) (int64, error)
+
+	// DeleteChatRoomDeleteMessageActionWithSdFunc mocks the DeleteChatRoomDeleteMessageActionWithSd method.
+	DeleteChatRoomDeleteMessageActionWithSdFunc func(ctx context.Context, sd Sd, chatRoomDeleteMessageActionID uuid.UUID) (int64, error)
 
 	// DeleteChatRoomRemoveMemberActionFunc mocks the DeleteChatRoomRemoveMemberAction method.
 	DeleteChatRoomRemoveMemberActionFunc func(ctx context.Context, chatRoomRemoveMemberActionID uuid.UUID) (int64, error)
@@ -4225,6 +4291,12 @@ type StoreMock struct {
 	// GetChatRoomCreateActionsOnChatRoomWithSdFunc mocks the GetChatRoomCreateActionsOnChatRoomWithSd method.
 	GetChatRoomCreateActionsOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomCreateActionParam, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error)
 
+	// GetChatRoomDeleteMessageActionsOnChatRoomFunc mocks the GetChatRoomDeleteMessageActionsOnChatRoom method.
+	GetChatRoomDeleteMessageActionsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomDeleteMessageActionParam, order parameter.ChatRoomDeleteMessageActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error)
+
+	// GetChatRoomDeleteMessageActionsOnChatRoomWithSdFunc mocks the GetChatRoomDeleteMessageActionsOnChatRoomWithSd method.
+	GetChatRoomDeleteMessageActionsOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomDeleteMessageActionParam, order parameter.ChatRoomDeleteMessageActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error)
+
 	// GetChatRoomRemoveMemberActionsOnChatRoomFunc mocks the GetChatRoomRemoveMemberActionsOnChatRoom method.
 	GetChatRoomRemoveMemberActionsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomRemoveMemberActionParam, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error)
 
@@ -4518,6 +4590,12 @@ type StoreMock struct {
 
 	// GetPluralChatRoomCreateActionsWithSdFunc mocks the GetPluralChatRoomCreateActionsWithSd method.
 	GetPluralChatRoomCreateActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomCreateActionIDs []uuid.UUID, order parameter.ChatRoomCreateActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error)
+
+	// GetPluralChatRoomDeleteMessageActionsFunc mocks the GetPluralChatRoomDeleteMessageActions method.
+	GetPluralChatRoomDeleteMessageActionsFunc func(ctx context.Context, chatRoomDeleteMessageActionIDs []uuid.UUID, order parameter.ChatRoomDeleteMessageActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error)
+
+	// GetPluralChatRoomDeleteMessageActionsWithSdFunc mocks the GetPluralChatRoomDeleteMessageActionsWithSd method.
+	GetPluralChatRoomDeleteMessageActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomDeleteMessageActionIDs []uuid.UUID, order parameter.ChatRoomDeleteMessageActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error)
 
 	// GetPluralChatRoomRemoveMemberActionsFunc mocks the GetPluralChatRoomRemoveMemberActions method.
 	GetPluralChatRoomRemoveMemberActionsFunc func(ctx context.Context, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error)
@@ -4926,6 +5004,12 @@ type StoreMock struct {
 
 	// PluralDeleteChatRoomCreateActionsWithSdFunc mocks the PluralDeleteChatRoomCreateActionsWithSd method.
 	PluralDeleteChatRoomCreateActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomCreateActionIDs []uuid.UUID) (int64, error)
+
+	// PluralDeleteChatRoomDeleteMessageActionsFunc mocks the PluralDeleteChatRoomDeleteMessageActions method.
+	PluralDeleteChatRoomDeleteMessageActionsFunc func(ctx context.Context, chatRoomDeleteMessageActionIDs []uuid.UUID) (int64, error)
+
+	// PluralDeleteChatRoomDeleteMessageActionsWithSdFunc mocks the PluralDeleteChatRoomDeleteMessageActionsWithSd method.
+	PluralDeleteChatRoomDeleteMessageActionsWithSdFunc func(ctx context.Context, sd Sd, chatRoomDeleteMessageActionIDs []uuid.UUID) (int64, error)
 
 	// PluralDeleteChatRoomRemoveMemberActionsFunc mocks the PluralDeleteChatRoomRemoveMemberActions method.
 	PluralDeleteChatRoomRemoveMemberActionsFunc func(ctx context.Context, chatRoomRemoveMemberActionIDs []uuid.UUID) (int64, error)
@@ -5626,6 +5710,22 @@ type StoreMock struct {
 			Sd Sd
 			// Where is the where argument value.
 			Where parameter.WhereChatRoomCreateActionParam
+		}
+		// CountChatRoomDeleteMessageActions holds details about calls to the CountChatRoomDeleteMessageActions method.
+		CountChatRoomDeleteMessageActions []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Where is the where argument value.
+			Where parameter.WhereChatRoomDeleteMessageActionParam
+		}
+		// CountChatRoomDeleteMessageActionsWithSd holds details about calls to the CountChatRoomDeleteMessageActionsWithSd method.
+		CountChatRoomDeleteMessageActionsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Where is the where argument value.
+			Where parameter.WhereChatRoomDeleteMessageActionParam
 		}
 		// CountChatRoomRemoveMemberActions holds details about calls to the CountChatRoomRemoveMemberActions method.
 		CountChatRoomRemoveMemberActions []struct {
@@ -6473,6 +6573,38 @@ type StoreMock struct {
 			Sd Sd
 			// Params is the params argument value.
 			Params []parameter.CreateChatRoomCreateActionParam
+		}
+		// CreateChatRoomDeleteMessageAction holds details about calls to the CreateChatRoomDeleteMessageAction method.
+		CreateChatRoomDeleteMessageAction []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Param is the param argument value.
+			Param parameter.CreateChatRoomDeleteMessageActionParam
+		}
+		// CreateChatRoomDeleteMessageActionWithSd holds details about calls to the CreateChatRoomDeleteMessageActionWithSd method.
+		CreateChatRoomDeleteMessageActionWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Param is the param argument value.
+			Param parameter.CreateChatRoomDeleteMessageActionParam
+		}
+		// CreateChatRoomDeleteMessageActions holds details about calls to the CreateChatRoomDeleteMessageActions method.
+		CreateChatRoomDeleteMessageActions []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Params is the params argument value.
+			Params []parameter.CreateChatRoomDeleteMessageActionParam
+		}
+		// CreateChatRoomDeleteMessageActionsWithSd holds details about calls to the CreateChatRoomDeleteMessageActionsWithSd method.
+		CreateChatRoomDeleteMessageActionsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// Params is the params argument value.
+			Params []parameter.CreateChatRoomDeleteMessageActionParam
 		}
 		// CreateChatRoomRemoveMemberAction holds details about calls to the CreateChatRoomRemoveMemberAction method.
 		CreateChatRoomRemoveMemberAction []struct {
@@ -7437,6 +7569,22 @@ type StoreMock struct {
 			Sd Sd
 			// ChatRoomCreateActionID is the chatRoomCreateActionID argument value.
 			ChatRoomCreateActionID uuid.UUID
+		}
+		// DeleteChatRoomDeleteMessageAction holds details about calls to the DeleteChatRoomDeleteMessageAction method.
+		DeleteChatRoomDeleteMessageAction []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomDeleteMessageActionID is the chatRoomDeleteMessageActionID argument value.
+			ChatRoomDeleteMessageActionID uuid.UUID
+		}
+		// DeleteChatRoomDeleteMessageActionWithSd holds details about calls to the DeleteChatRoomDeleteMessageActionWithSd method.
+		DeleteChatRoomDeleteMessageActionWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomDeleteMessageActionID is the chatRoomDeleteMessageActionID argument value.
+			ChatRoomDeleteMessageActionID uuid.UUID
 		}
 		// DeleteChatRoomRemoveMemberAction holds details about calls to the DeleteChatRoomRemoveMemberAction method.
 		DeleteChatRoomRemoveMemberAction []struct {
@@ -9755,6 +9903,42 @@ type StoreMock struct {
 			// Wc is the wc argument value.
 			Wc WithCountParam
 		}
+		// GetChatRoomDeleteMessageActionsOnChatRoom holds details about calls to the GetChatRoomDeleteMessageActionsOnChatRoom method.
+		GetChatRoomDeleteMessageActionsOnChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereChatRoomDeleteMessageActionParam
+			// Order is the order argument value.
+			Order parameter.ChatRoomDeleteMessageActionOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetChatRoomDeleteMessageActionsOnChatRoomWithSd holds details about calls to the GetChatRoomDeleteMessageActionsOnChatRoomWithSd method.
+		GetChatRoomDeleteMessageActionsOnChatRoomWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereChatRoomDeleteMessageActionParam
+			// Order is the order argument value.
+			Order parameter.ChatRoomDeleteMessageActionOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
 		// GetChatRoomRemoveMemberActionsOnChatRoom holds details about calls to the GetChatRoomRemoveMemberActionsOnChatRoom method.
 		GetChatRoomRemoveMemberActionsOnChatRoom []struct {
 			// Ctx is the ctx argument value.
@@ -11268,6 +11452,30 @@ type StoreMock struct {
 			ChatRoomCreateActionIDs []uuid.UUID
 			// Order is the order argument value.
 			Order parameter.ChatRoomCreateActionOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralChatRoomDeleteMessageActions holds details about calls to the GetPluralChatRoomDeleteMessageActions method.
+		GetPluralChatRoomDeleteMessageActions []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomDeleteMessageActionIDs is the chatRoomDeleteMessageActionIDs argument value.
+			ChatRoomDeleteMessageActionIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.ChatRoomDeleteMessageActionOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+		}
+		// GetPluralChatRoomDeleteMessageActionsWithSd holds details about calls to the GetPluralChatRoomDeleteMessageActionsWithSd method.
+		GetPluralChatRoomDeleteMessageActionsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomDeleteMessageActionIDs is the chatRoomDeleteMessageActionIDs argument value.
+			ChatRoomDeleteMessageActionIDs []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.ChatRoomDeleteMessageActionOrderMethod
 			// Np is the np argument value.
 			Np NumberedPaginationParam
 		}
@@ -12959,6 +13167,22 @@ type StoreMock struct {
 			// ChatRoomCreateActionIDs is the chatRoomCreateActionIDs argument value.
 			ChatRoomCreateActionIDs []uuid.UUID
 		}
+		// PluralDeleteChatRoomDeleteMessageActions holds details about calls to the PluralDeleteChatRoomDeleteMessageActions method.
+		PluralDeleteChatRoomDeleteMessageActions []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomDeleteMessageActionIDs is the chatRoomDeleteMessageActionIDs argument value.
+			ChatRoomDeleteMessageActionIDs []uuid.UUID
+		}
+		// PluralDeleteChatRoomDeleteMessageActionsWithSd holds details about calls to the PluralDeleteChatRoomDeleteMessageActionsWithSd method.
+		PluralDeleteChatRoomDeleteMessageActionsWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomDeleteMessageActionIDs is the chatRoomDeleteMessageActionIDs argument value.
+			ChatRoomDeleteMessageActionIDs []uuid.UUID
+		}
 		// PluralDeleteChatRoomRemoveMemberActions holds details about calls to the PluralDeleteChatRoomRemoveMemberActions method.
 		PluralDeleteChatRoomRemoveMemberActions []struct {
 			// Ctx is the ctx argument value.
@@ -14090,6 +14314,8 @@ type StoreMock struct {
 	lockCountChatRoomAddMemberActionsWithSd                             sync.RWMutex
 	lockCountChatRoomCreateActions                                      sync.RWMutex
 	lockCountChatRoomCreateActionsWithSd                                sync.RWMutex
+	lockCountChatRoomDeleteMessageActions                               sync.RWMutex
+	lockCountChatRoomDeleteMessageActionsWithSd                         sync.RWMutex
 	lockCountChatRoomRemoveMemberActions                                sync.RWMutex
 	lockCountChatRoomRemoveMemberActionsWithSd                          sync.RWMutex
 	lockCountChatRoomUpdateNameActions                                  sync.RWMutex
@@ -14189,6 +14415,10 @@ type StoreMock struct {
 	lockCreateChatRoomCreateActionWithSd                                sync.RWMutex
 	lockCreateChatRoomCreateActions                                     sync.RWMutex
 	lockCreateChatRoomCreateActionsWithSd                               sync.RWMutex
+	lockCreateChatRoomDeleteMessageAction                               sync.RWMutex
+	lockCreateChatRoomDeleteMessageActionWithSd                         sync.RWMutex
+	lockCreateChatRoomDeleteMessageActions                              sync.RWMutex
+	lockCreateChatRoomDeleteMessageActionsWithSd                        sync.RWMutex
 	lockCreateChatRoomRemoveMemberAction                                sync.RWMutex
 	lockCreateChatRoomRemoveMemberActionWithSd                          sync.RWMutex
 	lockCreateChatRoomRemoveMemberActions                               sync.RWMutex
@@ -14309,6 +14539,8 @@ type StoreMock struct {
 	lockDeleteChatRoomAddedMembersOnMembersWithSd                       sync.RWMutex
 	lockDeleteChatRoomCreateAction                                      sync.RWMutex
 	lockDeleteChatRoomCreateActionWithSd                                sync.RWMutex
+	lockDeleteChatRoomDeleteMessageAction                               sync.RWMutex
+	lockDeleteChatRoomDeleteMessageActionWithSd                         sync.RWMutex
 	lockDeleteChatRoomRemoveMemberAction                                sync.RWMutex
 	lockDeleteChatRoomRemoveMemberActionWithSd                          sync.RWMutex
 	lockDeleteChatRoomRemovedMember                                     sync.RWMutex
@@ -14570,6 +14802,8 @@ type StoreMock struct {
 	lockGetChatRoomAddMemberActionsOnChatRoomWithSd                     sync.RWMutex
 	lockGetChatRoomCreateActionsOnChatRoom                              sync.RWMutex
 	lockGetChatRoomCreateActionsOnChatRoomWithSd                        sync.RWMutex
+	lockGetChatRoomDeleteMessageActionsOnChatRoom                       sync.RWMutex
+	lockGetChatRoomDeleteMessageActionsOnChatRoomWithSd                 sync.RWMutex
 	lockGetChatRoomRemoveMemberActionsOnChatRoom                        sync.RWMutex
 	lockGetChatRoomRemoveMemberActionsOnChatRoomWithSd                  sync.RWMutex
 	lockGetChatRoomUpdateNameActionsOnChatRoom                          sync.RWMutex
@@ -14668,6 +14902,8 @@ type StoreMock struct {
 	lockGetPluralChatRoomAddMemberActionsWithSd                         sync.RWMutex
 	lockGetPluralChatRoomCreateActions                                  sync.RWMutex
 	lockGetPluralChatRoomCreateActionsWithSd                            sync.RWMutex
+	lockGetPluralChatRoomDeleteMessageActions                           sync.RWMutex
+	lockGetPluralChatRoomDeleteMessageActionsWithSd                     sync.RWMutex
 	lockGetPluralChatRoomRemoveMemberActions                            sync.RWMutex
 	lockGetPluralChatRoomRemoveMemberActionsWithSd                      sync.RWMutex
 	lockGetPluralChatRoomUpdateNameActions                              sync.RWMutex
@@ -14804,6 +15040,8 @@ type StoreMock struct {
 	lockPluralDeleteChatRoomAddMemberActionsWithSd                      sync.RWMutex
 	lockPluralDeleteChatRoomCreateActions                               sync.RWMutex
 	lockPluralDeleteChatRoomCreateActionsWithSd                         sync.RWMutex
+	lockPluralDeleteChatRoomDeleteMessageActions                        sync.RWMutex
+	lockPluralDeleteChatRoomDeleteMessageActionsWithSd                  sync.RWMutex
 	lockPluralDeleteChatRoomRemoveMemberActions                         sync.RWMutex
 	lockPluralDeleteChatRoomRemoveMemberActionsWithSd                   sync.RWMutex
 	lockPluralDeleteChatRoomUpdateNameActions                           sync.RWMutex
@@ -16550,6 +16788,82 @@ func (mock *StoreMock) CountChatRoomCreateActionsWithSdCalls() []struct {
 	mock.lockCountChatRoomCreateActionsWithSd.RLock()
 	calls = mock.calls.CountChatRoomCreateActionsWithSd
 	mock.lockCountChatRoomCreateActionsWithSd.RUnlock()
+	return calls
+}
+
+// CountChatRoomDeleteMessageActions calls CountChatRoomDeleteMessageActionsFunc.
+func (mock *StoreMock) CountChatRoomDeleteMessageActions(ctx context.Context, where parameter.WhereChatRoomDeleteMessageActionParam) (int64, error) {
+	if mock.CountChatRoomDeleteMessageActionsFunc == nil {
+		panic("StoreMock.CountChatRoomDeleteMessageActionsFunc: method is nil but Store.CountChatRoomDeleteMessageActions was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Where parameter.WhereChatRoomDeleteMessageActionParam
+	}{
+		Ctx:   ctx,
+		Where: where,
+	}
+	mock.lockCountChatRoomDeleteMessageActions.Lock()
+	mock.calls.CountChatRoomDeleteMessageActions = append(mock.calls.CountChatRoomDeleteMessageActions, callInfo)
+	mock.lockCountChatRoomDeleteMessageActions.Unlock()
+	return mock.CountChatRoomDeleteMessageActionsFunc(ctx, where)
+}
+
+// CountChatRoomDeleteMessageActionsCalls gets all the calls that were made to CountChatRoomDeleteMessageActions.
+// Check the length with:
+//
+//	len(mockedStore.CountChatRoomDeleteMessageActionsCalls())
+func (mock *StoreMock) CountChatRoomDeleteMessageActionsCalls() []struct {
+	Ctx   context.Context
+	Where parameter.WhereChatRoomDeleteMessageActionParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Where parameter.WhereChatRoomDeleteMessageActionParam
+	}
+	mock.lockCountChatRoomDeleteMessageActions.RLock()
+	calls = mock.calls.CountChatRoomDeleteMessageActions
+	mock.lockCountChatRoomDeleteMessageActions.RUnlock()
+	return calls
+}
+
+// CountChatRoomDeleteMessageActionsWithSd calls CountChatRoomDeleteMessageActionsWithSdFunc.
+func (mock *StoreMock) CountChatRoomDeleteMessageActionsWithSd(ctx context.Context, sd Sd, where parameter.WhereChatRoomDeleteMessageActionParam) (int64, error) {
+	if mock.CountChatRoomDeleteMessageActionsWithSdFunc == nil {
+		panic("StoreMock.CountChatRoomDeleteMessageActionsWithSdFunc: method is nil but Store.CountChatRoomDeleteMessageActionsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereChatRoomDeleteMessageActionParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Where: where,
+	}
+	mock.lockCountChatRoomDeleteMessageActionsWithSd.Lock()
+	mock.calls.CountChatRoomDeleteMessageActionsWithSd = append(mock.calls.CountChatRoomDeleteMessageActionsWithSd, callInfo)
+	mock.lockCountChatRoomDeleteMessageActionsWithSd.Unlock()
+	return mock.CountChatRoomDeleteMessageActionsWithSdFunc(ctx, sd, where)
+}
+
+// CountChatRoomDeleteMessageActionsWithSdCalls gets all the calls that were made to CountChatRoomDeleteMessageActionsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CountChatRoomDeleteMessageActionsWithSdCalls())
+func (mock *StoreMock) CountChatRoomDeleteMessageActionsWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Where parameter.WhereChatRoomDeleteMessageActionParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Where parameter.WhereChatRoomDeleteMessageActionParam
+	}
+	mock.lockCountChatRoomDeleteMessageActionsWithSd.RLock()
+	calls = mock.calls.CountChatRoomDeleteMessageActionsWithSd
+	mock.lockCountChatRoomDeleteMessageActionsWithSd.RUnlock()
 	return calls
 }
 
@@ -20422,6 +20736,158 @@ func (mock *StoreMock) CreateChatRoomCreateActionsWithSdCalls() []struct {
 	mock.lockCreateChatRoomCreateActionsWithSd.RLock()
 	calls = mock.calls.CreateChatRoomCreateActionsWithSd
 	mock.lockCreateChatRoomCreateActionsWithSd.RUnlock()
+	return calls
+}
+
+// CreateChatRoomDeleteMessageAction calls CreateChatRoomDeleteMessageActionFunc.
+func (mock *StoreMock) CreateChatRoomDeleteMessageAction(ctx context.Context, param parameter.CreateChatRoomDeleteMessageActionParam) (entity.ChatRoomDeleteMessageAction, error) {
+	if mock.CreateChatRoomDeleteMessageActionFunc == nil {
+		panic("StoreMock.CreateChatRoomDeleteMessageActionFunc: method is nil but Store.CreateChatRoomDeleteMessageAction was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Param parameter.CreateChatRoomDeleteMessageActionParam
+	}{
+		Ctx:   ctx,
+		Param: param,
+	}
+	mock.lockCreateChatRoomDeleteMessageAction.Lock()
+	mock.calls.CreateChatRoomDeleteMessageAction = append(mock.calls.CreateChatRoomDeleteMessageAction, callInfo)
+	mock.lockCreateChatRoomDeleteMessageAction.Unlock()
+	return mock.CreateChatRoomDeleteMessageActionFunc(ctx, param)
+}
+
+// CreateChatRoomDeleteMessageActionCalls gets all the calls that were made to CreateChatRoomDeleteMessageAction.
+// Check the length with:
+//
+//	len(mockedStore.CreateChatRoomDeleteMessageActionCalls())
+func (mock *StoreMock) CreateChatRoomDeleteMessageActionCalls() []struct {
+	Ctx   context.Context
+	Param parameter.CreateChatRoomDeleteMessageActionParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Param parameter.CreateChatRoomDeleteMessageActionParam
+	}
+	mock.lockCreateChatRoomDeleteMessageAction.RLock()
+	calls = mock.calls.CreateChatRoomDeleteMessageAction
+	mock.lockCreateChatRoomDeleteMessageAction.RUnlock()
+	return calls
+}
+
+// CreateChatRoomDeleteMessageActionWithSd calls CreateChatRoomDeleteMessageActionWithSdFunc.
+func (mock *StoreMock) CreateChatRoomDeleteMessageActionWithSd(ctx context.Context, sd Sd, param parameter.CreateChatRoomDeleteMessageActionParam) (entity.ChatRoomDeleteMessageAction, error) {
+	if mock.CreateChatRoomDeleteMessageActionWithSdFunc == nil {
+		panic("StoreMock.CreateChatRoomDeleteMessageActionWithSdFunc: method is nil but Store.CreateChatRoomDeleteMessageActionWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateChatRoomDeleteMessageActionParam
+	}{
+		Ctx:   ctx,
+		Sd:    sd,
+		Param: param,
+	}
+	mock.lockCreateChatRoomDeleteMessageActionWithSd.Lock()
+	mock.calls.CreateChatRoomDeleteMessageActionWithSd = append(mock.calls.CreateChatRoomDeleteMessageActionWithSd, callInfo)
+	mock.lockCreateChatRoomDeleteMessageActionWithSd.Unlock()
+	return mock.CreateChatRoomDeleteMessageActionWithSdFunc(ctx, sd, param)
+}
+
+// CreateChatRoomDeleteMessageActionWithSdCalls gets all the calls that were made to CreateChatRoomDeleteMessageActionWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateChatRoomDeleteMessageActionWithSdCalls())
+func (mock *StoreMock) CreateChatRoomDeleteMessageActionWithSdCalls() []struct {
+	Ctx   context.Context
+	Sd    Sd
+	Param parameter.CreateChatRoomDeleteMessageActionParam
+} {
+	var calls []struct {
+		Ctx   context.Context
+		Sd    Sd
+		Param parameter.CreateChatRoomDeleteMessageActionParam
+	}
+	mock.lockCreateChatRoomDeleteMessageActionWithSd.RLock()
+	calls = mock.calls.CreateChatRoomDeleteMessageActionWithSd
+	mock.lockCreateChatRoomDeleteMessageActionWithSd.RUnlock()
+	return calls
+}
+
+// CreateChatRoomDeleteMessageActions calls CreateChatRoomDeleteMessageActionsFunc.
+func (mock *StoreMock) CreateChatRoomDeleteMessageActions(ctx context.Context, params []parameter.CreateChatRoomDeleteMessageActionParam) (int64, error) {
+	if mock.CreateChatRoomDeleteMessageActionsFunc == nil {
+		panic("StoreMock.CreateChatRoomDeleteMessageActionsFunc: method is nil but Store.CreateChatRoomDeleteMessageActions was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Params []parameter.CreateChatRoomDeleteMessageActionParam
+	}{
+		Ctx:    ctx,
+		Params: params,
+	}
+	mock.lockCreateChatRoomDeleteMessageActions.Lock()
+	mock.calls.CreateChatRoomDeleteMessageActions = append(mock.calls.CreateChatRoomDeleteMessageActions, callInfo)
+	mock.lockCreateChatRoomDeleteMessageActions.Unlock()
+	return mock.CreateChatRoomDeleteMessageActionsFunc(ctx, params)
+}
+
+// CreateChatRoomDeleteMessageActionsCalls gets all the calls that were made to CreateChatRoomDeleteMessageActions.
+// Check the length with:
+//
+//	len(mockedStore.CreateChatRoomDeleteMessageActionsCalls())
+func (mock *StoreMock) CreateChatRoomDeleteMessageActionsCalls() []struct {
+	Ctx    context.Context
+	Params []parameter.CreateChatRoomDeleteMessageActionParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Params []parameter.CreateChatRoomDeleteMessageActionParam
+	}
+	mock.lockCreateChatRoomDeleteMessageActions.RLock()
+	calls = mock.calls.CreateChatRoomDeleteMessageActions
+	mock.lockCreateChatRoomDeleteMessageActions.RUnlock()
+	return calls
+}
+
+// CreateChatRoomDeleteMessageActionsWithSd calls CreateChatRoomDeleteMessageActionsWithSdFunc.
+func (mock *StoreMock) CreateChatRoomDeleteMessageActionsWithSd(ctx context.Context, sd Sd, params []parameter.CreateChatRoomDeleteMessageActionParam) (int64, error) {
+	if mock.CreateChatRoomDeleteMessageActionsWithSdFunc == nil {
+		panic("StoreMock.CreateChatRoomDeleteMessageActionsWithSdFunc: method is nil but Store.CreateChatRoomDeleteMessageActionsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateChatRoomDeleteMessageActionParam
+	}{
+		Ctx:    ctx,
+		Sd:     sd,
+		Params: params,
+	}
+	mock.lockCreateChatRoomDeleteMessageActionsWithSd.Lock()
+	mock.calls.CreateChatRoomDeleteMessageActionsWithSd = append(mock.calls.CreateChatRoomDeleteMessageActionsWithSd, callInfo)
+	mock.lockCreateChatRoomDeleteMessageActionsWithSd.Unlock()
+	return mock.CreateChatRoomDeleteMessageActionsWithSdFunc(ctx, sd, params)
+}
+
+// CreateChatRoomDeleteMessageActionsWithSdCalls gets all the calls that were made to CreateChatRoomDeleteMessageActionsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.CreateChatRoomDeleteMessageActionsWithSdCalls())
+func (mock *StoreMock) CreateChatRoomDeleteMessageActionsWithSdCalls() []struct {
+	Ctx    context.Context
+	Sd     Sd
+	Params []parameter.CreateChatRoomDeleteMessageActionParam
+} {
+	var calls []struct {
+		Ctx    context.Context
+		Sd     Sd
+		Params []parameter.CreateChatRoomDeleteMessageActionParam
+	}
+	mock.lockCreateChatRoomDeleteMessageActionsWithSd.RLock()
+	calls = mock.calls.CreateChatRoomDeleteMessageActionsWithSd
+	mock.lockCreateChatRoomDeleteMessageActionsWithSd.RUnlock()
 	return calls
 }
 
@@ -24990,6 +25456,82 @@ func (mock *StoreMock) DeleteChatRoomCreateActionWithSdCalls() []struct {
 	mock.lockDeleteChatRoomCreateActionWithSd.RLock()
 	calls = mock.calls.DeleteChatRoomCreateActionWithSd
 	mock.lockDeleteChatRoomCreateActionWithSd.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomDeleteMessageAction calls DeleteChatRoomDeleteMessageActionFunc.
+func (mock *StoreMock) DeleteChatRoomDeleteMessageAction(ctx context.Context, chatRoomDeleteMessageActionID uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomDeleteMessageActionFunc == nil {
+		panic("StoreMock.DeleteChatRoomDeleteMessageActionFunc: method is nil but Store.DeleteChatRoomDeleteMessageAction was just called")
+	}
+	callInfo := struct {
+		Ctx                           context.Context
+		ChatRoomDeleteMessageActionID uuid.UUID
+	}{
+		Ctx:                           ctx,
+		ChatRoomDeleteMessageActionID: chatRoomDeleteMessageActionID,
+	}
+	mock.lockDeleteChatRoomDeleteMessageAction.Lock()
+	mock.calls.DeleteChatRoomDeleteMessageAction = append(mock.calls.DeleteChatRoomDeleteMessageAction, callInfo)
+	mock.lockDeleteChatRoomDeleteMessageAction.Unlock()
+	return mock.DeleteChatRoomDeleteMessageActionFunc(ctx, chatRoomDeleteMessageActionID)
+}
+
+// DeleteChatRoomDeleteMessageActionCalls gets all the calls that were made to DeleteChatRoomDeleteMessageAction.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomDeleteMessageActionCalls())
+func (mock *StoreMock) DeleteChatRoomDeleteMessageActionCalls() []struct {
+	Ctx                           context.Context
+	ChatRoomDeleteMessageActionID uuid.UUID
+} {
+	var calls []struct {
+		Ctx                           context.Context
+		ChatRoomDeleteMessageActionID uuid.UUID
+	}
+	mock.lockDeleteChatRoomDeleteMessageAction.RLock()
+	calls = mock.calls.DeleteChatRoomDeleteMessageAction
+	mock.lockDeleteChatRoomDeleteMessageAction.RUnlock()
+	return calls
+}
+
+// DeleteChatRoomDeleteMessageActionWithSd calls DeleteChatRoomDeleteMessageActionWithSdFunc.
+func (mock *StoreMock) DeleteChatRoomDeleteMessageActionWithSd(ctx context.Context, sd Sd, chatRoomDeleteMessageActionID uuid.UUID) (int64, error) {
+	if mock.DeleteChatRoomDeleteMessageActionWithSdFunc == nil {
+		panic("StoreMock.DeleteChatRoomDeleteMessageActionWithSdFunc: method is nil but Store.DeleteChatRoomDeleteMessageActionWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                           context.Context
+		Sd                            Sd
+		ChatRoomDeleteMessageActionID uuid.UUID
+	}{
+		Ctx:                           ctx,
+		Sd:                            sd,
+		ChatRoomDeleteMessageActionID: chatRoomDeleteMessageActionID,
+	}
+	mock.lockDeleteChatRoomDeleteMessageActionWithSd.Lock()
+	mock.calls.DeleteChatRoomDeleteMessageActionWithSd = append(mock.calls.DeleteChatRoomDeleteMessageActionWithSd, callInfo)
+	mock.lockDeleteChatRoomDeleteMessageActionWithSd.Unlock()
+	return mock.DeleteChatRoomDeleteMessageActionWithSdFunc(ctx, sd, chatRoomDeleteMessageActionID)
+}
+
+// DeleteChatRoomDeleteMessageActionWithSdCalls gets all the calls that were made to DeleteChatRoomDeleteMessageActionWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DeleteChatRoomDeleteMessageActionWithSdCalls())
+func (mock *StoreMock) DeleteChatRoomDeleteMessageActionWithSdCalls() []struct {
+	Ctx                           context.Context
+	Sd                            Sd
+	ChatRoomDeleteMessageActionID uuid.UUID
+} {
+	var calls []struct {
+		Ctx                           context.Context
+		Sd                            Sd
+		ChatRoomDeleteMessageActionID uuid.UUID
+	}
+	mock.lockDeleteChatRoomDeleteMessageActionWithSd.RLock()
+	calls = mock.calls.DeleteChatRoomDeleteMessageActionWithSd
+	mock.lockDeleteChatRoomDeleteMessageActionWithSd.RUnlock()
 	return calls
 }
 
@@ -35369,6 +35911,122 @@ func (mock *StoreMock) GetChatRoomCreateActionsOnChatRoomWithSdCalls() []struct 
 	return calls
 }
 
+// GetChatRoomDeleteMessageActionsOnChatRoom calls GetChatRoomDeleteMessageActionsOnChatRoomFunc.
+func (mock *StoreMock) GetChatRoomDeleteMessageActionsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomDeleteMessageActionParam, order parameter.ChatRoomDeleteMessageActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error) {
+	if mock.GetChatRoomDeleteMessageActionsOnChatRoomFunc == nil {
+		panic("StoreMock.GetChatRoomDeleteMessageActionsOnChatRoomFunc: method is nil but Store.GetChatRoomDeleteMessageActionsOnChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		Where      parameter.WhereChatRoomDeleteMessageActionParam
+		Order      parameter.ChatRoomDeleteMessageActionOrderMethod
+		Np         NumberedPaginationParam
+		Cp         CursorPaginationParam
+		Wc         WithCountParam
+	}{
+		Ctx:        ctx,
+		ChatRoomID: chatRoomID,
+		Where:      where,
+		Order:      order,
+		Np:         np,
+		Cp:         cp,
+		Wc:         wc,
+	}
+	mock.lockGetChatRoomDeleteMessageActionsOnChatRoom.Lock()
+	mock.calls.GetChatRoomDeleteMessageActionsOnChatRoom = append(mock.calls.GetChatRoomDeleteMessageActionsOnChatRoom, callInfo)
+	mock.lockGetChatRoomDeleteMessageActionsOnChatRoom.Unlock()
+	return mock.GetChatRoomDeleteMessageActionsOnChatRoomFunc(ctx, chatRoomID, where, order, np, cp, wc)
+}
+
+// GetChatRoomDeleteMessageActionsOnChatRoomCalls gets all the calls that were made to GetChatRoomDeleteMessageActionsOnChatRoom.
+// Check the length with:
+//
+//	len(mockedStore.GetChatRoomDeleteMessageActionsOnChatRoomCalls())
+func (mock *StoreMock) GetChatRoomDeleteMessageActionsOnChatRoomCalls() []struct {
+	Ctx        context.Context
+	ChatRoomID uuid.UUID
+	Where      parameter.WhereChatRoomDeleteMessageActionParam
+	Order      parameter.ChatRoomDeleteMessageActionOrderMethod
+	Np         NumberedPaginationParam
+	Cp         CursorPaginationParam
+	Wc         WithCountParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		Where      parameter.WhereChatRoomDeleteMessageActionParam
+		Order      parameter.ChatRoomDeleteMessageActionOrderMethod
+		Np         NumberedPaginationParam
+		Cp         CursorPaginationParam
+		Wc         WithCountParam
+	}
+	mock.lockGetChatRoomDeleteMessageActionsOnChatRoom.RLock()
+	calls = mock.calls.GetChatRoomDeleteMessageActionsOnChatRoom
+	mock.lockGetChatRoomDeleteMessageActionsOnChatRoom.RUnlock()
+	return calls
+}
+
+// GetChatRoomDeleteMessageActionsOnChatRoomWithSd calls GetChatRoomDeleteMessageActionsOnChatRoomWithSdFunc.
+func (mock *StoreMock) GetChatRoomDeleteMessageActionsOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID, where parameter.WhereChatRoomDeleteMessageActionParam, order parameter.ChatRoomDeleteMessageActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error) {
+	if mock.GetChatRoomDeleteMessageActionsOnChatRoomWithSdFunc == nil {
+		panic("StoreMock.GetChatRoomDeleteMessageActionsOnChatRoomWithSdFunc: method is nil but Store.GetChatRoomDeleteMessageActionsOnChatRoomWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+		Where      parameter.WhereChatRoomDeleteMessageActionParam
+		Order      parameter.ChatRoomDeleteMessageActionOrderMethod
+		Np         NumberedPaginationParam
+		Cp         CursorPaginationParam
+		Wc         WithCountParam
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		ChatRoomID: chatRoomID,
+		Where:      where,
+		Order:      order,
+		Np:         np,
+		Cp:         cp,
+		Wc:         wc,
+	}
+	mock.lockGetChatRoomDeleteMessageActionsOnChatRoomWithSd.Lock()
+	mock.calls.GetChatRoomDeleteMessageActionsOnChatRoomWithSd = append(mock.calls.GetChatRoomDeleteMessageActionsOnChatRoomWithSd, callInfo)
+	mock.lockGetChatRoomDeleteMessageActionsOnChatRoomWithSd.Unlock()
+	return mock.GetChatRoomDeleteMessageActionsOnChatRoomWithSdFunc(ctx, sd, chatRoomID, where, order, np, cp, wc)
+}
+
+// GetChatRoomDeleteMessageActionsOnChatRoomWithSdCalls gets all the calls that were made to GetChatRoomDeleteMessageActionsOnChatRoomWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetChatRoomDeleteMessageActionsOnChatRoomWithSdCalls())
+func (mock *StoreMock) GetChatRoomDeleteMessageActionsOnChatRoomWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	ChatRoomID uuid.UUID
+	Where      parameter.WhereChatRoomDeleteMessageActionParam
+	Order      parameter.ChatRoomDeleteMessageActionOrderMethod
+	Np         NumberedPaginationParam
+	Cp         CursorPaginationParam
+	Wc         WithCountParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+		Where      parameter.WhereChatRoomDeleteMessageActionParam
+		Order      parameter.ChatRoomDeleteMessageActionOrderMethod
+		Np         NumberedPaginationParam
+		Cp         CursorPaginationParam
+		Wc         WithCountParam
+	}
+	mock.lockGetChatRoomDeleteMessageActionsOnChatRoomWithSd.RLock()
+	calls = mock.calls.GetChatRoomDeleteMessageActionsOnChatRoomWithSd
+	mock.lockGetChatRoomDeleteMessageActionsOnChatRoomWithSd.RUnlock()
+	return calls
+}
+
 // GetChatRoomRemoveMemberActionsOnChatRoom calls GetChatRoomRemoveMemberActionsOnChatRoomFunc.
 func (mock *StoreMock) GetChatRoomRemoveMemberActionsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, where parameter.WhereChatRoomRemoveMemberActionParam, order parameter.ChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
 	if mock.GetChatRoomRemoveMemberActionsOnChatRoomFunc == nil {
@@ -40554,6 +41212,98 @@ func (mock *StoreMock) GetPluralChatRoomCreateActionsWithSdCalls() []struct {
 	mock.lockGetPluralChatRoomCreateActionsWithSd.RLock()
 	calls = mock.calls.GetPluralChatRoomCreateActionsWithSd
 	mock.lockGetPluralChatRoomCreateActionsWithSd.RUnlock()
+	return calls
+}
+
+// GetPluralChatRoomDeleteMessageActions calls GetPluralChatRoomDeleteMessageActionsFunc.
+func (mock *StoreMock) GetPluralChatRoomDeleteMessageActions(ctx context.Context, chatRoomDeleteMessageActionIDs []uuid.UUID, order parameter.ChatRoomDeleteMessageActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error) {
+	if mock.GetPluralChatRoomDeleteMessageActionsFunc == nil {
+		panic("StoreMock.GetPluralChatRoomDeleteMessageActionsFunc: method is nil but Store.GetPluralChatRoomDeleteMessageActions was just called")
+	}
+	callInfo := struct {
+		Ctx                            context.Context
+		ChatRoomDeleteMessageActionIDs []uuid.UUID
+		Order                          parameter.ChatRoomDeleteMessageActionOrderMethod
+		Np                             NumberedPaginationParam
+	}{
+		Ctx:                            ctx,
+		ChatRoomDeleteMessageActionIDs: chatRoomDeleteMessageActionIDs,
+		Order:                          order,
+		Np:                             np,
+	}
+	mock.lockGetPluralChatRoomDeleteMessageActions.Lock()
+	mock.calls.GetPluralChatRoomDeleteMessageActions = append(mock.calls.GetPluralChatRoomDeleteMessageActions, callInfo)
+	mock.lockGetPluralChatRoomDeleteMessageActions.Unlock()
+	return mock.GetPluralChatRoomDeleteMessageActionsFunc(ctx, chatRoomDeleteMessageActionIDs, order, np)
+}
+
+// GetPluralChatRoomDeleteMessageActionsCalls gets all the calls that were made to GetPluralChatRoomDeleteMessageActions.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralChatRoomDeleteMessageActionsCalls())
+func (mock *StoreMock) GetPluralChatRoomDeleteMessageActionsCalls() []struct {
+	Ctx                            context.Context
+	ChatRoomDeleteMessageActionIDs []uuid.UUID
+	Order                          parameter.ChatRoomDeleteMessageActionOrderMethod
+	Np                             NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx                            context.Context
+		ChatRoomDeleteMessageActionIDs []uuid.UUID
+		Order                          parameter.ChatRoomDeleteMessageActionOrderMethod
+		Np                             NumberedPaginationParam
+	}
+	mock.lockGetPluralChatRoomDeleteMessageActions.RLock()
+	calls = mock.calls.GetPluralChatRoomDeleteMessageActions
+	mock.lockGetPluralChatRoomDeleteMessageActions.RUnlock()
+	return calls
+}
+
+// GetPluralChatRoomDeleteMessageActionsWithSd calls GetPluralChatRoomDeleteMessageActionsWithSdFunc.
+func (mock *StoreMock) GetPluralChatRoomDeleteMessageActionsWithSd(ctx context.Context, sd Sd, chatRoomDeleteMessageActionIDs []uuid.UUID, order parameter.ChatRoomDeleteMessageActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error) {
+	if mock.GetPluralChatRoomDeleteMessageActionsWithSdFunc == nil {
+		panic("StoreMock.GetPluralChatRoomDeleteMessageActionsWithSdFunc: method is nil but Store.GetPluralChatRoomDeleteMessageActionsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                            context.Context
+		Sd                             Sd
+		ChatRoomDeleteMessageActionIDs []uuid.UUID
+		Order                          parameter.ChatRoomDeleteMessageActionOrderMethod
+		Np                             NumberedPaginationParam
+	}{
+		Ctx:                            ctx,
+		Sd:                             sd,
+		ChatRoomDeleteMessageActionIDs: chatRoomDeleteMessageActionIDs,
+		Order:                          order,
+		Np:                             np,
+	}
+	mock.lockGetPluralChatRoomDeleteMessageActionsWithSd.Lock()
+	mock.calls.GetPluralChatRoomDeleteMessageActionsWithSd = append(mock.calls.GetPluralChatRoomDeleteMessageActionsWithSd, callInfo)
+	mock.lockGetPluralChatRoomDeleteMessageActionsWithSd.Unlock()
+	return mock.GetPluralChatRoomDeleteMessageActionsWithSdFunc(ctx, sd, chatRoomDeleteMessageActionIDs, order, np)
+}
+
+// GetPluralChatRoomDeleteMessageActionsWithSdCalls gets all the calls that were made to GetPluralChatRoomDeleteMessageActionsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetPluralChatRoomDeleteMessageActionsWithSdCalls())
+func (mock *StoreMock) GetPluralChatRoomDeleteMessageActionsWithSdCalls() []struct {
+	Ctx                            context.Context
+	Sd                             Sd
+	ChatRoomDeleteMessageActionIDs []uuid.UUID
+	Order                          parameter.ChatRoomDeleteMessageActionOrderMethod
+	Np                             NumberedPaginationParam
+} {
+	var calls []struct {
+		Ctx                            context.Context
+		Sd                             Sd
+		ChatRoomDeleteMessageActionIDs []uuid.UUID
+		Order                          parameter.ChatRoomDeleteMessageActionOrderMethod
+		Np                             NumberedPaginationParam
+	}
+	mock.lockGetPluralChatRoomDeleteMessageActionsWithSd.RLock()
+	calls = mock.calls.GetPluralChatRoomDeleteMessageActionsWithSd
+	mock.lockGetPluralChatRoomDeleteMessageActionsWithSd.RUnlock()
 	return calls
 }
 
@@ -46922,6 +47672,82 @@ func (mock *StoreMock) PluralDeleteChatRoomCreateActionsWithSdCalls() []struct {
 	mock.lockPluralDeleteChatRoomCreateActionsWithSd.RLock()
 	calls = mock.calls.PluralDeleteChatRoomCreateActionsWithSd
 	mock.lockPluralDeleteChatRoomCreateActionsWithSd.RUnlock()
+	return calls
+}
+
+// PluralDeleteChatRoomDeleteMessageActions calls PluralDeleteChatRoomDeleteMessageActionsFunc.
+func (mock *StoreMock) PluralDeleteChatRoomDeleteMessageActions(ctx context.Context, chatRoomDeleteMessageActionIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteChatRoomDeleteMessageActionsFunc == nil {
+		panic("StoreMock.PluralDeleteChatRoomDeleteMessageActionsFunc: method is nil but Store.PluralDeleteChatRoomDeleteMessageActions was just called")
+	}
+	callInfo := struct {
+		Ctx                            context.Context
+		ChatRoomDeleteMessageActionIDs []uuid.UUID
+	}{
+		Ctx:                            ctx,
+		ChatRoomDeleteMessageActionIDs: chatRoomDeleteMessageActionIDs,
+	}
+	mock.lockPluralDeleteChatRoomDeleteMessageActions.Lock()
+	mock.calls.PluralDeleteChatRoomDeleteMessageActions = append(mock.calls.PluralDeleteChatRoomDeleteMessageActions, callInfo)
+	mock.lockPluralDeleteChatRoomDeleteMessageActions.Unlock()
+	return mock.PluralDeleteChatRoomDeleteMessageActionsFunc(ctx, chatRoomDeleteMessageActionIDs)
+}
+
+// PluralDeleteChatRoomDeleteMessageActionsCalls gets all the calls that were made to PluralDeleteChatRoomDeleteMessageActions.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteChatRoomDeleteMessageActionsCalls())
+func (mock *StoreMock) PluralDeleteChatRoomDeleteMessageActionsCalls() []struct {
+	Ctx                            context.Context
+	ChatRoomDeleteMessageActionIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx                            context.Context
+		ChatRoomDeleteMessageActionIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteChatRoomDeleteMessageActions.RLock()
+	calls = mock.calls.PluralDeleteChatRoomDeleteMessageActions
+	mock.lockPluralDeleteChatRoomDeleteMessageActions.RUnlock()
+	return calls
+}
+
+// PluralDeleteChatRoomDeleteMessageActionsWithSd calls PluralDeleteChatRoomDeleteMessageActionsWithSdFunc.
+func (mock *StoreMock) PluralDeleteChatRoomDeleteMessageActionsWithSd(ctx context.Context, sd Sd, chatRoomDeleteMessageActionIDs []uuid.UUID) (int64, error) {
+	if mock.PluralDeleteChatRoomDeleteMessageActionsWithSdFunc == nil {
+		panic("StoreMock.PluralDeleteChatRoomDeleteMessageActionsWithSdFunc: method is nil but Store.PluralDeleteChatRoomDeleteMessageActionsWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx                            context.Context
+		Sd                             Sd
+		ChatRoomDeleteMessageActionIDs []uuid.UUID
+	}{
+		Ctx:                            ctx,
+		Sd:                             sd,
+		ChatRoomDeleteMessageActionIDs: chatRoomDeleteMessageActionIDs,
+	}
+	mock.lockPluralDeleteChatRoomDeleteMessageActionsWithSd.Lock()
+	mock.calls.PluralDeleteChatRoomDeleteMessageActionsWithSd = append(mock.calls.PluralDeleteChatRoomDeleteMessageActionsWithSd, callInfo)
+	mock.lockPluralDeleteChatRoomDeleteMessageActionsWithSd.Unlock()
+	return mock.PluralDeleteChatRoomDeleteMessageActionsWithSdFunc(ctx, sd, chatRoomDeleteMessageActionIDs)
+}
+
+// PluralDeleteChatRoomDeleteMessageActionsWithSdCalls gets all the calls that were made to PluralDeleteChatRoomDeleteMessageActionsWithSd.
+// Check the length with:
+//
+//	len(mockedStore.PluralDeleteChatRoomDeleteMessageActionsWithSdCalls())
+func (mock *StoreMock) PluralDeleteChatRoomDeleteMessageActionsWithSdCalls() []struct {
+	Ctx                            context.Context
+	Sd                             Sd
+	ChatRoomDeleteMessageActionIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx                            context.Context
+		Sd                             Sd
+		ChatRoomDeleteMessageActionIDs []uuid.UUID
+	}
+	mock.lockPluralDeleteChatRoomDeleteMessageActionsWithSd.RLock()
+	calls = mock.calls.PluralDeleteChatRoomDeleteMessageActionsWithSd
+	mock.lockPluralDeleteChatRoomDeleteMessageActionsWithSd.RUnlock()
 	return calls
 }
 

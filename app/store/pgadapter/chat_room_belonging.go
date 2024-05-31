@@ -39,13 +39,13 @@ func convChatRoomOnMember(r query.GetChatRoomsOnMemberRow) entity.ChatRoomOnMemb
 		}
 	}
 	var latestMessage entity.NullableEntity[entity.MessageCard]
-	if r.MessageID.Valid {
+	if r.ChatRoomLatestMessageID != uuid.Nil {
 		latestMessage = entity.NullableEntity[entity.MessageCard]{
 			Valid: true,
 			Entity: entity.MessageCard{
-				MessageID: r.MessageID.Bytes,
-				Body:      r.ChatRoomLatestMessageBody.String,
-				PostedAt:  r.ChatRoomLatestMessagePostedAt.Time,
+				MessageID: r.ChatRoomLatestMessageID,
+				Body:      r.ChatRoomLatestMessageBody,
+				PostedAt:  r.ChatRoomLatestMessagePostedAt,
 			},
 		}
 	}

@@ -382,6 +382,13 @@ type Student struct {
 	MemberID      uuid.UUID   `json:"member_id"`
 }
 
+type TChatRoomDeleteMessageAction struct {
+	TChatRoomDeleteMessageActionsPkey pgtype.Int8 `json:"t_chat_room_delete_message_actions_pkey"`
+	ChatRoomDeleteMessageActionID     uuid.UUID   `json:"chat_room_delete_message_action_id"`
+	ChatRoomActionID                  uuid.UUID   `json:"chat_room_action_id"`
+	DeletedBy                         pgtype.UUID `json:"deleted_by"`
+}
+
 type WorkPosition struct {
 	MWorkPositionsPkey pgtype.Int8 `json:"m_work_positions_pkey"`
 	WorkPositionID     uuid.UUID   `json:"work_position_id"`

@@ -25,6 +25,7 @@ func convChatRoomActionOnChatRoom(
 	var addMemberAction entity.NullableEntity[entity.ChatRoomAddMemberActionWithAddedBy]
 	var removeMemberAction entity.NullableEntity[entity.ChatRoomRemoveMemberActionWithRemovedBy]
 	var withdrawAction entity.NullableEntity[entity.ChatRoomWithdrawActionWithMember]
+	var deleteMessageAction entity.NullableEntity[entity.ChatRoomDeleteMessageActionWithDeletedBy]
 	var message entity.NullableEntity[entity.MessageWithSender]
 
 	if e.ChatRoomCreateActionID.Valid {
@@ -154,6 +155,31 @@ func convChatRoomActionOnChatRoom(
 		}
 	}
 
+	if e.ChatRoomDeleteMessageActionID.Valid {
+		var deletedBy entity.NullableEntity[entity.SimpleMember]
+		if e.DeleteMessageMemberID.Valid {
+			deletedBy = entity.NullableEntity[entity.SimpleMember]{
+				Valid: true,
+				Entity: entity.SimpleMember{
+					MemberID:       e.DeleteMessageMemberID.Bytes,
+					Name:           e.DeleteMessageMemberName.String,
+					Email:          e.DeleteMessageMemberEmail.String,
+					FirstName:      entity.String(e.DeleteMessageMemberFirstName),
+					LastName:       entity.String(e.DeleteMessageMemberLastName),
+					ProfileImageID: entity.UUID(e.DeleteMessageMemberProfileImageID),
+				},
+			}
+		}
+		deleteMessageAction = entity.NullableEntity[entity.ChatRoomDeleteMessageActionWithDeletedBy]{
+			Valid: true,
+			Entity: entity.ChatRoomDeleteMessageActionWithDeletedBy{
+				ChatRoomDeleteMessageActionID: e.ChatRoomDeleteMessageActionID.Bytes,
+				ChatRoomActionID:              e.ChatRoomActionID,
+				DeletedBy:                     deletedBy,
+			},
+		}
+	}
+
 	if e.MessageID.Valid {
 		var sender entity.NullableEntity[entity.MemberCard]
 		if e.MessageSenderID.Valid {
@@ -203,16 +229,17 @@ func convChatRoomActionOnChatRoom(
 	return entity.ChatRoomActionWithDetailForQuery{
 		Pkey: entity.Int(e.TChatRoomActionsPkey),
 		ChatRoomActionWithDetail: entity.ChatRoomActionWithDetail{
-			ChatRoomActionID:           e.ChatRoomActionID,
-			ChatRoomID:                 e.ChatRoomID,
-			ChatRoomActionTypeID:       e.ChatRoomActionTypeID,
-			ActedAt:                    e.ActedAt,
-			ChatRoomCreateAction:       createAction,
-			ChatRoomUpdateNameAction:   updateNameAction,
-			ChatRoomAddMemberAction:    addMemberAction,
-			ChatRoomRemoveMemberAction: removeMemberAction,
-			ChatRoomWithdrawAction:     withdrawAction,
-			Message:                    message,
+			ChatRoomActionID:            e.ChatRoomActionID,
+			ChatRoomID:                  e.ChatRoomID,
+			ChatRoomActionTypeID:        e.ChatRoomActionTypeID,
+			ActedAt:                     e.ActedAt,
+			ChatRoomCreateAction:        createAction,
+			ChatRoomUpdateNameAction:    updateNameAction,
+			ChatRoomAddMemberAction:     addMemberAction,
+			ChatRoomRemoveMemberAction:  removeMemberAction,
+			ChatRoomWithdrawAction:      withdrawAction,
+			ChatRoomDeleteMessageAction: deleteMessageAction,
+			Message:                     message,
 		},
 	}
 }

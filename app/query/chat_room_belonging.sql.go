@@ -153,7 +153,9 @@ m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
-latest_message.message_id chat_room_latest_message_id, latest_message.posted_at chat_room_latest_message_posted_at, latest_message.body chat_room_latest_message_body
+COALESCE(latest_message.message_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_message_id,
+COALESCE(latest_message.posted_at, TIMESTAMP '0001-01-01 00:00:00') chat_room_latest_message_posted_at,
+COALESCE(latest_message.body, '') chat_room_latest_message_body
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
@@ -169,7 +171,7 @@ LEFT JOIN (
 ) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
 WHERE member_id = $1
 AND CASE
-	WHEN $2::boolean = true THEN m_chat_rooms.name LIKE '%' || $3::text || '%'
+	WHEN $2::boolean = true THEN m_chat_rooms.name LIKE '%' || $3::text || '%' ELSE TRUE
 END
 ORDER BY
 	CASE WHEN $4::text = 'name' THEN m_chat_rooms.name END ASC NULLS LAST,
@@ -178,7 +180,6 @@ ORDER BY
 	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
 	CASE WHEN $4::text = 'old_chat' THEN latest_message.posted_at END ASC NULLS LAST,
 	CASE WHEN $4::text = 'late_chat' THEN latest_message.posted_at END DESC NULLS LAST,
-	latest_message.posted_at DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 `
 
@@ -267,7 +268,9 @@ m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
-latest_message.message_id chat_room_latest_message_id, latest_message.posted_at chat_room_latest_message_posted_at, latest_message.body chat_room_latest_message_body
+COALESCE(latest_message.message_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_message_id,
+COALESCE(latest_message.posted_at, TIMESTAMP '0001-01-01 00:00:00') chat_room_latest_message_posted_at,
+COALESCE(latest_message.body, '') chat_room_latest_message_body
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
@@ -283,7 +286,7 @@ LEFT JOIN (
 ) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
 WHERE member_id = $1
 AND CASE
-	WHEN $3::boolean = true THEN m_chat_rooms.name LIKE '%' || $4::text || '%'
+	WHEN $3::boolean = true THEN m_chat_rooms.name LIKE '%' || $4::text || '%' ELSE TRUE
 END
 AND CASE $5::text
 	WHEN 'next' THEN
@@ -422,7 +425,9 @@ m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
-latest_message.message_id chat_room_latest_message_id, latest_message.posted_at chat_room_latest_message_posted_at, latest_message.body chat_room_latest_message_body
+COALESCE(latest_message.message_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_message_id,
+COALESCE(latest_message.posted_at, TIMESTAMP '0001-01-01 00:00:00') chat_room_latest_message_posted_at,
+COALESCE(latest_message.body, '') chat_room_latest_message_body
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
@@ -438,7 +443,7 @@ LEFT JOIN (
 ) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
 WHERE member_id = $1
 AND CASE
-	WHEN $4::boolean = true THEN m_chat_rooms.name LIKE '%' || $5::text || '%'
+	WHEN $4::boolean = true THEN m_chat_rooms.name LIKE '%' || $5::text || '%' ELSE TRUE
 END
 ORDER BY
 	CASE WHEN $6::text = 'name' THEN m_chat_rooms.name END ASC NULLS LAST,
@@ -447,7 +452,6 @@ ORDER BY
 	CASE WHEN $6::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
 	CASE WHEN $6::text = 'old_chat' THEN latest_message.posted_at END ASC NULLS LAST,
 	CASE WHEN $6::text = 'late_chat' THEN latest_message.posted_at END DESC NULLS LAST,
-	latest_message.posted_at DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 LIMIT $2 OFFSET $3
 `
@@ -859,7 +863,9 @@ m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
-latest_message.message_id chat_room_latest_message_id, latest_message.posted_at chat_room_latest_message_posted_at, latest_message.body chat_room_latest_message_body
+COALESCE(latest_message.message_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_message_id,
+COALESCE(latest_message.posted_at, TIMESTAMP '0001-01-01 00:00:00') chat_room_latest_message_posted_at,
+COALESCE(latest_message.body, '') chat_room_latest_message_body
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
@@ -962,7 +968,9 @@ m_chat_rooms.cover_image_id chat_room_cover_image_id, t_images.height chat_room_
 t_images.width chat_room_cover_image_width, t_images.attachable_item_id chat_room_cover_image_attachable_item_id,
 t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.from_outer chat_room_cover_image_from_outer, t_attachable_items.alias chat_room_cover_image_alias,
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
-latest_message.message_id chat_room_latest_message_id, latest_message.posted_at chat_room_latest_message_posted_at, latest_message.body chat_room_latest_message_body
+COALESCE(latest_message.message_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_message_id,
+COALESCE(latest_message.posted_at, TIMESTAMP '0001-01-01 00:00:00') chat_room_latest_message_posted_at,
+COALESCE(latest_message.body, '') chat_room_latest_message_body
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id

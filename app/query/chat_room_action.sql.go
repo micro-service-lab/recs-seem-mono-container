@@ -79,6 +79,7 @@ t_chat_room_update_name_actions.chat_room_update_name_action_id, t_chat_room_upd
 t_chat_room_withdraw_actions.chat_room_withdraw_action_id, wm.member_id withdraw_member_id, wm.name withdraw_member_name, wm.first_name withdraw_member_first_name, wm.last_name withdraw_member_last_name, wm.email withdraw_member_email, wm.profile_image_id withdraw_member_profile_image_id,
 t_chat_room_add_member_actions.chat_room_add_member_action_id, am.member_id add_member_id, am.name add_member_name, am.first_name add_member_first_name, am.last_name add_member_last_name, am.email add_member_email, am.profile_image_id add_member_profile_image_id,
 t_chat_room_remove_member_actions.chat_room_remove_member_action_id, rm.member_id remove_member_id, rm.name remove_member_name, rm.first_name remove_member_first_name, rm.last_name remove_member_last_name, rm.email remove_member_email, rm.profile_image_id remove_member_profile_image_id,
+t_chat_room_delete_message_actions.chat_room_delete_message_action_id, dm.member_id delete_message_member_id, dm.name delete_message_member_name, dm.first_name delete_message_member_first_name, dm.last_name delete_message_member_last_name, dm.email delete_message_member_email, dm.profile_image_id delete_message_member_profile_image_id,
 t_messages.message_id, t_messages.sender_id message_sender_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at,
 mm.name message_sender_name, mm.first_name message_sender_first_name, mm.last_name message_sender_last_name, mm.email message_sender_email, mm.profile_image_id message_sender_profile_image_id,
 t_images.height message_sender_profile_image_height, t_images.width message_sender_profile_image_width, t_images.attachable_item_id message_sender_profile_image_attachable_item_id,
@@ -95,6 +96,8 @@ LEFT JOIN t_chat_room_add_member_actions ON t_chat_room_actions.chat_room_action
 LEFT JOIN m_members am ON t_chat_room_add_member_actions.added_by = am.member_id
 LEFT JOIN t_chat_room_remove_member_actions ON t_chat_room_actions.chat_room_action_id = t_chat_room_remove_member_actions.chat_room_action_id
 LEFT JOIN m_members rm ON t_chat_room_remove_member_actions.removed_by = rm.member_id
+LEFT JOIN t_chat_room_delete_message_actions ON t_chat_room_actions.chat_room_action_id = t_chat_room_delete_message_actions.chat_room_action_id
+LEFT JOIN m_members dm ON t_chat_room_delete_message_actions.deleted_by = dm.member_id
 LEFT JOIN t_messages ON t_chat_room_actions.chat_room_action_id = t_messages.chat_room_action_id
 LEFT JOIN m_members mm ON t_messages.member_id = mm.member_id
 LEFT JOIN t_images ON mm.chat_room_action_id = t_images.chat_room_action_id
@@ -158,6 +161,13 @@ type GetChatRoomActionsOnChatRoomRow struct {
 	RemoveMemberLastName                      pgtype.Text        `json:"remove_member_last_name"`
 	RemoveMemberEmail                         pgtype.Text        `json:"remove_member_email"`
 	RemoveMemberProfileImageID                pgtype.UUID        `json:"remove_member_profile_image_id"`
+	ChatRoomDeleteMessageActionID             pgtype.UUID        `json:"chat_room_delete_message_action_id"`
+	DeleteMessageMemberID                     pgtype.UUID        `json:"delete_message_member_id"`
+	DeleteMessageMemberName                   pgtype.Text        `json:"delete_message_member_name"`
+	DeleteMessageMemberFirstName              pgtype.Text        `json:"delete_message_member_first_name"`
+	DeleteMessageMemberLastName               pgtype.Text        `json:"delete_message_member_last_name"`
+	DeleteMessageMemberEmail                  pgtype.Text        `json:"delete_message_member_email"`
+	DeleteMessageMemberProfileImageID         pgtype.UUID        `json:"delete_message_member_profile_image_id"`
 	MessageID                                 pgtype.UUID        `json:"message_id"`
 	MessageSenderID                           pgtype.UUID        `json:"message_sender_id"`
 	MessageBody                               pgtype.Text        `json:"message_body"`
@@ -236,6 +246,13 @@ func (q *Queries) GetChatRoomActionsOnChatRoom(ctx context.Context, arg GetChatR
 			&i.RemoveMemberLastName,
 			&i.RemoveMemberEmail,
 			&i.RemoveMemberProfileImageID,
+			&i.ChatRoomDeleteMessageActionID,
+			&i.DeleteMessageMemberID,
+			&i.DeleteMessageMemberName,
+			&i.DeleteMessageMemberFirstName,
+			&i.DeleteMessageMemberLastName,
+			&i.DeleteMessageMemberEmail,
+			&i.DeleteMessageMemberProfileImageID,
 			&i.MessageID,
 			&i.MessageSenderID,
 			&i.MessageBody,
@@ -273,6 +290,7 @@ t_chat_room_update_name_actions.chat_room_update_name_action_id, t_chat_room_upd
 t_chat_room_withdraw_actions.chat_room_withdraw_action_id, wm.member_id withdraw_member_id, wm.name withdraw_member_name, wm.first_name withdraw_member_first_name, wm.last_name withdraw_member_last_name, wm.email withdraw_member_email, wm.profile_image_id withdraw_member_profile_image_id,
 t_chat_room_add_member_actions.chat_room_add_member_action_id, am.member_id add_member_id, am.name add_member_name, am.first_name add_member_first_name, am.last_name add_member_last_name, am.email add_member_email, am.profile_image_id add_member_profile_image_id,
 t_chat_room_remove_member_actions.chat_room_remove_member_action_id, rm.member_id remove_member_id, rm.name remove_member_name, rm.first_name remove_member_first_name, rm.last_name remove_member_last_name, rm.email remove_member_email, rm.profile_image_id remove_member_profile_image_id,
+t_chat_room_delete_message_actions.chat_room_delete_message_action_id, dm.member_id delete_message_member_id, dm.name delete_message_member_name, dm.first_name delete_message_member_first_name, dm.last_name delete_message_member_last_name, dm.email delete_message_member_email, dm.profile_image_id delete_message_member_profile_image_id,
 t_messages.message_id, t_messages.sender_id message_sender_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at,
 mm.name message_sender_name, mm.first_name message_sender_first_name, mm.last_name message_sender_last_name, mm.email message_sender_email, mm.profile_image_id message_sender_profile_image_id,
 t_images.height message_sender_profile_image_height, t_images.width message_sender_profile_image_width, t_images.attachable_item_id message_sender_profile_image_attachable_item_id,
@@ -289,6 +307,8 @@ LEFT JOIN t_chat_room_add_member_actions ON t_chat_room_actions.chat_room_action
 LEFT JOIN m_members am ON t_chat_room_add_member_actions.added_by = am.member_id
 LEFT JOIN t_chat_room_remove_member_actions ON t_chat_room_actions.chat_room_action_id = t_chat_room_remove_member_actions.chat_room_action_id
 LEFT JOIN m_members rm ON t_chat_room_remove_member_actions.removed_by = rm.member_id
+LEFT JOIN t_chat_room_delete_message_actions ON t_chat_room_actions.chat_room_action_id = t_chat_room_delete_message_actions.chat_room_action_id
+LEFT JOIN m_members dm ON t_chat_room_delete_message_actions.deleted_by = dm.member_id
 LEFT JOIN t_messages ON t_chat_room_actions.chat_room_action_id = t_messages.chat_room_action_id
 LEFT JOIN m_members mm ON t_messages.member_id = mm.member_id
 LEFT JOIN t_images ON mm.chat_room_action_id = t_images.chat_room_action_id
@@ -374,6 +394,13 @@ type GetChatRoomActionsOnChatRoomUseKeysetPaginateRow struct {
 	RemoveMemberLastName                      pgtype.Text        `json:"remove_member_last_name"`
 	RemoveMemberEmail                         pgtype.Text        `json:"remove_member_email"`
 	RemoveMemberProfileImageID                pgtype.UUID        `json:"remove_member_profile_image_id"`
+	ChatRoomDeleteMessageActionID             pgtype.UUID        `json:"chat_room_delete_message_action_id"`
+	DeleteMessageMemberID                     pgtype.UUID        `json:"delete_message_member_id"`
+	DeleteMessageMemberName                   pgtype.Text        `json:"delete_message_member_name"`
+	DeleteMessageMemberFirstName              pgtype.Text        `json:"delete_message_member_first_name"`
+	DeleteMessageMemberLastName               pgtype.Text        `json:"delete_message_member_last_name"`
+	DeleteMessageMemberEmail                  pgtype.Text        `json:"delete_message_member_email"`
+	DeleteMessageMemberProfileImageID         pgtype.UUID        `json:"delete_message_member_profile_image_id"`
 	MessageID                                 pgtype.UUID        `json:"message_id"`
 	MessageSenderID                           pgtype.UUID        `json:"message_sender_id"`
 	MessageBody                               pgtype.Text        `json:"message_body"`
@@ -456,6 +483,13 @@ func (q *Queries) GetChatRoomActionsOnChatRoomUseKeysetPaginate(ctx context.Cont
 			&i.RemoveMemberLastName,
 			&i.RemoveMemberEmail,
 			&i.RemoveMemberProfileImageID,
+			&i.ChatRoomDeleteMessageActionID,
+			&i.DeleteMessageMemberID,
+			&i.DeleteMessageMemberName,
+			&i.DeleteMessageMemberFirstName,
+			&i.DeleteMessageMemberLastName,
+			&i.DeleteMessageMemberEmail,
+			&i.DeleteMessageMemberProfileImageID,
 			&i.MessageID,
 			&i.MessageSenderID,
 			&i.MessageBody,
@@ -493,6 +527,7 @@ t_chat_room_update_name_actions.chat_room_update_name_action_id, t_chat_room_upd
 t_chat_room_withdraw_actions.chat_room_withdraw_action_id, wm.member_id withdraw_member_id, wm.name withdraw_member_name, wm.first_name withdraw_member_first_name, wm.last_name withdraw_member_last_name, wm.email withdraw_member_email, wm.profile_image_id withdraw_member_profile_image_id,
 t_chat_room_add_member_actions.chat_room_add_member_action_id, am.member_id add_member_id, am.name add_member_name, am.first_name add_member_first_name, am.last_name add_member_last_name, am.email add_member_email, am.profile_image_id add_member_profile_image_id,
 t_chat_room_remove_member_actions.chat_room_remove_member_action_id, rm.member_id remove_member_id, rm.name remove_member_name, rm.first_name remove_member_first_name, rm.last_name remove_member_last_name, rm.email remove_member_email, rm.profile_image_id remove_member_profile_image_id,
+t_chat_room_delete_message_actions.chat_room_delete_message_action_id, dm.member_id delete_message_member_id, dm.name delete_message_member_name, dm.first_name delete_message_member_first_name, dm.last_name delete_message_member_last_name, dm.email delete_message_member_email, dm.profile_image_id delete_message_member_profile_image_id,
 t_messages.message_id, t_messages.sender_id message_sender_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at,
 mm.name message_sender_name, mm.first_name message_sender_first_name, mm.last_name message_sender_last_name, mm.email message_sender_email, mm.profile_image_id message_sender_profile_image_id,
 t_images.height message_sender_profile_image_height, t_images.width message_sender_profile_image_width, t_images.attachable_item_id message_sender_profile_image_attachable_item_id,
@@ -509,6 +544,8 @@ LEFT JOIN t_chat_room_add_member_actions ON t_chat_room_actions.chat_room_action
 LEFT JOIN m_members am ON t_chat_room_add_member_actions.added_by = am.member_id
 LEFT JOIN t_chat_room_remove_member_actions ON t_chat_room_actions.chat_room_action_id = t_chat_room_remove_member_actions.chat_room_action_id
 LEFT JOIN m_members rm ON t_chat_room_remove_member_actions.removed_by = rm.member_id
+LEFT JOIN t_chat_room_delete_message_actions ON t_chat_room_actions.chat_room_action_id = t_chat_room_delete_message_actions.chat_room_action_id
+LEFT JOIN m_members dm ON t_chat_room_delete_message_actions.deleted_by = dm.member_id
 LEFT JOIN t_messages ON t_chat_room_actions.chat_room_action_id = t_messages.chat_room_action_id
 LEFT JOIN m_members mm ON t_messages.member_id = mm.member_id
 LEFT JOIN t_images ON mm.chat_room_action_id = t_images.chat_room_action_id
@@ -575,6 +612,13 @@ type GetChatRoomActionsOnChatRoomUseNumberedPaginateRow struct {
 	RemoveMemberLastName                      pgtype.Text        `json:"remove_member_last_name"`
 	RemoveMemberEmail                         pgtype.Text        `json:"remove_member_email"`
 	RemoveMemberProfileImageID                pgtype.UUID        `json:"remove_member_profile_image_id"`
+	ChatRoomDeleteMessageActionID             pgtype.UUID        `json:"chat_room_delete_message_action_id"`
+	DeleteMessageMemberID                     pgtype.UUID        `json:"delete_message_member_id"`
+	DeleteMessageMemberName                   pgtype.Text        `json:"delete_message_member_name"`
+	DeleteMessageMemberFirstName              pgtype.Text        `json:"delete_message_member_first_name"`
+	DeleteMessageMemberLastName               pgtype.Text        `json:"delete_message_member_last_name"`
+	DeleteMessageMemberEmail                  pgtype.Text        `json:"delete_message_member_email"`
+	DeleteMessageMemberProfileImageID         pgtype.UUID        `json:"delete_message_member_profile_image_id"`
 	MessageID                                 pgtype.UUID        `json:"message_id"`
 	MessageSenderID                           pgtype.UUID        `json:"message_sender_id"`
 	MessageBody                               pgtype.Text        `json:"message_body"`
@@ -655,6 +699,13 @@ func (q *Queries) GetChatRoomActionsOnChatRoomUseNumberedPaginate(ctx context.Co
 			&i.RemoveMemberLastName,
 			&i.RemoveMemberEmail,
 			&i.RemoveMemberProfileImageID,
+			&i.ChatRoomDeleteMessageActionID,
+			&i.DeleteMessageMemberID,
+			&i.DeleteMessageMemberName,
+			&i.DeleteMessageMemberFirstName,
+			&i.DeleteMessageMemberLastName,
+			&i.DeleteMessageMemberEmail,
+			&i.DeleteMessageMemberProfileImageID,
 			&i.MessageID,
 			&i.MessageSenderID,
 			&i.MessageBody,
@@ -692,6 +743,7 @@ t_chat_room_update_name_actions.chat_room_update_name_action_id, t_chat_room_upd
 t_chat_room_withdraw_actions.chat_room_withdraw_action_id, wm.member_id withdraw_member_id, wm.name withdraw_member_name, wm.first_name withdraw_member_first_name, wm.last_name withdraw_member_last_name, wm.email withdraw_member_email, wm.profile_image_id withdraw_member_profile_image_id,
 t_chat_room_add_member_actions.chat_room_add_member_action_id, am.member_id add_member_id, am.name add_member_name, am.first_name add_member_first_name, am.last_name add_member_last_name, am.email add_member_email, am.profile_image_id add_member_profile_image_id,
 t_chat_room_remove_member_actions.chat_room_remove_member_action_id, rm.member_id remove_member_id, rm.name remove_member_name, rm.first_name remove_member_first_name, rm.last_name remove_member_last_name, rm.email remove_member_email, rm.profile_image_id remove_member_profile_image_id,
+t_chat_room_delete_message_actions.chat_room_delete_message_action_id, dm.member_id delete_message_member_id, dm.name delete_message_member_name, dm.first_name delete_message_member_first_name, dm.last_name delete_message_member_last_name, dm.email delete_message_member_email, dm.profile_image_id delete_message_member_profile_image_id,
 t_messages.message_id, t_messages.sender_id message_sender_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at,
 mm.name message_sender_name, mm.first_name message_sender_first_name, mm.last_name message_sender_last_name, mm.email message_sender_email, mm.profile_image_id message_sender_profile_image_id,
 t_images.height message_sender_profile_image_height, t_images.width message_sender_profile_image_width, t_images.attachable_item_id message_sender_profile_image_attachable_item_id,
@@ -708,6 +760,8 @@ LEFT JOIN t_chat_room_add_member_actions ON t_chat_room_actions.chat_room_action
 LEFT JOIN m_members am ON t_chat_room_add_member_actions.added_by = am.member_id
 LEFT JOIN t_chat_room_remove_member_actions ON t_chat_room_actions.chat_room_action_id = t_chat_room_remove_member_actions.chat_room_action_id
 LEFT JOIN m_members rm ON t_chat_room_remove_member_actions.removed_by = rm.member_id
+LEFT JOIN t_chat_room_delete_message_actions ON t_chat_room_actions.chat_room_action_id = t_chat_room_delete_message_actions.chat_room_action_id
+LEFT JOIN m_members dm ON t_chat_room_delete_message_actions.deleted_by = dm.member_id
 LEFT JOIN t_messages ON t_chat_room_actions.chat_room_action_id = t_messages.chat_room_action_id
 LEFT JOIN m_members mm ON t_messages.member_id = mm.member_id
 LEFT JOIN t_images ON mm.chat_room_action_id = t_images.chat_room_action_id
@@ -767,6 +821,13 @@ type GetPluralChatRoomActionsRow struct {
 	RemoveMemberLastName                      pgtype.Text        `json:"remove_member_last_name"`
 	RemoveMemberEmail                         pgtype.Text        `json:"remove_member_email"`
 	RemoveMemberProfileImageID                pgtype.UUID        `json:"remove_member_profile_image_id"`
+	ChatRoomDeleteMessageActionID             pgtype.UUID        `json:"chat_room_delete_message_action_id"`
+	DeleteMessageMemberID                     pgtype.UUID        `json:"delete_message_member_id"`
+	DeleteMessageMemberName                   pgtype.Text        `json:"delete_message_member_name"`
+	DeleteMessageMemberFirstName              pgtype.Text        `json:"delete_message_member_first_name"`
+	DeleteMessageMemberLastName               pgtype.Text        `json:"delete_message_member_last_name"`
+	DeleteMessageMemberEmail                  pgtype.Text        `json:"delete_message_member_email"`
+	DeleteMessageMemberProfileImageID         pgtype.UUID        `json:"delete_message_member_profile_image_id"`
 	MessageID                                 pgtype.UUID        `json:"message_id"`
 	MessageSenderID                           pgtype.UUID        `json:"message_sender_id"`
 	MessageBody                               pgtype.Text        `json:"message_body"`
@@ -840,6 +901,13 @@ func (q *Queries) GetPluralChatRoomActions(ctx context.Context, arg GetPluralCha
 			&i.RemoveMemberLastName,
 			&i.RemoveMemberEmail,
 			&i.RemoveMemberProfileImageID,
+			&i.ChatRoomDeleteMessageActionID,
+			&i.DeleteMessageMemberID,
+			&i.DeleteMessageMemberName,
+			&i.DeleteMessageMemberFirstName,
+			&i.DeleteMessageMemberLastName,
+			&i.DeleteMessageMemberEmail,
+			&i.DeleteMessageMemberProfileImageID,
 			&i.MessageID,
 			&i.MessageSenderID,
 			&i.MessageBody,
@@ -877,6 +945,7 @@ t_chat_room_update_name_actions.chat_room_update_name_action_id, t_chat_room_upd
 t_chat_room_withdraw_actions.chat_room_withdraw_action_id, wm.member_id withdraw_member_id, wm.name withdraw_member_name, wm.first_name withdraw_member_first_name, wm.last_name withdraw_member_last_name, wm.email withdraw_member_email, wm.profile_image_id withdraw_member_profile_image_id,
 t_chat_room_add_member_actions.chat_room_add_member_action_id, am.member_id add_member_id, am.name add_member_name, am.first_name add_member_first_name, am.last_name add_member_last_name, am.email add_member_email, am.profile_image_id add_member_profile_image_id,
 t_chat_room_remove_member_actions.chat_room_remove_member_action_id, rm.member_id remove_member_id, rm.name remove_member_name, rm.first_name remove_member_first_name, rm.last_name remove_member_last_name, rm.email remove_member_email, rm.profile_image_id remove_member_profile_image_id,
+t_chat_room_delete_message_actions.chat_room_delete_message_action_id, dm.member_id delete_message_member_id, dm.name delete_message_member_name, dm.first_name delete_message_member_first_name, dm.last_name delete_message_member_last_name, dm.email delete_message_member_email, dm.profile_image_id delete_message_member_profile_image_id,
 t_messages.message_id, t_messages.sender_id message_sender_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at,
 mm.name message_sender_name, mm.first_name message_sender_first_name, mm.last_name message_sender_last_name, mm.email message_sender_email, mm.profile_image_id message_sender_profile_image_id,
 t_images.height message_sender_profile_image_height, t_images.width message_sender_profile_image_width, t_images.attachable_item_id message_sender_profile_image_attachable_item_id,
@@ -893,6 +962,8 @@ LEFT JOIN t_chat_room_add_member_actions ON t_chat_room_actions.chat_room_action
 LEFT JOIN m_members am ON t_chat_room_add_member_actions.added_by = am.member_id
 LEFT JOIN t_chat_room_remove_member_actions ON t_chat_room_actions.chat_room_action_id = t_chat_room_remove_member_actions.chat_room_action_id
 LEFT JOIN m_members rm ON t_chat_room_remove_member_actions.removed_by = rm.member_id
+LEFT JOIN t_chat_room_delete_message_actions ON t_chat_room_actions.chat_room_action_id = t_chat_room_delete_message_actions.chat_room_action_id
+LEFT JOIN m_members dm ON t_chat_room_delete_message_actions.deleted_by = dm.member_id
 LEFT JOIN t_messages ON t_chat_room_actions.chat_room_action_id = t_messages.chat_room_action_id
 LEFT JOIN m_members mm ON t_messages.member_id = mm.member_id
 LEFT JOIN t_images ON mm.chat_room_action_id = t_images.chat_room_action_id
@@ -955,6 +1026,13 @@ type GetPluralChatRoomActionsUseNumberedPaginateRow struct {
 	RemoveMemberLastName                      pgtype.Text        `json:"remove_member_last_name"`
 	RemoveMemberEmail                         pgtype.Text        `json:"remove_member_email"`
 	RemoveMemberProfileImageID                pgtype.UUID        `json:"remove_member_profile_image_id"`
+	ChatRoomDeleteMessageActionID             pgtype.UUID        `json:"chat_room_delete_message_action_id"`
+	DeleteMessageMemberID                     pgtype.UUID        `json:"delete_message_member_id"`
+	DeleteMessageMemberName                   pgtype.Text        `json:"delete_message_member_name"`
+	DeleteMessageMemberFirstName              pgtype.Text        `json:"delete_message_member_first_name"`
+	DeleteMessageMemberLastName               pgtype.Text        `json:"delete_message_member_last_name"`
+	DeleteMessageMemberEmail                  pgtype.Text        `json:"delete_message_member_email"`
+	DeleteMessageMemberProfileImageID         pgtype.UUID        `json:"delete_message_member_profile_image_id"`
 	MessageID                                 pgtype.UUID        `json:"message_id"`
 	MessageSenderID                           pgtype.UUID        `json:"message_sender_id"`
 	MessageBody                               pgtype.Text        `json:"message_body"`
@@ -1033,6 +1111,13 @@ func (q *Queries) GetPluralChatRoomActionsUseNumberedPaginate(ctx context.Contex
 			&i.RemoveMemberLastName,
 			&i.RemoveMemberEmail,
 			&i.RemoveMemberProfileImageID,
+			&i.ChatRoomDeleteMessageActionID,
+			&i.DeleteMessageMemberID,
+			&i.DeleteMessageMemberName,
+			&i.DeleteMessageMemberFirstName,
+			&i.DeleteMessageMemberLastName,
+			&i.DeleteMessageMemberEmail,
+			&i.DeleteMessageMemberProfileImageID,
 			&i.MessageID,
 			&i.MessageSenderID,
 			&i.MessageBody,

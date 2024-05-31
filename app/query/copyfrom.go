@@ -420,6 +420,39 @@ func (q *Queries) CreateChatRoomCreateActions(ctx context.Context, arg []CreateC
 	return q.db.CopyFrom(ctx, []string{"t_chat_room_create_actions"}, []string{"chat_room_action_id", "created_by", "name"}, &iteratorForCreateChatRoomCreateActions{rows: arg})
 }
 
+// iteratorForCreateChatRoomDeleteMessageActions implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomDeleteMessageActions struct {
+	rows                 []CreateChatRoomDeleteMessageActionsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomDeleteMessageActions) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomDeleteMessageActions) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].ChatRoomActionID,
+		r.rows[0].DeletedBy,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomDeleteMessageActions) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomDeleteMessageActions(ctx context.Context, arg []CreateChatRoomDeleteMessageActionsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_delete_message_actions"}, []string{"chat_room_action_id", "deleted_by"}, &iteratorForCreateChatRoomDeleteMessageActions{rows: arg})
+}
+
 // iteratorForCreateChatRoomRemoveMemberActions implements pgx.CopyFromSource.
 type iteratorForCreateChatRoomRemoveMemberActions struct {
 	rows                 []CreateChatRoomRemoveMemberActionsParams

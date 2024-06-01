@@ -146,6 +146,22 @@ func (q *Queries) DeleteChatRoomBelongingsOnMembers(ctx context.Context, memberI
 	return result.RowsAffected(), nil
 }
 
+const existsChatRoomBelonging = `-- name: ExistsChatRoomBelonging :one
+SELECT EXISTS(SELECT 1 FROM m_chat_room_belongings WHERE member_id = $1 AND chat_room_id = $2)
+`
+
+type ExistsChatRoomBelongingParams struct {
+	MemberID   uuid.UUID `json:"member_id"`
+	ChatRoomID uuid.UUID `json:"chat_room_id"`
+}
+
+func (q *Queries) ExistsChatRoomBelonging(ctx context.Context, arg ExistsChatRoomBelongingParams) (bool, error) {
+	row := q.db.QueryRow(ctx, existsChatRoomBelonging, arg.MemberID, arg.ChatRoomID)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
 const getChatRoomsOnMember = `-- name: GetChatRoomsOnMember :many
 SELECT m_chat_room_belongings.m_chat_room_belongings_pkey, m_chat_room_belongings.member_id, m_chat_room_belongings.chat_room_id, m_chat_room_belongings.added_at, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,

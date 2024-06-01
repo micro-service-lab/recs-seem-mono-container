@@ -30,10 +30,9 @@ WHERE chat_room_id = $1;
 
 -- name: FindChatRoomOnPrivate :one
 SELECT * FROM m_chat_rooms
-WHERE (SELECT COUNT(chat_room_id) FROM m_chat_room_belongings WHERE chat_room_id = m_chat_rooms.chat_room_id AND
+WHERE (SELECT COUNT(*) FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id AND
 (m_chat_room_belongings.member_id = sqlc.arg(owner_id) OR m_chat_room_belongings.member_id = sqlc.arg(member_id))) = 2
-AND is_private = true
-AND m_chat_rooms_belongs.member_id <> sqlc.arg(owner_id);
+AND is_private = true;
 
 -- name: FindChatRoomOnPrivateWithMember :one
 SELECT m_chat_rooms.*, m_chat_room_belongings.added_at member_added_at, m_members.member_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email,
@@ -41,7 +40,7 @@ m_members.profile_image_id member_profile_image_id, m_members.grade_id member_gr
 FROM m_chat_rooms
 LEFT JOIN m_chat_room_belongings ON m_chat_rooms.chat_room_id = m_chat_room_belongings.chat_room_id
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
-WHERE (SELECT COUNT(chat_room_id) FROM m_chat_room_belongings WHERE chat_room_id = m_chat_rooms.chat_room_id AND
+WHERE (SELECT COUNT(*) FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id AND
 (m_chat_room_belongings.member_id = sqlc.arg(owner_id) OR m_chat_room_belongings.member_id = sqlc.arg(member_id))) = 2
 AND is_private = true
 AND m_chat_rooms_belongs.member_id <> sqlc.arg(owner_id);

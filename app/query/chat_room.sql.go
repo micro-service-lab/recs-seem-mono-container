@@ -244,7 +244,7 @@ func (q *Queries) FindChatRoomByIDWithOwner(ctx context.Context, chatRoomID uuid
 
 const findChatRoomOnPrivate = `-- name: FindChatRoomOnPrivate :one
 SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms
-WHERE (SELECT COUNT(chat_room_id) FROM m_chat_room_belongings WHERE chat_room_id = m_chat_rooms.chat_room_id AND
+WHERE (SELECT COUNT(*) FROM m_chat_room_belongings WHERE chat_room_id = m_chat_rooms.chat_room_id AND
 (m_chat_room_belongings.member_id = $1 OR m_chat_room_belongings.member_id = $2)) = 2
 AND is_private = true
 AND m_chat_rooms_belongs.member_id <> $1
@@ -278,7 +278,7 @@ m_members.profile_image_id member_profile_image_id, m_members.grade_id member_gr
 FROM m_chat_rooms
 LEFT JOIN m_chat_room_belongings ON m_chat_rooms.chat_room_id = m_chat_room_belongings.chat_room_id
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
-WHERE (SELECT COUNT(chat_room_id) FROM m_chat_room_belongings WHERE chat_room_id = m_chat_rooms.chat_room_id AND
+WHERE (SELECT COUNT(*) FROM m_chat_room_belongings WHERE chat_room_id = m_chat_rooms.chat_room_id AND
 (m_chat_room_belongings.member_id = $1 OR m_chat_room_belongings.member_id = $2)) = 2
 AND is_private = true
 AND m_chat_rooms_belongs.member_id <> $1

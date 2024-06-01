@@ -25,6 +25,9 @@ DELETE FROM m_chat_room_belongings WHERE chat_room_id = ANY(@chat_room_ids::uuid
 -- name: PluralDeleteChatRoomBelongingsOnChatRoom :execrows
 DELETE FROM m_chat_room_belongings WHERE chat_room_id = $1 AND member_id = ANY(@member_ids::uuid[]);
 
+-- name: ExistsChatRoomBelonging :one
+SELECT EXISTS(SELECT 1 FROM m_chat_room_belongings WHERE member_id = $1 AND chat_room_id = $2);
+
 -- name: GetMembersOnChatRoom :many
 SELECT m_chat_room_belongings.*, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,

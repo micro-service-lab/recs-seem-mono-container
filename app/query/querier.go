@@ -250,6 +250,7 @@ type Querier interface {
 	DeleteRoleAssociationsOnRoles(ctx context.Context, roleIds []uuid.UUID) (int64, error)
 	DeleteStudent(ctx context.Context, studentID uuid.UUID) (int64, error)
 	DeleteWorkPosition(ctx context.Context, workPositionID uuid.UUID) (int64, error)
+	ExistsChatRoomBelonging(ctx context.Context, arg ExistsChatRoomBelongingParams) (bool, error)
 	ExitLabIOHistory(ctx context.Context, arg ExitLabIOHistoryParams) (LabIOHistory, error)
 	FindAbsenceByID(ctx context.Context, absenceID uuid.UUID) (Absence, error)
 	FindAttachableItemByID(ctx context.Context, attachableItemID uuid.UUID) (FindAttachableItemByIDRow, error)

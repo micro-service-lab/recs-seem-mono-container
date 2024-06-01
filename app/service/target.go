@@ -49,4 +49,14 @@ const (
 	ImageTargetImages = "ImageTargetImages"
 	// FileTargetFiles ファイルの関連付けの際のファイルターゲット
 	FileTargetFiles = "FileTargetFiles"
+	// MessageTargetMessages メッセージの関連付けの際のメッセージターゲット
+	MessageTargetMessages = "MessageTargetMessages"
+	// MessageTargetSender メッセージの関連付けの際の送信者ターゲット
+	MessageTargetSender = "MessageTargetSender"
+	// MessageTargetChatRoom メッセージの関連付けの際のチャットルームターゲット
+	MessageTargetChatRoom = "MessageTargetChatRoom"
+	// MessageTargetAttachments メッセージの関連付けの際の添付ファイルターゲット
+	MessageTargetAttachments = "MessageTargetAttachments"
+	// MessageTargetChatRoomBelongings メッセージの関連付けの際のチャットルーム所属ターゲット
+	MessageTargetChatRoomBelongings = "MessageTargetChatRoomBelongings"
 )

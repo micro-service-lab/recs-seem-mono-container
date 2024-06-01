@@ -1176,6 +1176,12 @@ var _ Store = &StoreMock{}
 //			DisbelongPluralOrganizationsOnMemberWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID, organizationIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the DisbelongPluralOrganizationsOnMemberWithSd method")
 //			},
+//			ExistsChatRoomBelongingFunc: func(ctx context.Context, memberID uuid.UUID, chatRoomID uuid.UUID) (bool, error) {
+//				panic("mock out the ExistsChatRoomBelonging method")
+//			},
+//			ExistsChatRoomBelongingWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID, chatRoomID uuid.UUID) (bool, error) {
+//				panic("mock out the ExistsChatRoomBelongingWithSd method")
+//			},
 //			FindAbsenceByIDFunc: func(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error) {
 //				panic("mock out the FindAbsenceByID method")
 //			},
@@ -3888,6 +3894,12 @@ type StoreMock struct {
 
 	// DisbelongPluralOrganizationsOnMemberWithSdFunc mocks the DisbelongPluralOrganizationsOnMemberWithSd method.
 	DisbelongPluralOrganizationsOnMemberWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID, organizationIDs []uuid.UUID) (int64, error)
+
+	// ExistsChatRoomBelongingFunc mocks the ExistsChatRoomBelonging method.
+	ExistsChatRoomBelongingFunc func(ctx context.Context, memberID uuid.UUID, chatRoomID uuid.UUID) (bool, error)
+
+	// ExistsChatRoomBelongingWithSdFunc mocks the ExistsChatRoomBelongingWithSd method.
+	ExistsChatRoomBelongingWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID, chatRoomID uuid.UUID) (bool, error)
 
 	// FindAbsenceByIDFunc mocks the FindAbsenceByID method.
 	FindAbsenceByIDFunc func(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error)
@@ -8618,6 +8630,26 @@ type StoreMock struct {
 			MemberID uuid.UUID
 			// OrganizationIDs is the organizationIDs argument value.
 			OrganizationIDs []uuid.UUID
+		}
+		// ExistsChatRoomBelonging holds details about calls to the ExistsChatRoomBelonging method.
+		ExistsChatRoomBelonging []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+		}
+		// ExistsChatRoomBelongingWithSd holds details about calls to the ExistsChatRoomBelongingWithSd method.
+		ExistsChatRoomBelongingWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
 		}
 		// FindAbsenceByID holds details about calls to the FindAbsenceByID method.
 		FindAbsenceByID []struct {
@@ -14848,6 +14880,8 @@ type StoreMock struct {
 	lockDisbelongPluralMembersOnOrganizationWithSd                      sync.RWMutex
 	lockDisbelongPluralOrganizationsOnMember                            sync.RWMutex
 	lockDisbelongPluralOrganizationsOnMemberWithSd                      sync.RWMutex
+	lockExistsChatRoomBelonging                                         sync.RWMutex
+	lockExistsChatRoomBelongingWithSd                                   sync.RWMutex
 	lockFindAbsenceByID                                                 sync.RWMutex
 	lockFindAbsenceByIDWithSd                                           sync.RWMutex
 	lockFindAttachableItemByID                                          sync.RWMutex
@@ -30188,6 +30222,90 @@ func (mock *StoreMock) DisbelongPluralOrganizationsOnMemberWithSdCalls() []struc
 	mock.lockDisbelongPluralOrganizationsOnMemberWithSd.RLock()
 	calls = mock.calls.DisbelongPluralOrganizationsOnMemberWithSd
 	mock.lockDisbelongPluralOrganizationsOnMemberWithSd.RUnlock()
+	return calls
+}
+
+// ExistsChatRoomBelonging calls ExistsChatRoomBelongingFunc.
+func (mock *StoreMock) ExistsChatRoomBelonging(ctx context.Context, memberID uuid.UUID, chatRoomID uuid.UUID) (bool, error) {
+	if mock.ExistsChatRoomBelongingFunc == nil {
+		panic("StoreMock.ExistsChatRoomBelongingFunc: method is nil but Store.ExistsChatRoomBelonging was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		MemberID   uuid.UUID
+		ChatRoomID uuid.UUID
+	}{
+		Ctx:        ctx,
+		MemberID:   memberID,
+		ChatRoomID: chatRoomID,
+	}
+	mock.lockExistsChatRoomBelonging.Lock()
+	mock.calls.ExistsChatRoomBelonging = append(mock.calls.ExistsChatRoomBelonging, callInfo)
+	mock.lockExistsChatRoomBelonging.Unlock()
+	return mock.ExistsChatRoomBelongingFunc(ctx, memberID, chatRoomID)
+}
+
+// ExistsChatRoomBelongingCalls gets all the calls that were made to ExistsChatRoomBelonging.
+// Check the length with:
+//
+//	len(mockedStore.ExistsChatRoomBelongingCalls())
+func (mock *StoreMock) ExistsChatRoomBelongingCalls() []struct {
+	Ctx        context.Context
+	MemberID   uuid.UUID
+	ChatRoomID uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		MemberID   uuid.UUID
+		ChatRoomID uuid.UUID
+	}
+	mock.lockExistsChatRoomBelonging.RLock()
+	calls = mock.calls.ExistsChatRoomBelonging
+	mock.lockExistsChatRoomBelonging.RUnlock()
+	return calls
+}
+
+// ExistsChatRoomBelongingWithSd calls ExistsChatRoomBelongingWithSdFunc.
+func (mock *StoreMock) ExistsChatRoomBelongingWithSd(ctx context.Context, sd Sd, memberID uuid.UUID, chatRoomID uuid.UUID) (bool, error) {
+	if mock.ExistsChatRoomBelongingWithSdFunc == nil {
+		panic("StoreMock.ExistsChatRoomBelongingWithSdFunc: method is nil but Store.ExistsChatRoomBelongingWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		MemberID   uuid.UUID
+		ChatRoomID uuid.UUID
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		MemberID:   memberID,
+		ChatRoomID: chatRoomID,
+	}
+	mock.lockExistsChatRoomBelongingWithSd.Lock()
+	mock.calls.ExistsChatRoomBelongingWithSd = append(mock.calls.ExistsChatRoomBelongingWithSd, callInfo)
+	mock.lockExistsChatRoomBelongingWithSd.Unlock()
+	return mock.ExistsChatRoomBelongingWithSdFunc(ctx, sd, memberID, chatRoomID)
+}
+
+// ExistsChatRoomBelongingWithSdCalls gets all the calls that were made to ExistsChatRoomBelongingWithSd.
+// Check the length with:
+//
+//	len(mockedStore.ExistsChatRoomBelongingWithSdCalls())
+func (mock *StoreMock) ExistsChatRoomBelongingWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	MemberID   uuid.UUID
+	ChatRoomID uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		MemberID   uuid.UUID
+		ChatRoomID uuid.UUID
+	}
+	mock.lockExistsChatRoomBelongingWithSd.RLock()
+	calls = mock.calls.ExistsChatRoomBelongingWithSd
+	mock.lockExistsChatRoomBelongingWithSd.RUnlock()
 	return calls
 }
 

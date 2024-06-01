@@ -27,22 +27,7 @@ func (m *ManageChatRoomAction) GetChatRoomActionsOnChatRoom(
 	cursor parameter.Cursor,
 	offset parameter.Offset,
 	withCount parameter.WithCount,
-) (store.ListResult[entity.ChatRoomActionPractical], error) {
-	sd, err := m.DB.Begin(ctx)
-	if err != nil {
-		return store.ListResult[entity.ChatRoomActionPractical]{}, fmt.Errorf("failed to begin transaction: %w", err)
-	}
-	defer func() {
-		if err != nil {
-			if rerr := m.DB.Rollback(ctx, sd); rerr != nil {
-				err = fmt.Errorf("failed to rollback transaction: %w", rerr)
-			}
-		} else {
-			if rerr := m.DB.Commit(ctx, sd); rerr != nil {
-				err = fmt.Errorf("failed to commit transaction: %w", rerr)
-			}
-		}
-	}()
+) (e store.ListResult[entity.ChatRoomActionPractical], err error) {
 	wc := store.WithCountParam{
 		Valid: bool(withCount),
 	}
@@ -67,9 +52,8 @@ func (m *ManageChatRoomAction) GetChatRoomActionsOnChatRoom(
 		}
 	case parameter.NonePagination:
 	}
-	r, err := m.DB.GetChatRoomActionsOnChatRoomWithSd(
+	r, err := m.DB.GetChatRoomActionsOnChatRoom(
 		ctx,
-		sd,
 		chatRoomID,
 		where,
 		order,
@@ -95,9 +79,8 @@ func (m *ManageChatRoomAction) GetChatRoomActionsOnChatRoom(
 		}
 	}
 	am := make(map[uuid.UUID][]entity.MemberOnChatRoomAddMemberAction, len(addMemberActionIDs))
-	addMembers, err := m.DB.GetPluralMembersOnChatRoomAddMemberActionWithSd(
+	addMembers, err := m.DB.GetPluralMembersOnChatRoomAddMemberAction(
 		ctx,
-		sd,
 		addMemberActionIDs,
 		parameter.MemberOnChatRoomAddMemberActionOrderMethodDefault,
 		store.NumberedPaginationParam{},
@@ -110,9 +93,8 @@ func (m *ManageChatRoomAction) GetChatRoomActionsOnChatRoom(
 		am[v.ChatRoomAddMemberActionID] = append(am[v.ChatRoomAddMemberActionID], v)
 	}
 	rm := make(map[uuid.UUID][]entity.MemberOnChatRoomRemoveMemberAction, len(removeMemberActionIDs))
-	removeMembers, err := m.DB.GetPluralMembersOnChatRoomRemoveMemberActionWithSd(
+	removeMembers, err := m.DB.GetPluralMembersOnChatRoomRemoveMemberAction(
 		ctx,
-		sd,
 		removeMemberActionIDs,
 		parameter.MemberOnChatRoomRemoveMemberActionOrderMethodDefault,
 		store.NumberedPaginationParam{},
@@ -126,9 +108,8 @@ func (m *ManageChatRoomAction) GetChatRoomActionsOnChatRoom(
 	}
 
 	rs := make(map[uuid.UUID]int64, len(messageIDs))
-	reads, err := m.DB.CountReadsOnMessagesWithSd(
+	reads, err := m.DB.CountReadsOnMessages(
 		ctx,
-		sd,
 		messageIDs,
 		parameter.WhereReadsOnMessageParam{
 			WhereIsRead: true,
@@ -143,9 +124,8 @@ func (m *ManageChatRoomAction) GetChatRoomActionsOnChatRoom(
 	}
 
 	ai := make(map[uuid.UUID][]entity.AttachedItemOnMessage, len(messageIDs))
-	attachments, err := m.DB.GetPluralAttachedItemsOnMessageWithSd(
+	attachments, err := m.DB.GetPluralAttachedItemsOnMessage(
 		ctx,
-		sd,
 		messageIDs,
 		parameter.AttachedItemOnMessageOrderMethodDefault,
 		store.NumberedPaginationParam{},
@@ -235,7 +215,7 @@ func (m *ManageChatRoomAction) GetChatRoomActionsOnChatRoom(
 		}
 	}
 
-	e := store.ListResult[entity.ChatRoomActionPractical]{
+	e = store.ListResult[entity.ChatRoomActionPractical]{
 		Data:             de,
 		CursorPagination: r.CursorPagination,
 		WithCount:        r.WithCount,

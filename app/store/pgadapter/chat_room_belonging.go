@@ -523,6 +523,41 @@ func (a *PgAdapter) DisbelongPluralMembersOnChatRoomWithSd(
 	return disbelongPluralMembersOnChatRoom(ctx, qtx, chatRoomID, memberIDs)
 }
 
+func existsChatRoomBelonging(
+	ctx context.Context,
+	qtx *query.Queries,
+	memberID, chatRoomID uuid.UUID,
+) (bool, error) {
+	exist, err := qtx.ExistsChatRoomBelonging(ctx, query.ExistsChatRoomBelongingParams{
+		MemberID:   memberID,
+		ChatRoomID: chatRoomID,
+	})
+	if err != nil {
+		return false, fmt.Errorf("failed to get chat room belonging: %w", err)
+	}
+	return exist, nil
+}
+
+// ExistsChatRoomBelonging チャットルーム所属が存在するか確認する。
+func (a *PgAdapter) ExistsChatRoomBelonging(
+	ctx context.Context, memberID, chatRoomID uuid.UUID,
+) (bool, error) {
+	return existsChatRoomBelonging(ctx, a.query, memberID, chatRoomID)
+}
+
+// ExistsChatRoomBelongingWithSd SD付きでチャットルーム所属が存在するか確認する。
+func (a *PgAdapter) ExistsChatRoomBelongingWithSd(
+	ctx context.Context, sd store.Sd, memberID, chatRoomID uuid.UUID,
+) (bool, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return false, store.ErrNotFoundDescriptor
+	}
+	return existsChatRoomBelonging(ctx, qtx, memberID, chatRoomID)
+}
+
 func getChatRoomsOnMember(
 	ctx context.Context,
 	qtx *query.Queries,

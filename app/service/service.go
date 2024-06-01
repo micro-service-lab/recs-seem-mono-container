@@ -959,7 +959,7 @@ type ChatRoomBelongingManager interface {
 
 // MembershipManager is a interface for membership service.
 type MembershipManager interface {
-	BelongMemberOnOrganization(
+	BelongMembersOnOrganization(
 		ctx context.Context,
 		organizationID,
 		ownerID uuid.UUID,

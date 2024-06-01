@@ -90,6 +90,12 @@ func (h *RemoveMembersOnChatRoom) ServeHTTP(w http.ResponseWriter, r *http.Reque
 						Other: "MemberIDs",
 					},
 				})
+				chatRoomStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "ChatRoom", i18n.Options{
+					DefaultMessage: &i18n.Message{
+						ID:    "ChatRoom",
+						Other: "ChatRoom",
+					},
+				})
 				msgStr := h.Translator.TranslateWithOpts(
 					lang.GetLocaleForTranslation(ctx), "PluralNotAssociated", i18n.Options{
 						DefaultMessage: &i18n.Message{
@@ -97,8 +103,9 @@ func (h *RemoveMembersOnChatRoom) ServeHTTP(w http.ResponseWriter, r *http.Reque
 							Other: "{{.ID}} not found",
 						},
 						TemplateData: map[string]any{
-							"ID":        memberStr,
-							"ValueType": "ID",
+							"ID":         memberStr,
+							"ValueType":  "ID",
+							"Associated": chatRoomStr,
 						},
 					})
 				ve := errhandle.NewValidationError(nil)

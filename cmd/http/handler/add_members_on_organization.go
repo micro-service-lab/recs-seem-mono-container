@@ -19,27 +19,27 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
 )
 
-// AddMembersOnChatRoom is a handler for add members on chat room.
-type AddMembersOnChatRoom struct {
+// AddMembersOnOrganization is a handler for add members on organization.
+type AddMembersOnOrganization struct {
 	Service    service.ManagerInterface
 	Validator  validation.Validator
 	Translator i18n.Translation
 }
 
-// AddMembersOnChatRoomRequest is a request for AddMembersOnChatRoom.
-type AddMembersOnChatRoomRequest struct {
+// AddMembersOnOrganizationRequest is a request for AddMembersOnOrganization.
+type AddMembersOnOrganizationRequest struct {
 	MemberIDS []uuid.UUID `json:"member_ids" validate:"required,unique,min=1" ja:"メンバーID" en:"MemberIDs"`
 }
 
-func (h *AddMembersOnChatRoom) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *AddMembersOnOrganization) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	authUser := auth.FromContext(ctx)
-	id := uuid.MustParse(chi.URLParam(r, "chat_room_id"))
+	id := uuid.MustParse(chi.URLParam(r, "organization_id"))
 	var err error
-	var req AddMembersOnChatRoomRequest
+	var req AddMembersOnOrganizationRequest
 	if err = json.NewDecoder(r.Body).Decode(&req); err == nil || errors.Is(err, io.EOF) {
 		if errors.Is(err, io.EOF) {
-			req = AddMembersOnChatRoomRequest{}
+			req = AddMembersOnOrganizationRequest{}
 		}
 		err = h.Validator.ValidateWithLocale(ctx, &req, lang.GetLocale(r.Context()))
 	} else {
@@ -52,10 +52,38 @@ func (h *AddMembersOnChatRoom) ServeHTTP(w http.ResponseWriter, r *http.Request)
 		}
 		return
 	}
-	if _, err = h.Service.BelongMembersOnChatRoom(ctx, id, authUser.MemberID, req.MemberIDS); err != nil {
+	if _, err = h.Service.BelongMembersOnOrganization(ctx, id, authUser.MemberID, req.MemberIDS); err != nil {
 		var de errhandle.ModelDuplicatedError
 		if errors.As(err, &de) {
 			switch de.Target() {
+			case service.OrganizationBelongingTargetOrganizationBelongings:
+				memberStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "MemberIDs", i18n.Options{
+					DefaultMessage: &i18n.Message{
+						ID:    "MemberIDs",
+						Other: "MemberIDs",
+					},
+				})
+				orgStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "Organization", i18n.Options{
+					DefaultMessage: &i18n.Message{
+						ID:    "Organization",
+						Other: "Organization",
+					},
+				})
+				msgStr := h.Translator.TranslateWithOpts(
+					lang.GetLocaleForTranslation(ctx), "PluralAlreadyAssociated", i18n.Options{
+						DefaultMessage: &i18n.Message{
+							ID:    "PluralAlreadyAssociated",
+							Other: "{{.ID}} not found",
+						},
+						TemplateData: map[string]any{
+							"ID":         memberStr,
+							"ValueType":  "ID",
+							"Associated": orgStr,
+						},
+					})
+				ve := errhandle.NewValidationError(nil)
+				ve.Add("member_ids", msgStr)
+				err = ve
 			case service.ChatRoomBelongingTargetChatRoomBelongings:
 				memberStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "MemberIDs", i18n.Options{
 					DefaultMessage: &i18n.Message{
@@ -83,19 +111,21 @@ func (h *AddMembersOnChatRoom) ServeHTTP(w http.ResponseWriter, r *http.Request)
 					})
 				ve := errhandle.NewValidationError(nil)
 				ve.Add("member_ids", msgStr)
-				err = ve
 			}
 		}
 		var e errhandle.ModelNotFoundError
 		if errors.As(err, &e) {
 			switch e.Target() {
-			case service.ChatRoomBelongingTargetOwner:
+			case service.OrganizationBelongingTargetOwner:
 				e.SetTarget("owner")
 				err = e
 			case service.ChatRoomBelongingTargetChatRoom:
 				e.SetTarget("chat_room")
 				err = e
-			case service.ChatRoomBelongingTargetMembers:
+			case service.OrganizationBelongingTargetOrganization:
+				e.SetTarget("organization")
+				err = e
+			case service.OrganizationBelongingTargetMembers:
 				memberStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "MemberIDs", i18n.Options{
 					DefaultMessage: &i18n.Message{
 						ID:    "MemberIDs",

@@ -19,6 +19,35 @@ import (
 )
 
 func convOrganizationWithChatRoom(e query.FindOrganizationByIDWithChatRoomRow) entity.OrganizationWithChatRoom {
+	var room entity.NullableEntity[entity.ChatRoomWithCoverImage]
+	if e.ChatRoomID.Valid {
+		room = entity.NullableEntity[entity.ChatRoomWithCoverImage]{
+			Valid: true,
+			Entity: entity.ChatRoomWithCoverImage{
+				ChatRoomID: e.ChatRoomID.Bytes,
+				Name:       e.ChatRoomName.String,
+				IsPrivate:  e.ChatRoomIsPrivate.Bool,
+				CoverImage: entity.NullableEntity[entity.ImageWithAttachableItem]{
+					Valid: e.ChatRoomCoverImageID.Valid,
+					Entity: entity.ImageWithAttachableItem{
+						ImageID: e.ChatRoomCoverImageID.Bytes,
+						Height:  entity.Float(e.ChatRoomCoverImageHeight),
+						Width:   entity.Float(e.ChatRoomCoverImageWidth),
+						AttachableItem: entity.AttachableItem{
+							AttachableItemID: e.ChatRoomCoverImageAttachableItemID.Bytes,
+							OwnerID:          entity.UUID(e.ChatRoomCoverImageOwnerID),
+							FromOuter:        e.ChatRoomCoverImageFromOuter.Bool,
+							URL:              e.ChatRoomCoverImageUrl.String,
+							Alias:            e.ChatRoomCoverImageAlias.String,
+							Size:             entity.Float(e.ChatRoomCoverImageSize),
+							MimeTypeID:       e.ChatRoomCoverImageMimeTypeID.Bytes,
+						},
+					},
+				},
+				OwnerID: entity.UUID(e.ChatRoomOwnerID),
+			},
+		}
+	}
 	return entity.OrganizationWithChatRoom{
 		OrganizationID: e.OrganizationID,
 		Name:           e.Name,
@@ -26,30 +55,7 @@ func convOrganizationWithChatRoom(e query.FindOrganizationByIDWithChatRoomRow) e
 		Color:          entity.String(e.Color),
 		IsPersonal:     e.IsPersonal,
 		IsWhole:        e.IsWhole,
-		ChatRoom: entity.ChatRoomWithCoverImage{
-			ChatRoomID:       e.ChatRoomID.Bytes,
-			Name:             e.ChatRoomName.String,
-			IsPrivate:        e.ChatRoomIsPrivate.Bool,
-			FromOrganization: e.ChatRoomFromOrganization.Bool,
-			CoverImage: entity.NullableEntity[entity.ImageWithAttachableItem]{
-				Valid: e.ChatRoomCoverImageID.Valid,
-				Entity: entity.ImageWithAttachableItem{
-					ImageID: e.ChatRoomCoverImageID.Bytes,
-					Height:  entity.Float(e.ChatRoomCoverImageHeight),
-					Width:   entity.Float(e.ChatRoomCoverImageWidth),
-					AttachableItem: entity.AttachableItem{
-						AttachableItemID: e.ChatRoomCoverImageAttachableItemID.Bytes,
-						OwnerID:          entity.UUID(e.ChatRoomCoverImageOwnerID),
-						FromOuter:        e.ChatRoomCoverImageFromOuter.Bool,
-						URL:              e.ChatRoomCoverImageUrl.String,
-						Alias:            e.ChatRoomCoverImageAlias.String,
-						Size:             entity.Float(e.ChatRoomCoverImageSize),
-						MimeTypeID:       e.ChatRoomCoverImageMimeTypeID.Bytes,
-					},
-				},
-			},
-			OwnerID: entity.UUID(e.ChatRoomOwnerID),
-		},
+		ChatRoom:       room,
 	}
 }
 
@@ -84,6 +90,35 @@ func convOrganizationWithDetail(e query.FindOrganizationByIDWithDetailRow) entit
 func convOrganizationWithChatRoomAndDetail(
 	e query.FindOrganizationByIDWithChatRoomAndDetailRow,
 ) entity.OrganizationWithChatRoomAndDetail {
+	var room entity.NullableEntity[entity.ChatRoomWithCoverImage]
+	if e.ChatRoomID.Valid {
+		room = entity.NullableEntity[entity.ChatRoomWithCoverImage]{
+			Valid: true,
+			Entity: entity.ChatRoomWithCoverImage{
+				ChatRoomID: e.ChatRoomID.Bytes,
+				Name:       e.ChatRoomName.String,
+				IsPrivate:  e.ChatRoomIsPrivate.Bool,
+				CoverImage: entity.NullableEntity[entity.ImageWithAttachableItem]{
+					Valid: e.ChatRoomCoverImageID.Valid,
+					Entity: entity.ImageWithAttachableItem{
+						ImageID: e.ChatRoomCoverImageID.Bytes,
+						Height:  entity.Float(e.ChatRoomCoverImageHeight),
+						Width:   entity.Float(e.ChatRoomCoverImageWidth),
+						AttachableItem: entity.AttachableItem{
+							AttachableItemID: e.ChatRoomCoverImageAttachableItemID.Bytes,
+							OwnerID:          entity.UUID(e.ChatRoomCoverImageOwnerID),
+							FromOuter:        e.ChatRoomCoverImageFromOuter.Bool,
+							URL:              e.ChatRoomCoverImageUrl.String,
+							Alias:            e.ChatRoomCoverImageAlias.String,
+							Size:             entity.Float(e.ChatRoomCoverImageSize),
+							MimeTypeID:       e.ChatRoomCoverImageMimeTypeID.Bytes,
+						},
+					},
+				},
+				OwnerID: entity.UUID(e.ChatRoomOwnerID),
+			},
+		}
+	}
 	return entity.OrganizationWithChatRoomAndDetail{
 		OrganizationID: e.OrganizationID,
 		Name:           e.Name,
@@ -91,30 +126,7 @@ func convOrganizationWithChatRoomAndDetail(
 		Color:          entity.String(e.Color),
 		IsPersonal:     e.IsPersonal,
 		IsWhole:        e.IsWhole,
-		ChatRoom: entity.ChatRoomWithCoverImage{
-			ChatRoomID:       e.ChatRoomID.Bytes,
-			Name:             e.ChatRoomName.String,
-			IsPrivate:        e.ChatRoomIsPrivate.Bool,
-			FromOrganization: e.ChatRoomFromOrganization.Bool,
-			CoverImage: entity.NullableEntity[entity.ImageWithAttachableItem]{
-				Valid: e.ChatRoomCoverImageID.Valid,
-				Entity: entity.ImageWithAttachableItem{
-					ImageID: e.ChatRoomCoverImageID.Bytes,
-					Height:  entity.Float(e.ChatRoomCoverImageHeight),
-					Width:   entity.Float(e.ChatRoomCoverImageWidth),
-					AttachableItem: entity.AttachableItem{
-						AttachableItemID: e.ChatRoomCoverImageAttachableItemID.Bytes,
-						OwnerID:          entity.UUID(e.ChatRoomCoverImageOwnerID),
-						FromOuter:        e.ChatRoomCoverImageFromOuter.Bool,
-						URL:              e.ChatRoomCoverImageUrl.String,
-						Alias:            e.ChatRoomCoverImageAlias.String,
-						Size:             entity.Float(e.ChatRoomCoverImageSize),
-						MimeTypeID:       e.ChatRoomCoverImageMimeTypeID.Bytes,
-					},
-				},
-			},
-			OwnerID: entity.UUID(e.ChatRoomOwnerID),
-		},
+		ChatRoom:       room,
 		Group: entity.NullableEntity[entity.Group]{
 			Valid: e.GroupID.Valid,
 			Entity: entity.Group{

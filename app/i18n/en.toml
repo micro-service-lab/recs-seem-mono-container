@@ -27,6 +27,11 @@ other = "MemberID"
 [MemberIDs]
 other = "MemberIDs"
 
+[ChatRoom]
+other = "ChatRoom"
+[Organization]
+other = "Organization"
+
 [ModelNotExists]
 other = "{{.ID}} is not exists on the system"
 [PluralModelNotExists]
@@ -36,12 +41,12 @@ other = "{{.ID}} is already exists"
 [PluralModelExists]
 other = "The {{.ValueType}} in the specified {{.ID}} already exists"
 [AlreadyAssociated]
-other = "The specified {{.ID}} is already associated"
+other = "The specified {{.ID}} is already associated with {{.Associated}}"
 [PluralAlreadyAssociated]
-other = "The specified {{.ID}} contains {{.ValueType}} that is already associated"
+other = "The specified {{.ID}} contains {{.ValueType}} that is already associated with {{.Associated}}"
 [NotAssociated]
-other = "The specified {{.ID}} is not associated"
+other = "The specified {{.ID}} is not associated with {{.Associated}}"
 [PluralNotAssociated]
-other = "The specified {{.ID}} contains {{.ValueType}} that is not associated"
+other = "The specified {{.ID}} contains {{{.ValueType}} that is not associated with {{.Associated}}"
 [OnlyProfessorModel]
 other = "{{.ID}} is for professors only"

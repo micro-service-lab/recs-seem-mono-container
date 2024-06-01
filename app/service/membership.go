@@ -20,8 +20,8 @@ type ManageMembership struct {
 	Clocker clock.Clock
 }
 
-// BelongMemberOnOrganization メンバーを組織に所属させる。
-func (m *ManageMembership) BelongMemberOnOrganization(
+// BelongMembersOnOrganization メンバーを組織に所属させる。
+func (m *ManageMembership) BelongMembersOnOrganization(
 	ctx context.Context,
 	organizationID,
 	ownerID uuid.UUID,
@@ -243,7 +243,7 @@ func (m *ManageMembership) WithdrawMemberFromOrganization(
 	if err != nil {
 		var nfe errhandle.ModelNotFoundError
 		if errors.As(err, &nfe) {
-			return 0, errhandle.NewModelNotFoundError(OrganizationBelongingTargetMembers)
+			return 0, errhandle.NewModelNotFoundError(OrganizationBelongingTargetOwner)
 		}
 		return 0, fmt.Errorf("failed to find member: %w", err)
 	}

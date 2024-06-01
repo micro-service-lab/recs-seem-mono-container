@@ -26,11 +26,11 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			AssociateRolesFunc: func(ctx context.Context, params []parameter.AssociationRoleParam) (int64, error) {
 //				panic("mock out the AssociateRoles method")
 //			},
-//			BelongMemberOnOrganizationFunc: func(ctx context.Context, organizationID uuid.UUID, ownerID uuid.UUID, memberIDs []uuid.UUID) (int64, error) {
-//				panic("mock out the BelongMemberOnOrganization method")
-//			},
 //			BelongMembersOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, ownerID uuid.UUID, memberIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the BelongMembersOnChatRoom method")
+//			},
+//			BelongMembersOnOrganizationFunc: func(ctx context.Context, organizationID uuid.UUID, ownerID uuid.UUID, memberIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the BelongMembersOnOrganization method")
 //			},
 //			CreateAttendStatusFunc: func(ctx context.Context, name string, key string) (entity.AttendStatus, error) {
 //				panic("mock out the CreateAttendStatus method")
@@ -648,11 +648,11 @@ type ManagerInterfaceMock struct {
 	// AssociateRolesFunc mocks the AssociateRoles method.
 	AssociateRolesFunc func(ctx context.Context, params []parameter.AssociationRoleParam) (int64, error)
 
-	// BelongMemberOnOrganizationFunc mocks the BelongMemberOnOrganization method.
-	BelongMemberOnOrganizationFunc func(ctx context.Context, organizationID uuid.UUID, ownerID uuid.UUID, memberIDs []uuid.UUID) (int64, error)
-
 	// BelongMembersOnChatRoomFunc mocks the BelongMembersOnChatRoom method.
 	BelongMembersOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, ownerID uuid.UUID, memberIDs []uuid.UUID) (int64, error)
+
+	// BelongMembersOnOrganizationFunc mocks the BelongMembersOnOrganization method.
+	BelongMembersOnOrganizationFunc func(ctx context.Context, organizationID uuid.UUID, ownerID uuid.UUID, memberIDs []uuid.UUID) (int64, error)
 
 	// CreateAttendStatusFunc mocks the CreateAttendStatus method.
 	CreateAttendStatusFunc func(ctx context.Context, name string, key string) (entity.AttendStatus, error)
@@ -1269,23 +1269,23 @@ type ManagerInterfaceMock struct {
 			// Params is the params argument value.
 			Params []parameter.AssociationRoleParam
 		}
-		// BelongMemberOnOrganization holds details about calls to the BelongMemberOnOrganization method.
-		BelongMemberOnOrganization []struct {
-			// Ctx is the ctx argument value.
-			Ctx context.Context
-			// OrganizationID is the organizationID argument value.
-			OrganizationID uuid.UUID
-			// OwnerID is the ownerID argument value.
-			OwnerID uuid.UUID
-			// MemberIDs is the memberIDs argument value.
-			MemberIDs []uuid.UUID
-		}
 		// BelongMembersOnChatRoom holds details about calls to the BelongMembersOnChatRoom method.
 		BelongMembersOnChatRoom []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 			// ChatRoomID is the chatRoomID argument value.
 			ChatRoomID uuid.UUID
+			// OwnerID is the ownerID argument value.
+			OwnerID uuid.UUID
+			// MemberIDs is the memberIDs argument value.
+			MemberIDs []uuid.UUID
+		}
+		// BelongMembersOnOrganization holds details about calls to the BelongMembersOnOrganization method.
+		BelongMembersOnOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
 			// OwnerID is the ownerID argument value.
 			OwnerID uuid.UUID
 			// MemberIDs is the memberIDs argument value.
@@ -3401,8 +3401,8 @@ type ManagerInterfaceMock struct {
 		}
 	}
 	lockAssociateRoles                        sync.RWMutex
-	lockBelongMemberOnOrganization            sync.RWMutex
 	lockBelongMembersOnChatRoom               sync.RWMutex
+	lockBelongMembersOnOrganization           sync.RWMutex
 	lockCreateAttendStatus                    sync.RWMutex
 	lockCreateAttendStatuses                  sync.RWMutex
 	lockCreateAttendanceType                  sync.RWMutex
@@ -3643,50 +3643,6 @@ func (mock *ManagerInterfaceMock) AssociateRolesCalls() []struct {
 	return calls
 }
 
-// BelongMemberOnOrganization calls BelongMemberOnOrganizationFunc.
-func (mock *ManagerInterfaceMock) BelongMemberOnOrganization(ctx context.Context, organizationID uuid.UUID, ownerID uuid.UUID, memberIDs []uuid.UUID) (int64, error) {
-	if mock.BelongMemberOnOrganizationFunc == nil {
-		panic("ManagerInterfaceMock.BelongMemberOnOrganizationFunc: method is nil but ManagerInterface.BelongMemberOnOrganization was just called")
-	}
-	callInfo := struct {
-		Ctx            context.Context
-		OrganizationID uuid.UUID
-		OwnerID        uuid.UUID
-		MemberIDs      []uuid.UUID
-	}{
-		Ctx:            ctx,
-		OrganizationID: organizationID,
-		OwnerID:        ownerID,
-		MemberIDs:      memberIDs,
-	}
-	mock.lockBelongMemberOnOrganization.Lock()
-	mock.calls.BelongMemberOnOrganization = append(mock.calls.BelongMemberOnOrganization, callInfo)
-	mock.lockBelongMemberOnOrganization.Unlock()
-	return mock.BelongMemberOnOrganizationFunc(ctx, organizationID, ownerID, memberIDs)
-}
-
-// BelongMemberOnOrganizationCalls gets all the calls that were made to BelongMemberOnOrganization.
-// Check the length with:
-//
-//	len(mockedManagerInterface.BelongMemberOnOrganizationCalls())
-func (mock *ManagerInterfaceMock) BelongMemberOnOrganizationCalls() []struct {
-	Ctx            context.Context
-	OrganizationID uuid.UUID
-	OwnerID        uuid.UUID
-	MemberIDs      []uuid.UUID
-} {
-	var calls []struct {
-		Ctx            context.Context
-		OrganizationID uuid.UUID
-		OwnerID        uuid.UUID
-		MemberIDs      []uuid.UUID
-	}
-	mock.lockBelongMemberOnOrganization.RLock()
-	calls = mock.calls.BelongMemberOnOrganization
-	mock.lockBelongMemberOnOrganization.RUnlock()
-	return calls
-}
-
 // BelongMembersOnChatRoom calls BelongMembersOnChatRoomFunc.
 func (mock *ManagerInterfaceMock) BelongMembersOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, ownerID uuid.UUID, memberIDs []uuid.UUID) (int64, error) {
 	if mock.BelongMembersOnChatRoomFunc == nil {
@@ -3728,6 +3684,50 @@ func (mock *ManagerInterfaceMock) BelongMembersOnChatRoomCalls() []struct {
 	mock.lockBelongMembersOnChatRoom.RLock()
 	calls = mock.calls.BelongMembersOnChatRoom
 	mock.lockBelongMembersOnChatRoom.RUnlock()
+	return calls
+}
+
+// BelongMembersOnOrganization calls BelongMembersOnOrganizationFunc.
+func (mock *ManagerInterfaceMock) BelongMembersOnOrganization(ctx context.Context, organizationID uuid.UUID, ownerID uuid.UUID, memberIDs []uuid.UUID) (int64, error) {
+	if mock.BelongMembersOnOrganizationFunc == nil {
+		panic("ManagerInterfaceMock.BelongMembersOnOrganizationFunc: method is nil but ManagerInterface.BelongMembersOnOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+		OwnerID        uuid.UUID
+		MemberIDs      []uuid.UUID
+	}{
+		Ctx:            ctx,
+		OrganizationID: organizationID,
+		OwnerID:        ownerID,
+		MemberIDs:      memberIDs,
+	}
+	mock.lockBelongMembersOnOrganization.Lock()
+	mock.calls.BelongMembersOnOrganization = append(mock.calls.BelongMembersOnOrganization, callInfo)
+	mock.lockBelongMembersOnOrganization.Unlock()
+	return mock.BelongMembersOnOrganizationFunc(ctx, organizationID, ownerID, memberIDs)
+}
+
+// BelongMembersOnOrganizationCalls gets all the calls that were made to BelongMembersOnOrganization.
+// Check the length with:
+//
+//	len(mockedManagerInterface.BelongMembersOnOrganizationCalls())
+func (mock *ManagerInterfaceMock) BelongMembersOnOrganizationCalls() []struct {
+	Ctx            context.Context
+	OrganizationID uuid.UUID
+	OwnerID        uuid.UUID
+	MemberIDs      []uuid.UUID
+} {
+	var calls []struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+		OwnerID        uuid.UUID
+		MemberIDs      []uuid.UUID
+	}
+	mock.lockBelongMembersOnOrganization.RLock()
+	calls = mock.calls.BelongMembersOnOrganization
+	mock.lockBelongMembersOnOrganization.RUnlock()
 	return calls
 }
 

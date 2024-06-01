@@ -47,6 +47,9 @@ func ChatRoomHandler(
 		Validator:  vd,
 		Translator: t,
 	}
+	withdraw := handler.WithdrawOnChatRoom{
+		Service: svc,
+	}
 	getMembers := handler.GetMembersOnChatRoom{
 		Service: svc,
 	}
@@ -64,6 +67,7 @@ func ChatRoomHandler(
 
 		r.Route(uuidPath("/{chat_room_id:uuid}/members"), func(r chi.Router) {
 			r.Post("/", addMembers.ServeHTTP)
+			r.Post("/withdraw", withdraw.ServeHTTP)
 			r.Delete("/", removeMembers.ServeHTTP)
 			r.Get("/", getMembers.ServeHTTP)
 		})

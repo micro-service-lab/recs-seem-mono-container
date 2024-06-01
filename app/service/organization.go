@@ -469,24 +469,32 @@ func (m *ManageOrganization) UpdateOrganization(
 		return entity.Organization{}, fmt.Errorf("failed to find member by id: %w", err)
 	}
 	if origin.ChatRoomID.Valid {
-		originRoom, err := m.DB.FindChatRoomByIDWithSd(ctx, sd, e.ChatRoomID.Bytes)
+		originRoom, err := m.DB.FindChatRoomByIDWithSd(ctx, sd, origin.ChatRoomID.Bytes)
 		if err != nil {
+			var e errhandle.ModelNotFoundError
+			if errors.As(err, &e) {
+				return entity.Organization{}, errhandle.NewModelNotFoundError(ChatRoomTargetChatRoom)
+			}
 			return entity.Organization{}, fmt.Errorf("failed to find chat room by id: %w", err)
 		}
 		var coverImage entity.NullableEntity[entity.ImageWithAttachableItem]
+		var cflag bool
 		if originRoom.CoverImageID.Valid {
 			image, err := m.DB.FindImageWithAttachableItemWithSd(ctx, sd, originRoom.CoverImageID.Bytes)
 			if err != nil {
 				var e errhandle.ModelNotFoundError
 				if errors.As(err, &e) {
-					return entity.Organization{}, errhandle.NewModelNotFoundError(ChatRoomTargetCoverImages)
+					cflag = true
+				} else {
+					return entity.Organization{}, fmt.Errorf("failed to find image with attachable item by id: %w", err)
 				}
-				return entity.Organization{}, fmt.Errorf("failed to find image with attachable item by id: %w", err)
 			}
 			if image.AttachableItem.OwnerID.Valid && image.AttachableItem.OwnerID.Bytes != ownerID {
 				return entity.Organization{}, errhandle.NewCommonError(response.NotFileOwner, nil)
 			}
-			coverImage = entity.NullableEntity[entity.ImageWithAttachableItem]{Valid: true, Entity: image}
+			if !cflag {
+				coverImage = entity.NullableEntity[entity.ImageWithAttachableItem]{Valid: true, Entity: image}
+			}
 		}
 		if _, err = updateChatRoom(
 			ctx,
@@ -573,6 +581,10 @@ func (m *ManageOrganization) DeleteOrganization(
 	if origin.ChatRoomID.Valid {
 		originRoom, err := m.DB.FindChatRoomByIDWithSd(ctx, sd, origin.ChatRoomID.Bytes)
 		if err != nil {
+			var e errhandle.ModelNotFoundError
+			if errors.As(err, &e) {
+				return 0, errhandle.NewModelNotFoundError(ChatRoomTargetChatRoom)
+			}
 			return 0, fmt.Errorf("failed to find chat room by id: %w", err)
 		}
 		if _, err = deleteChatRoom(

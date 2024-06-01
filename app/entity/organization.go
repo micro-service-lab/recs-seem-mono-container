@@ -36,13 +36,13 @@ type OrganizationWithDetailForQuery struct {
 
 // OrganizationWithChatRoom 組織と専用チャットルームを表す構造体。
 type OrganizationWithChatRoom struct {
-	OrganizationID uuid.UUID              `json:"organization_id"`
-	Name           string                 `json:"name"`
-	Color          String                 `json:"color"`
-	Description    String                 `json:"description"`
-	IsPersonal     bool                   `json:"is_personal"`
-	IsWhole        bool                   `json:"is_whole"`
-	ChatRoom       ChatRoomWithCoverImage `json:"chat_room"`
+	OrganizationID uuid.UUID                              `json:"organization_id"`
+	Name           string                                 `json:"name"`
+	Color          String                                 `json:"color"`
+	Description    String                                 `json:"description"`
+	IsPersonal     bool                                   `json:"is_personal"`
+	IsWhole        bool                                   `json:"is_whole"`
+	ChatRoom       NullableEntity[ChatRoomWithCoverImage] `json:"chat_room"`
 }
 
 // OrganizationWithChatRoomForQuery 組織と専用チャットルームを表す構造体(クエリー用)。
@@ -53,15 +53,15 @@ type OrganizationWithChatRoomForQuery struct {
 
 // OrganizationWithChatRoomAndDetail 組織と専用チャットルーム、詳細を表す構造体。
 type OrganizationWithChatRoomAndDetail struct {
-	OrganizationID uuid.UUID              `json:"organization_id"`
-	Name           string                 `json:"name"`
-	Color          String                 `json:"color"`
-	Description    String                 `json:"description"`
-	IsPersonal     bool                   `json:"is_personal"`
-	IsWhole        bool                   `json:"is_whole"`
-	ChatRoom       ChatRoomWithCoverImage `json:"chat_room"`
-	Group          NullableEntity[Group]  `json:"group,omitempty"`
-	Grade          NullableEntity[Grade]  `json:"grade,omitempty"`
+	OrganizationID uuid.UUID                              `json:"organization_id"`
+	Name           string                                 `json:"name"`
+	Color          String                                 `json:"color"`
+	Description    String                                 `json:"description"`
+	IsPersonal     bool                                   `json:"is_personal"`
+	IsWhole        bool                                   `json:"is_whole"`
+	ChatRoom       NullableEntity[ChatRoomWithCoverImage] `json:"chat_room"`
+	Group          NullableEntity[Group]                  `json:"group,omitempty"`
+	Grade          NullableEntity[Grade]                  `json:"grade,omitempty"`
 }
 
 // OrganizationWithChatRoomAndDetailForQuery 組織と専用チャットルーム、詳細を表す構造体(クエリー用)。

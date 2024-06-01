@@ -88,7 +88,7 @@ func (s *API) Handler() http.Handler {
 	r.Mount("/permissions", PermissionHandler(s.svc))
 	r.Mount("/policies", PolicyHandler(s.svc, s.validator, s.translator))
 	r.Mount("/roles", RoleHandler(s.svc, s.validator, s.translator))
-	r.Mount("/organizations", OrganizationHandler(s.svc, s.validator, s.translator))
+	r.Mount("/organizations", OrganizationHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
 	r.Mount("/students", StudentHandler(s.svc, s.validator, s.translator))
 	r.Mount("/professors", ProfessorHandler(s.svc, s.validator, s.translator))
 	r.Mount("/members", MemberHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))

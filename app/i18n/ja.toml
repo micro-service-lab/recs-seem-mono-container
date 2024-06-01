@@ -26,12 +26,36 @@ other = "カバー画像ID"
 other = "メンバーID"
 [MemberIDs]
 other = "メンバーID"
+[ImageID]
+other = "画像ID"
+[ImageIDs]
+other = "画像ID"
+[FileID]
+other = "ファイルID"
+[FileIDs]
+other = "ファイルID"
 
 [ChatRoom]
 other = "チャットルーム"
 [Organization]
 other = "オーガナイゼーション"
+[File]
+other = "ファイル"
+[Files]
+other = "ファイル"
 
+[Required]
+other = "{{.Target}}は必須フィールドです"
+[IsUploadFile]
+other = "{{.Target}}はアップロードファイルである必要があります"
+[PluralIsUploadFile]
+other = "{{.Target}}にアップロードファイルでないデータが含まれています"
+[ContainSystemFile]
+other = "{{.Target}}にシステムファイルが含まれています"
+[ContainNotOwnerFile]
+other = "{{.Target}}に他のユーザーが所有するファイルが含まれています"
+[ContainsNotImageFile]
+other = "{{.Target}}に画像ファイル以外が含まれています"
 
 [ModelNotExists]
 other = "指定された{{.ID}}が存在しません"

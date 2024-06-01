@@ -45,4 +45,8 @@ const (
 	OrganizationBelongingTargetMembers = "OrganizationBelongingTargetMembers"
 	// OrganizationBelongingTargetOrganizationBelongings 組織所属の際の組織所属ターゲット
 	OrganizationBelongingTargetOrganizationBelongings = "OrganizationBelongingTargetOrganizationBelongings"
+	// ImageTargetImages 画像の関連付けの際の画像ターゲット
+	ImageTargetImages = "ImageTargetImages"
+	// FileTargetFiles ファイルの関連付けの際のファイルターゲット
+	FileTargetFiles = "FileTargetFiles"
 )

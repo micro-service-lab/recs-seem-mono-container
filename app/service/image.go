@@ -5,12 +5,14 @@ import (
 	"bytes"
 	"context"
 	"embed"
+	"errors"
 	"fmt"
 	"image"
 	_ "image/gif"
 	_ "image/jpeg"
 	_ "image/png"
 	"io"
+	"strings"
 
 	"github.com/gabriel-vasile/mimetype"
 	"github.com/google/uuid"
@@ -60,10 +62,10 @@ func (m *ManageImage) CreateImage(
 	origin io.Reader,
 	alias string,
 	ownerID entity.UUID,
-) (e entity.Image, err error) {
+) (e entity.ImageWithAttachableItem, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
-		return entity.Image{}, fmt.Errorf("failed to begin transaction: %w", err)
+		return entity.ImageWithAttachableItem{}, fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	var storageKeys []string
 	defer func() {
@@ -86,41 +88,60 @@ func (m *ManageImage) CreateImage(
 		// 画像の所有者が存在する場合は、画像の所有者が存在するか確認する。
 		_, err := m.DB.FindMemberByIDWithSd(ctx, sd, ownerID.Bytes)
 		if err != nil {
-			return entity.Image{}, errhandle.NewModelNotFoundError("member")
+			return entity.ImageWithAttachableItem{}, errhandle.NewModelNotFoundError("member")
 		}
 	}
-	mtype, err := mimetype.DetectReader(origin)
+	data, size, err := readAll(origin)
 	if err != nil {
-		return entity.Image{}, fmt.Errorf("failed to detect mimetype: %w", err)
+		return entity.ImageWithAttachableItem{}, err
 	}
-	mime, err := m.DB.FindMimeTypeByKindWithSd(ctx, sd, mtype.String())
+	mtype := mimetype.Detect(data)
 	if err != nil {
-		return entity.Image{}, errhandle.NewModelNotFoundError("mime type")
+		return entity.ImageWithAttachableItem{}, fmt.Errorf("failed to detect mimetype: %w", err)
+	}
+	// "; "が含まれている場合は、"; "より前の文字列を取得する。
+	mtypeStr := mtype.String()
+	if i := bytes.Index([]byte(mtypeStr), []byte("; ")); i != -1 {
+		mtypeStr = mtypeStr[:i]
+	}
+	mime, err := m.DB.FindMimeTypeByKindWithSd(ctx, sd, mtypeStr)
+	if err != nil {
+		var merr *errhandle.ModelNotFoundError
+		if errors.As(err, &merr) {
+			mime, err = m.DB.FindMimeTypeByKeyWithSd(ctx, sd, string(MimeTypeKeyUnknown))
+			if err != nil {
+				return entity.ImageWithAttachableItem{}, errhandle.NewModelNotFoundError("mime type")
+			}
+		} else {
+			return entity.ImageWithAttachableItem{}, fmt.Errorf("failed to find mime type: %w", err)
+		}
+	}
+	if !strings.HasPrefix(mime.Kind, "image/") {
+		return entity.ImageWithAttachableItem{}, errhandle.NewCommonError(response.NotImageFile, nil)
 	}
 	uid, err := uuid.NewRandom()
 	if err != nil {
-		return entity.Image{}, fmt.Errorf("failed to generate uuid: %w", err)
+		return entity.ImageWithAttachableItem{}, fmt.Errorf("failed to generate uuid: %w", err)
 	}
-	fname := fmt.Sprintf("%s.%s", uid.String(), mtype.Extension())
-	url, err := m.Storage.UploadObject(ctx, origin, fname)
+	extension := mtype.Extension()
+	if i := bytes.LastIndex([]byte(alias), []byte(".")); i != -1 {
+		extension = "." + alias[i+1:]
+	}
+	fname := fmt.Sprintf("%s%s", uid.String(), extension)
+	url, err := m.Storage.UploadObject(ctx, bytes.NewReader(data), fname)
 	if err != nil {
-		return entity.Image{}, errhandle.NewCommonError(response.FailedUpload, nil)
+		return entity.ImageWithAttachableItem{}, errhandle.NewCommonError(response.FailedUpload, nil)
 	}
 	storageKeys = append(storageKeys, fname)
-	buf := new(bytes.Buffer)
-	size, err := io.Copy(buf, origin)
-	if err != nil {
-		return entity.Image{}, fmt.Errorf("failed to copy file: %w", err)
-	}
 	fsize := entity.Float{
 		Valid:   true,
 		Float64: float64(size),
 	}
-	img, _, err := image.Decode(buf)
+	img, _, err := image.DecodeConfig(bytes.NewReader(data))
 	var imgHeight, imgWidth entity.Float
 	if err == nil {
-		imgHeight = entity.Float{Valid: true, Float64: float64(img.Bounds().Dy())}
-		imgWidth = entity.Float{Valid: true, Float64: float64(img.Bounds().Dx())}
+		imgHeight = entity.Float{Valid: true, Float64: float64(img.Height)}
+		imgWidth = entity.Float{Valid: true, Float64: float64(img.Width)}
 	}
 	caip := parameter.CreateAttachableItemParam{
 		URL:        url,
@@ -132,18 +153,24 @@ func (m *ManageImage) CreateImage(
 	}
 	ai, err := m.DB.CreateAttachableItemWithSd(ctx, sd, caip)
 	if err != nil {
-		return entity.Image{}, fmt.Errorf("failed to create attachable item: %w", err)
+		return entity.ImageWithAttachableItem{}, fmt.Errorf("failed to create attachable item: %w", err)
 	}
 	p := parameter.CreateImageParam{
 		Height:           imgHeight,
 		Width:            imgWidth,
 		AttachableItemID: ai.AttachableItemID,
 	}
-	e, err = m.DB.CreateImageWithSd(ctx, sd, p)
+	image, err := m.DB.CreateImageWithSd(ctx, sd, p)
 	if err != nil {
-		return entity.Image{}, fmt.Errorf("failed to create image: %w", err)
+		return entity.ImageWithAttachableItem{}, fmt.Errorf("failed to create image: %w", err)
 	}
-	return e, nil
+	ai.ImageID = entity.UUID{Bytes: image.ImageID, Valid: true}
+	return entity.ImageWithAttachableItem{
+		ImageID:        image.ImageID,
+		Height:         image.Height,
+		Width:          image.Width,
+		AttachableItem: ai,
+	}, nil
 }
 
 // CreateImages 画像を複数作成する。
@@ -151,7 +178,7 @@ func (m *ManageImage) CreateImages(
 	ctx context.Context,
 	ownerID entity.UUID,
 	params []parameter.CreateImageServiceParam,
-) (es []entity.Image, err error) {
+) (es []entity.ImageWithAttachableItem, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to begin transaction: %w", err)
@@ -180,40 +207,57 @@ func (m *ManageImage) CreateImages(
 			return nil, errhandle.NewModelNotFoundError("member")
 		}
 	}
-	var images []entity.Image
+	var images []entity.ImageWithAttachableItem
 	for _, p := range params {
-		mtype, err := mimetype.DetectReader(p.Origin)
+		data, size, err := readAll(p.Origin)
 		if err != nil {
-			return nil, fmt.Errorf("failed to detect mimetype: %w", err)
+			return nil, err
 		}
-		mime, err := m.DB.FindMimeTypeByKindWithSd(ctx, sd, mtype.String())
+		mtype := mimetype.Detect(data)
+		// "; "が含まれている場合は、"; "より前の文字列を取得する。
+		mtypeStr := mtype.String()
+		if i := bytes.Index([]byte(mtypeStr), []byte("; ")); i != -1 {
+			mtypeStr = mtypeStr[:i]
+		}
+		mime, err := m.DB.FindMimeTypeByKindWithSd(ctx, sd, mtypeStr)
 		if err != nil {
-			return nil, errhandle.NewModelNotFoundError("mime type")
+			var merr *errhandle.ModelNotFoundError
+			if errors.As(err, &merr) {
+				mime, err = m.DB.FindMimeTypeByKeyWithSd(ctx, sd, string(MimeTypeKeyUnknown))
+				if err != nil {
+					return nil, errhandle.NewModelNotFoundError("mime type")
+				}
+			} else {
+				return nil, fmt.Errorf("failed to find mime type: %w", err)
+			}
+		}
+		if !strings.HasPrefix(mime.Kind, "image/") {
+			return nil, errhandle.NewCommonError(response.NotImageFile, nil)
 		}
 		uid, err := uuid.NewRandom()
 		if err != nil {
 			return nil, fmt.Errorf("failed to generate uuid: %w", err)
 		}
-		fname := fmt.Sprintf("%s.%s", uid.String(), mtype.Extension())
-		url, err := m.Storage.UploadObject(ctx, p.Origin, fname)
+		extension := mtype.Extension()
+		if i := bytes.LastIndex([]byte(p.Alias), []byte(".")); i != -1 {
+			extension = "." + p.Alias[i+1:]
+		}
+		fname := fmt.Sprintf("%s%s", uid.String(), extension)
+		url, err := m.Storage.UploadObject(ctx, bytes.NewReader(data), fname)
 		if err != nil {
 			return nil, errhandle.NewCommonError(response.FailedUpload, nil)
 		}
 		storageKeys = append(storageKeys, fname)
-		buf := new(bytes.Buffer)
-		size, err := io.Copy(buf, p.Origin)
-		if err != nil {
-			return nil, fmt.Errorf("failed to copy file: %w", err)
-		}
+
 		fsize := entity.Float{
 			Valid:   true,
 			Float64: float64(size),
 		}
-		img, _, err := image.Decode(buf)
+		img, _, err := image.DecodeConfig(bytes.NewReader(data))
 		var imgHeight, imgWidth entity.Float
 		if err == nil {
-			imgHeight = entity.Float{Valid: true, Float64: float64(img.Bounds().Dy())}
-			imgWidth = entity.Float{Valid: true, Float64: float64(img.Bounds().Dx())}
+			imgHeight = entity.Float{Valid: true, Float64: float64(img.Height)}
+			imgWidth = entity.Float{Valid: true, Float64: float64(img.Width)}
 		}
 		caip := parameter.CreateAttachableItemParam{
 			URL:        url,
@@ -236,7 +280,13 @@ func (m *ManageImage) CreateImages(
 		if err != nil {
 			return nil, fmt.Errorf("failed to create image: %w", err)
 		}
-		images = append(images, e)
+		ai.ImageID = entity.UUID{Bytes: e.ImageID, Valid: true}
+		images = append(images, entity.ImageWithAttachableItem{
+			ImageID:        e.ImageID,
+			Height:         e.Height,
+			Width:          e.Width,
+			AttachableItem: ai,
+		})
 	}
 	return images, nil
 }
@@ -248,10 +298,10 @@ func (m *ManageImage) CreateImageSpecifyFilename(
 	alias string,
 	ownerID entity.UUID,
 	filename string,
-) (e entity.Image, err error) {
+) (e entity.ImageWithAttachableItem, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
-		return entity.Image{}, fmt.Errorf("failed to begin transaction: %w", err)
+		return entity.ImageWithAttachableItem{}, fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	var storageKeys []string
 	defer func() {
@@ -274,43 +324,61 @@ func (m *ManageImage) CreateImageSpecifyFilename(
 		// 画像の所有者が存在する場合は、画像の所有者が存在するか確認する。
 		_, err := m.DB.FindMemberByIDWithSd(ctx, sd, ownerID.Bytes)
 		if err != nil {
-			return entity.Image{}, errhandle.NewModelNotFoundError("member")
+			return entity.ImageWithAttachableItem{}, errhandle.NewModelNotFoundError("member")
 		}
 	}
-	mtype, err := mimetype.DetectReader(origin)
+	data, size, err := readAll(origin)
 	if err != nil {
-		return entity.Image{}, fmt.Errorf("failed to detect mimetype: %w", err)
+		return entity.ImageWithAttachableItem{}, err
 	}
-	mime, err := m.DB.FindMimeTypeByKindWithSd(ctx, sd, mtype.String())
+	mtype := mimetype.Detect(data)
 	if err != nil {
-		return entity.Image{}, errhandle.NewModelNotFoundError("mime type")
+		return entity.ImageWithAttachableItem{}, fmt.Errorf("failed to detect mimetype: %w", err)
+	}
+	// "; "が含まれている場合は、"; "より前の文字列を取得する。
+	mtypeStr := mtype.String()
+	if i := bytes.Index([]byte(mtypeStr), []byte("; ")); i != -1 {
+		mtypeStr = mtypeStr[:i]
+	}
+	mime, err := m.DB.FindMimeTypeByKindWithSd(ctx, sd, mtypeStr)
+	if err != nil {
+		var merr *errhandle.ModelNotFoundError
+		if errors.As(err, &merr) {
+			mime, err = m.DB.FindMimeTypeByKeyWithSd(ctx, sd, string(MimeTypeKeyUnknown))
+			if err != nil {
+				return entity.ImageWithAttachableItem{}, errhandle.NewModelNotFoundError("mime type")
+			}
+		} else {
+			return entity.ImageWithAttachableItem{}, fmt.Errorf("failed to find mime type: %w", err)
+		}
+	}
+	if !strings.HasPrefix(mime.Kind, "image/") {
+		return entity.ImageWithAttachableItem{}, errhandle.NewCommonError(response.NotImageFile, nil)
 	}
 	exist, err := m.Storage.ExistsObject(ctx, filename)
 	if err != nil {
-		return entity.Image{}, fmt.Errorf("failed to check object existence: %w", err)
+		return entity.ImageWithAttachableItem{}, fmt.Errorf("failed to check object existence: %w", err)
 	}
 	if exist {
-		return entity.Image{}, errhandle.NewCommonError(response.ConflictStorageKey, nil)
+		return entity.ImageWithAttachableItem{}, errhandle.NewCommonError(response.ConflictStorageKey, nil)
 	}
-	url, err := m.Storage.UploadObject(ctx, origin, filename)
+	url, err := m.Storage.UploadObject(ctx, bytes.NewReader(data), filename)
 	if err != nil {
-		return entity.Image{}, errhandle.NewCommonError(response.FailedUpload, nil)
+		return entity.ImageWithAttachableItem{}, errhandle.NewCommonError(response.FailedUpload, nil)
 	}
 	storageKeys = append(storageKeys, filename)
-	buf := new(bytes.Buffer)
-	size, err := io.Copy(buf, origin)
 	if err != nil {
-		return entity.Image{}, fmt.Errorf("failed to copy file: %w", err)
+		return entity.ImageWithAttachableItem{}, fmt.Errorf("failed to copy file: %w", err)
 	}
 	fsize := entity.Float{
 		Valid:   true,
 		Float64: float64(size),
 	}
-	img, _, err := image.Decode(buf)
+	img, _, err := image.DecodeConfig(bytes.NewReader(data))
 	var imgHeight, imgWidth entity.Float
 	if err == nil {
-		imgHeight = entity.Float{Valid: true, Float64: float64(img.Bounds().Dy())}
-		imgWidth = entity.Float{Valid: true, Float64: float64(img.Bounds().Dx())}
+		imgHeight = entity.Float{Valid: true, Float64: float64(img.Height)}
+		imgWidth = entity.Float{Valid: true, Float64: float64(img.Width)}
 	}
 	caip := parameter.CreateAttachableItemParam{
 		URL:        url,
@@ -326,11 +394,17 @@ func (m *ManageImage) CreateImageSpecifyFilename(
 		Width:            imgWidth,
 		AttachableItemID: ai.AttachableItemID,
 	}
-	e, err = m.DB.CreateImageWithSd(ctx, sd, p)
+	im, err := m.DB.CreateImageWithSd(ctx, sd, p)
 	if err != nil {
-		return entity.Image{}, fmt.Errorf("failed to create image: %w", err)
+		return entity.ImageWithAttachableItem{}, fmt.Errorf("failed to create image: %w", err)
 	}
-	return e, nil
+	ai.ImageID = entity.UUID{Bytes: im.ImageID, Valid: true}
+	return entity.ImageWithAttachableItem{
+		ImageID:        im.ImageID,
+		Height:         im.Height,
+		Width:          im.Width,
+		AttachableItem: ai,
+	}, nil
 }
 
 // CreateImagesSpecifyFilename 画像を複数作成する。
@@ -338,7 +412,7 @@ func (m *ManageImage) CreateImagesSpecifyFilename(
 	ctx context.Context,
 	ownerID entity.UUID,
 	params []parameter.CreateImageSpecifyFilenameServiceParam,
-) (es []entity.Image, err error) {
+) (es []entity.ImageWithAttachableItem, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to begin transaction: %w", err)
@@ -367,15 +441,32 @@ func (m *ManageImage) CreateImagesSpecifyFilename(
 			return nil, errhandle.NewModelNotFoundError("member")
 		}
 	}
-	var images []entity.Image
+	var images []entity.ImageWithAttachableItem
 	for _, p := range params {
-		mtype, err := mimetype.DetectReader(p.Origin)
+		data, size, err := readAll(p.Origin)
 		if err != nil {
-			return nil, fmt.Errorf("failed to detect mimetype: %w", err)
+			return nil, err
 		}
-		mime, err := m.DB.FindMimeTypeByKindWithSd(ctx, sd, mtype.String())
+		mtype := mimetype.Detect(data)
+		// "; "が含まれている場合は、"; "より前の文字列を取得する。
+		mtypeStr := mtype.String()
+		if i := bytes.Index([]byte(mtypeStr), []byte("; ")); i != -1 {
+			mtypeStr = mtypeStr[:i]
+		}
+		mime, err := m.DB.FindMimeTypeByKindWithSd(ctx, sd, mtypeStr)
 		if err != nil {
-			return nil, errhandle.NewModelNotFoundError("mime type")
+			var merr *errhandle.ModelNotFoundError
+			if errors.As(err, &merr) {
+				mime, err = m.DB.FindMimeTypeByKeyWithSd(ctx, sd, string(MimeTypeKeyUnknown))
+				if err != nil {
+					return nil, errhandle.NewModelNotFoundError("mime type")
+				}
+			} else {
+				return nil, fmt.Errorf("failed to find mime type: %w", err)
+			}
+		}
+		if !strings.HasPrefix(mime.Kind, "image/") {
+			return nil, errhandle.NewCommonError(response.NotImageFile, nil)
 		}
 		exist, err := m.Storage.ExistsObject(ctx, p.Filename)
 		if err != nil {
@@ -384,25 +475,20 @@ func (m *ManageImage) CreateImagesSpecifyFilename(
 		if exist {
 			return nil, errhandle.NewCommonError(response.ConflictStorageKey, nil)
 		}
-		url, err := m.Storage.UploadObject(ctx, p.Origin, p.Filename)
+		url, err := m.Storage.UploadObject(ctx, bytes.NewReader(data), p.Filename)
 		if err != nil {
 			return nil, errhandle.NewCommonError(response.FailedUpload, nil)
 		}
 		storageKeys = append(storageKeys, p.Filename)
-		buf := new(bytes.Buffer)
-		size, err := io.Copy(buf, p.Origin)
-		if err != nil {
-			return nil, fmt.Errorf("failed to copy file: %w", err)
-		}
 		fsize := entity.Float{
 			Valid:   true,
 			Float64: float64(size),
 		}
-		img, _, err := image.Decode(buf)
+		img, _, err := image.DecodeConfig(bytes.NewReader(data))
 		var imgHeight, imgWidth entity.Float
 		if err == nil {
-			imgHeight = entity.Float{Valid: true, Float64: float64(img.Bounds().Dy())}
-			imgWidth = entity.Float{Valid: true, Float64: float64(img.Bounds().Dx())}
+			imgHeight = entity.Float{Valid: true, Float64: float64(img.Height)}
+			imgWidth = entity.Float{Valid: true, Float64: float64(img.Width)}
 		}
 		caip := parameter.CreateAttachableItemParam{
 			URL:        url,
@@ -425,7 +511,13 @@ func (m *ManageImage) CreateImagesSpecifyFilename(
 		if err != nil {
 			return nil, fmt.Errorf("failed to create image: %w", err)
 		}
-		images = append(images, e)
+		ai.ImageID = entity.UUID{Bytes: e.ImageID, Valid: true}
+		images = append(images, entity.ImageWithAttachableItem{
+			ImageID:        e.ImageID,
+			Height:         e.Height,
+			Width:          e.Width,
+			AttachableItem: ai,
+		})
 	}
 	return images, nil
 }
@@ -439,10 +531,10 @@ func (m *ManageImage) CreateImageFromOuter(
 	ownerID entity.UUID,
 	mimeTypeID uuid.UUID,
 	height, width entity.Float,
-) (e entity.Image, err error) {
+) (e entity.ImageWithAttachableItem, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
-		return entity.Image{}, fmt.Errorf("failed to begin transaction: %w", err)
+		return entity.ImageWithAttachableItem{}, fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer func() {
 		if err != nil {
@@ -459,13 +551,16 @@ func (m *ManageImage) CreateImageFromOuter(
 		// 画像の所有者が存在する場合は、画像の所有者が存在するか確認する。
 		_, err := m.DB.FindMemberByIDWithSd(ctx, sd, ownerID.Bytes)
 		if err != nil {
-			return entity.Image{}, errhandle.NewModelNotFoundError("member")
+			return entity.ImageWithAttachableItem{}, errhandle.NewModelNotFoundError("member")
 		}
 	}
 	// 画像のMIMEタイプが存在するか確認する。
-	_, err = m.DB.FindMimeTypeByIDWithSd(ctx, sd, mimeTypeID)
+	mime, err := m.DB.FindMimeTypeByIDWithSd(ctx, sd, mimeTypeID)
 	if err != nil {
-		return entity.Image{}, errhandle.NewModelNotFoundError("mime type")
+		return entity.ImageWithAttachableItem{}, errhandle.NewModelNotFoundError("mime type")
+	}
+	if !strings.HasPrefix(mime.Kind, "image/") {
+		return entity.ImageWithAttachableItem{}, errhandle.NewCommonError(response.NotImageFile, nil)
 	}
 	caip := parameter.CreateAttachableItemParam{
 		URL:        url,
@@ -481,11 +576,17 @@ func (m *ManageImage) CreateImageFromOuter(
 		Width:            width,
 		AttachableItemID: ai.AttachableItemID,
 	}
-	e, err = m.DB.CreateImageWithSd(ctx, sd, p)
+	im, err := m.DB.CreateImageWithSd(ctx, sd, p)
 	if err != nil {
-		return entity.Image{}, fmt.Errorf("failed to create image: %w", err)
+		return entity.ImageWithAttachableItem{}, fmt.Errorf("failed to create image: %w", err)
 	}
-	return e, nil
+	ai.ImageID = entity.UUID{Bytes: im.ImageID, Valid: true}
+	return entity.ImageWithAttachableItem{
+		ImageID:        im.ImageID,
+		Height:         im.Height,
+		Width:          im.Width,
+		AttachableItem: ai,
+	}, nil
 }
 
 // CreateImagesFromOuter 外部画像を複数作成する。
@@ -493,7 +594,7 @@ func (m *ManageImage) CreateImagesFromOuter(
 	ctx context.Context,
 	ownerID entity.UUID,
 	params []parameter.CreateImageFromOuterServiceParam,
-) (es []entity.Image, err error) {
+) (es []entity.ImageWithAttachableItem, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to begin transaction: %w", err)
@@ -516,12 +617,15 @@ func (m *ManageImage) CreateImagesFromOuter(
 			return nil, errhandle.NewModelNotFoundError("member")
 		}
 	}
-	var images []entity.Image
+	var images []entity.ImageWithAttachableItem
 	for _, p := range params {
 		// 画像のMIMEタイプが存在するか確認する。
-		_, err = m.DB.FindMimeTypeByIDWithSd(ctx, sd, p.MimeTypeID)
+		mime, err := m.DB.FindMimeTypeByIDWithSd(ctx, sd, p.MimeTypeID)
 		if err != nil {
 			return nil, errhandle.NewModelNotFoundError("mime type")
+		}
+		if !strings.HasPrefix(mime.Kind, "image/") {
+			return nil, errhandle.NewCommonError(response.NotImageFile, nil)
 		}
 		caip := parameter.CreateAttachableItemParam{
 			URL:        p.URL,
@@ -544,13 +648,19 @@ func (m *ManageImage) CreateImagesFromOuter(
 		if err != nil {
 			return nil, fmt.Errorf("failed to create image: %w", err)
 		}
-		images = append(images, e)
+		ai.ImageID = entity.UUID{Bytes: e.ImageID, Valid: true}
+		images = append(images, entity.ImageWithAttachableItem{
+			ImageID:        e.ImageID,
+			Height:         e.Height,
+			Width:          e.Width,
+			AttachableItem: ai,
+		})
 	}
 	return images, nil
 }
 
 // DeleteImage 画像を削除する。
-func (m *ManageImage) DeleteImage(ctx context.Context, id uuid.UUID) (c int64, err error) {
+func (m *ManageImage) DeleteImage(ctx context.Context, id uuid.UUID, ownerID entity.UUID) (c int64, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return 0, fmt.Errorf("failed to begin transaction: %w", err)
@@ -573,6 +683,17 @@ func (m *ManageImage) DeleteImage(ctx context.Context, id uuid.UUID) (c int64, e
 	if !image.AttachableItem.OwnerID.Valid {
 		return 0, nil
 	}
+	if !ownerID.Valid || image.AttachableItem.OwnerID.Bytes != ownerID.Bytes {
+		return 0, errhandle.NewCommonError(response.NotFileOwner, nil)
+	}
+	c, err = m.DB.DeleteImageWithSd(ctx, sd, id)
+	if err != nil {
+		return 0, fmt.Errorf("failed to delete image: %w", err)
+	}
+	_, err = m.DB.DeleteAttachableItemWithSd(ctx, sd, image.AttachableItem.AttachableItemID)
+	if err != nil {
+		return 0, fmt.Errorf("failed to delete attachable item: %w", err)
+	}
 	if !image.AttachableItem.FromOuter {
 		key, err := m.Storage.GetKeyFromURL(ctx, image.AttachableItem.URL)
 		if err != nil {
@@ -582,14 +703,6 @@ func (m *ManageImage) DeleteImage(ctx context.Context, id uuid.UUID) (c int64, e
 		if err != nil {
 			return 0, fmt.Errorf("failed to delete object: %w", err)
 		}
-	}
-	c, err = m.DB.DeleteImageWithSd(ctx, sd, id)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete image: %w", err)
-	}
-	_, err = m.DB.DeleteAttachableItemWithSd(ctx, sd, image.AttachableItem.AttachableItemID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete attachable item: %w", err)
 	}
 	return c, nil
 }
@@ -608,13 +721,19 @@ func pluralDeleteImages(
 	if err != nil {
 		return 0, fmt.Errorf("failed to get images: %w", err)
 	}
+	if len(image.Data) != len(ids) {
+		return 0, errhandle.NewModelNotFoundError(ImageTargetImages)
+	}
 	var keys []string
 	var attachableItemIDs []uuid.UUID
 	for _, i := range image.Data {
 		if !i.AttachableItem.OwnerID.Valid {
-			continue
+			if force {
+				continue
+			}
+			return 0, errhandle.NewCommonError(response.CannotDeleteSystemFile, nil)
 		}
-		if !force || (!ownerID.Valid || i.AttachableItem.OwnerID.Bytes != ownerID.Bytes) {
+		if !force && (!ownerID.Valid || i.AttachableItem.OwnerID.Bytes != ownerID.Bytes) {
 			return 0, errhandle.NewCommonError(response.NotFileOwner, nil)
 		}
 		if !i.AttachableItem.FromOuter {
@@ -629,10 +748,6 @@ func pluralDeleteImages(
 	if len(keys) == 0 {
 		return 0, nil
 	}
-	err = stg.DeleteObjects(ctx, keys)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete objects: %w", err)
-	}
 	c, err = db.PluralDeleteImagesWithSd(ctx, sd, ids)
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete policy: %w", err)
@@ -641,12 +756,16 @@ func pluralDeleteImages(
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete attachable items: %w", err)
 	}
+	err = stg.DeleteObjects(ctx, keys)
+	if err != nil {
+		return 0, fmt.Errorf("failed to delete objects: %w", err)
+	}
 	return c, nil
 }
 
 // PluralDeleteImages 画像を複数削除する。
 func (m *ManageImage) PluralDeleteImages(
-	ctx context.Context, ids []uuid.UUID,
+	ctx context.Context, ids []uuid.UUID, ownerID entity.UUID,
 ) (c int64, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
@@ -663,7 +782,7 @@ func (m *ManageImage) PluralDeleteImages(
 			}
 		}
 	}()
-	return pluralDeleteImages(ctx, sd, m.DB, m.Storage, ids, entity.UUID{}, false)
+	return pluralDeleteImages(ctx, sd, m.DB, m.Storage, ids, ownerID, false)
 }
 
 // GetImages 画像を取得する。

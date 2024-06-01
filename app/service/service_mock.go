@@ -59,22 +59,22 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreateEventTypesFunc: func(ctx context.Context, ps []parameter.CreateEventTypeParam) (int64, error) {
 //				panic("mock out the CreateEventTypes method")
 //			},
-//			CreateFileFunc: func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.File, error) {
+//			CreateFileFunc: func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.FileWithAttachableItem, error) {
 //				panic("mock out the CreateFile method")
 //			},
-//			CreateFileFromOuterFunc: func(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID) (entity.File, error) {
+//			CreateFileFromOuterFunc: func(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID) (entity.FileWithAttachableItem, error) {
 //				panic("mock out the CreateFileFromOuter method")
 //			},
-//			CreateFileSpecifyFilenameFunc: func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.File, error) {
+//			CreateFileSpecifyFilenameFunc: func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.FileWithAttachableItem, error) {
 //				panic("mock out the CreateFileSpecifyFilename method")
 //			},
-//			CreateFilesFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileServiceParam) ([]entity.File, error) {
+//			CreateFilesFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileServiceParam) ([]entity.FileWithAttachableItem, error) {
 //				panic("mock out the CreateFiles method")
 //			},
-//			CreateFilesFromOuterFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileFromOuterServiceParam) ([]entity.File, error) {
+//			CreateFilesFromOuterFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileFromOuterServiceParam) ([]entity.FileWithAttachableItem, error) {
 //				panic("mock out the CreateFilesFromOuter method")
 //			},
-//			CreateFilesSpecifyFilenameFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileSpecifyFilenameServiceParam) ([]entity.File, error) {
+//			CreateFilesSpecifyFilenameFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileSpecifyFilenameServiceParam) ([]entity.FileWithAttachableItem, error) {
 //				panic("mock out the CreateFilesSpecifyFilename method")
 //			},
 //			CreateGradeFunc: func(ctx context.Context, name string, key string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Grade, error) {
@@ -89,22 +89,22 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreateGroupsFunc: func(ctx context.Context, ps []parameter.CreateGroupServiceParam) (int64, error) {
 //				panic("mock out the CreateGroups method")
 //			},
-//			CreateImageFunc: func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.Image, error) {
+//			CreateImageFunc: func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.ImageWithAttachableItem, error) {
 //				panic("mock out the CreateImage method")
 //			},
-//			CreateImageFromOuterFunc: func(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID, height entity.Float, width entity.Float) (entity.Image, error) {
+//			CreateImageFromOuterFunc: func(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID, height entity.Float, width entity.Float) (entity.ImageWithAttachableItem, error) {
 //				panic("mock out the CreateImageFromOuter method")
 //			},
-//			CreateImageSpecifyFilenameFunc: func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.Image, error) {
+//			CreateImageSpecifyFilenameFunc: func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.ImageWithAttachableItem, error) {
 //				panic("mock out the CreateImageSpecifyFilename method")
 //			},
-//			CreateImagesFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageServiceParam) ([]entity.Image, error) {
+//			CreateImagesFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageServiceParam) ([]entity.ImageWithAttachableItem, error) {
 //				panic("mock out the CreateImages method")
 //			},
-//			CreateImagesFromOuterFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageFromOuterServiceParam) ([]entity.Image, error) {
+//			CreateImagesFromOuterFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageFromOuterServiceParam) ([]entity.ImageWithAttachableItem, error) {
 //				panic("mock out the CreateImagesFromOuter method")
 //			},
-//			CreateImagesSpecifyFilenameFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageSpecifyFilenameServiceParam) ([]entity.Image, error) {
+//			CreateImagesSpecifyFilenameFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageSpecifyFilenameServiceParam) ([]entity.ImageWithAttachableItem, error) {
 //				panic("mock out the CreateImagesSpecifyFilename method")
 //			},
 //			CreateMimeTypeFunc: func(ctx context.Context, name string, key string, kind string) (entity.MimeType, error) {
@@ -176,7 +176,7 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			DeleteEventTypeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteEventType method")
 //			},
-//			DeleteFileFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
+//			DeleteFileFunc: func(ctx context.Context, id uuid.UUID, ownerID entity.UUID) (int64, error) {
 //				panic("mock out the DeleteFile method")
 //			},
 //			DeleteGradeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
@@ -185,7 +185,7 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			DeleteGroupFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteGroup method")
 //			},
-//			DeleteImageFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
+//			DeleteImageFunc: func(ctx context.Context, id uuid.UUID, ownerID entity.UUID) (int64, error) {
 //				panic("mock out the DeleteImage method")
 //			},
 //			DeleteMemberFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
@@ -518,7 +518,7 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			PluralDeleteEventTypesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteEventTypes method")
 //			},
-//			PluralDeleteFilesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
+//			PluralDeleteFilesFunc: func(ctx context.Context, ids []uuid.UUID, ownerID entity.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteFiles method")
 //			},
 //			PluralDeleteGradesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
@@ -527,7 +527,7 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			PluralDeleteGroupsFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteGroups method")
 //			},
-//			PluralDeleteImagesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
+//			PluralDeleteImagesFunc: func(ctx context.Context, ids []uuid.UUID, ownerID entity.UUID) (int64, error) {
 //				panic("mock out the PluralDeleteImages method")
 //			},
 //			PluralDeleteMimeTypesFunc: func(ctx context.Context, ids []uuid.UUID) (int64, error) {
@@ -682,22 +682,22 @@ type ManagerInterfaceMock struct {
 	CreateEventTypesFunc func(ctx context.Context, ps []parameter.CreateEventTypeParam) (int64, error)
 
 	// CreateFileFunc mocks the CreateFile method.
-	CreateFileFunc func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.File, error)
+	CreateFileFunc func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.FileWithAttachableItem, error)
 
 	// CreateFileFromOuterFunc mocks the CreateFileFromOuter method.
-	CreateFileFromOuterFunc func(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID) (entity.File, error)
+	CreateFileFromOuterFunc func(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID) (entity.FileWithAttachableItem, error)
 
 	// CreateFileSpecifyFilenameFunc mocks the CreateFileSpecifyFilename method.
-	CreateFileSpecifyFilenameFunc func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.File, error)
+	CreateFileSpecifyFilenameFunc func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.FileWithAttachableItem, error)
 
 	// CreateFilesFunc mocks the CreateFiles method.
-	CreateFilesFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileServiceParam) ([]entity.File, error)
+	CreateFilesFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileServiceParam) ([]entity.FileWithAttachableItem, error)
 
 	// CreateFilesFromOuterFunc mocks the CreateFilesFromOuter method.
-	CreateFilesFromOuterFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileFromOuterServiceParam) ([]entity.File, error)
+	CreateFilesFromOuterFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileFromOuterServiceParam) ([]entity.FileWithAttachableItem, error)
 
 	// CreateFilesSpecifyFilenameFunc mocks the CreateFilesSpecifyFilename method.
-	CreateFilesSpecifyFilenameFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileSpecifyFilenameServiceParam) ([]entity.File, error)
+	CreateFilesSpecifyFilenameFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileSpecifyFilenameServiceParam) ([]entity.FileWithAttachableItem, error)
 
 	// CreateGradeFunc mocks the CreateGrade method.
 	CreateGradeFunc func(ctx context.Context, name string, key string, description entity.String, color entity.String, coverImageID entity.UUID) (entity.Grade, error)
@@ -712,22 +712,22 @@ type ManagerInterfaceMock struct {
 	CreateGroupsFunc func(ctx context.Context, ps []parameter.CreateGroupServiceParam) (int64, error)
 
 	// CreateImageFunc mocks the CreateImage method.
-	CreateImageFunc func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.Image, error)
+	CreateImageFunc func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.ImageWithAttachableItem, error)
 
 	// CreateImageFromOuterFunc mocks the CreateImageFromOuter method.
-	CreateImageFromOuterFunc func(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID, height entity.Float, width entity.Float) (entity.Image, error)
+	CreateImageFromOuterFunc func(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID, height entity.Float, width entity.Float) (entity.ImageWithAttachableItem, error)
 
 	// CreateImageSpecifyFilenameFunc mocks the CreateImageSpecifyFilename method.
-	CreateImageSpecifyFilenameFunc func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.Image, error)
+	CreateImageSpecifyFilenameFunc func(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.ImageWithAttachableItem, error)
 
 	// CreateImagesFunc mocks the CreateImages method.
-	CreateImagesFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageServiceParam) ([]entity.Image, error)
+	CreateImagesFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageServiceParam) ([]entity.ImageWithAttachableItem, error)
 
 	// CreateImagesFromOuterFunc mocks the CreateImagesFromOuter method.
-	CreateImagesFromOuterFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageFromOuterServiceParam) ([]entity.Image, error)
+	CreateImagesFromOuterFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageFromOuterServiceParam) ([]entity.ImageWithAttachableItem, error)
 
 	// CreateImagesSpecifyFilenameFunc mocks the CreateImagesSpecifyFilename method.
-	CreateImagesSpecifyFilenameFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageSpecifyFilenameServiceParam) ([]entity.Image, error)
+	CreateImagesSpecifyFilenameFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageSpecifyFilenameServiceParam) ([]entity.ImageWithAttachableItem, error)
 
 	// CreateMimeTypeFunc mocks the CreateMimeType method.
 	CreateMimeTypeFunc func(ctx context.Context, name string, key string, kind string) (entity.MimeType, error)
@@ -799,7 +799,7 @@ type ManagerInterfaceMock struct {
 	DeleteEventTypeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
 	// DeleteFileFunc mocks the DeleteFile method.
-	DeleteFileFunc func(ctx context.Context, id uuid.UUID) (int64, error)
+	DeleteFileFunc func(ctx context.Context, id uuid.UUID, ownerID entity.UUID) (int64, error)
 
 	// DeleteGradeFunc mocks the DeleteGrade method.
 	DeleteGradeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
@@ -808,7 +808,7 @@ type ManagerInterfaceMock struct {
 	DeleteGroupFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
 	// DeleteImageFunc mocks the DeleteImage method.
-	DeleteImageFunc func(ctx context.Context, id uuid.UUID) (int64, error)
+	DeleteImageFunc func(ctx context.Context, id uuid.UUID, ownerID entity.UUID) (int64, error)
 
 	// DeleteMemberFunc mocks the DeleteMember method.
 	DeleteMemberFunc func(ctx context.Context, id uuid.UUID) (int64, error)
@@ -1141,7 +1141,7 @@ type ManagerInterfaceMock struct {
 	PluralDeleteEventTypesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
 	// PluralDeleteFilesFunc mocks the PluralDeleteFiles method.
-	PluralDeleteFilesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
+	PluralDeleteFilesFunc func(ctx context.Context, ids []uuid.UUID, ownerID entity.UUID) (int64, error)
 
 	// PluralDeleteGradesFunc mocks the PluralDeleteGrades method.
 	PluralDeleteGradesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
@@ -1150,7 +1150,7 @@ type ManagerInterfaceMock struct {
 	PluralDeleteGroupsFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
 
 	// PluralDeleteImagesFunc mocks the PluralDeleteImages method.
-	PluralDeleteImagesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
+	PluralDeleteImagesFunc func(ctx context.Context, ids []uuid.UUID, ownerID entity.UUID) (int64, error)
 
 	// PluralDeleteMimeTypesFunc mocks the PluralDeleteMimeTypes method.
 	PluralDeleteMimeTypesFunc func(ctx context.Context, ids []uuid.UUID) (int64, error)
@@ -1795,6 +1795,8 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// ID is the id argument value.
 			ID uuid.UUID
+			// OwnerID is the ownerID argument value.
+			OwnerID entity.UUID
 		}
 		// DeleteGrade holds details about calls to the DeleteGrade method.
 		DeleteGrade []struct {
@@ -1816,6 +1818,8 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// ID is the id argument value.
 			ID uuid.UUID
+			// OwnerID is the ownerID argument value.
+			OwnerID entity.UUID
 		}
 		// DeleteMember holds details about calls to the DeleteMember method.
 		DeleteMember []struct {
@@ -2991,6 +2995,8 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// Ids is the ids argument value.
 			Ids []uuid.UUID
+			// OwnerID is the ownerID argument value.
+			OwnerID entity.UUID
 		}
 		// PluralDeleteGrades holds details about calls to the PluralDeleteGrades method.
 		PluralDeleteGrades []struct {
@@ -3012,6 +3018,8 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// Ids is the ids argument value.
 			Ids []uuid.UUID
+			// OwnerID is the ownerID argument value.
+			OwnerID entity.UUID
 		}
 		// PluralDeleteMimeTypes holds details about calls to the PluralDeleteMimeTypes method.
 		PluralDeleteMimeTypes []struct {
@@ -4092,7 +4100,7 @@ func (mock *ManagerInterfaceMock) CreateEventTypesCalls() []struct {
 }
 
 // CreateFile calls CreateFileFunc.
-func (mock *ManagerInterfaceMock) CreateFile(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.File, error) {
+func (mock *ManagerInterfaceMock) CreateFile(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.FileWithAttachableItem, error) {
 	if mock.CreateFileFunc == nil {
 		panic("ManagerInterfaceMock.CreateFileFunc: method is nil but ManagerInterface.CreateFile was just called")
 	}
@@ -4136,7 +4144,7 @@ func (mock *ManagerInterfaceMock) CreateFileCalls() []struct {
 }
 
 // CreateFileFromOuter calls CreateFileFromOuterFunc.
-func (mock *ManagerInterfaceMock) CreateFileFromOuter(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID) (entity.File, error) {
+func (mock *ManagerInterfaceMock) CreateFileFromOuter(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID) (entity.FileWithAttachableItem, error) {
 	if mock.CreateFileFromOuterFunc == nil {
 		panic("ManagerInterfaceMock.CreateFileFromOuterFunc: method is nil but ManagerInterface.CreateFileFromOuter was just called")
 	}
@@ -4188,7 +4196,7 @@ func (mock *ManagerInterfaceMock) CreateFileFromOuterCalls() []struct {
 }
 
 // CreateFileSpecifyFilename calls CreateFileSpecifyFilenameFunc.
-func (mock *ManagerInterfaceMock) CreateFileSpecifyFilename(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.File, error) {
+func (mock *ManagerInterfaceMock) CreateFileSpecifyFilename(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.FileWithAttachableItem, error) {
 	if mock.CreateFileSpecifyFilenameFunc == nil {
 		panic("ManagerInterfaceMock.CreateFileSpecifyFilenameFunc: method is nil but ManagerInterface.CreateFileSpecifyFilename was just called")
 	}
@@ -4236,7 +4244,7 @@ func (mock *ManagerInterfaceMock) CreateFileSpecifyFilenameCalls() []struct {
 }
 
 // CreateFiles calls CreateFilesFunc.
-func (mock *ManagerInterfaceMock) CreateFiles(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileServiceParam) ([]entity.File, error) {
+func (mock *ManagerInterfaceMock) CreateFiles(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileServiceParam) ([]entity.FileWithAttachableItem, error) {
 	if mock.CreateFilesFunc == nil {
 		panic("ManagerInterfaceMock.CreateFilesFunc: method is nil but ManagerInterface.CreateFiles was just called")
 	}
@@ -4276,7 +4284,7 @@ func (mock *ManagerInterfaceMock) CreateFilesCalls() []struct {
 }
 
 // CreateFilesFromOuter calls CreateFilesFromOuterFunc.
-func (mock *ManagerInterfaceMock) CreateFilesFromOuter(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileFromOuterServiceParam) ([]entity.File, error) {
+func (mock *ManagerInterfaceMock) CreateFilesFromOuter(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileFromOuterServiceParam) ([]entity.FileWithAttachableItem, error) {
 	if mock.CreateFilesFromOuterFunc == nil {
 		panic("ManagerInterfaceMock.CreateFilesFromOuterFunc: method is nil but ManagerInterface.CreateFilesFromOuter was just called")
 	}
@@ -4316,7 +4324,7 @@ func (mock *ManagerInterfaceMock) CreateFilesFromOuterCalls() []struct {
 }
 
 // CreateFilesSpecifyFilename calls CreateFilesSpecifyFilenameFunc.
-func (mock *ManagerInterfaceMock) CreateFilesSpecifyFilename(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileSpecifyFilenameServiceParam) ([]entity.File, error) {
+func (mock *ManagerInterfaceMock) CreateFilesSpecifyFilename(ctx context.Context, ownerID entity.UUID, params []parameter.CreateFileSpecifyFilenameServiceParam) ([]entity.FileWithAttachableItem, error) {
 	if mock.CreateFilesSpecifyFilenameFunc == nil {
 		panic("ManagerInterfaceMock.CreateFilesSpecifyFilenameFunc: method is nil but ManagerInterface.CreateFilesSpecifyFilename was just called")
 	}
@@ -4532,7 +4540,7 @@ func (mock *ManagerInterfaceMock) CreateGroupsCalls() []struct {
 }
 
 // CreateImage calls CreateImageFunc.
-func (mock *ManagerInterfaceMock) CreateImage(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.Image, error) {
+func (mock *ManagerInterfaceMock) CreateImage(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID) (entity.ImageWithAttachableItem, error) {
 	if mock.CreateImageFunc == nil {
 		panic("ManagerInterfaceMock.CreateImageFunc: method is nil but ManagerInterface.CreateImage was just called")
 	}
@@ -4576,7 +4584,7 @@ func (mock *ManagerInterfaceMock) CreateImageCalls() []struct {
 }
 
 // CreateImageFromOuter calls CreateImageFromOuterFunc.
-func (mock *ManagerInterfaceMock) CreateImageFromOuter(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID, height entity.Float, width entity.Float) (entity.Image, error) {
+func (mock *ManagerInterfaceMock) CreateImageFromOuter(ctx context.Context, url string, alias string, size entity.Float, ownerID entity.UUID, mimeTypeID uuid.UUID, height entity.Float, width entity.Float) (entity.ImageWithAttachableItem, error) {
 	if mock.CreateImageFromOuterFunc == nil {
 		panic("ManagerInterfaceMock.CreateImageFromOuterFunc: method is nil but ManagerInterface.CreateImageFromOuter was just called")
 	}
@@ -4636,7 +4644,7 @@ func (mock *ManagerInterfaceMock) CreateImageFromOuterCalls() []struct {
 }
 
 // CreateImageSpecifyFilename calls CreateImageSpecifyFilenameFunc.
-func (mock *ManagerInterfaceMock) CreateImageSpecifyFilename(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.Image, error) {
+func (mock *ManagerInterfaceMock) CreateImageSpecifyFilename(ctx context.Context, origin io.Reader, alias string, ownerID entity.UUID, filename string) (entity.ImageWithAttachableItem, error) {
 	if mock.CreateImageSpecifyFilenameFunc == nil {
 		panic("ManagerInterfaceMock.CreateImageSpecifyFilenameFunc: method is nil but ManagerInterface.CreateImageSpecifyFilename was just called")
 	}
@@ -4684,7 +4692,7 @@ func (mock *ManagerInterfaceMock) CreateImageSpecifyFilenameCalls() []struct {
 }
 
 // CreateImages calls CreateImagesFunc.
-func (mock *ManagerInterfaceMock) CreateImages(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageServiceParam) ([]entity.Image, error) {
+func (mock *ManagerInterfaceMock) CreateImages(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageServiceParam) ([]entity.ImageWithAttachableItem, error) {
 	if mock.CreateImagesFunc == nil {
 		panic("ManagerInterfaceMock.CreateImagesFunc: method is nil but ManagerInterface.CreateImages was just called")
 	}
@@ -4724,7 +4732,7 @@ func (mock *ManagerInterfaceMock) CreateImagesCalls() []struct {
 }
 
 // CreateImagesFromOuter calls CreateImagesFromOuterFunc.
-func (mock *ManagerInterfaceMock) CreateImagesFromOuter(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageFromOuterServiceParam) ([]entity.Image, error) {
+func (mock *ManagerInterfaceMock) CreateImagesFromOuter(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageFromOuterServiceParam) ([]entity.ImageWithAttachableItem, error) {
 	if mock.CreateImagesFromOuterFunc == nil {
 		panic("ManagerInterfaceMock.CreateImagesFromOuterFunc: method is nil but ManagerInterface.CreateImagesFromOuter was just called")
 	}
@@ -4764,7 +4772,7 @@ func (mock *ManagerInterfaceMock) CreateImagesFromOuterCalls() []struct {
 }
 
 // CreateImagesSpecifyFilename calls CreateImagesSpecifyFilenameFunc.
-func (mock *ManagerInterfaceMock) CreateImagesSpecifyFilename(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageSpecifyFilenameServiceParam) ([]entity.Image, error) {
+func (mock *ManagerInterfaceMock) CreateImagesSpecifyFilename(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageSpecifyFilenameServiceParam) ([]entity.ImageWithAttachableItem, error) {
 	if mock.CreateImagesSpecifyFilenameFunc == nil {
 		panic("ManagerInterfaceMock.CreateImagesSpecifyFilenameFunc: method is nil but ManagerInterface.CreateImagesSpecifyFilename was just called")
 	}
@@ -5784,21 +5792,23 @@ func (mock *ManagerInterfaceMock) DeleteEventTypeCalls() []struct {
 }
 
 // DeleteFile calls DeleteFileFunc.
-func (mock *ManagerInterfaceMock) DeleteFile(ctx context.Context, id uuid.UUID) (int64, error) {
+func (mock *ManagerInterfaceMock) DeleteFile(ctx context.Context, id uuid.UUID, ownerID entity.UUID) (int64, error) {
 	if mock.DeleteFileFunc == nil {
 		panic("ManagerInterfaceMock.DeleteFileFunc: method is nil but ManagerInterface.DeleteFile was just called")
 	}
 	callInfo := struct {
-		Ctx context.Context
-		ID  uuid.UUID
+		Ctx     context.Context
+		ID      uuid.UUID
+		OwnerID entity.UUID
 	}{
-		Ctx: ctx,
-		ID:  id,
+		Ctx:     ctx,
+		ID:      id,
+		OwnerID: ownerID,
 	}
 	mock.lockDeleteFile.Lock()
 	mock.calls.DeleteFile = append(mock.calls.DeleteFile, callInfo)
 	mock.lockDeleteFile.Unlock()
-	return mock.DeleteFileFunc(ctx, id)
+	return mock.DeleteFileFunc(ctx, id, ownerID)
 }
 
 // DeleteFileCalls gets all the calls that were made to DeleteFile.
@@ -5806,12 +5816,14 @@ func (mock *ManagerInterfaceMock) DeleteFile(ctx context.Context, id uuid.UUID) 
 //
 //	len(mockedManagerInterface.DeleteFileCalls())
 func (mock *ManagerInterfaceMock) DeleteFileCalls() []struct {
-	Ctx context.Context
-	ID  uuid.UUID
+	Ctx     context.Context
+	ID      uuid.UUID
+	OwnerID entity.UUID
 } {
 	var calls []struct {
-		Ctx context.Context
-		ID  uuid.UUID
+		Ctx     context.Context
+		ID      uuid.UUID
+		OwnerID entity.UUID
 	}
 	mock.lockDeleteFile.RLock()
 	calls = mock.calls.DeleteFile
@@ -5892,21 +5904,23 @@ func (mock *ManagerInterfaceMock) DeleteGroupCalls() []struct {
 }
 
 // DeleteImage calls DeleteImageFunc.
-func (mock *ManagerInterfaceMock) DeleteImage(ctx context.Context, id uuid.UUID) (int64, error) {
+func (mock *ManagerInterfaceMock) DeleteImage(ctx context.Context, id uuid.UUID, ownerID entity.UUID) (int64, error) {
 	if mock.DeleteImageFunc == nil {
 		panic("ManagerInterfaceMock.DeleteImageFunc: method is nil but ManagerInterface.DeleteImage was just called")
 	}
 	callInfo := struct {
-		Ctx context.Context
-		ID  uuid.UUID
+		Ctx     context.Context
+		ID      uuid.UUID
+		OwnerID entity.UUID
 	}{
-		Ctx: ctx,
-		ID:  id,
+		Ctx:     ctx,
+		ID:      id,
+		OwnerID: ownerID,
 	}
 	mock.lockDeleteImage.Lock()
 	mock.calls.DeleteImage = append(mock.calls.DeleteImage, callInfo)
 	mock.lockDeleteImage.Unlock()
-	return mock.DeleteImageFunc(ctx, id)
+	return mock.DeleteImageFunc(ctx, id, ownerID)
 }
 
 // DeleteImageCalls gets all the calls that were made to DeleteImage.
@@ -5914,12 +5928,14 @@ func (mock *ManagerInterfaceMock) DeleteImage(ctx context.Context, id uuid.UUID)
 //
 //	len(mockedManagerInterface.DeleteImageCalls())
 func (mock *ManagerInterfaceMock) DeleteImageCalls() []struct {
-	Ctx context.Context
-	ID  uuid.UUID
+	Ctx     context.Context
+	ID      uuid.UUID
+	OwnerID entity.UUID
 } {
 	var calls []struct {
-		Ctx context.Context
-		ID  uuid.UUID
+		Ctx     context.Context
+		ID      uuid.UUID
+		OwnerID entity.UUID
 	}
 	mock.lockDeleteImage.RLock()
 	calls = mock.calls.DeleteImage
@@ -10684,21 +10700,23 @@ func (mock *ManagerInterfaceMock) PluralDeleteEventTypesCalls() []struct {
 }
 
 // PluralDeleteFiles calls PluralDeleteFilesFunc.
-func (mock *ManagerInterfaceMock) PluralDeleteFiles(ctx context.Context, ids []uuid.UUID) (int64, error) {
+func (mock *ManagerInterfaceMock) PluralDeleteFiles(ctx context.Context, ids []uuid.UUID, ownerID entity.UUID) (int64, error) {
 	if mock.PluralDeleteFilesFunc == nil {
 		panic("ManagerInterfaceMock.PluralDeleteFilesFunc: method is nil but ManagerInterface.PluralDeleteFiles was just called")
 	}
 	callInfo := struct {
-		Ctx context.Context
-		Ids []uuid.UUID
+		Ctx     context.Context
+		Ids     []uuid.UUID
+		OwnerID entity.UUID
 	}{
-		Ctx: ctx,
-		Ids: ids,
+		Ctx:     ctx,
+		Ids:     ids,
+		OwnerID: ownerID,
 	}
 	mock.lockPluralDeleteFiles.Lock()
 	mock.calls.PluralDeleteFiles = append(mock.calls.PluralDeleteFiles, callInfo)
 	mock.lockPluralDeleteFiles.Unlock()
-	return mock.PluralDeleteFilesFunc(ctx, ids)
+	return mock.PluralDeleteFilesFunc(ctx, ids, ownerID)
 }
 
 // PluralDeleteFilesCalls gets all the calls that were made to PluralDeleteFiles.
@@ -10706,12 +10724,14 @@ func (mock *ManagerInterfaceMock) PluralDeleteFiles(ctx context.Context, ids []u
 //
 //	len(mockedManagerInterface.PluralDeleteFilesCalls())
 func (mock *ManagerInterfaceMock) PluralDeleteFilesCalls() []struct {
-	Ctx context.Context
-	Ids []uuid.UUID
+	Ctx     context.Context
+	Ids     []uuid.UUID
+	OwnerID entity.UUID
 } {
 	var calls []struct {
-		Ctx context.Context
-		Ids []uuid.UUID
+		Ctx     context.Context
+		Ids     []uuid.UUID
+		OwnerID entity.UUID
 	}
 	mock.lockPluralDeleteFiles.RLock()
 	calls = mock.calls.PluralDeleteFiles
@@ -10792,21 +10812,23 @@ func (mock *ManagerInterfaceMock) PluralDeleteGroupsCalls() []struct {
 }
 
 // PluralDeleteImages calls PluralDeleteImagesFunc.
-func (mock *ManagerInterfaceMock) PluralDeleteImages(ctx context.Context, ids []uuid.UUID) (int64, error) {
+func (mock *ManagerInterfaceMock) PluralDeleteImages(ctx context.Context, ids []uuid.UUID, ownerID entity.UUID) (int64, error) {
 	if mock.PluralDeleteImagesFunc == nil {
 		panic("ManagerInterfaceMock.PluralDeleteImagesFunc: method is nil but ManagerInterface.PluralDeleteImages was just called")
 	}
 	callInfo := struct {
-		Ctx context.Context
-		Ids []uuid.UUID
+		Ctx     context.Context
+		Ids     []uuid.UUID
+		OwnerID entity.UUID
 	}{
-		Ctx: ctx,
-		Ids: ids,
+		Ctx:     ctx,
+		Ids:     ids,
+		OwnerID: ownerID,
 	}
 	mock.lockPluralDeleteImages.Lock()
 	mock.calls.PluralDeleteImages = append(mock.calls.PluralDeleteImages, callInfo)
 	mock.lockPluralDeleteImages.Unlock()
-	return mock.PluralDeleteImagesFunc(ctx, ids)
+	return mock.PluralDeleteImagesFunc(ctx, ids, ownerID)
 }
 
 // PluralDeleteImagesCalls gets all the calls that were made to PluralDeleteImages.
@@ -10814,12 +10836,14 @@ func (mock *ManagerInterfaceMock) PluralDeleteImages(ctx context.Context, ids []
 //
 //	len(mockedManagerInterface.PluralDeleteImagesCalls())
 func (mock *ManagerInterfaceMock) PluralDeleteImagesCalls() []struct {
-	Ctx context.Context
-	Ids []uuid.UUID
+	Ctx     context.Context
+	Ids     []uuid.UUID
+	OwnerID entity.UUID
 } {
 	var calls []struct {
-		Ctx context.Context
-		Ids []uuid.UUID
+		Ctx     context.Context
+		Ids     []uuid.UUID
+		OwnerID entity.UUID
 	}
 	mock.lockPluralDeleteImages.RLock()
 	calls = mock.calls.PluralDeleteImages

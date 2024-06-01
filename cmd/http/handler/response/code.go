@@ -357,4 +357,25 @@ var (
 		Message:    "cannot remove member from private chat room error",
 		StatusCode: http.StatusForbidden,
 	}
+
+	// MultiPartFormParseError マルチパートフォームのパースエラー
+	MultiPartFormParseError = APIResponseType{
+		Code:       "246",
+		Message:    "multi part form parse error",
+		StatusCode: http.StatusBadRequest,
+	}
+
+	// CannotDeleteSystemFile システムファイルを削除できない
+	CannotDeleteSystemFile = APIResponseType{
+		Code:       "247",
+		Message:    "cannot delete system file error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// NotImageFile 画像ファイルでない
+	NotImageFile = APIResponseType{
+		Code:       "248",
+		Message:    "not image file error",
+		StatusCode: http.StatusBadRequest,
+	}
 )

@@ -1,7 +1,9 @@
 package service
 
 import (
+	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 
@@ -16,8 +18,6 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 )
 
-const bufSize = 1024
-
 // ManageFile ファイル管理サービス。
 type ManageFile struct {
 	DB      store.Store
@@ -30,10 +30,10 @@ func (m *ManageFile) CreateFile(
 	origin io.Reader,
 	alias string,
 	ownerID entity.UUID,
-) (e entity.File, err error) {
+) (e entity.FileWithAttachableItem, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
-		return entity.File{}, fmt.Errorf("failed to begin transaction: %w", err)
+		return entity.FileWithAttachableItem{}, fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	var storageKeys []string
 	defer func() {
@@ -56,39 +56,45 @@ func (m *ManageFile) CreateFile(
 		// ファイルの所有者が存在する場合は、ファイルの所有者が存在するか確認する。
 		_, err := m.DB.FindMemberByIDWithSd(ctx, sd, ownerID.Bytes)
 		if err != nil {
-			return entity.File{}, errhandle.NewModelNotFoundError("member")
+			return entity.FileWithAttachableItem{}, errhandle.NewModelNotFoundError("member")
 		}
 	}
-	mtype, err := mimetype.DetectReader(origin)
+	data, size, err := readAll(origin)
 	if err != nil {
-		return entity.File{}, fmt.Errorf("failed to detect mimetype: %w", err)
+		return entity.FileWithAttachableItem{}, err
 	}
-	mime, err := m.DB.FindMimeTypeByKindWithSd(ctx, sd, mtype.String())
+	mtype := mimetype.Detect(data)
+	// "; "が含まれている場合は、"; "より前の文字列を取得する。
+	mtypeStr := mtype.String()
+	if i := bytes.Index([]byte(mtypeStr), []byte("; ")); i != -1 {
+		mtypeStr = mtypeStr[:i]
+	}
+	mime, err := m.DB.FindMimeTypeByKindWithSd(ctx, sd, mtypeStr)
 	if err != nil {
-		return entity.File{}, errhandle.NewModelNotFoundError("mime type")
+		var merr *errhandle.ModelNotFoundError
+		if errors.As(err, &merr) {
+			mime, err = m.DB.FindMimeTypeByKeyWithSd(ctx, sd, string(MimeTypeKeyUnknown))
+			if err != nil {
+				return entity.FileWithAttachableItem{}, fmt.Errorf("failed to find mime type: %w", err)
+			}
+		} else {
+			return entity.FileWithAttachableItem{}, fmt.Errorf("failed to find mime type: %w", err)
+		}
 	}
 	uid, err := uuid.NewRandom()
 	if err != nil {
-		return entity.File{}, fmt.Errorf("failed to generate uuid: %w", err)
+		return entity.FileWithAttachableItem{}, fmt.Errorf("failed to generate uuid: %w", err)
 	}
-	fname := fmt.Sprintf("%s.%s", uid.String(), mtype.Extension())
-	url, err := m.Storage.UploadObject(ctx, origin, fname)
+	extension := mtype.Extension()
+	if i := bytes.LastIndex([]byte(alias), []byte(".")); i != -1 {
+		extension = "." + alias[i+1:]
+	}
+	fname := fmt.Sprintf("%s%s", uid.String(), extension)
+	url, err := m.Storage.UploadObject(ctx, bytes.NewReader(data), fname)
 	if err != nil {
-		return entity.File{}, errhandle.NewCommonError(response.FailedUpload, nil)
+		return entity.FileWithAttachableItem{}, errhandle.NewCommonError(response.FailedUpload, nil)
 	}
 	storageKeys = append(storageKeys, fname)
-	var size int64
-	for {
-		buf := make([]byte, bufSize)
-		n, err := origin.Read(buf)
-		if err != nil && err != io.EOF {
-			return entity.File{}, fmt.Errorf("failed to read file: %w", err)
-		}
-		if n == 0 {
-			break
-		}
-		size += int64(n)
-	}
 	fsize := entity.Float{
 		Valid:   true,
 		Float64: float64(size),
@@ -103,16 +109,20 @@ func (m *ManageFile) CreateFile(
 	}
 	ai, err := m.DB.CreateAttachableItemWithSd(ctx, sd, caip)
 	if err != nil {
-		return entity.File{}, fmt.Errorf("failed to create attachable item: %w", err)
+		return entity.FileWithAttachableItem{}, fmt.Errorf("failed to create attachable item: %w", err)
 	}
 	p := parameter.CreateFileParam{
 		AttachableItemID: ai.AttachableItemID,
 	}
-	e, err = m.DB.CreateFileWithSd(ctx, sd, p)
+	fi, err := m.DB.CreateFileWithSd(ctx, sd, p)
 	if err != nil {
-		return entity.File{}, fmt.Errorf("failed to create file: %w", err)
+		return entity.FileWithAttachableItem{}, fmt.Errorf("failed to create file: %w", err)
 	}
-	return e, nil
+	ai.FileID = entity.UUID{Bytes: fi.FileID, Valid: true}
+	return entity.FileWithAttachableItem{
+		FileID:         fi.FileID,
+		AttachableItem: ai,
+	}, nil
 }
 
 // CreateFiles ファイルを複数作成する。
@@ -120,7 +130,7 @@ func (m *ManageFile) CreateFiles(
 	ctx context.Context,
 	ownerID entity.UUID,
 	params []parameter.CreateFileServiceParam,
-) (es []entity.File, err error) {
+) (es []entity.FileWithAttachableItem, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to begin transaction: %w", err)
@@ -149,38 +159,44 @@ func (m *ManageFile) CreateFiles(
 			return nil, errhandle.NewModelNotFoundError("member")
 		}
 	}
-	var files []entity.File
+	var files []entity.FileWithAttachableItem
 	for _, p := range params {
-		mtype, err := mimetype.DetectReader(p.Origin)
+		data, size, err := readAll(p.Origin)
 		if err != nil {
-			return nil, fmt.Errorf("failed to detect mimetype: %w", err)
+			return nil, err
 		}
-		mime, err := m.DB.FindMimeTypeByKindWithSd(ctx, sd, mtype.String())
+		mtype := mimetype.Detect(data)
+		// "; "が含まれている場合は、"; "より前の文字列を取得する。
+		mtypeStr := mtype.String()
+		if i := bytes.Index([]byte(mtypeStr), []byte("; ")); i != -1 {
+			mtypeStr = mtypeStr[:i]
+		}
+		mime, err := m.DB.FindMimeTypeByKindWithSd(ctx, sd, mtypeStr)
 		if err != nil {
-			return nil, errhandle.NewModelNotFoundError("mime type")
+			var merr *errhandle.ModelNotFoundError
+			if errors.As(err, &merr) {
+				mime, err = m.DB.FindMimeTypeByKeyWithSd(ctx, sd, string(MimeTypeKeyUnknown))
+				if err != nil {
+					return nil, errhandle.NewModelNotFoundError("mime type")
+				}
+			} else {
+				return nil, fmt.Errorf("failed to find mime type: %w", err)
+			}
 		}
 		uid, err := uuid.NewRandom()
 		if err != nil {
 			return nil, fmt.Errorf("failed to generate uuid: %w", err)
 		}
-		fname := fmt.Sprintf("%s.%s", uid.String(), mtype.Extension())
-		url, err := m.Storage.UploadObject(ctx, p.Origin, fname)
+		extension := mtype.Extension()
+		if i := bytes.LastIndex([]byte(p.Alias), []byte(".")); i != -1 {
+			extension = "." + p.Alias[i+1:]
+		}
+		fname := fmt.Sprintf("%s%s", uid.String(), extension)
+		url, err := m.Storage.UploadObject(ctx, bytes.NewReader(data), fname)
 		if err != nil {
 			return nil, errhandle.NewCommonError(response.FailedUpload, nil)
 		}
 		storageKeys = append(storageKeys, fname)
-		var size int64
-		for {
-			buf := make([]byte, bufSize)
-			n, err := p.Origin.Read(buf)
-			if err != nil && err != io.EOF {
-				return nil, fmt.Errorf("failed to read file: %w", err)
-			}
-			if n == 0 {
-				break
-			}
-			size += int64(n)
-		}
 		fsize := entity.Float{
 			Valid:   true,
 			Float64: float64(size),
@@ -204,7 +220,11 @@ func (m *ManageFile) CreateFiles(
 		if err != nil {
 			return nil, fmt.Errorf("failed to create file: %w", err)
 		}
-		files = append(files, e)
+		ai.FileID = entity.UUID{Bytes: e.FileID, Valid: true}
+		files = append(files, entity.FileWithAttachableItem{
+			FileID:         e.FileID,
+			AttachableItem: ai,
+		})
 	}
 	return files, nil
 }
@@ -216,10 +236,10 @@ func (m *ManageFile) CreateFileSpecifyFilename(
 	alias string,
 	ownerID entity.UUID,
 	filename string,
-) (e entity.File, err error) {
+) (e entity.FileWithAttachableItem, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
-		return entity.File{}, fmt.Errorf("failed to begin transaction: %w", err)
+		return entity.FileWithAttachableItem{}, fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	var storageKeys []string
 	defer func() {
@@ -242,41 +262,43 @@ func (m *ManageFile) CreateFileSpecifyFilename(
 		// ファイルの所有者が存在する場合は、ファイルの所有者が存在するか確認する。
 		_, err := m.DB.FindMemberByIDWithSd(ctx, sd, ownerID.Bytes)
 		if err != nil {
-			return entity.File{}, errhandle.NewModelNotFoundError("member")
+			return entity.FileWithAttachableItem{}, errhandle.NewModelNotFoundError("member")
 		}
 	}
-	mtype, err := mimetype.DetectReader(origin)
+	data, size, err := readAll(origin)
 	if err != nil {
-		return entity.File{}, fmt.Errorf("failed to detect mimetype: %w", err)
+		return entity.FileWithAttachableItem{}, err
 	}
-	mime, err := m.DB.FindMimeTypeByKindWithSd(ctx, sd, mtype.String())
+	mtype := mimetype.Detect(data)
+	// "; "が含まれている場合は、"; "より前の文字列を取得する。
+	mtypeStr := mtype.String()
+	if i := bytes.Index([]byte(mtypeStr), []byte("; ")); i != -1 {
+		mtypeStr = mtypeStr[:i]
+	}
+	mime, err := m.DB.FindMimeTypeByKindWithSd(ctx, sd, mtypeStr)
 	if err != nil {
-		return entity.File{}, errhandle.NewModelNotFoundError("mime type")
+		var merr *errhandle.ModelNotFoundError
+		if errors.As(err, &merr) {
+			mime, err = m.DB.FindMimeTypeByKeyWithSd(ctx, sd, string(MimeTypeKeyUnknown))
+			if err != nil {
+				return entity.FileWithAttachableItem{}, errhandle.NewModelNotFoundError("mime type")
+			}
+		} else {
+			return entity.FileWithAttachableItem{}, fmt.Errorf("failed to find mime type: %w", err)
+		}
 	}
 	exist, err := m.Storage.ExistsObject(ctx, filename)
 	if err != nil {
-		return entity.File{}, fmt.Errorf("failed to check object existence: %w", err)
+		return entity.FileWithAttachableItem{}, fmt.Errorf("failed to check object existence: %w", err)
 	}
 	if exist {
-		return entity.File{}, errhandle.NewCommonError(response.ConflictStorageKey, nil)
+		return entity.FileWithAttachableItem{}, errhandle.NewCommonError(response.ConflictStorageKey, nil)
 	}
-	url, err := m.Storage.UploadObject(ctx, origin, filename)
+	url, err := m.Storage.UploadObject(ctx, bytes.NewReader(data), filename)
 	if err != nil {
-		return entity.File{}, errhandle.NewCommonError(response.FailedUpload, nil)
+		return entity.FileWithAttachableItem{}, errhandle.NewCommonError(response.FailedUpload, nil)
 	}
 	storageKeys = append(storageKeys, filename)
-	var size int64
-	for {
-		buf := make([]byte, bufSize)
-		n, err := origin.Read(buf)
-		if err != nil && err != io.EOF {
-			return entity.File{}, fmt.Errorf("failed to read file: %w", err)
-		}
-		if n == 0 {
-			break
-		}
-		size += int64(n)
-	}
 	fsize := entity.Float{
 		Valid:   true,
 		Float64: float64(size),
@@ -293,11 +315,15 @@ func (m *ManageFile) CreateFileSpecifyFilename(
 	p := parameter.CreateFileParam{
 		AttachableItemID: ai.AttachableItemID,
 	}
-	e, err = m.DB.CreateFileWithSd(ctx, sd, p)
+	fi, err := m.DB.CreateFileWithSd(ctx, sd, p)
 	if err != nil {
-		return entity.File{}, fmt.Errorf("failed to create file: %w", err)
+		return entity.FileWithAttachableItem{}, fmt.Errorf("failed to create file: %w", err)
 	}
-	return e, nil
+	ai.FileID = entity.UUID{Bytes: fi.FileID, Valid: true}
+	return entity.FileWithAttachableItem{
+		FileID:         fi.FileID,
+		AttachableItem: ai,
+	}, nil
 }
 
 // CreateFilesSpecifyFilename ファイルを複数作成する。
@@ -305,7 +331,7 @@ func (m *ManageFile) CreateFilesSpecifyFilename(
 	ctx context.Context,
 	ownerID entity.UUID,
 	params []parameter.CreateFileSpecifyFilenameServiceParam,
-) (es []entity.File, err error) {
+) (es []entity.FileWithAttachableItem, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to begin transaction: %w", err)
@@ -334,15 +360,29 @@ func (m *ManageFile) CreateFilesSpecifyFilename(
 			return nil, errhandle.NewModelNotFoundError("member")
 		}
 	}
-	var files []entity.File
+	var files []entity.FileWithAttachableItem
 	for _, p := range params {
-		mtype, err := mimetype.DetectReader(p.Origin)
+		data, size, err := readAll(p.Origin)
 		if err != nil {
-			return nil, fmt.Errorf("failed to detect mimetype: %w", err)
+			return nil, err
 		}
-		mime, err := m.DB.FindMimeTypeByKindWithSd(ctx, sd, mtype.String())
+		mtype := mimetype.Detect(data)
+		// "; "が含まれている場合は、"; "より前の文字列を取得する。
+		mtypeStr := mtype.String()
+		if i := bytes.Index([]byte(mtypeStr), []byte("; ")); i != -1 {
+			mtypeStr = mtypeStr[:i]
+		}
+		mime, err := m.DB.FindMimeTypeByKindWithSd(ctx, sd, mtypeStr)
 		if err != nil {
-			return nil, errhandle.NewModelNotFoundError("mime type")
+			var merr *errhandle.ModelNotFoundError
+			if errors.As(err, &merr) {
+				mime, err = m.DB.FindMimeTypeByKeyWithSd(ctx, sd, string(MimeTypeKeyUnknown))
+				if err != nil {
+					return nil, errhandle.NewModelNotFoundError("mime type")
+				}
+			} else {
+				return nil, fmt.Errorf("failed to find mime type: %w", err)
+			}
 		}
 		exist, err := m.Storage.ExistsObject(ctx, p.Filename)
 		if err != nil {
@@ -351,23 +391,11 @@ func (m *ManageFile) CreateFilesSpecifyFilename(
 		if exist {
 			return nil, errhandle.NewCommonError(response.ConflictStorageKey, nil)
 		}
-		url, err := m.Storage.UploadObject(ctx, p.Origin, p.Filename)
+		url, err := m.Storage.UploadObject(ctx, bytes.NewReader(data), p.Filename)
 		if err != nil {
 			return nil, errhandle.NewCommonError(response.FailedUpload, nil)
 		}
 		storageKeys = append(storageKeys, p.Filename)
-		var size int64
-		for {
-			buf := make([]byte, bufSize)
-			n, err := p.Origin.Read(buf)
-			if err != nil && err != io.EOF {
-				return nil, fmt.Errorf("failed to read file: %w", err)
-			}
-			if n == 0 {
-				break
-			}
-			size += int64(n)
-		}
 		fsize := entity.Float{
 			Valid:   true,
 			Float64: float64(size),
@@ -391,7 +419,11 @@ func (m *ManageFile) CreateFilesSpecifyFilename(
 		if err != nil {
 			return nil, fmt.Errorf("failed to create file: %w", err)
 		}
-		files = append(files, e)
+		ai.FileID = entity.UUID{Bytes: e.FileID, Valid: true}
+		files = append(files, entity.FileWithAttachableItem{
+			FileID:         e.FileID,
+			AttachableItem: ai,
+		})
 	}
 	return files, nil
 }
@@ -404,10 +436,10 @@ func (m *ManageFile) CreateFileFromOuter(
 	size entity.Float,
 	ownerID entity.UUID,
 	mimeTypeID uuid.UUID,
-) (e entity.File, err error) {
+) (e entity.FileWithAttachableItem, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
-		return entity.File{}, fmt.Errorf("failed to begin transaction: %w", err)
+		return entity.FileWithAttachableItem{}, fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer func() {
 		if err != nil {
@@ -424,13 +456,13 @@ func (m *ManageFile) CreateFileFromOuter(
 		// ファイルの所有者が存在する場合は、ファイルの所有者が存在するか確認する。
 		_, err := m.DB.FindMemberByIDWithSd(ctx, sd, ownerID.Bytes)
 		if err != nil {
-			return entity.File{}, errhandle.NewModelNotFoundError("member")
+			return entity.FileWithAttachableItem{}, errhandle.NewModelNotFoundError("member")
 		}
 	}
 	// ファイルのMIMEタイプが存在するか確認する。
 	_, err = m.DB.FindMimeTypeByIDWithSd(ctx, sd, mimeTypeID)
 	if err != nil {
-		return entity.File{}, errhandle.NewModelNotFoundError("mime type")
+		return entity.FileWithAttachableItem{}, errhandle.NewModelNotFoundError("mime type")
 	}
 	caip := parameter.CreateAttachableItemParam{
 		URL:        url,
@@ -444,11 +476,15 @@ func (m *ManageFile) CreateFileFromOuter(
 	p := parameter.CreateFileParam{
 		AttachableItemID: ai.AttachableItemID,
 	}
-	e, err = m.DB.CreateFileWithSd(ctx, sd, p)
+	fi, err := m.DB.CreateFileWithSd(ctx, sd, p)
 	if err != nil {
-		return entity.File{}, fmt.Errorf("failed to create file: %w", err)
+		return entity.FileWithAttachableItem{}, fmt.Errorf("failed to create file: %w", err)
 	}
-	return e, nil
+	ai.FileID = entity.UUID{Bytes: fi.FileID, Valid: true}
+	return entity.FileWithAttachableItem{
+		FileID:         fi.FileID,
+		AttachableItem: ai,
+	}, nil
 }
 
 // CreateFilesFromOuter 外部ファイルを複数作成する。
@@ -456,7 +492,7 @@ func (m *ManageFile) CreateFilesFromOuter(
 	ctx context.Context,
 	ownerID entity.UUID,
 	params []parameter.CreateFileFromOuterServiceParam,
-) (es []entity.File, err error) {
+) (es []entity.FileWithAttachableItem, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to begin transaction: %w", err)
@@ -479,7 +515,7 @@ func (m *ManageFile) CreateFilesFromOuter(
 			return nil, errhandle.NewModelNotFoundError("member")
 		}
 	}
-	var files []entity.File
+	var files []entity.FileWithAttachableItem
 	for _, p := range params {
 		// ファイルのMIMEタイプが存在するか確認する。
 		_, err = m.DB.FindMimeTypeByIDWithSd(ctx, sd, p.MimeTypeID)
@@ -505,13 +541,17 @@ func (m *ManageFile) CreateFilesFromOuter(
 		if err != nil {
 			return nil, fmt.Errorf("failed to create file: %w", err)
 		}
-		files = append(files, e)
+		ai.FileID = entity.UUID{Bytes: e.FileID, Valid: true}
+		files = append(files, entity.FileWithAttachableItem{
+			FileID:         e.FileID,
+			AttachableItem: ai,
+		})
 	}
 	return files, nil
 }
 
 // DeleteFile ファイルを削除する。
-func (m *ManageFile) DeleteFile(ctx context.Context, id uuid.UUID) (c int64, err error) {
+func (m *ManageFile) DeleteFile(ctx context.Context, id uuid.UUID, ownerID entity.UUID) (c int64, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
 		return 0, fmt.Errorf("failed to begin transaction: %w", err)
@@ -534,6 +574,17 @@ func (m *ManageFile) DeleteFile(ctx context.Context, id uuid.UUID) (c int64, err
 	if !file.AttachableItem.OwnerID.Valid {
 		return 0, nil
 	}
+	if !ownerID.Valid || file.AttachableItem.OwnerID.Bytes != ownerID.Bytes {
+		return 0, errhandle.NewCommonError(response.NotFileOwner, nil)
+	}
+	c, err = m.DB.DeleteFileWithSd(ctx, sd, id)
+	if err != nil {
+		return 0, fmt.Errorf("failed to delete file: %w", err)
+	}
+	_, err = m.DB.DeleteAttachableItemWithSd(ctx, sd, file.AttachableItem.AttachableItemID)
+	if err != nil {
+		return 0, fmt.Errorf("failed to delete attachable item: %w", err)
+	}
 	if !file.AttachableItem.FromOuter {
 		key, err := m.Storage.GetKeyFromURL(ctx, file.AttachableItem.URL)
 		if err != nil {
@@ -543,14 +594,6 @@ func (m *ManageFile) DeleteFile(ctx context.Context, id uuid.UUID) (c int64, err
 		if err != nil {
 			return 0, fmt.Errorf("failed to delete object: %w", err)
 		}
-	}
-	c, err = m.DB.DeleteFileWithSd(ctx, sd, id)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete file: %w", err)
-	}
-	_, err = m.DB.DeleteAttachableItemWithSd(ctx, sd, file.AttachableItem.AttachableItemID)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete attachable item: %w", err)
 	}
 	return c, nil
 }
@@ -569,13 +612,19 @@ func pluralDeleteFiles(
 	if err != nil {
 		return 0, fmt.Errorf("failed to get files: %w", err)
 	}
+	if len(file.Data) != len(ids) {
+		return 0, errhandle.NewModelNotFoundError(FileTargetFiles)
+	}
 	var keys []string
 	var attachableItemIDs []uuid.UUID
 	for _, i := range file.Data {
 		if !i.AttachableItem.OwnerID.Valid {
-			continue
+			if force {
+				continue
+			}
+			return 0, errhandle.NewCommonError(response.CannotDeleteSystemFile, nil)
 		}
-		if !force || (!ownerID.Valid || i.AttachableItem.OwnerID.Bytes != ownerID.Bytes) {
+		if !force && (!ownerID.Valid || i.AttachableItem.OwnerID.Bytes != ownerID.Bytes) {
 			return 0, errhandle.NewCommonError(response.NotFileOwner, nil)
 		}
 		if !i.AttachableItem.FromOuter {
@@ -590,10 +639,6 @@ func pluralDeleteFiles(
 	if len(keys) == 0 {
 		return 0, nil
 	}
-	err = stg.DeleteObjects(ctx, keys)
-	if err != nil {
-		return 0, fmt.Errorf("failed to delete objects: %w", err)
-	}
 	c, err = db.PluralDeleteFilesWithSd(ctx, sd, ids)
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete policy: %w", err)
@@ -602,12 +647,16 @@ func pluralDeleteFiles(
 	if err != nil {
 		return 0, fmt.Errorf("failed to delete attachable items: %w", err)
 	}
+	err = stg.DeleteObjects(ctx, keys)
+	if err != nil {
+		return 0, fmt.Errorf("failed to delete objects: %w", err)
+	}
 	return c, nil
 }
 
 // PluralDeleteFiles ファイルを複数削除する。
 func (m *ManageFile) PluralDeleteFiles(
-	ctx context.Context, ids []uuid.UUID,
+	ctx context.Context, ids []uuid.UUID, ownerID entity.UUID,
 ) (c int64, err error) {
 	sd, err := m.DB.Begin(ctx)
 	if err != nil {
@@ -624,7 +673,7 @@ func (m *ManageFile) PluralDeleteFiles(
 			}
 		}
 	}()
-	return pluralDeleteFiles(ctx, sd, m.DB, m.Storage, ids, entity.UUID{}, false)
+	return pluralDeleteFiles(ctx, sd, m.DB, m.Storage, ids, ownerID, false)
 }
 
 // GetFiles ファイルを取得する。

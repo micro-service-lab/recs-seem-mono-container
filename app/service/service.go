@@ -585,24 +585,24 @@ type ImageManager interface {
 		origin io.Reader,
 		alias string,
 		ownerID entity.UUID,
-	) (entity.Image, error)
+	) (entity.ImageWithAttachableItem, error)
 	CreateImages(
 		ctx context.Context,
 		ownerID entity.UUID,
 		params []parameter.CreateImageServiceParam,
-	) ([]entity.Image, error)
+	) ([]entity.ImageWithAttachableItem, error)
 	CreateImageSpecifyFilename(
 		ctx context.Context,
 		origin io.Reader,
 		alias string,
 		ownerID entity.UUID,
 		filename string,
-	) (entity.Image, error)
+	) (entity.ImageWithAttachableItem, error)
 	CreateImagesSpecifyFilename(
 		ctx context.Context,
 		ownerID entity.UUID,
 		params []parameter.CreateImageSpecifyFilenameServiceParam,
-	) ([]entity.Image, error)
+	) ([]entity.ImageWithAttachableItem, error)
 	CreateImageFromOuter(
 		ctx context.Context,
 		url,
@@ -611,15 +611,15 @@ type ImageManager interface {
 		ownerID entity.UUID,
 		mimeTypeID uuid.UUID,
 		height, width entity.Float,
-	) (entity.Image, error)
+	) (entity.ImageWithAttachableItem, error)
 	CreateImagesFromOuter(
 		ctx context.Context,
 		ownerID entity.UUID,
 		params []parameter.CreateImageFromOuterServiceParam,
-	) ([]entity.Image, error)
-	DeleteImage(ctx context.Context, id uuid.UUID) (int64, error)
+	) ([]entity.ImageWithAttachableItem, error)
+	DeleteImage(ctx context.Context, id uuid.UUID, ownerID entity.UUID) (int64, error)
 	PluralDeleteImages(
-		ctx context.Context, ids []uuid.UUID,
+		ctx context.Context, ids []uuid.UUID, ownerID entity.UUID,
 	) (int64, error)
 	GetImages(
 		ctx context.Context,
@@ -642,24 +642,24 @@ type FileManager interface {
 		origin io.Reader,
 		alias string,
 		ownerID entity.UUID,
-	) (entity.File, error)
+	) (entity.FileWithAttachableItem, error)
 	CreateFiles(
 		ctx context.Context,
 		ownerID entity.UUID,
 		params []parameter.CreateFileServiceParam,
-	) ([]entity.File, error)
+	) ([]entity.FileWithAttachableItem, error)
 	CreateFileSpecifyFilename(
 		ctx context.Context,
 		origin io.Reader,
 		alias string,
 		ownerID entity.UUID,
 		filename string,
-	) (entity.File, error)
+	) (entity.FileWithAttachableItem, error)
 	CreateFilesSpecifyFilename(
 		ctx context.Context,
 		ownerID entity.UUID,
 		params []parameter.CreateFileSpecifyFilenameServiceParam,
-	) ([]entity.File, error)
+	) ([]entity.FileWithAttachableItem, error)
 	CreateFileFromOuter(
 		ctx context.Context,
 		url,
@@ -667,15 +667,15 @@ type FileManager interface {
 		size entity.Float,
 		ownerID entity.UUID,
 		mimeTypeID uuid.UUID,
-	) (entity.File, error)
+	) (entity.FileWithAttachableItem, error)
 	CreateFilesFromOuter(
 		ctx context.Context,
 		ownerID entity.UUID,
 		params []parameter.CreateFileFromOuterServiceParam,
-	) ([]entity.File, error)
-	DeleteFile(ctx context.Context, id uuid.UUID) (int64, error)
+	) ([]entity.FileWithAttachableItem, error)
+	DeleteFile(ctx context.Context, id uuid.UUID, ownerID entity.UUID) (int64, error)
 	PluralDeleteFiles(
-		ctx context.Context, ids []uuid.UUID,
+		ctx context.Context, ids []uuid.UUID, ownerID entity.UUID,
 	) (int64, error)
 	GetFiles(
 		ctx context.Context,

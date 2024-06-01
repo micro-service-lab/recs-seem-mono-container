@@ -70,7 +70,8 @@ func (s *API) Handler() http.Handler {
 
 	r.Use(s.middlewares...)
 	r.Use(
-		allowContentTypeMiddleware("application/json"),
+		// json or multipart/form-data のみ受け付ける
+		allowContentTypeMiddleware("application/json", "multipart/form-data"),
 		middleware.RequestID,
 		middleware.SetHeader("Content-Type", "application/json"),
 	)
@@ -94,6 +95,8 @@ func (s *API) Handler() http.Handler {
 	r.Mount("/members", MemberHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
 	r.Mount("/chat_room_action_types", ChatRoomActionTypeHandler(s.svc))
 	r.Mount("/chat_rooms", ChatRoomHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
+	r.Mount("/images", ImageHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
+	r.Mount("/files", FileHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
 
 	r.NotFound(s.notFound)
 	r.MethodNotAllowed(s.methodNotAllowed)

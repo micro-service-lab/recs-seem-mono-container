@@ -26,11 +26,36 @@ other = "CoverImageIDs"
 other = "MemberID"
 [MemberIDs]
 other = "MemberIDs"
+[ImageID]
+other = "ImageID"
+[ImageIDs]
+other = "ImageIDs"
+[FileID]
+other = "FileID"
+[FileIDs]
+other = "FileIDs"
 
 [ChatRoom]
 other = "ChatRoom"
 [Organization]
 other = "Organization"
+[File]
+other = "File"
+[Files]
+other = "Files"
+
+[Required]
+other = "{{.Target}} is a required field"
+[IsUploadFile]
+other = "{{.Target}} must be an upload file"
+[PluralIsUploadFile]
+other = "The {{.Target}} contains data that is not an upload file"
+[ContainSystemFile]
+other = "{{.Target}} contains system files"
+[ContainNotOwnerFile]
+other = "{{.Target}} contains files that are not owned by the user"
+[ContainsNotImageFile]
+other = "{{.Target}} contains files that are not images"
 
 [ModelNotExists]
 other = "{{.ID}} is not exists on the system"

@@ -155,7 +155,7 @@ func createAttachableItem(
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
-			return entity.AttachableItem{}, errhandle.NewModelNotFoundError("attachable item")
+			return entity.AttachableItem{}, errhandle.NewModelDuplicatedError("attachable item")
 		}
 		return entity.AttachableItem{}, fmt.Errorf("failed to create attachable item: %w", err)
 	}

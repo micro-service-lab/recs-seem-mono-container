@@ -155,7 +155,12 @@ t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.f
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
 COALESCE(latest_message.message_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_message_id,
 COALESCE(latest_message.posted_at, TIMESTAMP '0001-01-01 00:00:00') chat_room_latest_message_posted_at,
-COALESCE(latest_message.body, '') chat_room_latest_message_body
+COALESCE(latest_message.body, '') chat_room_latest_message_body,
+COALESCE(latest_action.chat_room_action_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_action_id,
+COALESCE(latest_action.acted_at, TIMESTAMP '0001-01-01 00:00:00') chat_room_latest_action_acted_at,
+COALESCE(latest_action.chat_room_action_type_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_action_type_id,
+COALESCE(latest_action.type_name, '') chat_room_latest_action_type_name,
+COALESCE(latest_action.type_key, '') chat_room_latest_action_type_key
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
@@ -169,6 +174,15 @@ LEFT JOIN (
     ) sub
     WHERE sub.rn = 1
 ) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
+LEFT JOIN (
+	SELECT act_sub.chat_room_id, act_sub.chat_room_action_id, act_sub.acted_at, act_sub.chat_room_action_type_id, act_sub.type_name, act_sub.type_key, act_sub.rn FROM (
+        SELECT
+            tcra.chat_room_id AS chat_room_id, tcra.chat_room_action_id, tcra.acted_at, mcrat.chat_room_action_type_id, mcrat.name type_name, mcrat.key type_key, ROW_NUMBER() OVER (PARTITION BY tcra.chat_room_id ORDER BY tcra.acted_at DESC, tcra.t_chat_room_actions_pkey DESC) AS rn
+        FROM t_chat_room_actions tcra
+        LEFT JOIN m_chat_room_action_types mcrat ON tcra.chat_room_action_type_id = mcrat.chat_room_action_type_id
+    ) act_sub
+    WHERE act_sub.rn = 1
+) latest_action ON m_chat_rooms.chat_room_id = latest_action.chat_room_id
 WHERE member_id = $1
 AND CASE
 	WHEN $2::boolean = true THEN m_chat_rooms.name LIKE '%' || $3::text || '%' ELSE TRUE
@@ -180,6 +194,8 @@ ORDER BY
 	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
 	CASE WHEN $4::text = 'old_chat' THEN latest_message.posted_at END ASC NULLS LAST,
 	CASE WHEN $4::text = 'late_chat' THEN latest_message.posted_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'old_act' THEN latest_action.acted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_act' THEN latest_action.acted_at END DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 `
 
@@ -212,6 +228,11 @@ type GetChatRoomsOnMemberRow struct {
 	ChatRoomLatestMessageID            uuid.UUID     `json:"chat_room_latest_message_id"`
 	ChatRoomLatestMessagePostedAt      time.Time     `json:"chat_room_latest_message_posted_at"`
 	ChatRoomLatestMessageBody          string        `json:"chat_room_latest_message_body"`
+	ChatRoomLatestActionID             uuid.UUID     `json:"chat_room_latest_action_id"`
+	ChatRoomLatestActionActedAt        time.Time     `json:"chat_room_latest_action_acted_at"`
+	ChatRoomLatestActionTypeID         uuid.UUID     `json:"chat_room_latest_action_type_id"`
+	ChatRoomLatestActionTypeName       string        `json:"chat_room_latest_action_type_name"`
+	ChatRoomLatestActionTypeKey        string        `json:"chat_room_latest_action_type_key"`
 }
 
 func (q *Queries) GetChatRoomsOnMember(ctx context.Context, arg GetChatRoomsOnMemberParams) ([]GetChatRoomsOnMemberRow, error) {
@@ -250,6 +271,11 @@ func (q *Queries) GetChatRoomsOnMember(ctx context.Context, arg GetChatRoomsOnMe
 			&i.ChatRoomLatestMessageID,
 			&i.ChatRoomLatestMessagePostedAt,
 			&i.ChatRoomLatestMessageBody,
+			&i.ChatRoomLatestActionID,
+			&i.ChatRoomLatestActionActedAt,
+			&i.ChatRoomLatestActionTypeID,
+			&i.ChatRoomLatestActionTypeName,
+			&i.ChatRoomLatestActionTypeKey,
 		); err != nil {
 			return nil, err
 		}
@@ -270,7 +296,12 @@ t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.f
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
 COALESCE(latest_message.message_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_message_id,
 COALESCE(latest_message.posted_at, TIMESTAMP '0001-01-01 00:00:00') chat_room_latest_message_posted_at,
-COALESCE(latest_message.body, '') chat_room_latest_message_body
+COALESCE(latest_message.body, '') chat_room_latest_message_body,
+COALESCE(latest_action.chat_room_action_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_action_id,
+COALESCE(latest_action.acted_at, TIMESTAMP '0001-01-01 00:00:00') chat_room_latest_action_acted_at,
+COALESCE(latest_action.chat_room_action_type_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_action_type_id,
+COALESCE(latest_action.type_name, '') chat_room_latest_action_type_name,
+COALESCE(latest_action.type_key, '') chat_room_latest_action_type_key
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
@@ -284,6 +315,15 @@ LEFT JOIN (
     ) sub
     WHERE sub.rn = 1
 ) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
+LEFT JOIN (
+	SELECT act_sub.chat_room_id, act_sub.chat_room_action_id, act_sub.acted_at, act_sub.chat_room_action_type_id, act_sub.type_name, act_sub.type_key, act_sub.rn FROM (
+        SELECT
+            tcra.chat_room_id AS chat_room_id, tcra.chat_room_action_id, tcra.acted_at, mcrat.chat_room_action_type_id, mcrat.name type_name, mcrat.key type_key, ROW_NUMBER() OVER (PARTITION BY tcra.chat_room_id ORDER BY tcra.acted_at DESC, tcra.t_chat_room_actions_pkey DESC) AS rn
+        FROM t_chat_room_actions tcra
+        LEFT JOIN m_chat_room_action_types mcrat ON tcra.chat_room_action_type_id = mcrat.chat_room_action_type_id
+    ) act_sub
+    WHERE act_sub.rn = 1
+) latest_action ON m_chat_rooms.chat_room_id = latest_action.chat_room_id
 WHERE member_id = $1
 AND CASE
 	WHEN $3::boolean = true THEN m_chat_rooms.name LIKE '%' || $4::text || '%' ELSE TRUE
@@ -297,6 +337,8 @@ AND CASE $5::text
 			WHEN 'late_add' THEN m_chat_room_belongings.added_at < $9 OR (m_chat_room_belongings.added_at = $9 AND m_chat_room_belongings_pkey > $8::int)
 			WHEN 'old_chat' THEN latest_message.posted_at > $10::timestamptz OR (latest_message.posted_at = $10::timestamptz AND m_chat_room_belongings_pkey > $8::int)
 			WHEN 'late_chat' THEN latest_message.posted_at < $10::timestamptz OR (latest_message.posted_at = $10::timestamptz AND m_chat_room_belongings_pkey > $8::int)
+			WHEN 'old_act' THEN latest_action.acted_at > $11::timestamptz OR (latest_action.acted_at = $11::timestamptz AND m_chat_room_belongings_pkey > $8::int)
+			WHEN 'late_act' THEN latest_action.acted_at < $11::timestamptz OR (latest_action.acted_at = $11::timestamptz AND m_chat_room_belongings_pkey > $8::int)
 			ELSE m_chat_room_belongings_pkey > $8::int
 		END
 	WHEN 'prev' THEN
@@ -307,6 +349,8 @@ AND CASE $5::text
 			WHEN 'late_add' THEN m_chat_room_belongings.added_at > $9 OR (m_chat_room_belongings.added_at = $9 AND m_chat_room_belongings_pkey < $8::int)
 			WHEN 'old_chat' THEN latest_message.posted_at < $10::timestamptz OR (latest_message.posted_at = $10::timestamptz AND m_chat_room_belongings_pkey < $8::int)
 			WHEN 'late_chat' THEN latest_message.posted_at > $10::timestamptz OR (latest_message.posted_at = $10::timestamptz AND m_chat_room_belongings_pkey < $8::int)
+			WHEN 'old_act' THEN latest_action.acted_at < $11::timestamptz OR (latest_action.acted_at = $11::timestamptz AND m_chat_room_belongings_pkey < $8::int)
+			WHEN 'late_act' THEN latest_action.acted_at > $11::timestamptz OR (latest_action.acted_at = $11::timestamptz AND m_chat_room_belongings_pkey < $8::int)
 			ELSE m_chat_room_belongings_pkey < $8::int
 		END
 END
@@ -323,6 +367,10 @@ ORDER BY
 	CASE WHEN $6::text = 'old_chat' AND $5::text = 'prev' THEN latest_message.posted_at END DESC NULLS LAST,
 	CASE WHEN $6::text = 'late_chat' AND $5::text = 'next' THEN latest_message.posted_at END DESC NULLS LAST,
 	CASE WHEN $6::text = 'late_chat' AND $5::text = 'prev' THEN latest_message.posted_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'old_act' AND $5::text = 'next' THEN latest_action.acted_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'old_act' AND $5::text = 'prev' THEN latest_action.acted_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'late_act' AND $5::text = 'next' THEN latest_action.acted_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'late_act' AND $5::text = 'prev' THEN latest_action.acted_at END ASC NULLS LAST,
 	CASE WHEN $5::text = 'next' THEN m_chat_room_belongings_pkey END ASC,
 	CASE WHEN $5::text = 'prev' THEN m_chat_room_belongings_pkey END DESC
 LIMIT $2
@@ -339,6 +387,7 @@ type GetChatRoomsOnMemberUseKeysetPaginateParams struct {
 	Cursor          int32     `json:"cursor"`
 	AddCursor       time.Time `json:"add_cursor"`
 	ChatCursor      time.Time `json:"chat_cursor"`
+	ActCursor       time.Time `json:"act_cursor"`
 }
 
 type GetChatRoomsOnMemberUseKeysetPaginateRow struct {
@@ -363,6 +412,11 @@ type GetChatRoomsOnMemberUseKeysetPaginateRow struct {
 	ChatRoomLatestMessageID            uuid.UUID     `json:"chat_room_latest_message_id"`
 	ChatRoomLatestMessagePostedAt      time.Time     `json:"chat_room_latest_message_posted_at"`
 	ChatRoomLatestMessageBody          string        `json:"chat_room_latest_message_body"`
+	ChatRoomLatestActionID             uuid.UUID     `json:"chat_room_latest_action_id"`
+	ChatRoomLatestActionActedAt        time.Time     `json:"chat_room_latest_action_acted_at"`
+	ChatRoomLatestActionTypeID         uuid.UUID     `json:"chat_room_latest_action_type_id"`
+	ChatRoomLatestActionTypeName       string        `json:"chat_room_latest_action_type_name"`
+	ChatRoomLatestActionTypeKey        string        `json:"chat_room_latest_action_type_key"`
 }
 
 func (q *Queries) GetChatRoomsOnMemberUseKeysetPaginate(ctx context.Context, arg GetChatRoomsOnMemberUseKeysetPaginateParams) ([]GetChatRoomsOnMemberUseKeysetPaginateRow, error) {
@@ -377,6 +431,7 @@ func (q *Queries) GetChatRoomsOnMemberUseKeysetPaginate(ctx context.Context, arg
 		arg.Cursor,
 		arg.AddCursor,
 		arg.ChatCursor,
+		arg.ActCursor,
 	)
 	if err != nil {
 		return nil, err
@@ -407,6 +462,11 @@ func (q *Queries) GetChatRoomsOnMemberUseKeysetPaginate(ctx context.Context, arg
 			&i.ChatRoomLatestMessageID,
 			&i.ChatRoomLatestMessagePostedAt,
 			&i.ChatRoomLatestMessageBody,
+			&i.ChatRoomLatestActionID,
+			&i.ChatRoomLatestActionActedAt,
+			&i.ChatRoomLatestActionTypeID,
+			&i.ChatRoomLatestActionTypeName,
+			&i.ChatRoomLatestActionTypeKey,
 		); err != nil {
 			return nil, err
 		}
@@ -427,7 +487,12 @@ t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.f
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
 COALESCE(latest_message.message_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_message_id,
 COALESCE(latest_message.posted_at, TIMESTAMP '0001-01-01 00:00:00') chat_room_latest_message_posted_at,
-COALESCE(latest_message.body, '') chat_room_latest_message_body
+COALESCE(latest_message.body, '') chat_room_latest_message_body,
+COALESCE(latest_action.chat_room_action_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_action_id,
+COALESCE(latest_action.acted_at, TIMESTAMP '0001-01-01 00:00:00') chat_room_latest_action_acted_at,
+COALESCE(latest_action.chat_room_action_type_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_action_type_id,
+COALESCE(latest_action.type_name, '') chat_room_latest_action_type_name,
+COALESCE(latest_action.type_key, '') chat_room_latest_action_type_key
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
@@ -441,6 +506,15 @@ LEFT JOIN (
     ) sub
     WHERE sub.rn = 1
 ) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
+LEFT JOIN (
+	SELECT act_sub.chat_room_id, act_sub.chat_room_action_id, act_sub.acted_at, act_sub.chat_room_action_type_id, act_sub.type_name, act_sub.type_key, act_sub.rn FROM (
+        SELECT
+            tcra.chat_room_id AS chat_room_id, tcra.chat_room_action_id, tcra.acted_at, mcrat.chat_room_action_type_id, mcrat.name type_name, mcrat.key type_key, ROW_NUMBER() OVER (PARTITION BY tcra.chat_room_id ORDER BY tcra.acted_at DESC, tcra.t_chat_room_actions_pkey DESC) AS rn
+        FROM t_chat_room_actions tcra
+        LEFT JOIN m_chat_room_action_types mcrat ON tcra.chat_room_action_type_id = mcrat.chat_room_action_type_id
+    ) act_sub
+    WHERE act_sub.rn = 1
+) latest_action ON m_chat_rooms.chat_room_id = latest_action.chat_room_id
 WHERE member_id = $1
 AND CASE
 	WHEN $4::boolean = true THEN m_chat_rooms.name LIKE '%' || $5::text || '%' ELSE TRUE
@@ -452,6 +526,8 @@ ORDER BY
 	CASE WHEN $6::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
 	CASE WHEN $6::text = 'old_chat' THEN latest_message.posted_at END ASC NULLS LAST,
 	CASE WHEN $6::text = 'late_chat' THEN latest_message.posted_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'old_act' THEN latest_action.acted_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'late_act' THEN latest_action.acted_at END DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 LIMIT $2 OFFSET $3
 `
@@ -487,6 +563,11 @@ type GetChatRoomsOnMemberUseNumberedPaginateRow struct {
 	ChatRoomLatestMessageID            uuid.UUID     `json:"chat_room_latest_message_id"`
 	ChatRoomLatestMessagePostedAt      time.Time     `json:"chat_room_latest_message_posted_at"`
 	ChatRoomLatestMessageBody          string        `json:"chat_room_latest_message_body"`
+	ChatRoomLatestActionID             uuid.UUID     `json:"chat_room_latest_action_id"`
+	ChatRoomLatestActionActedAt        time.Time     `json:"chat_room_latest_action_acted_at"`
+	ChatRoomLatestActionTypeID         uuid.UUID     `json:"chat_room_latest_action_type_id"`
+	ChatRoomLatestActionTypeName       string        `json:"chat_room_latest_action_type_name"`
+	ChatRoomLatestActionTypeKey        string        `json:"chat_room_latest_action_type_key"`
 }
 
 func (q *Queries) GetChatRoomsOnMemberUseNumberedPaginate(ctx context.Context, arg GetChatRoomsOnMemberUseNumberedPaginateParams) ([]GetChatRoomsOnMemberUseNumberedPaginateRow, error) {
@@ -527,6 +608,11 @@ func (q *Queries) GetChatRoomsOnMemberUseNumberedPaginate(ctx context.Context, a
 			&i.ChatRoomLatestMessageID,
 			&i.ChatRoomLatestMessagePostedAt,
 			&i.ChatRoomLatestMessageBody,
+			&i.ChatRoomLatestActionID,
+			&i.ChatRoomLatestActionActedAt,
+			&i.ChatRoomLatestActionTypeID,
+			&i.ChatRoomLatestActionTypeName,
+			&i.ChatRoomLatestActionTypeKey,
 		); err != nil {
 			return nil, err
 		}
@@ -549,7 +635,7 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE chat_room_id = $1
 AND CASE
-	WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%'
+	WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE
 END
 ORDER BY
 	CASE WHEN $4::text = 'name' THEN m_members.name END ASC NULLS LAST,
@@ -646,7 +732,7 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE chat_room_id = $1
 AND CASE
-	WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%'
+	WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE
 END
 AND CASE $5::text
 	WHEN 'next' THEN
@@ -777,7 +863,7 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE chat_room_id = $1
 AND CASE
-	WHEN $4::boolean = true THEN m_members.name LIKE '%' || $5::text || '%'
+	WHEN $4::boolean = true THEN m_members.name LIKE '%' || $5::text || '%' ELSE TRUE
 END
 ORDER BY
 	CASE WHEN $6::text = 'name' THEN m_members.name END ASC NULLS LAST,
@@ -877,7 +963,12 @@ t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.f
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
 COALESCE(latest_message.message_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_message_id,
 COALESCE(latest_message.posted_at, TIMESTAMP '0001-01-01 00:00:00') chat_room_latest_message_posted_at,
-COALESCE(latest_message.body, '') chat_room_latest_message_body
+COALESCE(latest_message.body, '') chat_room_latest_message_body,
+COALESCE(latest_action.chat_room_action_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_action_id,
+COALESCE(latest_action.acted_at, TIMESTAMP '0001-01-01 00:00:00') chat_room_latest_action_acted_at,
+COALESCE(latest_action.chat_room_action_type_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_action_type_id,
+COALESCE(latest_action.type_name, '') chat_room_latest_action_type_name,
+COALESCE(latest_action.type_key, '') chat_room_latest_action_type_key
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
@@ -891,6 +982,15 @@ LEFT JOIN (
     ) sub
     WHERE sub.rn = 1
 ) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
+LEFT JOIN (
+	SELECT act_sub.chat_room_id, act_sub.chat_room_action_id, act_sub.acted_at, act_sub.chat_room_action_type_id, act_sub.type_name, act_sub.type_key, act_sub.rn FROM (
+        SELECT
+            tcra.chat_room_id AS chat_room_id, tcra.chat_room_action_id, tcra.acted_at, mcrat.chat_room_action_type_id, mcrat.name type_name, mcrat.key type_key, ROW_NUMBER() OVER (PARTITION BY tcra.chat_room_id ORDER BY tcra.acted_at DESC, tcra.t_chat_room_actions_pkey DESC) AS rn
+        FROM t_chat_room_actions tcra
+        LEFT JOIN m_chat_room_action_types mcrat ON tcra.chat_room_action_type_id = mcrat.chat_room_action_type_id
+    ) act_sub
+    WHERE act_sub.rn = 1
+) latest_action ON m_chat_rooms.chat_room_id = latest_action.chat_room_id
 WHERE member_id = ANY($1::uuid[])
 ORDER BY
 	CASE WHEN $2::text = 'name' THEN m_chat_rooms.name END ASC NULLS LAST,
@@ -899,6 +999,8 @@ ORDER BY
 	CASE WHEN $2::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
 	CASE WHEN $2::text = 'old_chat' THEN latest_message.posted_at END ASC NULLS LAST,
 	CASE WHEN $2::text = 'late_chat' THEN latest_message.posted_at END DESC NULLS LAST,
+	CASE WHEN $2::text = 'old_act' THEN latest_action.acted_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'late_act' THEN latest_action.acted_at END DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 `
 
@@ -929,6 +1031,11 @@ type GetPluralChatRoomsOnMemberRow struct {
 	ChatRoomLatestMessageID            uuid.UUID     `json:"chat_room_latest_message_id"`
 	ChatRoomLatestMessagePostedAt      time.Time     `json:"chat_room_latest_message_posted_at"`
 	ChatRoomLatestMessageBody          string        `json:"chat_room_latest_message_body"`
+	ChatRoomLatestActionID             uuid.UUID     `json:"chat_room_latest_action_id"`
+	ChatRoomLatestActionActedAt        time.Time     `json:"chat_room_latest_action_acted_at"`
+	ChatRoomLatestActionTypeID         uuid.UUID     `json:"chat_room_latest_action_type_id"`
+	ChatRoomLatestActionTypeName       string        `json:"chat_room_latest_action_type_name"`
+	ChatRoomLatestActionTypeKey        string        `json:"chat_room_latest_action_type_key"`
 }
 
 func (q *Queries) GetPluralChatRoomsOnMember(ctx context.Context, arg GetPluralChatRoomsOnMemberParams) ([]GetPluralChatRoomsOnMemberRow, error) {
@@ -962,6 +1069,11 @@ func (q *Queries) GetPluralChatRoomsOnMember(ctx context.Context, arg GetPluralC
 			&i.ChatRoomLatestMessageID,
 			&i.ChatRoomLatestMessagePostedAt,
 			&i.ChatRoomLatestMessageBody,
+			&i.ChatRoomLatestActionID,
+			&i.ChatRoomLatestActionActedAt,
+			&i.ChatRoomLatestActionTypeID,
+			&i.ChatRoomLatestActionTypeName,
+			&i.ChatRoomLatestActionTypeKey,
 		); err != nil {
 			return nil, err
 		}
@@ -982,7 +1094,12 @@ t_attachable_items.owner_id chat_room_cover_image_owner_id, t_attachable_items.f
 t_attachable_items.url chat_room_cover_image_url, t_attachable_items.size chat_room_cover_image_size, t_attachable_items.mime_type_id chat_room_cover_image_mime_type_id,
 COALESCE(latest_message.message_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_message_id,
 COALESCE(latest_message.posted_at, TIMESTAMP '0001-01-01 00:00:00') chat_room_latest_message_posted_at,
-COALESCE(latest_message.body, '') chat_room_latest_message_body
+COALESCE(latest_message.body, '') chat_room_latest_message_body,
+COALESCE(latest_action.chat_room_action_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_action_id,
+COALESCE(latest_action.acted_at, TIMESTAMP '0001-01-01 00:00:00') chat_room_latest_action_acted_at,
+COALESCE(latest_action.chat_room_action_type_id, '00000000-0000-0000-0000-000000000000') chat_room_latest_action_type_id,
+COALESCE(latest_action.type_name, '') chat_room_latest_action_type_name,
+COALESCE(latest_action.type_key, '') chat_room_latest_action_type_key
 FROM m_chat_room_belongings
 LEFT JOIN m_chat_rooms ON m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id
 LEFT JOIN t_images ON m_chat_rooms.cover_image_id = t_images.image_id
@@ -996,6 +1113,15 @@ LEFT JOIN (
     ) sub
     WHERE sub.rn = 1
 ) latest_message ON m_chat_rooms.chat_room_id = latest_message.chat_room_id
+LEFT JOIN (
+	SELECT act_sub.chat_room_id, act_sub.chat_room_action_id, act_sub.acted_at, act_sub.chat_room_action_type_id, act_sub.type_name, act_sub.type_key, act_sub.rn FROM (
+        SELECT
+            tcra.chat_room_id AS chat_room_id, tcra.chat_room_action_id, tcra.acted_at, mcrat.chat_room_action_type_id, mcrat.name type_name, mcrat.key type_key, ROW_NUMBER() OVER (PARTITION BY tcra.chat_room_id ORDER BY tcra.acted_at DESC, tcra.t_chat_room_actions_pkey DESC) AS rn
+        FROM t_chat_room_actions tcra
+        LEFT JOIN m_chat_room_action_types mcrat ON tcra.chat_room_action_type_id = mcrat.chat_room_action_type_id
+    ) act_sub
+    WHERE act_sub.rn = 1
+) latest_action ON m_chat_rooms.chat_room_id = latest_action.chat_room_id
 WHERE member_id = ANY($3::uuid[])
 ORDER BY
 	CASE WHEN $4::text = 'name' THEN m_chat_rooms.name END ASC NULLS LAST,
@@ -1004,6 +1130,8 @@ ORDER BY
 	CASE WHEN $4::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
 	CASE WHEN $4::text = 'old_chat' THEN latest_message.posted_at END ASC NULLS LAST,
 	CASE WHEN $4::text = 'late_chat' THEN latest_message.posted_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'old_act' THEN latest_action.acted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_act' THEN latest_action.acted_at END DESC NULLS LAST,
 	m_chat_room_belongings_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1037,6 +1165,11 @@ type GetPluralChatRoomsOnMemberUseNumberedPaginateRow struct {
 	ChatRoomLatestMessageID            uuid.UUID     `json:"chat_room_latest_message_id"`
 	ChatRoomLatestMessagePostedAt      time.Time     `json:"chat_room_latest_message_posted_at"`
 	ChatRoomLatestMessageBody          string        `json:"chat_room_latest_message_body"`
+	ChatRoomLatestActionID             uuid.UUID     `json:"chat_room_latest_action_id"`
+	ChatRoomLatestActionActedAt        time.Time     `json:"chat_room_latest_action_acted_at"`
+	ChatRoomLatestActionTypeID         uuid.UUID     `json:"chat_room_latest_action_type_id"`
+	ChatRoomLatestActionTypeName       string        `json:"chat_room_latest_action_type_name"`
+	ChatRoomLatestActionTypeKey        string        `json:"chat_room_latest_action_type_key"`
 }
 
 func (q *Queries) GetPluralChatRoomsOnMemberUseNumberedPaginate(ctx context.Context, arg GetPluralChatRoomsOnMemberUseNumberedPaginateParams) ([]GetPluralChatRoomsOnMemberUseNumberedPaginateRow, error) {
@@ -1075,6 +1208,11 @@ func (q *Queries) GetPluralChatRoomsOnMemberUseNumberedPaginate(ctx context.Cont
 			&i.ChatRoomLatestMessageID,
 			&i.ChatRoomLatestMessagePostedAt,
 			&i.ChatRoomLatestMessageBody,
+			&i.ChatRoomLatestActionID,
+			&i.ChatRoomLatestActionActedAt,
+			&i.ChatRoomLatestActionTypeID,
+			&i.ChatRoomLatestActionTypeName,
+			&i.ChatRoomLatestActionTypeKey,
 		); err != nil {
 			return nil, err
 		}
@@ -1266,4 +1404,38 @@ func (q *Queries) GetPluralMembersOnChatRoomUseNumberedPaginate(ctx context.Cont
 		return nil, err
 	}
 	return items, nil
+}
+
+const pluralDeleteChatRoomBelongingsOnChatRoom = `-- name: PluralDeleteChatRoomBelongingsOnChatRoom :execrows
+DELETE FROM m_chat_room_belongings WHERE chat_room_id = $1 AND member_id = ANY($2::uuid[])
+`
+
+type PluralDeleteChatRoomBelongingsOnChatRoomParams struct {
+	ChatRoomID uuid.UUID   `json:"chat_room_id"`
+	MemberIds  []uuid.UUID `json:"member_ids"`
+}
+
+func (q *Queries) PluralDeleteChatRoomBelongingsOnChatRoom(ctx context.Context, arg PluralDeleteChatRoomBelongingsOnChatRoomParams) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteChatRoomBelongingsOnChatRoom, arg.ChatRoomID, arg.MemberIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const pluralDeleteChatRoomBelongingsOnMember = `-- name: PluralDeleteChatRoomBelongingsOnMember :execrows
+DELETE FROM m_chat_room_belongings WHERE member_id = $1 AND chat_room_id = ANY($2::uuid[])
+`
+
+type PluralDeleteChatRoomBelongingsOnMemberParams struct {
+	MemberID    uuid.UUID   `json:"member_id"`
+	ChatRoomIds []uuid.UUID `json:"chat_room_ids"`
+}
+
+func (q *Queries) PluralDeleteChatRoomBelongingsOnMember(ctx context.Context, arg PluralDeleteChatRoomBelongingsOnMemberParams) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteChatRoomBelongingsOnMember, arg.MemberID, arg.ChatRoomIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }

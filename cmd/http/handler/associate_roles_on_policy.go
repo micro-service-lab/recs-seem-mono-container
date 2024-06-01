@@ -85,15 +85,17 @@ func (h *AssociateRolesOnPolicy) ServeHTTP(w http.ResponseWriter, r *http.Reques
 						Other: "RoleIDs",
 					},
 				})
-				msgStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "ModelNotExists", i18n.Options{
-					DefaultMessage: &i18n.Message{
-						ID:    "ModelNotExists",
-						Other: "{{.ID}} not found",
-					},
-					TemplateData: map[string]any{
-						"ID": roleStr,
-					},
-				})
+				msgStr := h.Translator.TranslateWithOpts(
+					lang.GetLocaleForTranslation(ctx), "PluralModelNotExists", i18n.Options{
+						DefaultMessage: &i18n.Message{
+							ID:    "PluralModelNotExists",
+							Other: "{{.ID}} not found",
+						},
+						TemplateData: map[string]any{
+							"ID":        roleStr,
+							"ValueType": "ID",
+						},
+					})
 				ve := errhandle.NewValidationError(nil)
 				ve.Add("role_ids", msgStr)
 				err = ve

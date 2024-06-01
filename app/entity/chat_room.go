@@ -26,13 +26,14 @@ type ChatRoomWithCoverImage struct {
 
 // PracticalChatRoom 実用的なチャットルームを表す構造体。
 type PracticalChatRoom struct {
-	ChatRoomID       uuid.UUID                               `json:"chat_room_id"`
-	Name             string                                  `json:"name"`
-	IsPrivate        bool                                    `json:"is_private"`
-	FromOrganization bool                                    `json:"from_organization"`
-	CoverImage       NullableEntity[ImageWithAttachableItem] `json:"cover_image"`
-	OwnerID          UUID                                    `json:"owner_id"`
-	LatestMessage    NullableEntity[MessageCard]             `json:"latest_message"`
+	ChatRoomID       uuid.UUID                                    `json:"chat_room_id"`
+	Name             string                                       `json:"name"`
+	IsPrivate        bool                                         `json:"is_private"`
+	FromOrganization bool                                         `json:"from_organization"`
+	CoverImage       NullableEntity[ImageWithAttachableItem]      `json:"cover_image"`
+	OwnerID          UUID                                         `json:"owner_id"`
+	LatestMessage    NullableEntity[MessageCard]                  `json:"latest_message"`
+	LatestAction     NullableEntity[ChatRoomActionWithActionType] `json:"latest_action"`
 }
 
 // ChatRoomWithOwner チャットルームとオーナーを表す構造体。

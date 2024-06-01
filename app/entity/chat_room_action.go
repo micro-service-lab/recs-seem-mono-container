@@ -14,6 +14,14 @@ type ChatRoomAction struct {
 	ActedAt              time.Time `json:"acted_at"`
 }
 
+// ChatRoomActionWithActionType チャットルームアクションを表す構造体。
+type ChatRoomActionWithActionType struct {
+	ChatRoomActionID   uuid.UUID          `json:"chat_room_action_id"`
+	ChatRoomID         uuid.UUID          `json:"chat_room_id"`
+	ActedAt            time.Time          `json:"acted_at"`
+	ChatRoomActionType ChatRoomActionType `json:"chat_room_action_type"`
+}
+
 // ChatRoomActionWithDetail チャットルームアクションを表す構造体。
 //
 //nolint:lll

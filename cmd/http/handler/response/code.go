@@ -343,4 +343,18 @@ var (
 		Message:    "cannot withdraw member from organization chat room error",
 		StatusCode: http.StatusForbidden,
 	}
+
+	// CannotRemoveMemberFromOrganizationChatRoom 組織チャットルームからメンバーを削除できない
+	CannotRemoveMemberFromOrganizationChatRoom = APIResponseType{
+		Code:       "244",
+		Message:    "cannot remove member from organization chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotRemoveMemberFromPrivateChatRoom プライベートチャットルームからメンバーを削除できない
+	CannotRemoveMemberFromPrivateChatRoom = APIResponseType{
+		Code:       "245",
+		Message:    "cannot remove member from private chat room error",
+		StatusCode: http.StatusForbidden,
+	}
 )

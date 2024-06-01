@@ -91,7 +91,7 @@ func addMemberToChatRoomAddMemberAction(
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
-			return entity.ChatRoomAddedMember{}, errhandle.NewModelNotFoundError("chat room add member action")
+			return entity.ChatRoomAddedMember{}, errhandle.NewModelDuplicatedError("chat room added member")
 		}
 		return entity.ChatRoomAddedMember{}, fmt.Errorf("failed to add member to chat room add member action: %w", err)
 	}
@@ -135,7 +135,7 @@ func addMembersToChatRoomAddMemberAction(
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
-			return 0, errhandle.NewModelNotFoundError("chat room add member action")
+			return 0, errhandle.NewModelDuplicatedError("chat room added member")
 		}
 		return 0, fmt.Errorf("failed to add members to chat room add member action: %w", err)
 	}

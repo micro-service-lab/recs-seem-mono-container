@@ -13,11 +13,17 @@ DELETE FROM m_memberships WHERE member_id = $1;
 -- name: DeleteMembershipsOnMembers :execrows
 DELETE FROM m_memberships WHERE member_id = ANY(@member_ids::uuid[]);
 
+-- name: PluralDeleteMembershipsOnMember :execrows
+DELETE FROM m_memberships WHERE member_id = $1 AND organization_id = ANY(@organization_ids::uuid[]);
+
 -- name: DeleteMembershipsOnOrganization :execrows
 DELETE FROM m_memberships WHERE organization_id = $1;
 
 -- name: DeleteMembershipsOnOrganizations :execrows
 DELETE FROM m_memberships WHERE organization_id = ANY(@organization_ids::uuid[]);
+
+-- name: PluralDeleteMembershipsOnOrganization :execrows
+DELETE FROM m_memberships WHERE member_id = ANY(@member_ids::uuid[]) AND organization_id = $1;
 
 -- name: GetMembersOnOrganization :many
 SELECT m_memberships.*, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
@@ -30,7 +36,7 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = $1
 AND CASE
-	WHEN @where_like_name::boolean = true THEN m_members.name LIKE '%' || @search_name::text || '%'
+	WHEN @where_like_name::boolean = true THEN m_members.name LIKE '%' || @search_name::text || '%' ELSE TRUE
 END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
@@ -50,7 +56,7 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = $1
 AND CASE
-	WHEN @where_like_name::boolean = true THEN m_members.name LIKE '%' || @search_name::text || '%'
+	WHEN @where_like_name::boolean = true THEN m_members.name LIKE '%' || @search_name::text || '%' ELSE TRUE
 END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
@@ -71,7 +77,7 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = $1
 AND CASE
-	WHEN @where_like_name::boolean = true THEN m_members.name LIKE '%' || @search_name::text || '%'
+	WHEN @where_like_name::boolean = true THEN m_members.name LIKE '%' || @search_name::text || '%' ELSE TRUE
 END
 AND CASE @cursor_direction::text
 	WHEN 'next' THEN

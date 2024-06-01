@@ -136,7 +136,7 @@ func removeMembersToChatRoomRemoveMemberAction(
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
-			return 0, errhandle.NewModelNotFoundError("chat room remove member action")
+			return 0, errhandle.NewModelDuplicatedError("chat room remove member action")
 		}
 		return 0, fmt.Errorf("failed to remove members to chat room remove member action: %w", err)
 	}

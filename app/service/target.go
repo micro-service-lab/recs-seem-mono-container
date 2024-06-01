@@ -29,4 +29,20 @@ const (
 	OrganizationTargetOwner = "OrganizationTargetOwner"
 	// OrganizationTargetMembers 組織の関連付けの際のメンバーターゲット
 	OrganizationTargetMembers = "OrganizationTargetMembers"
+	// ChatRoomBelongingTargetChatRoom チャットルーム所属の際のチャットルームターゲット
+	ChatRoomBelongingTargetChatRoom = "ChatRoomBelongingTargetChatRoom"
+	// ChatRoomBelongingTargetOwner チャットルーム所属の際のオーナーターゲット
+	ChatRoomBelongingTargetOwner = "ChatRoomBelongingTargetOwner"
+	// ChatRoomBelongingTargetMembers チャットルーム所属の際のメンバーターゲット
+	ChatRoomBelongingTargetMembers = "ChatRoomBelongingTargetMembers"
+	// ChatRoomBelongingTargetChatRoomBelongings チャットルーム所属の際のチャットルーム所属ターゲット
+	ChatRoomBelongingTargetChatRoomBelongings = "ChatRoomBelongingTargetChatRoomBelongings"
+	// OrganizationBelongingTargetOrganization 組織所属の際の組織ターゲット
+	OrganizationBelongingTargetOrganization = "OrganizationBelongingTargetOrganization"
+	// OrganizationBelongingTargetOwner 組織所属の際のオーナーターゲット
+	OrganizationBelongingTargetOwner = "OrganizationBelongingTargetOwner"
+	// OrganizationBelongingTargetMembers 組織所属の際のメンバーターゲット
+	OrganizationBelongingTargetMembers = "OrganizationBelongingTargetMembers"
+	// OrganizationBelongingTargetOrganizationBelongings 組織所属の際の組織所属ターゲット
+	OrganizationBelongingTargetOrganizationBelongings = "OrganizationBelongingTargetOrganizationBelongings"
 )

@@ -165,7 +165,7 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = $1
 AND CASE
-	WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%'
+	WHEN $2::boolean = true THEN m_members.name LIKE '%' || $3::text || '%' ELSE TRUE
 END
 ORDER BY
 	CASE WHEN $4::text = 'name' THEN m_members.name END ASC NULLS LAST,
@@ -264,7 +264,7 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = $1
 AND CASE
-	WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%'
+	WHEN $3::boolean = true THEN m_members.name LIKE '%' || $4::text || '%' ELSE TRUE
 END
 AND CASE $5::text
 	WHEN 'next' THEN
@@ -397,7 +397,7 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE organization_id = $1
 AND CASE
-	WHEN $4::boolean = true THEN m_members.name LIKE '%' || $5::text || '%'
+	WHEN $4::boolean = true THEN m_members.name LIKE '%' || $5::text || '%' ELSE TRUE
 END
 ORDER BY
 	CASE WHEN $6::text = 'name' THEN m_members.name END ASC NULLS LAST,
@@ -1081,4 +1081,38 @@ func (q *Queries) GetPluralOrganizationsOnMemberUseNumberedPaginate(ctx context.
 		return nil, err
 	}
 	return items, nil
+}
+
+const pluralDeleteMembershipsOnMember = `-- name: PluralDeleteMembershipsOnMember :execrows
+DELETE FROM m_memberships WHERE member_id = $1 AND organization_id = ANY($2::uuid[])
+`
+
+type PluralDeleteMembershipsOnMemberParams struct {
+	MemberID        uuid.UUID   `json:"member_id"`
+	OrganizationIds []uuid.UUID `json:"organization_ids"`
+}
+
+func (q *Queries) PluralDeleteMembershipsOnMember(ctx context.Context, arg PluralDeleteMembershipsOnMemberParams) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteMembershipsOnMember, arg.MemberID, arg.OrganizationIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const pluralDeleteMembershipsOnOrganization = `-- name: PluralDeleteMembershipsOnOrganization :execrows
+DELETE FROM m_memberships WHERE member_id = ANY($2::uuid[]) AND organization_id = $1
+`
+
+type PluralDeleteMembershipsOnOrganizationParams struct {
+	OrganizationID uuid.UUID   `json:"organization_id"`
+	MemberIds      []uuid.UUID `json:"member_ids"`
+}
+
+func (q *Queries) PluralDeleteMembershipsOnOrganization(ctx context.Context, arg PluralDeleteMembershipsOnOrganizationParams) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteMembershipsOnOrganization, arg.OrganizationID, arg.MemberIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }

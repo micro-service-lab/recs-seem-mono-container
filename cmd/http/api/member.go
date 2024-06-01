@@ -32,12 +32,20 @@ func MemberHandler(
 		Translator: t,
 	}
 
+	getChatRooms := handler.GetChatRoomsOnMember{
+		Service: svc,
+	}
+
 	r := chi.NewRouter()
 	r.Group(func(r chi.Router) {
 		r.Use(AuthMiddleware(clk.Now, auth, svc, ssm))
 
-		r.Delete("/{member_id}", deleteHandler.ServeHTTP)
-		r.Put("/{member_id}", updateHandler.ServeHTTP)
+		r.Delete(uuidPath("/{member_id}"), deleteHandler.ServeHTTP)
+		r.Put(uuidPath("/{member_id}"), updateHandler.ServeHTTP)
+
+		r.Route(uuidPath("/{member_id}/chat_rooms"), func(r chi.Router) {
+			r.Get("/", getChatRooms.ServeHTTP)
+		})
 	})
 
 	return r

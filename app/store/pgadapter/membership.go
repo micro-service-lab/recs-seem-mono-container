@@ -162,7 +162,7 @@ func belongOrganization(
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
-			return entity.Membership{}, errhandle.NewModelNotFoundError("membership")
+			return entity.Membership{}, errhandle.NewModelDuplicatedError("membership")
 		}
 		return entity.Membership{}, fmt.Errorf("failed to belong membership: %w", err)
 	}
@@ -212,7 +212,7 @@ func belongOrganizations(
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
-			return 0, errhandle.NewModelNotFoundError("membership")
+			return 0, errhandle.NewModelDuplicatedError("membership")
 		}
 		return 0, fmt.Errorf("failed to belong memberships: %w", err)
 	}
@@ -341,6 +341,45 @@ func (a *PgAdapter) DisbelongOrganizationOnMembersWithSd(
 	return disbelongOrganizationOnMembers(ctx, qtx, memberIDs)
 }
 
+func disbelongPluralOrganizationsOnMember(
+	ctx context.Context,
+	qtx *query.Queries,
+	memberID uuid.UUID,
+	organizationIDs []uuid.UUID,
+) (int64, error) {
+	b, err := qtx.PluralDeleteMembershipsOnMember(ctx, query.PluralDeleteMembershipsOnMemberParams{
+		MemberID:        memberID,
+		OrganizationIds: organizationIDs,
+	})
+	if err != nil {
+		return 0, fmt.Errorf("failed to disbelong membership on member and organizations: %w", err)
+	}
+	if b != int64(len(organizationIDs)) {
+		return 0, errhandle.NewModelNotFoundError("membership")
+	}
+	return b, nil
+}
+
+// DisbelongPluralOrganizationsOnMember メンバー上の複数のチャットルームから所属解除する。
+func (a *PgAdapter) DisbelongPluralOrganizationsOnMember(
+	ctx context.Context, memberID uuid.UUID, organizationIDs []uuid.UUID,
+) (int64, error) {
+	return disbelongPluralOrganizationsOnMember(ctx, a.query, memberID, organizationIDs)
+}
+
+// DisbelongPluralOrganizationsOnMemberWithSd SD付きでメンバー上の複数のチャットルームから所属解除する。
+func (a *PgAdapter) DisbelongPluralOrganizationsOnMemberWithSd(
+	ctx context.Context, sd store.Sd, memberID uuid.UUID, organizationIDs []uuid.UUID,
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return 0, store.ErrNotFoundDescriptor
+	}
+	return disbelongPluralOrganizationsOnMember(ctx, qtx, memberID, organizationIDs)
+}
+
 func disbelongOrganizationOnOrganization(
 	ctx context.Context,
 	qtx *query.Queries,
@@ -403,6 +442,45 @@ func (a *PgAdapter) DisbelongOrganizationOnOrganizationsWithSd(
 		return 0, store.ErrNotFoundDescriptor
 	}
 	return disbelongOrganizationOnOrganizations(ctx, qtx, organizationIDs)
+}
+
+func disbelongPluralMembersOnOrganization(
+	ctx context.Context,
+	qtx *query.Queries,
+	organizationID uuid.UUID,
+	memberIDs []uuid.UUID,
+) (int64, error) {
+	b, err := qtx.PluralDeleteMembershipsOnOrganization(ctx, query.PluralDeleteMembershipsOnOrganizationParams{
+		OrganizationID: organizationID,
+		MemberIds:      memberIDs,
+	})
+	if err != nil {
+		return 0, fmt.Errorf("failed to disbelong membership on organization and members: %w", err)
+	}
+	if b != int64(len(memberIDs)) {
+		return 0, errhandle.NewModelNotFoundError("membership")
+	}
+	return b, nil
+}
+
+// DisbelongPluralMembersOnOrganization チャットルーム上の複数のメンバーから所属解除する。
+func (a *PgAdapter) DisbelongPluralMembersOnOrganization(
+	ctx context.Context, organizationID uuid.UUID, memberIDs []uuid.UUID,
+) (int64, error) {
+	return disbelongPluralMembersOnOrganization(ctx, a.query, organizationID, memberIDs)
+}
+
+// DisbelongPluralMembersOnOrganizationWithSd SD付きでチャットルーム上の複数のメンバーから所属解除する。
+func (a *PgAdapter) DisbelongPluralMembersOnOrganizationWithSd(
+	ctx context.Context, sd store.Sd, organizationID uuid.UUID, memberIDs []uuid.UUID,
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return 0, store.ErrNotFoundDescriptor
+	}
+	return disbelongPluralMembersOnOrganization(ctx, qtx, organizationID, memberIDs)
 }
 
 func getOrganizationsOnMember(

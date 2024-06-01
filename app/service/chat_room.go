@@ -77,7 +77,12 @@ func createChatRoom(
 		return entity.ChatRoom{}, fmt.Errorf("failed to create chat room: %w", err)
 	}
 
-	var bcrp []parameter.BelongChatRoomParam
+	bcrp := make([]parameter.BelongChatRoomParam, 0, len(members)+1)
+	bcrp = append(bcrp, parameter.BelongChatRoomParam{
+		ChatRoomID: e.ChatRoomID,
+		MemberID:   owner.MemberID,
+		AddedAt:    now,
+	})
 	for _, m := range members {
 		bcrp = append(bcrp, parameter.BelongChatRoomParam{
 			ChatRoomID: e.ChatRoomID,
@@ -91,10 +96,6 @@ func createChatRoom(
 	}
 
 	createCraType, err := str.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyCreate))
-	if err != nil {
-		return entity.ChatRoom{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
-	}
-	addCraType, err := str.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyAddMember))
 	if err != nil {
 		return entity.ChatRoom{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
 	}
@@ -113,6 +114,11 @@ func createChatRoom(
 	})
 	if err != nil {
 		return entity.ChatRoom{}, fmt.Errorf("failed to create chat room create action: %w", err)
+	}
+
+	addCraType, err := str.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyAddMember))
+	if err != nil {
+		return entity.ChatRoom{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
 	}
 	addOwnerCra, err := str.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
 		ChatRoomID:           e.ChatRoomID,
@@ -139,26 +145,36 @@ func createChatRoom(
 	); err != nil {
 		return entity.ChatRoom{}, fmt.Errorf("failed to add member to chat room add member action: %w", err)
 	}
-	membersCrama, err := str.CreateChatRoomAddMemberActionWithSd(ctx, sd, parameter.CreateChatRoomAddMemberActionParam{
-		ChatRoomActionID: addOwnerCra.ChatRoomActionID,
-		AddedBy:          entity.UUID{Valid: true, Bytes: owner.MemberID},
-	})
-	if err != nil {
-		return entity.ChatRoom{}, fmt.Errorf("failed to create chat room add member action: %w", err)
-	}
-	membersCramp := make([]parameter.CreateChatRoomAddedMemberParam, 0, len(members))
-	for _, m := range members {
-		membersCramp = append(membersCramp, parameter.CreateChatRoomAddedMemberParam{
-			ChatRoomAddMemberActionID: membersCrama.ChatRoomAddMemberActionID,
-			MemberID:                  entity.UUID{Valid: true, Bytes: m.MemberID},
+	if len(members) > 0 {
+		addMembersCra, err := str.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
+			ChatRoomID:           e.ChatRoomID,
+			ChatRoomActionTypeID: addCraType.ChatRoomActionTypeID,
+			ActedAt:              now,
 		})
-	}
-	if _, err = str.AddMembersToChatRoomAddMemberActionWithSd(
-		ctx,
-		sd,
-		membersCramp,
-	); err != nil {
-		return entity.ChatRoom{}, fmt.Errorf("failed to add members to chat room add member action: %w", err)
+		if err != nil {
+			return entity.ChatRoom{}, fmt.Errorf("failed to create chat room action: %w", err)
+		}
+		membersCrama, err := str.CreateChatRoomAddMemberActionWithSd(ctx, sd, parameter.CreateChatRoomAddMemberActionParam{
+			ChatRoomActionID: addMembersCra.ChatRoomActionID,
+			AddedBy:          entity.UUID{Valid: true, Bytes: owner.MemberID},
+		})
+		if err != nil {
+			return entity.ChatRoom{}, fmt.Errorf("failed to create chat room add member action: %w", err)
+		}
+		membersCramp := make([]parameter.CreateChatRoomAddedMemberParam, 0, len(members))
+		for _, m := range members {
+			membersCramp = append(membersCramp, parameter.CreateChatRoomAddedMemberParam{
+				ChatRoomAddMemberActionID: membersCrama.ChatRoomAddMemberActionID,
+				MemberID:                  entity.UUID{Valid: true, Bytes: m.MemberID},
+			})
+		}
+		if _, err = str.AddMembersToChatRoomAddMemberActionWithSd(
+			ctx,
+			sd,
+			membersCramp,
+		); err != nil {
+			return entity.ChatRoom{}, fmt.Errorf("failed to add members to chat room add member action: %w", err)
+		}
 	}
 
 	return e, nil

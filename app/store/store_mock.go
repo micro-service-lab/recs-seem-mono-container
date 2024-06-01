@@ -1152,6 +1152,30 @@ var _ Store = &StoreMock{}
 //			DisbelongOrganizationWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID, organizationID uuid.UUID) (int64, error) {
 //				panic("mock out the DisbelongOrganizationWithSd method")
 //			},
+//			DisbelongPluralChatRoomsOnMemberFunc: func(ctx context.Context, memberID uuid.UUID, chatRoomIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongPluralChatRoomsOnMember method")
+//			},
+//			DisbelongPluralChatRoomsOnMemberWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID, chatRoomIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongPluralChatRoomsOnMemberWithSd method")
+//			},
+//			DisbelongPluralMembersOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, memberIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongPluralMembersOnChatRoom method")
+//			},
+//			DisbelongPluralMembersOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, memberIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongPluralMembersOnChatRoomWithSd method")
+//			},
+//			DisbelongPluralMembersOnOrganizationFunc: func(ctx context.Context, organizationID uuid.UUID, memberIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongPluralMembersOnOrganization method")
+//			},
+//			DisbelongPluralMembersOnOrganizationWithSdFunc: func(ctx context.Context, sd Sd, organizationID uuid.UUID, memberIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongPluralMembersOnOrganizationWithSd method")
+//			},
+//			DisbelongPluralOrganizationsOnMemberFunc: func(ctx context.Context, memberID uuid.UUID, organizationIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongPluralOrganizationsOnMember method")
+//			},
+//			DisbelongPluralOrganizationsOnMemberWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID, organizationIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the DisbelongPluralOrganizationsOnMemberWithSd method")
+//			},
 //			FindAbsenceByIDFunc: func(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error) {
 //				panic("mock out the FindAbsenceByID method")
 //			},
@@ -3840,6 +3864,30 @@ type StoreMock struct {
 
 	// DisbelongOrganizationWithSdFunc mocks the DisbelongOrganizationWithSd method.
 	DisbelongOrganizationWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID, organizationID uuid.UUID) (int64, error)
+
+	// DisbelongPluralChatRoomsOnMemberFunc mocks the DisbelongPluralChatRoomsOnMember method.
+	DisbelongPluralChatRoomsOnMemberFunc func(ctx context.Context, memberID uuid.UUID, chatRoomIDs []uuid.UUID) (int64, error)
+
+	// DisbelongPluralChatRoomsOnMemberWithSdFunc mocks the DisbelongPluralChatRoomsOnMemberWithSd method.
+	DisbelongPluralChatRoomsOnMemberWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID, chatRoomIDs []uuid.UUID) (int64, error)
+
+	// DisbelongPluralMembersOnChatRoomFunc mocks the DisbelongPluralMembersOnChatRoom method.
+	DisbelongPluralMembersOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, memberIDs []uuid.UUID) (int64, error)
+
+	// DisbelongPluralMembersOnChatRoomWithSdFunc mocks the DisbelongPluralMembersOnChatRoomWithSd method.
+	DisbelongPluralMembersOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, memberIDs []uuid.UUID) (int64, error)
+
+	// DisbelongPluralMembersOnOrganizationFunc mocks the DisbelongPluralMembersOnOrganization method.
+	DisbelongPluralMembersOnOrganizationFunc func(ctx context.Context, organizationID uuid.UUID, memberIDs []uuid.UUID) (int64, error)
+
+	// DisbelongPluralMembersOnOrganizationWithSdFunc mocks the DisbelongPluralMembersOnOrganizationWithSd method.
+	DisbelongPluralMembersOnOrganizationWithSdFunc func(ctx context.Context, sd Sd, organizationID uuid.UUID, memberIDs []uuid.UUID) (int64, error)
+
+	// DisbelongPluralOrganizationsOnMemberFunc mocks the DisbelongPluralOrganizationsOnMember method.
+	DisbelongPluralOrganizationsOnMemberFunc func(ctx context.Context, memberID uuid.UUID, organizationIDs []uuid.UUID) (int64, error)
+
+	// DisbelongPluralOrganizationsOnMemberWithSdFunc mocks the DisbelongPluralOrganizationsOnMemberWithSd method.
+	DisbelongPluralOrganizationsOnMemberWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID, organizationIDs []uuid.UUID) (int64, error)
 
 	// FindAbsenceByIDFunc mocks the FindAbsenceByID method.
 	FindAbsenceByIDFunc func(ctx context.Context, absenceID uuid.UUID) (entity.Absence, error)
@@ -8490,6 +8538,86 @@ type StoreMock struct {
 			MemberID uuid.UUID
 			// OrganizationID is the organizationID argument value.
 			OrganizationID uuid.UUID
+		}
+		// DisbelongPluralChatRoomsOnMember holds details about calls to the DisbelongPluralChatRoomsOnMember method.
+		DisbelongPluralChatRoomsOnMember []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+			// ChatRoomIDs is the chatRoomIDs argument value.
+			ChatRoomIDs []uuid.UUID
+		}
+		// DisbelongPluralChatRoomsOnMemberWithSd holds details about calls to the DisbelongPluralChatRoomsOnMemberWithSd method.
+		DisbelongPluralChatRoomsOnMemberWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+			// ChatRoomIDs is the chatRoomIDs argument value.
+			ChatRoomIDs []uuid.UUID
+		}
+		// DisbelongPluralMembersOnChatRoom holds details about calls to the DisbelongPluralMembersOnChatRoom method.
+		DisbelongPluralMembersOnChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// MemberIDs is the memberIDs argument value.
+			MemberIDs []uuid.UUID
+		}
+		// DisbelongPluralMembersOnChatRoomWithSd holds details about calls to the DisbelongPluralMembersOnChatRoomWithSd method.
+		DisbelongPluralMembersOnChatRoomWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// MemberIDs is the memberIDs argument value.
+			MemberIDs []uuid.UUID
+		}
+		// DisbelongPluralMembersOnOrganization holds details about calls to the DisbelongPluralMembersOnOrganization method.
+		DisbelongPluralMembersOnOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+			// MemberIDs is the memberIDs argument value.
+			MemberIDs []uuid.UUID
+		}
+		// DisbelongPluralMembersOnOrganizationWithSd holds details about calls to the DisbelongPluralMembersOnOrganizationWithSd method.
+		DisbelongPluralMembersOnOrganizationWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// OrganizationID is the organizationID argument value.
+			OrganizationID uuid.UUID
+			// MemberIDs is the memberIDs argument value.
+			MemberIDs []uuid.UUID
+		}
+		// DisbelongPluralOrganizationsOnMember holds details about calls to the DisbelongPluralOrganizationsOnMember method.
+		DisbelongPluralOrganizationsOnMember []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+			// OrganizationIDs is the organizationIDs argument value.
+			OrganizationIDs []uuid.UUID
+		}
+		// DisbelongPluralOrganizationsOnMemberWithSd holds details about calls to the DisbelongPluralOrganizationsOnMemberWithSd method.
+		DisbelongPluralOrganizationsOnMemberWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+			// OrganizationIDs is the organizationIDs argument value.
+			OrganizationIDs []uuid.UUID
 		}
 		// FindAbsenceByID holds details about calls to the FindAbsenceByID method.
 		FindAbsenceByID []struct {
@@ -14712,6 +14840,14 @@ type StoreMock struct {
 	lockDisbelongOrganizationOnOrganizations                            sync.RWMutex
 	lockDisbelongOrganizationOnOrganizationsWithSd                      sync.RWMutex
 	lockDisbelongOrganizationWithSd                                     sync.RWMutex
+	lockDisbelongPluralChatRoomsOnMember                                sync.RWMutex
+	lockDisbelongPluralChatRoomsOnMemberWithSd                          sync.RWMutex
+	lockDisbelongPluralMembersOnChatRoom                                sync.RWMutex
+	lockDisbelongPluralMembersOnChatRoomWithSd                          sync.RWMutex
+	lockDisbelongPluralMembersOnOrganization                            sync.RWMutex
+	lockDisbelongPluralMembersOnOrganizationWithSd                      sync.RWMutex
+	lockDisbelongPluralOrganizationsOnMember                            sync.RWMutex
+	lockDisbelongPluralOrganizationsOnMemberWithSd                      sync.RWMutex
 	lockFindAbsenceByID                                                 sync.RWMutex
 	lockFindAbsenceByIDWithSd                                           sync.RWMutex
 	lockFindAttachableItemByID                                          sync.RWMutex
@@ -29716,6 +29852,342 @@ func (mock *StoreMock) DisbelongOrganizationWithSdCalls() []struct {
 	mock.lockDisbelongOrganizationWithSd.RLock()
 	calls = mock.calls.DisbelongOrganizationWithSd
 	mock.lockDisbelongOrganizationWithSd.RUnlock()
+	return calls
+}
+
+// DisbelongPluralChatRoomsOnMember calls DisbelongPluralChatRoomsOnMemberFunc.
+func (mock *StoreMock) DisbelongPluralChatRoomsOnMember(ctx context.Context, memberID uuid.UUID, chatRoomIDs []uuid.UUID) (int64, error) {
+	if mock.DisbelongPluralChatRoomsOnMemberFunc == nil {
+		panic("StoreMock.DisbelongPluralChatRoomsOnMemberFunc: method is nil but Store.DisbelongPluralChatRoomsOnMember was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		MemberID    uuid.UUID
+		ChatRoomIDs []uuid.UUID
+	}{
+		Ctx:         ctx,
+		MemberID:    memberID,
+		ChatRoomIDs: chatRoomIDs,
+	}
+	mock.lockDisbelongPluralChatRoomsOnMember.Lock()
+	mock.calls.DisbelongPluralChatRoomsOnMember = append(mock.calls.DisbelongPluralChatRoomsOnMember, callInfo)
+	mock.lockDisbelongPluralChatRoomsOnMember.Unlock()
+	return mock.DisbelongPluralChatRoomsOnMemberFunc(ctx, memberID, chatRoomIDs)
+}
+
+// DisbelongPluralChatRoomsOnMemberCalls gets all the calls that were made to DisbelongPluralChatRoomsOnMember.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongPluralChatRoomsOnMemberCalls())
+func (mock *StoreMock) DisbelongPluralChatRoomsOnMemberCalls() []struct {
+	Ctx         context.Context
+	MemberID    uuid.UUID
+	ChatRoomIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx         context.Context
+		MemberID    uuid.UUID
+		ChatRoomIDs []uuid.UUID
+	}
+	mock.lockDisbelongPluralChatRoomsOnMember.RLock()
+	calls = mock.calls.DisbelongPluralChatRoomsOnMember
+	mock.lockDisbelongPluralChatRoomsOnMember.RUnlock()
+	return calls
+}
+
+// DisbelongPluralChatRoomsOnMemberWithSd calls DisbelongPluralChatRoomsOnMemberWithSdFunc.
+func (mock *StoreMock) DisbelongPluralChatRoomsOnMemberWithSd(ctx context.Context, sd Sd, memberID uuid.UUID, chatRoomIDs []uuid.UUID) (int64, error) {
+	if mock.DisbelongPluralChatRoomsOnMemberWithSdFunc == nil {
+		panic("StoreMock.DisbelongPluralChatRoomsOnMemberWithSdFunc: method is nil but Store.DisbelongPluralChatRoomsOnMemberWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		Sd          Sd
+		MemberID    uuid.UUID
+		ChatRoomIDs []uuid.UUID
+	}{
+		Ctx:         ctx,
+		Sd:          sd,
+		MemberID:    memberID,
+		ChatRoomIDs: chatRoomIDs,
+	}
+	mock.lockDisbelongPluralChatRoomsOnMemberWithSd.Lock()
+	mock.calls.DisbelongPluralChatRoomsOnMemberWithSd = append(mock.calls.DisbelongPluralChatRoomsOnMemberWithSd, callInfo)
+	mock.lockDisbelongPluralChatRoomsOnMemberWithSd.Unlock()
+	return mock.DisbelongPluralChatRoomsOnMemberWithSdFunc(ctx, sd, memberID, chatRoomIDs)
+}
+
+// DisbelongPluralChatRoomsOnMemberWithSdCalls gets all the calls that were made to DisbelongPluralChatRoomsOnMemberWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongPluralChatRoomsOnMemberWithSdCalls())
+func (mock *StoreMock) DisbelongPluralChatRoomsOnMemberWithSdCalls() []struct {
+	Ctx         context.Context
+	Sd          Sd
+	MemberID    uuid.UUID
+	ChatRoomIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx         context.Context
+		Sd          Sd
+		MemberID    uuid.UUID
+		ChatRoomIDs []uuid.UUID
+	}
+	mock.lockDisbelongPluralChatRoomsOnMemberWithSd.RLock()
+	calls = mock.calls.DisbelongPluralChatRoomsOnMemberWithSd
+	mock.lockDisbelongPluralChatRoomsOnMemberWithSd.RUnlock()
+	return calls
+}
+
+// DisbelongPluralMembersOnChatRoom calls DisbelongPluralMembersOnChatRoomFunc.
+func (mock *StoreMock) DisbelongPluralMembersOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, memberIDs []uuid.UUID) (int64, error) {
+	if mock.DisbelongPluralMembersOnChatRoomFunc == nil {
+		panic("StoreMock.DisbelongPluralMembersOnChatRoomFunc: method is nil but Store.DisbelongPluralMembersOnChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		MemberIDs  []uuid.UUID
+	}{
+		Ctx:        ctx,
+		ChatRoomID: chatRoomID,
+		MemberIDs:  memberIDs,
+	}
+	mock.lockDisbelongPluralMembersOnChatRoom.Lock()
+	mock.calls.DisbelongPluralMembersOnChatRoom = append(mock.calls.DisbelongPluralMembersOnChatRoom, callInfo)
+	mock.lockDisbelongPluralMembersOnChatRoom.Unlock()
+	return mock.DisbelongPluralMembersOnChatRoomFunc(ctx, chatRoomID, memberIDs)
+}
+
+// DisbelongPluralMembersOnChatRoomCalls gets all the calls that were made to DisbelongPluralMembersOnChatRoom.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongPluralMembersOnChatRoomCalls())
+func (mock *StoreMock) DisbelongPluralMembersOnChatRoomCalls() []struct {
+	Ctx        context.Context
+	ChatRoomID uuid.UUID
+	MemberIDs  []uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		MemberIDs  []uuid.UUID
+	}
+	mock.lockDisbelongPluralMembersOnChatRoom.RLock()
+	calls = mock.calls.DisbelongPluralMembersOnChatRoom
+	mock.lockDisbelongPluralMembersOnChatRoom.RUnlock()
+	return calls
+}
+
+// DisbelongPluralMembersOnChatRoomWithSd calls DisbelongPluralMembersOnChatRoomWithSdFunc.
+func (mock *StoreMock) DisbelongPluralMembersOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID, memberIDs []uuid.UUID) (int64, error) {
+	if mock.DisbelongPluralMembersOnChatRoomWithSdFunc == nil {
+		panic("StoreMock.DisbelongPluralMembersOnChatRoomWithSdFunc: method is nil but Store.DisbelongPluralMembersOnChatRoomWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+		MemberIDs  []uuid.UUID
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		ChatRoomID: chatRoomID,
+		MemberIDs:  memberIDs,
+	}
+	mock.lockDisbelongPluralMembersOnChatRoomWithSd.Lock()
+	mock.calls.DisbelongPluralMembersOnChatRoomWithSd = append(mock.calls.DisbelongPluralMembersOnChatRoomWithSd, callInfo)
+	mock.lockDisbelongPluralMembersOnChatRoomWithSd.Unlock()
+	return mock.DisbelongPluralMembersOnChatRoomWithSdFunc(ctx, sd, chatRoomID, memberIDs)
+}
+
+// DisbelongPluralMembersOnChatRoomWithSdCalls gets all the calls that were made to DisbelongPluralMembersOnChatRoomWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongPluralMembersOnChatRoomWithSdCalls())
+func (mock *StoreMock) DisbelongPluralMembersOnChatRoomWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	ChatRoomID uuid.UUID
+	MemberIDs  []uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+		MemberIDs  []uuid.UUID
+	}
+	mock.lockDisbelongPluralMembersOnChatRoomWithSd.RLock()
+	calls = mock.calls.DisbelongPluralMembersOnChatRoomWithSd
+	mock.lockDisbelongPluralMembersOnChatRoomWithSd.RUnlock()
+	return calls
+}
+
+// DisbelongPluralMembersOnOrganization calls DisbelongPluralMembersOnOrganizationFunc.
+func (mock *StoreMock) DisbelongPluralMembersOnOrganization(ctx context.Context, organizationID uuid.UUID, memberIDs []uuid.UUID) (int64, error) {
+	if mock.DisbelongPluralMembersOnOrganizationFunc == nil {
+		panic("StoreMock.DisbelongPluralMembersOnOrganizationFunc: method is nil but Store.DisbelongPluralMembersOnOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+		MemberIDs      []uuid.UUID
+	}{
+		Ctx:            ctx,
+		OrganizationID: organizationID,
+		MemberIDs:      memberIDs,
+	}
+	mock.lockDisbelongPluralMembersOnOrganization.Lock()
+	mock.calls.DisbelongPluralMembersOnOrganization = append(mock.calls.DisbelongPluralMembersOnOrganization, callInfo)
+	mock.lockDisbelongPluralMembersOnOrganization.Unlock()
+	return mock.DisbelongPluralMembersOnOrganizationFunc(ctx, organizationID, memberIDs)
+}
+
+// DisbelongPluralMembersOnOrganizationCalls gets all the calls that were made to DisbelongPluralMembersOnOrganization.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongPluralMembersOnOrganizationCalls())
+func (mock *StoreMock) DisbelongPluralMembersOnOrganizationCalls() []struct {
+	Ctx            context.Context
+	OrganizationID uuid.UUID
+	MemberIDs      []uuid.UUID
+} {
+	var calls []struct {
+		Ctx            context.Context
+		OrganizationID uuid.UUID
+		MemberIDs      []uuid.UUID
+	}
+	mock.lockDisbelongPluralMembersOnOrganization.RLock()
+	calls = mock.calls.DisbelongPluralMembersOnOrganization
+	mock.lockDisbelongPluralMembersOnOrganization.RUnlock()
+	return calls
+}
+
+// DisbelongPluralMembersOnOrganizationWithSd calls DisbelongPluralMembersOnOrganizationWithSdFunc.
+func (mock *StoreMock) DisbelongPluralMembersOnOrganizationWithSd(ctx context.Context, sd Sd, organizationID uuid.UUID, memberIDs []uuid.UUID) (int64, error) {
+	if mock.DisbelongPluralMembersOnOrganizationWithSdFunc == nil {
+		panic("StoreMock.DisbelongPluralMembersOnOrganizationWithSdFunc: method is nil but Store.DisbelongPluralMembersOnOrganizationWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+		MemberIDs      []uuid.UUID
+	}{
+		Ctx:            ctx,
+		Sd:             sd,
+		OrganizationID: organizationID,
+		MemberIDs:      memberIDs,
+	}
+	mock.lockDisbelongPluralMembersOnOrganizationWithSd.Lock()
+	mock.calls.DisbelongPluralMembersOnOrganizationWithSd = append(mock.calls.DisbelongPluralMembersOnOrganizationWithSd, callInfo)
+	mock.lockDisbelongPluralMembersOnOrganizationWithSd.Unlock()
+	return mock.DisbelongPluralMembersOnOrganizationWithSdFunc(ctx, sd, organizationID, memberIDs)
+}
+
+// DisbelongPluralMembersOnOrganizationWithSdCalls gets all the calls that were made to DisbelongPluralMembersOnOrganizationWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongPluralMembersOnOrganizationWithSdCalls())
+func (mock *StoreMock) DisbelongPluralMembersOnOrganizationWithSdCalls() []struct {
+	Ctx            context.Context
+	Sd             Sd
+	OrganizationID uuid.UUID
+	MemberIDs      []uuid.UUID
+} {
+	var calls []struct {
+		Ctx            context.Context
+		Sd             Sd
+		OrganizationID uuid.UUID
+		MemberIDs      []uuid.UUID
+	}
+	mock.lockDisbelongPluralMembersOnOrganizationWithSd.RLock()
+	calls = mock.calls.DisbelongPluralMembersOnOrganizationWithSd
+	mock.lockDisbelongPluralMembersOnOrganizationWithSd.RUnlock()
+	return calls
+}
+
+// DisbelongPluralOrganizationsOnMember calls DisbelongPluralOrganizationsOnMemberFunc.
+func (mock *StoreMock) DisbelongPluralOrganizationsOnMember(ctx context.Context, memberID uuid.UUID, organizationIDs []uuid.UUID) (int64, error) {
+	if mock.DisbelongPluralOrganizationsOnMemberFunc == nil {
+		panic("StoreMock.DisbelongPluralOrganizationsOnMemberFunc: method is nil but Store.DisbelongPluralOrganizationsOnMember was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		MemberID        uuid.UUID
+		OrganizationIDs []uuid.UUID
+	}{
+		Ctx:             ctx,
+		MemberID:        memberID,
+		OrganizationIDs: organizationIDs,
+	}
+	mock.lockDisbelongPluralOrganizationsOnMember.Lock()
+	mock.calls.DisbelongPluralOrganizationsOnMember = append(mock.calls.DisbelongPluralOrganizationsOnMember, callInfo)
+	mock.lockDisbelongPluralOrganizationsOnMember.Unlock()
+	return mock.DisbelongPluralOrganizationsOnMemberFunc(ctx, memberID, organizationIDs)
+}
+
+// DisbelongPluralOrganizationsOnMemberCalls gets all the calls that were made to DisbelongPluralOrganizationsOnMember.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongPluralOrganizationsOnMemberCalls())
+func (mock *StoreMock) DisbelongPluralOrganizationsOnMemberCalls() []struct {
+	Ctx             context.Context
+	MemberID        uuid.UUID
+	OrganizationIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx             context.Context
+		MemberID        uuid.UUID
+		OrganizationIDs []uuid.UUID
+	}
+	mock.lockDisbelongPluralOrganizationsOnMember.RLock()
+	calls = mock.calls.DisbelongPluralOrganizationsOnMember
+	mock.lockDisbelongPluralOrganizationsOnMember.RUnlock()
+	return calls
+}
+
+// DisbelongPluralOrganizationsOnMemberWithSd calls DisbelongPluralOrganizationsOnMemberWithSdFunc.
+func (mock *StoreMock) DisbelongPluralOrganizationsOnMemberWithSd(ctx context.Context, sd Sd, memberID uuid.UUID, organizationIDs []uuid.UUID) (int64, error) {
+	if mock.DisbelongPluralOrganizationsOnMemberWithSdFunc == nil {
+		panic("StoreMock.DisbelongPluralOrganizationsOnMemberWithSdFunc: method is nil but Store.DisbelongPluralOrganizationsOnMemberWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		Sd              Sd
+		MemberID        uuid.UUID
+		OrganizationIDs []uuid.UUID
+	}{
+		Ctx:             ctx,
+		Sd:              sd,
+		MemberID:        memberID,
+		OrganizationIDs: organizationIDs,
+	}
+	mock.lockDisbelongPluralOrganizationsOnMemberWithSd.Lock()
+	mock.calls.DisbelongPluralOrganizationsOnMemberWithSd = append(mock.calls.DisbelongPluralOrganizationsOnMemberWithSd, callInfo)
+	mock.lockDisbelongPluralOrganizationsOnMemberWithSd.Unlock()
+	return mock.DisbelongPluralOrganizationsOnMemberWithSdFunc(ctx, sd, memberID, organizationIDs)
+}
+
+// DisbelongPluralOrganizationsOnMemberWithSdCalls gets all the calls that were made to DisbelongPluralOrganizationsOnMemberWithSd.
+// Check the length with:
+//
+//	len(mockedStore.DisbelongPluralOrganizationsOnMemberWithSdCalls())
+func (mock *StoreMock) DisbelongPluralOrganizationsOnMemberWithSdCalls() []struct {
+	Ctx             context.Context
+	Sd              Sd
+	MemberID        uuid.UUID
+	OrganizationIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx             context.Context
+		Sd              Sd
+		MemberID        uuid.UUID
+		OrganizationIDs []uuid.UUID
+	}
+	mock.lockDisbelongPluralOrganizationsOnMemberWithSd.RLock()
+	calls = mock.calls.DisbelongPluralOrganizationsOnMemberWithSd
+	mock.lockDisbelongPluralOrganizationsOnMemberWithSd.RUnlock()
 	return calls
 }
 

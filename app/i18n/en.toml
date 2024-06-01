@@ -1,5 +1,7 @@
 [PolicyIDs]
 other = "PolicyIDs"
+[PolicyID]
+other = "PolicyID"
 [RoleIDs]
 other = "RoleIDs"
 [RoleID]
@@ -16,10 +18,30 @@ other = "GroupID"
 other = "GroupIDs"
 [LoginID]
 other = "LoginID"
+[CoverImageID]
+other = "CoverImageID"
+[CoverImageIDs]
+other = "CoverImageIDs"
+[MemberID]
+other = "MemberID"
+[MemberIDs]
+other = "MemberIDs"
 
 [ModelNotExists]
 other = "{{.ID}} is not exists on the system"
+[PluralModelNotExists]
+other = "The {{.ValueType}} in the specified {{.ID}} does not exist"
 [ModelExists]
 other = "{{.ID}} is already exists"
+[PluralModelExists]
+other = "The {{.ValueType}} in the specified {{.ID}} already exists"
+[AlreadyAssociated]
+other = "The specified {{.ID}} is already associated"
+[PluralAlreadyAssociated]
+other = "The specified {{.ID}} contains {{.ValueType}} that is already associated"
+[NotAssociated]
+other = "The specified {{.ID}} is not associated"
+[PluralNotAssociated]
+other = "The specified {{.ID}} contains {{.ValueType}} that is not associated"
 [OnlyProfessorModel]
 other = "{{.ID}} is for professors only"

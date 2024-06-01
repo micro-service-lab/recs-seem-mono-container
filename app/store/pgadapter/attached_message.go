@@ -102,7 +102,7 @@ func attachItemOnMessage(
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
-			return entity.AttachedMessage{}, errhandle.NewModelNotFoundError("attachable item")
+			return entity.AttachedMessage{}, errhandle.NewModelDuplicatedError("attached item")
 		}
 		return entity.AttachedMessage{}, fmt.Errorf("failed to attach item on message: %w", err)
 	}
@@ -148,7 +148,7 @@ func attachItemsOnMessages(
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
-			return 0, errhandle.NewModelNotFoundError("attachable item")
+			return 0, errhandle.NewModelDuplicatedError("attached item")
 		}
 		return 0, fmt.Errorf("failed to attach items on messages: %w", err)
 	}

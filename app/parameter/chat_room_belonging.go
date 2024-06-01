@@ -42,6 +42,10 @@ func ParseChatRoomOnMemberOrderMethod(v string) (any, error) {
 		return ChatRoomOnMemberOrderMethodOldChat, nil
 	case string(ChatRoomOnMemberOrderMethodLateChat):
 		return ChatRoomOnMemberOrderMethodLateChat, nil
+	case string(ChatRoomOnMemberOrderMethodOldAction):
+		return ChatRoomOnMemberOrderMethodOldAction, nil
+	case string(ChatRoomOnMemberOrderMethodLateAction):
+		return ChatRoomOnMemberOrderMethodLateAction, nil
 	default:
 		return ChatRoomOnMemberOrderMethodDefault, nil
 	}
@@ -56,6 +60,8 @@ const (
 	ChatRoomOnMemberAddedAtCursorKey = "added_at"
 	// ChatRoomOnMemberLastChatAtCursorKey は最終チャット日時カーソルキー。
 	ChatRoomOnMemberLastChatAtCursorKey = "last_chat_at"
+	// ChatRoomOnMemberLastActionAtCursorKey は最終アクション日時カーソルキー。
+	ChatRoomOnMemberLastActionAtCursorKey = "last_action_at"
 )
 
 // GetCursorKeyName はカーソルキー名を取得する。
@@ -69,6 +75,8 @@ func (m ChatRoomOnMemberOrderMethod) GetCursorKeyName() string {
 		return ChatRoomOnMemberAddedAtCursorKey
 	case ChatRoomOnMemberOrderMethodOldChat, ChatRoomOnMemberOrderMethodLateChat:
 		return ChatRoomOnMemberLastChatAtCursorKey
+	case ChatRoomOnMemberOrderMethodOldAction, ChatRoomOnMemberOrderMethodLateAction:
+		return ChatRoomOnMemberLastActionAtCursorKey
 	default:
 		return ChatRoomOnMemberDefaultCursorKey
 	}
@@ -94,6 +102,10 @@ const (
 	ChatRoomOnMemberOrderMethodOldChat ChatRoomOnMemberOrderMethod = "old_chat"
 	// ChatRoomOnMemberOrderMethodLateChat は最終チャット新しい順。
 	ChatRoomOnMemberOrderMethodLateChat ChatRoomOnMemberOrderMethod = "late_chat"
+	// ChatRoomOnMemberOrderMethodOldAction は最終アクション古い順。
+	ChatRoomOnMemberOrderMethodOldAction ChatRoomOnMemberOrderMethod = "old_act"
+	// ChatRoomOnMemberOrderMethodLateAction は最終アクション新しい順。
+	ChatRoomOnMemberOrderMethodLateAction ChatRoomOnMemberOrderMethod = "late_act"
 )
 
 // WhereMemberOnChatRoomParam チャットルーム上のメンバー検索のパラメータ。

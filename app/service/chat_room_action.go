@@ -56,14 +56,14 @@ func (m *ManageChatRoomAction) GetChatRoomActionsOnChatRoom(
 	case parameter.NumberedPagination:
 		np = store.NumberedPaginationParam{
 			Valid:  true,
-			Offset: entity.Int{Int64: int64(offset)},
-			Limit:  entity.Int{Int64: int64(limit)},
+			Offset: entity.Int{Int64: int64(offset), Valid: true},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
 		}
 	case parameter.CursorPagination:
 		cp = store.CursorPaginationParam{
 			Valid:  true,
 			Cursor: string(cursor),
-			Limit:  entity.Int{Int64: int64(limit)},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
 		}
 	case parameter.NonePagination:
 	}

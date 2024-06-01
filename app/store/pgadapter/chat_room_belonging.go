@@ -49,6 +49,22 @@ func convChatRoomOnMember(r query.GetChatRoomsOnMemberRow) entity.ChatRoomOnMemb
 			},
 		}
 	}
+	var latestAction entity.NullableEntity[entity.ChatRoomActionWithActionType]
+	if r.ChatRoomLatestActionID != uuid.Nil {
+		latestAction = entity.NullableEntity[entity.ChatRoomActionWithActionType]{
+			Valid: true,
+			Entity: entity.ChatRoomActionWithActionType{
+				ChatRoomActionID: r.ChatRoomLatestActionID,
+				ChatRoomID:       r.ChatRoomID,
+				ActedAt:          r.ChatRoomLatestActionActedAt,
+				ChatRoomActionType: entity.ChatRoomActionType{
+					ChatRoomActionTypeID: r.ChatRoomLatestActionTypeID,
+					Name:                 r.ChatRoomLatestActionTypeName,
+					Key:                  r.ChatRoomLatestActionTypeKey,
+				},
+			},
+		}
+	}
 	return entity.ChatRoomOnMember{
 		ChatRoom: entity.PracticalChatRoom{
 			ChatRoomID:       r.ChatRoomID,
@@ -57,6 +73,7 @@ func convChatRoomOnMember(r query.GetChatRoomsOnMemberRow) entity.ChatRoomOnMemb
 			FromOrganization: r.ChatRoomFromOrganization.Bool,
 			CoverImage:       coverImg,
 			LatestMessage:    latestMessage,
+			LatestAction:     latestAction,
 			OwnerID:          entity.UUID(r.ChatRoomOwnerID),
 		},
 		AddedAt: r.AddedAt,
@@ -189,7 +206,7 @@ func belongChatRoom(
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
-			return entity.ChatRoomBelonging{}, errhandle.NewModelNotFoundError("chat room belonging")
+			return entity.ChatRoomBelonging{}, errhandle.NewModelDuplicatedError("chat room belonging")
 		}
 		return entity.ChatRoomBelonging{}, fmt.Errorf("failed to belong chat room: %w", err)
 	}
@@ -237,7 +254,7 @@ func belongChatRooms(
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
-			return 0, errhandle.NewModelNotFoundError("chat room belonging")
+			return 0, errhandle.NewModelDuplicatedError("chat room belonging")
 		}
 		return 0, fmt.Errorf("failed to belong chat rooms: %w", err)
 	}
@@ -366,6 +383,45 @@ func (a *PgAdapter) DisbelongChatRoomOnMembersWithSd(
 	return disbelongChatRoomOnMembers(ctx, qtx, memberIDs)
 }
 
+func disbelongPluralChatRoomsOnMember(
+	ctx context.Context,
+	qtx *query.Queries,
+	memberID uuid.UUID,
+	chatRoomIDs []uuid.UUID,
+) (int64, error) {
+	b, err := qtx.PluralDeleteChatRoomBelongingsOnMember(ctx, query.PluralDeleteChatRoomBelongingsOnMemberParams{
+		MemberID:    memberID,
+		ChatRoomIds: chatRoomIDs,
+	})
+	if err != nil {
+		return 0, fmt.Errorf("failed to disbelong plural chat rooms on member: %w", err)
+	}
+	if b != int64(len(chatRoomIDs)) {
+		return 0, errhandle.NewModelNotFoundError("chat room belonging")
+	}
+	return b, nil
+}
+
+// DisbelongPluralChatRoomsOnMember メンバー上の複数のチャットルームから所属解除する。
+func (a *PgAdapter) DisbelongPluralChatRoomsOnMember(
+	ctx context.Context, memberID uuid.UUID, chatRoomIDs []uuid.UUID,
+) (int64, error) {
+	return disbelongPluralChatRoomsOnMember(ctx, a.query, memberID, chatRoomIDs)
+}
+
+// DisbelongPluralChatRoomsOnMemberWithSd SD付きでメンバー上の複数のチャットルームから所属解除する。
+func (a *PgAdapter) DisbelongPluralChatRoomsOnMemberWithSd(
+	ctx context.Context, sd store.Sd, memberID uuid.UUID, chatRoomIDs []uuid.UUID,
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return 0, store.ErrNotFoundDescriptor
+	}
+	return disbelongPluralChatRoomsOnMember(ctx, qtx, memberID, chatRoomIDs)
+}
+
 func disbelongChatRoomOnChatRoom(
 	ctx context.Context,
 	qtx *query.Queries,
@@ -426,6 +482,45 @@ func (a *PgAdapter) DisbelongChatRoomOnChatRoomsWithSd(
 		return 0, store.ErrNotFoundDescriptor
 	}
 	return disbelongChatRoomOnChatRooms(ctx, qtx, chatRoomIDs)
+}
+
+func disbelongPluralMembersOnChatRoom(
+	ctx context.Context,
+	qtx *query.Queries,
+	chatRoomID uuid.UUID,
+	memberIDs []uuid.UUID,
+) (int64, error) {
+	b, err := qtx.PluralDeleteChatRoomBelongingsOnChatRoom(ctx, query.PluralDeleteChatRoomBelongingsOnChatRoomParams{
+		ChatRoomID: chatRoomID,
+		MemberIds:  memberIDs,
+	})
+	if err != nil {
+		return 0, fmt.Errorf("failed to disbelong plural members on chat room: %w", err)
+	}
+	if b != int64(len(memberIDs)) {
+		return 0, errhandle.NewModelNotFoundError("chat room belonging")
+	}
+	return b, nil
+}
+
+// DisbelongPluralMembersOnChatRoom チャットルーム上の複数のメンバーから所属解除する。
+func (a *PgAdapter) DisbelongPluralMembersOnChatRoom(
+	ctx context.Context, chatRoomID uuid.UUID, memberIDs []uuid.UUID,
+) (int64, error) {
+	return disbelongPluralMembersOnChatRoom(ctx, a.query, chatRoomID, memberIDs)
+}
+
+// DisbelongPluralMembersOnChatRoomWithSd SD付きでチャットルーム上の複数のメンバーから所属解除する。
+func (a *PgAdapter) DisbelongPluralMembersOnChatRoomWithSd(
+	ctx context.Context, sd store.Sd, chatRoomID uuid.UUID, memberIDs []uuid.UUID,
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return 0, store.ErrNotFoundDescriptor
+	}
+	return disbelongPluralMembersOnChatRoom(ctx, qtx, chatRoomID, memberIDs)
 }
 
 func getChatRoomsOnMember(

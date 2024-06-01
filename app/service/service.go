@@ -46,6 +46,8 @@ type Manager struct {
 	ManageChatRoomActionType
 	ManageAuth
 	ManageChatRoomAction
+	ManageChatRoomBelonging
+	ManageMembership
 }
 
 // NewManager creates a new Manager.
@@ -86,7 +88,9 @@ func NewManager(
 		ManageAuth: ManageAuth{
 			DB: db, Hash: h, Auth: auth, SessionManager: ssm, Clocker: clk, Config: cfg,
 		},
-		ManageChatRoomAction: ManageChatRoomAction{DB: db},
+		ManageChatRoomAction:    ManageChatRoomAction{DB: db},
+		ManageChatRoomBelonging: ManageChatRoomBelonging{DB: db, Clocker: clk},
+		ManageMembership:        ManageMembership{DB: db, Clocker: clk},
 	}
 }
 
@@ -118,6 +122,8 @@ type ManagerInterface interface {
 	ChatRoomActionTypeManager
 	AuthManager
 	ChatRoomActionManager
+	ChatRoomBelongingManager
+	MembershipManager
 }
 
 // AuthManager is a interface for auth service.
@@ -898,6 +904,108 @@ type ChatRoomActionManager interface {
 		offset parameter.Offset,
 		withCount parameter.WithCount,
 	) (store.ListResult[entity.ChatRoomActionPractical], error)
+}
+
+// ChatRoomBelongingManager is a interface for chat room belonging service.
+type ChatRoomBelongingManager interface {
+	BelongMembersOnChatRoom(
+		ctx context.Context,
+		chatRoomID,
+		ownerID uuid.UUID,
+		memberIDs []uuid.UUID,
+	) (e int64, err error)
+	RemoveMembersFromChatRoom(
+		ctx context.Context,
+		chatRoomID,
+		ownerID uuid.UUID,
+		memberIDs []uuid.UUID,
+	) (e int64, err error)
+	WithdrawMemberFromChatRoom(
+		ctx context.Context,
+		chatRoomID,
+		memberID uuid.UUID,
+	) (e int64, err error)
+	GetChatRoomsOnMember(
+		ctx context.Context,
+		memberID uuid.UUID,
+		whereSearchName string,
+		order parameter.ChatRoomOnMemberOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (es store.ListResult[entity.ChatRoomOnMember], err error)
+	GetChatRoomsOnMemberCount(
+		ctx context.Context, memberID uuid.UUID,
+		whereSearchName string,
+	) (es int64, err error)
+	GetMembersOnChatRoom(
+		ctx context.Context,
+		chatRoomID uuid.UUID,
+		whereSearchName string,
+		order parameter.MemberOnChatRoomOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (es store.ListResult[entity.MemberOnChatRoom], err error)
+	GetMembersOnChatRoomCount(
+		ctx context.Context, chatRoomID uuid.UUID,
+		whereSearchName string,
+	) (es int64, err error)
+}
+
+// MembershipManager is a interface for membership service.
+type MembershipManager interface {
+	BelongMemberOnOrganization(
+		ctx context.Context,
+		organizationID,
+		ownerID uuid.UUID,
+		memberIDs []uuid.UUID,
+	) (e int64, err error)
+	RemoveMembersFromOrganization(
+		ctx context.Context,
+		organizationID,
+		ownerID uuid.UUID,
+		memberIDs []uuid.UUID,
+	) (e int64, err error)
+	WithdrawMemberFromOrganization(
+		ctx context.Context,
+		organizationID,
+		memberID uuid.UUID,
+	) (e int64, err error)
+	GetOrganizationsOnMember(
+		ctx context.Context,
+		memberID uuid.UUID,
+		whereSearchName string,
+		order parameter.OrganizationOnMemberOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (es store.ListResult[entity.OrganizationOnMember], err error)
+	GetOrganizationsOnMemberCount(
+		ctx context.Context, memberID uuid.UUID,
+		whereSearchName string,
+	) (es int64, err error)
+	GetMembersOnOrganization(
+		ctx context.Context,
+		chatRoomID uuid.UUID,
+		whereSearchName string,
+		order parameter.MemberOnOrganizationOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (es store.ListResult[entity.MemberOnOrganization], err error)
+	GetMembersOnOrganizationCount(
+		ctx context.Context, chatRoomID uuid.UUID,
+		whereSearchName string,
+	) (es int64, err error)
 }
 
 // AttachableItemManager is a interface for attachable item service.

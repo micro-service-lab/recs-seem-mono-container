@@ -1,5 +1,7 @@
 [PolicyIDs]
 other = "ポリシーID"
+[PolicyID]
+other = "ポリシーID"
 [RoleIDs]
 other = "ロールID"
 [RoleID]
@@ -16,11 +18,31 @@ other = "班ID"
 other = "班ID"
 [LoginID]
 other = "ログインID"
+[CoverImageID]
+other = "カバー画像ID"
+[CoverImageIDs]
+other = "カバー画像ID"
+[MemberID]
+other = "メンバーID"
+[MemberIDs]
+other = "メンバーID"
 
 
 [ModelNotExists]
 other = "指定された{{.ID}}が存在しません"
+[PluralModelNotExists]
+other = "指定された{{.ID}}に存在しない{{.ValueType}}が含まれています"
 [ModelExists]
 other = "指定された{{.ID}}は既に存在します"
+[PluralModelExists]
+other = "指定された{{.ID}}に既に存在する{{.ValueType}}が含まれています"
+[AlreadyAssociated]
+other = "指定された{{.ID}}は既に関連付けられています"
+[PluralAlreadyAssociated]
+other = "指定された{{.ID}}に既に関連付けられている{{.ValueType}}が含まれています"
+[NotAssociated]
+other = "指定された{{.ID}}は関連付けられていません"
+[PluralNotAssociated]
+other = "指定された{{.ID}}に関連付けられていない{{.ValueType}}が含まれています"
 [OnlyProfessorModel]
 other = "教授専用の{{.ID}}です"

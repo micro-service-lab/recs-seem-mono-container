@@ -1101,10 +1101,11 @@ func getPluralMessagesWithSenderByChatRoomActionIDs(
 	var te []query.GetPluralMessagesWithSenderByChatRoomActionIDsUseNumberedPaginateRow
 	var err error
 	if !np.Valid {
-		e, err = qtx.GetPluralMessagesWithSenderByChatRoomActionIDs(ctx, query.GetPluralMessagesWithSenderByChatRoomActionIDsParams{
-			ChatRoomActionIds: chatRoomActionIDs,
-			OrderMethod:       orderMethod.GetStringValue(),
-		})
+		e, err = qtx.GetPluralMessagesWithSenderByChatRoomActionIDs(
+			ctx, query.GetPluralMessagesWithSenderByChatRoomActionIDsParams{
+				ChatRoomActionIds: chatRoomActionIDs,
+				OrderMethod:       orderMethod.GetStringValue(),
+			})
 	} else {
 		te, err = qtx.GetPluralMessagesWithSenderByChatRoomActionIDsUseNumberedPaginate(
 			ctx, query.GetPluralMessagesWithSenderByChatRoomActionIDsUseNumberedPaginateParams{

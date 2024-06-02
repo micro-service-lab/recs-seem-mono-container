@@ -461,7 +461,7 @@ func (a *PgAdapter) GetPluralChatRoomAddMemberActionsByChatRoomActionIDs(
 	return getPluralChatRoomAddMemberActionsByChatRoomActionIDs(ctx, a.query, chatRoomActionIDs, order, np)
 }
 
-// GetPluralChatRoomAddMemberActionsByChatRoomIDsWithSd はSD付きでチャットルームメンバー追加アクションを取得します。
+// GetPluralChatRoomAddMemberActionsByChatRoomActionIDsWithSd はSD付きでチャットルームメンバー追加アクションを取得します。
 func (a *PgAdapter) GetPluralChatRoomAddMemberActionsByChatRoomActionIDsWithSd(
 	ctx context.Context, sd store.Sd, chatRoomActionIDs []uuid.UUID,
 	order parameter.ChatRoomAddMemberActionOrderMethod, np store.NumberedPaginationParam,

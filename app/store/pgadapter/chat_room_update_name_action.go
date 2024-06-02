@@ -465,7 +465,7 @@ func (a *PgAdapter) GetPluralChatRoomUpdateNameActionsByChatRoomActionIDs(
 	return getPluralChatRoomUpdateNameActionsByChatRoomActionIDs(ctx, a.query, chatRoomActionIDs, order, np)
 }
 
-// GetPluralChatRoomUpdateNameActionsByChatRoomIDsWithSd はSD付きでチャットルーム名前更新アクションを取得します。
+// GetPluralChatRoomUpdateNameActionsByChatRoomActionIDsWithSd はSD付きでチャットルーム名前更新アクションを取得します。
 func (a *PgAdapter) GetPluralChatRoomUpdateNameActionsByChatRoomActionIDsWithSd(
 	ctx context.Context, sd store.Sd, chatRoomActionIDs []uuid.UUID,
 	order parameter.ChatRoomUpdateNameActionOrderMethod, np store.NumberedPaginationParam,

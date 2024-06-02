@@ -36,6 +36,12 @@ func MemberHandler(
 		Service: svc,
 	}
 
+	createPrivateMessage := handler.CreatePrivateMessage{
+		Service:    svc,
+		Validator:  vd,
+		Translator: t,
+	}
+
 	r := chi.NewRouter()
 	r.Group(func(r chi.Router) {
 		r.Use(AuthMiddleware(clk.Now, auth, svc, ssm))
@@ -45,6 +51,10 @@ func MemberHandler(
 
 		r.Route(uuidPath("/{member_id}/chat_rooms"), func(r chi.Router) {
 			r.Get("/", getChatRooms.ServeHTTP)
+		})
+
+		r.Route(uuidPath("/{member_id}/private_messages"), func(r chi.Router) {
+			r.Post("/", createPrivateMessage.ServeHTTP)
 		})
 	})
 

@@ -57,7 +57,7 @@ INSERT INTO m_chat_rooms (name, is_private, cover_image_id, owner_id, from_organ
 `
 
 type CreateChatRoomParams struct {
-	Name             string      `json:"name"`
+	Name             pgtype.Text `json:"name"`
 	IsPrivate        bool        `json:"is_private"`
 	CoverImageID     pgtype.UUID `json:"cover_image_id"`
 	OwnerID          pgtype.UUID `json:"owner_id"`
@@ -92,7 +92,7 @@ func (q *Queries) CreateChatRoom(ctx context.Context, arg CreateChatRoomParams) 
 }
 
 type CreateChatRoomsParams struct {
-	Name             string      `json:"name"`
+	Name             pgtype.Text `json:"name"`
 	IsPrivate        bool        `json:"is_private"`
 	CoverImageID     pgtype.UUID `json:"cover_image_id"`
 	OwnerID          pgtype.UUID `json:"owner_id"`
@@ -147,7 +147,7 @@ WHERE chat_room_id = $1
 type FindChatRoomByIDWithCoverImageRow struct {
 	MChatRoomsPkey             pgtype.Int8   `json:"m_chat_rooms_pkey"`
 	ChatRoomID                 uuid.UUID     `json:"chat_room_id"`
-	Name                       string        `json:"name"`
+	Name                       pgtype.Text   `json:"name"`
 	IsPrivate                  bool          `json:"is_private"`
 	CoverImageID               pgtype.UUID   `json:"cover_image_id"`
 	OwnerID                    pgtype.UUID   `json:"owner_id"`
@@ -202,7 +202,7 @@ WHERE chat_room_id = $1
 type FindChatRoomByIDWithOwnerRow struct {
 	MChatRoomsPkey      pgtype.Int8 `json:"m_chat_rooms_pkey"`
 	ChatRoomID          uuid.UUID   `json:"chat_room_id"`
-	Name                string      `json:"name"`
+	Name                pgtype.Text `json:"name"`
 	IsPrivate           bool        `json:"is_private"`
 	CoverImageID        pgtype.UUID `json:"cover_image_id"`
 	OwnerID             pgtype.UUID `json:"owner_id"`
@@ -244,10 +244,9 @@ func (q *Queries) FindChatRoomByIDWithOwner(ctx context.Context, chatRoomID uuid
 
 const findChatRoomOnPrivate = `-- name: FindChatRoomOnPrivate :one
 SELECT m_chat_rooms_pkey, chat_room_id, name, is_private, cover_image_id, owner_id, from_organization, created_at, updated_at FROM m_chat_rooms
-WHERE (SELECT COUNT(*) FROM m_chat_room_belongings WHERE chat_room_id = m_chat_rooms.chat_room_id AND
+WHERE (SELECT COUNT(*) FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id AND
 (m_chat_room_belongings.member_id = $1 OR m_chat_room_belongings.member_id = $2)) = 2
 AND is_private = true
-AND m_chat_rooms_belongs.member_id <> $1
 `
 
 type FindChatRoomOnPrivateParams struct {
@@ -278,7 +277,7 @@ m_members.profile_image_id member_profile_image_id, m_members.grade_id member_gr
 FROM m_chat_rooms
 LEFT JOIN m_chat_room_belongings ON m_chat_rooms.chat_room_id = m_chat_room_belongings.chat_room_id
 LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
-WHERE (SELECT COUNT(*) FROM m_chat_room_belongings WHERE chat_room_id = m_chat_rooms.chat_room_id AND
+WHERE (SELECT COUNT(*) FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = m_chat_rooms.chat_room_id AND
 (m_chat_room_belongings.member_id = $1 OR m_chat_room_belongings.member_id = $2)) = 2
 AND is_private = true
 AND m_chat_rooms_belongs.member_id <> $1
@@ -292,7 +291,7 @@ type FindChatRoomOnPrivateWithMemberParams struct {
 type FindChatRoomOnPrivateWithMemberRow struct {
 	MChatRoomsPkey       pgtype.Int8        `json:"m_chat_rooms_pkey"`
 	ChatRoomID           uuid.UUID          `json:"chat_room_id"`
-	Name                 string             `json:"name"`
+	Name                 pgtype.Text        `json:"name"`
 	IsPrivate            bool               `json:"is_private"`
 	CoverImageID         pgtype.UUID        `json:"cover_image_id"`
 	OwnerID              pgtype.UUID        `json:"owner_id"`
@@ -581,7 +580,7 @@ type GetChatRoomsWithCoverImageParams struct {
 type GetChatRoomsWithCoverImageRow struct {
 	MChatRoomsPkey             pgtype.Int8   `json:"m_chat_rooms_pkey"`
 	ChatRoomID                 uuid.UUID     `json:"chat_room_id"`
-	Name                       string        `json:"name"`
+	Name                       pgtype.Text   `json:"name"`
 	IsPrivate                  bool          `json:"is_private"`
 	CoverImageID               pgtype.UUID   `json:"cover_image_id"`
 	OwnerID                    pgtype.UUID   `json:"owner_id"`
@@ -692,7 +691,7 @@ type GetChatRoomsWithCoverImageUseKeysetPaginateParams struct {
 type GetChatRoomsWithCoverImageUseKeysetPaginateRow struct {
 	MChatRoomsPkey             pgtype.Int8   `json:"m_chat_rooms_pkey"`
 	ChatRoomID                 uuid.UUID     `json:"chat_room_id"`
-	Name                       string        `json:"name"`
+	Name                       pgtype.Text   `json:"name"`
 	IsPrivate                  bool          `json:"is_private"`
 	CoverImageID               pgtype.UUID   `json:"cover_image_id"`
 	OwnerID                    pgtype.UUID   `json:"owner_id"`
@@ -797,7 +796,7 @@ type GetChatRoomsWithCoverImageUseNumberedPaginateParams struct {
 type GetChatRoomsWithCoverImageUseNumberedPaginateRow struct {
 	MChatRoomsPkey             pgtype.Int8   `json:"m_chat_rooms_pkey"`
 	ChatRoomID                 uuid.UUID     `json:"chat_room_id"`
-	Name                       string        `json:"name"`
+	Name                       pgtype.Text   `json:"name"`
 	IsPrivate                  bool          `json:"is_private"`
 	CoverImageID               pgtype.UUID   `json:"cover_image_id"`
 	OwnerID                    pgtype.UUID   `json:"owner_id"`
@@ -896,7 +895,7 @@ type GetChatRoomsWithOwnerParams struct {
 type GetChatRoomsWithOwnerRow struct {
 	MChatRoomsPkey      pgtype.Int8 `json:"m_chat_rooms_pkey"`
 	ChatRoomID          uuid.UUID   `json:"chat_room_id"`
-	Name                string      `json:"name"`
+	Name                pgtype.Text `json:"name"`
 	IsPrivate           bool        `json:"is_private"`
 	CoverImageID        pgtype.UUID `json:"cover_image_id"`
 	OwnerID             pgtype.UUID `json:"owner_id"`
@@ -1001,7 +1000,7 @@ type GetChatRoomsWithOwnerUseKeysetPaginateParams struct {
 type GetChatRoomsWithOwnerUseKeysetPaginateRow struct {
 	MChatRoomsPkey      pgtype.Int8 `json:"m_chat_rooms_pkey"`
 	ChatRoomID          uuid.UUID   `json:"chat_room_id"`
-	Name                string      `json:"name"`
+	Name                pgtype.Text `json:"name"`
 	IsPrivate           bool        `json:"is_private"`
 	CoverImageID        pgtype.UUID `json:"cover_image_id"`
 	OwnerID             pgtype.UUID `json:"owner_id"`
@@ -1100,7 +1099,7 @@ type GetChatRoomsWithOwnerUseNumberedPaginateParams struct {
 type GetChatRoomsWithOwnerUseNumberedPaginateRow struct {
 	MChatRoomsPkey      pgtype.Int8 `json:"m_chat_rooms_pkey"`
 	ChatRoomID          uuid.UUID   `json:"chat_room_id"`
-	Name                string      `json:"name"`
+	Name                pgtype.Text `json:"name"`
 	IsPrivate           bool        `json:"is_private"`
 	CoverImageID        pgtype.UUID `json:"cover_image_id"`
 	OwnerID             pgtype.UUID `json:"owner_id"`
@@ -1260,7 +1259,7 @@ ORDER BY
 type GetPluralChatRoomsWithCoverImageRow struct {
 	MChatRoomsPkey             pgtype.Int8   `json:"m_chat_rooms_pkey"`
 	ChatRoomID                 uuid.UUID     `json:"chat_room_id"`
-	Name                       string        `json:"name"`
+	Name                       pgtype.Text   `json:"name"`
 	IsPrivate                  bool          `json:"is_private"`
 	CoverImageID               pgtype.UUID   `json:"cover_image_id"`
 	OwnerID                    pgtype.UUID   `json:"owner_id"`
@@ -1339,7 +1338,7 @@ type GetPluralChatRoomsWithCoverImageUseNumberedPaginateParams struct {
 type GetPluralChatRoomsWithCoverImageUseNumberedPaginateRow struct {
 	MChatRoomsPkey             pgtype.Int8   `json:"m_chat_rooms_pkey"`
 	ChatRoomID                 uuid.UUID     `json:"chat_room_id"`
-	Name                       string        `json:"name"`
+	Name                       pgtype.Text   `json:"name"`
 	IsPrivate                  bool          `json:"is_private"`
 	CoverImageID               pgtype.UUID   `json:"cover_image_id"`
 	OwnerID                    pgtype.UUID   `json:"owner_id"`
@@ -1409,7 +1408,7 @@ ORDER BY
 type GetPluralChatRoomsWithOwnerRow struct {
 	MChatRoomsPkey      pgtype.Int8 `json:"m_chat_rooms_pkey"`
 	ChatRoomID          uuid.UUID   `json:"chat_room_id"`
-	Name                string      `json:"name"`
+	Name                pgtype.Text `json:"name"`
 	IsPrivate           bool        `json:"is_private"`
 	CoverImageID        pgtype.UUID `json:"cover_image_id"`
 	OwnerID             pgtype.UUID `json:"owner_id"`
@@ -1482,7 +1481,7 @@ type GetPluralChatRoomsWithOwnerUseNumberedPaginateParams struct {
 type GetPluralChatRoomsWithOwnerUseNumberedPaginateRow struct {
 	MChatRoomsPkey      pgtype.Int8 `json:"m_chat_rooms_pkey"`
 	ChatRoomID          uuid.UUID   `json:"chat_room_id"`
-	Name                string      `json:"name"`
+	Name                pgtype.Text `json:"name"`
 	IsPrivate           bool        `json:"is_private"`
 	CoverImageID        pgtype.UUID `json:"cover_image_id"`
 	OwnerID             pgtype.UUID `json:"owner_id"`
@@ -1553,7 +1552,7 @@ UPDATE m_chat_rooms SET name = $2, cover_image_id = $3, updated_at = $4 WHERE ch
 
 type UpdateChatRoomParams struct {
 	ChatRoomID   uuid.UUID   `json:"chat_room_id"`
-	Name         string      `json:"name"`
+	Name         pgtype.Text `json:"name"`
 	CoverImageID pgtype.UUID `json:"cover_image_id"`
 	UpdatedAt    time.Time   `json:"updated_at"`
 }

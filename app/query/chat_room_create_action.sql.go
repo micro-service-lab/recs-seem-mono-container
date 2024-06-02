@@ -30,7 +30,7 @@ INSERT INTO t_chat_room_create_actions (chat_room_action_id, created_by, name) V
 type CreateChatRoomCreateActionParams struct {
 	ChatRoomActionID uuid.UUID   `json:"chat_room_action_id"`
 	CreatedBy        pgtype.UUID `json:"created_by"`
-	Name             string      `json:"name"`
+	Name             pgtype.Text `json:"name"`
 }
 
 func (q *Queries) CreateChatRoomCreateAction(ctx context.Context, arg CreateChatRoomCreateActionParams) (ChatRoomCreateAction, error) {
@@ -49,7 +49,7 @@ func (q *Queries) CreateChatRoomCreateAction(ctx context.Context, arg CreateChat
 type CreateChatRoomCreateActionsParams struct {
 	ChatRoomActionID uuid.UUID   `json:"chat_room_action_id"`
 	CreatedBy        pgtype.UUID `json:"created_by"`
-	Name             string      `json:"name"`
+	Name             pgtype.Text `json:"name"`
 }
 
 const deleteChatRoomCreateAction = `-- name: DeleteChatRoomCreateAction :execrows
@@ -82,7 +82,7 @@ type GetChatRoomCreateActionsOnChatRoomRow struct {
 	ChatRoomCreateActionID     uuid.UUID   `json:"chat_room_create_action_id"`
 	ChatRoomActionID           uuid.UUID   `json:"chat_room_action_id"`
 	CreatedBy                  pgtype.UUID `json:"created_by"`
-	Name                       string      `json:"name"`
+	Name                       pgtype.Text `json:"name"`
 	CreateMemberName           pgtype.Text `json:"create_member_name"`
 	CreateMemberFirstName      pgtype.Text `json:"create_member_first_name"`
 	CreateMemberLastName       pgtype.Text `json:"create_member_last_name"`
@@ -159,7 +159,7 @@ type GetChatRoomCreateActionsOnChatRoomUseKeysetPaginateRow struct {
 	ChatRoomCreateActionID     uuid.UUID   `json:"chat_room_create_action_id"`
 	ChatRoomActionID           uuid.UUID   `json:"chat_room_action_id"`
 	CreatedBy                  pgtype.UUID `json:"created_by"`
-	Name                       string      `json:"name"`
+	Name                       pgtype.Text `json:"name"`
 	CreateMemberName           pgtype.Text `json:"create_member_name"`
 	CreateMemberFirstName      pgtype.Text `json:"create_member_first_name"`
 	CreateMemberLastName       pgtype.Text `json:"create_member_last_name"`
@@ -232,7 +232,7 @@ type GetChatRoomCreateActionsOnChatRoomUseNumberedPaginateRow struct {
 	ChatRoomCreateActionID     uuid.UUID   `json:"chat_room_create_action_id"`
 	ChatRoomActionID           uuid.UUID   `json:"chat_room_action_id"`
 	CreatedBy                  pgtype.UUID `json:"created_by"`
-	Name                       string      `json:"name"`
+	Name                       pgtype.Text `json:"name"`
 	CreateMemberName           pgtype.Text `json:"create_member_name"`
 	CreateMemberFirstName      pgtype.Text `json:"create_member_first_name"`
 	CreateMemberLastName       pgtype.Text `json:"create_member_last_name"`
@@ -291,7 +291,7 @@ type GetPluralChatRoomCreateActionsRow struct {
 	ChatRoomCreateActionID     uuid.UUID   `json:"chat_room_create_action_id"`
 	ChatRoomActionID           uuid.UUID   `json:"chat_room_action_id"`
 	CreatedBy                  pgtype.UUID `json:"created_by"`
-	Name                       string      `json:"name"`
+	Name                       pgtype.Text `json:"name"`
 	CreateMemberName           pgtype.Text `json:"create_member_name"`
 	CreateMemberFirstName      pgtype.Text `json:"create_member_first_name"`
 	CreateMemberLastName       pgtype.Text `json:"create_member_last_name"`
@@ -310,6 +310,131 @@ func (q *Queries) GetPluralChatRoomCreateActions(ctx context.Context, chatRoomCr
 	items := []GetPluralChatRoomCreateActionsRow{}
 	for rows.Next() {
 		var i GetPluralChatRoomCreateActionsRow
+		if err := rows.Scan(
+			&i.TChatRoomCreateActionsPkey,
+			&i.ChatRoomCreateActionID,
+			&i.ChatRoomActionID,
+			&i.CreatedBy,
+			&i.Name,
+			&i.CreateMemberName,
+			&i.CreateMemberFirstName,
+			&i.CreateMemberLastName,
+			&i.CreateMemberEmail,
+			&i.CreateMemberProfileImageID,
+			&i.CreateMemberGradeID,
+			&i.CreateMemberGroupID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralChatRoomCreateActionsByChatRoomActionIDs = `-- name: GetPluralChatRoomCreateActionsByChatRoomActionIDs :many
+SELECT t_chat_room_create_actions.t_chat_room_create_actions_pkey, t_chat_room_create_actions.chat_room_create_action_id, t_chat_room_create_actions.chat_room_action_id, t_chat_room_create_actions.created_by, t_chat_room_create_actions.name,
+m_members.name create_member_name, m_members.first_name create_member_first_name, m_members.last_name create_member_last_name, m_members.email create_member_email,
+m_members.profile_image_id create_member_profile_image_id, m_members.grade_id create_member_grade_id, m_members.group_id create_member_group_id
+FROM t_chat_room_create_actions
+LEFT JOIN m_members ON t_chat_room_create_actions.created_by = m_members.member_id
+WHERE chat_room_action_id = ANY($1::uuid[])
+ORDER BY
+	t_chat_room_create_actions_pkey ASC
+`
+
+type GetPluralChatRoomCreateActionsByChatRoomActionIDsRow struct {
+	TChatRoomCreateActionsPkey pgtype.Int8 `json:"t_chat_room_create_actions_pkey"`
+	ChatRoomCreateActionID     uuid.UUID   `json:"chat_room_create_action_id"`
+	ChatRoomActionID           uuid.UUID   `json:"chat_room_action_id"`
+	CreatedBy                  pgtype.UUID `json:"created_by"`
+	Name                       pgtype.Text `json:"name"`
+	CreateMemberName           pgtype.Text `json:"create_member_name"`
+	CreateMemberFirstName      pgtype.Text `json:"create_member_first_name"`
+	CreateMemberLastName       pgtype.Text `json:"create_member_last_name"`
+	CreateMemberEmail          pgtype.Text `json:"create_member_email"`
+	CreateMemberProfileImageID pgtype.UUID `json:"create_member_profile_image_id"`
+	CreateMemberGradeID        pgtype.UUID `json:"create_member_grade_id"`
+	CreateMemberGroupID        pgtype.UUID `json:"create_member_group_id"`
+}
+
+func (q *Queries) GetPluralChatRoomCreateActionsByChatRoomActionIDs(ctx context.Context, chatRoomActionIds []uuid.UUID) ([]GetPluralChatRoomCreateActionsByChatRoomActionIDsRow, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomCreateActionsByChatRoomActionIDs, chatRoomActionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralChatRoomCreateActionsByChatRoomActionIDsRow{}
+	for rows.Next() {
+		var i GetPluralChatRoomCreateActionsByChatRoomActionIDsRow
+		if err := rows.Scan(
+			&i.TChatRoomCreateActionsPkey,
+			&i.ChatRoomCreateActionID,
+			&i.ChatRoomActionID,
+			&i.CreatedBy,
+			&i.Name,
+			&i.CreateMemberName,
+			&i.CreateMemberFirstName,
+			&i.CreateMemberLastName,
+			&i.CreateMemberEmail,
+			&i.CreateMemberProfileImageID,
+			&i.CreateMemberGradeID,
+			&i.CreateMemberGroupID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralChatRoomCreateActionsByChatRoomActionIDsUseNumberedPaginate = `-- name: GetPluralChatRoomCreateActionsByChatRoomActionIDsUseNumberedPaginate :many
+SELECT t_chat_room_create_actions.t_chat_room_create_actions_pkey, t_chat_room_create_actions.chat_room_create_action_id, t_chat_room_create_actions.chat_room_action_id, t_chat_room_create_actions.created_by, t_chat_room_create_actions.name,
+m_members.name create_member_name, m_members.first_name create_member_first_name, m_members.last_name create_member_last_name, m_members.email create_member_email,
+m_members.profile_image_id create_member_profile_image_id, m_members.grade_id create_member_grade_id, m_members.group_id create_member_group_id
+FROM t_chat_room_create_actions
+LEFT JOIN m_members ON t_chat_room_create_actions.created_by = m_members.member_id
+WHERE chat_room_action_id = ANY($3::uuid[])
+ORDER BY
+	t_chat_room_create_actions_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralChatRoomCreateActionsByChatRoomActionIDsUseNumberedPaginateParams struct {
+	Limit             int32       `json:"limit"`
+	Offset            int32       `json:"offset"`
+	ChatRoomActionIds []uuid.UUID `json:"chat_room_action_ids"`
+}
+
+type GetPluralChatRoomCreateActionsByChatRoomActionIDsUseNumberedPaginateRow struct {
+	TChatRoomCreateActionsPkey pgtype.Int8 `json:"t_chat_room_create_actions_pkey"`
+	ChatRoomCreateActionID     uuid.UUID   `json:"chat_room_create_action_id"`
+	ChatRoomActionID           uuid.UUID   `json:"chat_room_action_id"`
+	CreatedBy                  pgtype.UUID `json:"created_by"`
+	Name                       pgtype.Text `json:"name"`
+	CreateMemberName           pgtype.Text `json:"create_member_name"`
+	CreateMemberFirstName      pgtype.Text `json:"create_member_first_name"`
+	CreateMemberLastName       pgtype.Text `json:"create_member_last_name"`
+	CreateMemberEmail          pgtype.Text `json:"create_member_email"`
+	CreateMemberProfileImageID pgtype.UUID `json:"create_member_profile_image_id"`
+	CreateMemberGradeID        pgtype.UUID `json:"create_member_grade_id"`
+	CreateMemberGroupID        pgtype.UUID `json:"create_member_group_id"`
+}
+
+func (q *Queries) GetPluralChatRoomCreateActionsByChatRoomActionIDsUseNumberedPaginate(ctx context.Context, arg GetPluralChatRoomCreateActionsByChatRoomActionIDsUseNumberedPaginateParams) ([]GetPluralChatRoomCreateActionsByChatRoomActionIDsUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomCreateActionsByChatRoomActionIDsUseNumberedPaginate, arg.Limit, arg.Offset, arg.ChatRoomActionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralChatRoomCreateActionsByChatRoomActionIDsUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralChatRoomCreateActionsByChatRoomActionIDsUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.TChatRoomCreateActionsPkey,
 			&i.ChatRoomCreateActionID,
@@ -357,7 +482,7 @@ type GetPluralChatRoomCreateActionsUseNumberedPaginateRow struct {
 	ChatRoomCreateActionID     uuid.UUID   `json:"chat_room_create_action_id"`
 	ChatRoomActionID           uuid.UUID   `json:"chat_room_action_id"`
 	CreatedBy                  pgtype.UUID `json:"created_by"`
-	Name                       string      `json:"name"`
+	Name                       pgtype.Text `json:"name"`
 	CreateMemberName           pgtype.Text `json:"create_member_name"`
 	CreateMemberFirstName      pgtype.Text `json:"create_member_first_name"`
 	CreateMemberLastName       pgtype.Text `json:"create_member_last_name"`

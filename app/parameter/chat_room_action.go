@@ -13,6 +13,11 @@ type CreateChatRoomActionParam struct {
 	ActedAt              time.Time
 }
 
+// UpdateChatRoomActionParam チャットルームアクション更新のパラメータ。
+type UpdateChatRoomActionParam struct {
+	ChatRoomActionTypeID uuid.UUID
+}
+
 // WhereChatRoomActionParam チャットルームアクション検索のパラメータ。
 type WhereChatRoomActionParam struct {
 	WhereInChatRoomActionTypeIDs bool

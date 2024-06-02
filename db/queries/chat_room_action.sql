@@ -4,6 +4,9 @@ INSERT INTO t_chat_room_actions (chat_room_id, chat_room_action_type_id, acted_a
 -- name: CreateChatRoomAction :one
 INSERT INTO t_chat_room_actions (chat_room_id, chat_room_action_type_id, acted_at) VALUES ($1, $2, $3) RETURNING *;
 
+-- name: UpdateChatRoomAction :one
+UPDATE t_chat_room_actions SET chat_room_action_type_id = $2 WHERE chat_room_action_id = $1 RETURNING *;
+
 -- name: DeleteChatRoomAction :execrows
 DELETE FROM t_chat_room_actions WHERE chat_room_action_id = $1;
 
@@ -11,6 +14,70 @@ DELETE FROM t_chat_room_actions WHERE chat_room_action_id = $1;
 DELETE FROM t_chat_room_actions WHERE chat_room_action_id = ANY(@chat_room_action_ids::uuid[]);
 
 -- name: GetChatRoomActionsOnChatRoom :many
+SELECT * FROM t_chat_room_actions
+WHERE chat_room_id = $1
+AND
+	CASE WHEN @where_in_chat_room_action_type_ids::boolean = true THEN chat_room_action_type_id = ANY(@in_chat_room_action_type_ids::uuid[]) ELSE TRUE END
+ORDER BY
+	CASE WHEN @order_method::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
+	t_chat_room_actions_pkey ASC;
+
+-- name: GetChatRoomActionsOnChatRoomUseNumberedPaginate :many
+SELECT * FROM t_chat_room_actions
+WHERE chat_room_id = $1
+AND
+	CASE WHEN @where_in_chat_room_action_type_ids::boolean = true THEN chat_room_action_type_id = ANY(@in_chat_room_action_type_ids::uuid[]) ELSE TRUE END
+ORDER BY
+	CASE WHEN @order_method::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
+	t_chat_room_actions_pkey ASC
+LIMIT $2 OFFSET $3;
+
+-- name: GetChatRoomActionsOnChatRoomUseKeysetPaginate :many
+SELECT * FROM t_chat_room_actions
+WHERE chat_room_id = $1
+AND
+	CASE WHEN @where_in_chat_room_action_type_ids::boolean = true THEN chat_room_action_type_id = ANY(@in_chat_room_action_type_ids::uuid[]) ELSE TRUE END
+AND
+	CASE @cursor_direction::text
+		WHEN 'next' THEN
+			CASE @order_method::text
+				WHEN 'acted_at' THEN acted_at > @acted_at_cursor OR (acted_at = @acted_at_cursor AND t_chat_room_actions_pkey > @cursor::int)
+				WHEN 'r_acted_at' THEN acted_at < @acted_at_cursor OR (acted_at = @acted_at_cursor AND t_chat_room_actions_pkey > @cursor::int)
+				ELSE t_chat_room_actions_pkey > @cursor::int
+			END
+		WHEN 'prev' THEN
+			CASE @order_method::text
+				WHEN 'acted_at' THEN acted_at < @acted_at_cursor OR (acted_at = @acted_at_cursor AND t_chat_room_actions_pkey < @cursor::int)
+				WHEN 'r_acted_at' THEN acted_at > @acted_at_cursor OR (acted_at = @acted_at_cursor AND t_chat_room_actions_pkey < @cursor::int)
+				ELSE t_chat_room_actions_pkey < @cursor::int
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
+	t_chat_room_actions_pkey ASC
+LIMIT $2;
+
+-- name: GetPluralChatRoomActions :many
+SELECT * FROM t_chat_room_actions
+WHERE chat_room_action_id = ANY(@chat_room_action_ids::uuid[])
+ORDER BY
+	CASE WHEN @order_method::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
+	t_chat_room_actions_pkey ASC;
+
+-- name: GetPluralChatRoomActionsUseNumberedPaginate :many
+SELECT * FROM t_chat_room_actions
+WHERE chat_room_action_id = ANY(@chat_room_action_ids::uuid[])
+ORDER BY
+	CASE WHEN @order_method::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
+	t_chat_room_actions_pkey ASC
+LIMIT $1 OFFSET $2;
+
+-- name: GetChatRoomActionsWithDetailOnChatRoom :many
 SELECT t_chat_room_actions.*,
 t_chat_room_create_actions.chat_room_create_action_id, t_chat_room_create_actions.name create_name, cm.member_id create_member_id, cm.name create_member_name, cm.first_name create_member_first_name, cm.last_name create_member_last_name, cm.email create_member_email, cm.profile_image_id create_member_profile_image_id, cm.grade_id create_member_grade_id, cm.group_id create_member_group_id,
 t_chat_room_update_name_actions.chat_room_update_name_action_id, t_chat_room_update_name_actions.name update_name, um.member_id update_member_id, um.name update_member_name, um.first_name update_member_first_name, um.last_name update_member_last_name, um.email update_member_email, um.profile_image_id update_member_profile_image_id, um.grade_id update_member_grade_id, um.group_id update_member_group_id,
@@ -48,7 +115,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
 	t_chat_room_actions_pkey ASC;
 
--- name: GetChatRoomActionsOnChatRoomUseNumberedPaginate :many
+-- name: GetChatRoomActionsWithDetailOnChatRoomUseNumberedPaginate :many
 SELECT t_chat_room_actions.*,
 t_chat_room_create_actions.chat_room_create_action_id, t_chat_room_create_actions.name create_name, cm.member_id create_member_id, cm.name create_member_name, cm.first_name create_member_first_name, cm.last_name create_member_last_name, cm.email create_member_email, cm.profile_image_id create_member_profile_image_id, cm.grade_id create_member_grade_id, cm.group_id create_member_group_id,
 t_chat_room_update_name_actions.chat_room_update_name_action_id, t_chat_room_update_name_actions.name update_name, um.member_id update_member_id, um.name update_member_name, um.first_name update_member_first_name, um.last_name update_member_last_name, um.email update_member_email, um.profile_image_id update_member_profile_image_id, um.grade_id update_member_grade_id, um.group_id update_member_group_id,
@@ -87,7 +154,7 @@ ORDER BY
 	t_chat_room_actions_pkey ASC
 LIMIT $2 OFFSET $3;
 
--- name: GetChatRoomActionsOnChatRoomUseKeysetPaginate :many
+-- name: GetChatRoomActionsWithDetailOnChatRoomUseKeysetPaginate :many
 SELECT t_chat_room_actions.*,
 t_chat_room_create_actions.chat_room_create_action_id, t_chat_room_create_actions.name create_name, cm.member_id create_member_id, cm.name create_member_name, cm.first_name create_member_first_name, cm.last_name create_member_last_name, cm.email create_member_email, cm.profile_image_id create_member_profile_image_id, cm.grade_id create_member_grade_id, cm.group_id create_member_group_id,
 t_chat_room_update_name_actions.chat_room_update_name_action_id, t_chat_room_update_name_actions.name update_name, um.member_id update_member_id, um.name update_member_name, um.first_name update_member_first_name, um.last_name update_member_last_name, um.email update_member_email, um.profile_image_id update_member_profile_image_id, um.grade_id update_member_grade_id, um.group_id update_member_group_id,
@@ -143,7 +210,7 @@ ORDER BY
 	t_chat_room_actions_pkey ASC
 LIMIT $2;
 
--- name: GetPluralChatRoomActions :many
+-- name: GetPluralChatRoomActionsWithDetail :many
 SELECT t_chat_room_actions.*,
 t_chat_room_create_actions.chat_room_create_action_id, t_chat_room_create_actions.name create_name, cm.member_id create_member_id, cm.name create_member_name, cm.first_name create_member_first_name, cm.last_name create_member_last_name, cm.email create_member_email, cm.profile_image_id create_member_profile_image_id, cm.grade_id create_member_grade_id, cm.group_id create_member_group_id,
 t_chat_room_update_name_actions.chat_room_update_name_action_id, t_chat_room_update_name_actions.name update_name, um.member_id update_member_id, um.name update_member_name, um.first_name update_member_first_name, um.last_name update_member_last_name, um.email update_member_email, um.profile_image_id update_member_profile_image_id, um.grade_id update_member_grade_id, um.group_id update_member_group_id,
@@ -179,7 +246,7 @@ ORDER BY
 	CASE WHEN @order_method::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
 	t_chat_room_actions_pkey ASC;
 
--- name: GetPluralChatRoomActionsUseNumberedPaginate :many
+-- name: GetPluralChatRoomActionsWithDetailUseNumberedPaginate :many
 SELECT t_chat_room_actions.*,
 t_chat_room_create_actions.chat_room_create_action_id, t_chat_room_create_actions.name create_name, cm.member_id create_member_id, cm.name create_member_name, cm.first_name create_member_first_name, cm.last_name create_member_last_name, cm.email create_member_email, cm.profile_image_id create_member_profile_image_id, cm.grade_id create_member_grade_id, cm.group_id create_member_group_id,
 t_chat_room_update_name_actions.chat_room_update_name_action_id, t_chat_room_update_name_actions.name update_name, um.member_id update_member_id, um.name update_member_name, um.first_name update_member_first_name, um.last_name update_member_last_name, um.email update_member_email, um.profile_image_id update_member_profile_image_id, um.grade_id update_member_grade_id, um.group_id update_member_group_id,

@@ -6,7 +6,7 @@ import "github.com/google/uuid"
 type ChatRoomCreateAction struct {
 	ChatRoomCreateActionID uuid.UUID `json:"chat_room_create_action_id"`
 	ChatRoomActionID       uuid.UUID `json:"chat_room_action_id"`
-	Name                   string    `json:"name"`
+	Name                   String    `json:"name"`
 	CreatedBy              UUID      `json:"created_by"`
 }
 
@@ -14,7 +14,7 @@ type ChatRoomCreateAction struct {
 type ChatRoomCreateActionWithCreatedBy struct {
 	ChatRoomCreateActionID uuid.UUID                    `json:"chat_room_create_action_id"`
 	ChatRoomActionID       uuid.UUID                    `json:"chat_room_action_id"`
-	Name                   string                       `json:"name"`
+	Name                   String                       `json:"name"`
 	CreatedBy              NullableEntity[SimpleMember] `json:"created_by"`
 }
 

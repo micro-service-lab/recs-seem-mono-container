@@ -78,4 +78,19 @@ type ChatRoomWithdrawAction interface {
 		order parameter.ChatRoomWithdrawActionOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.ChatRoomWithdrawActionWithMember], error)
+	// GetPluralChatRoomWithdrawActionsByChatRoomIDs チャットルームメンバー脱退アクションを取得する。
+	GetPluralChatRoomWithdrawActionsByChatRoomActionIDs(
+		ctx context.Context,
+		chatRoomActionIDs []uuid.UUID,
+		order parameter.ChatRoomWithdrawActionOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.ChatRoomWithdrawActionWithMember], error)
+	// GetPluralChatRoomWithdrawActionsByChatRoomIDsWithSd SD付きでチャットルームメンバー脱退アクションを取得する。
+	GetPluralChatRoomWithdrawActionsByChatRoomActionIDsWithSd(
+		ctx context.Context,
+		sd Sd,
+		chatRoomActionIDs []uuid.UUID,
+		order parameter.ChatRoomWithdrawActionOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.ChatRoomWithdrawActionWithMember], error)
 }

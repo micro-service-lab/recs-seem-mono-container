@@ -54,6 +54,22 @@ func ChatRoomHandler(
 		Service: svc,
 	}
 
+	createMessage := handler.CreateMessage{
+		Service:    svc,
+		Validator:  vd,
+		Translator: t,
+	}
+	attachItemOnMessage := handler.AttachItemsOnMessage{
+		Service:    svc,
+		Validator:  vd,
+		Translator: t,
+	}
+	detachItemOnMessage := handler.DetachItemsOnMessage{
+		Service:    svc,
+		Validator:  vd,
+		Translator: t,
+	}
+
 	getActions := handler.GetChatRoomActionsOnChatRoom{
 		Service: svc,
 	}
@@ -70,6 +86,15 @@ func ChatRoomHandler(
 			r.Post("/withdraw", withdraw.ServeHTTP)
 			r.Delete("/", removeMembers.ServeHTTP)
 			r.Get("/", getMembers.ServeHTTP)
+		})
+
+		r.Route(uuidPath("/{chat_room_id:uuid}/messages"), func(r chi.Router) {
+			r.Post("/", createMessage.ServeHTTP)
+
+			r.Route(uuidPath("/{message_id:uuid}/attachable_items"), func(r chi.Router) {
+				r.Post("/", attachItemOnMessage.ServeHTTP)
+				r.Delete("/", detachItemOnMessage.ServeHTTP)
+			})
 		})
 	})
 

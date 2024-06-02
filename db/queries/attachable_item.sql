@@ -11,7 +11,7 @@ UPDATE t_attachable_items SET url = $2, size = $3, alias = $4, mime_type_id = $5
 DELETE FROM t_attachable_items WHERE attachable_item_id = $1;
 
 -- name: PluralDeleteAttachableItems :execrows
-DELETE FROM t_attachable_items WHERE attachable_item_id = ANY(@attachable_item_ids::uuid[]);
+DELETE FROM t_attachable_items WHERE t_attachable_items.attachable_item_id = ANY(@attachable_item_ids::uuid[]);
 
 -- name: FindAttachableItemByID :one
 SELECT t_attachable_items.*, t_images.image_id, t_images.height image_height,
@@ -102,7 +102,7 @@ t_images.width image_width, t_files.file_id
 FROM t_attachable_items
 LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
-WHERE attachable_item_id = ANY(@attachable_item_ids::uuid[])
+WHERE t_attachable_items.attachable_item_id = ANY(@attachable_item_ids::uuid[])
 ORDER BY
 	t_attachable_items_pkey ASC;
 
@@ -112,7 +112,7 @@ t_images.width image_width, t_files.file_id
 FROM t_attachable_items
 LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
-WHERE attachable_item_id = ANY(@attachable_item_ids::uuid[])
+WHERE t_attachable_items.attachable_item_id = ANY(@attachable_item_ids::uuid[])
 ORDER BY
 	t_attachable_items_pkey ASC
 LIMIT $1 OFFSET $2;
@@ -176,7 +176,7 @@ FROM t_attachable_items
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
-WHERE attachable_item_id = ANY(@attachable_item_ids::uuid[])
+WHERE t_attachable_items.attachable_item_id = ANY(@attachable_item_ids::uuid[])
 ORDER BY
 	t_attachable_items_pkey ASC;
 
@@ -187,7 +187,7 @@ FROM t_attachable_items
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
-WHERE attachable_item_id = ANY(@attachable_item_ids::uuid[])
+WHERE t_attachable_items.attachable_item_id = ANY(@attachable_item_ids::uuid[])
 ORDER BY
 	t_attachable_items_pkey ASC
 LIMIT $1 OFFSET $2;

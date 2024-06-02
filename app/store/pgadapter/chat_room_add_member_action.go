@@ -418,3 +418,59 @@ func (a *PgAdapter) GetPluralChatRoomAddMemberActionsWithSd(
 	}
 	return getPluralChatRoomAddMemberActions(ctx, qtx, chatRoomAddMemberActionIDs, order, np)
 }
+
+// getPluralChatRoomAddMemberActionsByChatRoomActionIDs はチャットルームメンバー追加アクションを取得する内部関数です。
+func getPluralChatRoomAddMemberActionsByChatRoomActionIDs(
+	ctx context.Context, qtx *query.Queries, chatRoomActionIDs []uuid.UUID,
+	_ parameter.ChatRoomAddMemberActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error) {
+	var e []query.GetPluralChatRoomAddMemberActionsByChatRoomActionIDsRow
+	var err error
+	if !np.Valid {
+		e, err = qtx.GetPluralChatRoomAddMemberActionsByChatRoomActionIDs(ctx, chatRoomActionIDs)
+	} else {
+		var ne []query.GetPluralChatRoomAddMemberActionsByChatRoomActionIDsUseNumberedPaginateRow
+		ne, err = qtx.GetPluralChatRoomAddMemberActionsByChatRoomActionIDsUseNumberedPaginate(
+			ctx, query.GetPluralChatRoomAddMemberActionsByChatRoomActionIDsUseNumberedPaginateParams{
+				Limit:             int32(np.Limit.Int64),
+				Offset:            int32(np.Offset.Int64),
+				ChatRoomActionIds: chatRoomActionIDs,
+			})
+		e = make([]query.GetPluralChatRoomAddMemberActionsByChatRoomActionIDsRow, len(ne))
+		for i, v := range ne {
+			e[i] = query.GetPluralChatRoomAddMemberActionsByChatRoomActionIDsRow(v)
+		}
+	}
+	if err != nil {
+		return store.ListResult[entity.ChatRoomAddMemberActionWithAddedBy]{},
+			fmt.Errorf("failed to get chat room add member actions: %w", err)
+	}
+	entities := make([]entity.ChatRoomAddMemberActionWithAddedBy, len(e))
+	for i, v := range e {
+		entities[i] = convChatRoomAddMemberActionOnChatRoom(
+			query.GetChatRoomAddMemberActionsOnChatRoomRow(v)).ChatRoomAddMemberActionWithAddedBy
+	}
+	return store.ListResult[entity.ChatRoomAddMemberActionWithAddedBy]{Data: entities}, nil
+}
+
+// GetPluralChatRoomAddMemberActionsByChatRoomActionIDs はチャットルームメンバー追加アクションを取得します。
+func (a *PgAdapter) GetPluralChatRoomAddMemberActionsByChatRoomActionIDs(
+	ctx context.Context, chatRoomActionIDs []uuid.UUID,
+	order parameter.ChatRoomAddMemberActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error) {
+	return getPluralChatRoomAddMemberActionsByChatRoomActionIDs(ctx, a.query, chatRoomActionIDs, order, np)
+}
+
+// GetPluralChatRoomAddMemberActionsByChatRoomIDsWithSd はSD付きでチャットルームメンバー追加アクションを取得します。
+func (a *PgAdapter) GetPluralChatRoomAddMemberActionsByChatRoomActionIDsWithSd(
+	ctx context.Context, sd store.Sd, chatRoomActionIDs []uuid.UUID,
+	order parameter.ChatRoomAddMemberActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ListResult[entity.ChatRoomAddMemberActionWithAddedBy]{}, store.ErrNotFoundDescriptor
+	}
+	return getPluralChatRoomAddMemberActionsByChatRoomActionIDs(ctx, qtx, chatRoomActionIDs, order, np)
+}

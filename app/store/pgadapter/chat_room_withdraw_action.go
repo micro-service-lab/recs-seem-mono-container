@@ -418,3 +418,59 @@ func (a *PgAdapter) GetPluralChatRoomWithdrawActionsWithSd(
 	}
 	return getPluralChatRoomWithdrawActions(ctx, qtx, chatRoomWithdrawActionIDs, order, np)
 }
+
+// getPluralChatRoomWithdrawActionsByChatRoomActionIDs はチャットルームメンバー脱退アクションを取得する内部関数です。
+func getPluralChatRoomWithdrawActionsByChatRoomActionIDs(
+	ctx context.Context, qtx *query.Queries, chatRoomActionIDs []uuid.UUID,
+	_ parameter.ChatRoomWithdrawActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomWithdrawActionWithMember], error) {
+	var e []query.GetPluralChatRoomWithdrawActionsByChatRoomActionIDsRow
+	var err error
+	if !np.Valid {
+		e, err = qtx.GetPluralChatRoomWithdrawActionsByChatRoomActionIDs(ctx, chatRoomActionIDs)
+	} else {
+		var ne []query.GetPluralChatRoomWithdrawActionsByChatRoomActionIDsUseNumberedPaginateRow
+		ne, err = qtx.GetPluralChatRoomWithdrawActionsByChatRoomActionIDsUseNumberedPaginate(
+			ctx, query.GetPluralChatRoomWithdrawActionsByChatRoomActionIDsUseNumberedPaginateParams{
+				Limit:             int32(np.Limit.Int64),
+				Offset:            int32(np.Offset.Int64),
+				ChatRoomActionIds: chatRoomActionIDs,
+			})
+		e = make([]query.GetPluralChatRoomWithdrawActionsByChatRoomActionIDsRow, len(ne))
+		for i, v := range ne {
+			e[i] = query.GetPluralChatRoomWithdrawActionsByChatRoomActionIDsRow(v)
+		}
+	}
+	if err != nil {
+		return store.ListResult[entity.ChatRoomWithdrawActionWithMember]{},
+			fmt.Errorf("failed to get chat room withdraw actions: %w", err)
+	}
+	entities := make([]entity.ChatRoomWithdrawActionWithMember, len(e))
+	for i, v := range e {
+		entities[i] = convChatRoomWithdrawActionOnChatRoom(
+			query.GetChatRoomWithdrawActionsOnChatRoomRow(v)).ChatRoomWithdrawActionWithMember
+	}
+	return store.ListResult[entity.ChatRoomWithdrawActionWithMember]{Data: entities}, nil
+}
+
+// GetPluralChatRoomWithdrawActionsByChatRoomActionIDs はチャットルームメンバー脱退アクションを取得します。
+func (a *PgAdapter) GetPluralChatRoomWithdrawActionsByChatRoomActionIDs(
+	ctx context.Context, chatRoomActionIDs []uuid.UUID,
+	order parameter.ChatRoomWithdrawActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomWithdrawActionWithMember], error) {
+	return getPluralChatRoomWithdrawActionsByChatRoomActionIDs(ctx, a.query, chatRoomActionIDs, order, np)
+}
+
+// GetPluralChatRoomWithdrawActionsByChatRoomActionIDsWithSd はSD付きでチャットルームメンバー脱退アクションを取得します。
+func (a *PgAdapter) GetPluralChatRoomWithdrawActionsByChatRoomActionIDsWithSd(
+	ctx context.Context, sd store.Sd, chatRoomActionIDs []uuid.UUID,
+	order parameter.ChatRoomWithdrawActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomWithdrawActionWithMember], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ListResult[entity.ChatRoomWithdrawActionWithMember]{}, store.ErrNotFoundDescriptor
+	}
+	return getPluralChatRoomWithdrawActionsByChatRoomActionIDs(ctx, qtx, chatRoomActionIDs, order, np)
+}

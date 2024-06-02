@@ -256,6 +256,48 @@ func (a *PgAdapter) DetachItemsOnMessagesWithSd(
 	return detachItemsOnMessages(ctx, qtx, messageIDs)
 }
 
+func pluralDetachItemsOnMessage(
+	ctx context.Context,
+	qtx *query.Queries,
+	messageID uuid.UUID,
+	attachedItemIDs []uuid.UUID,
+) (int64, error) {
+	c, err := qtx.PluralDeleteAttachedMessagesOnMessage(
+		ctx,
+		query.PluralDeleteAttachedMessagesOnMessageParams{
+			MessageID:         messageID,
+			AttachableItemIds: attachedItemIDs,
+		},
+	)
+	if err != nil {
+		return 0, fmt.Errorf("failed to detach items on message: %w", err)
+	}
+	if c != int64(len(attachedItemIDs)) {
+		return 0, errhandle.NewModelNotFoundError("attached item")
+	}
+	return c, nil
+}
+
+// PluralDetachItemsOnMessage メッセージに関連付けられた複数の添付アイテムを解除する。
+func (a *PgAdapter) PluralDetachItemsOnMessage(
+	ctx context.Context, messageID uuid.UUID, attachedItemIDs []uuid.UUID,
+) (int64, error) {
+	return pluralDetachItemsOnMessage(ctx, a.query, messageID, attachedItemIDs)
+}
+
+// PluralDetachItemsOnMessageWithSd SD付きでメッセージに関連付けられた複数の添付アイテムを解除する。
+func (a *PgAdapter) PluralDetachItemsOnMessageWithSd(
+	ctx context.Context, sd store.Sd, messageID uuid.UUID, attachedItemIDs []uuid.UUID,
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return 0, store.ErrNotFoundDescriptor
+	}
+	return pluralDetachItemsOnMessage(ctx, qtx, messageID, attachedItemIDs)
+}
+
 func getAttachedItemsOnChatRoom(
 	ctx context.Context, qtx *query.Queries, chatRoomID uuid.UUID,
 	where parameter.WhereAttachedItemOnChatRoomParam,

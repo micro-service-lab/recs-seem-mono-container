@@ -300,21 +300,22 @@ func (m *ManageProfessor) DeleteProfessor(ctx context.Context, id uuid.UUID) (c 
 		imageIDs = append(imageIDs, st.Member.ProfileImage.Entity.ImageID)
 	}
 	if len(imageIDs) > 0 {
-		_, err = pluralDeleteImages(
-			ctx,
-			sd,
-			m.DB,
-			m.Storage,
-			imageIDs,
-			entity.UUID{
-				Valid: true,
-				Bytes: st.Member.MemberID,
-			},
-			true,
-		)
-		if err != nil {
-			return 0, fmt.Errorf("failed to delete images: %w", err)
-		}
+		defer func(imageIDs []uuid.UUID, ownerID uuid.UUID) {
+			if err == nil {
+				_, err = pluralDeleteImages(
+					ctx,
+					sd,
+					m.DB,
+					m.Storage,
+					imageIDs,
+					entity.UUID{
+						Valid: true,
+						Bytes: ownerID,
+					},
+					true,
+				)
+			}
+		}(imageIDs, st.Member.MemberID)
 	}
 	if len(fileIDs) > 0 {
 		_, err = pluralDeleteFiles(

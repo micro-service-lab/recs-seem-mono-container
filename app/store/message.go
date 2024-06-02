@@ -40,6 +40,11 @@ type Message interface {
 	FindMessageByID(ctx context.Context, messageID uuid.UUID) (entity.Message, error)
 	// FindMessageByIDWithSd SD付きでメッセージを取得する。
 	FindMessageByIDWithSd(ctx context.Context, sd Sd, messageID uuid.UUID) (entity.Message, error)
+	// FindMessageWithChatRoomAction メッセージを取得する。
+	FindMessageWithChatRoomAction(ctx context.Context, messageID uuid.UUID) (entity.MessageWithChatRoomAction, error)
+	// FindMessageWithChatRoomActionWithSd SD付きでメッセージを取得する。
+	FindMessageWithChatRoomActionWithSd(
+		ctx context.Context, sd Sd, messageID uuid.UUID) (entity.MessageWithChatRoomAction, error)
 	// FindMessageWithChatRoom メッセージを取得する。
 	FindMessageWithChatRoom(ctx context.Context, messageID uuid.UUID) (entity.MessageWithChatRoom, error)
 	// FindMessageWithChatRoomWithSd SD付きでメッセージを取得する。
@@ -149,6 +154,21 @@ type Message interface {
 		ctx context.Context,
 		sd Sd,
 		messageIDs []uuid.UUID,
+		order parameter.MessageOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.MessageWithSender], error)
+	// GetPluralMessagesWithSenderByChatRoomActionIDs チャットルームアクションに紐づくメッセージを取得する。
+	GetPluralMessagesWithSenderByChatRoomActionIDs(
+		ctx context.Context,
+		chatRoomActionIDs []uuid.UUID,
+		order parameter.MessageOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.MessageWithSender], error)
+	// GetPluralMessagesWithSenderByChatRoomActionIDsWithSd SD付きでチャットルームアクションに紐づくメッセージを取得する。
+	GetPluralMessagesWithSenderByChatRoomActionIDsWithSd(
+		ctx context.Context,
+		sd Sd,
+		chatRoomActionIDs []uuid.UUID,
 		order parameter.MessageOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.MessageWithSender], error)

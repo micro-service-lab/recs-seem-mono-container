@@ -1197,3 +1197,20 @@ func (q *Queries) GetPluralAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate
 	}
 	return items, nil
 }
+
+const pluralDeleteAttachedMessagesOnMessage = `-- name: PluralDeleteAttachedMessagesOnMessage :execrows
+DELETE FROM t_attached_messages WHERE message_id = $1 AND attachable_item_id = ANY($2::uuid[])
+`
+
+type PluralDeleteAttachedMessagesOnMessageParams struct {
+	MessageID         uuid.UUID   `json:"message_id"`
+	AttachableItemIds []uuid.UUID `json:"attachable_item_ids"`
+}
+
+func (q *Queries) PluralDeleteAttachedMessagesOnMessage(ctx context.Context, arg PluralDeleteAttachedMessagesOnMessageParams) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteAttachedMessagesOnMessage, arg.MessageID, arg.AttachableItemIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}

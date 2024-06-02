@@ -378,4 +378,39 @@ var (
 		Message:    "not image file error",
 		StatusCode: http.StatusBadRequest,
 	}
+
+	// NotMessageOwner メッセージの所有者でない
+	NotMessageOwner = APIResponseType{
+		Code:       "249",
+		Message:    "not message owner error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// NotMatchChatRoomMessage チャットルームとメッセージが一致しない
+	NotMatchChatRoomMessage = APIResponseType{
+		Code:       "250",
+		Message:    "not match chat room message error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotReadOwnMessage 自分のメッセージを読めない
+	CannotReadOwnMessage = APIResponseType{
+		Code:       "251",
+		Message:    "cannot read own message error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// NotCreateMessageToSelf 自分自身にメッセージを作成できない
+	NotCreateMessageToSelf = APIResponseType{
+		Code:       "252",
+		Message:    "not create message to self error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotAttachSystemFile システムファイルを添付できない
+	CannotAttachSystemFile = APIResponseType{
+		Code:       "253",
+		Message:    "cannot attach system file error",
+		StatusCode: http.StatusForbidden,
+	}
 )

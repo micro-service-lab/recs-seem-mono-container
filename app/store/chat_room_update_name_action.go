@@ -78,4 +78,19 @@ type ChatRoomUpdateNameAction interface {
 		order parameter.ChatRoomUpdateNameActionOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error)
+	// GetPluralChatRoomUpdateNameActionsByChatRoomIDs チャットルーム名前更新アクションを取得する。
+	GetPluralChatRoomUpdateNameActionsByChatRoomActionIDs(
+		ctx context.Context,
+		chatRoomActionIDs []uuid.UUID,
+		order parameter.ChatRoomUpdateNameActionOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error)
+	// GetPluralChatRoomUpdateNameActionsByChatRoomIDsWithSd SD付きでチャットルーム名前更新アクションを取得する。
+	GetPluralChatRoomUpdateNameActionsByChatRoomActionIDsWithSd(
+		ctx context.Context,
+		sd Sd,
+		chatRoomActionIDs []uuid.UUID,
+		order parameter.ChatRoomUpdateNameActionOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error)
 }

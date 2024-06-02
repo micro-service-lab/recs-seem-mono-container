@@ -4,6 +4,7 @@ package service
 import (
 	"context"
 	"io"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -48,6 +49,9 @@ type Manager struct {
 	ManageChatRoomAction
 	ManageChatRoomBelonging
 	ManageMembership
+	ManageMessage
+	ManageAttachedMessage
+	ManageReadReceipt
 }
 
 // NewManager creates a new Manager.
@@ -91,6 +95,9 @@ func NewManager(
 		ManageChatRoomAction:    ManageChatRoomAction{DB: db},
 		ManageChatRoomBelonging: ManageChatRoomBelonging{DB: db, Clocker: clk},
 		ManageMembership:        ManageMembership{DB: db, Clocker: clk},
+		ManageMessage:           ManageMessage{DB: db, Clocker: clk, Storage: stg},
+		ManageAttachedMessage:   ManageAttachedMessage{DB: db, Clocker: clk, Storage: stg},
+		ManageReadReceipt:       ManageReadReceipt{DB: db, Clocker: clk},
 	}
 }
 
@@ -124,6 +131,9 @@ type ManagerInterface interface {
 	ChatRoomActionManager
 	ChatRoomBelongingManager
 	MembershipManager
+	MessageManager
+	AttachedMessageManager
+	ReadReceiptManager
 }
 
 // AuthManager is a interface for auth service.
@@ -935,7 +945,7 @@ type ChatRoomBelongingManager interface {
 		cursor parameter.Cursor,
 		offset parameter.Offset,
 		withCount parameter.WithCount,
-	) (es store.ListResult[entity.ChatRoomOnMember], err error)
+	) (es store.ListResult[entity.PracticalChatRoomOnMember], err error)
 	GetChatRoomsOnMemberCount(
 		ctx context.Context, memberID uuid.UUID,
 		whereSearchName string,
@@ -1012,6 +1022,99 @@ type MembershipManager interface {
 type AttachableItemManager interface {
 	FindAttachableItemByID(ctx context.Context, id uuid.UUID) (entity.AttachableItemWithContent, error)
 	FindAttachableItemByURL(ctx context.Context, url string) (entity.AttachableItemWithContent, error)
+}
+
+// MessageManager is a interface for message service.
+type MessageManager interface {
+	CreateMessage(
+		ctx context.Context,
+		senderID, chatRoomID uuid.UUID,
+		content string,
+		attachments []uuid.UUID,
+	) (e entity.Message, err error)
+	CreateMessageOnPrivateRoom(
+		ctx context.Context,
+		senderID, receiverID uuid.UUID,
+		content string,
+		attachments []uuid.UUID,
+	) (e entity.Message, err error)
+	DeleteMessage(
+		ctx context.Context,
+		chatRoomID,
+		ownerID, messageID uuid.UUID,
+	) (e int64, err error)
+	ForceDeleteMessages(
+		ctx context.Context,
+		messageIDs []uuid.UUID,
+	) (e int64, err error)
+	DeleteMessagesBefore(
+		ctx context.Context,
+		chatRoomIDs []uuid.UUID,
+		earlierPostedAt time.Time,
+	) (e int64, err error)
+	DeleteMessagesBeforeAll(
+		ctx context.Context,
+		earlierPostedAt time.Time,
+	) (e int64, err error)
+	EditMessage(
+		ctx context.Context,
+		chatRoomID,
+		ownerID, messageID uuid.UUID,
+		content string,
+	) (e entity.Message, err error)
+	GetMessagesOnChatRoom(
+		ctx context.Context,
+		chatRoomID uuid.UUID,
+		whereInSenders []uuid.UUID,
+		whereSearchBody string,
+		whereEarlierPostedAt time.Time,
+		whereLaterPostedAt time.Time,
+		whereEarlierLastEditedAt time.Time,
+		whereLaterLastEditedAt time.Time,
+		order parameter.MessageOrderMethod,
+		pg parameter.Pagination,
+		limit parameter.Limit,
+		cursor parameter.Cursor,
+		offset parameter.Offset,
+		withCount parameter.WithCount,
+	) (e store.ListResult[entity.MessageWithSenderAndReadReceiptCountAndAttachments], err error)
+}
+
+// AttachedMessageManager is a interface for manage attached message service.
+type AttachedMessageManager interface {
+	AttachItemsOnMessage(
+		ctx context.Context,
+		chatRoomID,
+		messageID, ownerID uuid.UUID,
+		attachments []uuid.UUID,
+	) (e int64, err error)
+	DetachItemsOnMessage(
+		ctx context.Context,
+		chatRoomID,
+		messageID, ownerID uuid.UUID,
+		attachments []uuid.UUID,
+	) (e int64, err error)
+}
+
+// ReadReceiptManager is a interface for read receipt service.
+type ReadReceiptManager interface {
+	CountUnreadReceiptsOnMember(
+		ctx context.Context,
+		memberID uuid.UUID,
+	) (int64, error)
+	ReadMessage(
+		ctx context.Context,
+		chatRoomID,
+		memberID, messageID uuid.UUID,
+	) (read bool, err error)
+	ReadMessagesOnMember(
+		ctx context.Context,
+		memberID uuid.UUID,
+	) (e int64, err error)
+	ReadMessagesOnChatRoomAndMember(
+		ctx context.Context,
+		chatRoomID, memberID uuid.UUID,
+	) (e int64, err error)
 }
 
 var _ ManagerInterface = (*Manager)(nil)

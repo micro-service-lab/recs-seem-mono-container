@@ -43,6 +43,12 @@ LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = $1;
 
+-- name: FindMessageByIDWithChatRoomAction :one
+SELECT t_messages.*, t_chat_room_actions.chat_room_id chat_room_action_chat_room_id, t_chat_room_actions.chat_room_action_type_id chat_room_action_action_type_id, t_chat_room_actions.acted_at chat_room_action_acted_at
+FROM t_messages
+LEFT JOIN t_chat_room_actions ON t_messages.chat_room_action_id = t_chat_room_actions.chat_room_action_id
+WHERE message_id = $1;
+
 -- name: GetMessages :many
 SELECT * FROM t_messages
 WHERE
@@ -461,6 +467,41 @@ LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
 LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
 LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
 WHERE message_id = ANY(@message_ids::uuid[])
+ORDER BY
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
+	t_messages_pkey ASC
+LIMIT $1 OFFSET $2;
+
+-- name: GetPluralMessagesWithSenderByChatRoomActionIDs :many
+SELECT t_messages.*, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
+m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
+t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
+t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM t_messages
+LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE chat_room_action_id = ANY(@chat_room_action_ids::uuid[])
+ORDER BY
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
+	t_messages_pkey ASC;
+
+-- name: GetPluralMessagesWithSenderByChatRoomActionIDsUseNumberedPaginate :many
+SELECT t_messages.*, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
+m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
+t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
+t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM t_messages
+LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE chat_room_action_id = ANY(@chat_room_action_ids::uuid[])
 ORDER BY
 	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
 	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,

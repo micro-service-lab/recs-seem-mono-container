@@ -36,7 +36,7 @@ type CreateProfessorRequest struct {
 	Name                 string    `json:"name" validate:"required,max=255" ja:"名前" en:"Name"`
 	FirstName            string    `json:"first_name" validate:"max=255" ja:"名" en:"FirstName"`
 	LastName             string    `json:"last_name" validate:"max=255" ja:"姓" en:"LastName"`
-	RoleID               uuid.UUID `json:"professor_id" validate:"" ja:"ロールID" en:"RoleID"`
+	RoleID               uuid.UUID `json:"role_id" validate:"" ja:"ロールID" en:"RoleID"`
 }
 
 func (h *CreateProfessor) ServeHTTP(w http.ResponseWriter, r *http.Request) {

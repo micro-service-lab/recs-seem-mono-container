@@ -10,7 +10,7 @@ import (
 type CreateChatRoomCreateActionParam struct {
 	ChatRoomActionID uuid.UUID
 	CreatedBy        entity.UUID
-	Name             string
+	Name             entity.String
 }
 
 // WhereChatRoomCreateActionParam チャットルーム作成アクション検索のパラメータ。

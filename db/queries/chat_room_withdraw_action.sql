@@ -77,5 +77,26 @@ ORDER BY
 	t_chat_room_withdraw_actions_pkey ASC
 LIMIT $1 OFFSET $2;
 
+-- name: GetPluralChatRoomWithdrawActionsByChatRoomActionIDs :many
+SELECT t_chat_room_withdraw_actions.*,
+m_members.name withdraw_member_name, m_members.first_name withdraw_member_first_name, m_members.last_name withdraw_member_last_name, m_members.email withdraw_member_email,
+m_members.profile_image_id withdraw_member_profile_image_id, m_members.grade_id withdraw_member_grade_id, m_members.group_id withdraw_member_group_id
+FROM t_chat_room_withdraw_actions
+LEFT JOIN m_members ON t_chat_room_withdraw_actions.member_id = m_members.member_id
+WHERE chat_room_action_id = ANY(@chat_room_action_ids::uuid[])
+ORDER BY
+	t_chat_room_withdraw_actions_pkey ASC;
+
+-- name: GetPluralChatRoomWithdrawActionsByChatRoomActionIDsUseNumberedPaginate :many
+SELECT t_chat_room_withdraw_actions.*,
+m_members.name withdraw_member_name, m_members.first_name withdraw_member_first_name, m_members.last_name withdraw_member_last_name, m_members.email withdraw_member_email,
+m_members.profile_image_id withdraw_member_profile_image_id, m_members.grade_id withdraw_member_grade_id, m_members.group_id withdraw_member_group_id
+FROM t_chat_room_withdraw_actions
+LEFT JOIN m_members ON t_chat_room_withdraw_actions.member_id = m_members.member_id
+WHERE chat_room_action_id = ANY(@chat_room_action_ids::uuid[])
+ORDER BY
+	t_chat_room_withdraw_actions_pkey ASC
+LIMIT $1 OFFSET $2;
+
 -- name: CountChatRoomWithdrawActions :one
 SELECT COUNT(*) FROM t_chat_room_withdraw_actions;

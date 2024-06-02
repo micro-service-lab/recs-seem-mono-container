@@ -78,4 +78,19 @@ type ChatRoomAddMemberAction interface {
 		order parameter.ChatRoomAddMemberActionOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error)
+	// GetPluralChatRoomAddMemberActionsByChatRoomIDs チャットルームメンバー追加アクションを取得する。
+	GetPluralChatRoomAddMemberActionsByChatRoomActionIDs(
+		ctx context.Context,
+		chatRoomActionIDs []uuid.UUID,
+		order parameter.ChatRoomAddMemberActionOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error)
+	// GetPluralChatRoomAddMemberActionsByChatRoomIDsWithSd SD付きでチャットルームメンバー追加アクションを取得する。
+	GetPluralChatRoomAddMemberActionsByChatRoomActionIDsWithSd(
+		ctx context.Context,
+		sd Sd,
+		chatRoomActionIDs []uuid.UUID,
+		order parameter.ChatRoomAddMemberActionOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.ChatRoomAddMemberActionWithAddedBy], error)
 }

@@ -797,7 +797,7 @@ t_images.width image_width, t_files.file_id
 FROM t_attachable_items
 LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
-WHERE attachable_item_id = ANY($1::uuid[])
+WHERE t_attachable_items.attachable_item_id = ANY($1::uuid[])
 ORDER BY
 	t_attachable_items_pkey ASC
 `
@@ -856,7 +856,7 @@ t_images.width image_width, t_files.file_id
 FROM t_attachable_items
 LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
-WHERE attachable_item_id = ANY($3::uuid[])
+WHERE t_attachable_items.attachable_item_id = ANY($3::uuid[])
 ORDER BY
 	t_attachable_items_pkey ASC
 LIMIT $1 OFFSET $2
@@ -923,7 +923,7 @@ FROM t_attachable_items
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
-WHERE attachable_item_id = ANY($1::uuid[])
+WHERE t_attachable_items.attachable_item_id = ANY($1::uuid[])
 ORDER BY
 	t_attachable_items_pkey ASC
 `
@@ -989,7 +989,7 @@ FROM t_attachable_items
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
 LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
-WHERE attachable_item_id = ANY($3::uuid[])
+WHERE t_attachable_items.attachable_item_id = ANY($3::uuid[])
 ORDER BY
 	t_attachable_items_pkey ASC
 LIMIT $1 OFFSET $2
@@ -1056,7 +1056,7 @@ func (q *Queries) GetPluralAttachableItemsWithMimeTypeUseNumberedPaginate(ctx co
 }
 
 const pluralDeleteAttachableItems = `-- name: PluralDeleteAttachableItems :execrows
-DELETE FROM t_attachable_items WHERE attachable_item_id = ANY($1::uuid[])
+DELETE FROM t_attachable_items WHERE t_attachable_items.attachable_item_id = ANY($1::uuid[])
 `
 
 func (q *Queries) PluralDeleteAttachableItems(ctx context.Context, attachableItemIds []uuid.UUID) (int64, error) {

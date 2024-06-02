@@ -78,4 +78,19 @@ type ChatRoomRemoveMemberAction interface {
 		order parameter.ChatRoomRemoveMemberActionOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error)
+	// GetPluralChatRoomRemoveMemberActionsByChatRoomIDs チャットルームメンバー追放アクションを取得する。
+	GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDs(
+		ctx context.Context,
+		chatRoomActionIDs []uuid.UUID,
+		order parameter.ChatRoomRemoveMemberActionOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error)
+	// GetPluralChatRoomRemoveMemberActionsByChatRoomIDsWithSd SD付きでチャットルームメンバー追放アクションを取得する。
+	GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsWithSd(
+		ctx context.Context,
+		sd Sd,
+		chatRoomActionIDs []uuid.UUID,
+		order parameter.ChatRoomRemoveMemberActionOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error)
 }

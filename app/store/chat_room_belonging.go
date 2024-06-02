@@ -137,4 +137,21 @@ type ChatRoomBelonging interface {
 		np NumberedPaginationParam,
 		order parameter.MemberOnChatRoomOrderMethod,
 	) (ListResult[entity.MemberOnChatRoom], error)
+	// GetPluralPrivateChatRoomCompanions プライベートチャットルームの相手を取得する。
+	GetPluralPrivateChatRoomCompanions(
+		ctx context.Context,
+		chatRoomIDs []uuid.UUID,
+		memberID uuid.UUID,
+		np NumberedPaginationParam,
+		order parameter.MemberOnChatRoomOrderMethod,
+	) (ListResult[entity.PrivateChatRoomCompanions], error)
+	// GetPluralPrivateChatRoomCompanionsWithSd SD付きでプライベートチャットルームの相手を取得する。
+	GetPluralPrivateChatRoomCompanionsWithSd(
+		ctx context.Context,
+		sd Sd,
+		chatRoomIDs []uuid.UUID,
+		memberID uuid.UUID,
+		np NumberedPaginationParam,
+		order parameter.MemberOnChatRoomOrderMethod,
+	) (ListResult[entity.PrivateChatRoomCompanions], error)
 }

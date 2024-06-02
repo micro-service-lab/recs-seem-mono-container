@@ -77,5 +77,26 @@ ORDER BY
 	t_chat_room_update_name_actions_pkey ASC
 LIMIT $1 OFFSET $2;
 
+-- name: GetPluralChatRoomUpdateNameActionsByChatRoomActionIDs :many
+SELECT t_chat_room_update_name_actions.*,
+m_members.name update_member_name, m_members.first_name update_member_first_name, m_members.last_name update_member_last_name, m_members.email update_member_email,
+m_members.profile_image_id update_member_profile_image_id, m_members.grade_id update_member_grade_id, m_members.group_id update_member_group_id
+FROM t_chat_room_update_name_actions
+LEFT JOIN m_members ON t_chat_room_update_name_actions.updated_by = m_members.member_id
+WHERE chat_room_action_id = ANY(@chat_room_action_ids::uuid[])
+ORDER BY
+	t_chat_room_update_name_actions_pkey ASC;
+
+-- name: GetPluralChatRoomUpdateNameActionsByChatRoomActionIDsUseNumberedPaginate :many
+SELECT t_chat_room_update_name_actions.*,
+m_members.name update_member_name, m_members.first_name update_member_first_name, m_members.last_name update_member_last_name, m_members.email update_member_email,
+m_members.profile_image_id update_member_profile_image_id, m_members.grade_id update_member_grade_id, m_members.group_id update_member_group_id
+FROM t_chat_room_update_name_actions
+LEFT JOIN m_members ON t_chat_room_update_name_actions.updated_by = m_members.member_id
+WHERE chat_room_action_id = ANY(@chat_room_action_ids::uuid[])
+ORDER BY
+	t_chat_room_update_name_actions_pkey ASC
+LIMIT $1 OFFSET $2;
+
 -- name: CountChatRoomUpdateNameActions :one
 SELECT COUNT(*) FROM t_chat_room_update_name_actions;

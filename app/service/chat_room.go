@@ -67,7 +67,7 @@ func createChatRoom(
 		ctx,
 		sd,
 		parameter.CreateChatRoomParam{
-			Name:             name,
+			Name:             entity.String{Valid: true, String: name},
 			IsPrivate:        false,
 			CoverImageID:     coverImageID,
 			OwnerID:          entity.UUID{Valid: true, Bytes: owner.MemberID},
@@ -110,7 +110,7 @@ func createChatRoom(
 	_, err = str.CreateChatRoomCreateActionWithSd(ctx, sd, parameter.CreateChatRoomCreateActionParam{
 		ChatRoomActionID: cra.ChatRoomActionID,
 		CreatedBy:        entity.UUID{Valid: true, Bytes: owner.MemberID},
-		Name:             name,
+		Name:             entity.String{Valid: true, String: name},
 	})
 	if err != nil {
 		return entity.ChatRoom{}, fmt.Errorf("failed to create chat room create action: %w", err)
@@ -194,7 +194,7 @@ func updateChatRoom(
 ) (e entity.ChatRoom, err error) {
 	e = chatRoom
 	if !force && e.FromOrganization {
-		name = e.Name
+		name = e.Name.String
 	}
 	if !force && e.IsPrivate {
 		return entity.ChatRoom{}, errhandle.NewCommonError(response.CannotUpdatePrivateChatRoom, nil)
@@ -205,7 +205,7 @@ func updateChatRoom(
 		coverImageID = entity.UUID{Valid: true, Bytes: coverImage.Entity.ImageID}
 	}
 
-	if e.Name != name {
+	if e.Name.String != name {
 		craType, err := str.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyUpdateName))
 		if err != nil {
 			return entity.ChatRoom{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
@@ -228,28 +228,29 @@ func updateChatRoom(
 		}
 	}
 	if e.CoverImageID.Valid && e.CoverImageID.Bytes != coverImageID.Bytes {
-		_, err = pluralDeleteImages(
-			ctx,
-			sd,
-			str,
-			stg,
-			[]uuid.UUID{e.CoverImageID.Bytes},
-			entity.UUID{
-				Valid: true,
-				Bytes: owner.MemberID,
-			},
-			true,
-		)
-		if err != nil {
-			return entity.ChatRoom{}, fmt.Errorf("failed to plural delete images: %w", err)
-		}
+		defer func(ownerID, imageID uuid.UUID) {
+			if err == nil {
+				_, err = pluralDeleteImages(
+					ctx,
+					sd,
+					str,
+					stg,
+					[]uuid.UUID{imageID},
+					entity.UUID{
+						Valid: true,
+						Bytes: ownerID,
+					},
+					true,
+				)
+			}
+		}(owner.MemberID, e.CoverImageID.Bytes)
 	}
 	e, err = str.UpdateChatRoomWithSd(
 		ctx,
 		sd,
 		e.ChatRoomID,
 		parameter.UpdateChatRoomParams{
-			Name:         name,
+			Name:         entity.String{Valid: true, String: name},
 			CoverImageID: coverImageID,
 		},
 	)
@@ -300,19 +301,27 @@ func deleteChatRoom(
 	}
 
 	if len(imageIDs) > 0 {
-		_, err = pluralDeleteImages(ctx, sd, str, stg, imageIDs,
-			entity.UUID{Valid: true, Bytes: owner.MemberID}, true)
-		if err != nil {
-			return 0, fmt.Errorf("failed to plural delete images: %w", err)
-		}
+		defer func(imageIDs []uuid.UUID, ownerID uuid.UUID) {
+			if err == nil {
+				_, err = pluralDeleteImages(ctx, sd, str, stg, imageIDs, entity.UUID{
+					Valid: true,
+					Bytes: ownerID,
+				}, true)
+			}
+		}(imageIDs, owner.MemberID)
 	}
+
 	if len(fileIDs) > 0 {
-		_, err = pluralDeleteFiles(ctx, sd, str, stg, fileIDs,
-			entity.UUID{Valid: true, Bytes: owner.MemberID}, true)
-		if err != nil {
-			return 0, fmt.Errorf("failed to plural delete files: %w", err)
-		}
+		defer func(fileIDs []uuid.UUID, ownerID uuid.UUID) {
+			if err == nil {
+				_, err = pluralDeleteFiles(ctx, sd, str, stg, fileIDs, entity.UUID{
+					Valid: true,
+					Bytes: ownerID,
+				}, true)
+			}
+		}(fileIDs, owner.MemberID)
 	}
+
 	// action, message関連はカスケード削除される
 	// chatRoomBelongingはカスケード削除される
 	if c, err = str.DeleteChatRoomWithSd(ctx, sd, e.ChatRoomID); err != nil {

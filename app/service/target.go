@@ -53,10 +53,16 @@ const (
 	MessageTargetMessages = "MessageTargetMessages"
 	// MessageTargetSender メッセージの関連付けの際の送信者ターゲット
 	MessageTargetSender = "MessageTargetSender"
+	// MessageTargetReceiver メッセージの関連付けの際の受信者ターゲット
+	MessageTargetReceiver = "MessageTargetReceiver"
 	// MessageTargetChatRoom メッセージの関連付けの際のチャットルームターゲット
 	MessageTargetChatRoom = "MessageTargetChatRoom"
 	// MessageTargetAttachments メッセージの関連付けの際の添付ファイルターゲット
 	MessageTargetAttachments = "MessageTargetAttachments"
 	// MessageTargetChatRoomBelongings メッセージの関連付けの際のチャットルーム所属ターゲット
 	MessageTargetChatRoomBelongings = "MessageTargetChatRoomBelongings"
+	// MessageTargetAttacheMessage メッセージの関連付けの際の添付メッセージターゲット
+	MessageTargetAttacheMessage = "MessageTargetAttacheMessage"
+	// ReadReceiptTargetReadReceipts 既読情報の関連付けの際の既読情報ターゲット
+	ReadReceiptTargetReadReceipts = "ReadReceiptTargetReadReceipts"
 )

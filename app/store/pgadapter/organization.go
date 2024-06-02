@@ -25,7 +25,7 @@ func convOrganizationWithChatRoom(e query.FindOrganizationByIDWithChatRoomRow) e
 			Valid: true,
 			Entity: entity.ChatRoomWithCoverImage{
 				ChatRoomID: e.ChatRoomID.Bytes,
-				Name:       e.ChatRoomName.String,
+				Name:       entity.String(e.ChatRoomName),
 				IsPrivate:  e.ChatRoomIsPrivate.Bool,
 				CoverImage: entity.NullableEntity[entity.ImageWithAttachableItem]{
 					Valid: e.ChatRoomCoverImageID.Valid,
@@ -96,7 +96,7 @@ func convOrganizationWithChatRoomAndDetail(
 			Valid: true,
 			Entity: entity.ChatRoomWithCoverImage{
 				ChatRoomID: e.ChatRoomID.Bytes,
-				Name:       e.ChatRoomName.String,
+				Name:       entity.String(e.ChatRoomName),
 				IsPrivate:  e.ChatRoomIsPrivate.Bool,
 				CoverImage: entity.NullableEntity[entity.ImageWithAttachableItem]{
 					Valid: e.ChatRoomCoverImageID.Valid,

@@ -11,6 +11,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 	"io"
 	"sync"
+	"time"
 )
 
 // Ensure, that ManagerInterfaceMock does implement ManagerInterface.
@@ -26,11 +27,17 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			AssociateRolesFunc: func(ctx context.Context, params []parameter.AssociationRoleParam) (int64, error) {
 //				panic("mock out the AssociateRoles method")
 //			},
+//			AttachItemsOnMessageFunc: func(ctx context.Context, chatRoomID uuid.UUID, messageID uuid.UUID, ownerID uuid.UUID, attachments []uuid.UUID) (int64, error) {
+//				panic("mock out the AttachItemsOnMessage method")
+//			},
 //			BelongMembersOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, ownerID uuid.UUID, memberIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the BelongMembersOnChatRoom method")
 //			},
 //			BelongMembersOnOrganizationFunc: func(ctx context.Context, organizationID uuid.UUID, ownerID uuid.UUID, memberIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the BelongMembersOnOrganization method")
+//			},
+//			CountUnreadReceiptsOnMemberFunc: func(ctx context.Context, memberID uuid.UUID) (int64, error) {
+//				panic("mock out the CountUnreadReceiptsOnMember method")
 //			},
 //			CreateAttendStatusFunc: func(ctx context.Context, name string, key string) (entity.AttendStatus, error) {
 //				panic("mock out the CreateAttendStatus method")
@@ -106,6 +113,12 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			CreateImagesSpecifyFilenameFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageSpecifyFilenameServiceParam) ([]entity.ImageWithAttachableItem, error) {
 //				panic("mock out the CreateImagesSpecifyFilename method")
+//			},
+//			CreateMessageFunc: func(ctx context.Context, senderID uuid.UUID, chatRoomID uuid.UUID, content string, attachments []uuid.UUID) (entity.Message, error) {
+//				panic("mock out the CreateMessage method")
+//			},
+//			CreateMessageOnPrivateRoomFunc: func(ctx context.Context, senderID uuid.UUID, receiverID uuid.UUID, content string, attachments []uuid.UUID) (entity.Message, error) {
+//				panic("mock out the CreateMessageOnPrivateRoom method")
 //			},
 //			CreateMimeTypeFunc: func(ctx context.Context, name string, key string, kind string) (entity.MimeType, error) {
 //				panic("mock out the CreateMimeType method")
@@ -191,6 +204,15 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			DeleteMemberFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteMember method")
 //			},
+//			DeleteMessageFunc: func(ctx context.Context, chatRoomID uuid.UUID, ownerID uuid.UUID, messageID uuid.UUID) (int64, error) {
+//				panic("mock out the DeleteMessage method")
+//			},
+//			DeleteMessagesBeforeFunc: func(ctx context.Context, chatRoomIDs []uuid.UUID, earlierPostedAt time.Time) (int64, error) {
+//				panic("mock out the DeleteMessagesBefore method")
+//			},
+//			DeleteMessagesBeforeAllFunc: func(ctx context.Context, earlierPostedAt time.Time) (int64, error) {
+//				panic("mock out the DeleteMessagesBeforeAll method")
+//			},
 //			DeleteMimeTypeFunc: func(ctx context.Context, id uuid.UUID) (int64, error) {
 //				panic("mock out the DeleteMimeType method")
 //			},
@@ -224,6 +246,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			DeleteWholeOrganizationFunc: func(ctx context.Context) (int64, error) {
 //				panic("mock out the DeleteWholeOrganization method")
 //			},
+//			DetachItemsOnMessageFunc: func(ctx context.Context, chatRoomID uuid.UUID, messageID uuid.UUID, ownerID uuid.UUID, attachments []uuid.UUID) (int64, error) {
+//				panic("mock out the DetachItemsOnMessage method")
+//			},
 //			DisassociatePolicyOnRoleFunc: func(ctx context.Context, roleID uuid.UUID) (int64, error) {
 //				panic("mock out the DisassociatePolicyOnRole method")
 //			},
@@ -235,6 +260,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			DisassociateRoleOnPolicyFunc: func(ctx context.Context, policyID uuid.UUID) (int64, error) {
 //				panic("mock out the DisassociateRoleOnPolicy method")
+//			},
+//			EditMessageFunc: func(ctx context.Context, chatRoomID uuid.UUID, ownerID uuid.UUID, messageID uuid.UUID, content string) (entity.Message, error) {
+//				panic("mock out the EditMessage method")
 //			},
 //			FindAttachableItemByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.AttachableItemWithContent, error) {
 //				panic("mock out the FindAttachableItemByID method")
@@ -344,6 +372,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			FindWholeOrganizationFunc: func(ctx context.Context) (entity.Organization, error) {
 //				panic("mock out the FindWholeOrganization method")
 //			},
+//			ForceDeleteMessagesFunc: func(ctx context.Context, messageIDs []uuid.UUID) (int64, error) {
+//				panic("mock out the ForceDeleteMessages method")
+//			},
 //			GetAttendStatusesFunc: func(ctx context.Context, whereSearchName string, order parameter.AttendStatusOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendStatus], error) {
 //				panic("mock out the GetAttendStatuses method")
 //			},
@@ -365,7 +396,7 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			GetChatRoomActionsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, whereInTypes []uuid.UUID, order parameter.ChatRoomActionOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.ChatRoomActionPractical], error) {
 //				panic("mock out the GetChatRoomActionsOnChatRoom method")
 //			},
-//			GetChatRoomsOnMemberFunc: func(ctx context.Context, memberID uuid.UUID, whereSearchName string, order parameter.ChatRoomOnMemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.ChatRoomOnMember], error) {
+//			GetChatRoomsOnMemberFunc: func(ctx context.Context, memberID uuid.UUID, whereSearchName string, order parameter.ChatRoomOnMemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PracticalChatRoomOnMember], error) {
 //				panic("mock out the GetChatRoomsOnMember method")
 //			},
 //			GetChatRoomsOnMemberCountFunc: func(ctx context.Context, memberID uuid.UUID, whereSearchName string) (int64, error) {
@@ -418,6 +449,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			GetMembersOnOrganizationCountFunc: func(ctx context.Context, chatRoomID uuid.UUID, whereSearchName string) (int64, error) {
 //				panic("mock out the GetMembersOnOrganizationCount method")
+//			},
+//			GetMessagesOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, whereInSenders []uuid.UUID, whereSearchBody string, whereEarlierPostedAt time.Time, whereLaterPostedAt time.Time, whereEarlierLastEditedAt time.Time, whereLaterLastEditedAt time.Time, order parameter.MessageOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MessageWithSenderAndReadReceiptCountAndAttachments], error) {
+//				panic("mock out the GetMessagesOnChatRoom method")
 //			},
 //			GetMimeTypesFunc: func(ctx context.Context, whereSearchName string, order parameter.MimeTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MimeType], error) {
 //				panic("mock out the GetMimeTypes method")
@@ -557,6 +591,15 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			PluralDisassociateRoleOnPolicyFunc: func(ctx context.Context, policyID uuid.UUID, roleIDs []uuid.UUID) (int64, error) {
 //				panic("mock out the PluralDisassociateRoleOnPolicy method")
 //			},
+//			ReadMessageFunc: func(ctx context.Context, chatRoomID uuid.UUID, memberID uuid.UUID, messageID uuid.UUID) (bool, error) {
+//				panic("mock out the ReadMessage method")
+//			},
+//			ReadMessagesOnChatRoomAndMemberFunc: func(ctx context.Context, chatRoomID uuid.UUID, memberID uuid.UUID) (int64, error) {
+//				panic("mock out the ReadMessagesOnChatRoomAndMember method")
+//			},
+//			ReadMessagesOnMemberFunc: func(ctx context.Context, memberID uuid.UUID) (int64, error) {
+//				panic("mock out the ReadMessagesOnMember method")
+//			},
 //			RefreshTokenFunc: func(ctx context.Context, refreshToken string) (entity.AuthJwt, error) {
 //				panic("mock out the RefreshToken method")
 //			},
@@ -648,11 +691,17 @@ type ManagerInterfaceMock struct {
 	// AssociateRolesFunc mocks the AssociateRoles method.
 	AssociateRolesFunc func(ctx context.Context, params []parameter.AssociationRoleParam) (int64, error)
 
+	// AttachItemsOnMessageFunc mocks the AttachItemsOnMessage method.
+	AttachItemsOnMessageFunc func(ctx context.Context, chatRoomID uuid.UUID, messageID uuid.UUID, ownerID uuid.UUID, attachments []uuid.UUID) (int64, error)
+
 	// BelongMembersOnChatRoomFunc mocks the BelongMembersOnChatRoom method.
 	BelongMembersOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, ownerID uuid.UUID, memberIDs []uuid.UUID) (int64, error)
 
 	// BelongMembersOnOrganizationFunc mocks the BelongMembersOnOrganization method.
 	BelongMembersOnOrganizationFunc func(ctx context.Context, organizationID uuid.UUID, ownerID uuid.UUID, memberIDs []uuid.UUID) (int64, error)
+
+	// CountUnreadReceiptsOnMemberFunc mocks the CountUnreadReceiptsOnMember method.
+	CountUnreadReceiptsOnMemberFunc func(ctx context.Context, memberID uuid.UUID) (int64, error)
 
 	// CreateAttendStatusFunc mocks the CreateAttendStatus method.
 	CreateAttendStatusFunc func(ctx context.Context, name string, key string) (entity.AttendStatus, error)
@@ -728,6 +777,12 @@ type ManagerInterfaceMock struct {
 
 	// CreateImagesSpecifyFilenameFunc mocks the CreateImagesSpecifyFilename method.
 	CreateImagesSpecifyFilenameFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageSpecifyFilenameServiceParam) ([]entity.ImageWithAttachableItem, error)
+
+	// CreateMessageFunc mocks the CreateMessage method.
+	CreateMessageFunc func(ctx context.Context, senderID uuid.UUID, chatRoomID uuid.UUID, content string, attachments []uuid.UUID) (entity.Message, error)
+
+	// CreateMessageOnPrivateRoomFunc mocks the CreateMessageOnPrivateRoom method.
+	CreateMessageOnPrivateRoomFunc func(ctx context.Context, senderID uuid.UUID, receiverID uuid.UUID, content string, attachments []uuid.UUID) (entity.Message, error)
 
 	// CreateMimeTypeFunc mocks the CreateMimeType method.
 	CreateMimeTypeFunc func(ctx context.Context, name string, key string, kind string) (entity.MimeType, error)
@@ -813,6 +868,15 @@ type ManagerInterfaceMock struct {
 	// DeleteMemberFunc mocks the DeleteMember method.
 	DeleteMemberFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
+	// DeleteMessageFunc mocks the DeleteMessage method.
+	DeleteMessageFunc func(ctx context.Context, chatRoomID uuid.UUID, ownerID uuid.UUID, messageID uuid.UUID) (int64, error)
+
+	// DeleteMessagesBeforeFunc mocks the DeleteMessagesBefore method.
+	DeleteMessagesBeforeFunc func(ctx context.Context, chatRoomIDs []uuid.UUID, earlierPostedAt time.Time) (int64, error)
+
+	// DeleteMessagesBeforeAllFunc mocks the DeleteMessagesBeforeAll method.
+	DeleteMessagesBeforeAllFunc func(ctx context.Context, earlierPostedAt time.Time) (int64, error)
+
 	// DeleteMimeTypeFunc mocks the DeleteMimeType method.
 	DeleteMimeTypeFunc func(ctx context.Context, id uuid.UUID) (int64, error)
 
@@ -846,6 +910,9 @@ type ManagerInterfaceMock struct {
 	// DeleteWholeOrganizationFunc mocks the DeleteWholeOrganization method.
 	DeleteWholeOrganizationFunc func(ctx context.Context) (int64, error)
 
+	// DetachItemsOnMessageFunc mocks the DetachItemsOnMessage method.
+	DetachItemsOnMessageFunc func(ctx context.Context, chatRoomID uuid.UUID, messageID uuid.UUID, ownerID uuid.UUID, attachments []uuid.UUID) (int64, error)
+
 	// DisassociatePolicyOnRoleFunc mocks the DisassociatePolicyOnRole method.
 	DisassociatePolicyOnRoleFunc func(ctx context.Context, roleID uuid.UUID) (int64, error)
 
@@ -857,6 +924,9 @@ type ManagerInterfaceMock struct {
 
 	// DisassociateRoleOnPolicyFunc mocks the DisassociateRoleOnPolicy method.
 	DisassociateRoleOnPolicyFunc func(ctx context.Context, policyID uuid.UUID) (int64, error)
+
+	// EditMessageFunc mocks the EditMessage method.
+	EditMessageFunc func(ctx context.Context, chatRoomID uuid.UUID, ownerID uuid.UUID, messageID uuid.UUID, content string) (entity.Message, error)
 
 	// FindAttachableItemByIDFunc mocks the FindAttachableItemByID method.
 	FindAttachableItemByIDFunc func(ctx context.Context, id uuid.UUID) (entity.AttachableItemWithContent, error)
@@ -966,6 +1036,9 @@ type ManagerInterfaceMock struct {
 	// FindWholeOrganizationFunc mocks the FindWholeOrganization method.
 	FindWholeOrganizationFunc func(ctx context.Context) (entity.Organization, error)
 
+	// ForceDeleteMessagesFunc mocks the ForceDeleteMessages method.
+	ForceDeleteMessagesFunc func(ctx context.Context, messageIDs []uuid.UUID) (int64, error)
+
 	// GetAttendStatusesFunc mocks the GetAttendStatuses method.
 	GetAttendStatusesFunc func(ctx context.Context, whereSearchName string, order parameter.AttendStatusOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendStatus], error)
 
@@ -988,7 +1061,7 @@ type ManagerInterfaceMock struct {
 	GetChatRoomActionsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, whereInTypes []uuid.UUID, order parameter.ChatRoomActionOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.ChatRoomActionPractical], error)
 
 	// GetChatRoomsOnMemberFunc mocks the GetChatRoomsOnMember method.
-	GetChatRoomsOnMemberFunc func(ctx context.Context, memberID uuid.UUID, whereSearchName string, order parameter.ChatRoomOnMemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.ChatRoomOnMember], error)
+	GetChatRoomsOnMemberFunc func(ctx context.Context, memberID uuid.UUID, whereSearchName string, order parameter.ChatRoomOnMemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PracticalChatRoomOnMember], error)
 
 	// GetChatRoomsOnMemberCountFunc mocks the GetChatRoomsOnMemberCount method.
 	GetChatRoomsOnMemberCountFunc func(ctx context.Context, memberID uuid.UUID, whereSearchName string) (int64, error)
@@ -1040,6 +1113,9 @@ type ManagerInterfaceMock struct {
 
 	// GetMembersOnOrganizationCountFunc mocks the GetMembersOnOrganizationCount method.
 	GetMembersOnOrganizationCountFunc func(ctx context.Context, chatRoomID uuid.UUID, whereSearchName string) (int64, error)
+
+	// GetMessagesOnChatRoomFunc mocks the GetMessagesOnChatRoom method.
+	GetMessagesOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, whereInSenders []uuid.UUID, whereSearchBody string, whereEarlierPostedAt time.Time, whereLaterPostedAt time.Time, whereEarlierLastEditedAt time.Time, whereLaterLastEditedAt time.Time, order parameter.MessageOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MessageWithSenderAndReadReceiptCountAndAttachments], error)
 
 	// GetMimeTypesFunc mocks the GetMimeTypes method.
 	GetMimeTypesFunc func(ctx context.Context, whereSearchName string, order parameter.MimeTypeOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MimeType], error)
@@ -1179,6 +1255,15 @@ type ManagerInterfaceMock struct {
 	// PluralDisassociateRoleOnPolicyFunc mocks the PluralDisassociateRoleOnPolicy method.
 	PluralDisassociateRoleOnPolicyFunc func(ctx context.Context, policyID uuid.UUID, roleIDs []uuid.UUID) (int64, error)
 
+	// ReadMessageFunc mocks the ReadMessage method.
+	ReadMessageFunc func(ctx context.Context, chatRoomID uuid.UUID, memberID uuid.UUID, messageID uuid.UUID) (bool, error)
+
+	// ReadMessagesOnChatRoomAndMemberFunc mocks the ReadMessagesOnChatRoomAndMember method.
+	ReadMessagesOnChatRoomAndMemberFunc func(ctx context.Context, chatRoomID uuid.UUID, memberID uuid.UUID) (int64, error)
+
+	// ReadMessagesOnMemberFunc mocks the ReadMessagesOnMember method.
+	ReadMessagesOnMemberFunc func(ctx context.Context, memberID uuid.UUID) (int64, error)
+
 	// RefreshTokenFunc mocks the RefreshToken method.
 	RefreshTokenFunc func(ctx context.Context, refreshToken string) (entity.AuthJwt, error)
 
@@ -1269,6 +1354,19 @@ type ManagerInterfaceMock struct {
 			// Params is the params argument value.
 			Params []parameter.AssociationRoleParam
 		}
+		// AttachItemsOnMessage holds details about calls to the AttachItemsOnMessage method.
+		AttachItemsOnMessage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+			// OwnerID is the ownerID argument value.
+			OwnerID uuid.UUID
+			// Attachments is the attachments argument value.
+			Attachments []uuid.UUID
+		}
 		// BelongMembersOnChatRoom holds details about calls to the BelongMembersOnChatRoom method.
 		BelongMembersOnChatRoom []struct {
 			// Ctx is the ctx argument value.
@@ -1290,6 +1388,13 @@ type ManagerInterfaceMock struct {
 			OwnerID uuid.UUID
 			// MemberIDs is the memberIDs argument value.
 			MemberIDs []uuid.UUID
+		}
+		// CountUnreadReceiptsOnMember holds details about calls to the CountUnreadReceiptsOnMember method.
+		CountUnreadReceiptsOnMember []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
 		}
 		// CreateAttendStatus holds details about calls to the CreateAttendStatus method.
 		CreateAttendStatus []struct {
@@ -1551,6 +1656,32 @@ type ManagerInterfaceMock struct {
 			OwnerID entity.UUID
 			// Params is the params argument value.
 			Params []parameter.CreateImageSpecifyFilenameServiceParam
+		}
+		// CreateMessage holds details about calls to the CreateMessage method.
+		CreateMessage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// SenderID is the senderID argument value.
+			SenderID uuid.UUID
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// Content is the content argument value.
+			Content string
+			// Attachments is the attachments argument value.
+			Attachments []uuid.UUID
+		}
+		// CreateMessageOnPrivateRoom holds details about calls to the CreateMessageOnPrivateRoom method.
+		CreateMessageOnPrivateRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// SenderID is the senderID argument value.
+			SenderID uuid.UUID
+			// ReceiverID is the receiverID argument value.
+			ReceiverID uuid.UUID
+			// Content is the content argument value.
+			Content string
+			// Attachments is the attachments argument value.
+			Attachments []uuid.UUID
 		}
 		// CreateMimeType holds details about calls to the CreateMimeType method.
 		CreateMimeType []struct {
@@ -1828,6 +1959,33 @@ type ManagerInterfaceMock struct {
 			// ID is the id argument value.
 			ID uuid.UUID
 		}
+		// DeleteMessage holds details about calls to the DeleteMessage method.
+		DeleteMessage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// OwnerID is the ownerID argument value.
+			OwnerID uuid.UUID
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+		}
+		// DeleteMessagesBefore holds details about calls to the DeleteMessagesBefore method.
+		DeleteMessagesBefore []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomIDs is the chatRoomIDs argument value.
+			ChatRoomIDs []uuid.UUID
+			// EarlierPostedAt is the earlierPostedAt argument value.
+			EarlierPostedAt time.Time
+		}
+		// DeleteMessagesBeforeAll holds details about calls to the DeleteMessagesBeforeAll method.
+		DeleteMessagesBeforeAll []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// EarlierPostedAt is the earlierPostedAt argument value.
+			EarlierPostedAt time.Time
+		}
 		// DeleteMimeType holds details about calls to the DeleteMimeType method.
 		DeleteMimeType []struct {
 			// Ctx is the ctx argument value.
@@ -1905,6 +2063,19 @@ type ManagerInterfaceMock struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 		}
+		// DetachItemsOnMessage holds details about calls to the DetachItemsOnMessage method.
+		DetachItemsOnMessage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+			// OwnerID is the ownerID argument value.
+			OwnerID uuid.UUID
+			// Attachments is the attachments argument value.
+			Attachments []uuid.UUID
+		}
 		// DisassociatePolicyOnRole holds details about calls to the DisassociatePolicyOnRole method.
 		DisassociatePolicyOnRole []struct {
 			// Ctx is the ctx argument value.
@@ -1932,6 +2103,19 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// PolicyID is the policyID argument value.
 			PolicyID uuid.UUID
+		}
+		// EditMessage holds details about calls to the EditMessage method.
+		EditMessage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// OwnerID is the ownerID argument value.
+			OwnerID uuid.UUID
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+			// Content is the content argument value.
+			Content string
 		}
 		// FindAttachableItemByID holds details about calls to the FindAttachableItemByID method.
 		FindAttachableItemByID []struct {
@@ -2182,6 +2366,13 @@ type ManagerInterfaceMock struct {
 		FindWholeOrganization []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
+		}
+		// ForceDeleteMessages holds details about calls to the ForceDeleteMessages method.
+		ForceDeleteMessages []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MessageIDs is the messageIDs argument value.
+			MessageIDs []uuid.UUID
 		}
 		// GetAttendStatuses holds details about calls to the GetAttendStatuses method.
 		GetAttendStatuses []struct {
@@ -2519,6 +2710,37 @@ type ManagerInterfaceMock struct {
 			ChatRoomID uuid.UUID
 			// WhereSearchName is the whereSearchName argument value.
 			WhereSearchName string
+		}
+		// GetMessagesOnChatRoom holds details about calls to the GetMessagesOnChatRoom method.
+		GetMessagesOnChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// WhereInSenders is the whereInSenders argument value.
+			WhereInSenders []uuid.UUID
+			// WhereSearchBody is the whereSearchBody argument value.
+			WhereSearchBody string
+			// WhereEarlierPostedAt is the whereEarlierPostedAt argument value.
+			WhereEarlierPostedAt time.Time
+			// WhereLaterPostedAt is the whereLaterPostedAt argument value.
+			WhereLaterPostedAt time.Time
+			// WhereEarlierLastEditedAt is the whereEarlierLastEditedAt argument value.
+			WhereEarlierLastEditedAt time.Time
+			// WhereLaterLastEditedAt is the whereLaterLastEditedAt argument value.
+			WhereLaterLastEditedAt time.Time
+			// Order is the order argument value.
+			Order parameter.MessageOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
 		}
 		// GetMimeTypes holds details about calls to the GetMimeTypes method.
 		GetMimeTypes []struct {
@@ -3088,6 +3310,33 @@ type ManagerInterfaceMock struct {
 			// RoleIDs is the roleIDs argument value.
 			RoleIDs []uuid.UUID
 		}
+		// ReadMessage holds details about calls to the ReadMessage method.
+		ReadMessage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
+		}
+		// ReadMessagesOnChatRoomAndMember holds details about calls to the ReadMessagesOnChatRoomAndMember method.
+		ReadMessagesOnChatRoomAndMember []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+		}
+		// ReadMessagesOnMember holds details about calls to the ReadMessagesOnMember method.
+		ReadMessagesOnMember []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+		}
 		// RefreshToken holds details about calls to the RefreshToken method.
 		RefreshToken []struct {
 			// Ctx is the ctx argument value.
@@ -3409,8 +3658,10 @@ type ManagerInterfaceMock struct {
 		}
 	}
 	lockAssociateRoles                        sync.RWMutex
+	lockAttachItemsOnMessage                  sync.RWMutex
 	lockBelongMembersOnChatRoom               sync.RWMutex
 	lockBelongMembersOnOrganization           sync.RWMutex
+	lockCountUnreadReceiptsOnMember           sync.RWMutex
 	lockCreateAttendStatus                    sync.RWMutex
 	lockCreateAttendStatuses                  sync.RWMutex
 	lockCreateAttendanceType                  sync.RWMutex
@@ -3436,6 +3687,8 @@ type ManagerInterfaceMock struct {
 	lockCreateImages                          sync.RWMutex
 	lockCreateImagesFromOuter                 sync.RWMutex
 	lockCreateImagesSpecifyFilename           sync.RWMutex
+	lockCreateMessage                         sync.RWMutex
+	lockCreateMessageOnPrivateRoom            sync.RWMutex
 	lockCreateMimeType                        sync.RWMutex
 	lockCreateMimeTypes                       sync.RWMutex
 	lockCreateOrganization                    sync.RWMutex
@@ -3464,6 +3717,9 @@ type ManagerInterfaceMock struct {
 	lockDeleteGroup                           sync.RWMutex
 	lockDeleteImage                           sync.RWMutex
 	lockDeleteMember                          sync.RWMutex
+	lockDeleteMessage                         sync.RWMutex
+	lockDeleteMessagesBefore                  sync.RWMutex
+	lockDeleteMessagesBeforeAll               sync.RWMutex
 	lockDeleteMimeType                        sync.RWMutex
 	lockDeleteOrganization                    sync.RWMutex
 	lockDeletePermission                      sync.RWMutex
@@ -3475,10 +3731,12 @@ type ManagerInterfaceMock struct {
 	lockDeleteRole                            sync.RWMutex
 	lockDeleteStudent                         sync.RWMutex
 	lockDeleteWholeOrganization               sync.RWMutex
+	lockDetachItemsOnMessage                  sync.RWMutex
 	lockDisassociatePolicyOnRole              sync.RWMutex
 	lockDisassociatePolicyOnRoles             sync.RWMutex
 	lockDisassociateRoleOnPolicies            sync.RWMutex
 	lockDisassociateRoleOnPolicy              sync.RWMutex
+	lockEditMessage                           sync.RWMutex
 	lockFindAttachableItemByID                sync.RWMutex
 	lockFindAttachableItemByURL               sync.RWMutex
 	lockFindAttendStatusByID                  sync.RWMutex
@@ -3515,6 +3773,7 @@ type ManagerInterfaceMock struct {
 	lockFindRecordTypeByKey                   sync.RWMutex
 	lockFindRoleByID                          sync.RWMutex
 	lockFindWholeOrganization                 sync.RWMutex
+	lockForceDeleteMessages                   sync.RWMutex
 	lockGetAttendStatuses                     sync.RWMutex
 	lockGetAttendStatusesCount                sync.RWMutex
 	lockGetAttendanceTypes                    sync.RWMutex
@@ -3540,6 +3799,7 @@ type ManagerInterfaceMock struct {
 	lockGetMembersOnChatRoomCount             sync.RWMutex
 	lockGetMembersOnOrganization              sync.RWMutex
 	lockGetMembersOnOrganizationCount         sync.RWMutex
+	lockGetMessagesOnChatRoom                 sync.RWMutex
 	lockGetMimeTypes                          sync.RWMutex
 	lockGetMimeTypesCount                     sync.RWMutex
 	lockGetOrganizations                      sync.RWMutex
@@ -3586,6 +3846,9 @@ type ManagerInterfaceMock struct {
 	lockPluralDeleteRoles                     sync.RWMutex
 	lockPluralDisassociatePolicyOnRole        sync.RWMutex
 	lockPluralDisassociateRoleOnPolicy        sync.RWMutex
+	lockReadMessage                           sync.RWMutex
+	lockReadMessagesOnChatRoomAndMember       sync.RWMutex
+	lockReadMessagesOnMember                  sync.RWMutex
 	lockRefreshToken                          sync.RWMutex
 	lockRemoveMembersFromChatRoom             sync.RWMutex
 	lockRemoveMembersFromOrganization         sync.RWMutex
@@ -3648,6 +3911,54 @@ func (mock *ManagerInterfaceMock) AssociateRolesCalls() []struct {
 	mock.lockAssociateRoles.RLock()
 	calls = mock.calls.AssociateRoles
 	mock.lockAssociateRoles.RUnlock()
+	return calls
+}
+
+// AttachItemsOnMessage calls AttachItemsOnMessageFunc.
+func (mock *ManagerInterfaceMock) AttachItemsOnMessage(ctx context.Context, chatRoomID uuid.UUID, messageID uuid.UUID, ownerID uuid.UUID, attachments []uuid.UUID) (int64, error) {
+	if mock.AttachItemsOnMessageFunc == nil {
+		panic("ManagerInterfaceMock.AttachItemsOnMessageFunc: method is nil but ManagerInterface.AttachItemsOnMessage was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		ChatRoomID  uuid.UUID
+		MessageID   uuid.UUID
+		OwnerID     uuid.UUID
+		Attachments []uuid.UUID
+	}{
+		Ctx:         ctx,
+		ChatRoomID:  chatRoomID,
+		MessageID:   messageID,
+		OwnerID:     ownerID,
+		Attachments: attachments,
+	}
+	mock.lockAttachItemsOnMessage.Lock()
+	mock.calls.AttachItemsOnMessage = append(mock.calls.AttachItemsOnMessage, callInfo)
+	mock.lockAttachItemsOnMessage.Unlock()
+	return mock.AttachItemsOnMessageFunc(ctx, chatRoomID, messageID, ownerID, attachments)
+}
+
+// AttachItemsOnMessageCalls gets all the calls that were made to AttachItemsOnMessage.
+// Check the length with:
+//
+//	len(mockedManagerInterface.AttachItemsOnMessageCalls())
+func (mock *ManagerInterfaceMock) AttachItemsOnMessageCalls() []struct {
+	Ctx         context.Context
+	ChatRoomID  uuid.UUID
+	MessageID   uuid.UUID
+	OwnerID     uuid.UUID
+	Attachments []uuid.UUID
+} {
+	var calls []struct {
+		Ctx         context.Context
+		ChatRoomID  uuid.UUID
+		MessageID   uuid.UUID
+		OwnerID     uuid.UUID
+		Attachments []uuid.UUID
+	}
+	mock.lockAttachItemsOnMessage.RLock()
+	calls = mock.calls.AttachItemsOnMessage
+	mock.lockAttachItemsOnMessage.RUnlock()
 	return calls
 }
 
@@ -3736,6 +4047,42 @@ func (mock *ManagerInterfaceMock) BelongMembersOnOrganizationCalls() []struct {
 	mock.lockBelongMembersOnOrganization.RLock()
 	calls = mock.calls.BelongMembersOnOrganization
 	mock.lockBelongMembersOnOrganization.RUnlock()
+	return calls
+}
+
+// CountUnreadReceiptsOnMember calls CountUnreadReceiptsOnMemberFunc.
+func (mock *ManagerInterfaceMock) CountUnreadReceiptsOnMember(ctx context.Context, memberID uuid.UUID) (int64, error) {
+	if mock.CountUnreadReceiptsOnMemberFunc == nil {
+		panic("ManagerInterfaceMock.CountUnreadReceiptsOnMemberFunc: method is nil but ManagerInterface.CountUnreadReceiptsOnMember was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+	}{
+		Ctx:      ctx,
+		MemberID: memberID,
+	}
+	mock.lockCountUnreadReceiptsOnMember.Lock()
+	mock.calls.CountUnreadReceiptsOnMember = append(mock.calls.CountUnreadReceiptsOnMember, callInfo)
+	mock.lockCountUnreadReceiptsOnMember.Unlock()
+	return mock.CountUnreadReceiptsOnMemberFunc(ctx, memberID)
+}
+
+// CountUnreadReceiptsOnMemberCalls gets all the calls that were made to CountUnreadReceiptsOnMember.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CountUnreadReceiptsOnMemberCalls())
+func (mock *ManagerInterfaceMock) CountUnreadReceiptsOnMemberCalls() []struct {
+	Ctx      context.Context
+	MemberID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+	}
+	mock.lockCountUnreadReceiptsOnMember.RLock()
+	calls = mock.calls.CountUnreadReceiptsOnMember
+	mock.lockCountUnreadReceiptsOnMember.RUnlock()
 	return calls
 }
 
@@ -4808,6 +5155,102 @@ func (mock *ManagerInterfaceMock) CreateImagesSpecifyFilenameCalls() []struct {
 	mock.lockCreateImagesSpecifyFilename.RLock()
 	calls = mock.calls.CreateImagesSpecifyFilename
 	mock.lockCreateImagesSpecifyFilename.RUnlock()
+	return calls
+}
+
+// CreateMessage calls CreateMessageFunc.
+func (mock *ManagerInterfaceMock) CreateMessage(ctx context.Context, senderID uuid.UUID, chatRoomID uuid.UUID, content string, attachments []uuid.UUID) (entity.Message, error) {
+	if mock.CreateMessageFunc == nil {
+		panic("ManagerInterfaceMock.CreateMessageFunc: method is nil but ManagerInterface.CreateMessage was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		SenderID    uuid.UUID
+		ChatRoomID  uuid.UUID
+		Content     string
+		Attachments []uuid.UUID
+	}{
+		Ctx:         ctx,
+		SenderID:    senderID,
+		ChatRoomID:  chatRoomID,
+		Content:     content,
+		Attachments: attachments,
+	}
+	mock.lockCreateMessage.Lock()
+	mock.calls.CreateMessage = append(mock.calls.CreateMessage, callInfo)
+	mock.lockCreateMessage.Unlock()
+	return mock.CreateMessageFunc(ctx, senderID, chatRoomID, content, attachments)
+}
+
+// CreateMessageCalls gets all the calls that were made to CreateMessage.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateMessageCalls())
+func (mock *ManagerInterfaceMock) CreateMessageCalls() []struct {
+	Ctx         context.Context
+	SenderID    uuid.UUID
+	ChatRoomID  uuid.UUID
+	Content     string
+	Attachments []uuid.UUID
+} {
+	var calls []struct {
+		Ctx         context.Context
+		SenderID    uuid.UUID
+		ChatRoomID  uuid.UUID
+		Content     string
+		Attachments []uuid.UUID
+	}
+	mock.lockCreateMessage.RLock()
+	calls = mock.calls.CreateMessage
+	mock.lockCreateMessage.RUnlock()
+	return calls
+}
+
+// CreateMessageOnPrivateRoom calls CreateMessageOnPrivateRoomFunc.
+func (mock *ManagerInterfaceMock) CreateMessageOnPrivateRoom(ctx context.Context, senderID uuid.UUID, receiverID uuid.UUID, content string, attachments []uuid.UUID) (entity.Message, error) {
+	if mock.CreateMessageOnPrivateRoomFunc == nil {
+		panic("ManagerInterfaceMock.CreateMessageOnPrivateRoomFunc: method is nil but ManagerInterface.CreateMessageOnPrivateRoom was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		SenderID    uuid.UUID
+		ReceiverID  uuid.UUID
+		Content     string
+		Attachments []uuid.UUID
+	}{
+		Ctx:         ctx,
+		SenderID:    senderID,
+		ReceiverID:  receiverID,
+		Content:     content,
+		Attachments: attachments,
+	}
+	mock.lockCreateMessageOnPrivateRoom.Lock()
+	mock.calls.CreateMessageOnPrivateRoom = append(mock.calls.CreateMessageOnPrivateRoom, callInfo)
+	mock.lockCreateMessageOnPrivateRoom.Unlock()
+	return mock.CreateMessageOnPrivateRoomFunc(ctx, senderID, receiverID, content, attachments)
+}
+
+// CreateMessageOnPrivateRoomCalls gets all the calls that were made to CreateMessageOnPrivateRoom.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateMessageOnPrivateRoomCalls())
+func (mock *ManagerInterfaceMock) CreateMessageOnPrivateRoomCalls() []struct {
+	Ctx         context.Context
+	SenderID    uuid.UUID
+	ReceiverID  uuid.UUID
+	Content     string
+	Attachments []uuid.UUID
+} {
+	var calls []struct {
+		Ctx         context.Context
+		SenderID    uuid.UUID
+		ReceiverID  uuid.UUID
+		Content     string
+		Attachments []uuid.UUID
+	}
+	mock.lockCreateMessageOnPrivateRoom.RLock()
+	calls = mock.calls.CreateMessageOnPrivateRoom
+	mock.lockCreateMessageOnPrivateRoom.RUnlock()
 	return calls
 }
 
@@ -5979,6 +6422,126 @@ func (mock *ManagerInterfaceMock) DeleteMemberCalls() []struct {
 	return calls
 }
 
+// DeleteMessage calls DeleteMessageFunc.
+func (mock *ManagerInterfaceMock) DeleteMessage(ctx context.Context, chatRoomID uuid.UUID, ownerID uuid.UUID, messageID uuid.UUID) (int64, error) {
+	if mock.DeleteMessageFunc == nil {
+		panic("ManagerInterfaceMock.DeleteMessageFunc: method is nil but ManagerInterface.DeleteMessage was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		OwnerID    uuid.UUID
+		MessageID  uuid.UUID
+	}{
+		Ctx:        ctx,
+		ChatRoomID: chatRoomID,
+		OwnerID:    ownerID,
+		MessageID:  messageID,
+	}
+	mock.lockDeleteMessage.Lock()
+	mock.calls.DeleteMessage = append(mock.calls.DeleteMessage, callInfo)
+	mock.lockDeleteMessage.Unlock()
+	return mock.DeleteMessageFunc(ctx, chatRoomID, ownerID, messageID)
+}
+
+// DeleteMessageCalls gets all the calls that were made to DeleteMessage.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeleteMessageCalls())
+func (mock *ManagerInterfaceMock) DeleteMessageCalls() []struct {
+	Ctx        context.Context
+	ChatRoomID uuid.UUID
+	OwnerID    uuid.UUID
+	MessageID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		OwnerID    uuid.UUID
+		MessageID  uuid.UUID
+	}
+	mock.lockDeleteMessage.RLock()
+	calls = mock.calls.DeleteMessage
+	mock.lockDeleteMessage.RUnlock()
+	return calls
+}
+
+// DeleteMessagesBefore calls DeleteMessagesBeforeFunc.
+func (mock *ManagerInterfaceMock) DeleteMessagesBefore(ctx context.Context, chatRoomIDs []uuid.UUID, earlierPostedAt time.Time) (int64, error) {
+	if mock.DeleteMessagesBeforeFunc == nil {
+		panic("ManagerInterfaceMock.DeleteMessagesBeforeFunc: method is nil but ManagerInterface.DeleteMessagesBefore was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		ChatRoomIDs     []uuid.UUID
+		EarlierPostedAt time.Time
+	}{
+		Ctx:             ctx,
+		ChatRoomIDs:     chatRoomIDs,
+		EarlierPostedAt: earlierPostedAt,
+	}
+	mock.lockDeleteMessagesBefore.Lock()
+	mock.calls.DeleteMessagesBefore = append(mock.calls.DeleteMessagesBefore, callInfo)
+	mock.lockDeleteMessagesBefore.Unlock()
+	return mock.DeleteMessagesBeforeFunc(ctx, chatRoomIDs, earlierPostedAt)
+}
+
+// DeleteMessagesBeforeCalls gets all the calls that were made to DeleteMessagesBefore.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeleteMessagesBeforeCalls())
+func (mock *ManagerInterfaceMock) DeleteMessagesBeforeCalls() []struct {
+	Ctx             context.Context
+	ChatRoomIDs     []uuid.UUID
+	EarlierPostedAt time.Time
+} {
+	var calls []struct {
+		Ctx             context.Context
+		ChatRoomIDs     []uuid.UUID
+		EarlierPostedAt time.Time
+	}
+	mock.lockDeleteMessagesBefore.RLock()
+	calls = mock.calls.DeleteMessagesBefore
+	mock.lockDeleteMessagesBefore.RUnlock()
+	return calls
+}
+
+// DeleteMessagesBeforeAll calls DeleteMessagesBeforeAllFunc.
+func (mock *ManagerInterfaceMock) DeleteMessagesBeforeAll(ctx context.Context, earlierPostedAt time.Time) (int64, error) {
+	if mock.DeleteMessagesBeforeAllFunc == nil {
+		panic("ManagerInterfaceMock.DeleteMessagesBeforeAllFunc: method is nil but ManagerInterface.DeleteMessagesBeforeAll was just called")
+	}
+	callInfo := struct {
+		Ctx             context.Context
+		EarlierPostedAt time.Time
+	}{
+		Ctx:             ctx,
+		EarlierPostedAt: earlierPostedAt,
+	}
+	mock.lockDeleteMessagesBeforeAll.Lock()
+	mock.calls.DeleteMessagesBeforeAll = append(mock.calls.DeleteMessagesBeforeAll, callInfo)
+	mock.lockDeleteMessagesBeforeAll.Unlock()
+	return mock.DeleteMessagesBeforeAllFunc(ctx, earlierPostedAt)
+}
+
+// DeleteMessagesBeforeAllCalls gets all the calls that were made to DeleteMessagesBeforeAll.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DeleteMessagesBeforeAllCalls())
+func (mock *ManagerInterfaceMock) DeleteMessagesBeforeAllCalls() []struct {
+	Ctx             context.Context
+	EarlierPostedAt time.Time
+} {
+	var calls []struct {
+		Ctx             context.Context
+		EarlierPostedAt time.Time
+	}
+	mock.lockDeleteMessagesBeforeAll.RLock()
+	calls = mock.calls.DeleteMessagesBeforeAll
+	mock.lockDeleteMessagesBeforeAll.RUnlock()
+	return calls
+}
+
 // DeleteMimeType calls DeleteMimeTypeFunc.
 func (mock *ManagerInterfaceMock) DeleteMimeType(ctx context.Context, id uuid.UUID) (int64, error) {
 	if mock.DeleteMimeTypeFunc == nil {
@@ -6375,6 +6938,54 @@ func (mock *ManagerInterfaceMock) DeleteWholeOrganizationCalls() []struct {
 	return calls
 }
 
+// DetachItemsOnMessage calls DetachItemsOnMessageFunc.
+func (mock *ManagerInterfaceMock) DetachItemsOnMessage(ctx context.Context, chatRoomID uuid.UUID, messageID uuid.UUID, ownerID uuid.UUID, attachments []uuid.UUID) (int64, error) {
+	if mock.DetachItemsOnMessageFunc == nil {
+		panic("ManagerInterfaceMock.DetachItemsOnMessageFunc: method is nil but ManagerInterface.DetachItemsOnMessage was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		ChatRoomID  uuid.UUID
+		MessageID   uuid.UUID
+		OwnerID     uuid.UUID
+		Attachments []uuid.UUID
+	}{
+		Ctx:         ctx,
+		ChatRoomID:  chatRoomID,
+		MessageID:   messageID,
+		OwnerID:     ownerID,
+		Attachments: attachments,
+	}
+	mock.lockDetachItemsOnMessage.Lock()
+	mock.calls.DetachItemsOnMessage = append(mock.calls.DetachItemsOnMessage, callInfo)
+	mock.lockDetachItemsOnMessage.Unlock()
+	return mock.DetachItemsOnMessageFunc(ctx, chatRoomID, messageID, ownerID, attachments)
+}
+
+// DetachItemsOnMessageCalls gets all the calls that were made to DetachItemsOnMessage.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DetachItemsOnMessageCalls())
+func (mock *ManagerInterfaceMock) DetachItemsOnMessageCalls() []struct {
+	Ctx         context.Context
+	ChatRoomID  uuid.UUID
+	MessageID   uuid.UUID
+	OwnerID     uuid.UUID
+	Attachments []uuid.UUID
+} {
+	var calls []struct {
+		Ctx         context.Context
+		ChatRoomID  uuid.UUID
+		MessageID   uuid.UUID
+		OwnerID     uuid.UUID
+		Attachments []uuid.UUID
+	}
+	mock.lockDetachItemsOnMessage.RLock()
+	calls = mock.calls.DetachItemsOnMessage
+	mock.lockDetachItemsOnMessage.RUnlock()
+	return calls
+}
+
 // DisassociatePolicyOnRole calls DisassociatePolicyOnRoleFunc.
 func (mock *ManagerInterfaceMock) DisassociatePolicyOnRole(ctx context.Context, roleID uuid.UUID) (int64, error) {
 	if mock.DisassociatePolicyOnRoleFunc == nil {
@@ -6516,6 +7127,54 @@ func (mock *ManagerInterfaceMock) DisassociateRoleOnPolicyCalls() []struct {
 	mock.lockDisassociateRoleOnPolicy.RLock()
 	calls = mock.calls.DisassociateRoleOnPolicy
 	mock.lockDisassociateRoleOnPolicy.RUnlock()
+	return calls
+}
+
+// EditMessage calls EditMessageFunc.
+func (mock *ManagerInterfaceMock) EditMessage(ctx context.Context, chatRoomID uuid.UUID, ownerID uuid.UUID, messageID uuid.UUID, content string) (entity.Message, error) {
+	if mock.EditMessageFunc == nil {
+		panic("ManagerInterfaceMock.EditMessageFunc: method is nil but ManagerInterface.EditMessage was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		OwnerID    uuid.UUID
+		MessageID  uuid.UUID
+		Content    string
+	}{
+		Ctx:        ctx,
+		ChatRoomID: chatRoomID,
+		OwnerID:    ownerID,
+		MessageID:  messageID,
+		Content:    content,
+	}
+	mock.lockEditMessage.Lock()
+	mock.calls.EditMessage = append(mock.calls.EditMessage, callInfo)
+	mock.lockEditMessage.Unlock()
+	return mock.EditMessageFunc(ctx, chatRoomID, ownerID, messageID, content)
+}
+
+// EditMessageCalls gets all the calls that were made to EditMessage.
+// Check the length with:
+//
+//	len(mockedManagerInterface.EditMessageCalls())
+func (mock *ManagerInterfaceMock) EditMessageCalls() []struct {
+	Ctx        context.Context
+	ChatRoomID uuid.UUID
+	OwnerID    uuid.UUID
+	MessageID  uuid.UUID
+	Content    string
+} {
+	var calls []struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		OwnerID    uuid.UUID
+		MessageID  uuid.UUID
+		Content    string
+	}
+	mock.lockEditMessage.RLock()
+	calls = mock.calls.EditMessage
+	mock.lockEditMessage.RUnlock()
 	return calls
 }
 
@@ -7811,6 +8470,42 @@ func (mock *ManagerInterfaceMock) FindWholeOrganizationCalls() []struct {
 	return calls
 }
 
+// ForceDeleteMessages calls ForceDeleteMessagesFunc.
+func (mock *ManagerInterfaceMock) ForceDeleteMessages(ctx context.Context, messageIDs []uuid.UUID) (int64, error) {
+	if mock.ForceDeleteMessagesFunc == nil {
+		panic("ManagerInterfaceMock.ForceDeleteMessagesFunc: method is nil but ManagerInterface.ForceDeleteMessages was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+	}{
+		Ctx:        ctx,
+		MessageIDs: messageIDs,
+	}
+	mock.lockForceDeleteMessages.Lock()
+	mock.calls.ForceDeleteMessages = append(mock.calls.ForceDeleteMessages, callInfo)
+	mock.lockForceDeleteMessages.Unlock()
+	return mock.ForceDeleteMessagesFunc(ctx, messageIDs)
+}
+
+// ForceDeleteMessagesCalls gets all the calls that were made to ForceDeleteMessages.
+// Check the length with:
+//
+//	len(mockedManagerInterface.ForceDeleteMessagesCalls())
+func (mock *ManagerInterfaceMock) ForceDeleteMessagesCalls() []struct {
+	Ctx        context.Context
+	MessageIDs []uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		MessageIDs []uuid.UUID
+	}
+	mock.lockForceDeleteMessages.RLock()
+	calls = mock.calls.ForceDeleteMessages
+	mock.lockForceDeleteMessages.RUnlock()
+	return calls
+}
+
 // GetAttendStatuses calls GetAttendStatusesFunc.
 func (mock *ManagerInterfaceMock) GetAttendStatuses(ctx context.Context, whereSearchName string, order parameter.AttendStatusOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.AttendStatus], error) {
 	if mock.GetAttendStatusesFunc == nil {
@@ -8164,7 +8859,7 @@ func (mock *ManagerInterfaceMock) GetChatRoomActionsOnChatRoomCalls() []struct {
 }
 
 // GetChatRoomsOnMember calls GetChatRoomsOnMemberFunc.
-func (mock *ManagerInterfaceMock) GetChatRoomsOnMember(ctx context.Context, memberID uuid.UUID, whereSearchName string, order parameter.ChatRoomOnMemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.ChatRoomOnMember], error) {
+func (mock *ManagerInterfaceMock) GetChatRoomsOnMember(ctx context.Context, memberID uuid.UUID, whereSearchName string, order parameter.ChatRoomOnMemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PracticalChatRoomOnMember], error) {
 	if mock.GetChatRoomsOnMemberFunc == nil {
 		panic("ManagerInterfaceMock.GetChatRoomsOnMemberFunc: method is nil but ManagerInterface.GetChatRoomsOnMember was just called")
 	}
@@ -9032,6 +9727,90 @@ func (mock *ManagerInterfaceMock) GetMembersOnOrganizationCountCalls() []struct 
 	mock.lockGetMembersOnOrganizationCount.RLock()
 	calls = mock.calls.GetMembersOnOrganizationCount
 	mock.lockGetMembersOnOrganizationCount.RUnlock()
+	return calls
+}
+
+// GetMessagesOnChatRoom calls GetMessagesOnChatRoomFunc.
+func (mock *ManagerInterfaceMock) GetMessagesOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, whereInSenders []uuid.UUID, whereSearchBody string, whereEarlierPostedAt time.Time, whereLaterPostedAt time.Time, whereEarlierLastEditedAt time.Time, whereLaterLastEditedAt time.Time, order parameter.MessageOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MessageWithSenderAndReadReceiptCountAndAttachments], error) {
+	if mock.GetMessagesOnChatRoomFunc == nil {
+		panic("ManagerInterfaceMock.GetMessagesOnChatRoomFunc: method is nil but ManagerInterface.GetMessagesOnChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx                      context.Context
+		ChatRoomID               uuid.UUID
+		WhereInSenders           []uuid.UUID
+		WhereSearchBody          string
+		WhereEarlierPostedAt     time.Time
+		WhereLaterPostedAt       time.Time
+		WhereEarlierLastEditedAt time.Time
+		WhereLaterLastEditedAt   time.Time
+		Order                    parameter.MessageOrderMethod
+		Pg                       parameter.Pagination
+		Limit                    parameter.Limit
+		Cursor                   parameter.Cursor
+		Offset                   parameter.Offset
+		WithCount                parameter.WithCount
+	}{
+		Ctx:                      ctx,
+		ChatRoomID:               chatRoomID,
+		WhereInSenders:           whereInSenders,
+		WhereSearchBody:          whereSearchBody,
+		WhereEarlierPostedAt:     whereEarlierPostedAt,
+		WhereLaterPostedAt:       whereLaterPostedAt,
+		WhereEarlierLastEditedAt: whereEarlierLastEditedAt,
+		WhereLaterLastEditedAt:   whereLaterLastEditedAt,
+		Order:                    order,
+		Pg:                       pg,
+		Limit:                    limit,
+		Cursor:                   cursor,
+		Offset:                   offset,
+		WithCount:                withCount,
+	}
+	mock.lockGetMessagesOnChatRoom.Lock()
+	mock.calls.GetMessagesOnChatRoom = append(mock.calls.GetMessagesOnChatRoom, callInfo)
+	mock.lockGetMessagesOnChatRoom.Unlock()
+	return mock.GetMessagesOnChatRoomFunc(ctx, chatRoomID, whereInSenders, whereSearchBody, whereEarlierPostedAt, whereLaterPostedAt, whereEarlierLastEditedAt, whereLaterLastEditedAt, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetMessagesOnChatRoomCalls gets all the calls that were made to GetMessagesOnChatRoom.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetMessagesOnChatRoomCalls())
+func (mock *ManagerInterfaceMock) GetMessagesOnChatRoomCalls() []struct {
+	Ctx                      context.Context
+	ChatRoomID               uuid.UUID
+	WhereInSenders           []uuid.UUID
+	WhereSearchBody          string
+	WhereEarlierPostedAt     time.Time
+	WhereLaterPostedAt       time.Time
+	WhereEarlierLastEditedAt time.Time
+	WhereLaterLastEditedAt   time.Time
+	Order                    parameter.MessageOrderMethod
+	Pg                       parameter.Pagination
+	Limit                    parameter.Limit
+	Cursor                   parameter.Cursor
+	Offset                   parameter.Offset
+	WithCount                parameter.WithCount
+} {
+	var calls []struct {
+		Ctx                      context.Context
+		ChatRoomID               uuid.UUID
+		WhereInSenders           []uuid.UUID
+		WhereSearchBody          string
+		WhereEarlierPostedAt     time.Time
+		WhereLaterPostedAt       time.Time
+		WhereEarlierLastEditedAt time.Time
+		WhereLaterLastEditedAt   time.Time
+		Order                    parameter.MessageOrderMethod
+		Pg                       parameter.Pagination
+		Limit                    parameter.Limit
+		Cursor                   parameter.Cursor
+		Offset                   parameter.Offset
+		WithCount                parameter.WithCount
+	}
+	mock.lockGetMessagesOnChatRoom.RLock()
+	calls = mock.calls.GetMessagesOnChatRoom
+	mock.lockGetMessagesOnChatRoom.RUnlock()
 	return calls
 }
 
@@ -11180,6 +11959,126 @@ func (mock *ManagerInterfaceMock) PluralDisassociateRoleOnPolicyCalls() []struct
 	mock.lockPluralDisassociateRoleOnPolicy.RLock()
 	calls = mock.calls.PluralDisassociateRoleOnPolicy
 	mock.lockPluralDisassociateRoleOnPolicy.RUnlock()
+	return calls
+}
+
+// ReadMessage calls ReadMessageFunc.
+func (mock *ManagerInterfaceMock) ReadMessage(ctx context.Context, chatRoomID uuid.UUID, memberID uuid.UUID, messageID uuid.UUID) (bool, error) {
+	if mock.ReadMessageFunc == nil {
+		panic("ManagerInterfaceMock.ReadMessageFunc: method is nil but ManagerInterface.ReadMessage was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		MemberID   uuid.UUID
+		MessageID  uuid.UUID
+	}{
+		Ctx:        ctx,
+		ChatRoomID: chatRoomID,
+		MemberID:   memberID,
+		MessageID:  messageID,
+	}
+	mock.lockReadMessage.Lock()
+	mock.calls.ReadMessage = append(mock.calls.ReadMessage, callInfo)
+	mock.lockReadMessage.Unlock()
+	return mock.ReadMessageFunc(ctx, chatRoomID, memberID, messageID)
+}
+
+// ReadMessageCalls gets all the calls that were made to ReadMessage.
+// Check the length with:
+//
+//	len(mockedManagerInterface.ReadMessageCalls())
+func (mock *ManagerInterfaceMock) ReadMessageCalls() []struct {
+	Ctx        context.Context
+	ChatRoomID uuid.UUID
+	MemberID   uuid.UUID
+	MessageID  uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		MemberID   uuid.UUID
+		MessageID  uuid.UUID
+	}
+	mock.lockReadMessage.RLock()
+	calls = mock.calls.ReadMessage
+	mock.lockReadMessage.RUnlock()
+	return calls
+}
+
+// ReadMessagesOnChatRoomAndMember calls ReadMessagesOnChatRoomAndMemberFunc.
+func (mock *ManagerInterfaceMock) ReadMessagesOnChatRoomAndMember(ctx context.Context, chatRoomID uuid.UUID, memberID uuid.UUID) (int64, error) {
+	if mock.ReadMessagesOnChatRoomAndMemberFunc == nil {
+		panic("ManagerInterfaceMock.ReadMessagesOnChatRoomAndMemberFunc: method is nil but ManagerInterface.ReadMessagesOnChatRoomAndMember was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		MemberID   uuid.UUID
+	}{
+		Ctx:        ctx,
+		ChatRoomID: chatRoomID,
+		MemberID:   memberID,
+	}
+	mock.lockReadMessagesOnChatRoomAndMember.Lock()
+	mock.calls.ReadMessagesOnChatRoomAndMember = append(mock.calls.ReadMessagesOnChatRoomAndMember, callInfo)
+	mock.lockReadMessagesOnChatRoomAndMember.Unlock()
+	return mock.ReadMessagesOnChatRoomAndMemberFunc(ctx, chatRoomID, memberID)
+}
+
+// ReadMessagesOnChatRoomAndMemberCalls gets all the calls that were made to ReadMessagesOnChatRoomAndMember.
+// Check the length with:
+//
+//	len(mockedManagerInterface.ReadMessagesOnChatRoomAndMemberCalls())
+func (mock *ManagerInterfaceMock) ReadMessagesOnChatRoomAndMemberCalls() []struct {
+	Ctx        context.Context
+	ChatRoomID uuid.UUID
+	MemberID   uuid.UUID
+} {
+	var calls []struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		MemberID   uuid.UUID
+	}
+	mock.lockReadMessagesOnChatRoomAndMember.RLock()
+	calls = mock.calls.ReadMessagesOnChatRoomAndMember
+	mock.lockReadMessagesOnChatRoomAndMember.RUnlock()
+	return calls
+}
+
+// ReadMessagesOnMember calls ReadMessagesOnMemberFunc.
+func (mock *ManagerInterfaceMock) ReadMessagesOnMember(ctx context.Context, memberID uuid.UUID) (int64, error) {
+	if mock.ReadMessagesOnMemberFunc == nil {
+		panic("ManagerInterfaceMock.ReadMessagesOnMemberFunc: method is nil but ManagerInterface.ReadMessagesOnMember was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+	}{
+		Ctx:      ctx,
+		MemberID: memberID,
+	}
+	mock.lockReadMessagesOnMember.Lock()
+	mock.calls.ReadMessagesOnMember = append(mock.calls.ReadMessagesOnMember, callInfo)
+	mock.lockReadMessagesOnMember.Unlock()
+	return mock.ReadMessagesOnMemberFunc(ctx, memberID)
+}
+
+// ReadMessagesOnMemberCalls gets all the calls that were made to ReadMessagesOnMember.
+// Check the length with:
+//
+//	len(mockedManagerInterface.ReadMessagesOnMemberCalls())
+func (mock *ManagerInterfaceMock) ReadMessagesOnMemberCalls() []struct {
+	Ctx      context.Context
+	MemberID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		MemberID uuid.UUID
+	}
+	mock.lockReadMessagesOnMember.RLock()
+	calls = mock.calls.ReadMessagesOnMember
+	mock.lockReadMessagesOnMember.RUnlock()
 	return calls
 }
 

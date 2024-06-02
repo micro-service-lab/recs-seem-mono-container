@@ -44,6 +44,11 @@ type AttachedMessage interface {
 	DetachItemsOnMessages(ctx context.Context, messageIDs []uuid.UUID) (int64, error)
 	// DetachItemsOnMessagesWithSd SD付きでメッセージに関連付けられた添付アイテムを複数解除する。
 	DetachItemsOnMessagesWithSd(ctx context.Context, sd Sd, messageIDs []uuid.UUID) (int64, error)
+	// PluralDetachItemsOnMessage メッセージに関連付けられた複数の添付アイテムを解除する。
+	PluralDetachItemsOnMessage(ctx context.Context, messageID uuid.UUID, attachedItemIDs []uuid.UUID) (int64, error)
+	// PluralDetachItemsOnMessageWithSd SD付きでメッセージに関連付けられた複数の添付アイテムを解除する。
+	PluralDetachItemsOnMessageWithSd(
+		ctx context.Context, sd Sd, messageID uuid.UUID, attachedItemIDs []uuid.UUID) (int64, error)
 	// GetAttachedItemsOnChatRoom チャットルームに関連付けられた添付アイテムを取得する。
 	GetAttachedItemsOnChatRoom(
 		ctx context.Context,

@@ -323,6 +323,127 @@ func (q *Queries) GetPluralChatRoomDeleteMessageActions(ctx context.Context, cha
 	return items, nil
 }
 
+const getPluralChatRoomDeleteMessageActionsByChatRoomActionIDs = `-- name: GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDs :many
+SELECT t_chat_room_delete_message_actions.t_chat_room_delete_message_actions_pkey, t_chat_room_delete_message_actions.chat_room_delete_message_action_id, t_chat_room_delete_message_actions.chat_room_action_id, t_chat_room_delete_message_actions.deleted_by,
+m_members.name delete_message_member_name, m_members.first_name delete_message_member_first_name, m_members.last_name delete_message_member_last_name, m_members.email delete_message_member_email,
+m_members.profile_image_id delete_message_member_profile_image_id, m_members.grade_id delete_message_member_grade_id, m_members.group_id delete_message_member_group_id
+FROM t_chat_room_delete_message_actions
+LEFT JOIN m_members ON t_chat_room_delete_message_actions.deleted_by = m_members.member_id
+WHERE chat_room_action_id = ANY($1::uuid[])
+ORDER BY
+	t_chat_room_delete_message_actions_pkey ASC
+`
+
+type GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsRow struct {
+	TChatRoomDeleteMessageActionsPkey pgtype.Int8 `json:"t_chat_room_delete_message_actions_pkey"`
+	ChatRoomDeleteMessageActionID     uuid.UUID   `json:"chat_room_delete_message_action_id"`
+	ChatRoomActionID                  uuid.UUID   `json:"chat_room_action_id"`
+	DeletedBy                         pgtype.UUID `json:"deleted_by"`
+	DeleteMessageMemberName           pgtype.Text `json:"delete_message_member_name"`
+	DeleteMessageMemberFirstName      pgtype.Text `json:"delete_message_member_first_name"`
+	DeleteMessageMemberLastName       pgtype.Text `json:"delete_message_member_last_name"`
+	DeleteMessageMemberEmail          pgtype.Text `json:"delete_message_member_email"`
+	DeleteMessageMemberProfileImageID pgtype.UUID `json:"delete_message_member_profile_image_id"`
+	DeleteMessageMemberGradeID        pgtype.UUID `json:"delete_message_member_grade_id"`
+	DeleteMessageMemberGroupID        pgtype.UUID `json:"delete_message_member_group_id"`
+}
+
+func (q *Queries) GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDs(ctx context.Context, chatRoomActionIds []uuid.UUID) ([]GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsRow, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomDeleteMessageActionsByChatRoomActionIDs, chatRoomActionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsRow{}
+	for rows.Next() {
+		var i GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsRow
+		if err := rows.Scan(
+			&i.TChatRoomDeleteMessageActionsPkey,
+			&i.ChatRoomDeleteMessageActionID,
+			&i.ChatRoomActionID,
+			&i.DeletedBy,
+			&i.DeleteMessageMemberName,
+			&i.DeleteMessageMemberFirstName,
+			&i.DeleteMessageMemberLastName,
+			&i.DeleteMessageMemberEmail,
+			&i.DeleteMessageMemberProfileImageID,
+			&i.DeleteMessageMemberGradeID,
+			&i.DeleteMessageMemberGroupID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralChatRoomDeleteMessageActionsByChatRoomActionIDsUseNumberedPaginate = `-- name: GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsUseNumberedPaginate :many
+SELECT t_chat_room_delete_message_actions.t_chat_room_delete_message_actions_pkey, t_chat_room_delete_message_actions.chat_room_delete_message_action_id, t_chat_room_delete_message_actions.chat_room_action_id, t_chat_room_delete_message_actions.deleted_by,
+m_members.name delete_message_member_name, m_members.first_name delete_message_member_first_name, m_members.last_name delete_message_member_last_name, m_members.email delete_message_member_email,
+m_members.profile_image_id delete_message_member_profile_image_id, m_members.grade_id delete_message_member_grade_id, m_members.group_id delete_message_member_group_id
+FROM t_chat_room_delete_message_actions
+LEFT JOIN m_members ON t_chat_room_delete_message_actions.deleted_by = m_members.member_id
+WHERE chat_room_action_id = ANY($3::uuid[])
+ORDER BY
+	t_chat_room_delete_message_actions_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsUseNumberedPaginateParams struct {
+	Limit             int32       `json:"limit"`
+	Offset            int32       `json:"offset"`
+	ChatRoomActionIds []uuid.UUID `json:"chat_room_action_ids"`
+}
+
+type GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsUseNumberedPaginateRow struct {
+	TChatRoomDeleteMessageActionsPkey pgtype.Int8 `json:"t_chat_room_delete_message_actions_pkey"`
+	ChatRoomDeleteMessageActionID     uuid.UUID   `json:"chat_room_delete_message_action_id"`
+	ChatRoomActionID                  uuid.UUID   `json:"chat_room_action_id"`
+	DeletedBy                         pgtype.UUID `json:"deleted_by"`
+	DeleteMessageMemberName           pgtype.Text `json:"delete_message_member_name"`
+	DeleteMessageMemberFirstName      pgtype.Text `json:"delete_message_member_first_name"`
+	DeleteMessageMemberLastName       pgtype.Text `json:"delete_message_member_last_name"`
+	DeleteMessageMemberEmail          pgtype.Text `json:"delete_message_member_email"`
+	DeleteMessageMemberProfileImageID pgtype.UUID `json:"delete_message_member_profile_image_id"`
+	DeleteMessageMemberGradeID        pgtype.UUID `json:"delete_message_member_grade_id"`
+	DeleteMessageMemberGroupID        pgtype.UUID `json:"delete_message_member_group_id"`
+}
+
+func (q *Queries) GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsUseNumberedPaginate(ctx context.Context, arg GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsUseNumberedPaginateParams) ([]GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomDeleteMessageActionsByChatRoomActionIDsUseNumberedPaginate, arg.Limit, arg.Offset, arg.ChatRoomActionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.TChatRoomDeleteMessageActionsPkey,
+			&i.ChatRoomDeleteMessageActionID,
+			&i.ChatRoomActionID,
+			&i.DeletedBy,
+			&i.DeleteMessageMemberName,
+			&i.DeleteMessageMemberFirstName,
+			&i.DeleteMessageMemberLastName,
+			&i.DeleteMessageMemberEmail,
+			&i.DeleteMessageMemberProfileImageID,
+			&i.DeleteMessageMemberGradeID,
+			&i.DeleteMessageMemberGroupID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPluralChatRoomDeleteMessageActionsUseNumberedPaginate = `-- name: GetPluralChatRoomDeleteMessageActionsUseNumberedPaginate :many
 SELECT t_chat_room_delete_message_actions.t_chat_room_delete_message_actions_pkey, t_chat_room_delete_message_actions.chat_room_delete_message_action_id, t_chat_room_delete_message_actions.chat_room_action_id, t_chat_room_delete_message_actions.deleted_by,
 m_members.name delete_message_member_name, m_members.first_name delete_message_member_first_name, m_members.last_name delete_message_member_last_name, m_members.email delete_message_member_email,

@@ -323,6 +323,127 @@ func (q *Queries) GetPluralChatRoomAddMemberActions(ctx context.Context, chatRoo
 	return items, nil
 }
 
+const getPluralChatRoomAddMemberActionsByChatRoomActionIDs = `-- name: GetPluralChatRoomAddMemberActionsByChatRoomActionIDs :many
+SELECT t_chat_room_add_member_actions.t_chat_room_add_member_actions_pkey, t_chat_room_add_member_actions.chat_room_add_member_action_id, t_chat_room_add_member_actions.chat_room_action_id, t_chat_room_add_member_actions.added_by,
+m_members.name add_member_name, m_members.first_name add_member_first_name, m_members.last_name add_member_last_name, m_members.email add_member_email,
+m_members.profile_image_id add_member_profile_image_id, m_members.grade_id add_member_grade_id, m_members.group_id add_member_group_id
+FROM t_chat_room_add_member_actions
+LEFT JOIN m_members ON t_chat_room_add_member_actions.added_by = m_members.member_id
+WHERE chat_room_action_id = ANY($1::uuid[])
+ORDER BY
+	t_chat_room_add_member_actions_pkey ASC
+`
+
+type GetPluralChatRoomAddMemberActionsByChatRoomActionIDsRow struct {
+	TChatRoomAddMemberActionsPkey pgtype.Int8 `json:"t_chat_room_add_member_actions_pkey"`
+	ChatRoomAddMemberActionID     uuid.UUID   `json:"chat_room_add_member_action_id"`
+	ChatRoomActionID              uuid.UUID   `json:"chat_room_action_id"`
+	AddedBy                       pgtype.UUID `json:"added_by"`
+	AddMemberName                 pgtype.Text `json:"add_member_name"`
+	AddMemberFirstName            pgtype.Text `json:"add_member_first_name"`
+	AddMemberLastName             pgtype.Text `json:"add_member_last_name"`
+	AddMemberEmail                pgtype.Text `json:"add_member_email"`
+	AddMemberProfileImageID       pgtype.UUID `json:"add_member_profile_image_id"`
+	AddMemberGradeID              pgtype.UUID `json:"add_member_grade_id"`
+	AddMemberGroupID              pgtype.UUID `json:"add_member_group_id"`
+}
+
+func (q *Queries) GetPluralChatRoomAddMemberActionsByChatRoomActionIDs(ctx context.Context, chatRoomActionIds []uuid.UUID) ([]GetPluralChatRoomAddMemberActionsByChatRoomActionIDsRow, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomAddMemberActionsByChatRoomActionIDs, chatRoomActionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralChatRoomAddMemberActionsByChatRoomActionIDsRow{}
+	for rows.Next() {
+		var i GetPluralChatRoomAddMemberActionsByChatRoomActionIDsRow
+		if err := rows.Scan(
+			&i.TChatRoomAddMemberActionsPkey,
+			&i.ChatRoomAddMemberActionID,
+			&i.ChatRoomActionID,
+			&i.AddedBy,
+			&i.AddMemberName,
+			&i.AddMemberFirstName,
+			&i.AddMemberLastName,
+			&i.AddMemberEmail,
+			&i.AddMemberProfileImageID,
+			&i.AddMemberGradeID,
+			&i.AddMemberGroupID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralChatRoomAddMemberActionsByChatRoomActionIDsUseNumberedPaginate = `-- name: GetPluralChatRoomAddMemberActionsByChatRoomActionIDsUseNumberedPaginate :many
+SELECT t_chat_room_add_member_actions.t_chat_room_add_member_actions_pkey, t_chat_room_add_member_actions.chat_room_add_member_action_id, t_chat_room_add_member_actions.chat_room_action_id, t_chat_room_add_member_actions.added_by,
+m_members.name add_member_name, m_members.first_name add_member_first_name, m_members.last_name add_member_last_name, m_members.email add_member_email,
+m_members.profile_image_id add_member_profile_image_id, m_members.grade_id add_member_grade_id, m_members.group_id add_member_group_id
+FROM t_chat_room_add_member_actions
+LEFT JOIN m_members ON t_chat_room_add_member_actions.added_by = m_members.member_id
+WHERE chat_room_action_id = ANY($3::uuid[])
+ORDER BY
+	t_chat_room_add_member_actions_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralChatRoomAddMemberActionsByChatRoomActionIDsUseNumberedPaginateParams struct {
+	Limit             int32       `json:"limit"`
+	Offset            int32       `json:"offset"`
+	ChatRoomActionIds []uuid.UUID `json:"chat_room_action_ids"`
+}
+
+type GetPluralChatRoomAddMemberActionsByChatRoomActionIDsUseNumberedPaginateRow struct {
+	TChatRoomAddMemberActionsPkey pgtype.Int8 `json:"t_chat_room_add_member_actions_pkey"`
+	ChatRoomAddMemberActionID     uuid.UUID   `json:"chat_room_add_member_action_id"`
+	ChatRoomActionID              uuid.UUID   `json:"chat_room_action_id"`
+	AddedBy                       pgtype.UUID `json:"added_by"`
+	AddMemberName                 pgtype.Text `json:"add_member_name"`
+	AddMemberFirstName            pgtype.Text `json:"add_member_first_name"`
+	AddMemberLastName             pgtype.Text `json:"add_member_last_name"`
+	AddMemberEmail                pgtype.Text `json:"add_member_email"`
+	AddMemberProfileImageID       pgtype.UUID `json:"add_member_profile_image_id"`
+	AddMemberGradeID              pgtype.UUID `json:"add_member_grade_id"`
+	AddMemberGroupID              pgtype.UUID `json:"add_member_group_id"`
+}
+
+func (q *Queries) GetPluralChatRoomAddMemberActionsByChatRoomActionIDsUseNumberedPaginate(ctx context.Context, arg GetPluralChatRoomAddMemberActionsByChatRoomActionIDsUseNumberedPaginateParams) ([]GetPluralChatRoomAddMemberActionsByChatRoomActionIDsUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomAddMemberActionsByChatRoomActionIDsUseNumberedPaginate, arg.Limit, arg.Offset, arg.ChatRoomActionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralChatRoomAddMemberActionsByChatRoomActionIDsUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralChatRoomAddMemberActionsByChatRoomActionIDsUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.TChatRoomAddMemberActionsPkey,
+			&i.ChatRoomAddMemberActionID,
+			&i.ChatRoomActionID,
+			&i.AddedBy,
+			&i.AddMemberName,
+			&i.AddMemberFirstName,
+			&i.AddMemberLastName,
+			&i.AddMemberEmail,
+			&i.AddMemberProfileImageID,
+			&i.AddMemberGradeID,
+			&i.AddMemberGroupID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPluralChatRoomAddMemberActionsUseNumberedPaginate = `-- name: GetPluralChatRoomAddMemberActionsUseNumberedPaginate :many
 SELECT t_chat_room_add_member_actions.t_chat_room_add_member_actions_pkey, t_chat_room_add_member_actions.chat_room_add_member_action_id, t_chat_room_add_member_actions.chat_room_action_id, t_chat_room_add_member_actions.added_by,
 m_members.name add_member_name, m_members.first_name add_member_first_name, m_members.last_name add_member_last_name, m_members.email add_member_email,

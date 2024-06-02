@@ -8,7 +8,7 @@ import (
 
 // CreateChatRoomParam チャットルーム作成のパラメータ。
 type CreateChatRoomParam struct {
-	Name             string
+	Name             entity.String
 	IsPrivate        bool
 	CoverImageID     entity.UUID
 	OwnerID          entity.UUID
@@ -17,7 +17,7 @@ type CreateChatRoomParam struct {
 
 // UpdateChatRoomParams チャットルーム更新のパラメータ。
 type UpdateChatRoomParams struct {
-	Name         string
+	Name         entity.String
 	CoverImageID entity.UUID
 }
 

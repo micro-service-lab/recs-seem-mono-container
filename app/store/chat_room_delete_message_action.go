@@ -79,4 +79,19 @@ type ChatRoomDeleteMessageAction interface {
 		order parameter.ChatRoomDeleteMessageActionOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error)
+	// GetChatRoomDeleteMessageActionsOnChatRoom チャットルームに紐づくチャットルームメッセージ削除アクションを取得する。
+	GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDs(
+		ctx context.Context,
+		chatRoomActionIDs []uuid.UUID,
+		order parameter.ChatRoomDeleteMessageActionOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error)
+	// GetPluralChatRoomDeleteMessageActionsByChatRoomIDsWithSd SD付きでチャットルームメッセージ削除アクションを取得する。
+	GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsWithSd(
+		ctx context.Context,
+		sd Sd,
+		chatRoomActionIDs []uuid.UUID,
+		order parameter.ChatRoomDeleteMessageActionOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error)
 }

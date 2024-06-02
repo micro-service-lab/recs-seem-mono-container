@@ -18,7 +18,18 @@ import (
 )
 
 func convChatRoomActionOnChatRoom(
-	e query.GetChatRoomActionsOnChatRoomRow,
+	e query.ChatRoomAction,
+) entity.ChatRoomAction {
+	return entity.ChatRoomAction{
+		ChatRoomActionID:     e.ChatRoomActionID,
+		ChatRoomID:           e.ChatRoomID,
+		ChatRoomActionTypeID: e.ChatRoomActionTypeID,
+		ActedAt:              e.ActedAt,
+	}
+}
+
+func convChatRoomActionWithDetailOnChatRoom(
+	e query.GetChatRoomActionsWithDetailOnChatRoomRow,
 ) entity.ChatRoomActionWithDetailForQuery {
 	var createAction entity.NullableEntity[entity.ChatRoomCreateActionWithCreatedBy]
 	var updateNameAction entity.NullableEntity[entity.ChatRoomUpdateNameActionWithUpdatedBy]
@@ -50,7 +61,7 @@ func convChatRoomActionOnChatRoom(
 			Entity: entity.ChatRoomCreateActionWithCreatedBy{
 				ChatRoomCreateActionID: e.ChatRoomCreateActionID.Bytes,
 				ChatRoomActionID:       e.ChatRoomActionID,
-				Name:                   e.CreateName.String,
+				Name:                   entity.String(e.CreateName),
 				CreatedBy:              createdBy,
 			},
 		}
@@ -380,6 +391,48 @@ func (a *PgAdapter) CreateChatRoomActionsWithSd(
 	return createChatRoomActions(ctx, qtx, params)
 }
 
+func updateChatRoomAction(
+	ctx context.Context, qtx *query.Queries, chatRoomActionID uuid.UUID, param parameter.UpdateChatRoomActionParam,
+) (entity.ChatRoomAction, error) {
+	e, err := qtx.UpdateChatRoomAction(ctx, query.UpdateChatRoomActionParams{
+		ChatRoomActionID:     chatRoomActionID,
+		ChatRoomActionTypeID: param.ChatRoomActionTypeID,
+	})
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.ChatRoomAction{}, errhandle.NewModelNotFoundError("chat room action")
+		}
+		return entity.ChatRoomAction{}, fmt.Errorf("failed to update chat room action: %w", err)
+	}
+	entity := entity.ChatRoomAction{
+		ChatRoomActionID:     e.ChatRoomActionID,
+		ChatRoomID:           e.ChatRoomID,
+		ChatRoomActionTypeID: e.ChatRoomActionTypeID,
+		ActedAt:              e.ActedAt,
+	}
+	return entity, nil
+}
+
+// UpdateChatRoomAction はチャットルームアクションを更新します。
+func (a *PgAdapter) UpdateChatRoomAction(
+	ctx context.Context, chatRoomActionID uuid.UUID, param parameter.UpdateChatRoomActionParam,
+) (entity.ChatRoomAction, error) {
+	return updateChatRoomAction(ctx, a.query, chatRoomActionID, param)
+}
+
+// UpdateChatRoomActionWithSd はSD付きでチャットルームアクションを更新します。
+func (a *PgAdapter) UpdateChatRoomActionWithSd(
+	ctx context.Context, sd store.Sd, chatRoomActionID uuid.UUID, param parameter.UpdateChatRoomActionParam,
+) (entity.ChatRoomAction, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return entity.ChatRoomAction{}, store.ErrNotFoundDescriptor
+	}
+	return updateChatRoomAction(ctx, qtx, chatRoomActionID, param)
+}
+
 // deleteChatRoomAction はチャットルームアクションを削除する内部関数です。
 func deleteChatRoomAction(
 	ctx context.Context, qtx *query.Queries, chatRoomActionID uuid.UUID,
@@ -458,11 +511,11 @@ func getChatRoomActionsOnChatRoom(
 	np store.NumberedPaginationParam,
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
-) (store.ListResult[entity.ChatRoomActionWithDetail], error) {
+) (store.ListResult[entity.ChatRoomAction], error) {
 	eConvFunc := func(
-		e entity.ChatRoomActionWithDetailForQuery,
-	) (entity.ChatRoomActionWithDetail, error) {
-		return e.ChatRoomActionWithDetail, nil
+		e query.ChatRoomAction,
+	) (entity.ChatRoomAction, error) {
+		return convChatRoomActionOnChatRoom(e), nil
 	}
 	runCFunc := func() (int64, error) {
 		r, err := qtx.CountChatRoomActionsOnChatRoom(ctx, query.CountChatRoomActionsOnChatRoomParams{
@@ -475,7 +528,7 @@ func getChatRoomActionsOnChatRoom(
 		}
 		return r, nil
 	}
-	runQFunc := func(orderMethod string) ([]entity.ChatRoomActionWithDetailForQuery, error) {
+	runQFunc := func(orderMethod string) ([]query.ChatRoomAction, error) {
 		r, err := qtx.GetChatRoomActionsOnChatRoom(ctx, query.GetChatRoomActionsOnChatRoomParams{
 			ChatRoomID:                   chatRoomID,
 			OrderMethod:                  orderMethod,
@@ -484,19 +537,15 @@ func getChatRoomActionsOnChatRoom(
 		})
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
-				return []entity.ChatRoomActionWithDetailForQuery{}, nil
+				return []query.ChatRoomAction{}, nil
 			}
 			return nil, fmt.Errorf("failed to get chat room actions: %w", err)
 		}
-		e := make([]entity.ChatRoomActionWithDetailForQuery, len(r))
-		for i, v := range r {
-			e[i] = convChatRoomActionOnChatRoom(v)
-		}
-		return e, nil
+		return r, nil
 	}
 	runQCPFunc := func(subCursor, orderMethod string,
 		limit int32, cursorDir string, cursor int32, subCursorValue any,
-	) ([]entity.ChatRoomActionWithDetailForQuery, error) {
+	) ([]query.ChatRoomAction, error) {
 		var actCursor time.Time
 		var err error
 		switch subCursor {
@@ -521,13 +570,9 @@ func getChatRoomActionsOnChatRoom(
 		if err != nil {
 			return nil, fmt.Errorf("failed to get chat room actions: %w", err)
 		}
-		e := make([]entity.ChatRoomActionWithDetailForQuery, len(r))
-		for i, v := range r {
-			e[i] = convChatRoomActionOnChatRoom(query.GetChatRoomActionsOnChatRoomRow(v))
-		}
-		return e, nil
+		return r, nil
 	}
-	runQNPFunc := func(orderMethod string, limit, offset int32) ([]entity.ChatRoomActionWithDetailForQuery, error) {
+	runQNPFunc := func(orderMethod string, limit, offset int32) ([]query.ChatRoomAction, error) {
 		p := query.GetChatRoomActionsOnChatRoomUseNumberedPaginateParams{
 			ChatRoomID:                   chatRoomID,
 			Limit:                        limit,
@@ -540,9 +585,220 @@ func getChatRoomActionsOnChatRoom(
 		if err != nil {
 			return nil, fmt.Errorf("failed to get chat room actions: %w", err)
 		}
+		return r, nil
+	}
+	selector := func(subCursor string, e query.ChatRoomAction) (entity.Int, any) {
+		switch subCursor {
+		case parameter.ChatRoomActionDefaultCursorKey:
+			return entity.Int(e.TChatRoomActionsPkey), nil
+		case parameter.ChatRoomActionActedAtCursorKey:
+			return entity.Int(e.TChatRoomActionsPkey), e.ActedAt
+		}
+		return entity.Int(e.TChatRoomActionsPkey), nil
+	}
+
+	res, err := store.RunListQuery(
+		ctx,
+		order,
+		np,
+		cp,
+		wc,
+		eConvFunc,
+		runCFunc,
+		runQFunc,
+		runQCPFunc,
+		runQNPFunc,
+		selector,
+	)
+	if err != nil {
+		return store.ListResult[entity.ChatRoomAction]{},
+			fmt.Errorf("failed to get chat room actions: %w", err)
+	}
+	return res, nil
+}
+
+// GetChatRoomActionsOnChatRoom はチャットルームアクションを取得します。
+func (a *PgAdapter) GetChatRoomActionsOnChatRoom(
+	ctx context.Context,
+	chatRoomID uuid.UUID,
+	where parameter.WhereChatRoomActionParam,
+	order parameter.ChatRoomActionOrderMethod,
+	np store.NumberedPaginationParam,
+	cp store.CursorPaginationParam,
+	wc store.WithCountParam,
+) (store.ListResult[entity.ChatRoomAction], error) {
+	return getChatRoomActionsOnChatRoom(ctx, a.query, chatRoomID, where, order, np, cp, wc)
+}
+
+// GetChatRoomActionsOnChatRoomWithSd はSD付きでチャットルームアクションを取得します。
+func (a *PgAdapter) GetChatRoomActionsOnChatRoomWithSd(
+	ctx context.Context,
+	sd store.Sd,
+	chatRoomID uuid.UUID,
+	where parameter.WhereChatRoomActionParam,
+	order parameter.ChatRoomActionOrderMethod,
+	np store.NumberedPaginationParam,
+	cp store.CursorPaginationParam,
+	wc store.WithCountParam,
+) (store.ListResult[entity.ChatRoomAction], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ListResult[entity.ChatRoomAction]{}, store.ErrNotFoundDescriptor
+	}
+	return getChatRoomActionsOnChatRoom(ctx, qtx, chatRoomID, where, order, np, cp, wc)
+}
+
+// getPluralChatRoomActions は複数のチャットルームアクションを取得する内部関数です。
+func getPluralChatRoomActions(
+	ctx context.Context, qtx *query.Queries, chatRoomActionIDs []uuid.UUID,
+	orderMethod parameter.ChatRoomActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomAction], error) {
+	var e []query.ChatRoomAction
+	var err error
+	if !np.Valid {
+		e, err = qtx.GetPluralChatRoomActions(ctx, query.GetPluralChatRoomActionsParams{
+			ChatRoomActionIds: chatRoomActionIDs,
+			OrderMethod:       orderMethod.GetStringValue(),
+		})
+	} else {
+		e, err = qtx.GetPluralChatRoomActionsUseNumberedPaginate(
+			ctx, query.GetPluralChatRoomActionsUseNumberedPaginateParams{
+				Limit:             int32(np.Limit.Int64),
+				Offset:            int32(np.Offset.Int64),
+				ChatRoomActionIds: chatRoomActionIDs,
+				OrderMethod:       orderMethod.GetStringValue(),
+			})
+	}
+	if err != nil {
+		return store.ListResult[entity.ChatRoomAction]{},
+			fmt.Errorf("failed to get chat room actions: %w", err)
+	}
+	entities := make([]entity.ChatRoomAction, len(e))
+	for i, v := range e {
+		entities[i] = convChatRoomActionOnChatRoom(v)
+	}
+	return store.ListResult[entity.ChatRoomAction]{Data: entities}, nil
+}
+
+// GetPluralChatRoomActions は複数のチャットルームアクションを取得します。
+func (a *PgAdapter) GetPluralChatRoomActions(
+	ctx context.Context, chatRoomActionIDs []uuid.UUID,
+	orderMethod parameter.ChatRoomActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomAction], error) {
+	return getPluralChatRoomActions(ctx, a.query, chatRoomActionIDs, orderMethod, np)
+}
+
+// GetPluralChatRoomActionsWithSd はSD付きで複数のチャットルームアクションを取得します。
+func (a *PgAdapter) GetPluralChatRoomActionsWithSd(
+	ctx context.Context, sd store.Sd, chatRoomActionIDs []uuid.UUID,
+	orderMethod parameter.ChatRoomActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomAction], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ListResult[entity.ChatRoomAction]{}, store.ErrNotFoundDescriptor
+	}
+	return getPluralChatRoomActions(ctx, qtx, chatRoomActionIDs, orderMethod, np)
+}
+
+// getChatRoomActionsWithDetailOnChatRoom はチャットルームアクション詳細を取得する内部関数です。
+func getChatRoomActionsWithDetailOnChatRoom(
+	ctx context.Context,
+	qtx *query.Queries,
+	chatRoomID uuid.UUID,
+	where parameter.WhereChatRoomActionParam,
+	order parameter.ChatRoomActionOrderMethod,
+	np store.NumberedPaginationParam,
+	cp store.CursorPaginationParam,
+	wc store.WithCountParam,
+) (store.ListResult[entity.ChatRoomActionWithDetail], error) {
+	eConvFunc := func(
+		e entity.ChatRoomActionWithDetailForQuery,
+	) (entity.ChatRoomActionWithDetail, error) {
+		return e.ChatRoomActionWithDetail, nil
+	}
+	runCFunc := func() (int64, error) {
+		r, err := qtx.CountChatRoomActionsOnChatRoom(ctx, query.CountChatRoomActionsOnChatRoomParams{
+			ChatRoomID:                   chatRoomID,
+			WhereInChatRoomActionTypeIds: where.WhereInChatRoomActionTypeIDs,
+			InChatRoomActionTypeIds:      where.InChatRoomActionTypeIDs,
+		})
+		if err != nil {
+			return 0, fmt.Errorf("failed to count chat room actions: %w", err)
+		}
+		return r, nil
+	}
+	runQFunc := func(orderMethod string) ([]entity.ChatRoomActionWithDetailForQuery, error) {
+		r, err := qtx.GetChatRoomActionsWithDetailOnChatRoom(ctx, query.GetChatRoomActionsWithDetailOnChatRoomParams{
+			ChatRoomID:                   chatRoomID,
+			OrderMethod:                  orderMethod,
+			WhereInChatRoomActionTypeIds: where.WhereInChatRoomActionTypeIDs,
+			InChatRoomActionTypeIds:      where.InChatRoomActionTypeIDs,
+		})
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return []entity.ChatRoomActionWithDetailForQuery{}, nil
+			}
+			return nil, fmt.Errorf("failed to get chat room actions: %w", err)
+		}
 		e := make([]entity.ChatRoomActionWithDetailForQuery, len(r))
 		for i, v := range r {
-			e[i] = convChatRoomActionOnChatRoom(query.GetChatRoomActionsOnChatRoomRow(v))
+			e[i] = convChatRoomActionWithDetailOnChatRoom(v)
+		}
+		return e, nil
+	}
+	runQCPFunc := func(subCursor, orderMethod string,
+		limit int32, cursorDir string, cursor int32, subCursorValue any,
+	) ([]entity.ChatRoomActionWithDetailForQuery, error) {
+		var actCursor time.Time
+		var err error
+		switch subCursor {
+		case parameter.ChatRoomActionActedAtCursorKey:
+			cv, ok := subCursorValue.(string)
+			actCursor, err = time.Parse(time.RFC3339, cv)
+			if !ok || err != nil {
+				actCursor = time.Time{}
+			}
+		}
+		p := query.GetChatRoomActionsWithDetailOnChatRoomUseKeysetPaginateParams{
+			ChatRoomID:                   chatRoomID,
+			Limit:                        limit,
+			WhereInChatRoomActionTypeIds: where.WhereInChatRoomActionTypeIDs,
+			InChatRoomActionTypeIds:      where.InChatRoomActionTypeIDs,
+			CursorDirection:              cursorDir,
+			OrderMethod:                  orderMethod,
+			ActedAtCursor:                actCursor,
+			Cursor:                       cursor,
+		}
+		r, err := qtx.GetChatRoomActionsWithDetailOnChatRoomUseKeysetPaginate(ctx, p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get chat room actions: %w", err)
+		}
+		e := make([]entity.ChatRoomActionWithDetailForQuery, len(r))
+		for i, v := range r {
+			e[i] = convChatRoomActionWithDetailOnChatRoom(query.GetChatRoomActionsWithDetailOnChatRoomRow(v))
+		}
+		return e, nil
+	}
+	runQNPFunc := func(orderMethod string, limit, offset int32) ([]entity.ChatRoomActionWithDetailForQuery, error) {
+		p := query.GetChatRoomActionsWithDetailOnChatRoomUseNumberedPaginateParams{
+			ChatRoomID:                   chatRoomID,
+			Limit:                        limit,
+			Offset:                       offset,
+			WhereInChatRoomActionTypeIds: where.WhereInChatRoomActionTypeIDs,
+			InChatRoomActionTypeIds:      where.InChatRoomActionTypeIDs,
+			OrderMethod:                  orderMethod,
+		}
+		r, err := qtx.GetChatRoomActionsWithDetailOnChatRoomUseNumberedPaginate(ctx, p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get chat room actions: %w", err)
+		}
+		e := make([]entity.ChatRoomActionWithDetailForQuery, len(r))
+		for i, v := range r {
+			e[i] = convChatRoomActionWithDetailOnChatRoom(query.GetChatRoomActionsWithDetailOnChatRoomRow(v))
 		}
 		return e, nil
 	}
@@ -576,8 +832,8 @@ func getChatRoomActionsOnChatRoom(
 	return res, nil
 }
 
-// GetChatRoomActionsOnChatRoom はチャットルームアクションを取得します。
-func (a *PgAdapter) GetChatRoomActionsOnChatRoom(
+// GetChatRoomActionsWithDetailOnChatRoom はチャットルームアクションを取得します。
+func (a *PgAdapter) GetChatRoomActionsWithDetailOnChatRoom(
 	ctx context.Context,
 	chatRoomID uuid.UUID,
 	where parameter.WhereChatRoomActionParam,
@@ -586,11 +842,11 @@ func (a *PgAdapter) GetChatRoomActionsOnChatRoom(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.ChatRoomActionWithDetail], error) {
-	return getChatRoomActionsOnChatRoom(ctx, a.query, chatRoomID, where, order, np, cp, wc)
+	return getChatRoomActionsWithDetailOnChatRoom(ctx, a.query, chatRoomID, where, order, np, cp, wc)
 }
 
-// GetChatRoomActionsOnChatRoomWithSd はSD付きでチャットルームアクションを取得します。
-func (a *PgAdapter) GetChatRoomActionsOnChatRoomWithSd(
+// GetChatRoomActionsWithDetailOnChatRoomWithSd はSD付きでチャットルームアクションを取得します。
+func (a *PgAdapter) GetChatRoomActionsWithDetailOnChatRoomWithSd(
 	ctx context.Context,
 	sd store.Sd,
 	chatRoomID uuid.UUID,
@@ -606,33 +862,33 @@ func (a *PgAdapter) GetChatRoomActionsOnChatRoomWithSd(
 	if !ok {
 		return store.ListResult[entity.ChatRoomActionWithDetail]{}, store.ErrNotFoundDescriptor
 	}
-	return getChatRoomActionsOnChatRoom(ctx, qtx, chatRoomID, where, order, np, cp, wc)
+	return getChatRoomActionsWithDetailOnChatRoom(ctx, qtx, chatRoomID, where, order, np, cp, wc)
 }
 
-// getPluralChatRoomActions は複数のチャットルームアクションを取得する内部関数です。
-func getPluralChatRoomActions(
+// getPluralChatRoomActionsWithDetail は複数のチャットルームアクションを取得する内部関数です。
+func getPluralChatRoomActionsWithDetail(
 	ctx context.Context, qtx *query.Queries, chatRoomActionIDs []uuid.UUID,
 	orderMethod parameter.ChatRoomActionOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.ChatRoomActionWithDetail], error) {
-	var e []query.GetPluralChatRoomActionsRow
+	var e []query.GetPluralChatRoomActionsWithDetailRow
 	var err error
 	if !np.Valid {
-		e, err = qtx.GetPluralChatRoomActions(ctx, query.GetPluralChatRoomActionsParams{
+		e, err = qtx.GetPluralChatRoomActionsWithDetail(ctx, query.GetPluralChatRoomActionsWithDetailParams{
 			ChatRoomActionIds: chatRoomActionIDs,
 			OrderMethod:       orderMethod.GetStringValue(),
 		})
 	} else {
-		var ne []query.GetPluralChatRoomActionsUseNumberedPaginateRow
-		ne, err = qtx.GetPluralChatRoomActionsUseNumberedPaginate(
-			ctx, query.GetPluralChatRoomActionsUseNumberedPaginateParams{
+		var ne []query.GetPluralChatRoomActionsWithDetailUseNumberedPaginateRow
+		ne, err = qtx.GetPluralChatRoomActionsWithDetailUseNumberedPaginate(
+			ctx, query.GetPluralChatRoomActionsWithDetailUseNumberedPaginateParams{
 				Limit:             int32(np.Limit.Int64),
 				Offset:            int32(np.Offset.Int64),
 				ChatRoomActionIds: chatRoomActionIDs,
 				OrderMethod:       orderMethod.GetStringValue(),
 			})
-		e = make([]query.GetPluralChatRoomActionsRow, len(ne))
+		e = make([]query.GetPluralChatRoomActionsWithDetailRow, len(ne))
 		for i, v := range ne {
-			e[i] = query.GetPluralChatRoomActionsRow(v)
+			e[i] = query.GetPluralChatRoomActionsWithDetailRow(v)
 		}
 	}
 	if err != nil {
@@ -641,22 +897,22 @@ func getPluralChatRoomActions(
 	}
 	entities := make([]entity.ChatRoomActionWithDetail, len(e))
 	for i, v := range e {
-		entities[i] = convChatRoomActionOnChatRoom(
-			query.GetChatRoomActionsOnChatRoomRow(v)).ChatRoomActionWithDetail
+		entities[i] = convChatRoomActionWithDetailOnChatRoom(
+			query.GetChatRoomActionsWithDetailOnChatRoomRow(v)).ChatRoomActionWithDetail
 	}
 	return store.ListResult[entity.ChatRoomActionWithDetail]{Data: entities}, nil
 }
 
-// GetPluralChatRoomActions は複数のチャットルームアクションを取得します。
-func (a *PgAdapter) GetPluralChatRoomActions(
+// GetPluralChatRoomActionsWithDetail は複数のチャットルームアクションを取得します。
+func (a *PgAdapter) GetPluralChatRoomActionsWithDetail(
 	ctx context.Context, chatRoomActionIDs []uuid.UUID,
 	order parameter.ChatRoomActionOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.ChatRoomActionWithDetail], error) {
-	return getPluralChatRoomActions(ctx, a.query, chatRoomActionIDs, order, np)
+	return getPluralChatRoomActionsWithDetail(ctx, a.query, chatRoomActionIDs, order, np)
 }
 
-// GetPluralChatRoomActionsWithSd はSD付きで複数のチャットルームアクションを取得します。
-func (a *PgAdapter) GetPluralChatRoomActionsWithSd(
+// GetPluralChatRoomActionsWithDetailWithSd はSD付きで複数のチャットルームアクションを取得します。
+func (a *PgAdapter) GetPluralChatRoomActionsWithDetailWithSd(
 	ctx context.Context, sd store.Sd, chatRoomActionIDs []uuid.UUID,
 	order parameter.ChatRoomActionOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.ChatRoomActionWithDetail], error) {
@@ -666,5 +922,5 @@ func (a *PgAdapter) GetPluralChatRoomActionsWithSd(
 	if !ok {
 		return store.ListResult[entity.ChatRoomActionWithDetail]{}, store.ErrNotFoundDescriptor
 	}
-	return getPluralChatRoomActions(ctx, qtx, chatRoomActionIDs, order, np)
+	return getPluralChatRoomActionsWithDetail(ctx, qtx, chatRoomActionIDs, order, np)
 }

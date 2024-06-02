@@ -132,7 +132,7 @@ func (m *ManageGrade) CreateGrade(
 	}
 	now := m.Clocker.Now()
 	crp := parameter.CreateChatRoomParam{
-		Name:             name,
+		Name:             entity.String{Valid: true, String: name},
 		IsPrivate:        false,
 		CoverImageID:     coverImageID,
 		OwnerID:          entity.UUID{},
@@ -157,7 +157,7 @@ func (m *ManageGrade) CreateGrade(
 	_, err = m.DB.CreateChatRoomCreateActionWithSd(ctx, sd, parameter.CreateChatRoomCreateActionParam{
 		ChatRoomActionID: cra.ChatRoomActionID,
 		CreatedBy:        entity.UUID{},
-		Name:             name,
+		Name:             entity.String{Valid: true, String: name},
 	})
 	if err != nil {
 		return entity.Grade{}, fmt.Errorf("failed to create chat room create action: %w", err)
@@ -231,7 +231,7 @@ func (m *ManageGrade) CreateGrades(
 	var p []parameter.CreateGradeParam
 	for _, v := range ps {
 		crp := parameter.CreateChatRoomParam{
-			Name:             v.Name,
+			Name:             entity.String{Valid: true, String: v.Name},
 			IsPrivate:        false,
 			CoverImageID:     v.CoverImageID,
 			OwnerID:          entity.UUID{},
@@ -252,7 +252,7 @@ func (m *ManageGrade) CreateGrades(
 		_, err = m.DB.CreateChatRoomCreateActionWithSd(ctx, sd, parameter.CreateChatRoomCreateActionParam{
 			ChatRoomActionID: cra.ChatRoomActionID,
 			CreatedBy:        entity.UUID{},
-			Name:             v.Name,
+			Name:             entity.String{Valid: true, String: v.Name},
 		})
 		if err != nil {
 			return 0, fmt.Errorf("failed to create chat room create action: %w", err)
@@ -341,16 +341,19 @@ func (m *ManageGrade) DeleteGrade(ctx context.Context, id uuid.UUID) (c int64, e
 		}
 
 		if len(imageIDs) > 0 {
-			_, err = pluralDeleteImages(ctx, sd, m.DB, m.Storage, imageIDs, entity.UUID{}, true)
-			if err != nil {
-				return 0, fmt.Errorf("failed to plural delete images: %w", err)
-			}
+			defer func(imageIDs []uuid.UUID) {
+				if err == nil {
+					_, err = pluralDeleteImages(ctx, sd, m.DB, m.Storage, imageIDs, entity.UUID{}, true)
+				}
+			}(imageIDs)
 		}
+
 		if len(fileIDs) > 0 {
-			_, err = pluralDeleteFiles(ctx, sd, m.DB, m.Storage, fileIDs, entity.UUID{}, true)
-			if err != nil {
-				return 0, fmt.Errorf("failed to plural delete files: %w", err)
-			}
+			defer func(fileIDs []uuid.UUID) {
+				if err == nil {
+					_, err = pluralDeleteFiles(ctx, sd, m.DB, m.Storage, fileIDs, entity.UUID{}, true)
+				}
+			}(fileIDs)
 		}
 		// action, message関連はカスケード削除される
 		// chatRoomBelongingはカスケード削除される
@@ -442,16 +445,19 @@ func (m *ManageGrade) PluralDeleteGrades(
 			}
 		}
 		if len(imageIDs) > 0 {
-			_, err = pluralDeleteImages(ctx, sd, m.DB, m.Storage, imageIDs, entity.UUID{}, true)
-			if err != nil {
-				return 0, fmt.Errorf("failed to plural delete images: %w", err)
-			}
+			defer func(imageIDs []uuid.UUID) {
+				if err == nil {
+					_, err = pluralDeleteImages(ctx, sd, m.DB, m.Storage, imageIDs, entity.UUID{}, true)
+				}
+			}(imageIDs)
 		}
+
 		if len(fileIDs) > 0 {
-			_, err = pluralDeleteFiles(ctx, sd, m.DB, m.Storage, fileIDs, entity.UUID{}, true)
-			if err != nil {
-				return 0, fmt.Errorf("failed to plural delete files: %w", err)
-			}
+			defer func(fileIDs []uuid.UUID) {
+				if err == nil {
+					_, err = pluralDeleteFiles(ctx, sd, m.DB, m.Storage, fileIDs, entity.UUID{}, true)
+				}
+			}(fileIDs)
 		}
 		_, err = m.DB.PluralDeleteChatRoomsWithSd(ctx, sd, chatRoomIDs)
 		if err != nil {
@@ -524,21 +530,22 @@ func (m *ManageGrade) UpdateGrade(
 			return entity.Grade{}, fmt.Errorf("failed to find chat room: %w", err)
 		}
 		if cr.CoverImage.Valid && cr.CoverImage.Entity.ImageID != coverImageID.Bytes {
-			_, err = pluralDeleteImages(
-				ctx,
-				sd,
-				m.DB,
-				m.Storage,
-				[]uuid.UUID{cr.CoverImage.Entity.ImageID},
-				entity.UUID{},
-				true,
-			)
-			if err != nil {
-				return entity.Grade{}, fmt.Errorf("failed to plural delete images: %w", err)
-			}
+			defer func(imageID uuid.UUID) {
+				if err == nil {
+					_, err = pluralDeleteImages(
+						ctx,
+						sd,
+						m.DB,
+						m.Storage,
+						[]uuid.UUID{imageID},
+						entity.UUID{},
+						true,
+					)
+				}
+			}(cr.CoverImage.Entity.ImageID)
 		}
 		crp := parameter.UpdateChatRoomParams{
-			Name:         name,
+			Name:         entity.String{Valid: true, String: name},
 			CoverImageID: coverImageID,
 		}
 		_, err = m.DB.UpdateChatRoomWithSd(ctx, sd, fe.Organization.ChatRoomID.Bytes, crp)

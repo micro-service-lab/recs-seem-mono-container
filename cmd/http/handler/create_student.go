@@ -38,7 +38,7 @@ type CreateStudentRequest struct {
 	LastName             string    `json:"last_name" validate:"max=255" ja:"姓" en:"LastName"`
 	GradeID              uuid.UUID `json:"grade_id" validate:"required" ja:"学年ID" en:"GradeID"`
 	GroupID              uuid.UUID `json:"group_id" validate:"required" ja:"班ID" en:"GroupID"`
-	RoleID               uuid.UUID `json:"student_id" validate:"" ja:"ロールID" en:"RoleID"`
+	RoleID               uuid.UUID `json:"role_id" validate:"" ja:"ロールID" en:"RoleID"`
 }
 
 func (h *CreateStudent) ServeHTTP(w http.ResponseWriter, r *http.Request) {

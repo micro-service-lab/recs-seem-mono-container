@@ -422,3 +422,59 @@ func (a *PgAdapter) GetPluralChatRoomUpdateNameActionsWithSd(
 	}
 	return getPluralChatRoomUpdateNameActions(ctx, qtx, chatRoomUpdateNameActionIDs, order, np)
 }
+
+// getPluralChatRoomUpdateNameActionsByChatRoomActionIDs はチャットルーム名前更新アクションを取得する内部関数です。
+func getPluralChatRoomUpdateNameActionsByChatRoomActionIDs(
+	ctx context.Context, qtx *query.Queries, chatRoomActionIDs []uuid.UUID,
+	_ parameter.ChatRoomUpdateNameActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error) {
+	var e []query.GetPluralChatRoomUpdateNameActionsByChatRoomActionIDsRow
+	var err error
+	if !np.Valid {
+		e, err = qtx.GetPluralChatRoomUpdateNameActionsByChatRoomActionIDs(ctx, chatRoomActionIDs)
+	} else {
+		var ne []query.GetPluralChatRoomUpdateNameActionsByChatRoomActionIDsUseNumberedPaginateRow
+		ne, err = qtx.GetPluralChatRoomUpdateNameActionsByChatRoomActionIDsUseNumberedPaginate(
+			ctx, query.GetPluralChatRoomUpdateNameActionsByChatRoomActionIDsUseNumberedPaginateParams{
+				Limit:             int32(np.Limit.Int64),
+				Offset:            int32(np.Offset.Int64),
+				ChatRoomActionIds: chatRoomActionIDs,
+			})
+		e = make([]query.GetPluralChatRoomUpdateNameActionsByChatRoomActionIDsRow, len(ne))
+		for i, v := range ne {
+			e[i] = query.GetPluralChatRoomUpdateNameActionsByChatRoomActionIDsRow(v)
+		}
+	}
+	if err != nil {
+		return store.ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy]{},
+			fmt.Errorf("failed to get chat room update name actions: %w", err)
+	}
+	entities := make([]entity.ChatRoomUpdateNameActionWithUpdatedBy, len(e))
+	for i, v := range e {
+		entities[i] = convChatRoomUpdateNameActionOnChatRoom(
+			query.GetChatRoomUpdateNameActionsOnChatRoomRow(v)).ChatRoomUpdateNameActionWithUpdatedBy
+	}
+	return store.ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy]{Data: entities}, nil
+}
+
+// GetPluralChatRoomUpdateNameActionsByChatRoomActionIDs はチャットルーム名前更新アクションを取得します。
+func (a *PgAdapter) GetPluralChatRoomUpdateNameActionsByChatRoomActionIDs(
+	ctx context.Context, chatRoomActionIDs []uuid.UUID,
+	order parameter.ChatRoomUpdateNameActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error) {
+	return getPluralChatRoomUpdateNameActionsByChatRoomActionIDs(ctx, a.query, chatRoomActionIDs, order, np)
+}
+
+// GetPluralChatRoomUpdateNameActionsByChatRoomIDsWithSd はSD付きでチャットルーム名前更新アクションを取得します。
+func (a *PgAdapter) GetPluralChatRoomUpdateNameActionsByChatRoomActionIDsWithSd(
+	ctx context.Context, sd store.Sd, chatRoomActionIDs []uuid.UUID,
+	order parameter.ChatRoomUpdateNameActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ListResult[entity.ChatRoomUpdateNameActionWithUpdatedBy]{}, store.ErrNotFoundDescriptor
+	}
+	return getPluralChatRoomUpdateNameActionsByChatRoomActionIDs(ctx, qtx, chatRoomActionIDs, order, np)
+}

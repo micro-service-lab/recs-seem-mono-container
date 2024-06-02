@@ -27,6 +27,8 @@ const (
 	ChatRoomActionTypeKeyWithdraw ChatRoomActionTypeKey = "withdraw"
 	// ChatRoomActionTypeKeyMessage チャットルームアクションタイプキー: メッセージ。
 	ChatRoomActionTypeKeyMessage ChatRoomActionTypeKey = "message"
+	// ChatRoomActionTypeKeyDeleteMessage チャットルームアクションタイプキー: メッセージ削除。
+	ChatRoomActionTypeKeyDeleteMessage ChatRoomActionTypeKey = "delete_message"
 )
 
 // ChatRoomActionType チャットルームアクションタイプ。
@@ -60,6 +62,10 @@ var ChatRoomActionTypes = []ChatRoomActionType{
 	{
 		Key:  string(ChatRoomActionTypeKeyMessage),
 		Name: "メッセージ",
+	},
+	{
+		Key:  string(ChatRoomActionTypeKeyDeleteMessage),
+		Name: "メッセージ削除",
 	},
 }
 

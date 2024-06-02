@@ -13,6 +13,9 @@ DELETE FROM t_attached_messages WHERE message_id = $1;
 -- name: DeleteAttachedMessagesOnMessages :execrows
 DELETE FROM t_attached_messages WHERE message_id = ANY(@message_ids::uuid[]);
 
+-- name: PluralDeleteAttachedMessagesOnMessage :execrows
+DELETE FROM t_attached_messages WHERE message_id = $1 AND attachable_item_id = ANY(@attachable_item_ids::uuid[]);
+
 -- name: GetAttachedItemsOnMessage :many
 SELECT t_attached_messages.*, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,

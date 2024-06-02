@@ -67,7 +67,7 @@ func (m *ManageOrganization) CreateWholeOrganization(
 	}
 	now := m.Clocker.Now()
 	cr, err := m.DB.CreateChatRoomWithSd(ctx, sd, parameter.CreateChatRoomParam{
-		Name:             name,
+		Name:             entity.String{Valid: true, String: name},
 		IsPrivate:        false,
 		CoverImageID:     coverImageID,
 		OwnerID:          entity.UUID{},
@@ -91,7 +91,7 @@ func (m *ManageOrganization) CreateWholeOrganization(
 	_, err = m.DB.CreateChatRoomCreateActionWithSd(ctx, sd, parameter.CreateChatRoomCreateActionParam{
 		ChatRoomActionID: cra.ChatRoomActionID,
 		CreatedBy:        entity.UUID{},
-		Name:             name,
+		Name:             entity.String{Valid: true, String: name},
 	})
 	if err != nil {
 		return entity.Organization{}, fmt.Errorf("failed to create chat room create action: %w", err)
@@ -170,16 +170,19 @@ func (m *ManageOrganization) DeleteWholeOrganization(ctx context.Context) (c int
 		}
 
 		if len(imageIDs) > 0 {
-			_, err = pluralDeleteImages(ctx, sd, m.DB, m.Storage, imageIDs, entity.UUID{}, true)
-			if err != nil {
-				return 0, fmt.Errorf("failed to plural delete images: %w", err)
-			}
+			defer func(imageIDs []uuid.UUID) {
+				if err == nil {
+					_, err = pluralDeleteImages(ctx, sd, m.DB, m.Storage, imageIDs, entity.UUID{}, true)
+				}
+			}(imageIDs)
 		}
+
 		if len(fileIDs) > 0 {
-			_, err = pluralDeleteFiles(ctx, sd, m.DB, m.Storage, fileIDs, entity.UUID{}, true)
-			if err != nil {
-				return 0, fmt.Errorf("failed to plural delete files: %w", err)
-			}
+			defer func(fileIDs []uuid.UUID) {
+				if err == nil {
+					_, err = pluralDeleteFiles(ctx, sd, m.DB, m.Storage, fileIDs, entity.UUID{}, true)
+				}
+			}(fileIDs)
 		}
 		// action, message関連はカスケード削除される
 		// chatRoomBelongingはカスケード削除される
@@ -252,21 +255,22 @@ func (m *ManageOrganization) UpdateWholeOrganization(
 			return entity.Organization{}, fmt.Errorf("failed to find chat room: %w", err)
 		}
 		if cr.CoverImage.Valid && cr.CoverImage.Entity.ImageID != coverImageID.Bytes {
-			_, err = pluralDeleteImages(
-				ctx,
-				sd,
-				m.DB,
-				m.Storage,
-				[]uuid.UUID{cr.CoverImage.Entity.ImageID},
-				entity.UUID{},
-				true,
-			)
-			if err != nil {
-				return entity.Organization{}, fmt.Errorf("failed to plural delete images: %w", err)
-			}
+			defer func(imageID uuid.UUID) {
+				if err == nil {
+					_, err = pluralDeleteImages(
+						ctx,
+						sd,
+						m.DB,
+						m.Storage,
+						[]uuid.UUID{imageID},
+						entity.UUID{},
+						true,
+					)
+				}
+			}(cr.CoverImage.Entity.ImageID)
 		}
 		_, err = m.DB.UpdateChatRoomWithSd(ctx, sd, origin.ChatRoomID.Bytes, parameter.UpdateChatRoomParams{
-			Name:         name,
+			Name:         entity.String{Valid: true, String: name},
 			CoverImageID: coverImageID,
 		})
 		if err != nil {

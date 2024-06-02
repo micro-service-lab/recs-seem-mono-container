@@ -418,3 +418,59 @@ func (a *PgAdapter) GetPluralChatRoomDeleteMessageActionsWithSd(
 	}
 	return getPluralChatRoomDeleteMessageActions(ctx, qtx, chatRoomDeleteMessageActionIDs, order, np)
 }
+
+// getPluralChatRoomDeleteMessageActionsByChatRoomActionIDs はチャットルームメッセージ削除アクションを取得する内部関数です。
+func getPluralChatRoomDeleteMessageActionsByChatRoomActionIDs(
+	ctx context.Context, qtx *query.Queries, chatRoomActionIDs []uuid.UUID,
+	_ parameter.ChatRoomDeleteMessageActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error) {
+	var e []query.GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsRow
+	var err error
+	if !np.Valid {
+		e, err = qtx.GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDs(ctx, chatRoomActionIDs)
+	} else {
+		var ne []query.GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsUseNumberedPaginateRow
+		ne, err = qtx.GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsUseNumberedPaginate(
+			ctx, query.GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsUseNumberedPaginateParams{
+				Limit:             int32(np.Limit.Int64),
+				Offset:            int32(np.Offset.Int64),
+				ChatRoomActionIds: chatRoomActionIDs,
+			})
+		e = make([]query.GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsRow, len(ne))
+		for i, v := range ne {
+			e[i] = query.GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsRow(v)
+		}
+	}
+	if err != nil {
+		return store.ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy]{},
+			fmt.Errorf("failed to get chat room delete message actions: %w", err)
+	}
+	entities := make([]entity.ChatRoomDeleteMessageActionWithDeletedBy, len(e))
+	for i, v := range e {
+		entities[i] = convChatRoomDeleteMessageActionOnChatRoom(
+			query.GetChatRoomDeleteMessageActionsOnChatRoomRow(v)).ChatRoomDeleteMessageActionWithDeletedBy
+	}
+	return store.ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy]{Data: entities}, nil
+}
+
+// GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDs はチャットルームメッセージ削除アクションを取得します。
+func (a *PgAdapter) GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDs(
+	ctx context.Context, chatRoomActionIDs []uuid.UUID,
+	order parameter.ChatRoomDeleteMessageActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error) {
+	return getPluralChatRoomDeleteMessageActionsByChatRoomActionIDs(ctx, a.query, chatRoomActionIDs, order, np)
+}
+
+// GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsWithSd はSD付きでチャットルームメッセージ削除アクションを取得します。
+func (a *PgAdapter) GetPluralChatRoomDeleteMessageActionsByChatRoomActionIDsWithSd(
+	ctx context.Context, sd store.Sd, chatRoomActionIDs []uuid.UUID,
+	order parameter.ChatRoomDeleteMessageActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ListResult[entity.ChatRoomDeleteMessageActionWithDeletedBy]{}, store.ErrNotFoundDescriptor
+	}
+	return getPluralChatRoomDeleteMessageActionsByChatRoomActionIDs(ctx, qtx, chatRoomActionIDs, order, np)
+}

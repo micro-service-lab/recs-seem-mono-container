@@ -404,7 +404,7 @@ func (m *ManageChatRoomBelonging) GetChatRoomsOnMember(
 	cursor parameter.Cursor,
 	offset parameter.Offset,
 	withCount parameter.WithCount,
-) (es store.ListResult[entity.ChatRoomOnMember], err error) {
+) (es store.ListResult[entity.PracticalChatRoomOnMember], err error) {
 	wc := store.WithCountParam{
 		Valid: bool(withCount),
 	}
@@ -429,9 +429,61 @@ func (m *ManageChatRoomBelonging) GetChatRoomsOnMember(
 		}
 	case parameter.NonePagination:
 	}
-	es, err = m.DB.GetChatRoomsOnMember(ctx, memberID, where, order, np, cp, wc)
+	e, err := m.DB.GetChatRoomsOnMember(ctx, memberID, where, order, np, cp, wc)
 	if err != nil {
-		return store.ListResult[entity.ChatRoomOnMember]{}, fmt.Errorf("failed to get chat rooms on member: %w", err)
+		return store.ListResult[entity.PracticalChatRoomOnMember]{}, fmt.Errorf("failed to get chat rooms on member: %w", err)
+	}
+	es = store.ListResult[entity.PracticalChatRoomOnMember]{
+		CursorPagination: e.CursorPagination,
+		WithCount:        e.WithCount,
+	}
+	privateRoomIDs := make([]uuid.UUID, 0, len(e.Data))
+	es.Data = make([]entity.PracticalChatRoomOnMember, len(e.Data))
+	for _, v := range e.Data {
+		if v.ChatRoom.IsPrivate {
+			privateRoomIDs = append(privateRoomIDs, v.ChatRoom.ChatRoomID)
+		}
+	}
+	companions, err := m.DB.GetPluralPrivateChatRoomCompanions(
+		ctx,
+		privateRoomIDs,
+		memberID,
+		store.NumberedPaginationParam{},
+		parameter.MemberOnChatRoomOrderMethodDefault,
+	)
+	if err != nil {
+		return store.ListResult[entity.PracticalChatRoomOnMember]{},
+			fmt.Errorf("failed to get plural private chat room companions: %w", err)
+	}
+	companionMap := make(map[uuid.UUID]entity.MemberOnChatRoom, len(companions.Data))
+	for _, v := range companions.Data {
+		companionMap[v.ChatRoomID] = entity.MemberOnChatRoom{
+			Member:  v.Member,
+			AddedAt: v.AddedAt,
+		}
+	}
+	for i, v := range e.Data {
+		var cp entity.NullableEntity[entity.MemberOnChatRoom]
+		if companion, ok := companionMap[v.ChatRoom.ChatRoomID]; ok {
+			cp = entity.NullableEntity[entity.MemberOnChatRoom]{
+				Valid:  true,
+				Entity: companion,
+			}
+		}
+		es.Data[i] = entity.PracticalChatRoomOnMember{
+			ChatRoom: entity.PracticalChatRoom{
+				ChatRoomID:       v.ChatRoom.ChatRoomID,
+				Name:             v.ChatRoom.Name,
+				IsPrivate:        v.ChatRoom.IsPrivate,
+				FromOrganization: v.ChatRoom.FromOrganization,
+				CoverImage:       v.ChatRoom.CoverImage,
+				OwnerID:          v.ChatRoom.OwnerID,
+				LatestMessage:    v.ChatRoom.LatestMessage,
+				LatestAction:     v.ChatRoom.LatestAction,
+				Companion:        cp,
+			},
+			AddedAt: v.AddedAt,
+		}
 	}
 	return es, nil
 }

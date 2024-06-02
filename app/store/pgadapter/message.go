@@ -34,7 +34,7 @@ func convMessageWithChatRoom(e query.FindMessageByIDWithChatRoomRow) entity.Mess
 		MessageID: e.MessageID,
 		ChatRoom: entity.ChatRoomWithCoverImage{
 			ChatRoomID:       e.ChatRoomID.Bytes,
-			Name:             e.ChatRoomName.String,
+			Name:             entity.String(e.ChatRoomName),
 			IsPrivate:        e.ChatRoomIsPrivate.Bool,
 			FromOrganization: e.ChatRoomFromOrganization.Bool,
 			CoverImage: entity.NullableEntity[entity.ImageWithAttachableItem]{
@@ -346,6 +346,51 @@ func (a *PgAdapter) FindMessageByIDWithSd(
 		return entity.Message{}, store.ErrNotFoundDescriptor
 	}
 	return findMessageByID(ctx, qtx, messageID)
+}
+
+func findMessageWithChatRoomAction(
+	ctx context.Context, qtx *query.Queries, messageID uuid.UUID,
+) (entity.MessageWithChatRoomAction, error) {
+	e, err := qtx.FindMessageByIDWithChatRoomAction(ctx, messageID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.MessageWithChatRoomAction{}, errhandle.NewModelNotFoundError("message")
+		}
+		return entity.MessageWithChatRoomAction{}, fmt.Errorf("failed to find message with chat room action: %w", err)
+	}
+	return entity.MessageWithChatRoomAction{
+		MessageID:    e.MessageID,
+		SenderID:     entity.UUID(e.SenderID),
+		Body:         e.Body,
+		PostedAt:     e.PostedAt,
+		LastEditedAt: e.LastEditedAt,
+		ChatRoomAction: entity.ChatRoomAction{
+			ChatRoomActionID:     e.ChatRoomActionID,
+			ChatRoomID:           e.ChatRoomActionChatRoomID.Bytes,
+			ChatRoomActionTypeID: e.ChatRoomActionActionTypeID.Bytes,
+			ActedAt:              e.ChatRoomActionActedAt.Time,
+		},
+	}, nil
+}
+
+// FindMessageWithChatRoomAction はメッセージとチャットルームアクションを取得します。
+func (a *PgAdapter) FindMessageWithChatRoomAction(
+	ctx context.Context, messageID uuid.UUID,
+) (entity.MessageWithChatRoomAction, error) {
+	return findMessageWithChatRoomAction(ctx, a.query, messageID)
+}
+
+// FindMessageWithChatRoomActionWithSd はSD付きでメッセージとチャットルームアクションを取得します。
+func (a *PgAdapter) FindMessageWithChatRoomActionWithSd(
+	ctx context.Context, sd store.Sd, messageID uuid.UUID,
+) (entity.MessageWithChatRoomAction, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return entity.MessageWithChatRoomAction{}, store.ErrNotFoundDescriptor
+	}
+	return findMessageWithChatRoomAction(ctx, qtx, messageID)
 }
 
 // findMessageWithChatRoom はメッセージと出席状況を取得する内部関数です。
@@ -1045,6 +1090,64 @@ func (a *PgAdapter) GetPluralMessagesWithSenderWithSd(
 		return store.ListResult[entity.MessageWithSender]{}, store.ErrNotFoundDescriptor
 	}
 	return getPluralMessagesWithSender(ctx, qtx, messageIDs, order, np)
+}
+
+// getPluralMessagesWithSenderByChatRoomActionIDs はチャットルームアクションIDからメッセージを取得する内部関数です。
+func getPluralMessagesWithSenderByChatRoomActionIDs(
+	ctx context.Context, qtx *query.Queries, chatRoomActionIDs []uuid.UUID,
+	orderMethod parameter.MessageOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.MessageWithSender], error) {
+	var e []query.GetPluralMessagesWithSenderByChatRoomActionIDsRow
+	var te []query.GetPluralMessagesWithSenderByChatRoomActionIDsUseNumberedPaginateRow
+	var err error
+	if !np.Valid {
+		e, err = qtx.GetPluralMessagesWithSenderByChatRoomActionIDs(ctx, query.GetPluralMessagesWithSenderByChatRoomActionIDsParams{
+			ChatRoomActionIds: chatRoomActionIDs,
+			OrderMethod:       orderMethod.GetStringValue(),
+		})
+	} else {
+		te, err = qtx.GetPluralMessagesWithSenderByChatRoomActionIDsUseNumberedPaginate(
+			ctx, query.GetPluralMessagesWithSenderByChatRoomActionIDsUseNumberedPaginateParams{
+				ChatRoomActionIds: chatRoomActionIDs,
+				Offset:            int32(np.Offset.Int64),
+				Limit:             int32(np.Limit.Int64),
+				OrderMethod:       orderMethod.GetStringValue(),
+			})
+		e = make([]query.GetPluralMessagesWithSenderByChatRoomActionIDsRow, len(te))
+		for i, v := range te {
+			e[i] = query.GetPluralMessagesWithSenderByChatRoomActionIDsRow(v)
+		}
+	}
+	if err != nil {
+		return store.ListResult[entity.MessageWithSender]{}, fmt.Errorf("failed to get messages: %w", err)
+	}
+	entities := make([]entity.MessageWithSender, len(e))
+	for i, v := range e {
+		entities[i] = convMessageWithSender(query.FindMessageByIDWithSenderRow(v))
+	}
+	return store.ListResult[entity.MessageWithSender]{Data: entities}, nil
+}
+
+// GetPluralMessagesWithSenderByChatRoomActionIDs はチャットルームアクションIDからメッセージを取得します。
+func (a *PgAdapter) GetPluralMessagesWithSenderByChatRoomActionIDs(
+	ctx context.Context, chatRoomActionIDs []uuid.UUID,
+	order parameter.MessageOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.MessageWithSender], error) {
+	return getPluralMessagesWithSenderByChatRoomActionIDs(ctx, a.query, chatRoomActionIDs, order, np)
+}
+
+// GetPluralMessagesWithSenderByChatRoomActionIDsWithSd はSD付きでチャットルームアクションIDからメッセージを取得します。
+func (a *PgAdapter) GetPluralMessagesWithSenderByChatRoomActionIDsWithSd(
+	ctx context.Context, sd store.Sd, chatRoomActionIDs []uuid.UUID,
+	order parameter.MessageOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.MessageWithSender], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ListResult[entity.MessageWithSender]{}, store.ErrNotFoundDescriptor
+	}
+	return getPluralMessagesWithSenderByChatRoomActionIDs(ctx, qtx, chatRoomActionIDs, order, np)
 }
 
 func updateMessage(

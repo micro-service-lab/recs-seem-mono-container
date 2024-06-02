@@ -223,6 +223,44 @@ func (q *Queries) FindMessageByIDWithChatRoom(ctx context.Context, messageID uui
 	return i, err
 }
 
+const findMessageByIDWithChatRoomAction = `-- name: FindMessageByIDWithChatRoomAction :one
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, t_chat_room_actions.chat_room_id chat_room_action_chat_room_id, t_chat_room_actions.chat_room_action_type_id chat_room_action_action_type_id, t_chat_room_actions.acted_at chat_room_action_acted_at
+FROM t_messages
+LEFT JOIN t_chat_room_actions ON t_messages.chat_room_action_id = t_chat_room_actions.chat_room_action_id
+WHERE message_id = $1
+`
+
+type FindMessageByIDWithChatRoomActionRow struct {
+	TMessagesPkey              pgtype.Int8        `json:"t_messages_pkey"`
+	MessageID                  uuid.UUID          `json:"message_id"`
+	SenderID                   pgtype.UUID        `json:"sender_id"`
+	Body                       string             `json:"body"`
+	PostedAt                   time.Time          `json:"posted_at"`
+	LastEditedAt               time.Time          `json:"last_edited_at"`
+	ChatRoomActionID           uuid.UUID          `json:"chat_room_action_id"`
+	ChatRoomActionChatRoomID   pgtype.UUID        `json:"chat_room_action_chat_room_id"`
+	ChatRoomActionActionTypeID pgtype.UUID        `json:"chat_room_action_action_type_id"`
+	ChatRoomActionActedAt      pgtype.Timestamptz `json:"chat_room_action_acted_at"`
+}
+
+func (q *Queries) FindMessageByIDWithChatRoomAction(ctx context.Context, messageID uuid.UUID) (FindMessageByIDWithChatRoomActionRow, error) {
+	row := q.db.QueryRow(ctx, findMessageByIDWithChatRoomAction, messageID)
+	var i FindMessageByIDWithChatRoomActionRow
+	err := row.Scan(
+		&i.TMessagesPkey,
+		&i.MessageID,
+		&i.SenderID,
+		&i.Body,
+		&i.PostedAt,
+		&i.LastEditedAt,
+		&i.ChatRoomActionID,
+		&i.ChatRoomActionChatRoomID,
+		&i.ChatRoomActionActionTypeID,
+		&i.ChatRoomActionActedAt,
+	)
+	return i, err
+}
+
 const findMessageByIDWithSender = `-- name: FindMessageByIDWithSender :one
 SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
 m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
@@ -1826,6 +1864,200 @@ func (q *Queries) GetPluralMessagesWithSender(ctx context.Context, arg GetPlural
 	items := []GetPluralMessagesWithSenderRow{}
 	for rows.Next() {
 		var i GetPluralMessagesWithSenderRow
+		if err := rows.Scan(
+			&i.TMessagesPkey,
+			&i.MessageID,
+			&i.SenderID,
+			&i.Body,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.ChatRoomActionID,
+			&i.MemberName,
+			&i.MemberFirstName,
+			&i.MemberLastName,
+			&i.MemberEmail,
+			&i.MemberGradeID,
+			&i.MemberGroupID,
+			&i.MemberProfileImageID,
+			&i.MemberProfileImageHeight,
+			&i.MemberProfileImageWidth,
+			&i.MemberProfileImageAttachableItemID,
+			&i.MemberProfileImageOwnerID,
+			&i.MemberProfileImageFromOuter,
+			&i.MemberProfileImageAlias,
+			&i.MemberProfileImageUrl,
+			&i.MemberProfileImageSize,
+			&i.MemberProfileImageMimeTypeID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMessagesWithSenderByChatRoomActionIDs = `-- name: GetPluralMessagesWithSenderByChatRoomActionIDs :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
+m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
+t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
+t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM t_messages
+LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE chat_room_action_id = ANY($1::uuid[])
+ORDER BY
+	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
+	t_messages_pkey ASC
+`
+
+type GetPluralMessagesWithSenderByChatRoomActionIDsParams struct {
+	ChatRoomActionIds []uuid.UUID `json:"chat_room_action_ids"`
+	OrderMethod       string      `json:"order_method"`
+}
+
+type GetPluralMessagesWithSenderByChatRoomActionIDsRow struct {
+	TMessagesPkey                      pgtype.Int8   `json:"t_messages_pkey"`
+	MessageID                          uuid.UUID     `json:"message_id"`
+	SenderID                           pgtype.UUID   `json:"sender_id"`
+	Body                               string        `json:"body"`
+	PostedAt                           time.Time     `json:"posted_at"`
+	LastEditedAt                       time.Time     `json:"last_edited_at"`
+	ChatRoomActionID                   uuid.UUID     `json:"chat_room_action_id"`
+	MemberName                         pgtype.Text   `json:"member_name"`
+	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
+	MemberLastName                     pgtype.Text   `json:"member_last_name"`
+	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberGradeID                      pgtype.UUID   `json:"member_grade_id"`
+	MemberGroupID                      pgtype.UUID   `json:"member_group_id"`
+	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
+	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
+	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
+	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
+	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
+	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageAlias            pgtype.Text   `json:"member_profile_image_alias"`
+	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
+	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
+	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
+}
+
+func (q *Queries) GetPluralMessagesWithSenderByChatRoomActionIDs(ctx context.Context, arg GetPluralMessagesWithSenderByChatRoomActionIDsParams) ([]GetPluralMessagesWithSenderByChatRoomActionIDsRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMessagesWithSenderByChatRoomActionIDs, arg.ChatRoomActionIds, arg.OrderMethod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralMessagesWithSenderByChatRoomActionIDsRow{}
+	for rows.Next() {
+		var i GetPluralMessagesWithSenderByChatRoomActionIDsRow
+		if err := rows.Scan(
+			&i.TMessagesPkey,
+			&i.MessageID,
+			&i.SenderID,
+			&i.Body,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.ChatRoomActionID,
+			&i.MemberName,
+			&i.MemberFirstName,
+			&i.MemberLastName,
+			&i.MemberEmail,
+			&i.MemberGradeID,
+			&i.MemberGroupID,
+			&i.MemberProfileImageID,
+			&i.MemberProfileImageHeight,
+			&i.MemberProfileImageWidth,
+			&i.MemberProfileImageAttachableItemID,
+			&i.MemberProfileImageOwnerID,
+			&i.MemberProfileImageFromOuter,
+			&i.MemberProfileImageAlias,
+			&i.MemberProfileImageUrl,
+			&i.MemberProfileImageSize,
+			&i.MemberProfileImageMimeTypeID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralMessagesWithSenderByChatRoomActionIDsUseNumberedPaginate = `-- name: GetPluralMessagesWithSenderByChatRoomActionIDsUseNumberedPaginate :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
+m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
+t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
+t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM t_messages
+LEFT JOIN m_members ON t_messages.sender_id = m_members.member_id
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE chat_room_action_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
+	t_messages_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralMessagesWithSenderByChatRoomActionIDsUseNumberedPaginateParams struct {
+	Limit             int32       `json:"limit"`
+	Offset            int32       `json:"offset"`
+	ChatRoomActionIds []uuid.UUID `json:"chat_room_action_ids"`
+	OrderMethod       string      `json:"order_method"`
+}
+
+type GetPluralMessagesWithSenderByChatRoomActionIDsUseNumberedPaginateRow struct {
+	TMessagesPkey                      pgtype.Int8   `json:"t_messages_pkey"`
+	MessageID                          uuid.UUID     `json:"message_id"`
+	SenderID                           pgtype.UUID   `json:"sender_id"`
+	Body                               string        `json:"body"`
+	PostedAt                           time.Time     `json:"posted_at"`
+	LastEditedAt                       time.Time     `json:"last_edited_at"`
+	ChatRoomActionID                   uuid.UUID     `json:"chat_room_action_id"`
+	MemberName                         pgtype.Text   `json:"member_name"`
+	MemberFirstName                    pgtype.Text   `json:"member_first_name"`
+	MemberLastName                     pgtype.Text   `json:"member_last_name"`
+	MemberEmail                        pgtype.Text   `json:"member_email"`
+	MemberGradeID                      pgtype.UUID   `json:"member_grade_id"`
+	MemberGroupID                      pgtype.UUID   `json:"member_group_id"`
+	MemberProfileImageID               pgtype.UUID   `json:"member_profile_image_id"`
+	MemberProfileImageHeight           pgtype.Float8 `json:"member_profile_image_height"`
+	MemberProfileImageWidth            pgtype.Float8 `json:"member_profile_image_width"`
+	MemberProfileImageAttachableItemID pgtype.UUID   `json:"member_profile_image_attachable_item_id"`
+	MemberProfileImageOwnerID          pgtype.UUID   `json:"member_profile_image_owner_id"`
+	MemberProfileImageFromOuter        pgtype.Bool   `json:"member_profile_image_from_outer"`
+	MemberProfileImageAlias            pgtype.Text   `json:"member_profile_image_alias"`
+	MemberProfileImageUrl              pgtype.Text   `json:"member_profile_image_url"`
+	MemberProfileImageSize             pgtype.Float8 `json:"member_profile_image_size"`
+	MemberProfileImageMimeTypeID       pgtype.UUID   `json:"member_profile_image_mime_type_id"`
+}
+
+func (q *Queries) GetPluralMessagesWithSenderByChatRoomActionIDsUseNumberedPaginate(ctx context.Context, arg GetPluralMessagesWithSenderByChatRoomActionIDsUseNumberedPaginateParams) ([]GetPluralMessagesWithSenderByChatRoomActionIDsUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralMessagesWithSenderByChatRoomActionIDsUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.ChatRoomActionIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralMessagesWithSenderByChatRoomActionIDsUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralMessagesWithSenderByChatRoomActionIDsUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.TMessagesPkey,
 			&i.MessageID,

@@ -323,6 +323,127 @@ func (q *Queries) GetPluralChatRoomRemoveMemberActions(ctx context.Context, chat
 	return items, nil
 }
 
+const getPluralChatRoomRemoveMemberActionsByChatRoomActionIDs = `-- name: GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDs :many
+SELECT t_chat_room_remove_member_actions.t_chat_room_remove_member_actions_pkey, t_chat_room_remove_member_actions.chat_room_remove_member_action_id, t_chat_room_remove_member_actions.chat_room_action_id, t_chat_room_remove_member_actions.removed_by,
+m_members.name remove_member_name, m_members.first_name remove_member_first_name, m_members.last_name remove_member_last_name, m_members.email remove_member_email,
+m_members.profile_image_id remove_member_profile_image_id, m_members.grade_id remove_member_grade_id, m_members.group_id remove_member_group_id
+FROM t_chat_room_remove_member_actions
+LEFT JOIN m_members ON t_chat_room_remove_member_actions.removed_by = m_members.member_id
+WHERE chat_room_action_id = ANY($1::uuid[])
+ORDER BY
+	t_chat_room_remove_member_actions_pkey ASC
+`
+
+type GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsRow struct {
+	TChatRoomRemoveMemberActionsPkey pgtype.Int8 `json:"t_chat_room_remove_member_actions_pkey"`
+	ChatRoomRemoveMemberActionID     uuid.UUID   `json:"chat_room_remove_member_action_id"`
+	ChatRoomActionID                 uuid.UUID   `json:"chat_room_action_id"`
+	RemovedBy                        pgtype.UUID `json:"removed_by"`
+	RemoveMemberName                 pgtype.Text `json:"remove_member_name"`
+	RemoveMemberFirstName            pgtype.Text `json:"remove_member_first_name"`
+	RemoveMemberLastName             pgtype.Text `json:"remove_member_last_name"`
+	RemoveMemberEmail                pgtype.Text `json:"remove_member_email"`
+	RemoveMemberProfileImageID       pgtype.UUID `json:"remove_member_profile_image_id"`
+	RemoveMemberGradeID              pgtype.UUID `json:"remove_member_grade_id"`
+	RemoveMemberGroupID              pgtype.UUID `json:"remove_member_group_id"`
+}
+
+func (q *Queries) GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDs(ctx context.Context, chatRoomActionIds []uuid.UUID) ([]GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsRow, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomRemoveMemberActionsByChatRoomActionIDs, chatRoomActionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsRow{}
+	for rows.Next() {
+		var i GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsRow
+		if err := rows.Scan(
+			&i.TChatRoomRemoveMemberActionsPkey,
+			&i.ChatRoomRemoveMemberActionID,
+			&i.ChatRoomActionID,
+			&i.RemovedBy,
+			&i.RemoveMemberName,
+			&i.RemoveMemberFirstName,
+			&i.RemoveMemberLastName,
+			&i.RemoveMemberEmail,
+			&i.RemoveMemberProfileImageID,
+			&i.RemoveMemberGradeID,
+			&i.RemoveMemberGroupID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralChatRoomRemoveMemberActionsByChatRoomActionIDsUseNumberedPaginate = `-- name: GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsUseNumberedPaginate :many
+SELECT t_chat_room_remove_member_actions.t_chat_room_remove_member_actions_pkey, t_chat_room_remove_member_actions.chat_room_remove_member_action_id, t_chat_room_remove_member_actions.chat_room_action_id, t_chat_room_remove_member_actions.removed_by,
+m_members.name remove_member_name, m_members.first_name remove_member_first_name, m_members.last_name remove_member_last_name, m_members.email remove_member_email,
+m_members.profile_image_id remove_member_profile_image_id, m_members.grade_id remove_member_grade_id, m_members.group_id remove_member_group_id
+FROM t_chat_room_remove_member_actions
+LEFT JOIN m_members ON t_chat_room_remove_member_actions.removed_by = m_members.member_id
+WHERE chat_room_action_id = ANY($3::uuid[])
+ORDER BY
+	t_chat_room_remove_member_actions_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsUseNumberedPaginateParams struct {
+	Limit             int32       `json:"limit"`
+	Offset            int32       `json:"offset"`
+	ChatRoomActionIds []uuid.UUID `json:"chat_room_action_ids"`
+}
+
+type GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsUseNumberedPaginateRow struct {
+	TChatRoomRemoveMemberActionsPkey pgtype.Int8 `json:"t_chat_room_remove_member_actions_pkey"`
+	ChatRoomRemoveMemberActionID     uuid.UUID   `json:"chat_room_remove_member_action_id"`
+	ChatRoomActionID                 uuid.UUID   `json:"chat_room_action_id"`
+	RemovedBy                        pgtype.UUID `json:"removed_by"`
+	RemoveMemberName                 pgtype.Text `json:"remove_member_name"`
+	RemoveMemberFirstName            pgtype.Text `json:"remove_member_first_name"`
+	RemoveMemberLastName             pgtype.Text `json:"remove_member_last_name"`
+	RemoveMemberEmail                pgtype.Text `json:"remove_member_email"`
+	RemoveMemberProfileImageID       pgtype.UUID `json:"remove_member_profile_image_id"`
+	RemoveMemberGradeID              pgtype.UUID `json:"remove_member_grade_id"`
+	RemoveMemberGroupID              pgtype.UUID `json:"remove_member_group_id"`
+}
+
+func (q *Queries) GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsUseNumberedPaginate(ctx context.Context, arg GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsUseNumberedPaginateParams) ([]GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomRemoveMemberActionsByChatRoomActionIDsUseNumberedPaginate, arg.Limit, arg.Offset, arg.ChatRoomActionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.TChatRoomRemoveMemberActionsPkey,
+			&i.ChatRoomRemoveMemberActionID,
+			&i.ChatRoomActionID,
+			&i.RemovedBy,
+			&i.RemoveMemberName,
+			&i.RemoveMemberFirstName,
+			&i.RemoveMemberLastName,
+			&i.RemoveMemberEmail,
+			&i.RemoveMemberProfileImageID,
+			&i.RemoveMemberGradeID,
+			&i.RemoveMemberGroupID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPluralChatRoomRemoveMemberActionsUseNumberedPaginate = `-- name: GetPluralChatRoomRemoveMemberActionsUseNumberedPaginate :many
 SELECT t_chat_room_remove_member_actions.t_chat_room_remove_member_actions_pkey, t_chat_room_remove_member_actions.chat_room_remove_member_action_id, t_chat_room_remove_member_actions.chat_room_action_id, t_chat_room_remove_member_actions.removed_by,
 m_members.name remove_member_name, m_members.first_name remove_member_first_name, m_members.last_name remove_member_last_name, m_members.email remove_member_email,

@@ -154,6 +154,43 @@ AND CASE WHEN @where_like_name::boolean = true THEN
 		EXISTS (SELECT 1 FROM m_members WHERE m_chat_room_belongings.member_id = m_members.member_id AND m_members.name LIKE '%' || @search_name::text || '%')
 	ELSE TRUE END;
 
+-- name: GetPluralPrivateChatRoomCompanions :many
+SELECT m_chat_room_belongings.*, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
+m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
+t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
+t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_chat_room_belongings
+LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
+AND m_chat_room_belongings.member_id != $1
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	m_chat_room_belongings_pkey ASC;
+
+-- name: GetPluralPrivateChatRoomCompanionsUseNumberedPaginate :many
+SELECT m_chat_room_belongings.*, m_members.name member_name, m_members.first_name member_first_name, m_members.last_name member_last_name, m_members.email member_email, m_members.grade_id member_grade_id, m_members.group_id member_group_id,
+m_members.profile_image_id member_profile_image_id, t_images.height member_profile_image_height,
+t_images.width member_profile_image_width, t_images.attachable_item_id member_profile_image_attachable_item_id,
+t_attachable_items.owner_id member_profile_image_owner_id, t_attachable_items.from_outer member_profile_image_from_outer, t_attachable_items.alias member_profile_image_alias,
+t_attachable_items.url member_profile_image_url, t_attachable_items.size member_profile_image_size, t_attachable_items.mime_type_id member_profile_image_mime_type_id FROM m_chat_room_belongings
+LEFT JOIN m_members ON m_chat_room_belongings.member_id = m_members.member_id
+LEFT JOIN t_images ON m_members.profile_image_id = t_images.image_id
+LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items.attachable_item_id
+WHERE chat_room_id = ANY(@chat_room_ids::uuid[])
+AND m_chat_room_belongings.member_id != $1
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'old_add' THEN m_chat_room_belongings.added_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'late_add' THEN m_chat_room_belongings.added_at END DESC NULLS LAST,
+	m_chat_room_belongings_pkey ASC
+LIMIT $2 OFFSET $3;
+
 -- name: GetChatRoomsOnMember :many
 SELECT m_chat_room_belongings.*, m_chat_rooms.name chat_room_name, m_chat_rooms.is_private chat_room_is_private,
 m_chat_rooms.from_organization chat_room_from_organization, m_chat_rooms.owner_id chat_room_owner_id,

@@ -77,4 +77,19 @@ type ChatRoomCreateAction interface {
 		order parameter.ChatRoomCreateActionOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error)
+	// GetPluralChatRoomCreateActionsByChatRoomIDs チャットルーム作成アクションを取得する。
+	GetPluralChatRoomCreateActionsByChatRoomActionIDs(
+		ctx context.Context,
+		chatRoomActionIDs []uuid.UUID,
+		order parameter.ChatRoomCreateActionOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error)
+	// GetPluralChatRoomCreateActionsByChatRoomIDsWithSd SD付きでチャットルーム作成アクションを取得する。
+	GetPluralChatRoomCreateActionsByChatRoomActionIDsWithSd(
+		ctx context.Context,
+		sd Sd,
+		chatRoomActionIDs []uuid.UUID,
+		order parameter.ChatRoomCreateActionOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.ChatRoomCreateActionWithCreatedBy], error)
 }

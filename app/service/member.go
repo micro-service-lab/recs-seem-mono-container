@@ -69,21 +69,22 @@ func (m *ManageMember) UpdateMember(
 		return entity.Member{}, fmt.Errorf("failed to find member by id: %w", err)
 	}
 	if e.ProfileImageID.Valid && e.ProfileImageID.Bytes != profileImageID.Bytes {
-		_, err = pluralDeleteImages(
-			ctx,
-			sd,
-			m.DB,
-			m.Storage,
-			[]uuid.UUID{e.ProfileImageID.Bytes},
-			entity.UUID{
-				Valid: true,
-				Bytes: id,
-			},
-			true,
-		)
-		if err != nil {
-			return entity.Member{}, fmt.Errorf("failed to delete images: %w", err)
-		}
+		defer func(ownerID, imageID uuid.UUID) {
+			if err == nil {
+				_, err = pluralDeleteImages(
+					ctx,
+					sd,
+					m.DB,
+					m.Storage,
+					[]uuid.UUID{imageID},
+					entity.UUID{
+						Valid: true,
+						Bytes: ownerID,
+					},
+					true,
+				)
+			}
+		}(id, e.ProfileImageID.Bytes)
 	}
 	if name != e.Name {
 		org, err := m.DB.FindOrganizationByIDWithSd(ctx, sd, e.PersonalOrganizationID)
@@ -164,21 +165,22 @@ func (m *ManageMember) DeleteMember(ctx context.Context, id uuid.UUID) (c int64,
 		imageIDs = append(imageIDs, ec.ProfileImageID.Bytes)
 	}
 	if len(imageIDs) > 0 {
-		_, err = pluralDeleteImages(
-			ctx,
-			sd,
-			m.DB,
-			m.Storage,
-			imageIDs,
-			entity.UUID{
-				Valid: true,
-				Bytes: id,
-			},
-			true,
-		)
-		if err != nil {
-			return 0, fmt.Errorf("failed to delete images: %w", err)
-		}
+		defer func(imageIDs []uuid.UUID, ownerID uuid.UUID) {
+			if err == nil {
+				_, err = pluralDeleteImages(
+					ctx,
+					sd,
+					m.DB,
+					m.Storage,
+					imageIDs,
+					entity.UUID{
+						Valid: true,
+						Bytes: ownerID,
+					},
+					true,
+				)
+			}
+		}(imageIDs, id)
 	}
 	if len(fileIDs) > 0 {
 		_, err = pluralDeleteFiles(

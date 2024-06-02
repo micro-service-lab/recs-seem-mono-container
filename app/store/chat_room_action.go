@@ -29,6 +29,14 @@ type ChatRoomAction interface {
 	// CreateChatRoomActionsWithSd SD付きでチャットルームアクションを作成する。
 	CreateChatRoomActionsWithSd(
 		ctx context.Context, sd Sd, params []parameter.CreateChatRoomActionParam) (int64, error)
+	// UpdateChatRoomAction チャットルームアクションを更新する。
+	UpdateChatRoomAction(
+		ctx context.Context, chatRoomActionID uuid.UUID, param parameter.UpdateChatRoomActionParam,
+	) (entity.ChatRoomAction, error)
+	// UpdateChatRoomActionWithSd SD付きでチャットルームアクションを更新する。
+	UpdateChatRoomActionWithSd(
+		ctx context.Context, sd Sd, chatRoomActionID uuid.UUID, param parameter.UpdateChatRoomActionParam,
+	) (entity.ChatRoomAction, error)
 	// DeleteChatRoomAction チャットルームアクションを削除する。
 	DeleteChatRoomAction(
 		ctx context.Context, chatRoomActionID uuid.UUID) (int64, error)
@@ -50,7 +58,7 @@ type ChatRoomAction interface {
 		np NumberedPaginationParam,
 		cp CursorPaginationParam,
 		wc WithCountParam,
-	) (ListResult[entity.ChatRoomActionWithDetail], error)
+	) (ListResult[entity.ChatRoomAction], error)
 	// GetChatRoomActionsOnChatRoomWithSd SD付きでチャットルームアクションを取得する。
 	GetChatRoomActionsOnChatRoomWithSd(
 		ctx context.Context,
@@ -61,16 +69,52 @@ type ChatRoomAction interface {
 		np NumberedPaginationParam,
 		cp CursorPaginationParam,
 		wc WithCountParam,
-	) (ListResult[entity.ChatRoomActionWithDetail], error)
+	) (ListResult[entity.ChatRoomAction], error)
 	// GetPluralChatRoomActions チャットルームアクションを取得する。
 	GetPluralChatRoomActions(
 		ctx context.Context,
 		chatRoomActionIDs []uuid.UUID,
 		order parameter.ChatRoomActionOrderMethod,
 		np NumberedPaginationParam,
-	) (ListResult[entity.ChatRoomActionWithDetail], error)
+	) (ListResult[entity.ChatRoomAction], error)
 	// GetPluralChatRoomActionsWithSd SD付きでチャットルームアクションを取得する。
 	GetPluralChatRoomActionsWithSd(
+		ctx context.Context,
+		sd Sd,
+		chatRoomActionIDs []uuid.UUID,
+		order parameter.ChatRoomActionOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.ChatRoomAction], error)
+	// GetChatRoomActionsWithDetailOnChatRoom チャットルームアクションを取得する。
+	GetChatRoomActionsWithDetailOnChatRoom(
+		ctx context.Context,
+		chatRoomID uuid.UUID,
+		where parameter.WhereChatRoomActionParam,
+		order parameter.ChatRoomActionOrderMethod,
+		np NumberedPaginationParam,
+		cp CursorPaginationParam,
+		wc WithCountParam,
+	) (ListResult[entity.ChatRoomActionWithDetail], error)
+	// GetChatRoomActionsWithDetailOnChatRoomWithSd SD付きでチャットルームアクションを取得する。
+	GetChatRoomActionsWithDetailOnChatRoomWithSd(
+		ctx context.Context,
+		sd Sd,
+		chatRoomID uuid.UUID,
+		where parameter.WhereChatRoomActionParam,
+		order parameter.ChatRoomActionOrderMethod,
+		np NumberedPaginationParam,
+		cp CursorPaginationParam,
+		wc WithCountParam,
+	) (ListResult[entity.ChatRoomActionWithDetail], error)
+	// GetPluralChatRoomActionsWithDetail チャットルームアクションを取得する。
+	GetPluralChatRoomActionsWithDetail(
+		ctx context.Context,
+		chatRoomActionIDs []uuid.UUID,
+		order parameter.ChatRoomActionOrderMethod,
+		np NumberedPaginationParam,
+	) (ListResult[entity.ChatRoomActionWithDetail], error)
+	// GetPluralChatRoomActionsWithDetailWithSd SD付きでチャットルームアクションを取得する。
+	GetPluralChatRoomActionsWithDetailWithSd(
 		ctx context.Context,
 		sd Sd,
 		chatRoomActionIDs []uuid.UUID,

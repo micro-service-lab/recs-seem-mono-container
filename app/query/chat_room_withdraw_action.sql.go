@@ -323,6 +323,127 @@ func (q *Queries) GetPluralChatRoomWithdrawActions(ctx context.Context, chatRoom
 	return items, nil
 }
 
+const getPluralChatRoomWithdrawActionsByChatRoomActionIDs = `-- name: GetPluralChatRoomWithdrawActionsByChatRoomActionIDs :many
+SELECT t_chat_room_withdraw_actions.t_chat_room_withdraw_actions_pkey, t_chat_room_withdraw_actions.chat_room_withdraw_action_id, t_chat_room_withdraw_actions.chat_room_action_id, t_chat_room_withdraw_actions.member_id,
+m_members.name withdraw_member_name, m_members.first_name withdraw_member_first_name, m_members.last_name withdraw_member_last_name, m_members.email withdraw_member_email,
+m_members.profile_image_id withdraw_member_profile_image_id, m_members.grade_id withdraw_member_grade_id, m_members.group_id withdraw_member_group_id
+FROM t_chat_room_withdraw_actions
+LEFT JOIN m_members ON t_chat_room_withdraw_actions.member_id = m_members.member_id
+WHERE chat_room_action_id = ANY($1::uuid[])
+ORDER BY
+	t_chat_room_withdraw_actions_pkey ASC
+`
+
+type GetPluralChatRoomWithdrawActionsByChatRoomActionIDsRow struct {
+	TChatRoomWithdrawActionsPkey pgtype.Int8 `json:"t_chat_room_withdraw_actions_pkey"`
+	ChatRoomWithdrawActionID     uuid.UUID   `json:"chat_room_withdraw_action_id"`
+	ChatRoomActionID             uuid.UUID   `json:"chat_room_action_id"`
+	MemberID                     pgtype.UUID `json:"member_id"`
+	WithdrawMemberName           pgtype.Text `json:"withdraw_member_name"`
+	WithdrawMemberFirstName      pgtype.Text `json:"withdraw_member_first_name"`
+	WithdrawMemberLastName       pgtype.Text `json:"withdraw_member_last_name"`
+	WithdrawMemberEmail          pgtype.Text `json:"withdraw_member_email"`
+	WithdrawMemberProfileImageID pgtype.UUID `json:"withdraw_member_profile_image_id"`
+	WithdrawMemberGradeID        pgtype.UUID `json:"withdraw_member_grade_id"`
+	WithdrawMemberGroupID        pgtype.UUID `json:"withdraw_member_group_id"`
+}
+
+func (q *Queries) GetPluralChatRoomWithdrawActionsByChatRoomActionIDs(ctx context.Context, chatRoomActionIds []uuid.UUID) ([]GetPluralChatRoomWithdrawActionsByChatRoomActionIDsRow, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomWithdrawActionsByChatRoomActionIDs, chatRoomActionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralChatRoomWithdrawActionsByChatRoomActionIDsRow{}
+	for rows.Next() {
+		var i GetPluralChatRoomWithdrawActionsByChatRoomActionIDsRow
+		if err := rows.Scan(
+			&i.TChatRoomWithdrawActionsPkey,
+			&i.ChatRoomWithdrawActionID,
+			&i.ChatRoomActionID,
+			&i.MemberID,
+			&i.WithdrawMemberName,
+			&i.WithdrawMemberFirstName,
+			&i.WithdrawMemberLastName,
+			&i.WithdrawMemberEmail,
+			&i.WithdrawMemberProfileImageID,
+			&i.WithdrawMemberGradeID,
+			&i.WithdrawMemberGroupID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralChatRoomWithdrawActionsByChatRoomActionIDsUseNumberedPaginate = `-- name: GetPluralChatRoomWithdrawActionsByChatRoomActionIDsUseNumberedPaginate :many
+SELECT t_chat_room_withdraw_actions.t_chat_room_withdraw_actions_pkey, t_chat_room_withdraw_actions.chat_room_withdraw_action_id, t_chat_room_withdraw_actions.chat_room_action_id, t_chat_room_withdraw_actions.member_id,
+m_members.name withdraw_member_name, m_members.first_name withdraw_member_first_name, m_members.last_name withdraw_member_last_name, m_members.email withdraw_member_email,
+m_members.profile_image_id withdraw_member_profile_image_id, m_members.grade_id withdraw_member_grade_id, m_members.group_id withdraw_member_group_id
+FROM t_chat_room_withdraw_actions
+LEFT JOIN m_members ON t_chat_room_withdraw_actions.member_id = m_members.member_id
+WHERE chat_room_action_id = ANY($3::uuid[])
+ORDER BY
+	t_chat_room_withdraw_actions_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralChatRoomWithdrawActionsByChatRoomActionIDsUseNumberedPaginateParams struct {
+	Limit             int32       `json:"limit"`
+	Offset            int32       `json:"offset"`
+	ChatRoomActionIds []uuid.UUID `json:"chat_room_action_ids"`
+}
+
+type GetPluralChatRoomWithdrawActionsByChatRoomActionIDsUseNumberedPaginateRow struct {
+	TChatRoomWithdrawActionsPkey pgtype.Int8 `json:"t_chat_room_withdraw_actions_pkey"`
+	ChatRoomWithdrawActionID     uuid.UUID   `json:"chat_room_withdraw_action_id"`
+	ChatRoomActionID             uuid.UUID   `json:"chat_room_action_id"`
+	MemberID                     pgtype.UUID `json:"member_id"`
+	WithdrawMemberName           pgtype.Text `json:"withdraw_member_name"`
+	WithdrawMemberFirstName      pgtype.Text `json:"withdraw_member_first_name"`
+	WithdrawMemberLastName       pgtype.Text `json:"withdraw_member_last_name"`
+	WithdrawMemberEmail          pgtype.Text `json:"withdraw_member_email"`
+	WithdrawMemberProfileImageID pgtype.UUID `json:"withdraw_member_profile_image_id"`
+	WithdrawMemberGradeID        pgtype.UUID `json:"withdraw_member_grade_id"`
+	WithdrawMemberGroupID        pgtype.UUID `json:"withdraw_member_group_id"`
+}
+
+func (q *Queries) GetPluralChatRoomWithdrawActionsByChatRoomActionIDsUseNumberedPaginate(ctx context.Context, arg GetPluralChatRoomWithdrawActionsByChatRoomActionIDsUseNumberedPaginateParams) ([]GetPluralChatRoomWithdrawActionsByChatRoomActionIDsUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomWithdrawActionsByChatRoomActionIDsUseNumberedPaginate, arg.Limit, arg.Offset, arg.ChatRoomActionIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralChatRoomWithdrawActionsByChatRoomActionIDsUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralChatRoomWithdrawActionsByChatRoomActionIDsUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.TChatRoomWithdrawActionsPkey,
+			&i.ChatRoomWithdrawActionID,
+			&i.ChatRoomActionID,
+			&i.MemberID,
+			&i.WithdrawMemberName,
+			&i.WithdrawMemberFirstName,
+			&i.WithdrawMemberLastName,
+			&i.WithdrawMemberEmail,
+			&i.WithdrawMemberProfileImageID,
+			&i.WithdrawMemberGradeID,
+			&i.WithdrawMemberGroupID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getPluralChatRoomWithdrawActionsUseNumberedPaginate = `-- name: GetPluralChatRoomWithdrawActionsUseNumberedPaginate :many
 SELECT t_chat_room_withdraw_actions.t_chat_room_withdraw_actions_pkey, t_chat_room_withdraw_actions.chat_room_withdraw_action_id, t_chat_room_withdraw_actions.chat_room_action_id, t_chat_room_withdraw_actions.member_id,
 m_members.name withdraw_member_name, m_members.first_name withdraw_member_first_name, m_members.last_name withdraw_member_last_name, m_members.email withdraw_member_email,

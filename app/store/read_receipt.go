@@ -2,6 +2,7 @@ package store
 
 import (
 	"context"
+	"time"
 
 	"github.com/google/uuid"
 
@@ -76,6 +77,32 @@ type ReadReceipt interface {
 	ReadReceipts(ctx context.Context, param parameter.ReadReceiptsParam) (int64, error)
 	// ReadReceiptsWithSd SD付きで複数既読にする。
 	ReadReceiptsWithSd(ctx context.Context, sd Sd, param parameter.ReadReceiptsParam) (int64, error)
+	// ReadReceiptsOnMember メンバー上の既読情報を取得する。
+	ReadReceiptsOnMember(
+		ctx context.Context, memberID uuid.UUID, readAt time.Time) (int64, error)
+	// ReadReceiptsOnMemberWithSd SD付きでメンバー上の既読情報を取得する。
+	ReadReceiptsOnMemberWithSd(
+		ctx context.Context, sd Sd, memberID uuid.UUID, readAt time.Time) (int64, error)
+	// ReadReceiptsOnChatRoomAndMember チャットルーム、メンバー上の既読情報を取得する。
+	ReadReceiptsOnChatRoomAndMember(
+		ctx context.Context, chatRoomID, memberID uuid.UUID, readAt time.Time) (int64, error)
+	// ReadReceiptsOnChatRoomAndMemberWithSd SD付きでチャットルーム、メンバー上の既読情報を取得する。
+	ReadReceiptsOnChatRoomAndMemberWithSd(
+		ctx context.Context, sd Sd, chatRoomID, memberID uuid.UUID, readAt time.Time) (int64, error)
+	// ExistsReadReceipt 既読情報が存在するか確認する。
+	ExistsReadReceipt(
+		ctx context.Context, memberID, messageID uuid.UUID, where parameter.WhereExistsReadReceiptParam,
+	) (bool, error)
+	// ExistsReadReceiptWithSd SD付きで既読情報が存在するか確認する。
+	ExistsReadReceiptWithSd(
+		ctx context.Context, sd Sd, memberID, messageID uuid.UUID, where parameter.WhereExistsReadReceiptParam,
+	) (bool, error)
+	// FindReadReceipt 既読情報を取得する。
+	FindReadReceipt(
+		ctx context.Context, memberID, messageID uuid.UUID) (entity.ReadReceipt, error)
+	// FindReadReceiptWithSd SD付きで既読情報を取得する。
+	FindReadReceiptWithSd(
+		ctx context.Context, sd Sd, memberID, messageID uuid.UUID) (entity.ReadReceipt, error)
 	// GetReadableMessagesOnMember メンバー上のメッセージを取得する。
 	GetReadableMessagesOnMember(
 		ctx context.Context,

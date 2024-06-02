@@ -418,3 +418,59 @@ func (a *PgAdapter) GetPluralChatRoomRemoveMemberActionsWithSd(
 	}
 	return getPluralChatRoomRemoveMemberActions(ctx, qtx, chatRoomRemoveMemberActionIDs, order, np)
 }
+
+// getPluralChatRoomRemoveMemberActionsByChatRoomActionIDs はチャットルームメンバー追放アクションを取得する内部関数です。
+func getPluralChatRoomRemoveMemberActionsByChatRoomActionIDs(
+	ctx context.Context, qtx *query.Queries, chatRoomActionIDs []uuid.UUID,
+	_ parameter.ChatRoomRemoveMemberActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
+	var e []query.GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsRow
+	var err error
+	if !np.Valid {
+		e, err = qtx.GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDs(ctx, chatRoomActionIDs)
+	} else {
+		var ne []query.GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsUseNumberedPaginateRow
+		ne, err = qtx.GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsUseNumberedPaginate(
+			ctx, query.GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsUseNumberedPaginateParams{
+				Limit:             int32(np.Limit.Int64),
+				Offset:            int32(np.Offset.Int64),
+				ChatRoomActionIds: chatRoomActionIDs,
+			})
+		e = make([]query.GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsRow, len(ne))
+		for i, v := range ne {
+			e[i] = query.GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsRow(v)
+		}
+	}
+	if err != nil {
+		return store.ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy]{},
+			fmt.Errorf("failed to get chat room remove member actions: %w", err)
+	}
+	entities := make([]entity.ChatRoomRemoveMemberActionWithRemovedBy, len(e))
+	for i, v := range e {
+		entities[i] = convChatRoomRemoveMemberActionOnChatRoom(
+			query.GetChatRoomRemoveMemberActionsOnChatRoomRow(v)).ChatRoomRemoveMemberActionWithRemovedBy
+	}
+	return store.ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy]{Data: entities}, nil
+}
+
+// GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDs はチャットルームメンバー追放アクションを取得します。
+func (a *PgAdapter) GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDs(
+	ctx context.Context, chatRoomActionIDs []uuid.UUID,
+	order parameter.ChatRoomRemoveMemberActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
+	return getPluralChatRoomRemoveMemberActionsByChatRoomActionIDs(ctx, a.query, chatRoomActionIDs, order, np)
+}
+
+// GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsWithSd はSD付きでチャットルームメンバー追放アクションを取得します。
+func (a *PgAdapter) GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsWithSd(
+	ctx context.Context, sd store.Sd, chatRoomActionIDs []uuid.UUID,
+	order parameter.ChatRoomRemoveMemberActionOrderMethod, np store.NumberedPaginationParam,
+) (store.ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ListResult[entity.ChatRoomRemoveMemberActionWithRemovedBy]{}, store.ErrNotFoundDescriptor
+	}
+	return getPluralChatRoomRemoveMemberActionsByChatRoomActionIDs(ctx, qtx, chatRoomActionIDs, order, np)
+}

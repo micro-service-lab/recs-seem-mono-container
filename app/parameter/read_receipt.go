@@ -35,6 +35,12 @@ type WhereReadableMemberOnMessageParam struct {
 	WhereIsNotRead bool
 }
 
+// WhereExistsReadReceiptParam 既読情報の存在検索のパラメータ。
+type WhereExistsReadReceiptParam struct {
+	WhereIsRead    bool
+	WhereIsNotRead bool
+}
+
 // WhereReadableMessageOnChatRoomAndMemberParam メッセージ上のメッセージの既読情報検索のパラメータ。
 type WhereReadableMessageOnChatRoomAndMemberParam struct {
 	WhereIsRead    bool

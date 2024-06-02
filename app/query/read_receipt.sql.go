@@ -260,6 +260,54 @@ type CreateReadReceiptsParams struct {
 	ReadAt    pgtype.Timestamptz `json:"read_at"`
 }
 
+const existsReadReceipt = `-- name: ExistsReadReceipt :one
+SELECT EXISTS(SELECT 1 FROM t_read_receipts WHERE member_id = $1 AND message_id = $2
+AND
+	CASE WHEN $3::boolean = true THEN read_at IS NOT NULL ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN read_at IS NULL ELSE TRUE END)
+`
+
+type ExistsReadReceiptParams struct {
+	MemberID       uuid.UUID `json:"member_id"`
+	MessageID      uuid.UUID `json:"message_id"`
+	WhereIsRead    bool      `json:"where_is_read"`
+	WhereIsNotRead bool      `json:"where_is_not_read"`
+}
+
+func (q *Queries) ExistsReadReceipt(ctx context.Context, arg ExistsReadReceiptParams) (bool, error) {
+	row := q.db.QueryRow(ctx, existsReadReceipt,
+		arg.MemberID,
+		arg.MessageID,
+		arg.WhereIsRead,
+		arg.WhereIsNotRead,
+	)
+	var exists bool
+	err := row.Scan(&exists)
+	return exists, err
+}
+
+const findReadReceipt = `-- name: FindReadReceipt :one
+SELECT t_read_receipts_pkey, member_id, message_id, read_at FROM t_read_receipts WHERE member_id = $1 AND message_id = $2
+`
+
+type FindReadReceiptParams struct {
+	MemberID  uuid.UUID `json:"member_id"`
+	MessageID uuid.UUID `json:"message_id"`
+}
+
+func (q *Queries) FindReadReceipt(ctx context.Context, arg FindReadReceiptParams) (ReadReceipt, error) {
+	row := q.db.QueryRow(ctx, findReadReceipt, arg.MemberID, arg.MessageID)
+	var i ReadReceipt
+	err := row.Scan(
+		&i.TReadReceiptsPkey,
+		&i.MemberID,
+		&i.MessageID,
+		&i.ReadAt,
+	)
+	return i, err
+}
+
 const getPluralReadableMembersOnMessage = `-- name: GetPluralReadableMembersOnMessage :many
 SELECT m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, t_read_receipts.read_at read_at, t_images.height profile_image_height,
 t_images.width profile_image_width, t_images.attachable_item_id profile_image_attachable_item_id,
@@ -1236,6 +1284,44 @@ type ReadReceiptsParams struct {
 
 func (q *Queries) ReadReceipts(ctx context.Context, arg ReadReceiptsParams) (int64, error) {
 	result, err := q.db.Exec(ctx, readReceipts, arg.MemberID, arg.ReadAt, arg.MessageIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const readReceiptsOnChatRoomAndMember = `-- name: ReadReceiptsOnChatRoomAndMember :execrows
+UPDATE t_read_receipts SET read_at = $3
+WHERE message_id IN (SELECT message_id FROM t_messages WHERE chat_room_action_id IN (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1))
+AND member_id = $2
+`
+
+type ReadReceiptsOnChatRoomAndMemberParams struct {
+	ChatRoomID uuid.UUID          `json:"chat_room_id"`
+	MemberID   uuid.UUID          `json:"member_id"`
+	ReadAt     pgtype.Timestamptz `json:"read_at"`
+}
+
+func (q *Queries) ReadReceiptsOnChatRoomAndMember(ctx context.Context, arg ReadReceiptsOnChatRoomAndMemberParams) (int64, error) {
+	result, err := q.db.Exec(ctx, readReceiptsOnChatRoomAndMember, arg.ChatRoomID, arg.MemberID, arg.ReadAt)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
+}
+
+const readReceiptsOnMember = `-- name: ReadReceiptsOnMember :execrows
+UPDATE t_read_receipts SET read_at = $2
+WHERE member_id = $1
+`
+
+type ReadReceiptsOnMemberParams struct {
+	MemberID uuid.UUID          `json:"member_id"`
+	ReadAt   pgtype.Timestamptz `json:"read_at"`
+}
+
+func (q *Queries) ReadReceiptsOnMember(ctx context.Context, arg ReadReceiptsOnMemberParams) (int64, error) {
+	result, err := q.db.Exec(ctx, readReceiptsOnMember, arg.MemberID, arg.ReadAt)
 	if err != nil {
 		return 0, err
 	}

@@ -34,6 +34,10 @@ other = "ImageIDs"
 other = "FileID"
 [FileIDs]
 other = "FileIDs"
+[AttachableItemID]
+other = "AttachableItemID"
+[AttachableItemIDs]
+other = "AttachableItemIDs"
 
 [ChatRoom]
 other = "ChatRoom"
@@ -43,6 +47,10 @@ other = "Organization"
 other = "File"
 [Files]
 other = "Files"
+[Message]
+other = "Message"
+[Messages]
+other = "Messages"
 
 [Required]
 other = "{{.Target}} is a required field"

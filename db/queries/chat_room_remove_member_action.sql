@@ -77,5 +77,26 @@ ORDER BY
 	t_chat_room_remove_member_actions_pkey ASC
 LIMIT $1 OFFSET $2;
 
+-- name: GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDs :many
+SELECT t_chat_room_remove_member_actions.*,
+m_members.name remove_member_name, m_members.first_name remove_member_first_name, m_members.last_name remove_member_last_name, m_members.email remove_member_email,
+m_members.profile_image_id remove_member_profile_image_id, m_members.grade_id remove_member_grade_id, m_members.group_id remove_member_group_id
+FROM t_chat_room_remove_member_actions
+LEFT JOIN m_members ON t_chat_room_remove_member_actions.removed_by = m_members.member_id
+WHERE chat_room_action_id = ANY(@chat_room_action_ids::uuid[])
+ORDER BY
+	t_chat_room_remove_member_actions_pkey ASC;
+
+-- name: GetPluralChatRoomRemoveMemberActionsByChatRoomActionIDsUseNumberedPaginate :many
+SELECT t_chat_room_remove_member_actions.*,
+m_members.name remove_member_name, m_members.first_name remove_member_first_name, m_members.last_name remove_member_last_name, m_members.email remove_member_email,
+m_members.profile_image_id remove_member_profile_image_id, m_members.grade_id remove_member_grade_id, m_members.group_id remove_member_group_id
+FROM t_chat_room_remove_member_actions
+LEFT JOIN m_members ON t_chat_room_remove_member_actions.removed_by = m_members.member_id
+WHERE chat_room_action_id = ANY(@chat_room_action_ids::uuid[])
+ORDER BY
+	t_chat_room_remove_member_actions_pkey ASC
+LIMIT $1 OFFSET $2;
+
 -- name: CountChatRoomRemoveMemberActions :one
 SELECT COUNT(*) FROM t_chat_room_remove_member_actions;

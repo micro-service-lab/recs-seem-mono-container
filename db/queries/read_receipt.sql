@@ -4,11 +4,30 @@ INSERT INTO t_read_receipts (member_id, message_id, read_at) VALUES ($1, $2, $3)
 -- name: CreateReadReceipt :one
 INSERT INTO t_read_receipts (member_id, message_id, read_at) VALUES ($1, $2, $3) RETURNING *;
 
+-- name: ExistsReadReceipt :one
+SELECT EXISTS(SELECT 1 FROM t_read_receipts WHERE member_id = $1 AND message_id = $2
+AND
+	CASE WHEN @where_is_read::boolean = true THEN read_at IS NOT NULL ELSE TRUE END
+AND
+	CASE WHEN @where_is_not_read::boolean = true THEN read_at IS NULL ELSE TRUE END);
+
+-- name: FindReadReceipt :one
+SELECT * FROM t_read_receipts WHERE member_id = $1 AND message_id = $2;
+
 -- name: ReadReceipt :one
 UPDATE t_read_receipts SET read_at = $3 WHERE member_id = $1 AND message_id = $2 RETURNING *;
 
 -- name: ReadReceipts :execrows
 UPDATE t_read_receipts SET read_at = $2 WHERE member_id = $1 AND message_id = ANY(@message_ids::uuid[]);
+
+-- name: ReadReceiptsOnMember :execrows
+UPDATE t_read_receipts SET read_at = $2
+WHERE member_id = $1;
+
+-- name: ReadReceiptsOnChatRoomAndMember :execrows
+UPDATE t_read_receipts SET read_at = $3
+WHERE message_id IN (SELECT message_id FROM t_messages WHERE chat_room_action_id IN (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1))
+AND member_id = $2;
 
 -- name: GetReadableMembersOnMessage :many
 SELECT m_members.*, t_read_receipts.read_at read_at, t_images.height profile_image_height,

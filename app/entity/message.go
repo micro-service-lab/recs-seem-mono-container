@@ -23,6 +23,16 @@ type MessageCard struct {
 	PostedAt  time.Time `json:"posted_at"`
 }
 
+// MessageWithChatRoomAction メッセージとチャットルームアクションを表す構造体。
+type MessageWithChatRoomAction struct {
+	MessageID      uuid.UUID      `json:"message_id"`
+	ChatRoomAction ChatRoomAction `json:"chat_room_action"`
+	SenderID       UUID           `json:"sender_id"`
+	Body           string         `json:"body"`
+	PostedAt       time.Time      `json:"posted_at"`
+	LastEditedAt   time.Time      `json:"last_edited_at"`
+}
+
 // MessageWithSender メッセージと送信者を表す構造体。
 type MessageWithSender struct {
 	MessageID        uuid.UUID                  `json:"message_id"`

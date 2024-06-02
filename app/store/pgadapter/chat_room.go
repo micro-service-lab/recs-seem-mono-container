@@ -42,7 +42,7 @@ func convChatRoomWithCoverImage(e query.FindChatRoomByIDWithCoverImageRow) entit
 	}
 	return entity.ChatRoomWithCoverImage{
 		ChatRoomID:       e.ChatRoomID,
-		Name:             e.Name,
+		Name:             entity.String(e.Name),
 		IsPrivate:        e.IsPrivate,
 		FromOrganization: e.FromOrganization,
 		OwnerID:          entity.UUID(e.OwnerID),
@@ -90,7 +90,7 @@ func createChatRoom(
 	ctx context.Context, qtx *query.Queries, param parameter.CreateChatRoomParam, now time.Time,
 ) (entity.ChatRoom, error) {
 	p := query.CreateChatRoomParams{
-		Name:             param.Name,
+		Name:             pgtype.Text(param.Name),
 		IsPrivate:        param.IsPrivate,
 		CoverImageID:     pgtype.UUID(param.CoverImageID),
 		OwnerID:          pgtype.UUID(param.OwnerID),
@@ -108,7 +108,7 @@ func createChatRoom(
 	}
 	entity := entity.ChatRoom{
 		ChatRoomID:       e.ChatRoomID,
-		Name:             e.Name,
+		Name:             entity.String(e.Name),
 		IsPrivate:        e.IsPrivate,
 		FromOrganization: e.FromOrganization,
 		CoverImageID:     entity.UUID(e.CoverImageID),
@@ -141,7 +141,7 @@ func createChatRooms(
 	param := make([]query.CreateChatRoomsParams, len(params))
 	for i, p := range params {
 		param[i] = query.CreateChatRoomsParams{
-			Name:             p.Name,
+			Name:             pgtype.Text(p.Name),
 			IsPrivate:        p.IsPrivate,
 			CoverImageID:     pgtype.UUID(p.CoverImageID),
 			OwnerID:          pgtype.UUID(p.OwnerID),
@@ -249,7 +249,7 @@ func findChatRoomByID(ctx context.Context, qtx *query.Queries, chatRoomID uuid.U
 	}
 	entity := entity.ChatRoom{
 		ChatRoomID:       e.ChatRoomID,
-		Name:             e.Name,
+		Name:             entity.String(e.Name),
 		IsPrivate:        e.IsPrivate,
 		FromOrganization: e.FromOrganization,
 		CoverImageID:     entity.UUID(e.CoverImageID),
@@ -325,7 +325,7 @@ func findChatRoomOnPrivate(
 	}
 	entity := entity.ChatRoom{
 		ChatRoomID:       e.ChatRoomID,
-		Name:             e.Name,
+		Name:             entity.String(e.Name),
 		IsPrivate:        e.IsPrivate,
 		FromOrganization: e.FromOrganization,
 		CoverImageID:     entity.UUID(e.CoverImageID),
@@ -366,7 +366,7 @@ func getChatRooms(
 	eConvFunc := func(e query.ChatRoom) (entity.ChatRoom, error) {
 		return entity.ChatRoom{
 			ChatRoomID:       e.ChatRoomID,
-			Name:             e.Name,
+			Name:             entity.String(e.Name),
 			IsPrivate:        e.IsPrivate,
 			FromOrganization: e.FromOrganization,
 			CoverImageID:     entity.UUID(e.CoverImageID),
@@ -524,7 +524,7 @@ func getPluralChatRooms(
 	for i, v := range e {
 		entities[i] = entity.ChatRoom{
 			ChatRoomID:       v.ChatRoomID,
-			Name:             v.Name,
+			Name:             entity.String(v.Name),
 			IsPrivate:        v.IsPrivate,
 			FromOrganization: v.FromOrganization,
 			CoverImageID:     entity.UUID(v.CoverImageID),
@@ -774,7 +774,7 @@ func updateChatRoom(
 ) (entity.ChatRoom, error) {
 	p := query.UpdateChatRoomParams{
 		ChatRoomID:   chatRoomID,
-		Name:         param.Name,
+		Name:         pgtype.Text(param.Name),
 		CoverImageID: pgtype.UUID(param.CoverImageID),
 		UpdatedAt:    now,
 	}
@@ -787,7 +787,7 @@ func updateChatRoom(
 	}
 	entity := entity.ChatRoom{
 		ChatRoomID:       e.ChatRoomID,
-		Name:             e.Name,
+		Name:             entity.String(e.Name),
 		IsPrivate:        e.IsPrivate,
 		FromOrganization: e.FromOrganization,
 		CoverImageID:     entity.UUID(e.CoverImageID),

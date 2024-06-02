@@ -11,6 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
@@ -420,6 +421,9 @@ func readReceipt(
 	}
 	r, err := qtx.ReadReceipt(ctx, p)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.ReadReceipt{}, errhandle.NewModelNotFoundError("read receipt")
+		}
 		return entity.ReadReceipt{}, fmt.Errorf("failed to mark readable members on message: %w", err)
 	}
 	return entity.ReadReceipt{
@@ -469,6 +473,9 @@ func readReceipts(
 	if err != nil {
 		return 0, fmt.Errorf("failed to mark readable members on message: %w", err)
 	}
+	if c != int64(len(param.MessageIDs)) {
+		return 0, errhandle.NewModelNotFoundError("read receipt")
+	}
 	return c, nil
 }
 
@@ -490,6 +497,164 @@ func (a *PgAdapter) ReadReceiptsWithSd(
 		return 0, store.ErrNotFoundDescriptor
 	}
 	return readReceipts(ctx, qtx, param)
+}
+
+func readReceiptsOnMember(
+	ctx context.Context, qtx *query.Queries, memberID uuid.UUID, readAt time.Time,
+) (int64, error) {
+	p := query.ReadReceiptsOnMemberParams{
+		MemberID: memberID,
+		ReadAt:   pgtype.Timestamptz{Time: readAt, Valid: true},
+	}
+	c, err := qtx.ReadReceiptsOnMember(ctx, p)
+	if err != nil {
+		return 0, fmt.Errorf("failed to mark readable members on message: %w", err)
+	}
+	return c, nil
+}
+
+// ReadReceiptsOnMember メンバー上の既読をする。
+func (a *PgAdapter) ReadReceiptsOnMember(
+	ctx context.Context, memberID uuid.UUID, readAt time.Time,
+) (int64, error) {
+	return readReceiptsOnMember(ctx, a.query, memberID, readAt)
+}
+
+// ReadReceiptsOnMemberWithSd SD付きでメンバー上の既読をする。
+func (a *PgAdapter) ReadReceiptsOnMemberWithSd(
+	ctx context.Context, sd store.Sd, memberID uuid.UUID, readAt time.Time,
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return 0, store.ErrNotFoundDescriptor
+	}
+	return readReceiptsOnMember(ctx, qtx, memberID, readAt)
+}
+
+func readReceiptsOnChatRoomAndMember(
+	ctx context.Context,
+	qtx *query.Queries,
+	chatRoomID, memberID uuid.UUID,
+	readAt time.Time,
+) (int64, error) {
+	p := query.ReadReceiptsOnChatRoomAndMemberParams{
+		ChatRoomID: chatRoomID,
+		MemberID:   memberID,
+		ReadAt:     pgtype.Timestamptz{Time: readAt, Valid: true},
+	}
+	c, err := qtx.ReadReceiptsOnChatRoomAndMember(ctx, p)
+	if err != nil {
+		return 0, fmt.Errorf("failed to mark readable members on message: %w", err)
+	}
+	return c, nil
+}
+
+// ReadReceiptsOnChatRoomAndMember チャットルーム、メンバー上の既読をする。
+func (a *PgAdapter) ReadReceiptsOnChatRoomAndMember(
+	ctx context.Context,
+	chatRoomID, memberID uuid.UUID,
+	readAt time.Time,
+) (int64, error) {
+	return readReceiptsOnChatRoomAndMember(ctx, a.query, chatRoomID, memberID, readAt)
+}
+
+// ReadReceiptsOnChatRoomAndMemberWithSd SD付きでチャットルーム、メンバー上の既読をする。
+func (a *PgAdapter) ReadReceiptsOnChatRoomAndMemberWithSd(
+	ctx context.Context,
+	sd store.Sd,
+	chatRoomID, memberID uuid.UUID,
+	readAt time.Time,
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return 0, store.ErrNotFoundDescriptor
+	}
+	return readReceiptsOnChatRoomAndMember(ctx, qtx, chatRoomID, memberID, readAt)
+}
+
+func existsReadReceipt(
+	ctx context.Context, qtx *query.Queries, memberID, messageID uuid.UUID, where parameter.WhereExistsReadReceiptParam,
+) (bool, error) {
+	p := query.ExistsReadReceiptParams{
+		MemberID:       memberID,
+		MessageID:      messageID,
+		WhereIsRead:    where.WhereIsRead,
+		WhereIsNotRead: where.WhereIsNotRead,
+	}
+	r, err := qtx.ExistsReadReceipt(ctx, p)
+	if err != nil {
+		return false, fmt.Errorf("failed to check read receipt: %w", err)
+	}
+	return r, nil
+}
+
+// ExistsReadReceipt 既読情報が存在するか確認する。
+func (a *PgAdapter) ExistsReadReceipt(
+	ctx context.Context, memberID, messageID uuid.UUID, where parameter.WhereExistsReadReceiptParam,
+) (bool, error) {
+	return existsReadReceipt(ctx, a.query, memberID, messageID, where)
+}
+
+// ExistsReadReceiptWithSd SD付きで既読情報が存在するか確認する。
+func (a *PgAdapter) ExistsReadReceiptWithSd(
+	ctx context.Context, sd store.Sd, memberID, messageID uuid.UUID, where parameter.WhereExistsReadReceiptParam,
+) (bool, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return false, store.ErrNotFoundDescriptor
+	}
+	return existsReadReceipt(ctx, qtx, memberID, messageID, where)
+}
+
+func findReadReceipt(
+	ctx context.Context, qtx *query.Queries, memberID, messageID uuid.UUID,
+) (entity.ReadReceipt, error) {
+	p := query.FindReadReceiptParams{
+		MemberID:  memberID,
+		MessageID: messageID,
+	}
+	r, err := qtx.FindReadReceipt(ctx, p)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return entity.ReadReceipt{}, errhandle.NewModelNotFoundError("read receipt")
+		}
+		return entity.ReadReceipt{}, fmt.Errorf("failed to find read receipt: %w", err)
+	}
+	return entity.ReadReceipt{
+		MessageID: r.MessageID,
+		MemberID:  r.MemberID,
+		ReadAt: entity.Timestamptz{
+			Time:             r.ReadAt.Time,
+			InfinityModifier: entity.InfinityModifier(r.ReadAt.InfinityModifier),
+			Valid:            r.ReadAt.Valid,
+		},
+	}, nil
+}
+
+// FindReadReceipt 既読情報を取得する。
+func (a *PgAdapter) FindReadReceipt(
+	ctx context.Context, memberID, messageID uuid.UUID,
+) (entity.ReadReceipt, error) {
+	return findReadReceipt(ctx, a.query, memberID, messageID)
+}
+
+// FindReadReceiptWithSd SD付きで既読情報を取得する。
+func (a *PgAdapter) FindReadReceiptWithSd(
+	ctx context.Context, sd store.Sd, memberID, messageID uuid.UUID,
+) (entity.ReadReceipt, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return entity.ReadReceipt{}, store.ErrNotFoundDescriptor
+	}
+	return findReadReceipt(ctx, qtx, memberID, messageID)
 }
 
 func getReadableMessagesOnMember(

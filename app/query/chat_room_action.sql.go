@@ -93,6 +93,182 @@ func (q *Queries) DeleteChatRoomAction(ctx context.Context, chatRoomActionID uui
 }
 
 const getChatRoomActionsOnChatRoom = `-- name: GetChatRoomActionsOnChatRoom :many
+SELECT t_chat_room_actions_pkey, chat_room_action_id, chat_room_id, chat_room_action_type_id, acted_at FROM t_chat_room_actions
+WHERE chat_room_id = $1
+AND
+	CASE WHEN $2::boolean = true THEN chat_room_action_type_id = ANY($3::uuid[]) ELSE TRUE END
+ORDER BY
+	CASE WHEN $4::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
+	t_chat_room_actions_pkey ASC
+`
+
+type GetChatRoomActionsOnChatRoomParams struct {
+	ChatRoomID                   uuid.UUID   `json:"chat_room_id"`
+	WhereInChatRoomActionTypeIds bool        `json:"where_in_chat_room_action_type_ids"`
+	InChatRoomActionTypeIds      []uuid.UUID `json:"in_chat_room_action_type_ids"`
+	OrderMethod                  string      `json:"order_method"`
+}
+
+func (q *Queries) GetChatRoomActionsOnChatRoom(ctx context.Context, arg GetChatRoomActionsOnChatRoomParams) ([]ChatRoomAction, error) {
+	rows, err := q.db.Query(ctx, getChatRoomActionsOnChatRoom,
+		arg.ChatRoomID,
+		arg.WhereInChatRoomActionTypeIds,
+		arg.InChatRoomActionTypeIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ChatRoomAction{}
+	for rows.Next() {
+		var i ChatRoomAction
+		if err := rows.Scan(
+			&i.TChatRoomActionsPkey,
+			&i.ChatRoomActionID,
+			&i.ChatRoomID,
+			&i.ChatRoomActionTypeID,
+			&i.ActedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getChatRoomActionsOnChatRoomUseKeysetPaginate = `-- name: GetChatRoomActionsOnChatRoomUseKeysetPaginate :many
+SELECT t_chat_room_actions_pkey, chat_room_action_id, chat_room_id, chat_room_action_type_id, acted_at FROM t_chat_room_actions
+WHERE chat_room_id = $1
+AND
+	CASE WHEN $3::boolean = true THEN chat_room_action_type_id = ANY($4::uuid[]) ELSE TRUE END
+AND
+	CASE $5::text
+		WHEN 'next' THEN
+			CASE $6::text
+				WHEN 'acted_at' THEN acted_at > $7 OR (acted_at = $7 AND t_chat_room_actions_pkey > $8::int)
+				WHEN 'r_acted_at' THEN acted_at < $7 OR (acted_at = $7 AND t_chat_room_actions_pkey > $8::int)
+				ELSE t_chat_room_actions_pkey > $8::int
+			END
+		WHEN 'prev' THEN
+			CASE $6::text
+				WHEN 'acted_at' THEN acted_at < $7 OR (acted_at = $7 AND t_chat_room_actions_pkey < $8::int)
+				WHEN 'r_acted_at' THEN acted_at > $7 OR (acted_at = $7 AND t_chat_room_actions_pkey < $8::int)
+				ELSE t_chat_room_actions_pkey < $8::int
+			END
+	END
+ORDER BY
+	CASE WHEN $6::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
+	t_chat_room_actions_pkey ASC
+LIMIT $2
+`
+
+type GetChatRoomActionsOnChatRoomUseKeysetPaginateParams struct {
+	ChatRoomID                   uuid.UUID   `json:"chat_room_id"`
+	Limit                        int32       `json:"limit"`
+	WhereInChatRoomActionTypeIds bool        `json:"where_in_chat_room_action_type_ids"`
+	InChatRoomActionTypeIds      []uuid.UUID `json:"in_chat_room_action_type_ids"`
+	CursorDirection              string      `json:"cursor_direction"`
+	OrderMethod                  string      `json:"order_method"`
+	ActedAtCursor                time.Time   `json:"acted_at_cursor"`
+	Cursor                       int32       `json:"cursor"`
+}
+
+func (q *Queries) GetChatRoomActionsOnChatRoomUseKeysetPaginate(ctx context.Context, arg GetChatRoomActionsOnChatRoomUseKeysetPaginateParams) ([]ChatRoomAction, error) {
+	rows, err := q.db.Query(ctx, getChatRoomActionsOnChatRoomUseKeysetPaginate,
+		arg.ChatRoomID,
+		arg.Limit,
+		arg.WhereInChatRoomActionTypeIds,
+		arg.InChatRoomActionTypeIds,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.ActedAtCursor,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ChatRoomAction{}
+	for rows.Next() {
+		var i ChatRoomAction
+		if err := rows.Scan(
+			&i.TChatRoomActionsPkey,
+			&i.ChatRoomActionID,
+			&i.ChatRoomID,
+			&i.ChatRoomActionTypeID,
+			&i.ActedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getChatRoomActionsOnChatRoomUseNumberedPaginate = `-- name: GetChatRoomActionsOnChatRoomUseNumberedPaginate :many
+SELECT t_chat_room_actions_pkey, chat_room_action_id, chat_room_id, chat_room_action_type_id, acted_at FROM t_chat_room_actions
+WHERE chat_room_id = $1
+AND
+	CASE WHEN $4::boolean = true THEN chat_room_action_type_id = ANY($5::uuid[]) ELSE TRUE END
+ORDER BY
+	CASE WHEN $6::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
+	t_chat_room_actions_pkey ASC
+LIMIT $2 OFFSET $3
+`
+
+type GetChatRoomActionsOnChatRoomUseNumberedPaginateParams struct {
+	ChatRoomID                   uuid.UUID   `json:"chat_room_id"`
+	Limit                        int32       `json:"limit"`
+	Offset                       int32       `json:"offset"`
+	WhereInChatRoomActionTypeIds bool        `json:"where_in_chat_room_action_type_ids"`
+	InChatRoomActionTypeIds      []uuid.UUID `json:"in_chat_room_action_type_ids"`
+	OrderMethod                  string      `json:"order_method"`
+}
+
+func (q *Queries) GetChatRoomActionsOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetChatRoomActionsOnChatRoomUseNumberedPaginateParams) ([]ChatRoomAction, error) {
+	rows, err := q.db.Query(ctx, getChatRoomActionsOnChatRoomUseNumberedPaginate,
+		arg.ChatRoomID,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereInChatRoomActionTypeIds,
+		arg.InChatRoomActionTypeIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ChatRoomAction{}
+	for rows.Next() {
+		var i ChatRoomAction
+		if err := rows.Scan(
+			&i.TChatRoomActionsPkey,
+			&i.ChatRoomActionID,
+			&i.ChatRoomID,
+			&i.ChatRoomActionTypeID,
+			&i.ActedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getChatRoomActionsWithDetailOnChatRoom = `-- name: GetChatRoomActionsWithDetailOnChatRoom :many
 SELECT t_chat_room_actions.t_chat_room_actions_pkey, t_chat_room_actions.chat_room_action_id, t_chat_room_actions.chat_room_id, t_chat_room_actions.chat_room_action_type_id, t_chat_room_actions.acted_at,
 t_chat_room_create_actions.chat_room_create_action_id, t_chat_room_create_actions.name create_name, cm.member_id create_member_id, cm.name create_member_name, cm.first_name create_member_first_name, cm.last_name create_member_last_name, cm.email create_member_email, cm.profile_image_id create_member_profile_image_id, cm.grade_id create_member_grade_id, cm.group_id create_member_group_id,
 t_chat_room_update_name_actions.chat_room_update_name_action_id, t_chat_room_update_name_actions.name update_name, um.member_id update_member_id, um.name update_member_name, um.first_name update_member_first_name, um.last_name update_member_last_name, um.email update_member_email, um.profile_image_id update_member_profile_image_id, um.grade_id update_member_grade_id, um.group_id update_member_group_id,
@@ -131,14 +307,14 @@ ORDER BY
 	t_chat_room_actions_pkey ASC
 `
 
-type GetChatRoomActionsOnChatRoomParams struct {
+type GetChatRoomActionsWithDetailOnChatRoomParams struct {
 	ChatRoomID                   uuid.UUID   `json:"chat_room_id"`
 	WhereInChatRoomActionTypeIds bool        `json:"where_in_chat_room_action_type_ids"`
 	InChatRoomActionTypeIds      []uuid.UUID `json:"in_chat_room_action_type_ids"`
 	OrderMethod                  string      `json:"order_method"`
 }
 
-type GetChatRoomActionsOnChatRoomRow struct {
+type GetChatRoomActionsWithDetailOnChatRoomRow struct {
 	TChatRoomActionsPkey                      pgtype.Int8        `json:"t_chat_room_actions_pkey"`
 	ChatRoomActionID                          uuid.UUID          `json:"chat_room_action_id"`
 	ChatRoomID                                uuid.UUID          `json:"chat_room_id"`
@@ -223,8 +399,8 @@ type GetChatRoomActionsOnChatRoomRow struct {
 	MessageSenderProfileImageMimeTypeID       pgtype.UUID        `json:"message_sender_profile_image_mime_type_id"`
 }
 
-func (q *Queries) GetChatRoomActionsOnChatRoom(ctx context.Context, arg GetChatRoomActionsOnChatRoomParams) ([]GetChatRoomActionsOnChatRoomRow, error) {
-	rows, err := q.db.Query(ctx, getChatRoomActionsOnChatRoom,
+func (q *Queries) GetChatRoomActionsWithDetailOnChatRoom(ctx context.Context, arg GetChatRoomActionsWithDetailOnChatRoomParams) ([]GetChatRoomActionsWithDetailOnChatRoomRow, error) {
+	rows, err := q.db.Query(ctx, getChatRoomActionsWithDetailOnChatRoom,
 		arg.ChatRoomID,
 		arg.WhereInChatRoomActionTypeIds,
 		arg.InChatRoomActionTypeIds,
@@ -234,9 +410,9 @@ func (q *Queries) GetChatRoomActionsOnChatRoom(ctx context.Context, arg GetChatR
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetChatRoomActionsOnChatRoomRow{}
+	items := []GetChatRoomActionsWithDetailOnChatRoomRow{}
 	for rows.Next() {
-		var i GetChatRoomActionsOnChatRoomRow
+		var i GetChatRoomActionsWithDetailOnChatRoomRow
 		if err := rows.Scan(
 			&i.TChatRoomActionsPkey,
 			&i.ChatRoomActionID,
@@ -331,7 +507,7 @@ func (q *Queries) GetChatRoomActionsOnChatRoom(ctx context.Context, arg GetChatR
 	return items, nil
 }
 
-const getChatRoomActionsOnChatRoomUseKeysetPaginate = `-- name: GetChatRoomActionsOnChatRoomUseKeysetPaginate :many
+const getChatRoomActionsWithDetailOnChatRoomUseKeysetPaginate = `-- name: GetChatRoomActionsWithDetailOnChatRoomUseKeysetPaginate :many
 SELECT t_chat_room_actions.t_chat_room_actions_pkey, t_chat_room_actions.chat_room_action_id, t_chat_room_actions.chat_room_id, t_chat_room_actions.chat_room_action_type_id, t_chat_room_actions.acted_at,
 t_chat_room_create_actions.chat_room_create_action_id, t_chat_room_create_actions.name create_name, cm.member_id create_member_id, cm.name create_member_name, cm.first_name create_member_first_name, cm.last_name create_member_last_name, cm.email create_member_email, cm.profile_image_id create_member_profile_image_id, cm.grade_id create_member_grade_id, cm.group_id create_member_group_id,
 t_chat_room_update_name_actions.chat_room_update_name_action_id, t_chat_room_update_name_actions.name update_name, um.member_id update_member_id, um.name update_member_name, um.first_name update_member_first_name, um.last_name update_member_last_name, um.email update_member_email, um.profile_image_id update_member_profile_image_id, um.grade_id update_member_grade_id, um.group_id update_member_group_id,
@@ -388,7 +564,7 @@ ORDER BY
 LIMIT $2
 `
 
-type GetChatRoomActionsOnChatRoomUseKeysetPaginateParams struct {
+type GetChatRoomActionsWithDetailOnChatRoomUseKeysetPaginateParams struct {
 	ChatRoomID                   uuid.UUID   `json:"chat_room_id"`
 	Limit                        int32       `json:"limit"`
 	WhereInChatRoomActionTypeIds bool        `json:"where_in_chat_room_action_type_ids"`
@@ -399,7 +575,7 @@ type GetChatRoomActionsOnChatRoomUseKeysetPaginateParams struct {
 	Cursor                       int32       `json:"cursor"`
 }
 
-type GetChatRoomActionsOnChatRoomUseKeysetPaginateRow struct {
+type GetChatRoomActionsWithDetailOnChatRoomUseKeysetPaginateRow struct {
 	TChatRoomActionsPkey                      pgtype.Int8        `json:"t_chat_room_actions_pkey"`
 	ChatRoomActionID                          uuid.UUID          `json:"chat_room_action_id"`
 	ChatRoomID                                uuid.UUID          `json:"chat_room_id"`
@@ -484,8 +660,8 @@ type GetChatRoomActionsOnChatRoomUseKeysetPaginateRow struct {
 	MessageSenderProfileImageMimeTypeID       pgtype.UUID        `json:"message_sender_profile_image_mime_type_id"`
 }
 
-func (q *Queries) GetChatRoomActionsOnChatRoomUseKeysetPaginate(ctx context.Context, arg GetChatRoomActionsOnChatRoomUseKeysetPaginateParams) ([]GetChatRoomActionsOnChatRoomUseKeysetPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getChatRoomActionsOnChatRoomUseKeysetPaginate,
+func (q *Queries) GetChatRoomActionsWithDetailOnChatRoomUseKeysetPaginate(ctx context.Context, arg GetChatRoomActionsWithDetailOnChatRoomUseKeysetPaginateParams) ([]GetChatRoomActionsWithDetailOnChatRoomUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getChatRoomActionsWithDetailOnChatRoomUseKeysetPaginate,
 		arg.ChatRoomID,
 		arg.Limit,
 		arg.WhereInChatRoomActionTypeIds,
@@ -499,9 +675,9 @@ func (q *Queries) GetChatRoomActionsOnChatRoomUseKeysetPaginate(ctx context.Cont
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetChatRoomActionsOnChatRoomUseKeysetPaginateRow{}
+	items := []GetChatRoomActionsWithDetailOnChatRoomUseKeysetPaginateRow{}
 	for rows.Next() {
-		var i GetChatRoomActionsOnChatRoomUseKeysetPaginateRow
+		var i GetChatRoomActionsWithDetailOnChatRoomUseKeysetPaginateRow
 		if err := rows.Scan(
 			&i.TChatRoomActionsPkey,
 			&i.ChatRoomActionID,
@@ -596,7 +772,7 @@ func (q *Queries) GetChatRoomActionsOnChatRoomUseKeysetPaginate(ctx context.Cont
 	return items, nil
 }
 
-const getChatRoomActionsOnChatRoomUseNumberedPaginate = `-- name: GetChatRoomActionsOnChatRoomUseNumberedPaginate :many
+const getChatRoomActionsWithDetailOnChatRoomUseNumberedPaginate = `-- name: GetChatRoomActionsWithDetailOnChatRoomUseNumberedPaginate :many
 SELECT t_chat_room_actions.t_chat_room_actions_pkey, t_chat_room_actions.chat_room_action_id, t_chat_room_actions.chat_room_id, t_chat_room_actions.chat_room_action_type_id, t_chat_room_actions.acted_at,
 t_chat_room_create_actions.chat_room_create_action_id, t_chat_room_create_actions.name create_name, cm.member_id create_member_id, cm.name create_member_name, cm.first_name create_member_first_name, cm.last_name create_member_last_name, cm.email create_member_email, cm.profile_image_id create_member_profile_image_id, cm.grade_id create_member_grade_id, cm.group_id create_member_group_id,
 t_chat_room_update_name_actions.chat_room_update_name_action_id, t_chat_room_update_name_actions.name update_name, um.member_id update_member_id, um.name update_member_name, um.first_name update_member_first_name, um.last_name update_member_last_name, um.email update_member_email, um.profile_image_id update_member_profile_image_id, um.grade_id update_member_grade_id, um.group_id update_member_group_id,
@@ -636,7 +812,7 @@ ORDER BY
 LIMIT $2 OFFSET $3
 `
 
-type GetChatRoomActionsOnChatRoomUseNumberedPaginateParams struct {
+type GetChatRoomActionsWithDetailOnChatRoomUseNumberedPaginateParams struct {
 	ChatRoomID                   uuid.UUID   `json:"chat_room_id"`
 	Limit                        int32       `json:"limit"`
 	Offset                       int32       `json:"offset"`
@@ -645,7 +821,7 @@ type GetChatRoomActionsOnChatRoomUseNumberedPaginateParams struct {
 	OrderMethod                  string      `json:"order_method"`
 }
 
-type GetChatRoomActionsOnChatRoomUseNumberedPaginateRow struct {
+type GetChatRoomActionsWithDetailOnChatRoomUseNumberedPaginateRow struct {
 	TChatRoomActionsPkey                      pgtype.Int8        `json:"t_chat_room_actions_pkey"`
 	ChatRoomActionID                          uuid.UUID          `json:"chat_room_action_id"`
 	ChatRoomID                                uuid.UUID          `json:"chat_room_id"`
@@ -730,8 +906,8 @@ type GetChatRoomActionsOnChatRoomUseNumberedPaginateRow struct {
 	MessageSenderProfileImageMimeTypeID       pgtype.UUID        `json:"message_sender_profile_image_mime_type_id"`
 }
 
-func (q *Queries) GetChatRoomActionsOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetChatRoomActionsOnChatRoomUseNumberedPaginateParams) ([]GetChatRoomActionsOnChatRoomUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getChatRoomActionsOnChatRoomUseNumberedPaginate,
+func (q *Queries) GetChatRoomActionsWithDetailOnChatRoomUseNumberedPaginate(ctx context.Context, arg GetChatRoomActionsWithDetailOnChatRoomUseNumberedPaginateParams) ([]GetChatRoomActionsWithDetailOnChatRoomUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getChatRoomActionsWithDetailOnChatRoomUseNumberedPaginate,
 		arg.ChatRoomID,
 		arg.Limit,
 		arg.Offset,
@@ -743,9 +919,9 @@ func (q *Queries) GetChatRoomActionsOnChatRoomUseNumberedPaginate(ctx context.Co
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetChatRoomActionsOnChatRoomUseNumberedPaginateRow{}
+	items := []GetChatRoomActionsWithDetailOnChatRoomUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetChatRoomActionsOnChatRoomUseNumberedPaginateRow
+		var i GetChatRoomActionsWithDetailOnChatRoomUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.TChatRoomActionsPkey,
 			&i.ChatRoomActionID,
@@ -841,6 +1017,94 @@ func (q *Queries) GetChatRoomActionsOnChatRoomUseNumberedPaginate(ctx context.Co
 }
 
 const getPluralChatRoomActions = `-- name: GetPluralChatRoomActions :many
+SELECT t_chat_room_actions_pkey, chat_room_action_id, chat_room_id, chat_room_action_type_id, acted_at FROM t_chat_room_actions
+WHERE chat_room_action_id = ANY($1::uuid[])
+ORDER BY
+	CASE WHEN $2::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
+	t_chat_room_actions_pkey ASC
+`
+
+type GetPluralChatRoomActionsParams struct {
+	ChatRoomActionIds []uuid.UUID `json:"chat_room_action_ids"`
+	OrderMethod       string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralChatRoomActions(ctx context.Context, arg GetPluralChatRoomActionsParams) ([]ChatRoomAction, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomActions, arg.ChatRoomActionIds, arg.OrderMethod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ChatRoomAction{}
+	for rows.Next() {
+		var i ChatRoomAction
+		if err := rows.Scan(
+			&i.TChatRoomActionsPkey,
+			&i.ChatRoomActionID,
+			&i.ChatRoomID,
+			&i.ChatRoomActionTypeID,
+			&i.ActedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralChatRoomActionsUseNumberedPaginate = `-- name: GetPluralChatRoomActionsUseNumberedPaginate :many
+SELECT t_chat_room_actions_pkey, chat_room_action_id, chat_room_id, chat_room_action_type_id, acted_at FROM t_chat_room_actions
+WHERE chat_room_action_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
+	t_chat_room_actions_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralChatRoomActionsUseNumberedPaginateParams struct {
+	Limit             int32       `json:"limit"`
+	Offset            int32       `json:"offset"`
+	ChatRoomActionIds []uuid.UUID `json:"chat_room_action_ids"`
+	OrderMethod       string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralChatRoomActionsUseNumberedPaginate(ctx context.Context, arg GetPluralChatRoomActionsUseNumberedPaginateParams) ([]ChatRoomAction, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomActionsUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.ChatRoomActionIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []ChatRoomAction{}
+	for rows.Next() {
+		var i ChatRoomAction
+		if err := rows.Scan(
+			&i.TChatRoomActionsPkey,
+			&i.ChatRoomActionID,
+			&i.ChatRoomID,
+			&i.ChatRoomActionTypeID,
+			&i.ActedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralChatRoomActionsWithDetail = `-- name: GetPluralChatRoomActionsWithDetail :many
 SELECT t_chat_room_actions.t_chat_room_actions_pkey, t_chat_room_actions.chat_room_action_id, t_chat_room_actions.chat_room_id, t_chat_room_actions.chat_room_action_type_id, t_chat_room_actions.acted_at,
 t_chat_room_create_actions.chat_room_create_action_id, t_chat_room_create_actions.name create_name, cm.member_id create_member_id, cm.name create_member_name, cm.first_name create_member_first_name, cm.last_name create_member_last_name, cm.email create_member_email, cm.profile_image_id create_member_profile_image_id, cm.grade_id create_member_grade_id, cm.group_id create_member_group_id,
 t_chat_room_update_name_actions.chat_room_update_name_action_id, t_chat_room_update_name_actions.name update_name, um.member_id update_member_id, um.name update_member_name, um.first_name update_member_first_name, um.last_name update_member_last_name, um.email update_member_email, um.profile_image_id update_member_profile_image_id, um.grade_id update_member_grade_id, um.group_id update_member_group_id,
@@ -877,12 +1141,12 @@ ORDER BY
 	t_chat_room_actions_pkey ASC
 `
 
-type GetPluralChatRoomActionsParams struct {
+type GetPluralChatRoomActionsWithDetailParams struct {
 	ChatRoomActionIds []uuid.UUID `json:"chat_room_action_ids"`
 	OrderMethod       string      `json:"order_method"`
 }
 
-type GetPluralChatRoomActionsRow struct {
+type GetPluralChatRoomActionsWithDetailRow struct {
 	TChatRoomActionsPkey                      pgtype.Int8        `json:"t_chat_room_actions_pkey"`
 	ChatRoomActionID                          uuid.UUID          `json:"chat_room_action_id"`
 	ChatRoomID                                uuid.UUID          `json:"chat_room_id"`
@@ -967,15 +1231,15 @@ type GetPluralChatRoomActionsRow struct {
 	MessageSenderProfileImageMimeTypeID       pgtype.UUID        `json:"message_sender_profile_image_mime_type_id"`
 }
 
-func (q *Queries) GetPluralChatRoomActions(ctx context.Context, arg GetPluralChatRoomActionsParams) ([]GetPluralChatRoomActionsRow, error) {
-	rows, err := q.db.Query(ctx, getPluralChatRoomActions, arg.ChatRoomActionIds, arg.OrderMethod)
+func (q *Queries) GetPluralChatRoomActionsWithDetail(ctx context.Context, arg GetPluralChatRoomActionsWithDetailParams) ([]GetPluralChatRoomActionsWithDetailRow, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomActionsWithDetail, arg.ChatRoomActionIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluralChatRoomActionsRow{}
+	items := []GetPluralChatRoomActionsWithDetailRow{}
 	for rows.Next() {
-		var i GetPluralChatRoomActionsRow
+		var i GetPluralChatRoomActionsWithDetailRow
 		if err := rows.Scan(
 			&i.TChatRoomActionsPkey,
 			&i.ChatRoomActionID,
@@ -1070,7 +1334,7 @@ func (q *Queries) GetPluralChatRoomActions(ctx context.Context, arg GetPluralCha
 	return items, nil
 }
 
-const getPluralChatRoomActionsUseNumberedPaginate = `-- name: GetPluralChatRoomActionsUseNumberedPaginate :many
+const getPluralChatRoomActionsWithDetailUseNumberedPaginate = `-- name: GetPluralChatRoomActionsWithDetailUseNumberedPaginate :many
 SELECT t_chat_room_actions.t_chat_room_actions_pkey, t_chat_room_actions.chat_room_action_id, t_chat_room_actions.chat_room_id, t_chat_room_actions.chat_room_action_type_id, t_chat_room_actions.acted_at,
 t_chat_room_create_actions.chat_room_create_action_id, t_chat_room_create_actions.name create_name, cm.member_id create_member_id, cm.name create_member_name, cm.first_name create_member_first_name, cm.last_name create_member_last_name, cm.email create_member_email, cm.profile_image_id create_member_profile_image_id, cm.grade_id create_member_grade_id, cm.group_id create_member_group_id,
 t_chat_room_update_name_actions.chat_room_update_name_action_id, t_chat_room_update_name_actions.name update_name, um.member_id update_member_id, um.name update_member_name, um.first_name update_member_first_name, um.last_name update_member_last_name, um.email update_member_email, um.profile_image_id update_member_profile_image_id, um.grade_id update_member_grade_id, um.group_id update_member_group_id,
@@ -1108,14 +1372,14 @@ ORDER BY
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralChatRoomActionsUseNumberedPaginateParams struct {
+type GetPluralChatRoomActionsWithDetailUseNumberedPaginateParams struct {
 	Limit             int32       `json:"limit"`
 	Offset            int32       `json:"offset"`
 	ChatRoomActionIds []uuid.UUID `json:"chat_room_action_ids"`
 	OrderMethod       string      `json:"order_method"`
 }
 
-type GetPluralChatRoomActionsUseNumberedPaginateRow struct {
+type GetPluralChatRoomActionsWithDetailUseNumberedPaginateRow struct {
 	TChatRoomActionsPkey                      pgtype.Int8        `json:"t_chat_room_actions_pkey"`
 	ChatRoomActionID                          uuid.UUID          `json:"chat_room_action_id"`
 	ChatRoomID                                uuid.UUID          `json:"chat_room_id"`
@@ -1200,8 +1464,8 @@ type GetPluralChatRoomActionsUseNumberedPaginateRow struct {
 	MessageSenderProfileImageMimeTypeID       pgtype.UUID        `json:"message_sender_profile_image_mime_type_id"`
 }
 
-func (q *Queries) GetPluralChatRoomActionsUseNumberedPaginate(ctx context.Context, arg GetPluralChatRoomActionsUseNumberedPaginateParams) ([]GetPluralChatRoomActionsUseNumberedPaginateRow, error) {
-	rows, err := q.db.Query(ctx, getPluralChatRoomActionsUseNumberedPaginate,
+func (q *Queries) GetPluralChatRoomActionsWithDetailUseNumberedPaginate(ctx context.Context, arg GetPluralChatRoomActionsWithDetailUseNumberedPaginateParams) ([]GetPluralChatRoomActionsWithDetailUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralChatRoomActionsWithDetailUseNumberedPaginate,
 		arg.Limit,
 		arg.Offset,
 		arg.ChatRoomActionIds,
@@ -1211,9 +1475,9 @@ func (q *Queries) GetPluralChatRoomActionsUseNumberedPaginate(ctx context.Contex
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluralChatRoomActionsUseNumberedPaginateRow{}
+	items := []GetPluralChatRoomActionsWithDetailUseNumberedPaginateRow{}
 	for rows.Next() {
-		var i GetPluralChatRoomActionsUseNumberedPaginateRow
+		var i GetPluralChatRoomActionsWithDetailUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.TChatRoomActionsPkey,
 			&i.ChatRoomActionID,
@@ -1318,4 +1582,26 @@ func (q *Queries) PluralDeleteChatRoomActions(ctx context.Context, chatRoomActio
 		return 0, err
 	}
 	return result.RowsAffected(), nil
+}
+
+const updateChatRoomAction = `-- name: UpdateChatRoomAction :one
+UPDATE t_chat_room_actions SET chat_room_action_type_id = $2 WHERE chat_room_action_id = $1 RETURNING t_chat_room_actions_pkey, chat_room_action_id, chat_room_id, chat_room_action_type_id, acted_at
+`
+
+type UpdateChatRoomActionParams struct {
+	ChatRoomActionID     uuid.UUID `json:"chat_room_action_id"`
+	ChatRoomActionTypeID uuid.UUID `json:"chat_room_action_type_id"`
+}
+
+func (q *Queries) UpdateChatRoomAction(ctx context.Context, arg UpdateChatRoomActionParams) (ChatRoomAction, error) {
+	row := q.db.QueryRow(ctx, updateChatRoomAction, arg.ChatRoomActionID, arg.ChatRoomActionTypeID)
+	var i ChatRoomAction
+	err := row.Scan(
+		&i.TChatRoomActionsPkey,
+		&i.ChatRoomActionID,
+		&i.ChatRoomID,
+		&i.ChatRoomActionTypeID,
+		&i.ActedAt,
+	)
+	return i, err
 }

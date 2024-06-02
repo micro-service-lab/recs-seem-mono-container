@@ -34,6 +34,10 @@ other = "画像ID"
 other = "ファイルID"
 [FileIDs]
 other = "ファイルID"
+[AttachableItemID]
+other = "添付可能アイテムID"
+[AttachableItemIDs]
+other = "添付可能アイテムID"
 
 [ChatRoom]
 other = "チャットルーム"
@@ -43,6 +47,10 @@ other = "オーガナイゼーション"
 other = "ファイル"
 [Files]
 other = "ファイル"
+[Message]
+other = "メッセージ"
+[Messages]
+other = "メッセージ"
 
 [Required]
 other = "{{.Target}}は必須フィールドです"

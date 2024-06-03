@@ -37,6 +37,10 @@ func ChatRoomHandler(
 		Translator: t,
 	}
 
+	readOnChatRoom := handler.ReadMessagesOnChatRoom{
+		Service: svc,
+	}
+
 	addMembers := handler.AddMembersOnChatRoom{
 		Service:    svc,
 		Validator:  vd,
@@ -65,6 +69,9 @@ func ChatRoomHandler(
 	editMessage := handler.EditMessage{
 		Service:   svc,
 		Validator: vd,
+	}
+	readMessage := handler.ReadMessage{
+		Service: svc,
 	}
 	attachItemOnMessage := handler.AttachItemsOnMessage{
 		Service:    svc,
@@ -99,6 +106,14 @@ func ChatRoomHandler(
 			r.Post("/", createMessage.ServeHTTP)
 			r.Delete(uuidPath("/{message_id:uuid}"), deleteMessage.ServeHTTP)
 			r.Put(uuidPath("/{message_id:uuid}"), editMessage.ServeHTTP)
+
+			r.Route("/read", func(r chi.Router) {
+				r.Post("/", readOnChatRoom.ServeHTTP)
+			})
+
+			r.Route(uuidPath("/{message_id:uuid}/read"), func(r chi.Router) {
+				r.Post("/", readMessage.ServeHTTP)
+			})
 
 			r.Route(uuidPath("/{message_id:uuid}/attachable_items"), func(r chi.Router) {
 				r.Post("/", attachItemOnMessage.ServeHTTP)

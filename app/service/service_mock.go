@@ -153,6 +153,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreatePolicyCategoryFunc: func(ctx context.Context, name string, key string, description string) (entity.PolicyCategory, error) {
 //				panic("mock out the CreatePolicyCategory method")
 //			},
+//			CreatePrivateChatRoomFunc: func(ctx context.Context, ownerID uuid.UUID, memberID uuid.UUID) (entity.ChatRoom, error) {
+//				panic("mock out the CreatePrivateChatRoom method")
+//			},
 //			CreateProfessorFunc: func(ctx context.Context, loginID string, rawPassword string, email string, name string, firstName entity.String, lastName entity.String, roleID entity.UUID) (entity.Professor, error) {
 //				panic("mock out the CreateProfessor method")
 //			},
@@ -359,6 +362,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			FindPolicyCategoryByKeyFunc: func(ctx context.Context, key string) (entity.PolicyCategory, error) {
 //				panic("mock out the FindPolicyCategoryByKey method")
+//			},
+//			FindPrivateChatRoomFunc: func(ctx context.Context, ownerID uuid.UUID, memberID uuid.UUID) (entity.ChatRoom, error) {
+//				panic("mock out the FindPrivateChatRoom method")
 //			},
 //			FindRecordTypeByIDFunc: func(ctx context.Context, id uuid.UUID) (entity.RecordType, error) {
 //				panic("mock out the FindRecordTypeByID method")
@@ -817,6 +823,9 @@ type ManagerInterfaceMock struct {
 	// CreatePolicyCategoryFunc mocks the CreatePolicyCategory method.
 	CreatePolicyCategoryFunc func(ctx context.Context, name string, key string, description string) (entity.PolicyCategory, error)
 
+	// CreatePrivateChatRoomFunc mocks the CreatePrivateChatRoom method.
+	CreatePrivateChatRoomFunc func(ctx context.Context, ownerID uuid.UUID, memberID uuid.UUID) (entity.ChatRoom, error)
+
 	// CreateProfessorFunc mocks the CreateProfessor method.
 	CreateProfessorFunc func(ctx context.Context, loginID string, rawPassword string, email string, name string, firstName entity.String, lastName entity.String, roleID entity.UUID) (entity.Professor, error)
 
@@ -1023,6 +1032,9 @@ type ManagerInterfaceMock struct {
 
 	// FindPolicyCategoryByKeyFunc mocks the FindPolicyCategoryByKey method.
 	FindPolicyCategoryByKeyFunc func(ctx context.Context, key string) (entity.PolicyCategory, error)
+
+	// FindPrivateChatRoomFunc mocks the FindPrivateChatRoom method.
+	FindPrivateChatRoomFunc func(ctx context.Context, ownerID uuid.UUID, memberID uuid.UUID) (entity.ChatRoom, error)
 
 	// FindRecordTypeByIDFunc mocks the FindRecordTypeByID method.
 	FindRecordTypeByIDFunc func(ctx context.Context, id uuid.UUID) (entity.RecordType, error)
@@ -1796,6 +1808,15 @@ type ManagerInterfaceMock struct {
 			// Description is the description argument value.
 			Description string
 		}
+		// CreatePrivateChatRoom holds details about calls to the CreatePrivateChatRoom method.
+		CreatePrivateChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OwnerID is the ownerID argument value.
+			OwnerID uuid.UUID
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+		}
 		// CreateProfessor holds details about calls to the CreateProfessor method.
 		CreateProfessor []struct {
 			// Ctx is the ctx argument value.
@@ -2340,6 +2361,15 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// Key is the key argument value.
 			Key string
+		}
+		// FindPrivateChatRoom holds details about calls to the FindPrivateChatRoom method.
+		FindPrivateChatRoom []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OwnerID is the ownerID argument value.
+			OwnerID uuid.UUID
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
 		}
 		// FindRecordTypeByID holds details about calls to the FindRecordTypeByID method.
 		FindRecordTypeByID []struct {
@@ -3700,6 +3730,7 @@ type ManagerInterfaceMock struct {
 	lockCreatePolicy                          sync.RWMutex
 	lockCreatePolicyCategories                sync.RWMutex
 	lockCreatePolicyCategory                  sync.RWMutex
+	lockCreatePrivateChatRoom                 sync.RWMutex
 	lockCreateProfessor                       sync.RWMutex
 	lockCreateRecordType                      sync.RWMutex
 	lockCreateRecordTypes                     sync.RWMutex
@@ -3769,6 +3800,7 @@ type ManagerInterfaceMock struct {
 	lockFindPolicyByKeyWithCategory           sync.RWMutex
 	lockFindPolicyCategoryByID                sync.RWMutex
 	lockFindPolicyCategoryByKey               sync.RWMutex
+	lockFindPrivateChatRoom                   sync.RWMutex
 	lockFindRecordTypeByID                    sync.RWMutex
 	lockFindRecordTypeByKey                   sync.RWMutex
 	lockFindRoleByID                          sync.RWMutex
@@ -5719,6 +5751,46 @@ func (mock *ManagerInterfaceMock) CreatePolicyCategoryCalls() []struct {
 	mock.lockCreatePolicyCategory.RLock()
 	calls = mock.calls.CreatePolicyCategory
 	mock.lockCreatePolicyCategory.RUnlock()
+	return calls
+}
+
+// CreatePrivateChatRoom calls CreatePrivateChatRoomFunc.
+func (mock *ManagerInterfaceMock) CreatePrivateChatRoom(ctx context.Context, ownerID uuid.UUID, memberID uuid.UUID) (entity.ChatRoom, error) {
+	if mock.CreatePrivateChatRoomFunc == nil {
+		panic("ManagerInterfaceMock.CreatePrivateChatRoomFunc: method is nil but ManagerInterface.CreatePrivateChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		OwnerID  uuid.UUID
+		MemberID uuid.UUID
+	}{
+		Ctx:      ctx,
+		OwnerID:  ownerID,
+		MemberID: memberID,
+	}
+	mock.lockCreatePrivateChatRoom.Lock()
+	mock.calls.CreatePrivateChatRoom = append(mock.calls.CreatePrivateChatRoom, callInfo)
+	mock.lockCreatePrivateChatRoom.Unlock()
+	return mock.CreatePrivateChatRoomFunc(ctx, ownerID, memberID)
+}
+
+// CreatePrivateChatRoomCalls gets all the calls that were made to CreatePrivateChatRoom.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreatePrivateChatRoomCalls())
+func (mock *ManagerInterfaceMock) CreatePrivateChatRoomCalls() []struct {
+	Ctx      context.Context
+	OwnerID  uuid.UUID
+	MemberID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		OwnerID  uuid.UUID
+		MemberID uuid.UUID
+	}
+	mock.lockCreatePrivateChatRoom.RLock()
+	calls = mock.calls.CreatePrivateChatRoom
+	mock.lockCreatePrivateChatRoom.RUnlock()
 	return calls
 }
 
@@ -8327,6 +8399,46 @@ func (mock *ManagerInterfaceMock) FindPolicyCategoryByKeyCalls() []struct {
 	mock.lockFindPolicyCategoryByKey.RLock()
 	calls = mock.calls.FindPolicyCategoryByKey
 	mock.lockFindPolicyCategoryByKey.RUnlock()
+	return calls
+}
+
+// FindPrivateChatRoom calls FindPrivateChatRoomFunc.
+func (mock *ManagerInterfaceMock) FindPrivateChatRoom(ctx context.Context, ownerID uuid.UUID, memberID uuid.UUID) (entity.ChatRoom, error) {
+	if mock.FindPrivateChatRoomFunc == nil {
+		panic("ManagerInterfaceMock.FindPrivateChatRoomFunc: method is nil but ManagerInterface.FindPrivateChatRoom was just called")
+	}
+	callInfo := struct {
+		Ctx      context.Context
+		OwnerID  uuid.UUID
+		MemberID uuid.UUID
+	}{
+		Ctx:      ctx,
+		OwnerID:  ownerID,
+		MemberID: memberID,
+	}
+	mock.lockFindPrivateChatRoom.Lock()
+	mock.calls.FindPrivateChatRoom = append(mock.calls.FindPrivateChatRoom, callInfo)
+	mock.lockFindPrivateChatRoom.Unlock()
+	return mock.FindPrivateChatRoomFunc(ctx, ownerID, memberID)
+}
+
+// FindPrivateChatRoomCalls gets all the calls that were made to FindPrivateChatRoom.
+// Check the length with:
+//
+//	len(mockedManagerInterface.FindPrivateChatRoomCalls())
+func (mock *ManagerInterfaceMock) FindPrivateChatRoomCalls() []struct {
+	Ctx      context.Context
+	OwnerID  uuid.UUID
+	MemberID uuid.UUID
+} {
+	var calls []struct {
+		Ctx      context.Context
+		OwnerID  uuid.UUID
+		MemberID uuid.UUID
+	}
+	mock.lockFindPrivateChatRoom.RLock()
+	calls = mock.calls.FindPrivateChatRoom
+	mock.lockFindPrivateChatRoom.RUnlock()
 	return calls
 }
 

@@ -413,4 +413,18 @@ var (
 		Message:    "cannot attach system file error",
 		StatusCode: http.StatusForbidden,
 	}
+
+	// PrivateChatRoomAlreadyExists プライベートチャットルームが既に存在する
+	PrivateChatRoomAlreadyExists = APIResponseType{
+		Code:       "254",
+		Message:    "private chat room already exists error",
+		StatusCode: http.StatusConflict,
+	}
+
+	// NotChatRoomMember チャットルームのメンバーでない
+	NotChatRoomMember = APIResponseType{
+		Code:       "255",
+		Message:    "not chat room member error",
+		StatusCode: http.StatusForbidden,
+	}
 )

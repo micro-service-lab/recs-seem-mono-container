@@ -801,12 +801,22 @@ type ChatRoomManager interface {
 		ctx context.Context,
 		id uuid.UUID,
 	) (entity.ChatRoomWithCoverImage, error)
+	FindPrivateChatRoom(
+		ctx context.Context,
+		ownerID,
+		memberID uuid.UUID,
+	) (entity.ChatRoom, error)
 	CreateChatRoom(
 		ctx context.Context,
 		name string,
 		coverImageID entity.UUID,
 		ownerID uuid.UUID,
 		members []uuid.UUID,
+	) (e entity.ChatRoom, err error)
+	CreatePrivateChatRoom(
+		ctx context.Context,
+		ownerID uuid.UUID,
+		memberID uuid.UUID,
 	) (e entity.ChatRoom, err error)
 	UpdateChatRoom(
 		ctx context.Context,

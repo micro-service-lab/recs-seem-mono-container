@@ -109,6 +109,9 @@ func (h *DetachItemsOnMessage) ServeHTTP(w http.ResponseWriter, r *http.Request)
 				ve := errhandle.NewValidationError(nil)
 				ve.Add("attachable_item_ids", msgStr)
 				err = ve
+			case service.MessageTargetMessages:
+				e.SetTarget("message")
+				err = e
 			}
 		}
 	} else {

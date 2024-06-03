@@ -10,7 +10,7 @@
 | chat_room_create_action_id | uuid | uuid_generate_v4() | false |  |  |  |
 | chat_room_action_id | uuid |  | false |  | [public.t_chat_room_actions](public.t_chat_room_actions.md) |  |
 | created_by | uuid |  | true |  | [public.m_members](public.m_members.md) |  |
-| name | varchar(255) |  | false |  |  |  |
+| name | varchar(255) |  | true |  |  |  |
 
 ## Constraints
 

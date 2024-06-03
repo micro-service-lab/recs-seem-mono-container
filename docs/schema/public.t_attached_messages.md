@@ -25,6 +25,7 @@
 | ---- | ---------- |
 | t_attached_messages_pkey | CREATE UNIQUE INDEX t_attached_messages_pkey ON public.t_attached_messages USING btree (t_attached_messages_pkey) |
 | idx_t_attached_messages_id | CREATE UNIQUE INDEX idx_t_attached_messages_id ON public.t_attached_messages USING btree (attached_message_id) |
+| index_t_attached_messages_on_message_id_and_attachable_item_id | CREATE UNIQUE INDEX index_t_attached_messages_on_message_id_and_attachable_item_id ON public.t_attached_messages USING btree (message_id, attachable_item_id) |
 
 ## Relations
 

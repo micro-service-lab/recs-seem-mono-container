@@ -23,6 +23,9 @@ func MemberHandler(
 	auth auth.Auth,
 	ssm session.Manager,
 ) http.Handler {
+	getHandler := handler.GetMembers{
+		Service: svc,
+	}
 	deleteHandler := handler.DeleteMember{
 		Service: svc,
 	}
@@ -55,6 +58,7 @@ func MemberHandler(
 	r.Group(func(r chi.Router) {
 		r.Use(AuthMiddleware(clk.Now, auth, svc, ssm))
 
+		r.Get("/", getHandler.ServeHTTP)
 		r.Delete(uuidPath("/{member_id}"), deleteHandler.ServeHTTP)
 		r.Put(uuidPath("/{member_id}"), updateHandler.ServeHTTP)
 

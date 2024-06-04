@@ -444,6 +444,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			GetImagesCountFunc: func(ctx context.Context) (int64, error) {
 //				panic("mock out the GetImagesCount method")
 //			},
+//			GetMembersFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Member], error) {
+//				panic("mock out the GetMembers method")
+//			},
 //			GetMembersOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, whereSearchName string, order parameter.MemberOnChatRoomOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberOnChatRoom], error) {
 //				panic("mock out the GetMembersOnChatRoom method")
 //			},
@@ -455,6 +458,27 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			},
 //			GetMembersOnOrganizationCountFunc: func(ctx context.Context, chatRoomID uuid.UUID, whereSearchName string) (int64, error) {
 //				panic("mock out the GetMembersOnOrganizationCount method")
+//			},
+//			GetMembersWithAttendStatusFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithAttendStatus], error) {
+//				panic("mock out the GetMembersWithAttendStatus method")
+//			},
+//			GetMembersWithCrewFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrew], error) {
+//				panic("mock out the GetMembersWithCrew method")
+//			},
+//			GetMembersWithCrewAndProfileImageAndAttendStatusFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrewAndProfileImageAndAttendStatus], error) {
+//				panic("mock out the GetMembersWithCrewAndProfileImageAndAttendStatus method")
+//			},
+//			GetMembersWithDetailFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithDetail], error) {
+//				panic("mock out the GetMembersWithDetail method")
+//			},
+//			GetMembersWithPersonalOrganizationFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithPersonalOrganization], error) {
+//				panic("mock out the GetMembersWithPersonalOrganization method")
+//			},
+//			GetMembersWithProfileImageFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithProfileImage], error) {
+//				panic("mock out the GetMembersWithProfileImage method")
+//			},
+//			GetMembersWithRoleFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithRole], error) {
+//				panic("mock out the GetMembersWithRole method")
 //			},
 //			GetMessagesOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, whereInSenders []uuid.UUID, whereSearchBody string, whereEarlierPostedAt time.Time, whereLaterPostedAt time.Time, whereEarlierLastEditedAt time.Time, whereLaterLastEditedAt time.Time, order parameter.MessageOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MessageWithSenderAndReadReceiptCountAndAttachments], error) {
 //				panic("mock out the GetMessagesOnChatRoom method")
@@ -1114,6 +1138,9 @@ type ManagerInterfaceMock struct {
 	// GetImagesCountFunc mocks the GetImagesCount method.
 	GetImagesCountFunc func(ctx context.Context) (int64, error)
 
+	// GetMembersFunc mocks the GetMembers method.
+	GetMembersFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Member], error)
+
 	// GetMembersOnChatRoomFunc mocks the GetMembersOnChatRoom method.
 	GetMembersOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, whereSearchName string, order parameter.MemberOnChatRoomOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberOnChatRoom], error)
 
@@ -1125,6 +1152,27 @@ type ManagerInterfaceMock struct {
 
 	// GetMembersOnOrganizationCountFunc mocks the GetMembersOnOrganizationCount method.
 	GetMembersOnOrganizationCountFunc func(ctx context.Context, chatRoomID uuid.UUID, whereSearchName string) (int64, error)
+
+	// GetMembersWithAttendStatusFunc mocks the GetMembersWithAttendStatus method.
+	GetMembersWithAttendStatusFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithAttendStatus], error)
+
+	// GetMembersWithCrewFunc mocks the GetMembersWithCrew method.
+	GetMembersWithCrewFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrew], error)
+
+	// GetMembersWithCrewAndProfileImageAndAttendStatusFunc mocks the GetMembersWithCrewAndProfileImageAndAttendStatus method.
+	GetMembersWithCrewAndProfileImageAndAttendStatusFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrewAndProfileImageAndAttendStatus], error)
+
+	// GetMembersWithDetailFunc mocks the GetMembersWithDetail method.
+	GetMembersWithDetailFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithDetail], error)
+
+	// GetMembersWithPersonalOrganizationFunc mocks the GetMembersWithPersonalOrganization method.
+	GetMembersWithPersonalOrganizationFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithPersonalOrganization], error)
+
+	// GetMembersWithProfileImageFunc mocks the GetMembersWithProfileImage method.
+	GetMembersWithProfileImageFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithProfileImage], error)
+
+	// GetMembersWithRoleFunc mocks the GetMembersWithRole method.
+	GetMembersWithRoleFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithRole], error)
 
 	// GetMessagesOnChatRoomFunc mocks the GetMessagesOnChatRoom method.
 	GetMessagesOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, whereInSenders []uuid.UUID, whereSearchBody string, whereEarlierPostedAt time.Time, whereLaterPostedAt time.Time, whereEarlierLastEditedAt time.Time, whereLaterLastEditedAt time.Time, order parameter.MessageOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MessageWithSenderAndReadReceiptCountAndAttachments], error)
@@ -2681,6 +2729,33 @@ type ManagerInterfaceMock struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
 		}
+		// GetMembers holds details about calls to the GetMembers method.
+		GetMembers []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// WhereHasInPolicies is the whereHasInPolicies argument value.
+			WhereHasInPolicies []uuid.UUID
+			// WhereInAttendStatuses is the whereInAttendStatuses argument value.
+			WhereInAttendStatuses []uuid.UUID
+			// WhereInGrades is the whereInGrades argument value.
+			WhereInGrades []uuid.UUID
+			// WhereInGroups is the whereInGroups argument value.
+			WhereInGroups []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MemberOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
 		// GetMembersOnChatRoom holds details about calls to the GetMembersOnChatRoom method.
 		GetMembersOnChatRoom []struct {
 			// Ctx is the ctx argument value.
@@ -2740,6 +2815,195 @@ type ManagerInterfaceMock struct {
 			ChatRoomID uuid.UUID
 			// WhereSearchName is the whereSearchName argument value.
 			WhereSearchName string
+		}
+		// GetMembersWithAttendStatus holds details about calls to the GetMembersWithAttendStatus method.
+		GetMembersWithAttendStatus []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// WhereHasInPolicies is the whereHasInPolicies argument value.
+			WhereHasInPolicies []uuid.UUID
+			// WhereInAttendStatuses is the whereInAttendStatuses argument value.
+			WhereInAttendStatuses []uuid.UUID
+			// WhereInGrades is the whereInGrades argument value.
+			WhereInGrades []uuid.UUID
+			// WhereInGroups is the whereInGroups argument value.
+			WhereInGroups []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MemberOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetMembersWithCrew holds details about calls to the GetMembersWithCrew method.
+		GetMembersWithCrew []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// WhereHasInPolicies is the whereHasInPolicies argument value.
+			WhereHasInPolicies []uuid.UUID
+			// WhereInAttendStatuses is the whereInAttendStatuses argument value.
+			WhereInAttendStatuses []uuid.UUID
+			// WhereInGrades is the whereInGrades argument value.
+			WhereInGrades []uuid.UUID
+			// WhereInGroups is the whereInGroups argument value.
+			WhereInGroups []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MemberOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetMembersWithCrewAndProfileImageAndAttendStatus holds details about calls to the GetMembersWithCrewAndProfileImageAndAttendStatus method.
+		GetMembersWithCrewAndProfileImageAndAttendStatus []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// WhereHasInPolicies is the whereHasInPolicies argument value.
+			WhereHasInPolicies []uuid.UUID
+			// WhereInAttendStatuses is the whereInAttendStatuses argument value.
+			WhereInAttendStatuses []uuid.UUID
+			// WhereInGrades is the whereInGrades argument value.
+			WhereInGrades []uuid.UUID
+			// WhereInGroups is the whereInGroups argument value.
+			WhereInGroups []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MemberOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetMembersWithDetail holds details about calls to the GetMembersWithDetail method.
+		GetMembersWithDetail []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// WhereHasInPolicies is the whereHasInPolicies argument value.
+			WhereHasInPolicies []uuid.UUID
+			// WhereInAttendStatuses is the whereInAttendStatuses argument value.
+			WhereInAttendStatuses []uuid.UUID
+			// WhereInGrades is the whereInGrades argument value.
+			WhereInGrades []uuid.UUID
+			// WhereInGroups is the whereInGroups argument value.
+			WhereInGroups []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MemberOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetMembersWithPersonalOrganization holds details about calls to the GetMembersWithPersonalOrganization method.
+		GetMembersWithPersonalOrganization []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// WhereHasInPolicies is the whereHasInPolicies argument value.
+			WhereHasInPolicies []uuid.UUID
+			// WhereInAttendStatuses is the whereInAttendStatuses argument value.
+			WhereInAttendStatuses []uuid.UUID
+			// WhereInGrades is the whereInGrades argument value.
+			WhereInGrades []uuid.UUID
+			// WhereInGroups is the whereInGroups argument value.
+			WhereInGroups []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MemberOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetMembersWithProfileImage holds details about calls to the GetMembersWithProfileImage method.
+		GetMembersWithProfileImage []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// WhereHasInPolicies is the whereHasInPolicies argument value.
+			WhereHasInPolicies []uuid.UUID
+			// WhereInAttendStatuses is the whereInAttendStatuses argument value.
+			WhereInAttendStatuses []uuid.UUID
+			// WhereInGrades is the whereInGrades argument value.
+			WhereInGrades []uuid.UUID
+			// WhereInGroups is the whereInGroups argument value.
+			WhereInGroups []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MemberOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
+		}
+		// GetMembersWithRole holds details about calls to the GetMembersWithRole method.
+		GetMembersWithRole []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// WhereSearchName is the whereSearchName argument value.
+			WhereSearchName string
+			// WhereHasInPolicies is the whereHasInPolicies argument value.
+			WhereHasInPolicies []uuid.UUID
+			// WhereInAttendStatuses is the whereInAttendStatuses argument value.
+			WhereInAttendStatuses []uuid.UUID
+			// WhereInGrades is the whereInGrades argument value.
+			WhereInGrades []uuid.UUID
+			// WhereInGroups is the whereInGroups argument value.
+			WhereInGroups []uuid.UUID
+			// Order is the order argument value.
+			Order parameter.MemberOrderMethod
+			// Pg is the pg argument value.
+			Pg parameter.Pagination
+			// Limit is the limit argument value.
+			Limit parameter.Limit
+			// Cursor is the cursor argument value.
+			Cursor parameter.Cursor
+			// Offset is the offset argument value.
+			Offset parameter.Offset
+			// WithCount is the withCount argument value.
+			WithCount parameter.WithCount
 		}
 		// GetMessagesOnChatRoom holds details about calls to the GetMessagesOnChatRoom method.
 		GetMessagesOnChatRoom []struct {
@@ -3687,227 +3951,235 @@ type ManagerInterfaceMock struct {
 			MemberID uuid.UUID
 		}
 	}
-	lockAssociateRoles                        sync.RWMutex
-	lockAttachItemsOnMessage                  sync.RWMutex
-	lockBelongMembersOnChatRoom               sync.RWMutex
-	lockBelongMembersOnOrganization           sync.RWMutex
-	lockCountUnreadReceiptsOnMember           sync.RWMutex
-	lockCreateAttendStatus                    sync.RWMutex
-	lockCreateAttendStatuses                  sync.RWMutex
-	lockCreateAttendanceType                  sync.RWMutex
-	lockCreateAttendanceTypes                 sync.RWMutex
-	lockCreateChatRoom                        sync.RWMutex
-	lockCreateChatRoomActionType              sync.RWMutex
-	lockCreateChatRoomActionTypes             sync.RWMutex
-	lockCreateEventType                       sync.RWMutex
-	lockCreateEventTypes                      sync.RWMutex
-	lockCreateFile                            sync.RWMutex
-	lockCreateFileFromOuter                   sync.RWMutex
-	lockCreateFileSpecifyFilename             sync.RWMutex
-	lockCreateFiles                           sync.RWMutex
-	lockCreateFilesFromOuter                  sync.RWMutex
-	lockCreateFilesSpecifyFilename            sync.RWMutex
-	lockCreateGrade                           sync.RWMutex
-	lockCreateGrades                          sync.RWMutex
-	lockCreateGroup                           sync.RWMutex
-	lockCreateGroups                          sync.RWMutex
-	lockCreateImage                           sync.RWMutex
-	lockCreateImageFromOuter                  sync.RWMutex
-	lockCreateImageSpecifyFilename            sync.RWMutex
-	lockCreateImages                          sync.RWMutex
-	lockCreateImagesFromOuter                 sync.RWMutex
-	lockCreateImagesSpecifyFilename           sync.RWMutex
-	lockCreateMessage                         sync.RWMutex
-	lockCreateMessageOnPrivateRoom            sync.RWMutex
-	lockCreateMimeType                        sync.RWMutex
-	lockCreateMimeTypes                       sync.RWMutex
-	lockCreateOrganization                    sync.RWMutex
-	lockCreatePermission                      sync.RWMutex
-	lockCreatePermissionCategories            sync.RWMutex
-	lockCreatePermissionCategory              sync.RWMutex
-	lockCreatePermissions                     sync.RWMutex
-	lockCreatePolicies                        sync.RWMutex
-	lockCreatePolicy                          sync.RWMutex
-	lockCreatePolicyCategories                sync.RWMutex
-	lockCreatePolicyCategory                  sync.RWMutex
-	lockCreatePrivateChatRoom                 sync.RWMutex
-	lockCreateProfessor                       sync.RWMutex
-	lockCreateRecordType                      sync.RWMutex
-	lockCreateRecordTypes                     sync.RWMutex
-	lockCreateRole                            sync.RWMutex
-	lockCreateRoles                           sync.RWMutex
-	lockCreateStudent                         sync.RWMutex
-	lockCreateWholeOrganization               sync.RWMutex
-	lockDeleteAttendStatus                    sync.RWMutex
-	lockDeleteAttendanceType                  sync.RWMutex
-	lockDeleteChatRoom                        sync.RWMutex
-	lockDeleteChatRoomActionType              sync.RWMutex
-	lockDeleteEventType                       sync.RWMutex
-	lockDeleteFile                            sync.RWMutex
-	lockDeleteGrade                           sync.RWMutex
-	lockDeleteGroup                           sync.RWMutex
-	lockDeleteImage                           sync.RWMutex
-	lockDeleteMember                          sync.RWMutex
-	lockDeleteMessage                         sync.RWMutex
-	lockDeleteMessagesBefore                  sync.RWMutex
-	lockDeleteMessagesBeforeAll               sync.RWMutex
-	lockDeleteMimeType                        sync.RWMutex
-	lockDeleteOrganization                    sync.RWMutex
-	lockDeletePermission                      sync.RWMutex
-	lockDeletePermissionCategory              sync.RWMutex
-	lockDeletePolicy                          sync.RWMutex
-	lockDeletePolicyCategory                  sync.RWMutex
-	lockDeleteProfessor                       sync.RWMutex
-	lockDeleteRecordType                      sync.RWMutex
-	lockDeleteRole                            sync.RWMutex
-	lockDeleteStudent                         sync.RWMutex
-	lockDeleteWholeOrganization               sync.RWMutex
-	lockDetachItemsOnMessage                  sync.RWMutex
-	lockDisassociatePolicyOnRole              sync.RWMutex
-	lockDisassociatePolicyOnRoles             sync.RWMutex
-	lockDisassociateRoleOnPolicies            sync.RWMutex
-	lockDisassociateRoleOnPolicy              sync.RWMutex
-	lockEditMessage                           sync.RWMutex
-	lockFindAttachableItemByID                sync.RWMutex
-	lockFindAttachableItemByURL               sync.RWMutex
-	lockFindAttendStatusByID                  sync.RWMutex
-	lockFindAttendStatusByKey                 sync.RWMutex
-	lockFindAttendanceTypeByID                sync.RWMutex
-	lockFindAttendanceTypeByKey               sync.RWMutex
-	lockFindAuthMemberByID                    sync.RWMutex
-	lockFindChatRoomActionTypeByID            sync.RWMutex
-	lockFindChatRoomActionTypeByKey           sync.RWMutex
-	lockFindChatRoomByID                      sync.RWMutex
-	lockFindChatRoomByIDWithCoverImage        sync.RWMutex
-	lockFindEventTypeByID                     sync.RWMutex
-	lockFindEventTypeByKey                    sync.RWMutex
-	lockFindMemberByID                        sync.RWMutex
-	lockFindMimeTypeByID                      sync.RWMutex
-	lockFindMimeTypeByKey                     sync.RWMutex
-	lockFindOrganizationByID                  sync.RWMutex
-	lockFindOrganizationWithChatRoom          sync.RWMutex
-	lockFindOrganizationWithChatRoomAndDetail sync.RWMutex
-	lockFindOrganizationWithDetail            sync.RWMutex
-	lockFindPermissionByID                    sync.RWMutex
-	lockFindPermissionByIDWithCategory        sync.RWMutex
-	lockFindPermissionByKey                   sync.RWMutex
-	lockFindPermissionByKeyWithCategory       sync.RWMutex
-	lockFindPermissionCategoryByID            sync.RWMutex
-	lockFindPermissionCategoryByKey           sync.RWMutex
-	lockFindPolicyByID                        sync.RWMutex
-	lockFindPolicyByIDWithCategory            sync.RWMutex
-	lockFindPolicyByKey                       sync.RWMutex
-	lockFindPolicyByKeyWithCategory           sync.RWMutex
-	lockFindPolicyCategoryByID                sync.RWMutex
-	lockFindPolicyCategoryByKey               sync.RWMutex
-	lockFindPrivateChatRoom                   sync.RWMutex
-	lockFindRecordTypeByID                    sync.RWMutex
-	lockFindRecordTypeByKey                   sync.RWMutex
-	lockFindRoleByID                          sync.RWMutex
-	lockFindWholeOrganization                 sync.RWMutex
-	lockForceDeleteMessages                   sync.RWMutex
-	lockGetAttendStatuses                     sync.RWMutex
-	lockGetAttendStatusesCount                sync.RWMutex
-	lockGetAttendanceTypes                    sync.RWMutex
-	lockGetAttendanceTypesCount               sync.RWMutex
-	lockGetChatRoomActionTypes                sync.RWMutex
-	lockGetChatRoomActionTypesCount           sync.RWMutex
-	lockGetChatRoomActionsOnChatRoom          sync.RWMutex
-	lockGetChatRoomsOnMember                  sync.RWMutex
-	lockGetChatRoomsOnMemberCount             sync.RWMutex
-	lockGetEventTypes                         sync.RWMutex
-	lockGetEventTypesCount                    sync.RWMutex
-	lockGetFiles                              sync.RWMutex
-	lockGetFilesCount                         sync.RWMutex
-	lockGetGrades                             sync.RWMutex
-	lockGetGradesCount                        sync.RWMutex
-	lockGetGradesWithOrganization             sync.RWMutex
-	lockGetGroups                             sync.RWMutex
-	lockGetGroupsCount                        sync.RWMutex
-	lockGetGroupsWithOrganization             sync.RWMutex
-	lockGetImages                             sync.RWMutex
-	lockGetImagesCount                        sync.RWMutex
-	lockGetMembersOnChatRoom                  sync.RWMutex
-	lockGetMembersOnChatRoomCount             sync.RWMutex
-	lockGetMembersOnOrganization              sync.RWMutex
-	lockGetMembersOnOrganizationCount         sync.RWMutex
-	lockGetMessagesOnChatRoom                 sync.RWMutex
-	lockGetMimeTypes                          sync.RWMutex
-	lockGetMimeTypesCount                     sync.RWMutex
-	lockGetOrganizations                      sync.RWMutex
-	lockGetOrganizationsCount                 sync.RWMutex
-	lockGetOrganizationsOnMember              sync.RWMutex
-	lockGetOrganizationsOnMemberCount         sync.RWMutex
-	lockGetOrganizationsWithChatRoom          sync.RWMutex
-	lockGetOrganizationsWithChatRoomAndDetail sync.RWMutex
-	lockGetOrganizationsWithDetail            sync.RWMutex
-	lockGetPermissionCategories               sync.RWMutex
-	lockGetPermissionCategoriesCount          sync.RWMutex
-	lockGetPermissions                        sync.RWMutex
-	lockGetPermissionsCount                   sync.RWMutex
-	lockGetPermissionsWithCategory            sync.RWMutex
-	lockGetPolicies                           sync.RWMutex
-	lockGetPoliciesCount                      sync.RWMutex
-	lockGetPoliciesOnRole                     sync.RWMutex
-	lockGetPoliciesOnRoleCount                sync.RWMutex
-	lockGetPoliciesWithCategory               sync.RWMutex
-	lockGetPolicyCategories                   sync.RWMutex
-	lockGetPolicyCategoriesCount              sync.RWMutex
-	lockGetRecordTypes                        sync.RWMutex
-	lockGetRecordTypesCount                   sync.RWMutex
-	lockGetRoles                              sync.RWMutex
-	lockGetRolesCount                         sync.RWMutex
-	lockGetRolesOnPolicy                      sync.RWMutex
-	lockGetRolesOnPolicyCount                 sync.RWMutex
-	lockLogin                                 sync.RWMutex
-	lockLogout                                sync.RWMutex
-	lockPluralDeleteAttendStatuses            sync.RWMutex
-	lockPluralDeleteAttendanceTypes           sync.RWMutex
-	lockPluralDeleteChatRoomActionTypes       sync.RWMutex
-	lockPluralDeleteEventTypes                sync.RWMutex
-	lockPluralDeleteFiles                     sync.RWMutex
-	lockPluralDeleteGrades                    sync.RWMutex
-	lockPluralDeleteGroups                    sync.RWMutex
-	lockPluralDeleteImages                    sync.RWMutex
-	lockPluralDeleteMimeTypes                 sync.RWMutex
-	lockPluralDeletePermissionCategories      sync.RWMutex
-	lockPluralDeletePermissions               sync.RWMutex
-	lockPluralDeletePolicies                  sync.RWMutex
-	lockPluralDeletePolicyCategories          sync.RWMutex
-	lockPluralDeleteRecordTypes               sync.RWMutex
-	lockPluralDeleteRoles                     sync.RWMutex
-	lockPluralDisassociatePolicyOnRole        sync.RWMutex
-	lockPluralDisassociateRoleOnPolicy        sync.RWMutex
-	lockReadMessage                           sync.RWMutex
-	lockReadMessagesOnChatRoomAndMember       sync.RWMutex
-	lockReadMessagesOnMember                  sync.RWMutex
-	lockRefreshToken                          sync.RWMutex
-	lockRemoveMembersFromChatRoom             sync.RWMutex
-	lockRemoveMembersFromOrganization         sync.RWMutex
-	lockUpdateAttendStatus                    sync.RWMutex
-	lockUpdateAttendanceType                  sync.RWMutex
-	lockUpdateChatRoom                        sync.RWMutex
-	lockUpdateChatRoomActionType              sync.RWMutex
-	lockUpdateEventType                       sync.RWMutex
-	lockUpdateGrade                           sync.RWMutex
-	lockUpdateGroup                           sync.RWMutex
-	lockUpdateMember                          sync.RWMutex
-	lockUpdateMemberLoginID                   sync.RWMutex
-	lockUpdateMemberPassword                  sync.RWMutex
-	lockUpdateMemberRole                      sync.RWMutex
-	lockUpdateMimeType                        sync.RWMutex
-	lockUpdateOrganization                    sync.RWMutex
-	lockUpdatePermission                      sync.RWMutex
-	lockUpdatePermissionCategory              sync.RWMutex
-	lockUpdatePolicy                          sync.RWMutex
-	lockUpdatePolicyCategory                  sync.RWMutex
-	lockUpdateRecordType                      sync.RWMutex
-	lockUpdateRole                            sync.RWMutex
-	lockUpdateStudentGrade                    sync.RWMutex
-	lockUpdateStudentGroup                    sync.RWMutex
-	lockUpdateWholeOrganization               sync.RWMutex
-	lockWithdrawMemberFromChatRoom            sync.RWMutex
-	lockWithdrawMemberFromOrganization        sync.RWMutex
+	lockAssociateRoles                                   sync.RWMutex
+	lockAttachItemsOnMessage                             sync.RWMutex
+	lockBelongMembersOnChatRoom                          sync.RWMutex
+	lockBelongMembersOnOrganization                      sync.RWMutex
+	lockCountUnreadReceiptsOnMember                      sync.RWMutex
+	lockCreateAttendStatus                               sync.RWMutex
+	lockCreateAttendStatuses                             sync.RWMutex
+	lockCreateAttendanceType                             sync.RWMutex
+	lockCreateAttendanceTypes                            sync.RWMutex
+	lockCreateChatRoom                                   sync.RWMutex
+	lockCreateChatRoomActionType                         sync.RWMutex
+	lockCreateChatRoomActionTypes                        sync.RWMutex
+	lockCreateEventType                                  sync.RWMutex
+	lockCreateEventTypes                                 sync.RWMutex
+	lockCreateFile                                       sync.RWMutex
+	lockCreateFileFromOuter                              sync.RWMutex
+	lockCreateFileSpecifyFilename                        sync.RWMutex
+	lockCreateFiles                                      sync.RWMutex
+	lockCreateFilesFromOuter                             sync.RWMutex
+	lockCreateFilesSpecifyFilename                       sync.RWMutex
+	lockCreateGrade                                      sync.RWMutex
+	lockCreateGrades                                     sync.RWMutex
+	lockCreateGroup                                      sync.RWMutex
+	lockCreateGroups                                     sync.RWMutex
+	lockCreateImage                                      sync.RWMutex
+	lockCreateImageFromOuter                             sync.RWMutex
+	lockCreateImageSpecifyFilename                       sync.RWMutex
+	lockCreateImages                                     sync.RWMutex
+	lockCreateImagesFromOuter                            sync.RWMutex
+	lockCreateImagesSpecifyFilename                      sync.RWMutex
+	lockCreateMessage                                    sync.RWMutex
+	lockCreateMessageOnPrivateRoom                       sync.RWMutex
+	lockCreateMimeType                                   sync.RWMutex
+	lockCreateMimeTypes                                  sync.RWMutex
+	lockCreateOrganization                               sync.RWMutex
+	lockCreatePermission                                 sync.RWMutex
+	lockCreatePermissionCategories                       sync.RWMutex
+	lockCreatePermissionCategory                         sync.RWMutex
+	lockCreatePermissions                                sync.RWMutex
+	lockCreatePolicies                                   sync.RWMutex
+	lockCreatePolicy                                     sync.RWMutex
+	lockCreatePolicyCategories                           sync.RWMutex
+	lockCreatePolicyCategory                             sync.RWMutex
+	lockCreatePrivateChatRoom                            sync.RWMutex
+	lockCreateProfessor                                  sync.RWMutex
+	lockCreateRecordType                                 sync.RWMutex
+	lockCreateRecordTypes                                sync.RWMutex
+	lockCreateRole                                       sync.RWMutex
+	lockCreateRoles                                      sync.RWMutex
+	lockCreateStudent                                    sync.RWMutex
+	lockCreateWholeOrganization                          sync.RWMutex
+	lockDeleteAttendStatus                               sync.RWMutex
+	lockDeleteAttendanceType                             sync.RWMutex
+	lockDeleteChatRoom                                   sync.RWMutex
+	lockDeleteChatRoomActionType                         sync.RWMutex
+	lockDeleteEventType                                  sync.RWMutex
+	lockDeleteFile                                       sync.RWMutex
+	lockDeleteGrade                                      sync.RWMutex
+	lockDeleteGroup                                      sync.RWMutex
+	lockDeleteImage                                      sync.RWMutex
+	lockDeleteMember                                     sync.RWMutex
+	lockDeleteMessage                                    sync.RWMutex
+	lockDeleteMessagesBefore                             sync.RWMutex
+	lockDeleteMessagesBeforeAll                          sync.RWMutex
+	lockDeleteMimeType                                   sync.RWMutex
+	lockDeleteOrganization                               sync.RWMutex
+	lockDeletePermission                                 sync.RWMutex
+	lockDeletePermissionCategory                         sync.RWMutex
+	lockDeletePolicy                                     sync.RWMutex
+	lockDeletePolicyCategory                             sync.RWMutex
+	lockDeleteProfessor                                  sync.RWMutex
+	lockDeleteRecordType                                 sync.RWMutex
+	lockDeleteRole                                       sync.RWMutex
+	lockDeleteStudent                                    sync.RWMutex
+	lockDeleteWholeOrganization                          sync.RWMutex
+	lockDetachItemsOnMessage                             sync.RWMutex
+	lockDisassociatePolicyOnRole                         sync.RWMutex
+	lockDisassociatePolicyOnRoles                        sync.RWMutex
+	lockDisassociateRoleOnPolicies                       sync.RWMutex
+	lockDisassociateRoleOnPolicy                         sync.RWMutex
+	lockEditMessage                                      sync.RWMutex
+	lockFindAttachableItemByID                           sync.RWMutex
+	lockFindAttachableItemByURL                          sync.RWMutex
+	lockFindAttendStatusByID                             sync.RWMutex
+	lockFindAttendStatusByKey                            sync.RWMutex
+	lockFindAttendanceTypeByID                           sync.RWMutex
+	lockFindAttendanceTypeByKey                          sync.RWMutex
+	lockFindAuthMemberByID                               sync.RWMutex
+	lockFindChatRoomActionTypeByID                       sync.RWMutex
+	lockFindChatRoomActionTypeByKey                      sync.RWMutex
+	lockFindChatRoomByID                                 sync.RWMutex
+	lockFindChatRoomByIDWithCoverImage                   sync.RWMutex
+	lockFindEventTypeByID                                sync.RWMutex
+	lockFindEventTypeByKey                               sync.RWMutex
+	lockFindMemberByID                                   sync.RWMutex
+	lockFindMimeTypeByID                                 sync.RWMutex
+	lockFindMimeTypeByKey                                sync.RWMutex
+	lockFindOrganizationByID                             sync.RWMutex
+	lockFindOrganizationWithChatRoom                     sync.RWMutex
+	lockFindOrganizationWithChatRoomAndDetail            sync.RWMutex
+	lockFindOrganizationWithDetail                       sync.RWMutex
+	lockFindPermissionByID                               sync.RWMutex
+	lockFindPermissionByIDWithCategory                   sync.RWMutex
+	lockFindPermissionByKey                              sync.RWMutex
+	lockFindPermissionByKeyWithCategory                  sync.RWMutex
+	lockFindPermissionCategoryByID                       sync.RWMutex
+	lockFindPermissionCategoryByKey                      sync.RWMutex
+	lockFindPolicyByID                                   sync.RWMutex
+	lockFindPolicyByIDWithCategory                       sync.RWMutex
+	lockFindPolicyByKey                                  sync.RWMutex
+	lockFindPolicyByKeyWithCategory                      sync.RWMutex
+	lockFindPolicyCategoryByID                           sync.RWMutex
+	lockFindPolicyCategoryByKey                          sync.RWMutex
+	lockFindPrivateChatRoom                              sync.RWMutex
+	lockFindRecordTypeByID                               sync.RWMutex
+	lockFindRecordTypeByKey                              sync.RWMutex
+	lockFindRoleByID                                     sync.RWMutex
+	lockFindWholeOrganization                            sync.RWMutex
+	lockForceDeleteMessages                              sync.RWMutex
+	lockGetAttendStatuses                                sync.RWMutex
+	lockGetAttendStatusesCount                           sync.RWMutex
+	lockGetAttendanceTypes                               sync.RWMutex
+	lockGetAttendanceTypesCount                          sync.RWMutex
+	lockGetChatRoomActionTypes                           sync.RWMutex
+	lockGetChatRoomActionTypesCount                      sync.RWMutex
+	lockGetChatRoomActionsOnChatRoom                     sync.RWMutex
+	lockGetChatRoomsOnMember                             sync.RWMutex
+	lockGetChatRoomsOnMemberCount                        sync.RWMutex
+	lockGetEventTypes                                    sync.RWMutex
+	lockGetEventTypesCount                               sync.RWMutex
+	lockGetFiles                                         sync.RWMutex
+	lockGetFilesCount                                    sync.RWMutex
+	lockGetGrades                                        sync.RWMutex
+	lockGetGradesCount                                   sync.RWMutex
+	lockGetGradesWithOrganization                        sync.RWMutex
+	lockGetGroups                                        sync.RWMutex
+	lockGetGroupsCount                                   sync.RWMutex
+	lockGetGroupsWithOrganization                        sync.RWMutex
+	lockGetImages                                        sync.RWMutex
+	lockGetImagesCount                                   sync.RWMutex
+	lockGetMembers                                       sync.RWMutex
+	lockGetMembersOnChatRoom                             sync.RWMutex
+	lockGetMembersOnChatRoomCount                        sync.RWMutex
+	lockGetMembersOnOrganization                         sync.RWMutex
+	lockGetMembersOnOrganizationCount                    sync.RWMutex
+	lockGetMembersWithAttendStatus                       sync.RWMutex
+	lockGetMembersWithCrew                               sync.RWMutex
+	lockGetMembersWithCrewAndProfileImageAndAttendStatus sync.RWMutex
+	lockGetMembersWithDetail                             sync.RWMutex
+	lockGetMembersWithPersonalOrganization               sync.RWMutex
+	lockGetMembersWithProfileImage                       sync.RWMutex
+	lockGetMembersWithRole                               sync.RWMutex
+	lockGetMessagesOnChatRoom                            sync.RWMutex
+	lockGetMimeTypes                                     sync.RWMutex
+	lockGetMimeTypesCount                                sync.RWMutex
+	lockGetOrganizations                                 sync.RWMutex
+	lockGetOrganizationsCount                            sync.RWMutex
+	lockGetOrganizationsOnMember                         sync.RWMutex
+	lockGetOrganizationsOnMemberCount                    sync.RWMutex
+	lockGetOrganizationsWithChatRoom                     sync.RWMutex
+	lockGetOrganizationsWithChatRoomAndDetail            sync.RWMutex
+	lockGetOrganizationsWithDetail                       sync.RWMutex
+	lockGetPermissionCategories                          sync.RWMutex
+	lockGetPermissionCategoriesCount                     sync.RWMutex
+	lockGetPermissions                                   sync.RWMutex
+	lockGetPermissionsCount                              sync.RWMutex
+	lockGetPermissionsWithCategory                       sync.RWMutex
+	lockGetPolicies                                      sync.RWMutex
+	lockGetPoliciesCount                                 sync.RWMutex
+	lockGetPoliciesOnRole                                sync.RWMutex
+	lockGetPoliciesOnRoleCount                           sync.RWMutex
+	lockGetPoliciesWithCategory                          sync.RWMutex
+	lockGetPolicyCategories                              sync.RWMutex
+	lockGetPolicyCategoriesCount                         sync.RWMutex
+	lockGetRecordTypes                                   sync.RWMutex
+	lockGetRecordTypesCount                              sync.RWMutex
+	lockGetRoles                                         sync.RWMutex
+	lockGetRolesCount                                    sync.RWMutex
+	lockGetRolesOnPolicy                                 sync.RWMutex
+	lockGetRolesOnPolicyCount                            sync.RWMutex
+	lockLogin                                            sync.RWMutex
+	lockLogout                                           sync.RWMutex
+	lockPluralDeleteAttendStatuses                       sync.RWMutex
+	lockPluralDeleteAttendanceTypes                      sync.RWMutex
+	lockPluralDeleteChatRoomActionTypes                  sync.RWMutex
+	lockPluralDeleteEventTypes                           sync.RWMutex
+	lockPluralDeleteFiles                                sync.RWMutex
+	lockPluralDeleteGrades                               sync.RWMutex
+	lockPluralDeleteGroups                               sync.RWMutex
+	lockPluralDeleteImages                               sync.RWMutex
+	lockPluralDeleteMimeTypes                            sync.RWMutex
+	lockPluralDeletePermissionCategories                 sync.RWMutex
+	lockPluralDeletePermissions                          sync.RWMutex
+	lockPluralDeletePolicies                             sync.RWMutex
+	lockPluralDeletePolicyCategories                     sync.RWMutex
+	lockPluralDeleteRecordTypes                          sync.RWMutex
+	lockPluralDeleteRoles                                sync.RWMutex
+	lockPluralDisassociatePolicyOnRole                   sync.RWMutex
+	lockPluralDisassociateRoleOnPolicy                   sync.RWMutex
+	lockReadMessage                                      sync.RWMutex
+	lockReadMessagesOnChatRoomAndMember                  sync.RWMutex
+	lockReadMessagesOnMember                             sync.RWMutex
+	lockRefreshToken                                     sync.RWMutex
+	lockRemoveMembersFromChatRoom                        sync.RWMutex
+	lockRemoveMembersFromOrganization                    sync.RWMutex
+	lockUpdateAttendStatus                               sync.RWMutex
+	lockUpdateAttendanceType                             sync.RWMutex
+	lockUpdateChatRoom                                   sync.RWMutex
+	lockUpdateChatRoomActionType                         sync.RWMutex
+	lockUpdateEventType                                  sync.RWMutex
+	lockUpdateGrade                                      sync.RWMutex
+	lockUpdateGroup                                      sync.RWMutex
+	lockUpdateMember                                     sync.RWMutex
+	lockUpdateMemberLoginID                              sync.RWMutex
+	lockUpdateMemberPassword                             sync.RWMutex
+	lockUpdateMemberRole                                 sync.RWMutex
+	lockUpdateMimeType                                   sync.RWMutex
+	lockUpdateOrganization                               sync.RWMutex
+	lockUpdatePermission                                 sync.RWMutex
+	lockUpdatePermissionCategory                         sync.RWMutex
+	lockUpdatePolicy                                     sync.RWMutex
+	lockUpdatePolicyCategory                             sync.RWMutex
+	lockUpdateRecordType                                 sync.RWMutex
+	lockUpdateRole                                       sync.RWMutex
+	lockUpdateStudentGrade                               sync.RWMutex
+	lockUpdateStudentGroup                               sync.RWMutex
+	lockUpdateWholeOrganization                          sync.RWMutex
+	lockWithdrawMemberFromChatRoom                       sync.RWMutex
+	lockWithdrawMemberFromOrganization                   sync.RWMutex
 }
 
 // AssociateRoles calls AssociateRolesFunc.
@@ -9634,6 +9906,82 @@ func (mock *ManagerInterfaceMock) GetImagesCountCalls() []struct {
 	return calls
 }
 
+// GetMembers calls GetMembersFunc.
+func (mock *ManagerInterfaceMock) GetMembers(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Member], error) {
+	if mock.GetMembersFunc == nil {
+		panic("ManagerInterfaceMock.GetMembersFunc: method is nil but ManagerInterface.GetMembers was just called")
+	}
+	callInfo := struct {
+		Ctx                   context.Context
+		WhereSearchName       string
+		WhereHasInPolicies    []uuid.UUID
+		WhereInAttendStatuses []uuid.UUID
+		WhereInGrades         []uuid.UUID
+		WhereInGroups         []uuid.UUID
+		Order                 parameter.MemberOrderMethod
+		Pg                    parameter.Pagination
+		Limit                 parameter.Limit
+		Cursor                parameter.Cursor
+		Offset                parameter.Offset
+		WithCount             parameter.WithCount
+	}{
+		Ctx:                   ctx,
+		WhereSearchName:       whereSearchName,
+		WhereHasInPolicies:    whereHasInPolicies,
+		WhereInAttendStatuses: whereInAttendStatuses,
+		WhereInGrades:         whereInGrades,
+		WhereInGroups:         whereInGroups,
+		Order:                 order,
+		Pg:                    pg,
+		Limit:                 limit,
+		Cursor:                cursor,
+		Offset:                offset,
+		WithCount:             withCount,
+	}
+	mock.lockGetMembers.Lock()
+	mock.calls.GetMembers = append(mock.calls.GetMembers, callInfo)
+	mock.lockGetMembers.Unlock()
+	return mock.GetMembersFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetMembersCalls gets all the calls that were made to GetMembers.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetMembersCalls())
+func (mock *ManagerInterfaceMock) GetMembersCalls() []struct {
+	Ctx                   context.Context
+	WhereSearchName       string
+	WhereHasInPolicies    []uuid.UUID
+	WhereInAttendStatuses []uuid.UUID
+	WhereInGrades         []uuid.UUID
+	WhereInGroups         []uuid.UUID
+	Order                 parameter.MemberOrderMethod
+	Pg                    parameter.Pagination
+	Limit                 parameter.Limit
+	Cursor                parameter.Cursor
+	Offset                parameter.Offset
+	WithCount             parameter.WithCount
+} {
+	var calls []struct {
+		Ctx                   context.Context
+		WhereSearchName       string
+		WhereHasInPolicies    []uuid.UUID
+		WhereInAttendStatuses []uuid.UUID
+		WhereInGrades         []uuid.UUID
+		WhereInGroups         []uuid.UUID
+		Order                 parameter.MemberOrderMethod
+		Pg                    parameter.Pagination
+		Limit                 parameter.Limit
+		Cursor                parameter.Cursor
+		Offset                parameter.Offset
+		WithCount             parameter.WithCount
+	}
+	mock.lockGetMembers.RLock()
+	calls = mock.calls.GetMembers
+	mock.lockGetMembers.RUnlock()
+	return calls
+}
+
 // GetMembersOnChatRoom calls GetMembersOnChatRoomFunc.
 func (mock *ManagerInterfaceMock) GetMembersOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, whereSearchName string, order parameter.MemberOnChatRoomOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberOnChatRoom], error) {
 	if mock.GetMembersOnChatRoomFunc == nil {
@@ -9839,6 +10187,538 @@ func (mock *ManagerInterfaceMock) GetMembersOnOrganizationCountCalls() []struct 
 	mock.lockGetMembersOnOrganizationCount.RLock()
 	calls = mock.calls.GetMembersOnOrganizationCount
 	mock.lockGetMembersOnOrganizationCount.RUnlock()
+	return calls
+}
+
+// GetMembersWithAttendStatus calls GetMembersWithAttendStatusFunc.
+func (mock *ManagerInterfaceMock) GetMembersWithAttendStatus(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithAttendStatus], error) {
+	if mock.GetMembersWithAttendStatusFunc == nil {
+		panic("ManagerInterfaceMock.GetMembersWithAttendStatusFunc: method is nil but ManagerInterface.GetMembersWithAttendStatus was just called")
+	}
+	callInfo := struct {
+		Ctx                   context.Context
+		WhereSearchName       string
+		WhereHasInPolicies    []uuid.UUID
+		WhereInAttendStatuses []uuid.UUID
+		WhereInGrades         []uuid.UUID
+		WhereInGroups         []uuid.UUID
+		Order                 parameter.MemberOrderMethod
+		Pg                    parameter.Pagination
+		Limit                 parameter.Limit
+		Cursor                parameter.Cursor
+		Offset                parameter.Offset
+		WithCount             parameter.WithCount
+	}{
+		Ctx:                   ctx,
+		WhereSearchName:       whereSearchName,
+		WhereHasInPolicies:    whereHasInPolicies,
+		WhereInAttendStatuses: whereInAttendStatuses,
+		WhereInGrades:         whereInGrades,
+		WhereInGroups:         whereInGroups,
+		Order:                 order,
+		Pg:                    pg,
+		Limit:                 limit,
+		Cursor:                cursor,
+		Offset:                offset,
+		WithCount:             withCount,
+	}
+	mock.lockGetMembersWithAttendStatus.Lock()
+	mock.calls.GetMembersWithAttendStatus = append(mock.calls.GetMembersWithAttendStatus, callInfo)
+	mock.lockGetMembersWithAttendStatus.Unlock()
+	return mock.GetMembersWithAttendStatusFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetMembersWithAttendStatusCalls gets all the calls that were made to GetMembersWithAttendStatus.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetMembersWithAttendStatusCalls())
+func (mock *ManagerInterfaceMock) GetMembersWithAttendStatusCalls() []struct {
+	Ctx                   context.Context
+	WhereSearchName       string
+	WhereHasInPolicies    []uuid.UUID
+	WhereInAttendStatuses []uuid.UUID
+	WhereInGrades         []uuid.UUID
+	WhereInGroups         []uuid.UUID
+	Order                 parameter.MemberOrderMethod
+	Pg                    parameter.Pagination
+	Limit                 parameter.Limit
+	Cursor                parameter.Cursor
+	Offset                parameter.Offset
+	WithCount             parameter.WithCount
+} {
+	var calls []struct {
+		Ctx                   context.Context
+		WhereSearchName       string
+		WhereHasInPolicies    []uuid.UUID
+		WhereInAttendStatuses []uuid.UUID
+		WhereInGrades         []uuid.UUID
+		WhereInGroups         []uuid.UUID
+		Order                 parameter.MemberOrderMethod
+		Pg                    parameter.Pagination
+		Limit                 parameter.Limit
+		Cursor                parameter.Cursor
+		Offset                parameter.Offset
+		WithCount             parameter.WithCount
+	}
+	mock.lockGetMembersWithAttendStatus.RLock()
+	calls = mock.calls.GetMembersWithAttendStatus
+	mock.lockGetMembersWithAttendStatus.RUnlock()
+	return calls
+}
+
+// GetMembersWithCrew calls GetMembersWithCrewFunc.
+func (mock *ManagerInterfaceMock) GetMembersWithCrew(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrew], error) {
+	if mock.GetMembersWithCrewFunc == nil {
+		panic("ManagerInterfaceMock.GetMembersWithCrewFunc: method is nil but ManagerInterface.GetMembersWithCrew was just called")
+	}
+	callInfo := struct {
+		Ctx                   context.Context
+		WhereSearchName       string
+		WhereHasInPolicies    []uuid.UUID
+		WhereInAttendStatuses []uuid.UUID
+		WhereInGrades         []uuid.UUID
+		WhereInGroups         []uuid.UUID
+		Order                 parameter.MemberOrderMethod
+		Pg                    parameter.Pagination
+		Limit                 parameter.Limit
+		Cursor                parameter.Cursor
+		Offset                parameter.Offset
+		WithCount             parameter.WithCount
+	}{
+		Ctx:                   ctx,
+		WhereSearchName:       whereSearchName,
+		WhereHasInPolicies:    whereHasInPolicies,
+		WhereInAttendStatuses: whereInAttendStatuses,
+		WhereInGrades:         whereInGrades,
+		WhereInGroups:         whereInGroups,
+		Order:                 order,
+		Pg:                    pg,
+		Limit:                 limit,
+		Cursor:                cursor,
+		Offset:                offset,
+		WithCount:             withCount,
+	}
+	mock.lockGetMembersWithCrew.Lock()
+	mock.calls.GetMembersWithCrew = append(mock.calls.GetMembersWithCrew, callInfo)
+	mock.lockGetMembersWithCrew.Unlock()
+	return mock.GetMembersWithCrewFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetMembersWithCrewCalls gets all the calls that were made to GetMembersWithCrew.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetMembersWithCrewCalls())
+func (mock *ManagerInterfaceMock) GetMembersWithCrewCalls() []struct {
+	Ctx                   context.Context
+	WhereSearchName       string
+	WhereHasInPolicies    []uuid.UUID
+	WhereInAttendStatuses []uuid.UUID
+	WhereInGrades         []uuid.UUID
+	WhereInGroups         []uuid.UUID
+	Order                 parameter.MemberOrderMethod
+	Pg                    parameter.Pagination
+	Limit                 parameter.Limit
+	Cursor                parameter.Cursor
+	Offset                parameter.Offset
+	WithCount             parameter.WithCount
+} {
+	var calls []struct {
+		Ctx                   context.Context
+		WhereSearchName       string
+		WhereHasInPolicies    []uuid.UUID
+		WhereInAttendStatuses []uuid.UUID
+		WhereInGrades         []uuid.UUID
+		WhereInGroups         []uuid.UUID
+		Order                 parameter.MemberOrderMethod
+		Pg                    parameter.Pagination
+		Limit                 parameter.Limit
+		Cursor                parameter.Cursor
+		Offset                parameter.Offset
+		WithCount             parameter.WithCount
+	}
+	mock.lockGetMembersWithCrew.RLock()
+	calls = mock.calls.GetMembersWithCrew
+	mock.lockGetMembersWithCrew.RUnlock()
+	return calls
+}
+
+// GetMembersWithCrewAndProfileImageAndAttendStatus calls GetMembersWithCrewAndProfileImageAndAttendStatusFunc.
+func (mock *ManagerInterfaceMock) GetMembersWithCrewAndProfileImageAndAttendStatus(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrewAndProfileImageAndAttendStatus], error) {
+	if mock.GetMembersWithCrewAndProfileImageAndAttendStatusFunc == nil {
+		panic("ManagerInterfaceMock.GetMembersWithCrewAndProfileImageAndAttendStatusFunc: method is nil but ManagerInterface.GetMembersWithCrewAndProfileImageAndAttendStatus was just called")
+	}
+	callInfo := struct {
+		Ctx                   context.Context
+		WhereSearchName       string
+		WhereHasInPolicies    []uuid.UUID
+		WhereInAttendStatuses []uuid.UUID
+		WhereInGrades         []uuid.UUID
+		WhereInGroups         []uuid.UUID
+		Order                 parameter.MemberOrderMethod
+		Pg                    parameter.Pagination
+		Limit                 parameter.Limit
+		Cursor                parameter.Cursor
+		Offset                parameter.Offset
+		WithCount             parameter.WithCount
+	}{
+		Ctx:                   ctx,
+		WhereSearchName:       whereSearchName,
+		WhereHasInPolicies:    whereHasInPolicies,
+		WhereInAttendStatuses: whereInAttendStatuses,
+		WhereInGrades:         whereInGrades,
+		WhereInGroups:         whereInGroups,
+		Order:                 order,
+		Pg:                    pg,
+		Limit:                 limit,
+		Cursor:                cursor,
+		Offset:                offset,
+		WithCount:             withCount,
+	}
+	mock.lockGetMembersWithCrewAndProfileImageAndAttendStatus.Lock()
+	mock.calls.GetMembersWithCrewAndProfileImageAndAttendStatus = append(mock.calls.GetMembersWithCrewAndProfileImageAndAttendStatus, callInfo)
+	mock.lockGetMembersWithCrewAndProfileImageAndAttendStatus.Unlock()
+	return mock.GetMembersWithCrewAndProfileImageAndAttendStatusFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetMembersWithCrewAndProfileImageAndAttendStatusCalls gets all the calls that were made to GetMembersWithCrewAndProfileImageAndAttendStatus.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetMembersWithCrewAndProfileImageAndAttendStatusCalls())
+func (mock *ManagerInterfaceMock) GetMembersWithCrewAndProfileImageAndAttendStatusCalls() []struct {
+	Ctx                   context.Context
+	WhereSearchName       string
+	WhereHasInPolicies    []uuid.UUID
+	WhereInAttendStatuses []uuid.UUID
+	WhereInGrades         []uuid.UUID
+	WhereInGroups         []uuid.UUID
+	Order                 parameter.MemberOrderMethod
+	Pg                    parameter.Pagination
+	Limit                 parameter.Limit
+	Cursor                parameter.Cursor
+	Offset                parameter.Offset
+	WithCount             parameter.WithCount
+} {
+	var calls []struct {
+		Ctx                   context.Context
+		WhereSearchName       string
+		WhereHasInPolicies    []uuid.UUID
+		WhereInAttendStatuses []uuid.UUID
+		WhereInGrades         []uuid.UUID
+		WhereInGroups         []uuid.UUID
+		Order                 parameter.MemberOrderMethod
+		Pg                    parameter.Pagination
+		Limit                 parameter.Limit
+		Cursor                parameter.Cursor
+		Offset                parameter.Offset
+		WithCount             parameter.WithCount
+	}
+	mock.lockGetMembersWithCrewAndProfileImageAndAttendStatus.RLock()
+	calls = mock.calls.GetMembersWithCrewAndProfileImageAndAttendStatus
+	mock.lockGetMembersWithCrewAndProfileImageAndAttendStatus.RUnlock()
+	return calls
+}
+
+// GetMembersWithDetail calls GetMembersWithDetailFunc.
+func (mock *ManagerInterfaceMock) GetMembersWithDetail(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithDetail], error) {
+	if mock.GetMembersWithDetailFunc == nil {
+		panic("ManagerInterfaceMock.GetMembersWithDetailFunc: method is nil but ManagerInterface.GetMembersWithDetail was just called")
+	}
+	callInfo := struct {
+		Ctx                   context.Context
+		WhereSearchName       string
+		WhereHasInPolicies    []uuid.UUID
+		WhereInAttendStatuses []uuid.UUID
+		WhereInGrades         []uuid.UUID
+		WhereInGroups         []uuid.UUID
+		Order                 parameter.MemberOrderMethod
+		Pg                    parameter.Pagination
+		Limit                 parameter.Limit
+		Cursor                parameter.Cursor
+		Offset                parameter.Offset
+		WithCount             parameter.WithCount
+	}{
+		Ctx:                   ctx,
+		WhereSearchName:       whereSearchName,
+		WhereHasInPolicies:    whereHasInPolicies,
+		WhereInAttendStatuses: whereInAttendStatuses,
+		WhereInGrades:         whereInGrades,
+		WhereInGroups:         whereInGroups,
+		Order:                 order,
+		Pg:                    pg,
+		Limit:                 limit,
+		Cursor:                cursor,
+		Offset:                offset,
+		WithCount:             withCount,
+	}
+	mock.lockGetMembersWithDetail.Lock()
+	mock.calls.GetMembersWithDetail = append(mock.calls.GetMembersWithDetail, callInfo)
+	mock.lockGetMembersWithDetail.Unlock()
+	return mock.GetMembersWithDetailFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetMembersWithDetailCalls gets all the calls that were made to GetMembersWithDetail.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetMembersWithDetailCalls())
+func (mock *ManagerInterfaceMock) GetMembersWithDetailCalls() []struct {
+	Ctx                   context.Context
+	WhereSearchName       string
+	WhereHasInPolicies    []uuid.UUID
+	WhereInAttendStatuses []uuid.UUID
+	WhereInGrades         []uuid.UUID
+	WhereInGroups         []uuid.UUID
+	Order                 parameter.MemberOrderMethod
+	Pg                    parameter.Pagination
+	Limit                 parameter.Limit
+	Cursor                parameter.Cursor
+	Offset                parameter.Offset
+	WithCount             parameter.WithCount
+} {
+	var calls []struct {
+		Ctx                   context.Context
+		WhereSearchName       string
+		WhereHasInPolicies    []uuid.UUID
+		WhereInAttendStatuses []uuid.UUID
+		WhereInGrades         []uuid.UUID
+		WhereInGroups         []uuid.UUID
+		Order                 parameter.MemberOrderMethod
+		Pg                    parameter.Pagination
+		Limit                 parameter.Limit
+		Cursor                parameter.Cursor
+		Offset                parameter.Offset
+		WithCount             parameter.WithCount
+	}
+	mock.lockGetMembersWithDetail.RLock()
+	calls = mock.calls.GetMembersWithDetail
+	mock.lockGetMembersWithDetail.RUnlock()
+	return calls
+}
+
+// GetMembersWithPersonalOrganization calls GetMembersWithPersonalOrganizationFunc.
+func (mock *ManagerInterfaceMock) GetMembersWithPersonalOrganization(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithPersonalOrganization], error) {
+	if mock.GetMembersWithPersonalOrganizationFunc == nil {
+		panic("ManagerInterfaceMock.GetMembersWithPersonalOrganizationFunc: method is nil but ManagerInterface.GetMembersWithPersonalOrganization was just called")
+	}
+	callInfo := struct {
+		Ctx                   context.Context
+		WhereSearchName       string
+		WhereHasInPolicies    []uuid.UUID
+		WhereInAttendStatuses []uuid.UUID
+		WhereInGrades         []uuid.UUID
+		WhereInGroups         []uuid.UUID
+		Order                 parameter.MemberOrderMethod
+		Pg                    parameter.Pagination
+		Limit                 parameter.Limit
+		Cursor                parameter.Cursor
+		Offset                parameter.Offset
+		WithCount             parameter.WithCount
+	}{
+		Ctx:                   ctx,
+		WhereSearchName:       whereSearchName,
+		WhereHasInPolicies:    whereHasInPolicies,
+		WhereInAttendStatuses: whereInAttendStatuses,
+		WhereInGrades:         whereInGrades,
+		WhereInGroups:         whereInGroups,
+		Order:                 order,
+		Pg:                    pg,
+		Limit:                 limit,
+		Cursor:                cursor,
+		Offset:                offset,
+		WithCount:             withCount,
+	}
+	mock.lockGetMembersWithPersonalOrganization.Lock()
+	mock.calls.GetMembersWithPersonalOrganization = append(mock.calls.GetMembersWithPersonalOrganization, callInfo)
+	mock.lockGetMembersWithPersonalOrganization.Unlock()
+	return mock.GetMembersWithPersonalOrganizationFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetMembersWithPersonalOrganizationCalls gets all the calls that were made to GetMembersWithPersonalOrganization.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetMembersWithPersonalOrganizationCalls())
+func (mock *ManagerInterfaceMock) GetMembersWithPersonalOrganizationCalls() []struct {
+	Ctx                   context.Context
+	WhereSearchName       string
+	WhereHasInPolicies    []uuid.UUID
+	WhereInAttendStatuses []uuid.UUID
+	WhereInGrades         []uuid.UUID
+	WhereInGroups         []uuid.UUID
+	Order                 parameter.MemberOrderMethod
+	Pg                    parameter.Pagination
+	Limit                 parameter.Limit
+	Cursor                parameter.Cursor
+	Offset                parameter.Offset
+	WithCount             parameter.WithCount
+} {
+	var calls []struct {
+		Ctx                   context.Context
+		WhereSearchName       string
+		WhereHasInPolicies    []uuid.UUID
+		WhereInAttendStatuses []uuid.UUID
+		WhereInGrades         []uuid.UUID
+		WhereInGroups         []uuid.UUID
+		Order                 parameter.MemberOrderMethod
+		Pg                    parameter.Pagination
+		Limit                 parameter.Limit
+		Cursor                parameter.Cursor
+		Offset                parameter.Offset
+		WithCount             parameter.WithCount
+	}
+	mock.lockGetMembersWithPersonalOrganization.RLock()
+	calls = mock.calls.GetMembersWithPersonalOrganization
+	mock.lockGetMembersWithPersonalOrganization.RUnlock()
+	return calls
+}
+
+// GetMembersWithProfileImage calls GetMembersWithProfileImageFunc.
+func (mock *ManagerInterfaceMock) GetMembersWithProfileImage(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithProfileImage], error) {
+	if mock.GetMembersWithProfileImageFunc == nil {
+		panic("ManagerInterfaceMock.GetMembersWithProfileImageFunc: method is nil but ManagerInterface.GetMembersWithProfileImage was just called")
+	}
+	callInfo := struct {
+		Ctx                   context.Context
+		WhereSearchName       string
+		WhereHasInPolicies    []uuid.UUID
+		WhereInAttendStatuses []uuid.UUID
+		WhereInGrades         []uuid.UUID
+		WhereInGroups         []uuid.UUID
+		Order                 parameter.MemberOrderMethod
+		Pg                    parameter.Pagination
+		Limit                 parameter.Limit
+		Cursor                parameter.Cursor
+		Offset                parameter.Offset
+		WithCount             parameter.WithCount
+	}{
+		Ctx:                   ctx,
+		WhereSearchName:       whereSearchName,
+		WhereHasInPolicies:    whereHasInPolicies,
+		WhereInAttendStatuses: whereInAttendStatuses,
+		WhereInGrades:         whereInGrades,
+		WhereInGroups:         whereInGroups,
+		Order:                 order,
+		Pg:                    pg,
+		Limit:                 limit,
+		Cursor:                cursor,
+		Offset:                offset,
+		WithCount:             withCount,
+	}
+	mock.lockGetMembersWithProfileImage.Lock()
+	mock.calls.GetMembersWithProfileImage = append(mock.calls.GetMembersWithProfileImage, callInfo)
+	mock.lockGetMembersWithProfileImage.Unlock()
+	return mock.GetMembersWithProfileImageFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetMembersWithProfileImageCalls gets all the calls that were made to GetMembersWithProfileImage.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetMembersWithProfileImageCalls())
+func (mock *ManagerInterfaceMock) GetMembersWithProfileImageCalls() []struct {
+	Ctx                   context.Context
+	WhereSearchName       string
+	WhereHasInPolicies    []uuid.UUID
+	WhereInAttendStatuses []uuid.UUID
+	WhereInGrades         []uuid.UUID
+	WhereInGroups         []uuid.UUID
+	Order                 parameter.MemberOrderMethod
+	Pg                    parameter.Pagination
+	Limit                 parameter.Limit
+	Cursor                parameter.Cursor
+	Offset                parameter.Offset
+	WithCount             parameter.WithCount
+} {
+	var calls []struct {
+		Ctx                   context.Context
+		WhereSearchName       string
+		WhereHasInPolicies    []uuid.UUID
+		WhereInAttendStatuses []uuid.UUID
+		WhereInGrades         []uuid.UUID
+		WhereInGroups         []uuid.UUID
+		Order                 parameter.MemberOrderMethod
+		Pg                    parameter.Pagination
+		Limit                 parameter.Limit
+		Cursor                parameter.Cursor
+		Offset                parameter.Offset
+		WithCount             parameter.WithCount
+	}
+	mock.lockGetMembersWithProfileImage.RLock()
+	calls = mock.calls.GetMembersWithProfileImage
+	mock.lockGetMembersWithProfileImage.RUnlock()
+	return calls
+}
+
+// GetMembersWithRole calls GetMembersWithRoleFunc.
+func (mock *ManagerInterfaceMock) GetMembersWithRole(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithRole], error) {
+	if mock.GetMembersWithRoleFunc == nil {
+		panic("ManagerInterfaceMock.GetMembersWithRoleFunc: method is nil but ManagerInterface.GetMembersWithRole was just called")
+	}
+	callInfo := struct {
+		Ctx                   context.Context
+		WhereSearchName       string
+		WhereHasInPolicies    []uuid.UUID
+		WhereInAttendStatuses []uuid.UUID
+		WhereInGrades         []uuid.UUID
+		WhereInGroups         []uuid.UUID
+		Order                 parameter.MemberOrderMethod
+		Pg                    parameter.Pagination
+		Limit                 parameter.Limit
+		Cursor                parameter.Cursor
+		Offset                parameter.Offset
+		WithCount             parameter.WithCount
+	}{
+		Ctx:                   ctx,
+		WhereSearchName:       whereSearchName,
+		WhereHasInPolicies:    whereHasInPolicies,
+		WhereInAttendStatuses: whereInAttendStatuses,
+		WhereInGrades:         whereInGrades,
+		WhereInGroups:         whereInGroups,
+		Order:                 order,
+		Pg:                    pg,
+		Limit:                 limit,
+		Cursor:                cursor,
+		Offset:                offset,
+		WithCount:             withCount,
+	}
+	mock.lockGetMembersWithRole.Lock()
+	mock.calls.GetMembersWithRole = append(mock.calls.GetMembersWithRole, callInfo)
+	mock.lockGetMembersWithRole.Unlock()
+	return mock.GetMembersWithRoleFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, order, pg, limit, cursor, offset, withCount)
+}
+
+// GetMembersWithRoleCalls gets all the calls that were made to GetMembersWithRole.
+// Check the length with:
+//
+//	len(mockedManagerInterface.GetMembersWithRoleCalls())
+func (mock *ManagerInterfaceMock) GetMembersWithRoleCalls() []struct {
+	Ctx                   context.Context
+	WhereSearchName       string
+	WhereHasInPolicies    []uuid.UUID
+	WhereInAttendStatuses []uuid.UUID
+	WhereInGrades         []uuid.UUID
+	WhereInGroups         []uuid.UUID
+	Order                 parameter.MemberOrderMethod
+	Pg                    parameter.Pagination
+	Limit                 parameter.Limit
+	Cursor                parameter.Cursor
+	Offset                parameter.Offset
+	WithCount             parameter.WithCount
+} {
+	var calls []struct {
+		Ctx                   context.Context
+		WhereSearchName       string
+		WhereHasInPolicies    []uuid.UUID
+		WhereInAttendStatuses []uuid.UUID
+		WhereInGrades         []uuid.UUID
+		WhereInGroups         []uuid.UUID
+		Order                 parameter.MemberOrderMethod
+		Pg                    parameter.Pagination
+		Limit                 parameter.Limit
+		Cursor                parameter.Cursor
+		Offset                parameter.Offset
+		WithCount             parameter.WithCount
+	}
+	mock.lockGetMembersWithRole.RLock()
+	calls = mock.calls.GetMembersWithRole
+	mock.lockGetMembersWithRole.RUnlock()
 	return calls
 }
 

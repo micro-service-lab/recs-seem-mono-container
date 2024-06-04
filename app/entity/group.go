@@ -11,9 +11,9 @@ type Group struct {
 
 // GroupWithOrganization グループと組織を表す構造体。
 type GroupWithOrganization struct {
-	GroupID      uuid.UUID `json:"group_id"`
-	Key          string    `json:"key"`
-	Organization Organization
+	GroupID      uuid.UUID    `json:"group_id"`
+	Key          string       `json:"key"`
+	Organization Organization `json:"organization"`
 }
 
 // GroupWithOrganizationForQuery グループと組織を表す構造体(クエリー用)。

@@ -435,3 +435,509 @@ func (m *ManageMember) FindAuthMemberByID(
 		Role:                   role,
 	}, nil
 }
+
+// GetMembers メンバーを取得する。
+func (m *ManageMember) GetMembers(
+	ctx context.Context,
+	whereSearchName string,
+	whereHasInPolicies []uuid.UUID,
+	whereInAttendStatuses []uuid.UUID,
+	whereInGrades []uuid.UUID,
+	whereInGroups []uuid.UUID,
+	order parameter.MemberOrderMethod,
+	pg parameter.Pagination,
+	limit parameter.Limit,
+	cursor parameter.Cursor,
+	offset parameter.Offset,
+	withCount parameter.WithCount,
+) (store.ListResult[entity.Member], error) {
+	wc := store.WithCountParam{
+		Valid: bool(withCount),
+	}
+	var np store.NumberedPaginationParam
+	var cp store.CursorPaginationParam
+	where := parameter.WhereMemberParam{
+		WhereLikeName:      whereSearchName != "",
+		SearchName:         whereSearchName,
+		WhereHasPolicy:     len(whereHasInPolicies) > 0,
+		HasPolicyIDs:       whereHasInPolicies,
+		WhenInAttendStatus: len(whereInAttendStatuses) > 0,
+		InAttendStatusIDs:  whereInAttendStatuses,
+		WhenInGrade:        len(whereInGrades) > 0,
+		InGradeIDs:         whereInGrades,
+		WhenInGroup:        len(whereInGroups) > 0,
+		InGroupIDs:         whereInGroups,
+	}
+	switch pg {
+	case parameter.NumberedPagination:
+		np = store.NumberedPaginationParam{
+			Valid:  true,
+			Offset: entity.Int{Int64: int64(offset), Valid: true},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
+		}
+	case parameter.CursorPagination:
+		cp = store.CursorPaginationParam{
+			Valid:  true,
+			Cursor: string(cursor),
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
+		}
+	case parameter.NonePagination:
+	}
+	r, err := m.DB.GetMembers(ctx, where, order, np, cp, wc)
+	if err != nil {
+		return store.ListResult[entity.Member]{}, fmt.Errorf("failed to get members: %w", err)
+	}
+	return r, nil
+}
+
+// GetMembersWithAttendStatus メンバーを取得する。
+func (m *ManageMember) GetMembersWithAttendStatus(
+	ctx context.Context,
+	whereSearchName string,
+	whereHasInPolicies []uuid.UUID,
+	whereInAttendStatuses []uuid.UUID,
+	whereInGrades []uuid.UUID,
+	whereInGroups []uuid.UUID,
+	order parameter.MemberOrderMethod,
+	pg parameter.Pagination,
+	limit parameter.Limit,
+	cursor parameter.Cursor,
+	offset parameter.Offset,
+	withCount parameter.WithCount,
+) (store.ListResult[entity.MemberWithAttendStatus], error) {
+	wc := store.WithCountParam{
+		Valid: bool(withCount),
+	}
+	var np store.NumberedPaginationParam
+	var cp store.CursorPaginationParam
+	where := parameter.WhereMemberParam{
+		WhenInAttendStatus: len(whereInAttendStatuses) > 0,
+		InAttendStatusIDs:  whereInAttendStatuses,
+		WhereLikeName:      whereSearchName != "",
+		SearchName:         whereSearchName,
+		WhereHasPolicy:     len(whereHasInPolicies) > 0,
+		HasPolicyIDs:       whereHasInPolicies,
+		WhenInGrade:        len(whereInGrades) > 0,
+		InGradeIDs:         whereInGrades,
+		WhenInGroup:        len(whereInGroups) > 0,
+		InGroupIDs:         whereInGroups,
+	}
+	switch pg {
+	case parameter.NumberedPagination:
+		np = store.NumberedPaginationParam{
+			Valid:  true,
+			Offset: entity.Int{Int64: int64(offset), Valid: true},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
+		}
+	case parameter.CursorPagination:
+		cp = store.CursorPaginationParam{
+			Valid:  true,
+			Cursor: string(cursor),
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
+		}
+	case parameter.NonePagination:
+	}
+	r, err := m.DB.GetMembersWithAttendStatus(ctx, where, order, np, cp, wc)
+	if err != nil {
+		return store.ListResult[entity.MemberWithAttendStatus]{}, fmt.Errorf("failed to get members: %w", err)
+	}
+	return r, nil
+}
+
+// GetMembersWithDetail メンバーを取得する。
+func (m *ManageMember) GetMembersWithDetail(
+	ctx context.Context,
+	whereSearchName string,
+	whereHasInPolicies []uuid.UUID,
+	whereInAttendStatuses []uuid.UUID,
+	whereInGrades []uuid.UUID,
+	whereInGroups []uuid.UUID,
+	order parameter.MemberOrderMethod,
+	pg parameter.Pagination,
+	limit parameter.Limit,
+	cursor parameter.Cursor,
+	offset parameter.Offset,
+	withCount parameter.WithCount,
+) (store.ListResult[entity.MemberWithDetail], error) {
+	wc := store.WithCountParam{
+		Valid: bool(withCount),
+	}
+	var np store.NumberedPaginationParam
+	var cp store.CursorPaginationParam
+	where := parameter.WhereMemberParam{
+		WhereLikeName:      whereSearchName != "",
+		SearchName:         whereSearchName,
+		WhereHasPolicy:     len(whereHasInPolicies) > 0,
+		HasPolicyIDs:       whereHasInPolicies,
+		WhenInAttendStatus: len(whereInAttendStatuses) > 0,
+		InAttendStatusIDs:  whereInAttendStatuses,
+		WhenInGrade:        len(whereInGrades) > 0,
+		InGradeIDs:         whereInGrades,
+		WhenInGroup:        len(whereInGroups) > 0,
+		InGroupIDs:         whereInGroups,
+	}
+	switch pg {
+	case parameter.NumberedPagination:
+		np = store.NumberedPaginationParam{
+			Valid:  true,
+			Offset: entity.Int{Int64: int64(offset), Valid: true},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
+		}
+	case parameter.CursorPagination:
+		cp = store.CursorPaginationParam{
+			Valid:  true,
+			Cursor: string(cursor),
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
+		}
+	case parameter.NonePagination:
+	}
+	r, err := m.DB.GetMembersWithDetail(ctx, where, order, np, cp, wc)
+	if err != nil {
+		return store.ListResult[entity.MemberWithDetail]{}, fmt.Errorf("failed to get members: %w", err)
+	}
+	return r, nil
+}
+
+// GetMembersWithCrew メンバーを取得する。
+func (m *ManageMember) GetMembersWithCrew(
+	ctx context.Context,
+	whereSearchName string,
+	whereHasInPolicies []uuid.UUID,
+	whereInAttendStatuses []uuid.UUID,
+	whereInGrades []uuid.UUID,
+	whereInGroups []uuid.UUID,
+	order parameter.MemberOrderMethod,
+	pg parameter.Pagination,
+	limit parameter.Limit,
+	cursor parameter.Cursor,
+	offset parameter.Offset,
+	withCount parameter.WithCount,
+) (store.ListResult[entity.MemberWithCrew], error) {
+	wc := store.WithCountParam{
+		Valid: bool(withCount),
+	}
+	var np store.NumberedPaginationParam
+	var cp store.CursorPaginationParam
+	where := parameter.WhereMemberParam{
+		WhereLikeName:      whereSearchName != "",
+		SearchName:         whereSearchName,
+		WhereHasPolicy:     len(whereHasInPolicies) > 0,
+		HasPolicyIDs:       whereHasInPolicies,
+		WhenInAttendStatus: len(whereInAttendStatuses) > 0,
+		InAttendStatusIDs:  whereInAttendStatuses,
+		WhenInGrade:        len(whereInGrades) > 0,
+		InGradeIDs:         whereInGrades,
+		WhenInGroup:        len(whereInGroups) > 0,
+		InGroupIDs:         whereInGroups,
+	}
+	switch pg {
+	case parameter.NumberedPagination:
+		np = store.NumberedPaginationParam{
+			Valid:  true,
+			Offset: entity.Int{Int64: int64(offset), Valid: true},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
+		}
+	case parameter.CursorPagination:
+		cp = store.CursorPaginationParam{
+			Valid:  true,
+			Cursor: string(cursor),
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
+		}
+	case parameter.NonePagination:
+	}
+	r, err := m.DB.GetMembersWithCrew(ctx, where, order, np, cp, wc)
+	if err != nil {
+		return store.ListResult[entity.MemberWithCrew]{}, fmt.Errorf("failed to get members: %w", err)
+	}
+	return r, nil
+}
+
+// GetMembersWithProfileImage メンバーを取得する。
+func (m *ManageMember) GetMembersWithProfileImage(
+	ctx context.Context,
+	whereSearchName string,
+	whereHasInPolicies []uuid.UUID,
+	whereInAttendStatuses []uuid.UUID,
+	whereInGrades []uuid.UUID,
+	whereInGroups []uuid.UUID,
+	order parameter.MemberOrderMethod,
+	pg parameter.Pagination,
+	limit parameter.Limit,
+	cursor parameter.Cursor,
+	offset parameter.Offset,
+	withCount parameter.WithCount,
+) (store.ListResult[entity.MemberWithProfileImage], error) {
+	wc := store.WithCountParam{
+		Valid: bool(withCount),
+	}
+	var np store.NumberedPaginationParam
+	var cp store.CursorPaginationParam
+	where := parameter.WhereMemberParam{
+		WhereLikeName:      whereSearchName != "",
+		SearchName:         whereSearchName,
+		WhereHasPolicy:     len(whereHasInPolicies) > 0,
+		HasPolicyIDs:       whereHasInPolicies,
+		WhenInAttendStatus: len(whereInAttendStatuses) > 0,
+		InAttendStatusIDs:  whereInAttendStatuses,
+		WhenInGrade:        len(whereInGrades) > 0,
+		InGradeIDs:         whereInGrades,
+		WhenInGroup:        len(whereInGroups) > 0,
+		InGroupIDs:         whereInGroups,
+	}
+	switch pg {
+	case parameter.NumberedPagination:
+		np = store.NumberedPaginationParam{
+			Valid:  true,
+			Offset: entity.Int{Int64: int64(offset), Valid: true},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
+		}
+	case parameter.CursorPagination:
+		cp = store.CursorPaginationParam{
+			Valid:  true,
+			Cursor: string(cursor),
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
+		}
+	case parameter.NonePagination:
+	}
+	r, err := m.DB.GetMembersWithProfileImage(ctx, where, order, np, cp, wc)
+	if err != nil {
+		return store.ListResult[entity.MemberWithProfileImage]{}, fmt.Errorf("failed to get members: %w", err)
+	}
+	return r, nil
+}
+
+// GetMembersWithPersonalOrganization メンバーを取得する。
+func (m *ManageMember) GetMembersWithPersonalOrganization(
+	ctx context.Context,
+	whereSearchName string,
+	whereHasInPolicies []uuid.UUID,
+	whereInAttendStatuses []uuid.UUID,
+	whereInGrades []uuid.UUID,
+	whereInGroups []uuid.UUID,
+	order parameter.MemberOrderMethod,
+	pg parameter.Pagination,
+	limit parameter.Limit,
+	cursor parameter.Cursor,
+	offset parameter.Offset,
+	withCount parameter.WithCount,
+) (store.ListResult[entity.MemberWithPersonalOrganization], error) {
+	wc := store.WithCountParam{
+		Valid: bool(withCount),
+	}
+	var np store.NumberedPaginationParam
+	var cp store.CursorPaginationParam
+	where := parameter.WhereMemberParam{
+		WhereLikeName:      whereSearchName != "",
+		SearchName:         whereSearchName,
+		WhereHasPolicy:     len(whereHasInPolicies) > 0,
+		HasPolicyIDs:       whereHasInPolicies,
+		WhenInAttendStatus: len(whereInAttendStatuses) > 0,
+		InAttendStatusIDs:  whereInAttendStatuses,
+		WhenInGrade:        len(whereInGrades) > 0,
+		InGradeIDs:         whereInGrades,
+		WhenInGroup:        len(whereInGroups) > 0,
+		InGroupIDs:         whereInGroups,
+	}
+	switch pg {
+	case parameter.NumberedPagination:
+		np = store.NumberedPaginationParam{
+			Valid:  true,
+			Offset: entity.Int{Int64: int64(offset), Valid: true},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
+		}
+	case parameter.CursorPagination:
+		cp = store.CursorPaginationParam{
+			Valid:  true,
+			Cursor: string(cursor),
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
+		}
+	case parameter.NonePagination:
+	}
+	r, err := m.DB.GetMembersWithPersonalOrganization(ctx, where, order, np, cp, wc)
+	if err != nil {
+		return store.ListResult[entity.MemberWithPersonalOrganization]{}, fmt.Errorf("failed to get members: %w", err)
+	}
+	return r, nil
+}
+
+// GetMembersWithRole メンバーを取得する。
+func (m *ManageMember) GetMembersWithRole(
+	ctx context.Context,
+	whereSearchName string,
+	whereHasInPolicies []uuid.UUID,
+	whereInAttendStatuses []uuid.UUID,
+	whereInGrades []uuid.UUID,
+	whereInGroups []uuid.UUID,
+	order parameter.MemberOrderMethod,
+	pg parameter.Pagination,
+	limit parameter.Limit,
+	cursor parameter.Cursor,
+	offset parameter.Offset,
+	withCount parameter.WithCount,
+) (store.ListResult[entity.MemberWithRole], error) {
+	wc := store.WithCountParam{
+		Valid: bool(withCount),
+	}
+	var np store.NumberedPaginationParam
+	var cp store.CursorPaginationParam
+	where := parameter.WhereMemberParam{
+		WhereLikeName:      whereSearchName != "",
+		SearchName:         whereSearchName,
+		WhereHasPolicy:     len(whereHasInPolicies) > 0,
+		HasPolicyIDs:       whereHasInPolicies,
+		WhenInAttendStatus: len(whereInAttendStatuses) > 0,
+		InAttendStatusIDs:  whereInAttendStatuses,
+		WhenInGrade:        len(whereInGrades) > 0,
+		InGradeIDs:         whereInGrades,
+		WhenInGroup:        len(whereInGroups) > 0,
+		InGroupIDs:         whereInGroups,
+	}
+	switch pg {
+	case parameter.NumberedPagination:
+		np = store.NumberedPaginationParam{
+			Valid:  true,
+			Offset: entity.Int{Int64: int64(offset), Valid: true},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
+		}
+	case parameter.CursorPagination:
+		cp = store.CursorPaginationParam{
+			Valid:  true,
+			Cursor: string(cursor),
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
+		}
+	case parameter.NonePagination:
+	}
+	r, err := m.DB.GetMembersWithRole(ctx, where, order, np, cp, wc)
+	if err != nil {
+		return store.ListResult[entity.MemberWithRole]{}, fmt.Errorf("failed to get members: %w", err)
+	}
+	return r, nil
+}
+
+// GetMembersWithCrewAndProfileImageAndAttendStatus メンバーを取得する。
+func (m *ManageMember) GetMembersWithCrewAndProfileImageAndAttendStatus(
+	ctx context.Context,
+	whereSearchName string,
+	whereHasInPolicies []uuid.UUID,
+	whereInAttendStatuses []uuid.UUID,
+	whereInGrades []uuid.UUID,
+	whereInGroups []uuid.UUID,
+	order parameter.MemberOrderMethod,
+	pg parameter.Pagination,
+	limit parameter.Limit,
+	cursor parameter.Cursor,
+	offset parameter.Offset,
+	withCount parameter.WithCount,
+) (store.ListResult[entity.MemberWithCrewAndProfileImageAndAttendStatus], error) {
+	wc := store.WithCountParam{
+		Valid: bool(withCount),
+	}
+	var np store.NumberedPaginationParam
+	var cp store.CursorPaginationParam
+	where := parameter.WhereMemberParam{
+		WhereLikeName:      whereSearchName != "",
+		SearchName:         whereSearchName,
+		WhereHasPolicy:     len(whereHasInPolicies) > 0,
+		HasPolicyIDs:       whereHasInPolicies,
+		WhenInAttendStatus: len(whereInAttendStatuses) > 0,
+		InAttendStatusIDs:  whereInAttendStatuses,
+		WhenInGrade:        len(whereInGrades) > 0,
+		InGradeIDs:         whereInGrades,
+		WhenInGroup:        len(whereInGroups) > 0,
+		InGroupIDs:         whereInGroups,
+	}
+	switch pg {
+	case parameter.NumberedPagination:
+		np = store.NumberedPaginationParam{
+			Valid:  true,
+			Offset: entity.Int{Int64: int64(offset), Valid: true},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
+		}
+	case parameter.CursorPagination:
+		cp = store.CursorPaginationParam{
+			Valid:  true,
+			Cursor: string(cursor),
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
+		}
+	case parameter.NonePagination:
+	}
+	var e store.ListResult[entity.MemberWithCrewAndProfileImageAndAttendStatus]
+	r, err := m.DB.GetMembersWithCrew(ctx, where, order, np, cp, wc)
+	if err != nil {
+		return store.ListResult[entity.MemberWithCrewAndProfileImageAndAttendStatus]{}, fmt.Errorf("failed to get members: %w", err)
+	}
+	e.CursorPagination = r.CursorPagination
+	e.WithCount = r.WithCount
+	uniqueAttendStatues := make(map[uuid.UUID]entity.AttendStatus)
+	uniqueProfileImages := make(map[uuid.UUID]entity.ImageWithAttachableItem)
+	for _, v := range r.Data {
+		uniqueAttendStatues[v.AttendStatusID] = entity.AttendStatus{}
+		if v.ProfileImageID.Valid {
+			uniqueProfileImages[v.ProfileImageID.Bytes] = entity.ImageWithAttachableItem{}
+		}
+	}
+	attendStatuses := make([]uuid.UUID, 0, len(uniqueAttendStatues))
+	for k := range uniqueAttendStatues {
+		attendStatuses = append(attendStatuses, k)
+	}
+	profileImages := make([]uuid.UUID, 0, len(uniqueProfileImages))
+	for k := range uniqueProfileImages {
+		profileImages = append(profileImages, k)
+	}
+	attendStatusesData, err := m.DB.GetPluralAttendStatuses(
+		ctx,
+		attendStatuses,
+		parameter.AttendStatusOrderMethodDefault,
+		store.NumberedPaginationParam{},
+	)
+	if err != nil {
+		return store.ListResult[entity.MemberWithCrewAndProfileImageAndAttendStatus]{},
+			fmt.Errorf("failed to get plural attend statuses: %w", err)
+	}
+	for _, v := range attendStatusesData.Data {
+		uniqueAttendStatues[v.AttendStatusID] = v
+	}
+	profileImagesData, err := m.DB.GetPluralImagesWithAttachableItem(
+		ctx,
+		profileImages,
+		parameter.ImageOrderMethodDefault,
+		store.NumberedPaginationParam{},
+	)
+	if err != nil {
+		return store.ListResult[entity.MemberWithCrewAndProfileImageAndAttendStatus]{},
+			fmt.Errorf("failed to get plural images: %w", err)
+	}
+	for _, v := range profileImagesData.Data {
+		uniqueProfileImages[v.ImageID] = v
+	}
+
+	e.Data = make([]entity.MemberWithCrewAndProfileImageAndAttendStatus, 0, len(r.Data))
+	for _, v := range r.Data {
+		attendStatus, ok := uniqueAttendStatues[v.AttendStatusID]
+		if !ok {
+			attendStatus = entity.AttendStatus{}
+		}
+		var profileImage entity.NullableEntity[entity.ImageWithAttachableItem]
+		if v.ProfileImageID.Valid {
+			if pi, ok := uniqueProfileImages[v.ProfileImageID.Bytes]; ok {
+				profileImage = entity.NullableEntity[entity.ImageWithAttachableItem]{
+					Valid:  true,
+					Entity: pi,
+				}
+			}
+		}
+		e.Data = append(e.Data, entity.MemberWithCrewAndProfileImageAndAttendStatus{
+			MemberID:               v.MemberID,
+			Email:                  v.Email,
+			Name:                   v.Name,
+			FirstName:              v.FirstName,
+			LastName:               v.LastName,
+			AttendStatus:           attendStatus,
+			Grade:                  v.Grade,
+			Group:                  v.Group,
+			PersonalOrganizationID: v.PersonalOrganizationID,
+			ProfileImage:           profileImage,
+		})
+	}
+	return e, nil
+}

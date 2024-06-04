@@ -174,6 +174,21 @@ type MemberWithPersonalOrganizationForQuery struct {
 	MemberWithPersonalOrganization
 }
 
+// MemberWithCrewAndProfileImageAndAttendStatus クルー、プロフィール画像、出席状況付きのメンバーを表す構造体。
+type MemberWithCrewAndProfileImageAndAttendStatus struct {
+	MemberID               uuid.UUID                               `json:"member_id"`
+	Email                  string                                  `json:"email"`
+	Name                   string                                  `json:"name"`
+	FirstName              String                                  `json:"first_name"`
+	LastName               String                                  `json:"last_name"`
+	AttendStatus           AttendStatus                            `json:"attend_status"`
+	ProfileImage           NullableEntity[ImageWithAttachableItem] `json:"profile_image"`
+	Grade                  GradeWithOrganization                   `json:"grade"`
+	Group                  GroupWithOrganization                   `json:"group"`
+	PersonalOrganizationID uuid.UUID                               `json:"personal_organization_id"`
+	RoleID                 UUID                                    `json:"role_id"`
+}
+
 // MemberCard メンバーカードを表す構造体。
 type MemberCard struct {
 	MemberID     uuid.UUID                               `json:"member_id"`

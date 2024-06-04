@@ -11,9 +11,9 @@ type Grade struct {
 
 // GradeWithOrganization 学年と組織を表す構造体。
 type GradeWithOrganization struct {
-	GradeID      uuid.UUID `json:"grade_id"`
-	Key          string    `json:"key"`
-	Organization Organization
+	GradeID      uuid.UUID    `json:"grade_id"`
+	Key          string       `json:"key"`
+	Organization Organization `json:"organization"`
 }
 
 // GradeWithOrganizationForQuery 学年と組織を表す構造体(クエリー用)。

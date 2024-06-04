@@ -31,6 +31,88 @@ type UpdateMemberParams struct {
 	ProfileImageID entity.UUID
 }
 
+// MemberWith オーガナイゼーションの付加情報。
+type MemberWith struct {
+	withDetail               bool
+	withProfileImage         bool
+	withPersonalOrganization bool
+	withCrew                 bool
+	withAttendStatus         bool
+	withRole                 bool
+}
+
+// MemberWithParams オーガナイゼーションの付加情報。
+type MemberWithParams []MemberWith
+
+// ParseMemberWithParam オーガナイゼーションの付加情報をパースする。
+func ParseMemberWithParam(v string) (any, error) {
+	if v == "" {
+		return MemberWith{}, nil
+	}
+	switch v {
+	case "detail":
+		return MemberWith{withDetail: true}, nil
+	case "profile_image":
+		return MemberWith{withProfileImage: true}, nil
+	case "personal_organization":
+		return MemberWith{withPersonalOrganization: true}, nil
+	case "crew":
+		return MemberWith{withCrew: true}, nil
+	case "attend_status":
+		return MemberWith{withAttendStatus: true}, nil
+	case "role":
+		return MemberWith{withRole: true}, nil
+	default:
+		return MemberWith{}, nil
+	}
+}
+
+// MemberWithCase オーガナイゼーションの付加情報のケース。
+type MemberWithCase int8
+
+const (
+	// MemberWithCaseDefault はデフォルト。
+	MemberWithCaseDefault MemberWithCase = 0b0
+	// MemberWithCaseDetail はカテゴリを含む。
+	MemberWithCaseDetail MemberWithCase = 0b1
+	// MemberWithCaseProfileImage はプロフィール画像を含む。
+	MemberWithCaseProfileImage MemberWithCase = 0b10
+	// MemberWithCasePersonalOrganization は個人組織を含む。
+	MemberWithCasePersonalOrganization MemberWithCase = 0b100
+	// MemberWithCaseCrew はクルーを含む。
+	MemberWithCaseCrew MemberWithCase = 0b1000
+	// MemberWithCaseAttendStatus は出席状況を含む。
+	MemberWithCaseAttendStatus MemberWithCase = 0b10000
+	// MemberWithCaseRole は役割を含む。
+	MemberWithCaseRole MemberWithCase = 0b100000
+)
+
+// Case はケースを取得する。
+func (p MemberWithParams) Case() MemberWithCase {
+	var c MemberWithCase
+	for _, v := range p {
+		if v.withDetail {
+			c |= MemberWithCaseDetail
+		}
+		if v.withProfileImage {
+			c |= MemberWithCaseProfileImage
+		}
+		if v.withPersonalOrganization {
+			c |= MemberWithCasePersonalOrganization
+		}
+		if v.withCrew {
+			c |= MemberWithCaseCrew
+		}
+		if v.withAttendStatus {
+			c |= MemberWithCaseAttendStatus
+		}
+		if v.withRole {
+			c |= MemberWithCaseRole
+		}
+	}
+	return c
+}
+
 // WhereMemberParam メンバー検索のパラメータ。
 type WhereMemberParam struct {
 	WhereLikeName      bool

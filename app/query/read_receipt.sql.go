@@ -1251,7 +1251,7 @@ func (q *Queries) GetReadableMessagesOnMemberUseNumberedPaginate(ctx context.Con
 }
 
 const readReceipt = `-- name: ReadReceipt :one
-UPDATE t_read_receipts SET read_at = $3 WHERE member_id = $1 AND message_id = $2 RETURNING t_read_receipts_pkey, member_id, message_id, read_at
+UPDATE t_read_receipts SET read_at = $3 WHERE member_id = $1 AND message_id = $2 AND read_at IS NULL RETURNING t_read_receipts_pkey, member_id, message_id, read_at
 `
 
 type ReadReceiptParams struct {
@@ -1273,7 +1273,7 @@ func (q *Queries) ReadReceipt(ctx context.Context, arg ReadReceiptParams) (ReadR
 }
 
 const readReceipts = `-- name: ReadReceipts :execrows
-UPDATE t_read_receipts SET read_at = $2 WHERE member_id = $1 AND message_id = ANY($3::uuid[])
+UPDATE t_read_receipts SET read_at = $2 WHERE member_id = $1 AND message_id = ANY($3::uuid[]) AND read_at IS NULL
 `
 
 type ReadReceiptsParams struct {
@@ -1293,7 +1293,7 @@ func (q *Queries) ReadReceipts(ctx context.Context, arg ReadReceiptsParams) (int
 const readReceiptsOnChatRoomAndMember = `-- name: ReadReceiptsOnChatRoomAndMember :execrows
 UPDATE t_read_receipts SET read_at = $3
 WHERE message_id IN (SELECT message_id FROM t_messages WHERE chat_room_action_id IN (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1))
-AND member_id = $2
+AND member_id = $2 AND read_at IS NULL
 `
 
 type ReadReceiptsOnChatRoomAndMemberParams struct {
@@ -1312,7 +1312,7 @@ func (q *Queries) ReadReceiptsOnChatRoomAndMember(ctx context.Context, arg ReadR
 
 const readReceiptsOnMember = `-- name: ReadReceiptsOnMember :execrows
 UPDATE t_read_receipts SET read_at = $2
-WHERE member_id = $1
+WHERE member_id = $1 AND read_at IS NULL
 `
 
 type ReadReceiptsOnMemberParams struct {

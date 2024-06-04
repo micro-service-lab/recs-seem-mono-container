@@ -75,6 +75,16 @@ func (m *ManageReadReceipt) ReadMessage(
 	if msg.ChatRoomAction.ChatRoomID != chatRoomID {
 		return false, errhandle.NewCommonError(response.NotMatchChatRoomMessage, nil)
 	}
+	if exist, err := m.DB.ExistsChatRoomBelongingWithSd(
+		ctx,
+		sd,
+		memberID,
+		chatRoomID,
+	); err != nil {
+		return false, fmt.Errorf("failed to exists chat room belonging: %w", err)
+	} else if !exist {
+		return false, errhandle.NewCommonError(response.NotChatRoomMember, nil)
+	}
 	rr, err := m.DB.FindReadReceiptWithSd(ctx, sd, memberID, messageID)
 	if err != nil {
 		var nfe errhandle.ModelNotFoundError

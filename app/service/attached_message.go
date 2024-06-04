@@ -59,6 +59,16 @@ func (m *ManageAttachedMessage) AttachItemsOnMessage(
 	if msg.ChatRoomAction.ChatRoomID != chatRoomID {
 		return 0, errhandle.NewCommonError(response.NotMatchChatRoomMessage, nil)
 	}
+	if exist, err := m.DB.ExistsChatRoomBelongingWithSd(
+		ctx,
+		sd,
+		ownerID,
+		chatRoomID,
+	); err != nil {
+		return 0, fmt.Errorf("failed to exists chat room belonging: %w", err)
+	} else if !exist {
+		return 0, errhandle.NewCommonError(response.NotChatRoomMember, nil)
+	}
 
 	if len(attachments) > 0 {
 		ai, err := m.DB.GetPluralAttachableItemsWithSd(
@@ -134,7 +144,7 @@ func (m *ManageAttachedMessage) DetachItemsOnMessage(
 	if err != nil {
 		var nfe errhandle.ModelNotFoundError
 		if errors.As(err, &nfe) {
-			return 0, errhandle.NewModelNotFoundError(MessageTargetMessages)
+			return 0, errhandle.NewCommonError(response.NotChatRoomMember, nil)
 		}
 		return 0, fmt.Errorf("failed to find message: %w", err)
 	}
@@ -143,6 +153,16 @@ func (m *ManageAttachedMessage) DetachItemsOnMessage(
 	}
 	if msg.ChatRoomAction.ChatRoomID != chatRoomID {
 		return 0, errhandle.NewCommonError(response.NotMatchChatRoomMessage, nil)
+	}
+	if exist, err := m.DB.ExistsChatRoomBelongingWithSd(
+		ctx,
+		sd,
+		ownerID,
+		chatRoomID,
+	); err != nil {
+		return 0, fmt.Errorf("failed to exists chat room belonging: %w", err)
+	} else if !exist {
+		return 0, errhandle.NewModelNotFoundError(MessageTargetChatRoomBelongings)
 	}
 
 	var ai store.ListResult[entity.AttachableItemWithContent]

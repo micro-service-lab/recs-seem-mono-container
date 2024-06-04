@@ -87,7 +87,7 @@ func (m *ManageMessage) CreateMessage(
 		}
 	}
 	if !belong {
-		return entity.Message{}, errhandle.NewModelNotFoundError(MessageTargetChatRoomBelongings)
+		return entity.Message{}, errhandle.NewCommonError(response.NotChatRoomMember, nil)
 	}
 	if len(attachments) > 0 {
 		ai, err := m.DB.GetPluralAttachableItemsWithSd(
@@ -171,105 +171,6 @@ func (m *ManageMessage) CreateMessage(
 			return entity.Message{}, fmt.Errorf("failed to create read receipts: %w", err)
 		}
 	}
-	return e, nil
-}
-
-func createPrivateChatRoom(
-	ctx context.Context,
-	sd store.Sd,
-	now time.Time,
-	str store.Store,
-	owner, member entity.Member,
-) (e entity.ChatRoom, err error) {
-	if e, err = str.CreateChatRoomWithSd(
-		ctx,
-		sd,
-		parameter.CreateChatRoomParam{
-			Name:             entity.String{},
-			IsPrivate:        true,
-			CoverImageID:     entity.UUID{},
-			OwnerID:          entity.UUID{},
-			FromOrganization: false,
-		},
-	); err != nil {
-		return entity.ChatRoom{}, fmt.Errorf("failed to create chat room: %w", err)
-	}
-
-	bcrp := []parameter.BelongChatRoomParam{
-		{
-			ChatRoomID: e.ChatRoomID,
-			MemberID:   owner.MemberID,
-			AddedAt:    now,
-		},
-		{
-			ChatRoomID: e.ChatRoomID,
-			MemberID:   member.MemberID,
-			AddedAt:    now,
-		},
-	}
-
-	if _, err = str.BelongChatRoomsWithSd(ctx, sd, bcrp); err != nil {
-		return entity.ChatRoom{}, fmt.Errorf("failed to belong chat rooms: %w", err)
-	}
-
-	createCraType, err := str.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyCreate))
-	if err != nil {
-		return entity.ChatRoom{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
-	}
-	cra, err := str.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
-		ChatRoomID:           e.ChatRoomID,
-		ChatRoomActionTypeID: createCraType.ChatRoomActionTypeID,
-		ActedAt:              now,
-	})
-	if err != nil {
-		return entity.ChatRoom{}, fmt.Errorf("failed to create chat room action: %w", err)
-	}
-	_, err = str.CreateChatRoomCreateActionWithSd(ctx, sd, parameter.CreateChatRoomCreateActionParam{
-		ChatRoomActionID: cra.ChatRoomActionID,
-		CreatedBy:        entity.UUID{},
-		Name:             entity.String{},
-	})
-	if err != nil {
-		return entity.ChatRoom{}, fmt.Errorf("failed to create chat room create action: %w", err)
-	}
-
-	addCraType, err := str.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyAddMember))
-	if err != nil {
-		return entity.ChatRoom{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
-	}
-	addOwnerCra, err := str.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
-		ChatRoomID:           e.ChatRoomID,
-		ChatRoomActionTypeID: addCraType.ChatRoomActionTypeID,
-		ActedAt:              now,
-	})
-	if err != nil {
-		return entity.ChatRoom{}, fmt.Errorf("failed to create chat room action: %w", err)
-	}
-	crama, err := str.CreateChatRoomAddMemberActionWithSd(ctx, sd, parameter.CreateChatRoomAddMemberActionParam{
-		ChatRoomActionID: addOwnerCra.ChatRoomActionID,
-		AddedBy:          entity.UUID{},
-	})
-	if err != nil {
-		return entity.ChatRoom{}, fmt.Errorf("failed to create chat room add member action: %w", err)
-	}
-	cramp := []parameter.CreateChatRoomAddedMemberParam{
-		{
-			ChatRoomAddMemberActionID: crama.ChatRoomAddMemberActionID,
-			MemberID:                  entity.UUID{Valid: true, Bytes: owner.MemberID},
-		},
-		{
-			ChatRoomAddMemberActionID: crama.ChatRoomAddMemberActionID,
-			MemberID:                  entity.UUID{Valid: true, Bytes: member.MemberID},
-		},
-	}
-	if _, err = str.AddMembersToChatRoomAddMemberActionWithSd(
-		ctx,
-		sd,
-		cramp,
-	); err != nil {
-		return entity.ChatRoom{}, fmt.Errorf("failed to add members to chat room add member action: %w", err)
-	}
-
 	return e, nil
 }
 
@@ -444,6 +345,16 @@ func (m *ManageMessage) DeleteMessage(
 	if msg.ChatRoomAction.ChatRoomID != chatRoomID {
 		return 0, errhandle.NewCommonError(response.NotMatchChatRoomMessage, nil)
 	}
+	if exist, err := m.DB.ExistsChatRoomBelongingWithSd(
+		ctx,
+		sd,
+		ownerID,
+		chatRoomID,
+	); err != nil {
+		return 0, fmt.Errorf("failed to exists chat room belonging: %w", err)
+	} else if !exist {
+		return 0, errhandle.NewCommonError(response.NotChatRoomMember, nil)
+	}
 
 	craType, err := m.DB.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyDeleteMessage))
 	if err != nil {
@@ -509,7 +420,7 @@ func (m *ManageMessage) DeleteMessage(
 		}
 	}
 
-	return 0, nil
+	return e, nil
 }
 
 // ForceDeleteMessages メッセージを強制削除する。
@@ -726,6 +637,16 @@ func (m *ManageMessage) EditMessage(
 	}
 	if msg.ChatRoomAction.ChatRoomID != chatRoomID {
 		return entity.Message{}, errhandle.NewCommonError(response.NotMatchChatRoomMessage, nil)
+	}
+	if exist, err := m.DB.ExistsChatRoomBelongingWithSd(
+		ctx,
+		sd,
+		ownerID,
+		chatRoomID,
+	); err != nil {
+		return entity.Message{}, fmt.Errorf("failed to exists chat room belonging: %w", err)
+	} else if !exist {
+		return entity.Message{}, errhandle.NewCommonError(response.NotChatRoomMember, nil)
 	}
 	if e, err = m.DB.UpdateMessageWithSd(
 		ctx,

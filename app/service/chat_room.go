@@ -48,6 +48,19 @@ func (m *ManageChatRoom) FindChatRoomByIDWithCoverImage(
 	return e, nil
 }
 
+// FindPrivateChatRoom プライベートチャットルームを取得する。
+func (m *ManageChatRoom) FindPrivateChatRoom(
+	ctx context.Context,
+	ownerID,
+	memberID uuid.UUID,
+) (entity.ChatRoom, error) {
+	e, err := m.DB.FindChatRoomOnPrivate(ctx, ownerID, memberID)
+	if err != nil {
+		return entity.ChatRoom{}, fmt.Errorf("failed to find private chat room: %w", err)
+	}
+	return e, nil
+}
+
 func createChatRoom(
 	ctx context.Context,
 	sd store.Sd,
@@ -175,6 +188,105 @@ func createChatRoom(
 		); err != nil {
 			return entity.ChatRoom{}, fmt.Errorf("failed to add members to chat room add member action: %w", err)
 		}
+	}
+
+	return e, nil
+}
+
+func createPrivateChatRoom(
+	ctx context.Context,
+	sd store.Sd,
+	now time.Time,
+	str store.Store,
+	owner, member entity.Member,
+) (e entity.ChatRoom, err error) {
+	if e, err = str.CreateChatRoomWithSd(
+		ctx,
+		sd,
+		parameter.CreateChatRoomParam{
+			Name:             entity.String{},
+			IsPrivate:        true,
+			CoverImageID:     entity.UUID{},
+			OwnerID:          entity.UUID{},
+			FromOrganization: false,
+		},
+	); err != nil {
+		return entity.ChatRoom{}, fmt.Errorf("failed to create chat room: %w", err)
+	}
+
+	bcrp := []parameter.BelongChatRoomParam{
+		{
+			ChatRoomID: e.ChatRoomID,
+			MemberID:   owner.MemberID,
+			AddedAt:    now,
+		},
+		{
+			ChatRoomID: e.ChatRoomID,
+			MemberID:   member.MemberID,
+			AddedAt:    now,
+		},
+	}
+
+	if _, err = str.BelongChatRoomsWithSd(ctx, sd, bcrp); err != nil {
+		return entity.ChatRoom{}, fmt.Errorf("failed to belong chat rooms: %w", err)
+	}
+
+	createCraType, err := str.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyCreate))
+	if err != nil {
+		return entity.ChatRoom{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
+	}
+	cra, err := str.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
+		ChatRoomID:           e.ChatRoomID,
+		ChatRoomActionTypeID: createCraType.ChatRoomActionTypeID,
+		ActedAt:              now,
+	})
+	if err != nil {
+		return entity.ChatRoom{}, fmt.Errorf("failed to create chat room action: %w", err)
+	}
+	_, err = str.CreateChatRoomCreateActionWithSd(ctx, sd, parameter.CreateChatRoomCreateActionParam{
+		ChatRoomActionID: cra.ChatRoomActionID,
+		CreatedBy:        entity.UUID{},
+		Name:             entity.String{},
+	})
+	if err != nil {
+		return entity.ChatRoom{}, fmt.Errorf("failed to create chat room create action: %w", err)
+	}
+
+	addCraType, err := str.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyAddMember))
+	if err != nil {
+		return entity.ChatRoom{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
+	}
+	addOwnerCra, err := str.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
+		ChatRoomID:           e.ChatRoomID,
+		ChatRoomActionTypeID: addCraType.ChatRoomActionTypeID,
+		ActedAt:              now,
+	})
+	if err != nil {
+		return entity.ChatRoom{}, fmt.Errorf("failed to create chat room action: %w", err)
+	}
+	crama, err := str.CreateChatRoomAddMemberActionWithSd(ctx, sd, parameter.CreateChatRoomAddMemberActionParam{
+		ChatRoomActionID: addOwnerCra.ChatRoomActionID,
+		AddedBy:          entity.UUID{},
+	})
+	if err != nil {
+		return entity.ChatRoom{}, fmt.Errorf("failed to create chat room add member action: %w", err)
+	}
+	cramp := []parameter.CreateChatRoomAddedMemberParam{
+		{
+			ChatRoomAddMemberActionID: crama.ChatRoomAddMemberActionID,
+			MemberID:                  entity.UUID{Valid: true, Bytes: owner.MemberID},
+		},
+		{
+			ChatRoomAddMemberActionID: crama.ChatRoomAddMemberActionID,
+			MemberID:                  entity.UUID{Valid: true, Bytes: member.MemberID},
+		},
+	}
+	if _, err = str.AddMembersToChatRoomAddMemberActionWithSd(
+		ctx,
+		sd,
+		cramp,
+	); err != nil {
+		return entity.ChatRoom{}, fmt.Errorf("failed to add members to chat room add member action: %w", err)
 	}
 
 	return e, nil
@@ -391,6 +503,64 @@ func (m *ManageChatRoom) CreateChatRoom(
 		return entity.ChatRoom{}, errhandle.NewModelNotFoundError(ChatRoomTargetMembers)
 	}
 	return createChatRoom(ctx, sd, m.Clocker.Now(), m.DB, name, coverImage, owner, pm.Data, false)
+}
+
+// CreatePrivateChatRoom プライベートチャットルームを作成する。
+func (m *ManageChatRoom) CreatePrivateChatRoom(
+	ctx context.Context,
+	ownerID uuid.UUID,
+	memberID uuid.UUID,
+) (e entity.ChatRoom, err error) {
+	sd, err := m.DB.Begin(ctx)
+	if err != nil {
+		return entity.ChatRoom{}, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+	defer func() {
+		if err != nil {
+			if rerr := m.DB.Rollback(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to rollback transaction: %w", rerr)
+			}
+		} else {
+			if rerr := m.DB.Commit(ctx, sd); rerr != nil {
+				err = fmt.Errorf("failed to commit transaction: %w", rerr)
+			}
+		}
+	}()
+	now := m.Clocker.Now()
+	if ownerID == memberID {
+		return entity.ChatRoom{}, errhandle.NewCommonError(response.NotCreateMessageToSelf, nil)
+	}
+	owner, err := m.DB.FindMemberByIDWithSd(ctx, sd, ownerID)
+	if err != nil {
+		var e errhandle.ModelNotFoundError
+		if errors.As(err, &e) {
+			return entity.ChatRoom{}, errhandle.NewModelNotFoundError(ChatRoomTargetOwner)
+		}
+		return entity.ChatRoom{}, fmt.Errorf("failed to find member by id: %w", err)
+	}
+	member, err := m.DB.FindMemberByIDWithSd(ctx, sd, memberID)
+	if err != nil {
+		var e errhandle.ModelNotFoundError
+		if errors.As(err, &e) {
+			return entity.ChatRoom{}, errhandle.NewModelNotFoundError(ChatRoomTargetMembers)
+		}
+		return entity.ChatRoom{}, fmt.Errorf("failed to find member by id: %w", err)
+	}
+	_, err = m.DB.FindChatRoomOnPrivateWithSd(ctx, sd, ownerID, memberID)
+	exist := true
+	if err != nil {
+		var e errhandle.ModelNotFoundError
+		if errors.As(err, &e) {
+			exist = false
+		} else {
+			return entity.ChatRoom{}, fmt.Errorf("failed to find private chat room: %w", err)
+		}
+	}
+	if exist {
+		return entity.ChatRoom{}, errhandle.NewCommonError(response.PrivateChatRoomAlreadyExists, nil)
+	}
+
+	return createPrivateChatRoom(ctx, sd, now, m.DB, owner, member)
 }
 
 // UpdateChatRoom チャットルームを更新する。

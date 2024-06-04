@@ -36,6 +36,15 @@ func MemberHandler(
 		Service: svc,
 	}
 
+	createPrivateChatRoom := handler.CreatePrivateChatRoom{
+		Service:    svc,
+		Validator:  vd,
+		Translator: t,
+	}
+	findPrivateChatRoom := handler.FindPrivateChatRoom{
+		Service: svc,
+	}
+
 	createPrivateMessage := handler.CreatePrivateMessage{
 		Service:    svc,
 		Validator:  vd,
@@ -51,6 +60,11 @@ func MemberHandler(
 
 		r.Route(uuidPath("/{member_id}/chat_rooms"), func(r chi.Router) {
 			r.Get("/", getChatRooms.ServeHTTP)
+		})
+
+		r.Route(uuidPath("/{member_id}/private_chat_rooms"), func(r chi.Router) {
+			r.Post("/", createPrivateChatRoom.ServeHTTP)
+			r.Get("/", findPrivateChatRoom.ServeHTTP)
 		})
 
 		r.Route(uuidPath("/{member_id}/private_messages"), func(r chi.Router) {

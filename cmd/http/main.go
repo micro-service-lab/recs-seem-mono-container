@@ -70,11 +70,18 @@ func run(ctx context.Context) error {
 		middlewares = append(middlewares, cors.Handler(cors.Options{
 			AllowedOrigins: []string(ctr.Config.ClientOrigin),
 			AllowedMethods: []string{http.MethodPost, http.MethodGet},
-			AllowedHeaders: []string{"Authorization", "Content-Type", "X-Request-Id", "Accept", "X-CSRF-Token"},
-			MaxAge:         ctr.Config.CORSMaxAge,
-			ErrorHandler:   cors.AppHandler,
-			// AllowCredentials: true, // jwtをクッキーに保存する場合はtrueにする
-			Debug: ctr.Config.DebugCORS,
+			AllowedHeaders: []string{
+				"Authorization",
+				"Content-Type",
+				"X-Request-Id",
+				"Accept",
+				"X-CSRF-Token",
+				"X-Requested-With",
+			},
+			MaxAge:           ctr.Config.CORSMaxAge,
+			ErrorHandler:     cors.AppHandler,
+			AllowCredentials: true, // jwtをクッキーに保存する場合はtrueにする
+			Debug:            ctr.Config.DebugCORS,
 		}))
 	}
 	middlewares = append(middlewares, lang.Handler(string(ctr.Config.DefaultLanguage)))

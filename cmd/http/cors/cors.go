@@ -2,6 +2,7 @@
 package cors
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -211,6 +212,7 @@ func AllowAll() *Cors {
 // as necessary.
 func (c *Cors) Handler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Cors.Handler")
 		if r.Method == http.MethodOptions && r.Header.Get("Access-Control-Request-Method") != "" {
 			c.logf("Handler: Preflight request")
 			ret := c.handlePreflight(w, r)

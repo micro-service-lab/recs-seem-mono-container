@@ -77,7 +77,7 @@ func (m *ManageAuth) Login(
 		AccessToken:  token,
 		RefreshToken: refreshToken,
 		SessionID:    sessID,
-		ExpiresIn:    int(m.Config.AuthAccessTokenExpiresIn),
+		ExpiresIn:    int(m.Config.AuthAccessTokenExpiresIn.Seconds()),
 	}, nil
 }
 

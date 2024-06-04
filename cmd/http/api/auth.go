@@ -11,6 +11,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
+	"github.com/micro-service-lab/recs-seem-mono-container/internal/config"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/session"
 )
 
@@ -22,11 +23,13 @@ func AuthHandler(
 	clk clock.Clock,
 	auth auth.Auth,
 	ssm session.Manager,
+	cfg config.Config,
 ) http.Handler {
 	loginHandler := handler.Login{
 		Service:    svc,
 		Validator:  vd,
 		Translator: t,
+		Config:     cfg,
 	}
 	logoutHandler := handler.Logout{
 		Service: svc,

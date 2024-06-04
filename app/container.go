@@ -114,8 +114,10 @@ func (c *Container) Init(ctx context.Context) error {
 
 	c.SessionManager = ssm
 
-	auth := auth.New([]byte(
-		cfg.AuthSecret), cfg.SecretIssuer,
+	auth := auth.New(
+		[]byte(cfg.AuthSecret),
+		[]byte(cfg.AuthRefreshSecret),
+		cfg.SecretIssuer,
 		cfg.AuthAccessTokenExpiresIn, cfg.AuthRefreshTokenExpiresIn)
 	vd, err := validation.NewRequestValidator()
 	if err != nil {

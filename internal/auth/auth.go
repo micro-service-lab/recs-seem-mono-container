@@ -13,6 +13,9 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/session"
 )
 
+// AccessTokenCookieKey アクセストークンのクッキー名。
+const AccessTokenCookieKey = "access-token"
+
 const (
 	memberTypeKey = "member_type"
 	tokenTypeKey  = "token_type"
@@ -37,6 +40,7 @@ type Auth interface {
 // jwtAuth JSON Web Token (JWT) による Auth 実装。
 type jwtAuth struct {
 	secret                []byte
+	refreshSecret         []byte
 	issuer                string
 	accessTokenExpiresIn  time.Duration
 	refreshTokenExpiresIn time.Duration
@@ -45,12 +49,14 @@ type jwtAuth struct {
 // New Auth を生成して返す。
 func New(
 	secret []byte,
+	refreshSecret []byte,
 	issuer string,
 	accessTokenExpiresIn,
 	refreshTokenExpiresIn time.Duration,
 ) Auth {
 	return &jwtAuth{
 		secret:                secret,
+		refreshSecret:         refreshSecret,
 		issuer:                issuer,
 		accessTokenExpiresIn:  accessTokenExpiresIn,
 		refreshTokenExpiresIn: refreshTokenExpiresIn,
@@ -99,7 +105,7 @@ func (s *jwtAuth) ParseRefreshToken(tokenString string, now time.Time) (*session
 	})
 
 	token, err := jwt.ParseString(tokenString,
-		jwt.WithKey(jwa.HS512, s.secret), jwt.WithClock(clk), jwt.WithIssuer(s.issuer))
+		jwt.WithKey(jwa.HS512, s.refreshSecret), jwt.WithClock(clk), jwt.WithIssuer(s.issuer))
 	if err != nil {
 		return nil, fmt.Errorf("parse token: %w", err)
 	}
@@ -227,7 +233,7 @@ func (s *jwtAuth) NewRefreshToken(
 		return "", "", fmt.Errorf("new token: %w", err)
 	}
 
-	signed, err := jwt.Sign(token, jwt.WithKey(jwa.HS512, s.secret))
+	signed, err := jwt.Sign(token, jwt.WithKey(jwa.HS512, s.refreshSecret))
 	if err != nil {
 		return "", "", fmt.Errorf("sign: %w", err)
 	}

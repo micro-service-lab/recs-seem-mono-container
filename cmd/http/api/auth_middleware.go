@@ -110,8 +110,20 @@ func (s *authMiddleware) authenticate(r *http.Request) (bool, *session.Session, 
 
 // extractToken リクエストから Bearer トークンを抽出する。
 func extractToken(r *http.Request) string {
+	var token string
+	// まず Authorization ヘッダーから Bearer トークンを取得する。
 	v := strings.TrimSpace(r.Header.Get("Authorization"))
-	return strings.TrimSpace(strings.TrimPrefix(v, "Bearer"))
+	token = strings.TrimSpace(strings.TrimPrefix(v, "Bearer"))
+
+	// 次にクッキーからトークンを取得する。
+	if token == "" {
+		cookie, err := r.Cookie(auth.AccessTokenCookieKey)
+		if err == nil {
+			token = cookie.Value
+		}
+	}
+
+	return token
 }
 
 // checkSession セッション情報とデータベースのメンバー情報とを照らし合わせ、

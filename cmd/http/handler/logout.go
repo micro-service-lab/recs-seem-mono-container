@@ -23,6 +23,13 @@ func (h *Logout) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		ctx,
 		authUser.MemberID,
 	); err == nil {
+		// くっきー削除
+		http.SetCookie(w, &http.Cookie{
+			Name:   auth.AccessTokenCookieKey,
+			Value:  "",
+			Path:   "/",
+			MaxAge: -1,
+		})
 		err = response.JSONResponseWriter(ctx, w, response.Success, nil, nil)
 	}
 	if err != nil {

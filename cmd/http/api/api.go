@@ -15,6 +15,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
+	"github.com/micro-service-lab/recs-seem-mono-container/internal/config"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/session"
 )
 
@@ -37,6 +38,9 @@ type API struct {
 
 	// ssm セッションマネージャ
 	ssm session.Manager
+
+	// cfg 設定
+	cfg config.Config
 }
 
 // NewAPI API を生成して返す。
@@ -47,6 +51,7 @@ func NewAPI(
 	svc service.ManagerInterface,
 	translator i18n.Translation,
 	ssm session.Manager,
+	cfg config.Config,
 ) *API {
 	return &API{
 		clk:         clk,
@@ -56,6 +61,7 @@ func NewAPI(
 		middlewares: make([]func(http.Handler) http.Handler, 0),
 		translator:  translator,
 		ssm:         ssm,
+		cfg:         cfg,
 	}
 }
 
@@ -78,7 +84,7 @@ func (s *API) Handler() http.Handler {
 
 	r.Post("/ping", handler.PingHandler(s.clk))
 
-	r.Mount("/auth", AuthHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
+	r.Mount("/auth", AuthHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm, s.cfg))
 	r.Mount("/attend_statuses", AttendStatusHandler(s.svc))
 	r.Mount("/attendance_types", AttendanceTypeHandler(s.svc))
 	r.Mount("/event_types", EventTypeHandler(s.svc))

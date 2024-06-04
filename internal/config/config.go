@@ -38,6 +38,7 @@ type Config struct {
 
 	// AuthSecret 認証トークンの署名用シークレット
 	AuthSecret                string        `env:"AUTH_SECRET,required"`
+	AuthRefreshSecret         string        `env:"AUTH_REFRESH_SECRET,required"`
 	SecretIssuer              string        `env:"SECRET_ISSUER,required"`
 	AuthAccessTokenExpiresIn  time.Duration `env:"AUTH_ACCESS_TOKEN_EXPIRES_IN" envDefault:"6h"`
 	AuthRefreshTokenExpiresIn time.Duration `env:"AUTH_REFRESH_TOKEN_EXPIRES_IN" envDefault:"720h"`

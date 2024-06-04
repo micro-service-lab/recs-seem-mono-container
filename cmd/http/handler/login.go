@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
@@ -14,6 +15,8 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/lang"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"
+	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
+	"github.com/micro-service-lab/recs-seem-mono-container/internal/config"
 )
 
 // Login is a handler for login.
@@ -21,6 +24,7 @@ type Login struct {
 	Service    service.ManagerInterface
 	Validator  validation.Validator
 	Translator i18n.Translation
+	Config     config.Config
 }
 
 // LoginRequest is a request for Login.
@@ -54,6 +58,15 @@ func (h *Login) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		loginReq.LoginID,
 		loginReq.Password,
 	); err == nil {
+		cookie := new(http.Cookie)
+		cookie.Name = auth.AccessTokenCookieKey
+		cookie.Path = "/"
+		cookie.Value = jwt.AccessToken
+		cookie.Expires = time.Now().Add(h.Config.AuthRefreshTokenExpiresIn)
+		cookie.SameSite = http.SameSiteLaxMode
+		cookie.HttpOnly = true
+		cookie.Secure = !h.Config.AppDebug
+		http.SetCookie(w, cookie)
 		err = response.JSONResponseWriter(ctx, w, response.Success, jwt, nil)
 	}
 	if err != nil {

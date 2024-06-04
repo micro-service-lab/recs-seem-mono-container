@@ -61,7 +61,15 @@ func run(ctx context.Context) error {
 		r.Mount("/faketime", faketime.NewAPI(fakeClk, "/faketime"))
 	}
 
-	apiI := api.NewAPI(ctr.Clocker, ctr.Auth, ctr.Validator, ctr.ServiceManager, ctr.Translator, ctr.SessionManager)
+	apiI := api.NewAPI(
+		ctr.Clocker,
+		ctr.Auth,
+		ctr.Validator,
+		ctr.ServiceManager,
+		ctr.Translator,
+		ctr.SessionManager,
+		*ctr.Config,
+	)
 
 	middlewares := make([]func(http.Handler) http.Handler, 0, 3) //nolint:gomnd
 	// CORS ミドルウェアを追加

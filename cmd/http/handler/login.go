@@ -60,7 +60,6 @@ func (h *Login) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	); err == nil {
 		cookie := new(http.Cookie)
 		cookie.Name = auth.AccessTokenCookieKey
-		cookie.Path = "/"
 		cookie.Value = jwt.AccessToken
 		cookie.Expires = time.Now().Add(h.Config.AuthRefreshTokenExpiresIn)
 		cookie.SameSite = http.SameSiteLaxMode

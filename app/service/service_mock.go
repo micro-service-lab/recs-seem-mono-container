@@ -114,6 +114,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			CreateImagesSpecifyFilenameFunc: func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageSpecifyFilenameServiceParam) ([]entity.ImageWithAttachableItem, error) {
 //				panic("mock out the CreateImagesSpecifyFilename method")
 //			},
+//			CreateMemberFunc: func(ctx context.Context, loginID string, rawPassword string, email string, name string, firstName entity.String, lastName entity.String, gradeID uuid.UUID, groupID uuid.UUID, roleID entity.UUID) (entity.MemberWithDetail, error) {
+//				panic("mock out the CreateMember method")
+//			},
 //			CreateMessageFunc: func(ctx context.Context, senderID uuid.UUID, chatRoomID uuid.UUID, content string, attachments []uuid.UUID) (entity.Message, error) {
 //				panic("mock out the CreateMessage method")
 //			},
@@ -807,6 +810,9 @@ type ManagerInterfaceMock struct {
 
 	// CreateImagesSpecifyFilenameFunc mocks the CreateImagesSpecifyFilename method.
 	CreateImagesSpecifyFilenameFunc func(ctx context.Context, ownerID entity.UUID, params []parameter.CreateImageSpecifyFilenameServiceParam) ([]entity.ImageWithAttachableItem, error)
+
+	// CreateMemberFunc mocks the CreateMember method.
+	CreateMemberFunc func(ctx context.Context, loginID string, rawPassword string, email string, name string, firstName entity.String, lastName entity.String, gradeID uuid.UUID, groupID uuid.UUID, roleID entity.UUID) (entity.MemberWithDetail, error)
 
 	// CreateMessageFunc mocks the CreateMessage method.
 	CreateMessageFunc func(ctx context.Context, senderID uuid.UUID, chatRoomID uuid.UUID, content string, attachments []uuid.UUID) (entity.Message, error)
@@ -1716,6 +1722,29 @@ type ManagerInterfaceMock struct {
 			OwnerID entity.UUID
 			// Params is the params argument value.
 			Params []parameter.CreateImageSpecifyFilenameServiceParam
+		}
+		// CreateMember holds details about calls to the CreateMember method.
+		CreateMember []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// LoginID is the loginID argument value.
+			LoginID string
+			// RawPassword is the rawPassword argument value.
+			RawPassword string
+			// Email is the email argument value.
+			Email string
+			// Name is the name argument value.
+			Name string
+			// FirstName is the firstName argument value.
+			FirstName entity.String
+			// LastName is the lastName argument value.
+			LastName entity.String
+			// GradeID is the gradeID argument value.
+			GradeID uuid.UUID
+			// GroupID is the groupID argument value.
+			GroupID uuid.UUID
+			// RoleID is the roleID argument value.
+			RoleID entity.UUID
 		}
 		// CreateMessage holds details about calls to the CreateMessage method.
 		CreateMessage []struct {
@@ -3981,6 +4010,7 @@ type ManagerInterfaceMock struct {
 	lockCreateImages                                     sync.RWMutex
 	lockCreateImagesFromOuter                            sync.RWMutex
 	lockCreateImagesSpecifyFilename                      sync.RWMutex
+	lockCreateMember                                     sync.RWMutex
 	lockCreateMessage                                    sync.RWMutex
 	lockCreateMessageOnPrivateRoom                       sync.RWMutex
 	lockCreateMimeType                                   sync.RWMutex
@@ -5459,6 +5489,74 @@ func (mock *ManagerInterfaceMock) CreateImagesSpecifyFilenameCalls() []struct {
 	mock.lockCreateImagesSpecifyFilename.RLock()
 	calls = mock.calls.CreateImagesSpecifyFilename
 	mock.lockCreateImagesSpecifyFilename.RUnlock()
+	return calls
+}
+
+// CreateMember calls CreateMemberFunc.
+func (mock *ManagerInterfaceMock) CreateMember(ctx context.Context, loginID string, rawPassword string, email string, name string, firstName entity.String, lastName entity.String, gradeID uuid.UUID, groupID uuid.UUID, roleID entity.UUID) (entity.MemberWithDetail, error) {
+	if mock.CreateMemberFunc == nil {
+		panic("ManagerInterfaceMock.CreateMemberFunc: method is nil but ManagerInterface.CreateMember was just called")
+	}
+	callInfo := struct {
+		Ctx         context.Context
+		LoginID     string
+		RawPassword string
+		Email       string
+		Name        string
+		FirstName   entity.String
+		LastName    entity.String
+		GradeID     uuid.UUID
+		GroupID     uuid.UUID
+		RoleID      entity.UUID
+	}{
+		Ctx:         ctx,
+		LoginID:     loginID,
+		RawPassword: rawPassword,
+		Email:       email,
+		Name:        name,
+		FirstName:   firstName,
+		LastName:    lastName,
+		GradeID:     gradeID,
+		GroupID:     groupID,
+		RoleID:      roleID,
+	}
+	mock.lockCreateMember.Lock()
+	mock.calls.CreateMember = append(mock.calls.CreateMember, callInfo)
+	mock.lockCreateMember.Unlock()
+	return mock.CreateMemberFunc(ctx, loginID, rawPassword, email, name, firstName, lastName, gradeID, groupID, roleID)
+}
+
+// CreateMemberCalls gets all the calls that were made to CreateMember.
+// Check the length with:
+//
+//	len(mockedManagerInterface.CreateMemberCalls())
+func (mock *ManagerInterfaceMock) CreateMemberCalls() []struct {
+	Ctx         context.Context
+	LoginID     string
+	RawPassword string
+	Email       string
+	Name        string
+	FirstName   entity.String
+	LastName    entity.String
+	GradeID     uuid.UUID
+	GroupID     uuid.UUID
+	RoleID      entity.UUID
+} {
+	var calls []struct {
+		Ctx         context.Context
+		LoginID     string
+		RawPassword string
+		Email       string
+		Name        string
+		FirstName   entity.String
+		LastName    entity.String
+		GradeID     uuid.UUID
+		GroupID     uuid.UUID
+		RoleID      entity.UUID
+	}
+	mock.lockCreateMember.RLock()
+	calls = mock.calls.CreateMember
+	mock.lockCreateMember.RUnlock()
 	return calls
 }
 

@@ -51,6 +51,22 @@ other = "Files"
 other = "Message"
 [Messages]
 other = "Messages"
+[Professor]
+other = "Professor"
+[Professors]
+other = "Professors"
+[Student]
+other = "Student"
+[Students]
+other = "Students"
+[Grade]
+other = "Grade"
+[Grades]
+other = "Grades"
+[Group]
+other = "Group"
+[Groups]
+other = "Groups"
 
 [Required]
 other = "{{.Target}} is a required field"
@@ -83,3 +99,5 @@ other = "The specified {{.ID}} is not associated with {{.Associated}}"
 other = "The specified {{.ID}} contains {{{.ValueType}} that is not associated with {{.Associated}}"
 [OnlyProfessorModel]
 other = "{{.ID}} is for professors only"
+[MustBeEntityStatusIfEntityStatus]
+other = "If the {{.Assumption}} is a {{.AssumptionStatus}}, the {{.Target}} must be a {{.TargetStatus}}"

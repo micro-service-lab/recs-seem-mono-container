@@ -51,6 +51,22 @@ other = "ファイル"
 other = "メッセージ"
 [Messages]
 other = "メッセージ"
+[Professor]
+other = "教授"
+[Professors]
+other = "教授"
+[Student]
+other = "学生"
+[Students]
+other = "学生"
+[Grade]
+other = "学年"
+[Grades]
+other = "学年"
+[Group]
+other = "班"
+[Groups]
+other = "班"
 
 [Required]
 other = "{{.Target}}は必須フィールドです"
@@ -83,3 +99,5 @@ other = "指定された{{.ID}}は{{.Associated}}に関連付けられていま�
 other = "指定された{{.ID}}には{{.Associated}}に関連付けられていない{{.ValueType}}が含まれています"
 [OnlyProfessorModel]
 other = "教授専用の{{.ID}}です"
+[MustBeEntityStatusIfEntityStatus]
+other = "{{.Assumption}}が{{.AssumptionStatus}}の場合、{{.Target}}は{{.TargetStatus}}である必要があります"

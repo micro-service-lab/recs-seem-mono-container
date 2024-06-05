@@ -427,4 +427,18 @@ var (
 		Message:    "not chat room member error",
 		StatusCode: http.StatusForbidden,
 	}
+
+	// MustBeGradeProfessorIfGroupProfessor 一方が教授であれば、もう一方も教授である必要がある
+	MustBeGradeProfessorIfGroupProfessor = APIResponseType{
+		Code:       "256",
+		Message:    "must be grade professor if group professor error",
+		StatusCode: http.StatusBadRequest,
+	}
+
+	// MustBeGroupProfessorIfGradeProfessor 一方が教授であれば、もう一方も教授である必要がある
+	MustBeGroupProfessorIfGradeProfessor = APIResponseType{
+		Code:       "257",
+		Message:    "must be group professor if grade professor error",
+		StatusCode: http.StatusBadRequest,
+	}
 )

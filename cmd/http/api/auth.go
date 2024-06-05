@@ -31,6 +31,16 @@ func AuthHandler(
 		Translator: t,
 		Config:     cfg,
 	}
+	registerHandler := handler.Register{
+		Service:    svc,
+		Validator:  vd,
+		Translator: t,
+	}
+	registerProfessorHandler := handler.RegisterProfessor{
+		Service:    svc,
+		Validator:  vd,
+		Translator: t,
+	}
 	logoutHandler := handler.Logout{
 		Service: svc,
 	}
@@ -51,6 +61,8 @@ func AuthHandler(
 	})
 	r.Post("/login", loginHandler.ServeHTTP)
 	r.Post("/refresh_token", refreshTokenHandler.ServeHTTP)
+	r.Post("/register", registerHandler.ServeHTTP)
+	r.Post("/register_professor", registerProfessorHandler.ServeHTTP)
 
 	return r
 }

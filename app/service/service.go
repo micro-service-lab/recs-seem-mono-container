@@ -834,6 +834,18 @@ type ChatRoomManager interface {
 
 // MemberManager is a interface for member service.
 type MemberManager interface {
+	CreateMember(
+		ctx context.Context,
+		loginID,
+		rawPassword,
+		email,
+		name string,
+		firstName,
+		lastName entity.String,
+		gradeID,
+		groupID uuid.UUID,
+		roleID entity.UUID,
+	) (e entity.MemberWithDetail, err error)
 	UpdateMember(
 		ctx context.Context,
 		id uuid.UUID,

@@ -22,17 +22,17 @@ type GetMembers struct {
 // GetMembersParam is a parameter for GetMembers.
 type GetMembersParam struct {
 	SearchName           string                      `queryParam:"search_name"`
-	SearchHasPolicies    []parameter.EntityID        `queryParam:"search_has_policies"`
-	SearchAttendStatuses []parameter.EntityID        `queryParam:"search_attend_statuses"`
-	SearchGrades         []parameter.EntityID        `queryParam:"search_grades"`
-	SearchGroups         []parameter.EntityID        `queryParam:"search_groups"`
+	SearchHasPolicies    []parameter.EntityID        `queryParam:"search_has_policies[]"`
+	SearchAttendStatuses []parameter.EntityID        `queryParam:"search_attend_statuses[]"`
+	SearchGrades         []parameter.EntityID        `queryParam:"search_grades[]"`
+	SearchGroups         []parameter.EntityID        `queryParam:"search_groups[]"`
 	Order                parameter.MemberOrderMethod `queryParam:"order"`
 	Limit                parameter.Limit             `queryParam:"limit"`
 	Offset               parameter.Offset            `queryParam:"offset"`
 	Cursor               parameter.Cursor            `queryParam:"cursor"`
 	Pagination           parameter.Pagination        `queryParam:"pagination"`
 	WithCount            parameter.WithCount         `queryParam:"with_count"`
-	With                 parameter.MemberWithParams  `queryParam:"with"`
+	With                 parameter.MemberWithParams  `queryParam:"with[]"`
 }
 
 var getMembersParseFuncMap = map[reflect.Type]queryparam.ParserFunc{

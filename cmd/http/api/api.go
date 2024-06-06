@@ -104,6 +104,8 @@ func (s *API) Handler() http.Handler {
 	r.Mount("/images", ImageHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
 	r.Mount("/files", FileHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
 	r.Mount("/read_receipts", ReadReceiptHandler(s.svc, s.clk, s.auth, s.ssm))
+	r.Mount("/groups", GroupHandler(s.svc))
+	r.Mount("/grades", GradeHandler(s.svc))
 
 	r.NotFound(s.notFound)
 	r.MethodNotAllowed(s.methodNotAllowed)

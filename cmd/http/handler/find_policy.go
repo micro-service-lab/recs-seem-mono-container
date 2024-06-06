@@ -22,7 +22,7 @@ type FindPolicy struct {
 
 // FindPoliciesParam is a parameter for FindPolicies.
 type FindPoliciesParam struct {
-	With parameter.PolicyWithParams `queryParam:"with"`
+	With parameter.PolicyWithParams `queryParam:"with[]"`
 }
 
 var findPoliciesParseFuncMap = map[reflect.Type]queryparam.ParserFunc{

@@ -22,7 +22,7 @@ type GetChatRoomActionsOnChatRoom struct {
 
 // GetChatRoomActionsOnChatRoomParam is a parameter for GetChatRoomActionsOnChatRoom.
 type GetChatRoomActionsOnChatRoomParam struct {
-	SearchTypes []parameter.EntityID                `queryParam:"search_types"`
+	SearchTypes []parameter.EntityID                `queryParam:"search_types[]"`
 	Order       parameter.ChatRoomActionOrderMethod `queryParam:"order"`
 	Limit       parameter.Limit                     `queryParam:"limit"`
 	Offset      parameter.Offset                    `queryParam:"offset"`

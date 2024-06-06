@@ -22,7 +22,7 @@ type FindOrganization struct {
 
 // FindOrganizationParam is a parameter for FindOrganization.
 type FindOrganizationParam struct {
-	With parameter.OrganizationWithParams `queryParam:"with"`
+	With parameter.OrganizationWithParams `queryParam:"with[]"`
 }
 
 var findOrganizationParseFuncMap = map[reflect.Type]queryparam.ParserFunc{

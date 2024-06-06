@@ -22,14 +22,14 @@ type GetPermissions struct {
 // GetPermissionsParam is a parameter for GetPermissions.
 type GetPermissionsParam struct {
 	SearchName       string                          `queryParam:"search_name"`
-	SearchCategories []parameter.EntityID            `queryParam:"search_categories"`
+	SearchCategories []parameter.EntityID            `queryParam:"search_categories[]"`
 	Order            parameter.PermissionOrderMethod `queryParam:"order"`
 	Limit            parameter.Limit                 `queryParam:"limit"`
 	Offset           parameter.Offset                `queryParam:"offset"`
 	Cursor           parameter.Cursor                `queryParam:"cursor"`
 	Pagination       parameter.Pagination            `queryParam:"pagination"`
 	WithCount        parameter.WithCount             `queryParam:"with_count"`
-	With             parameter.PermissionWithParams  `queryParam:"with"`
+	With             parameter.PermissionWithParams  `queryParam:"with[]"`
 }
 
 var getPermissionsParseFuncMap = map[reflect.Type]queryparam.ParserFunc{

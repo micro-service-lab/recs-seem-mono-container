@@ -22,14 +22,14 @@ type GetPolicies struct {
 // GetPoliciesParam is a parameter for GetPolicies.
 type GetPoliciesParam struct {
 	SearchName       string                      `queryParam:"search_name"`
-	SearchCategories []parameter.EntityID        `queryParam:"search_categories"`
+	SearchCategories []parameter.EntityID        `queryParam:"search_categories[]"`
 	Order            parameter.PolicyOrderMethod `queryParam:"order"`
 	Limit            parameter.Limit             `queryParam:"limit"`
 	Offset           parameter.Offset            `queryParam:"offset"`
 	Cursor           parameter.Cursor            `queryParam:"cursor"`
 	Pagination       parameter.Pagination        `queryParam:"pagination"`
 	WithCount        parameter.WithCount         `queryParam:"with_count"`
-	With             parameter.PolicyWithParams  `queryParam:"with"`
+	With             parameter.PolicyWithParams  `queryParam:"with[]"`
 }
 
 var getPoliciesParseFuncMap = map[reflect.Type]queryparam.ParserFunc{

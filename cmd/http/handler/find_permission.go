@@ -22,7 +22,7 @@ type FindPermission struct {
 
 // FindPermissionsParam is a parameter for FindPermissions.
 type FindPermissionsParam struct {
-	With parameter.PermissionWithParams `queryParam:"with"`
+	With parameter.PermissionWithParams `queryParam:"with[]"`
 }
 
 var findPermissionsParseFuncMap = map[reflect.Type]queryparam.ParserFunc{

@@ -14,29 +14,25 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 )
 
-// GetOrganizations is a handler for getting organizations.
-type GetOrganizations struct {
+// GetGrades is a handler for getting grades.
+type GetGrades struct {
 	Service service.ManagerInterface
 }
 
-// GetOrganizationsParam is a parameter for GetOrganizations.
-type GetOrganizationsParam struct {
-	SearchName       string                            `queryParam:"search_name"`
-	OrganizationType parameter.WhereOrganizationType   `queryParam:"organization_type"`
-	PersonalMemberID parameter.EntityID                `queryParam:"personal_member_id"`
-	Order            parameter.OrganizationOrderMethod `queryParam:"order"`
-	Limit            parameter.Limit                   `queryParam:"limit"`
-	Offset           parameter.Offset                  `queryParam:"offset"`
-	Cursor           parameter.Cursor                  `queryParam:"cursor"`
-	Pagination       parameter.Pagination              `queryParam:"pagination"`
-	WithCount        parameter.WithCount               `queryParam:"with_count"`
-	With             parameter.OrganizationWithParams  `queryParam:"with[]"`
+// GetGradesParam is a parameter for GetGrades.
+type GetGradesParam struct {
+	SearchName string                            `queryParam:"search_name"`
+	Order      parameter.OrganizationOrderMethod `queryParam:"order"`
+	Limit      parameter.Limit                   `queryParam:"limit"`
+	Offset     parameter.Offset                  `queryParam:"offset"`
+	Cursor     parameter.Cursor                  `queryParam:"cursor"`
+	Pagination parameter.Pagination              `queryParam:"pagination"`
+	WithCount  parameter.WithCount               `queryParam:"with_count"`
+	With       parameter.OrganizationWithParams  `queryParam:"with[]"`
 }
 
-var getOrganizationsParseFuncMap = map[reflect.Type]queryparam.ParserFunc{
+var getGradesParseFuncMap = map[reflect.Type]queryparam.ParserFunc{
 	reflect.TypeOf(parameter.OrganizationOrderMethodName): parameter.ParseOrganizationOrderMethod,
-	reflect.TypeOf(parameter.EntityID(uuid.UUID{})):       parameter.ParseEntityIDParam,
-	reflect.TypeOf(parameter.WhereOrganizationType("")):   parameter.ParseWhereOrganizationType,
 	reflect.TypeOf(parameter.Limit(0)):                    parameter.ParseLimitParam,
 	reflect.TypeOf(parameter.Offset(0)):                   parameter.ParseOffsetParam,
 	reflect.TypeOf(parameter.Cursor("")):                  parameter.ParseCursorParam,
@@ -45,13 +41,13 @@ var getOrganizationsParseFuncMap = map[reflect.Type]queryparam.ParserFunc{
 	reflect.TypeOf(parameter.OrganizationWith{}):          parameter.ParseOrganizationWithParam,
 }
 
-func (h *GetOrganizations) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+func (h *GetGrades) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	parse := queryparam.NewParser(r.URL.Query())
-	var param GetOrganizationsParam
+	var param GetGradesParam
 	err := parse.ParseWithOptions(&param, queryparam.Options{
 		TagName: "queryParam",
-		FuncMap: getOrganizationsParseFuncMap,
+		FuncMap: getGradesParseFuncMap,
 	})
 	if err != nil {
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
@@ -66,8 +62,8 @@ func (h *GetOrganizations) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		organizations, err = h.Service.GetOrganizations(
 			ctx,
 			param.SearchName,
-			param.OrganizationType,
-			uuid.UUID(param.PersonalMemberID),
+			parameter.WhereOrganizationTypeGrade,
+			uuid.UUID{},
 			param.Order,
 			param.Pagination,
 			param.Limit,
@@ -79,8 +75,8 @@ func (h *GetOrganizations) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		organizations, err = h.Service.GetOrganizationsWithChatRoom(
 			ctx,
 			param.SearchName,
-			param.OrganizationType,
-			uuid.UUID(param.PersonalMemberID),
+			parameter.WhereOrganizationTypeGrade,
+			uuid.UUID{},
 			param.Order,
 			param.Pagination,
 			param.Limit,
@@ -92,8 +88,8 @@ func (h *GetOrganizations) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		organizations, err = h.Service.GetOrganizationsWithDetail(
 			ctx,
 			param.SearchName,
-			param.OrganizationType,
-			uuid.UUID(param.PersonalMemberID),
+			parameter.WhereOrganizationTypeGrade,
+			uuid.UUID{},
 			param.Order,
 			param.Pagination,
 			param.Limit,
@@ -105,8 +101,8 @@ func (h *GetOrganizations) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		organizations, err = h.Service.GetOrganizationsWithChatRoomAndDetail(
 			ctx,
 			param.SearchName,
-			param.OrganizationType,
-			uuid.UUID(param.PersonalMemberID),
+			parameter.WhereOrganizationTypeGrade,
+			uuid.UUID{},
 			param.Order,
 			param.Pagination,
 			param.Limit,

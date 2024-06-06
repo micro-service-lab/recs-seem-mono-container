@@ -30,7 +30,7 @@ func ConfidentialHandler(
 	r.Group(func(r chi.Router) {
 		r.Use(AuthMiddleware(clk.Now, auth, svc, ssm))
 
-		r.Get("/chat-rooms", getChatRooms.ServeHTTP)
+		r.Get("/chat_rooms", getChatRooms.ServeHTTP)
 	})
 
 	return r

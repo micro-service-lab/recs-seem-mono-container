@@ -85,6 +85,7 @@ func (s *API) Handler() http.Handler {
 	r.Post("/ping", handler.PingHandler(s.clk))
 
 	r.Mount("/auth", AuthHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm, s.cfg))
+	r.Mount("/confidential", ConfidentialHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
 	r.Mount("/attend_statuses", AttendStatusHandler(s.svc))
 	r.Mount("/attendance_types", AttendanceTypeHandler(s.svc))
 	r.Mount("/event_types", EventTypeHandler(s.svc))

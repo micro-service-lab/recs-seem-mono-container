@@ -145,13 +145,13 @@ func (m *ManageMember) CreateMember(
 
 	if grade.Key == string(GradeKeyProfessor) {
 		if _, err := m.DB.CreateProfessorWithSd(ctx, sd, parameter.CreateProfessorParam{
-			MemberID: e.MemberID,
+			MemberID: member.MemberID,
 		}); err != nil {
 			return entity.MemberWithDetail{}, fmt.Errorf("failed to create professor: %w", err)
 		}
 	} else {
 		if _, err := m.DB.CreateStudentWithSd(ctx, sd, parameter.CreateStudentParam{
-			MemberID: e.MemberID,
+			MemberID: member.MemberID,
 		}); err != nil {
 			return entity.MemberWithDetail{}, fmt.Errorf("failed to create student: %w", err)
 		}

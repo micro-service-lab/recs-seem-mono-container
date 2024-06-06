@@ -651,6 +651,7 @@ func getChatRoomsOnMember(
 	) ([]entity.ChatRoomOnMemberForQuery, error) {
 		var addCursor time.Time
 		var lastChatCursor time.Time
+		var lastActCursor time.Time
 		var nameCursor string
 		var ok bool
 		var err error
@@ -672,6 +673,12 @@ func getChatRoomsOnMember(
 			if !ok || err != nil {
 				lastChatCursor = time.Time{}
 			}
+		case parameter.ChatRoomOnMemberLastActionAtCursorKey:
+			cv, ok := subCursorValue.(string)
+			lastActCursor, err = time.Parse(time.RFC3339, cv)
+			if !ok || err != nil {
+				lastActCursor = time.Time{}
+			}
 		}
 		p := query.GetChatRoomsOnMemberUseKeysetPaginateParams{
 			MemberID:        memberID,
@@ -684,6 +691,7 @@ func getChatRoomsOnMember(
 			NameCursor:      pgtype.Text{String: nameCursor, Valid: nameCursor != ""},
 			AddCursor:       addCursor,
 			ChatCursor:      lastChatCursor,
+			ActCursor:       lastActCursor,
 		}
 		r, err := qtx.GetChatRoomsOnMemberUseKeysetPaginate(ctx, p)
 		if err != nil {
@@ -730,6 +738,8 @@ func getChatRoomsOnMember(
 			return entity.Int(e.Pkey), e.ChatRoomOnMember.AddedAt
 		case parameter.ChatRoomOnMemberLastChatAtCursorKey:
 			return entity.Int(e.Pkey), e.ChatRoomOnMember.ChatRoom.LatestMessage.Entity.PostedAt
+		case parameter.ChatRoomOnMemberLastActionAtCursorKey:
+			return entity.Int(e.Pkey), e.ChatRoomOnMember.ChatRoom.LatestAction.Entity.ActedAt
 		}
 		return entity.Int(e.Pkey), nil
 	}

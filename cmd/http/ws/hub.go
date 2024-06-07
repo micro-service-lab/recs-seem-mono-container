@@ -4,6 +4,8 @@ package ws
 import (
 	"context"
 
+	"github.com/google/uuid"
+
 	"github.com/micro-service-lab/recs-seem-mono-container/app/pubsub"
 )
 
@@ -18,11 +20,12 @@ type HubInterface interface {
 
 // Hub は WebSocket のハブを表す構造体。
 type Hub struct {
-	Clients      map[*Client]bool
-	RegisterCh   chan *Client
-	UnRegisterCh chan *Client
-	BroadcastCh  chan []byte
-	pubsub       pubsub.Service
+	Clients       map[*Client]bool
+	RegisterCh    chan *Client
+	UnRegisterCh  chan *Client
+	OnlineMembers []uuid.UUID
+	BroadcastCh   chan []byte
+	pubsub        pubsub.Service
 }
 
 var _ HubInterface = (*Hub)(nil)
@@ -32,11 +35,12 @@ const broadCastChan = "wsBroadcast"
 // NewHub Hub を生成して返す。
 func NewHub(pubsub pubsub.Service) *Hub {
 	return &Hub{
-		Clients:      make(map[*Client]bool),
-		RegisterCh:   make(chan *Client),
-		UnRegisterCh: make(chan *Client),
-		BroadcastCh:  make(chan []byte),
-		pubsub:       pubsub,
+		Clients:       make(map[*Client]bool),
+		RegisterCh:    make(chan *Client),
+		UnRegisterCh:  make(chan *Client),
+		OnlineMembers: make([]uuid.UUID, 0),
+		BroadcastCh:   make(chan []byte),
+		pubsub:        pubsub,
 	}
 }
 

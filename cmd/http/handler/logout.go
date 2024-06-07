@@ -19,7 +19,9 @@ func (h *Logout) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	var err error
 	authUser := auth.FromContext(ctx)
-	if err = h.Service.Logout(
+	if authUser == nil {
+		err = response.JSONResponseWriter(ctx, w, response.AlreadyLogout, nil, nil)
+	} else if err = h.Service.Logout(
 		ctx,
 		authUser.MemberID,
 	); err == nil {

@@ -3,7 +3,6 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -67,7 +66,6 @@ func (h *Login) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		cookie.SameSite = http.SameSiteLaxMode
 		cookie.HttpOnly = true
 		cookie.Secure = !h.Config.AppDebug
-		fmt.Println("cookie: ", cookie)
 		http.SetCookie(w, cookie)
 		err = response.JSONResponseWriter(ctx, w, response.Success, jwt, nil)
 	}

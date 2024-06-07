@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -33,7 +32,6 @@ func (h *GetChatRoomsOnAuth) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	fmt.Printf("cursor: %v\n", param.Cursor)
 	chatRooms, err := h.Service.GetChatRoomsOnMember(
 		ctx,
 		authUser.MemberID,

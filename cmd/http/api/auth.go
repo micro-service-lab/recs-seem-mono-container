@@ -56,8 +56,8 @@ func AuthHandler(
 	r.Group(func(r chi.Router) {
 		r.Use(AuthMiddleware(clk.Now, auth, svc, ssm))
 
-		r.Post("/logout", logoutHandler.ServeHTTP)
 		r.Get("/me", retrieveAuth.ServeHTTP)
+		r.Post("/logout", logoutHandler.ServeHTTP)
 	})
 	r.Post("/login", loginHandler.ServeHTTP)
 	r.Post("/refresh_token", refreshTokenHandler.ServeHTTP)

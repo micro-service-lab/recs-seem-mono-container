@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/websocket"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/ws"
+	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
 )
 
 // WebsocketHandler Websocket ハンドラを表す構造体。
@@ -23,8 +24,9 @@ func NewWebsocketHandler(hub ws.HubInterface) *WebsocketHandler {
 
 // Handle WebSocket ハンドラ。
 func (h *WebsocketHandler) Handle(w http.ResponseWriter, r *http.Request) {
+	authUser := auth.FromContext(r.Context())
 	upgrader := &websocket.Upgrader{
-		CheckOrigin: func(r *http.Request) bool {
+		CheckOrigin: func(_ *http.Request) bool {
 			return true
 		},
 	}
@@ -33,8 +35,8 @@ func (h *WebsocketHandler) Handle(w http.ResponseWriter, r *http.Request) {
 		log.Fatal(err)
 	}
 
-	client := ws.NewClient(sock)
-	go client.ReadLoop(h.hub.ReadBroadCast(), h.hub.ReadUnregisterClient())
+	client := ws.NewClient(sock, *authUser)
+	go client.ReadLoop(h.hub.Dispatch, h.hub.UnRegisterClient, h.hub.GetOnlineMembers)
 	go client.WriteLoop()
 	h.hub.RegisterClient(client)
 }

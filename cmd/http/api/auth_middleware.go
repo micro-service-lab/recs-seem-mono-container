@@ -53,7 +53,12 @@ func (s *authMiddleware) handler(next http.Handler) http.Handler {
 			}
 			return
 		}
+		logout := r.URL.Path == "/logout"
 		if !ok {
+			if logout {
+				next.ServeHTTP(w, r)
+				return
+			}
 			if err := response.JSONResponseWriter(ctx, w, response.Unauthorized, nil, nil); err != nil {
 				log.Printf("failed to write response: %+v", err)
 			}
@@ -65,6 +70,10 @@ func (s *authMiddleware) handler(next http.Handler) http.Handler {
 			if err != nil {
 				var me errhandle.ModelNotFoundError
 				if errors.As(err, &me) {
+					if logout {
+						next.ServeHTTP(w, r)
+						return
+					}
 					if err := response.JSONResponseWriter(ctx, w, response.Unauthorized, nil, nil); err != nil {
 						log.Printf("failed to write response: %+v", err)
 					}

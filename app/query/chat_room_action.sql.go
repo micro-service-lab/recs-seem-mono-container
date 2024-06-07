@@ -99,8 +99,10 @@ AND
 	CASE WHEN $2::boolean = true THEN chat_room_action_type_id = ANY($3::uuid[]) ELSE TRUE END
 ORDER BY
 	CASE WHEN $4::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'acted_at' THEN t_chat_room_actions_pkey END ASC,
 	CASE WHEN $4::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
-	t_chat_room_actions_pkey ASC
+	CASE WHEN $4::text = 'r_acted_at' THEN t_chat_room_actions_pkey END DESC,
+	CASE WHEN $4::text = 'default' THEN t_chat_room_actions_pkey END ASC
 `
 
 type GetChatRoomActionsOnChatRoomParams struct {
@@ -151,20 +153,27 @@ AND
 		WHEN 'next' THEN
 			CASE $6::text
 				WHEN 'acted_at' THEN acted_at > $7 OR (acted_at = $7 AND t_chat_room_actions_pkey > $8::int)
-				WHEN 'r_acted_at' THEN acted_at < $7 OR (acted_at = $7 AND t_chat_room_actions_pkey > $8::int)
+				WHEN 'r_acted_at' THEN acted_at < $7 OR (acted_at = $7 AND t_chat_room_actions_pkey < $8::int)
 				ELSE t_chat_room_actions_pkey > $8::int
 			END
 		WHEN 'prev' THEN
 			CASE $6::text
 				WHEN 'acted_at' THEN acted_at < $7 OR (acted_at = $7 AND t_chat_room_actions_pkey < $8::int)
-				WHEN 'r_acted_at' THEN acted_at > $7 OR (acted_at = $7 AND t_chat_room_actions_pkey < $8::int)
+				WHEN 'r_acted_at' THEN acted_at > $7 OR (acted_at = $7 AND t_chat_room_actions_pkey > $8::int)
 				ELSE t_chat_room_actions_pkey < $8::int
 			END
 	END
 ORDER BY
-	CASE WHEN $6::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
-	CASE WHEN $6::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
-	t_chat_room_actions_pkey ASC
+	CASE WHEN $6::text = 'acted_at' AND $5::text = 'next' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'acted_at' AND $5::text = 'next' THEN t_chat_room_actions_pkey END ASC,
+	CASE WHEN $6::text = 'acted_at' AND $5::text = 'prev' THEN acted_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'acted_at' AND $5::text = 'prev' THEN t_chat_room_actions_pkey END DESC,
+	CASE WHEN $6::text = 'r_acted_at' AND $5::text = 'next' THEN acted_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_acted_at' AND $5::text = 'next' THEN t_chat_room_actions_pkey END DESC,
+	CASE WHEN $6::text = 'r_acted_at' AND $5::text = 'prev' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'r_acted_at' AND $5::text = 'prev' THEN t_chat_room_actions_pkey END ASC,
+	CASE WHEN $6::text = 'default' AND $5::text = 'next' THEN t_chat_room_actions_pkey END ASC,
+	CASE WHEN $6::text = 'default' AND $5::text = 'prev' THEN t_chat_room_actions_pkey END DESC
 LIMIT $2
 `
 
@@ -221,8 +230,10 @@ AND
 	CASE WHEN $4::boolean = true THEN chat_room_action_type_id = ANY($5::uuid[]) ELSE TRUE END
 ORDER BY
 	CASE WHEN $6::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'acted_at' THEN t_chat_room_actions_pkey END ASC,
 	CASE WHEN $6::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
-	t_chat_room_actions_pkey ASC
+	CASE WHEN $6::text = 'r_acted_at' THEN t_chat_room_actions_pkey END DESC,
+	CASE WHEN $6::text = 'default' THEN t_chat_room_actions_pkey END ASC
 LIMIT $2 OFFSET $3
 `
 
@@ -303,8 +314,10 @@ AND
 	CASE WHEN $2::boolean = true THEN chat_room_action_type_id = ANY($3::uuid[]) ELSE TRUE END
 ORDER BY
 	CASE WHEN $4::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'acted_at' THEN t_chat_room_actions_pkey END ASC,
 	CASE WHEN $4::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
-	t_chat_room_actions_pkey ASC
+	CASE WHEN $4::text = 'r_acted_at' THEN t_chat_room_actions_pkey END DESC,
+	CASE WHEN $4::text = 'default' THEN t_chat_room_actions_pkey END ASC
 `
 
 type GetChatRoomActionsWithDetailOnChatRoomParams struct {
@@ -545,22 +558,27 @@ AND
 		WHEN 'next' THEN
 			CASE $6::text
 				WHEN 'acted_at' THEN acted_at > $7 OR (acted_at = $7 AND t_chat_room_actions_pkey > $8::int)
-				WHEN 'r_acted_at' THEN acted_at < $7 OR (acted_at = $7 AND t_chat_room_actions_pkey > $8::int)
+				WHEN 'r_acted_at' THEN acted_at < $7 OR (acted_at = $7 AND t_chat_room_actions_pkey < $8::int)
 				ELSE t_chat_room_actions_pkey > $8::int
 			END
 		WHEN 'prev' THEN
 			CASE $6::text
 				WHEN 'acted_at' THEN acted_at < $7 OR (acted_at = $7 AND t_chat_room_actions_pkey < $8::int)
-				WHEN 'r_acted_at' THEN acted_at > $7 OR (acted_at = $7 AND t_chat_room_actions_pkey < $8::int)
+				WHEN 'r_acted_at' THEN acted_at > $7 OR (acted_at = $7 AND t_chat_room_actions_pkey > $8::int)
 				ELSE t_chat_room_actions_pkey < $8::int
 			END
 	END
 ORDER BY
 	CASE WHEN $6::text = 'acted_at' AND $5::text = 'next' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'acted_at' AND $5::text = 'next' THEN t_chat_room_actions_pkey END ASC,
 	CASE WHEN $6::text = 'acted_at' AND $5::text = 'prev' THEN acted_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'acted_at' AND $5::text = 'prev' THEN t_chat_room_actions_pkey END DESC,
 	CASE WHEN $6::text = 'r_acted_at' AND $5::text = 'next' THEN acted_at END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_acted_at' AND $5::text = 'next' THEN t_chat_room_actions_pkey END DESC,
 	CASE WHEN $6::text = 'r_acted_at' AND $5::text = 'prev' THEN acted_at END ASC NULLS LAST,
-	t_chat_room_actions_pkey ASC
+	CASE WHEN $6::text = 'r_acted_at' AND $5::text = 'prev' THEN t_chat_room_actions_pkey END ASC,
+	CASE WHEN $6::text = 'default' AND $5::text = 'next' THEN t_chat_room_actions_pkey END ASC,
+	CASE WHEN $6::text = 'default' AND $5::text = 'prev' THEN t_chat_room_actions_pkey END DESC
 LIMIT $2
 `
 
@@ -807,8 +825,10 @@ AND
 	CASE WHEN $4::boolean = true THEN chat_room_action_type_id = ANY($5::uuid[]) ELSE TRUE END
 ORDER BY
 	CASE WHEN $6::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'acted_at' THEN t_chat_room_actions_pkey END ASC,
 	CASE WHEN $6::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
-	t_chat_room_actions_pkey ASC
+	CASE WHEN $6::text = 'r_acted_at' THEN t_chat_room_actions_pkey END DESC,
+	CASE WHEN $6::text = 'default' THEN t_chat_room_actions_pkey END ASC
 LIMIT $2 OFFSET $3
 `
 
@@ -1021,8 +1041,10 @@ SELECT t_chat_room_actions_pkey, chat_room_action_id, chat_room_id, chat_room_ac
 WHERE chat_room_action_id = ANY($1::uuid[])
 ORDER BY
 	CASE WHEN $2::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'acted_at' THEN t_chat_room_actions_pkey END ASC,
 	CASE WHEN $2::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
-	t_chat_room_actions_pkey ASC
+	CASE WHEN $2::text = 'r_acted_at' THEN t_chat_room_actions_pkey END DESC,
+	CASE WHEN $2::text = 'default' THEN t_chat_room_actions_pkey END ASC
 `
 
 type GetPluralChatRoomActionsParams struct {
@@ -1061,8 +1083,10 @@ SELECT t_chat_room_actions_pkey, chat_room_action_id, chat_room_id, chat_room_ac
 WHERE chat_room_action_id = ANY($3::uuid[])
 ORDER BY
 	CASE WHEN $4::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'acted_at' THEN t_chat_room_actions_pkey END ASC,
 	CASE WHEN $4::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
-	t_chat_room_actions_pkey ASC
+	CASE WHEN $4::text = 'r_acted_at' THEN t_chat_room_actions_pkey END DESC,
+	CASE WHEN $4::text = 'default' THEN t_chat_room_actions_pkey END ASC
 LIMIT $1 OFFSET $2
 `
 
@@ -1137,8 +1161,10 @@ LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items
 WHERE chat_room_action_id = ANY($1::uuid[])
 ORDER BY
 	CASE WHEN $2::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'acted_at' THEN t_chat_room_actions_pkey END ASC,
 	CASE WHEN $2::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
-	t_chat_room_actions_pkey ASC
+	CASE WHEN $2::text = 'r_acted_at' THEN t_chat_room_actions_pkey END DESC,
+	CASE WHEN $2::text = 'default' THEN t_chat_room_actions_pkey END ASC
 `
 
 type GetPluralChatRoomActionsWithDetailParams struct {
@@ -1367,8 +1393,10 @@ LEFT JOIN t_attachable_items ON t_images.attachable_item_id = t_attachable_items
 WHERE chat_room_action_id = ANY($3::uuid[])
 ORDER BY
 	CASE WHEN $4::text = 'acted_at' THEN acted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'acted_at' THEN t_chat_room_actions_pkey END ASC,
 	CASE WHEN $4::text = 'r_acted_at' THEN acted_at END DESC NULLS LAST,
-	t_chat_room_actions_pkey ASC
+	CASE WHEN $4::text = 'r_acted_at' THEN t_chat_room_actions_pkey END DESC,
+	CASE WHEN $4::text = 'default' THEN t_chat_room_actions_pkey END ASC
 LIMIT $1 OFFSET $2
 `
 

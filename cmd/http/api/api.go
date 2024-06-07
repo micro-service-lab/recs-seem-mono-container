@@ -89,7 +89,7 @@ func (s *API) Handler() http.Handler {
 	)
 
 	r.Group(func(r chi.Router) {
-		// r.Use(AuthMiddleware(s.clk.Now, s.auth, s.svc, s.ssm))
+		r.Use(AuthMiddleware(s.clk.Now, s.auth, s.svc, s.ssm))
 
 		r.HandleFunc("/ws", handler.NewWebsocketHandler(s.wsHub).Handle)
 	})

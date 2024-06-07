@@ -658,7 +658,7 @@ func (m *ManageMember) FindAuthMemberByID(
 		}
 	}()
 
-	member, err := m.DB.FindMemberByIDWithSd(ctx, sd, id)
+	member, err := m.DB.FindMemberWithProfileImageWithSd(ctx, sd, id)
 	if err != nil {
 		return entity.AuthMember{}, fmt.Errorf("failed to find member by id: %w", err)
 	}
@@ -699,7 +699,7 @@ func (m *ManageMember) FindAuthMemberByID(
 		FirstName:              member.FirstName,
 		LastName:               member.LastName,
 		AttendStatusID:         member.AttendStatusID,
-		ProfileImageID:         member.ProfileImageID,
+		ProfileImage:           member.ProfileImage,
 		GradeID:                member.GradeID,
 		GroupID:                member.GroupID,
 		PersonalOrganizationID: member.PersonalOrganizationID,

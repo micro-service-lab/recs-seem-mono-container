@@ -8,11 +8,13 @@ import (
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/hasher"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/i18n"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/pubsub"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/storage"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store/pgadapter"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/ws"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock/fakeclock"
@@ -32,6 +34,8 @@ type Container struct {
 	SessionManager session.Manager
 	Auth           auth.Auth
 	Validator      validation.Validator
+	PubsubService  pubsub.Service
+	WebsocketHub   ws.HubInterface
 }
 
 // NewContainer creates a new Container.
@@ -114,7 +118,7 @@ func (c *Container) Init(ctx context.Context) error {
 
 	c.SessionManager = ssm
 
-	auth := auth.New(
+	authSvc := auth.New(
 		[]byte(cfg.AuthSecret),
 		[]byte(cfg.AuthRefreshSecret),
 		cfg.SecretIssuer,
@@ -124,15 +128,23 @@ func (c *Container) Init(ctx context.Context) error {
 		return fmt.Errorf("failed to create request validator: %w", err)
 	}
 
-	c.Auth = auth
+	c.Auth = authSvc
 
 	c.Validator = vd
 
 	svc := service.NewManager(
-		str, c.Translator, s3, h, clk, auth, ssm, *cfg,
+		str, c.Translator, s3, h, clk, authSvc, ssm, *cfg,
 	)
 
 	c.ServiceManager = svc
+
+	ps := pubsub.NewRedisService(*cfg)
+
+	c.PubsubService = ps
+
+	hub := ws.NewHub(ps)
+
+	c.WebsocketHub = hub
 
 	return nil
 }

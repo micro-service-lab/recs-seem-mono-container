@@ -13,6 +13,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/ws"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/config"
@@ -41,6 +42,9 @@ type API struct {
 
 	// cfg 設定
 	cfg config.Config
+
+	// wsHub WebSocket ハブ
+	wsHub ws.HubInterface
 }
 
 // NewAPI API を生成して返す。
@@ -52,6 +56,7 @@ func NewAPI(
 	translator i18n.Translation,
 	ssm session.Manager,
 	cfg config.Config,
+	wsHub ws.HubInterface,
 ) *API {
 	return &API{
 		clk:         clk,
@@ -62,6 +67,7 @@ func NewAPI(
 		translator:  translator,
 		ssm:         ssm,
 		cfg:         cfg,
+		wsHub:       wsHub,
 	}
 }
 
@@ -81,6 +87,12 @@ func (s *API) Handler() http.Handler {
 		middleware.RequestID,
 		middleware.SetHeader("Content-Type", "application/json"),
 	)
+
+	r.Group(func(r chi.Router) {
+		// r.Use(AuthMiddleware(s.clk.Now, s.auth, s.svc, s.ssm))
+
+		r.HandleFunc("/ws", handler.NewWebsocketHandler(s.wsHub).Handle)
+	})
 
 	r.Post("/ping", handler.PingHandler(s.clk))
 

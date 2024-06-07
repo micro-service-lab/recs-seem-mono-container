@@ -42,6 +42,9 @@ func run(ctx context.Context) error {
 		return fmt.Errorf("failed to initialize container: %w", err)
 	}
 
+	go ctr.WebsocketHub.SubscribeMessages(ctx)
+	go ctr.WebsocketHub.RunLoop(ctx)
+
 	r := chi.NewRouter()
 	// TODO: slog に変更する
 	r.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{
@@ -69,6 +72,7 @@ func run(ctx context.Context) error {
 		ctr.Translator,
 		ctr.SessionManager,
 		*ctr.Config,
+		ctr.WebsocketHub,
 	)
 
 	middlewares := make([]func(http.Handler) http.Handler, 0, 3) //nolint:gomnd

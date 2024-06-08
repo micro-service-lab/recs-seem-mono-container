@@ -128,7 +128,7 @@ type ChatRoomBelonging interface {
 		chatRoomIDs []uuid.UUID,
 		np NumberedPaginationParam,
 		order parameter.MemberOnChatRoomOrderMethod,
-	) (ListResult[entity.MemberOnChatRoom], error)
+	) (ListResult[entity.MemberOnChatRoomWithChatRoomID], error)
 	// GetPluralMembersOnChatRoomWithSd SD付きでチャットルーム上の複数のメンバーを取得する。
 	GetPluralMembersOnChatRoomWithSd(
 		ctx context.Context,
@@ -136,7 +136,7 @@ type ChatRoomBelonging interface {
 		chatRoomIDs []uuid.UUID,
 		np NumberedPaginationParam,
 		order parameter.MemberOnChatRoomOrderMethod,
-	) (ListResult[entity.MemberOnChatRoom], error)
+	) (ListResult[entity.MemberOnChatRoomWithChatRoomID], error)
 	// GetPluralPrivateChatRoomCompanions プライベートチャットルームの相手を取得する。
 	GetPluralPrivateChatRoomCompanions(
 		ctx context.Context,

@@ -46,3 +46,15 @@ type ReadableMessageOnMemberForQuery struct {
 	Pkey Int `json:"-"`
 	ReadableMessageOnMember
 }
+
+// ReadableMessageOnChatRoomAndMember チャットルーム、メンバー上のメッセージを表す構造体。
+type ReadableMessageOnChatRoomAndMember struct {
+	Message Message     `json:"message"`
+	ReadAt  Timestamptz `json:"read_at"`
+}
+
+// ReadableMessageOnChatRoomAndMemberForQuery チャットルーム、メンバー上のメッセージを表す構造体(クエリ用)。
+type ReadableMessageOnChatRoomAndMemberForQuery struct {
+	Pkey Int `json:"-"`
+	ReadableMessageOnChatRoomAndMember
+}

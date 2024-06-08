@@ -14,6 +14,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/storage"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/ws"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 )
 
@@ -22,6 +23,7 @@ type ManageChatRoom struct {
 	DB      store.Store
 	Storage storage.Storage
 	Clocker clock.Clock
+	WsHub   ws.HubInterface
 }
 
 // FindChatRoomByID チャットルームをIDで取得する。
@@ -303,13 +305,17 @@ func updateChatRoom(
 	coverImage entity.NullableEntity[entity.ImageWithAttachableItem],
 	owner entity.Member,
 	force bool,
-) (e entity.ChatRoom, err error) {
+) (e entity.ChatRoom, action entity.ChatRoomUpdateNameActionWithUpdatedBy,
+	actAttr entity.ChatRoomAction, nameUpdated bool, err error,
+) {
 	e = chatRoom
 	if !force && e.FromOrganization {
 		name = e.Name.String
 	}
 	if !force && e.IsPrivate {
-		return entity.ChatRoom{}, errhandle.NewCommonError(response.CannotUpdatePrivateChatRoom, nil)
+		return entity.ChatRoom{}, entity.ChatRoomUpdateNameActionWithUpdatedBy{},
+			entity.ChatRoomAction{},
+			false, errhandle.NewCommonError(response.CannotUpdatePrivateChatRoom, nil)
 	}
 
 	coverImageID := entity.UUID{}
@@ -320,23 +326,49 @@ func updateChatRoom(
 	if e.Name.String != name {
 		craType, err := str.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyUpdateName))
 		if err != nil {
-			return entity.ChatRoom{}, fmt.Errorf("failed to find chat room action type by key: %w", err)
+			return entity.ChatRoom{}, entity.ChatRoomUpdateNameActionWithUpdatedBy{},
+				entity.ChatRoomAction{},
+				false, fmt.Errorf("failed to find chat room action type by key: %w", err)
 		}
-		cra, err := str.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
+		actAttr, err = str.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
 			ChatRoomID:           e.ChatRoomID,
 			ChatRoomActionTypeID: craType.ChatRoomActionTypeID,
 			ActedAt:              now,
 		})
 		if err != nil {
-			return entity.ChatRoom{}, fmt.Errorf("failed to create chat room action: %w", err)
+			return entity.ChatRoom{}, entity.ChatRoomUpdateNameActionWithUpdatedBy{},
+				entity.ChatRoomAction{},
+				false, fmt.Errorf("failed to create chat room action: %w", err)
 		}
-		_, err = str.CreateChatRoomUpdateNameActionWithSd(ctx, sd, parameter.CreateChatRoomUpdateNameActionParam{
-			ChatRoomActionID: cra.ChatRoomActionID,
-			UpdatedBy:        entity.UUID{Valid: true, Bytes: owner.MemberID},
-			Name:             name,
-		})
+		updateAct, err := str.CreateChatRoomUpdateNameActionWithSd(ctx, sd,
+			parameter.CreateChatRoomUpdateNameActionParam{
+				ChatRoomActionID: actAttr.ChatRoomActionID,
+				UpdatedBy:        entity.UUID{Valid: true, Bytes: owner.MemberID},
+				Name:             name,
+			})
 		if err != nil {
-			return entity.ChatRoom{}, fmt.Errorf("failed to create chat room update name action: %w", err)
+			return entity.ChatRoom{}, entity.ChatRoomUpdateNameActionWithUpdatedBy{},
+				entity.ChatRoomAction{},
+				false, fmt.Errorf("failed to create chat room update name action: %w", err)
+		}
+		nameUpdated = true
+		action = entity.ChatRoomUpdateNameActionWithUpdatedBy{
+			ChatRoomUpdateNameActionID: updateAct.ChatRoomUpdateNameActionID,
+			ChatRoomActionID:           actAttr.ChatRoomActionID,
+			Name:                       name,
+			UpdatedBy: entity.NullableEntity[entity.SimpleMember]{
+				Valid: true,
+				Entity: entity.SimpleMember{
+					MemberID:       owner.MemberID,
+					Name:           owner.Name,
+					FirstName:      owner.FirstName,
+					LastName:       owner.LastName,
+					Email:          owner.Email,
+					ProfileImageID: owner.ProfileImageID,
+					GradeID:        owner.GradeID,
+					GroupID:        owner.GroupID,
+				},
+			},
 		}
 	}
 	if e.CoverImageID.Valid && e.CoverImageID.Bytes != coverImageID.Bytes {
@@ -367,9 +399,11 @@ func updateChatRoom(
 		},
 	)
 	if err != nil {
-		return entity.ChatRoom{}, fmt.Errorf("failed to update chat room: %w", err)
+		return entity.ChatRoom{}, entity.ChatRoomUpdateNameActionWithUpdatedBy{},
+			entity.ChatRoomAction{},
+			false, fmt.Errorf("failed to update chat room: %w", err)
 	}
-	return e, nil
+	return e, action, actAttr, nameUpdated, nil
 }
 
 func deleteChatRoom(
@@ -502,7 +536,19 @@ func (m *ManageChatRoom) CreateChatRoom(
 	if len(pm.Data) != len(members) {
 		return entity.ChatRoom{}, errhandle.NewModelNotFoundError(ChatRoomTargetMembers)
 	}
-	return createChatRoom(ctx, sd, m.Clocker.Now(), m.DB, name, coverImage, owner, pm.Data, false)
+	e, err = createChatRoom(ctx, sd, m.Clocker.Now(), m.DB, name, coverImage, owner, pm.Data, false)
+
+	defer func(room entity.ChatRoom, membersIDs []uuid.UUID) {
+		if err == nil {
+			m.WsHub.Dispatch(ws.EventTypeChatRoomAddedMe, ws.Targets{
+				Members: membersIDs,
+			}, ws.ChatRoomAddedMeEventData{
+				ChatRoom: room,
+			})
+		}
+	}(e, append([]uuid.UUID{ownerID}, members...))
+
+	return e, err
 }
 
 // CreatePrivateChatRoom プライベートチャットルームを作成する。
@@ -560,7 +606,19 @@ func (m *ManageChatRoom) CreatePrivateChatRoom(
 		return entity.ChatRoom{}, errhandle.NewCommonError(response.PrivateChatRoomAlreadyExists, nil)
 	}
 
-	return createPrivateChatRoom(ctx, sd, now, m.DB, owner, member)
+	e, err = createPrivateChatRoom(ctx, sd, now, m.DB, owner, member)
+
+	defer func(room entity.ChatRoom, membersIDs []uuid.UUID) {
+		if err == nil {
+			m.WsHub.Dispatch(ws.EventTypeChatRoomAddedMe, ws.Targets{
+				Members: membersIDs,
+			}, ws.ChatRoomAddedMeEventData{
+				ChatRoom: room,
+			})
+		}
+	}(e, []uuid.UUID{ownerID, memberID})
+
+	return e, err
 }
 
 // UpdateChatRoom チャットルームを更新する。
@@ -618,7 +676,49 @@ func (m *ManageChatRoom) UpdateChatRoom(
 		}
 		return entity.ChatRoom{}, fmt.Errorf("failed to find member by id: %w", err)
 	}
-	return updateChatRoom(ctx, sd, m.Clocker.Now(), m.DB, m.Storage, chatRoom, name, coverImage, owner, false)
+
+	belongMembers, err := m.DB.GetMembersOnChatRoomWithSd(ctx, sd, chatRoom.ChatRoomID,
+		parameter.WhereMemberOnChatRoomParam{}, parameter.MemberOnChatRoomOrderMethodDefault,
+		store.NumberedPaginationParam{}, store.CursorPaginationParam{}, store.WithCountParam{})
+	if err != nil {
+		return entity.ChatRoom{}, fmt.Errorf("failed to get members on chat room: %w", err)
+	}
+	var exist bool
+	members := make([]uuid.UUID, 0, len(belongMembers.Data))
+	for _, v := range belongMembers.Data {
+		if v.Member.MemberID == ownerID {
+			exist = true
+		}
+		members = append(members, v.Member.MemberID)
+	}
+	if !exist {
+		return entity.ChatRoom{}, errhandle.NewCommonError(response.NotChatRoomMember, nil)
+	}
+	var nameUpdated bool
+	var action entity.ChatRoomUpdateNameActionWithUpdatedBy
+	var actAttr entity.ChatRoomAction
+	e, action, actAttr, nameUpdated, err = updateChatRoom(
+		ctx, sd, m.Clocker.Now(), m.DB, m.Storage, chatRoom, name, coverImage, owner, false)
+	if nameUpdated {
+		defer func(
+			members []uuid.UUID, chatRoom entity.ChatRoom,
+			action entity.ChatRoomUpdateNameActionWithUpdatedBy,
+			actAttr entity.ChatRoomAction,
+		) {
+			if err == nil {
+				m.WsHub.Dispatch(ws.EventTypeChatRoomUpdatedName, ws.Targets{
+					Members: members,
+				}, ws.ChatRoomUpdatedNameEventData{
+					ChatRoomID:           chatRoom.ChatRoomID,
+					Action:               action,
+					ChatRoomActionID:     actAttr.ChatRoomActionID,
+					ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+					ActedAt:              actAttr.ActedAt,
+				})
+			}
+		}(members, e, action, actAttr)
+	}
+	return e, err
 }
 
 // DeleteChatRoom チャットルームを削除する。
@@ -658,5 +758,37 @@ func (m *ManageChatRoom) DeleteChatRoom(
 		}
 		return 0, fmt.Errorf("failed to find member by id: %w", err)
 	}
-	return deleteChatRoom(ctx, sd, m.DB, m.Storage, chatRoom, owner, false)
+	belongMembers, err := m.DB.GetMembersOnChatRoomWithSd(ctx, sd, chatRoom.ChatRoomID,
+		parameter.WhereMemberOnChatRoomParam{}, parameter.MemberOnChatRoomOrderMethodDefault,
+		store.NumberedPaginationParam{}, store.CursorPaginationParam{}, store.WithCountParam{})
+	if err != nil {
+		return 0, fmt.Errorf("failed to get members on chat room: %w", err)
+	}
+	var exist bool
+	members := make([]uuid.UUID, 0, len(belongMembers.Data))
+	for _, v := range belongMembers.Data {
+		if v.Member.MemberID == ownerID {
+			exist = true
+		}
+		members = append(members, v.Member.MemberID)
+	}
+	if !exist {
+		return 0, errhandle.NewCommonError(response.NotChatRoomMember, nil)
+	}
+	c, err = deleteChatRoom(ctx, sd, m.DB, m.Storage, chatRoom, owner, false)
+
+	defer func(
+		members []uuid.UUID, chatRoom entity.ChatRoom, deletedBy entity.Member,
+	) {
+		if err == nil {
+			m.WsHub.Dispatch(ws.EventTypeChatRoomDeleted, ws.Targets{
+				Members: members,
+			}, ws.ChatRoomDeletedEventData{
+				ChatRoom:  chatRoom,
+				DeletedBy: deletedBy,
+			})
+		}
+	}(members, chatRoom, owner)
+
+	return c, err
 }

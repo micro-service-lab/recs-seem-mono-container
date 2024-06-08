@@ -13,6 +13,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/storage"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/ws"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 )
 
@@ -21,6 +22,7 @@ type ManageOrganization struct {
 	DB      store.Store
 	Clocker clock.Clock
 	Storage storage.Storage
+	WsHub   ws.HubInterface
 }
 
 // Organization オーガナイゼーション。
@@ -381,6 +383,15 @@ func (m *ManageOrganization) CreateOrganization(
 			Valid: true,
 			Bytes: ccr.ChatRoomID,
 		}
+		defer func(room entity.ChatRoom, membersIDs []uuid.UUID) {
+			if err == nil {
+				m.WsHub.Dispatch(ws.EventTypeChatRoomAddedMe, ws.Targets{
+					Members: membersIDs,
+				}, ws.ChatRoomAddedMeEventData{
+					ChatRoom: room,
+				})
+			}
+		}(ccr, append([]uuid.UUID{ownerID}, members...))
 	}
 	e, err = m.DB.CreateOrganizationWithSd(ctx, sd, parameter.CreateOrganizationParam{
 		Name:        name,
@@ -472,6 +483,30 @@ func (m *ManageOrganization) UpdateOrganization(
 		}
 		return entity.Organization{}, fmt.Errorf("failed to find member by id: %w", err)
 	}
+	belongMembers, err := m.DB.GetMembersOnOrganizationWithSd(
+		ctx,
+		sd,
+		origin.OrganizationID,
+		parameter.WhereMemberOnOrganizationParam{},
+		parameter.MemberOnOrganizationOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
+		return entity.Organization{}, fmt.Errorf("failed to get members on organization: %w", err)
+	}
+	var exist bool
+	members := make([]uuid.UUID, 0, len(belongMembers.Data))
+	for _, v := range belongMembers.Data {
+		if v.Member.MemberID == ownerID {
+			exist = true
+		}
+		members = append(members, v.Member.MemberID)
+	}
+	if !exist {
+		return entity.Organization{}, errhandle.NewCommonError(response.NotOrganizationMember, nil)
+	}
 	if origin.ChatRoomID.Valid {
 		originRoom, err := m.DB.FindChatRoomByIDWithSd(ctx, sd, origin.ChatRoomID.Bytes)
 		if err != nil {
@@ -500,7 +535,11 @@ func (m *ManageOrganization) UpdateOrganization(
 				coverImage = entity.NullableEntity[entity.ImageWithAttachableItem]{Valid: true, Entity: image}
 			}
 		}
-		if _, err = updateChatRoom(
+
+		var nameUpdated bool
+		var action entity.ChatRoomUpdateNameActionWithUpdatedBy
+		var actAttr entity.ChatRoomAction
+		_, action, actAttr, nameUpdated, err = updateChatRoom(
 			ctx,
 			sd,
 			now,
@@ -511,8 +550,27 @@ func (m *ManageOrganization) UpdateOrganization(
 			coverImage,
 			owner,
 			true,
-		); err != nil {
+		)
+		if err != nil {
 			return entity.Organization{}, fmt.Errorf("failed to update chat room: %w", err)
+		}
+		if nameUpdated {
+			defer func(members []uuid.UUID, chatRoomID uuid.UUID,
+				action entity.ChatRoomUpdateNameActionWithUpdatedBy,
+				actAttr entity.ChatRoomAction,
+			) {
+				if err == nil {
+					m.WsHub.Dispatch(ws.EventTypeChatRoomUpdatedName, ws.Targets{
+						Members: members,
+					}, ws.ChatRoomUpdatedNameEventData{
+						ChatRoomID:           chatRoomID,
+						Action:               action,
+						ChatRoomActionID:     actAttr.ChatRoomActionID,
+						ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+						ActedAt:              actAttr.ActedAt,
+					})
+				}
+			}(members, originRoom.ChatRoomID, action, actAttr)
 		}
 	}
 	p := parameter.UpdateOrganizationParams{
@@ -576,6 +634,30 @@ func (m *ManageOrganization) DeleteOrganization(
 		}
 		return 0, fmt.Errorf("failed to find member by id: %w", err)
 	}
+	belongMembers, err := m.DB.GetMembersOnOrganizationWithSd(
+		ctx,
+		sd,
+		origin.OrganizationID,
+		parameter.WhereMemberOnOrganizationParam{},
+		parameter.MemberOnOrganizationOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get members on organization: %w", err)
+	}
+	var exist bool
+	members := make([]uuid.UUID, 0, len(belongMembers.Data))
+	for _, v := range belongMembers.Data {
+		if v.Member.MemberID == ownerID {
+			exist = true
+		}
+		members = append(members, v.Member.MemberID)
+	}
+	if !exist {
+		return 0, errhandle.NewCommonError(response.NotOrganizationMember, nil)
+	}
 	// organizationMemberShipはカスケード削除される
 	c, err = m.DB.DeleteOrganizationWithSd(ctx, sd, id)
 	if err != nil {
@@ -602,6 +684,18 @@ func (m *ManageOrganization) DeleteOrganization(
 		); err != nil {
 			return 0, fmt.Errorf("failed to delete chat room: %w", err)
 		}
+		defer func(
+			members []uuid.UUID, chatRoom entity.ChatRoom, deletedBy entity.Member,
+		) {
+			if err == nil {
+				m.WsHub.Dispatch(ws.EventTypeChatRoomDeleted, ws.Targets{
+					Members: members,
+				}, ws.ChatRoomDeletedEventData{
+					ChatRoom:  chatRoom,
+					DeletedBy: deletedBy,
+				})
+			}
+		}(members, originRoom, owner)
 	}
 	return c, nil
 }

@@ -1,6 +1,8 @@
 package ws
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
@@ -36,6 +38,8 @@ const (
 	EventTypeChatRoomSentMessage EventType = "chat_room:sent:message"
 	// EventTypeChatRoomReadMessage チャットルームのメッセージが既読になったことを表すイベント。
 	EventTypeChatRoomReadMessage EventType = "chat_room:read:message"
+	// EventTypeChatRoomDeleted チャットルームが削除されたことを表すイベント。
+	EventTypeChatRoomDeleted EventType = "chat_room:deleted"
 )
 
 // ConnectingMembersEventData クライアントが接続した際、接続しているメンバーを表す構造体。
@@ -68,38 +72,56 @@ type ChatRoomAddedMeEventData struct {
 
 // ChatRoomAddedMemberEventData チャットルームに自分以外のメンバーが追加された際のイベントデータを表す構造体。
 type ChatRoomAddedMemberEventData struct {
-	ChatRoomID uuid.UUID                                              `json:"chat_room_id"`
-	Action     entity.ChatRoomAddMemberActionWithAddedByAndAddMembers `json:"action"`
+	ChatRoomID           uuid.UUID                                              `json:"chat_room_id"`
+	Action               entity.ChatRoomAddMemberActionWithAddedByAndAddMembers `json:"action"`
+	ChatRoomActionID     uuid.UUID                                              `json:"chat_room_action_id"`
+	ChatRoomActionTypeID uuid.UUID                                              `json:"chat_room_action_type_id"`
+	ActedAt              time.Time                                              `json:"acted_at"`
 }
 
 // ChatRoomRemovedMeEventData チャットルームから自分が削除された際のイベントデータを表す構造体。
 type ChatRoomRemovedMeEventData struct {
-	ChatRoomID uuid.UUID                                                      `json:"chat_room_id"`
-	Action     entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers `json:"action"`
+	ChatRoomID           uuid.UUID                                                      `json:"chat_room_id"`
+	Action               entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers `json:"action"`
+	ChatRoomActionID     uuid.UUID                                                      `json:"chat_room_action_id"`
+	ChatRoomActionTypeID uuid.UUID                                                      `json:"chat_room_action_type_id"`
+	ActedAt              time.Time                                                      `json:"acted_at"`
 }
 
 // ChatRoomRemovedMemberEventData チャットルームから自分以外のメンバーが削除された際のイベントデータを表す構造体。
 type ChatRoomRemovedMemberEventData struct {
-	ChatRoomID uuid.UUID                                                      `json:"chat_room_id"`
-	Action     entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers `json:"action"`
+	ChatRoomID           uuid.UUID                                                      `json:"chat_room_id"`
+	Action               entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers `json:"action"`
+	ChatRoomActionID     uuid.UUID                                                      `json:"chat_room_action_id"`
+	ChatRoomActionTypeID uuid.UUID                                                      `json:"chat_room_action_type_id"`
+	ActedAt              time.Time                                                      `json:"acted_at"`
 }
 
 // ChatRoomWithdrawnMemberEventData チャットルームから自分以外のメンバーが退室した際のイベントデータを表す構造体。
 type ChatRoomWithdrawnMemberEventData struct {
-	ChatRoomID uuid.UUID                               `json:"chat_room_id"`
-	Action     entity.ChatRoomWithdrawActionWithMember `json:"action"`
+	ChatRoomID           uuid.UUID                               `json:"chat_room_id"`
+	Action               entity.ChatRoomWithdrawActionWithMember `json:"action"`
+	ChatRoomActionID     uuid.UUID                               `json:"chat_room_action_id"`
+	ChatRoomActionTypeID uuid.UUID                               `json:"chat_room_action_type_id"`
+	ActedAt              time.Time                               `json:"acted_at"`
 }
 
 // ChatRoomUpdatedNameEventData チャットルームの名前が更新された際のイベントデータを表す構造体。
 type ChatRoomUpdatedNameEventData struct {
-	ChatRoomID uuid.UUID                                    `json:"chat_room_id"`
-	Action     entity.ChatRoomUpdateNameActionWithUpdatedBy `json:"action"`
+	ChatRoomID           uuid.UUID                                    `json:"chat_room_id"`
+	Action               entity.ChatRoomUpdateNameActionWithUpdatedBy `json:"action"`
+	ChatRoomActionID     uuid.UUID                                    `json:"chat_room_action_id"`
+	ChatRoomActionTypeID uuid.UUID                                    `json:"chat_room_action_type_id"`
+	ActedAt              time.Time                                    `json:"acted_at"`
 }
 
 // ChatRoomDeletedMessageEventData チャットルームのメッセージが削除された際のイベントデータを表す構造体。
 type ChatRoomDeletedMessageEventData struct {
-	ChatRoomID uuid.UUID                                       `json:"chat_room_id"`
-	Action     entity.ChatRoomDeleteMessageActionWithDeletedBy `json:"action"`
+	ChatRoomID           uuid.UUID                                       `json:"chat_room_id"`
+	Action               entity.ChatRoomDeleteMessageActionWithDeletedBy `json:"action"`
+	ChatRoomActionID     uuid.UUID                                       `json:"chat_room_action_id"`
+	ChatRoomActionTypeID uuid.UUID                                       `json:"chat_room_action_type_id"`
+	ActedAt              time.Time                                       `json:"acted_at"`
 }
 
 // ChatRoomEditedMessageEventData チャットルームのメッセージが編集された際のイベントデータを表す構造体。
@@ -110,12 +132,21 @@ type ChatRoomEditedMessageEventData struct {
 
 // ChatRoomSentMessageEventData チャットルームにメッセージが送信された際のイベントデータを表す構造体。
 type ChatRoomSentMessageEventData struct {
-	ChatRoomID uuid.UUID                                                 `json:"chat_room_id"`
-	Action     entity.MessageWithSenderAndReadReceiptCountAndAttachments `json:"action"`
+	ChatRoomID           uuid.UUID                                                 `json:"chat_room_id"`
+	Action               entity.MessageWithSenderAndReadReceiptCountAndAttachments `json:"action"`
+	ChatRoomActionID     uuid.UUID                                                 `json:"chat_room_action_id"`
+	ChatRoomActionTypeID uuid.UUID                                                 `json:"chat_room_action_type_id"`
+	ActedAt              time.Time                                                 `json:"acted_at"`
 }
 
 // ChatRoomReadMessageEventData チャットルームのメッセージが既読になった際のイベントデータを表す構造体。
 type ChatRoomReadMessageEventData struct {
 	ChatRoomID uuid.UUID   `json:"chat_room_id"`
 	MessageIDs []uuid.UUID `json:"message_ids"`
+}
+
+// ChatRoomDeletedEventData チャットルームが削除された際のイベントデータを表す構造体。
+type ChatRoomDeletedEventData struct {
+	ChatRoom  entity.ChatRoom `json:"chat_room"`
+	DeletedBy entity.Member   `json:"deleted_by"`
 }

@@ -13,6 +13,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/ws"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 )
 
@@ -20,6 +21,7 @@ import (
 type ManageChatRoomBelonging struct {
 	DB      store.Store
 	Clocker clock.Clock
+	WsHub   ws.HubInterface
 }
 
 func belongMembersOnChatRoom(
@@ -31,12 +33,18 @@ func belongMembersOnChatRoom(
 	owner entity.Member,
 	members []entity.Member,
 	force bool,
-) (e int64, err error) {
+) (e int64, action entity.ChatRoomAddMemberActionWithAddedByAndAddMembers,
+	actAttr entity.ChatRoomAction, err error,
+) {
 	if !force && chatRoom.FromOrganization {
-		return 0, errhandle.NewCommonError(response.CannotAddMemberToOrganizationChatRoom, nil)
+		return 0, entity.ChatRoomAddMemberActionWithAddedByAndAddMembers{},
+			entity.ChatRoomAction{},
+			errhandle.NewCommonError(response.CannotAddMemberToOrganizationChatRoom, nil)
 	}
 	if !force && chatRoom.IsPrivate {
-		return 0, errhandle.NewCommonError(response.CannotAddMemberToPrivateChatRoom, nil)
+		return 0, entity.ChatRoomAddMemberActionWithAddedByAndAddMembers{},
+			entity.ChatRoomAction{},
+			errhandle.NewCommonError(response.CannotAddMemberToPrivateChatRoom, nil)
 	}
 	bcrp := make([]parameter.BelongChatRoomParam, len(members))
 	for i, member := range members {
@@ -53,14 +61,20 @@ func belongMembersOnChatRoom(
 	); err != nil {
 		var ufe errhandle.ModelDuplicatedError
 		if errors.As(err, &ufe) {
-			return 0, errhandle.NewModelDuplicatedError(ChatRoomBelongingTargetChatRoomBelongings)
+			return 0, entity.ChatRoomAddMemberActionWithAddedByAndAddMembers{},
+				entity.ChatRoomAction{},
+				errhandle.NewModelDuplicatedError(ChatRoomBelongingTargetChatRoomBelongings)
 		}
-		return 0, fmt.Errorf("failed to belong chat rooms: %w", err)
+		return 0, entity.ChatRoomAddMemberActionWithAddedByAndAddMembers{},
+			entity.ChatRoomAction{},
+			fmt.Errorf("failed to belong chat rooms: %w", err)
 	}
 
 	addCraType, err := str.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyAddMember))
 	if err != nil {
-		return 0, fmt.Errorf("failed to find chat room action type: %w", err)
+		return 0, entity.ChatRoomAddMemberActionWithAddedByAndAddMembers{},
+			entity.ChatRoomAction{},
+			fmt.Errorf("failed to find chat room action type: %w", err)
 	}
 	addCra, err := str.CreateChatRoomActionWithSd(
 		ctx,
@@ -72,7 +86,9 @@ func belongMembersOnChatRoom(
 		},
 	)
 	if err != nil {
-		return 0, fmt.Errorf("failed to create chat room action: %w", err)
+		return 0, entity.ChatRoomAddMemberActionWithAddedByAndAddMembers{},
+			entity.ChatRoomAction{},
+			fmt.Errorf("failed to create chat room action: %w", err)
 	}
 	crama, err := str.CreateChatRoomAddMemberActionWithSd(
 		ctx,
@@ -83,7 +99,9 @@ func belongMembersOnChatRoom(
 		},
 	)
 	if err != nil {
-		return 0, fmt.Errorf("failed to create chat room add member action: %w", err)
+		return 0, entity.ChatRoomAddMemberActionWithAddedByAndAddMembers{},
+			entity.ChatRoomAction{},
+			fmt.Errorf("failed to create chat room add member action: %w", err)
 	}
 	cramap := make([]parameter.CreateChatRoomAddedMemberParam, len(members))
 	for i, member := range members {
@@ -92,15 +110,56 @@ func belongMembersOnChatRoom(
 			MemberID:                  entity.UUID{Valid: true, Bytes: member.MemberID},
 		}
 	}
+
 	if _, err = str.AddMembersToChatRoomAddMemberActionWithSd(
 		ctx,
 		sd,
 		cramap,
 	); err != nil {
-		return 0, fmt.Errorf("failed to add members to chat room add member action: %w", err)
+		return 0, entity.ChatRoomAddMemberActionWithAddedByAndAddMembers{},
+			entity.ChatRoomAction{},
+			fmt.Errorf("failed to add members to chat room add member action: %w", err)
 	}
 
-	return e, nil
+	addMembers := make([]entity.MemberOnChatRoomAddMemberAction, len(members))
+	for i, member := range members {
+		addMembers[i] = entity.MemberOnChatRoomAddMemberAction{
+			ChatRoomAddMemberActionID: crama.ChatRoomAddMemberActionID,
+			Member: entity.NullableEntity[entity.SimpleMember]{
+				Valid: true,
+				Entity: entity.SimpleMember{
+					MemberID:       member.MemberID,
+					Name:           member.Name,
+					FirstName:      member.FirstName,
+					LastName:       member.LastName,
+					Email:          member.Email,
+					ProfileImageID: member.ProfileImageID,
+					GradeID:        member.GradeID,
+					GroupID:        member.GroupID,
+				},
+			},
+		}
+	}
+
+	action = entity.ChatRoomAddMemberActionWithAddedByAndAddMembers{
+		ChatRoomAddMemberActionID: crama.ChatRoomAddMemberActionID,
+		ChatRoomActionID:          addCra.ChatRoomActionID,
+		AddedBy: entity.NullableEntity[entity.SimpleMember]{
+			Valid: true,
+			Entity: entity.SimpleMember{
+				MemberID:       owner.MemberID,
+				Name:           owner.Name,
+				FirstName:      owner.FirstName,
+				LastName:       owner.LastName,
+				Email:          owner.Email,
+				ProfileImageID: owner.ProfileImageID,
+				GradeID:        owner.GradeID,
+				GroupID:        owner.GroupID,
+			},
+		},
+	}
+
+	return e, action, addCra, nil
 }
 
 func removeMembersFromChatRoom(
@@ -112,12 +171,18 @@ func removeMembersFromChatRoom(
 	owner entity.Member,
 	members []entity.Member,
 	force bool,
-) (e int64, err error) {
+) (e int64, action entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers,
+	actAttr entity.ChatRoomAction, err error,
+) {
 	if !force && chatRoom.FromOrganization {
-		return 0, errhandle.NewCommonError(response.CannotRemoveMemberFromOrganizationChatRoom, nil)
+		return 0, entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers{},
+			entity.ChatRoomAction{},
+			errhandle.NewCommonError(response.CannotRemoveMemberFromOrganizationChatRoom, nil)
 	}
 	if !force && chatRoom.IsPrivate {
-		return 0, errhandle.NewCommonError(response.CannotRemoveMemberFromPrivateChatRoom, nil)
+		return 0, entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers{},
+			entity.ChatRoomAction{},
+			errhandle.NewCommonError(response.CannotRemoveMemberFromPrivateChatRoom, nil)
 	}
 	memberIDs := make([]uuid.UUID, len(members))
 	for i, member := range members {
@@ -131,14 +196,20 @@ func removeMembersFromChatRoom(
 	); err != nil {
 		var ufe errhandle.ModelNotFoundError
 		if errors.As(err, &ufe) {
-			return 0, errhandle.NewModelNotFoundError(ChatRoomBelongingTargetChatRoomBelongings)
+			return 0, entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers{},
+				entity.ChatRoomAction{},
+				errhandle.NewModelNotFoundError(ChatRoomBelongingTargetChatRoomBelongings)
 		}
-		return 0, fmt.Errorf("failed to disbelong plural members on chat room: %w", err)
+		return 0, entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers{},
+			entity.ChatRoomAction{},
+			fmt.Errorf("failed to disbelong plural members on chat room: %w", err)
 	}
 
 	removeCraType, err := str.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyRemoveMember))
 	if err != nil {
-		return 0, fmt.Errorf("failed to find chat room action type: %w", err)
+		return 0, entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers{},
+			entity.ChatRoomAction{},
+			fmt.Errorf("failed to find chat room action type: %w", err)
 	}
 	removeCra, err := str.CreateChatRoomActionWithSd(
 		ctx,
@@ -150,7 +221,9 @@ func removeMembersFromChatRoom(
 		},
 	)
 	if err != nil {
-		return 0, fmt.Errorf("failed to create chat room action: %w", err)
+		return 0, entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers{},
+			entity.ChatRoomAction{},
+			fmt.Errorf("failed to create chat room action: %w", err)
 	}
 	crama, err := str.CreateChatRoomRemoveMemberActionWithSd(
 		ctx,
@@ -161,7 +234,9 @@ func removeMembersFromChatRoom(
 		},
 	)
 	if err != nil {
-		return 0, fmt.Errorf("failed to create chat room remove member action: %w", err)
+		return 0, entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers{},
+			entity.ChatRoomAction{},
+			fmt.Errorf("failed to create chat room remove member action: %w", err)
 	}
 	cramap := make([]parameter.CreateChatRoomRemovedMemberParam, len(members))
 	for i, member := range members {
@@ -175,10 +250,51 @@ func removeMembersFromChatRoom(
 		sd,
 		cramap,
 	); err != nil {
-		return 0, fmt.Errorf("failed to remove members to chat room remove member action: %w", err)
+		return 0, entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers{},
+			entity.ChatRoomAction{},
+			fmt.Errorf("failed to remove members to chat room remove member action: %w", err)
 	}
 
-	return e, nil
+	removedMembers := make([]entity.MemberOnChatRoomRemoveMemberAction, len(members))
+	for i, member := range members {
+		removedMembers[i] = entity.MemberOnChatRoomRemoveMemberAction{
+			ChatRoomRemoveMemberActionID: crama.ChatRoomRemoveMemberActionID,
+			Member: entity.NullableEntity[entity.SimpleMember]{
+				Valid: true,
+				Entity: entity.SimpleMember{
+					MemberID:       member.MemberID,
+					Name:           member.Name,
+					FirstName:      member.FirstName,
+					LastName:       member.LastName,
+					Email:          member.Email,
+					ProfileImageID: member.ProfileImageID,
+					GradeID:        member.GradeID,
+					GroupID:        member.GroupID,
+				},
+			},
+		}
+	}
+
+	action = entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers{
+		ChatRoomRemoveMemberActionID: crama.ChatRoomRemoveMemberActionID,
+		ChatRoomActionID:             removeCra.ChatRoomActionID,
+		RemovedBy: entity.NullableEntity[entity.SimpleMember]{
+			Valid: true,
+			Entity: entity.SimpleMember{
+				MemberID:       owner.MemberID,
+				Name:           owner.Name,
+				FirstName:      owner.FirstName,
+				LastName:       owner.LastName,
+				Email:          owner.Email,
+				ProfileImageID: owner.ProfileImageID,
+				GradeID:        owner.GradeID,
+				GroupID:        owner.GroupID,
+			},
+		},
+		RemoveMembers: removedMembers,
+	}
+
+	return e, action, removeCra, nil
 }
 
 func withdrawMemberFromChatRoom(
@@ -189,12 +305,18 @@ func withdrawMemberFromChatRoom(
 	chatRoom entity.ChatRoom,
 	member entity.Member,
 	force bool,
-) (e int64, err error) {
+) (e int64, action entity.ChatRoomWithdrawActionWithMember,
+	actAttr entity.ChatRoomAction, err error,
+) {
 	if !force && chatRoom.FromOrganization {
-		return 0, errhandle.NewCommonError(response.CannotWithdrawMemberFromOrganizationChatRoom, nil)
+		return 0, entity.ChatRoomWithdrawActionWithMember{},
+			entity.ChatRoomAction{},
+			errhandle.NewCommonError(response.CannotWithdrawMemberFromOrganizationChatRoom, nil)
 	}
 	if !force && chatRoom.IsPrivate {
-		return 0, errhandle.NewCommonError(response.CannotWithdrawMemberFromPrivateChatRoom, nil)
+		return 0, entity.ChatRoomWithdrawActionWithMember{},
+			entity.ChatRoomAction{},
+			errhandle.NewCommonError(response.CannotWithdrawMemberFromPrivateChatRoom, nil)
 	}
 	if e, err = str.DisbelongPluralMembersOnChatRoomWithSd(
 		ctx,
@@ -204,14 +326,20 @@ func withdrawMemberFromChatRoom(
 	); err != nil {
 		var ufe errhandle.ModelNotFoundError
 		if errors.As(err, &ufe) {
-			return 0, errhandle.NewModelNotFoundError(ChatRoomBelongingTargetChatRoomBelongings)
+			return 0, entity.ChatRoomWithdrawActionWithMember{},
+				entity.ChatRoomAction{},
+				errhandle.NewModelNotFoundError(ChatRoomBelongingTargetChatRoomBelongings)
 		}
-		return 0, fmt.Errorf("failed to disbelong plural members on chat room: %w", err)
+		return 0, entity.ChatRoomWithdrawActionWithMember{},
+			entity.ChatRoomAction{},
+			fmt.Errorf("failed to disbelong plural members on chat room: %w", err)
 	}
 
 	withdrawCraType, err := str.FindChatRoomActionTypeByKeyWithSd(ctx, sd, string(ChatRoomActionTypeKeyWithdraw))
 	if err != nil {
-		return 0, fmt.Errorf("failed to find chat room action type: %w", err)
+		return 0, entity.ChatRoomWithdrawActionWithMember{},
+			entity.ChatRoomAction{},
+			fmt.Errorf("failed to find chat room action type: %w", err)
 	}
 	withdrawCra, err := str.CreateChatRoomActionWithSd(
 		ctx,
@@ -223,20 +351,43 @@ func withdrawMemberFromChatRoom(
 		},
 	)
 	if err != nil {
-		return 0, fmt.Errorf("failed to create chat room action: %w", err)
+		return 0, entity.ChatRoomWithdrawActionWithMember{},
+			entity.ChatRoomAction{},
+			fmt.Errorf("failed to create chat room action: %w", err)
 	}
-	if _, err := str.CreateChatRoomWithdrawActionWithSd(
+	withdrawAct, err := str.CreateChatRoomWithdrawActionWithSd(
 		ctx,
 		sd,
 		parameter.CreateChatRoomWithdrawActionParam{
 			ChatRoomActionID: withdrawCra.ChatRoomActionID,
 			MemberID:         entity.UUID{Valid: true, Bytes: member.MemberID},
 		},
-	); err != nil {
-		return 0, fmt.Errorf("failed to create chat room withdraw action: %w", err)
+	)
+	if err != nil {
+		return 0, entity.ChatRoomWithdrawActionWithMember{},
+			entity.ChatRoomAction{},
+			fmt.Errorf("failed to create chat room withdraw action: %w", err)
 	}
 
-	return e, nil
+	action = entity.ChatRoomWithdrawActionWithMember{
+		ChatRoomWithdrawActionID: withdrawAct.ChatRoomWithdrawActionID,
+		ChatRoomActionID:         withdrawCra.ChatRoomActionID,
+		Member: entity.NullableEntity[entity.SimpleMember]{
+			Valid: true,
+			Entity: entity.SimpleMember{
+				MemberID:       member.MemberID,
+				Name:           member.Name,
+				FirstName:      member.FirstName,
+				LastName:       member.LastName,
+				Email:          member.Email,
+				ProfileImageID: member.ProfileImageID,
+				GradeID:        member.GradeID,
+				GroupID:        member.GroupID,
+			},
+		},
+	}
+
+	return e, action, withdrawCra, nil
 }
 
 // BelongMembersOnChatRoom メンバーをチャットルームに所属させる。
@@ -291,8 +442,52 @@ func (m *ManageChatRoomBelonging) BelongMembersOnChatRoom(
 	if len(mm.Data) != len(memberIDs) {
 		return 0, errhandle.NewModelNotFoundError(ChatRoomBelongingTargetMembers)
 	}
+	belongingMembers, err := m.DB.GetMembersOnChatRoomWithSd(
+		ctx,
+		sd,
+		room.ChatRoomID,
+		parameter.WhereMemberOnChatRoomParam{},
+		parameter.MemberOnChatRoomOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get members on chat room: %w", err)
+	}
+	alreadyMemberIDs := make([]uuid.UUID, 0, len(belongingMembers.Data))
+	for _, v := range belongingMembers.Data {
+		alreadyMemberIDs = append(alreadyMemberIDs, v.Member.MemberID)
+	}
 
-	return belongMembersOnChatRoom(ctx, sd, now, m.DB, room, owner, mm.Data, false)
+	var action entity.ChatRoomAddMemberActionWithAddedByAndAddMembers
+	var actAttr entity.ChatRoomAction
+	e, action, actAttr, err = belongMembersOnChatRoom(ctx, sd, now, m.DB, room, owner, mm.Data, false)
+
+	defer func(
+		room entity.ChatRoom, membersIDs, alreadyMemberIDs []uuid.UUID,
+		action entity.ChatRoomAddMemberActionWithAddedByAndAddMembers,
+		actAttr entity.ChatRoomAction,
+	) {
+		if err == nil {
+			m.WsHub.Dispatch(ws.EventTypeChatRoomAddedMe, ws.Targets{
+				Members: membersIDs,
+			}, ws.ChatRoomAddedMeEventData{
+				ChatRoom: room,
+			})
+			m.WsHub.Dispatch(ws.EventTypeChatRoomAddedMember, ws.Targets{
+				Members: alreadyMemberIDs,
+			}, ws.ChatRoomAddedMemberEventData{
+				ChatRoomID:           room.ChatRoomID,
+				Action:               action,
+				ChatRoomActionID:     actAttr.ChatRoomActionID,
+				ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+				ActedAt:              actAttr.ActedAt,
+			})
+		}
+	}(room, memberIDs, alreadyMemberIDs, action, actAttr)
+
+	return e, err
 }
 
 // RemoveMembersFromChatRoom チャットルームからメンバーを削除する。
@@ -347,8 +542,63 @@ func (m *ManageChatRoomBelonging) RemoveMembersFromChatRoom(
 	if len(mm.Data) != len(memberIDs) {
 		return 0, errhandle.NewModelNotFoundError(ChatRoomBelongingTargetMembers)
 	}
+	belongingMembers, err := m.DB.GetMembersOnChatRoomWithSd(
+		ctx,
+		sd,
+		room.ChatRoomID,
+		parameter.WhereMemberOnChatRoomParam{},
+		parameter.MemberOnChatRoomOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get members on chat room: %w", err)
+	}
+	removeMembers := make(map[uuid.UUID]struct{}, len(mm.Data))
+	for _, v := range memberIDs {
+		removeMembers[v] = struct{}{}
+	}
+	leftMemberIDs := make([]uuid.UUID, 0, len(belongingMembers.Data))
+	for _, v := range belongingMembers.Data {
+		if _, ok := removeMembers[v.Member.MemberID]; ok {
+			continue
+		}
+		leftMemberIDs = append(leftMemberIDs, v.Member.MemberID)
+	}
 
-	return removeMembersFromChatRoom(ctx, sd, now, m.DB, room, owner, mm.Data, false)
+	var action entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers
+	var actAttr entity.ChatRoomAction
+	e, action, actAttr, err = removeMembersFromChatRoom(ctx, sd, now, m.DB, room, owner, mm.Data, false)
+
+	defer func(
+		room entity.ChatRoom, membersIDs, leftMemberIDs []uuid.UUID,
+		action entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers,
+		actAttr entity.ChatRoomAction,
+	) {
+		if err == nil {
+			m.WsHub.Dispatch(ws.EventTypeChatRoomRemovedMe, ws.Targets{
+				Members: membersIDs,
+			}, ws.ChatRoomRemovedMeEventData{
+				ChatRoomID:           room.ChatRoomID,
+				Action:               action,
+				ChatRoomActionID:     actAttr.ChatRoomActionID,
+				ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+				ActedAt:              actAttr.ActedAt,
+			})
+			m.WsHub.Dispatch(ws.EventTypeChatRoomRemovedMember, ws.Targets{
+				Members: leftMemberIDs,
+			}, ws.ChatRoomRemovedMemberEventData{
+				ChatRoomID:           room.ChatRoomID,
+				Action:               action,
+				ChatRoomActionID:     actAttr.ChatRoomActionID,
+				ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+				ActedAt:              actAttr.ActedAt,
+			})
+		}
+	}(room, memberIDs, leftMemberIDs, action, actAttr)
+
+	return e, err
 }
 
 // WithdrawMemberFromChatRoom チャットルームからメンバーを退会させる。
@@ -389,8 +639,50 @@ func (m *ManageChatRoomBelonging) WithdrawMemberFromChatRoom(
 		}
 		return 0, fmt.Errorf("failed to find chat room: %w", err)
 	}
+	belongingMembers, err := m.DB.GetMembersOnChatRoomWithSd(
+		ctx,
+		sd,
+		room.ChatRoomID,
+		parameter.WhereMemberOnChatRoomParam{},
+		parameter.MemberOnChatRoomOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get members on chat room: %w", err)
+	}
+	leftMemberIDs := make([]uuid.UUID, 0, len(belongingMembers.Data))
+	for _, v := range belongingMembers.Data {
+		if v.Member.MemberID == memberID {
+			continue
+		}
+		leftMemberIDs = append(leftMemberIDs, v.Member.MemberID)
+	}
 
-	return withdrawMemberFromChatRoom(ctx, sd, now, m.DB, room, owner, false)
+	var action entity.ChatRoomWithdrawActionWithMember
+	var actAttr entity.ChatRoomAction
+	e, action, actAttr, err = withdrawMemberFromChatRoom(ctx, sd, now, m.DB, room, owner, false)
+
+	defer func(
+		room entity.ChatRoom, leftMemberIDs []uuid.UUID,
+		action entity.ChatRoomWithdrawActionWithMember,
+		actAttr entity.ChatRoomAction,
+	) {
+		if err == nil {
+			m.WsHub.Dispatch(ws.EventTypeChatRoomWithdrawnMember, ws.Targets{
+				Members: leftMemberIDs,
+			}, ws.ChatRoomWithdrawnMemberEventData{
+				ChatRoomID:           room.ChatRoomID,
+				Action:               action,
+				ChatRoomActionID:     actAttr.ChatRoomActionID,
+				ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+				ActedAt:              actAttr.ActedAt,
+			})
+		}
+	}(room, leftMemberIDs, action, actAttr)
+
+	return e, err
 }
 
 // GetChatRoomsOnMember メンバーに関連付けられたチャットルームを取得する。

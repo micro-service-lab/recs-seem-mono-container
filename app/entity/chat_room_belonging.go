@@ -38,6 +38,19 @@ type MemberOnChatRoomForQuery struct {
 	MemberOnChatRoom
 }
 
+// MemberOnChatRoomWithChatRoomID チャットルーム上のメンバーを表す構造体。
+type MemberOnChatRoomWithChatRoomID struct {
+	ChatRoomID uuid.UUID  `json:"chat_room_id"`
+	Member     MemberCard `json:"member"`
+	AddedAt    time.Time  `json:"added_at"`
+}
+
+// MemberOnChatRoomWithChatRoomIDForQuery チャットルーム上のメンバーを表す構造体(クエリ用)。
+type MemberOnChatRoomWithChatRoomIDForQuery struct {
+	Pkey Int `json:"-"`
+	MemberOnChatRoomWithChatRoomID
+}
+
 // PracticalChatRoomOnMember メンバー上の実用的なチャットルームを表す構造体。
 type PracticalChatRoomOnMember struct {
 	ChatRoom PracticalChatRoom `json:"chat_room"`

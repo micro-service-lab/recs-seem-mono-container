@@ -35,6 +35,24 @@ func convReadableMessageOnMember(e query.GetReadableMessagesOnMemberRow) entity.
 	}
 }
 
+func convReadableMessageOnChatRoomAndMember(e query.GetReadableMessagesOnChatRoomAndMemberRow) entity.ReadableMessageOnChatRoomAndMember {
+	return entity.ReadableMessageOnChatRoomAndMember{
+		Message: entity.Message{
+			MessageID:        e.MessageID,
+			ChatRoomActionID: e.ChatRoomActionID,
+			SenderID:         entity.UUID(e.SenderID),
+			Body:             e.Body,
+			PostedAt:         e.PostedAt,
+			LastEditedAt:     e.LastEditedAt,
+		},
+		ReadAt: entity.Timestamptz{
+			Time:             e.ReadAt.Time,
+			InfinityModifier: entity.InfinityModifier(e.ReadAt.InfinityModifier),
+			Valid:            e.ReadAt.Valid,
+		},
+	}
+}
+
 func convReadableMemberOnMessage(e query.GetReadableMembersOnMessageRow) entity.ReadableMemberOnMessage {
 	return entity.ReadableMemberOnMessage{
 		Member: entity.MemberCard{
@@ -1115,4 +1133,177 @@ func (a *PgAdapter) GetPluralReadableMembersOnMessageWithSd(
 		return store.ListResult[entity.ReadableMemberOnMessage]{}, store.ErrNotFoundDescriptor
 	}
 	return getPluralReadableMembersOnMessage(ctx, qtx, messageIDs, order, np)
+}
+
+func getReadableMessagesOnChatRoomAndMember(
+	ctx context.Context,
+	qtx *query.Queries,
+	chatRoomID,
+	memberID uuid.UUID,
+	where parameter.WhereReadableMessageOnChatRoomAndMemberParam,
+	order parameter.ReadableMessageOnChatRoomAndMemberOrderMethod,
+	np store.NumberedPaginationParam,
+	cp store.CursorPaginationParam,
+	wc store.WithCountParam,
+) (store.ListResult[entity.ReadableMessageOnChatRoomAndMember], error) {
+	eConvFunc := func(e entity.ReadableMessageOnChatRoomAndMemberForQuery) (entity.ReadableMessageOnChatRoomAndMember, error) {
+		return e.ReadableMessageOnChatRoomAndMember, nil
+	}
+	runCFunc := func() (int64, error) {
+		p := query.CountReadableMessagesOnChatRoomAndMemberParams{
+			ChatRoomID:     chatRoomID,
+			MemberID:       memberID,
+			WhereIsRead:    where.WhereIsRead,
+			WhereIsNotRead: where.WhereIsNotRead,
+		}
+		r, err := qtx.CountReadableMessagesOnChatRoomAndMember(ctx, p)
+		if err != nil {
+			return 0, fmt.Errorf("failed to count readable messages on chat room and member: %w", err)
+		}
+		return r, nil
+	}
+	runQFunc := func(orderMethod string) ([]entity.ReadableMessageOnChatRoomAndMemberForQuery, error) {
+		p := query.GetReadableMessagesOnChatRoomAndMemberParams{
+			ChatRoomID:     chatRoomID,
+			MemberID:       memberID,
+			WhereIsRead:    where.WhereIsRead,
+			WhereIsNotRead: where.WhereIsNotRead,
+			OrderMethod:    orderMethod,
+		}
+		r, err := qtx.GetReadableMessagesOnChatRoomAndMember(ctx, p)
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return []entity.ReadableMessageOnChatRoomAndMemberForQuery{}, nil
+			}
+			return nil, fmt.Errorf("failed to get readable messages on chat room and member: %w", err)
+		}
+		fq := make([]entity.ReadableMessageOnChatRoomAndMemberForQuery, len(r))
+		for i, e := range r {
+			fq[i] = entity.ReadableMessageOnChatRoomAndMemberForQuery{
+				Pkey:                               entity.Int(e.TMessagesPkey),
+				ReadableMessageOnChatRoomAndMember: convReadableMessageOnChatRoomAndMember(query.GetReadableMessagesOnChatRoomAndMemberRow(e)),
+			}
+		}
+		return fq, nil
+	}
+	runQCPFunc := func(subCursor, orderMethod string,
+		limit int32, cursorDir string, cursor int32, subCursorValue any,
+	) ([]entity.ReadableMessageOnChatRoomAndMemberForQuery, error) {
+		var readCursor time.Time
+		var err error
+		switch subCursor {
+		case parameter.ReadableMessageOnChatRoomAndMemberReadAtCursorKey:
+			cv, ok := subCursorValue.(string)
+			readCursor, err = time.Parse(time.RFC3339, cv)
+			if !ok || err != nil {
+				readCursor = time.Time{}
+			}
+		}
+		p := query.GetReadableMessagesOnChatRoomAndMemberUseKeysetPaginateParams{
+			ChatRoomID:      chatRoomID,
+			MemberID:        memberID,
+			WhereIsRead:     where.WhereIsRead,
+			WhereIsNotRead:  where.WhereIsNotRead,
+			OrderMethod:     orderMethod,
+			CursorDirection: cursorDir,
+			Cursor:          cursor,
+			Limit:           limit,
+			ReadAtCursor: pgtype.Timestamptz{
+				Time:  readCursor,
+				Valid: !readCursor.IsZero(),
+			},
+		}
+		r, err := qtx.GetReadableMessagesOnChatRoomAndMemberUseKeysetPaginate(ctx, p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get readable messages on chat room and member: %w", err)
+		}
+		fq := make([]entity.ReadableMessageOnChatRoomAndMemberForQuery, len(r))
+		for i, e := range r {
+			fq[i] = entity.ReadableMessageOnChatRoomAndMemberForQuery{
+				Pkey:                               entity.Int(e.TMessagesPkey),
+				ReadableMessageOnChatRoomAndMember: convReadableMessageOnChatRoomAndMember(query.GetReadableMessagesOnChatRoomAndMemberRow(e)),
+			}
+		}
+		return fq, nil
+	}
+	runQNPFunc := func(orderMethod string, limit, offset int32) ([]entity.ReadableMessageOnChatRoomAndMemberForQuery, error) {
+		p := query.GetReadableMessagesOnChatRoomAndMemberUseNumberedPaginateParams{
+			ChatRoomID:     chatRoomID,
+			MemberID:       memberID,
+			WhereIsRead:    where.WhereIsRead,
+			WhereIsNotRead: where.WhereIsNotRead,
+			OrderMethod:    orderMethod,
+			Limit:          limit,
+			Offset:         offset,
+		}
+		r, err := qtx.GetReadableMessagesOnChatRoomAndMemberUseNumberedPaginate(ctx, p)
+		if err != nil {
+			return nil, fmt.Errorf("failed to get readable messages on chat room and member: %w", err)
+		}
+		fq := make([]entity.ReadableMessageOnChatRoomAndMemberForQuery, len(r))
+		for i, e := range r {
+			fq[i] = entity.ReadableMessageOnChatRoomAndMemberForQuery{
+				Pkey:                               entity.Int(e.TMessagesPkey),
+				ReadableMessageOnChatRoomAndMember: convReadableMessageOnChatRoomAndMember(query.GetReadableMessagesOnChatRoomAndMemberRow(e)),
+			}
+		}
+		return fq, nil
+	}
+	selector := func(subCursor string, e entity.ReadableMessageOnChatRoomAndMemberForQuery) (entity.Int, any) {
+		switch subCursor {
+		case parameter.ReadableMessageOnChatRoomAndMemberDefaultCursorKey:
+			return entity.Int(e.Pkey), nil
+		case parameter.ReadableMessageOnChatRoomAndMemberReadAtCursorKey:
+			return entity.Int(e.Pkey), e.ReadableMessageOnChatRoomAndMember.ReadAt
+		}
+		return entity.Int(e.Pkey), nil
+	}
+
+	res, err := store.RunListQuery(
+		ctx,
+		order,
+		np,
+		cp,
+		wc,
+		eConvFunc,
+		runCFunc,
+		runQFunc,
+		runQCPFunc,
+		runQNPFunc,
+		selector,
+	)
+	if err != nil {
+		return store.ListResult[entity.ReadableMessageOnChatRoomAndMember]{},
+			fmt.Errorf("failed to get readable messages on chat room and member: %w", err)
+	}
+	return res, nil
+}
+
+// GetReadableMessagesOnChatRoomAndMember チャットルーム、メンバー上のメッセージを取得する。
+func (a *PgAdapter) GetReadableMessagesOnChatRoomAndMember(
+	ctx context.Context,
+	chatRoomID, memberID uuid.UUID,
+	where parameter.WhereReadableMessageOnChatRoomAndMemberParam,
+	order parameter.ReadableMessageOnChatRoomAndMemberOrderMethod,
+	np store.NumberedPaginationParam, cp store.CursorPaginationParam, wc store.WithCountParam,
+) (store.ListResult[entity.ReadableMessageOnChatRoomAndMember], error) {
+	return getReadableMessagesOnChatRoomAndMember(ctx, a.query, chatRoomID, memberID, where, order, np, cp, wc)
+}
+
+// GetReadableMessagesOnChatRoomAndMemberWithSd SD付きでチャットルーム、メンバー上のメッセージを取得する。
+func (a *PgAdapter) GetReadableMessagesOnChatRoomAndMemberWithSd(
+	ctx context.Context,
+	sd store.Sd,
+	chatRoomID, memberID uuid.UUID,
+	where parameter.WhereReadableMessageOnChatRoomAndMemberParam,
+	order parameter.ReadableMessageOnChatRoomAndMemberOrderMethod,
+	np store.NumberedPaginationParam, cp store.CursorPaginationParam, wc store.WithCountParam,
+) (store.ListResult[entity.ReadableMessageOnChatRoomAndMember], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
+	qtx, ok := a.qtxMap[sd]
+	if !ok {
+		return store.ListResult[entity.ReadableMessageOnChatRoomAndMember]{}, store.ErrNotFoundDescriptor
+	}
+	return getReadableMessagesOnChatRoomAndMember(ctx, qtx, chatRoomID, memberID, where, order, np, cp, wc)
 }

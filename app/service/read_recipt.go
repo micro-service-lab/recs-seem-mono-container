@@ -12,6 +12,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/ws"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 )
 
@@ -19,6 +20,7 @@ import (
 type ManageReadReceipt struct {
 	DB      store.Store
 	Clocker clock.Clock
+	WsHub   ws.HubInterface
 }
 
 // CountUnreadReceiptsOnMember メンバー上の未読既読数を取得する。
@@ -75,14 +77,29 @@ func (m *ManageReadReceipt) ReadMessage(
 	if msg.ChatRoomAction.ChatRoomID != chatRoomID {
 		return false, errhandle.NewCommonError(response.NotMatchChatRoomMessage, nil)
 	}
-	if exist, err := m.DB.ExistsChatRoomBelongingWithSd(
+
+	belongMembers, err := m.DB.GetMembersOnChatRoomWithSd(
 		ctx,
 		sd,
-		memberID,
 		chatRoomID,
-	); err != nil {
+		parameter.WhereMemberOnChatRoomParam{},
+		parameter.MemberOnChatRoomOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
 		return false, fmt.Errorf("failed to exists chat room belonging: %w", err)
-	} else if !exist {
+	}
+	var belong bool
+	belongMemberIDs := make([]uuid.UUID, len(belongMembers.Data))
+	for _, v := range belongMembers.Data {
+		if v.Member.MemberID == memberID {
+			belong = true
+		}
+		belongMemberIDs = append(belongMemberIDs, v.Member.MemberID)
+	}
+	if !belong {
 		return false, errhandle.NewCommonError(response.NotChatRoomMember, nil)
 	}
 	rr, err := m.DB.FindReadReceiptWithSd(ctx, sd, memberID, messageID)
@@ -103,6 +120,20 @@ func (m *ManageReadReceipt) ReadMessage(
 	}); err != nil {
 		return false, fmt.Errorf("failed to read message: %w", err)
 	}
+
+	defer func(
+		roomID uuid.UUID, belongMemberIDs, messageIDs []uuid.UUID,
+	) {
+		if err == nil {
+			m.WsHub.Dispatch(ws.EventTypeChatRoomReadMessage, ws.Targets{
+				Members: belongMemberIDs,
+			}, ws.ChatRoomReadMessageEventData{
+				ChatRoomID: roomID,
+				MessageIDs: messageIDs,
+			})
+		}
+	}(chatRoomID, belongMemberIDs, []uuid.UUID{messageID})
+
 	return true, nil
 }
 
@@ -136,6 +167,8 @@ func (m *ManageReadReceipt) ReadMessagesOnMember(
 		return 0, fmt.Errorf("failed to read messages on member: %w", err)
 	}
 
+	// TODO: wsの通知処理を追加する
+
 	return e, nil
 }
 
@@ -160,6 +193,53 @@ func (m *ManageReadReceipt) ReadMessagesOnChatRoomAndMember(
 		}
 	}()
 	now := m.Clocker.Now()
+	belongMembers, err := m.DB.GetMembersOnChatRoomWithSd(
+		ctx,
+		sd,
+		chatRoomID,
+		parameter.WhereMemberOnChatRoomParam{},
+		parameter.MemberOnChatRoomOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
+		return 0, fmt.Errorf("failed to exists chat room belonging: %w", err)
+	}
+	var belong bool
+	belongMemberIDs := make([]uuid.UUID, len(belongMembers.Data))
+	for _, v := range belongMembers.Data {
+		if v.Member.MemberID == memberID {
+			belong = true
+		}
+		belongMemberIDs = append(belongMemberIDs, v.Member.MemberID)
+	}
+	if !belong {
+		return 0, errhandle.NewCommonError(response.NotChatRoomMember, nil)
+	}
+	readableMessages, err := m.DB.GetReadableMessagesOnChatRoomAndMemberWithSd(
+		ctx,
+		sd,
+		chatRoomID,
+		memberID,
+		parameter.WhereReadableMessageOnChatRoomAndMemberParam{
+			WhereIsNotRead: true,
+		},
+		parameter.ReadableMessageOnChatRoomAndMemberOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get readable messages on chat room and member: %w", err)
+	}
+	if len(readableMessages.Data) == 0 {
+		return 0, nil
+	}
+	messageIDs := make([]uuid.UUID, len(readableMessages.Data))
+	for _, v := range readableMessages.Data {
+		messageIDs = append(messageIDs, v.Message.MessageID)
+	}
 	if e, err = m.DB.ReadReceiptsOnChatRoomAndMemberWithSd(
 		ctx,
 		sd,
@@ -169,6 +249,19 @@ func (m *ManageReadReceipt) ReadMessagesOnChatRoomAndMember(
 	); err != nil {
 		return 0, fmt.Errorf("failed to read messages on chat room and member: %w", err)
 	}
+
+	defer func(
+		roomID uuid.UUID, belongMemberIDs, messageIDs []uuid.UUID,
+	) {
+		if err == nil {
+			m.WsHub.Dispatch(ws.EventTypeChatRoomReadMessage, ws.Targets{
+				Members: belongMemberIDs,
+			}, ws.ChatRoomReadMessageEventData{
+				ChatRoomID: roomID,
+				MessageIDs: messageIDs,
+			})
+		}
+	}(chatRoomID, belongMemberIDs, messageIDs)
 
 	return e, nil
 }

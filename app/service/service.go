@@ -14,6 +14,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/storage"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/ws"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/config"
@@ -64,6 +65,7 @@ func NewManager(
 	auth auth.Auth,
 	ssm session.Manager,
 	cfg config.Config,
+	wsHub ws.HubInterface,
 ) *Manager {
 	return &Manager{
 		ManageAttendStatus:       ManageAttendStatus{DB: db},
@@ -78,26 +80,26 @@ func NewManager(
 		ManagePolicy:             ManagePolicy{DB: db},
 		ManageRole:               ManageRole{DB: db},
 		ManageRoleAssociation:    ManageRoleAssociation{DB: db},
-		ManageOrganization:       ManageOrganization{DB: db, Clocker: clk, Storage: stg},
+		ManageOrganization:       ManageOrganization{DB: db, Clocker: clk, Storage: stg, WsHub: wsHub},
 		ManageImage:              ManageImage{DB: db, Storage: stg},
 		ManageFile:               ManageFile{DB: db, Storage: stg},
 		ManageAttachableItem:     ManageAttachableItem{DB: db},
 		ManageGrade:              ManageGrade{DB: db, Clocker: clk, Storage: stg},
 		ManageGroup:              ManageGroup{DB: db, Clocker: clk, Storage: stg},
-		ManageChatRoom:           ManageChatRoom{DB: db, Storage: stg, Clocker: clk},
-		ManageMember:             ManageMember{DB: db, Hash: h, Clocker: clk, Storage: stg},
-		ManageStudent:            ManageStudent{DB: db, Hash: h, Clocker: clk, Storage: stg},
-		ManageProfessor:          ManageProfessor{DB: db, Hash: h, Clocker: clk, Storage: stg},
+		ManageChatRoom:           ManageChatRoom{DB: db, Storage: stg, Clocker: clk, WsHub: wsHub},
+		ManageMember:             ManageMember{DB: db, Hash: h, Clocker: clk, Storage: stg, WsHub: wsHub},
+		ManageStudent:            ManageStudent{DB: db, Hash: h, Clocker: clk, Storage: stg, WsHub: wsHub},
+		ManageProfessor:          ManageProfessor{DB: db, Hash: h, Clocker: clk, Storage: stg, WsHub: wsHub},
 		ManageChatRoomActionType: ManageChatRoomActionType{DB: db},
 		ManageAuth: ManageAuth{
 			DB: db, Hash: h, Auth: auth, SessionManager: ssm, Clocker: clk, Config: cfg,
 		},
 		ManageChatRoomAction:    ManageChatRoomAction{DB: db},
-		ManageChatRoomBelonging: ManageChatRoomBelonging{DB: db, Clocker: clk},
-		ManageMembership:        ManageMembership{DB: db, Clocker: clk},
-		ManageMessage:           ManageMessage{DB: db, Clocker: clk, Storage: stg},
+		ManageChatRoomBelonging: ManageChatRoomBelonging{DB: db, Clocker: clk, WsHub: wsHub},
+		ManageMembership:        ManageMembership{DB: db, Clocker: clk, WsHub: wsHub},
+		ManageMessage:           ManageMessage{DB: db, Clocker: clk, Storage: stg, WsHub: wsHub},
 		ManageAttachedMessage:   ManageAttachedMessage{DB: db, Clocker: clk, Storage: stg},
-		ManageReadReceipt:       ManageReadReceipt{DB: db, Clocker: clk},
+		ManageReadReceipt:       ManageReadReceipt{DB: db, Clocker: clk, WsHub: wsHub},
 	}
 }
 

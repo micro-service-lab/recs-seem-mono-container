@@ -14,6 +14,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/storage"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/ws"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 )
 
@@ -22,6 +23,7 @@ type ManageMessage struct {
 	DB      store.Store
 	Clocker clock.Clock
 	Storage storage.Storage
+	WsHub   ws.HubInterface
 }
 
 // CreateMessage メッセージを作成する。
@@ -48,7 +50,7 @@ func (m *ManageMessage) CreateMessage(
 	}()
 	now := m.Clocker.Now()
 
-	_, err = m.DB.FindMemberByIDWithSd(ctx, sd, senderID)
+	sender, err := m.DB.FindMemberWithProfileImageWithSd(ctx, sd, senderID)
 	if err != nil {
 		var nfe errhandle.ModelNotFoundError
 		if errors.As(err, &nfe) {
@@ -56,7 +58,7 @@ func (m *ManageMessage) CreateMessage(
 		}
 		return entity.Message{}, fmt.Errorf("failed to find member: %w", err)
 	}
-	_, err = m.DB.FindChatRoomByIDWithSd(ctx, sd, chatRoomID)
+	chatRoom, err := m.DB.FindChatRoomByIDWithSd(ctx, sd, chatRoomID)
 	if err != nil {
 		var nfe errhandle.ModelNotFoundError
 		if errors.As(err, &nfe) {
@@ -139,6 +141,8 @@ func (m *ManageMessage) CreateMessage(
 	if err != nil {
 		return entity.Message{}, fmt.Errorf("failed to create message: %w", err)
 	}
+
+	var attachmentsData []entity.AttachedItemOnMessage
 	if len(attachments) > 0 {
 		aiParams := make([]parameter.AttachItemMessageParam, len(attachments))
 		for i, v := range attachments {
@@ -154,6 +158,20 @@ func (m *ManageMessage) CreateMessage(
 		); err != nil {
 			return entity.Message{}, fmt.Errorf("failed to attache items on messages: %w", err)
 		}
+		attachmentsEntity, err := m.DB.GetAttachedItemsOnMessageWithSd(
+			ctx,
+			sd,
+			e.MessageID,
+			parameter.WhereAttachedItemOnMessageParam{},
+			parameter.AttachedItemOnMessageOrderMethodDefault,
+			store.NumberedPaginationParam{},
+			store.CursorPaginationParam{},
+			store.WithCountParam{},
+		)
+		if err != nil {
+			return entity.Message{}, fmt.Errorf("failed to get attached items on message: %w", err)
+		}
+		attachmentsData = attachmentsEntity.Data
 	}
 	if len(readableMemberIDs) > 0 {
 		rrParams := make([]parameter.CreateReadReceiptParam, len(readableMemberIDs))
@@ -171,6 +189,52 @@ func (m *ManageMessage) CreateMessage(
 			return entity.Message{}, fmt.Errorf("failed to create read receipts: %w", err)
 		}
 	}
+
+	belongMemberIDs := make([]uuid.UUID, len(belongMembers.Data))
+	for i, v := range belongMembers.Data {
+		belongMemberIDs[i] = v.Member.MemberID
+	}
+
+	msg := entity.MessageWithSenderAndReadReceiptCountAndAttachments{
+		MessageID:        e.MessageID,
+		ChatRoomActionID: e.ChatRoomActionID,
+		Sender: entity.NullableEntity[entity.MemberCard]{
+			Valid: true,
+			Entity: entity.MemberCard{
+				MemberID:     sender.MemberID,
+				Name:         sender.Name,
+				FirstName:    sender.FirstName,
+				LastName:     sender.LastName,
+				Email:        sender.Email,
+				ProfileImage: sender.ProfileImage,
+				GradeID:      sender.GradeID,
+				GroupID:      sender.GroupID,
+			},
+		},
+		Body:             e.Body,
+		PostedAt:         e.PostedAt,
+		LastEditedAt:     e.LastEditedAt,
+		ReadReceiptCount: 0,
+		Attachments:      attachmentsData,
+	}
+
+	defer func(
+		room entity.ChatRoom, belongMemberIDs []uuid.UUID,
+		msg entity.MessageWithSenderAndReadReceiptCountAndAttachments,
+	) {
+		if err == nil {
+			m.WsHub.Dispatch(ws.EventTypeChatRoomSentMessage, ws.Targets{
+				Members: belongMemberIDs,
+			}, ws.ChatRoomSentMessageEventData{
+				ChatRoomID:           room.ChatRoomID,
+				Action:               msg,
+				ChatRoomActionID:     cra.ChatRoomActionID,
+				ChatRoomActionTypeID: cra.ChatRoomActionTypeID,
+				ActedAt:              cra.ActedAt,
+			})
+		}
+	}(chatRoom, belongMemberIDs, msg)
+
 	return e, nil
 }
 
@@ -200,7 +264,7 @@ func (m *ManageMessage) CreateMessageOnPrivateRoom(
 	if senderID == receiverID {
 		return entity.Message{}, errhandle.NewCommonError(response.NotCreateMessageToSelf, nil)
 	}
-	sender, err := m.DB.FindMemberByIDWithSd(ctx, sd, senderID)
+	sender, err := m.DB.FindMemberWithProfileImageWithSd(ctx, sd, senderID)
 	if err != nil {
 		var nfe errhandle.ModelNotFoundError
 		if errors.As(err, &nfe) {
@@ -245,10 +309,32 @@ func (m *ManageMessage) CreateMessageOnPrivateRoom(
 	if err != nil {
 		var nfe errhandle.ModelNotFoundError
 		if errors.As(err, &nfe) {
-			cr, err = createPrivateChatRoom(ctx, sd, now, m.DB, sender, receiver)
+			cr, err = createPrivateChatRoom(ctx, sd, now, m.DB, entity.Member{
+				MemberID:               senderID,
+				Name:                   sender.Name,
+				FirstName:              sender.FirstName,
+				LastName:               sender.LastName,
+				AttendStatusID:         sender.AttendStatusID,
+				Email:                  sender.Email,
+				ProfileImageID:         entity.UUID{Valid: sender.ProfileImage.Valid, Bytes: sender.ProfileImage.Entity.ImageID},
+				GradeID:                sender.GradeID,
+				GroupID:                sender.GroupID,
+				PersonalOrganizationID: sender.PersonalOrganizationID,
+				RoleID:                 sender.RoleID,
+			}, receiver)
 			if err != nil {
 				return entity.Message{}, fmt.Errorf("failed to create private chat room: %w", err)
 			}
+
+			defer func(room entity.ChatRoom, membersIDs []uuid.UUID) {
+				if err == nil {
+					m.WsHub.Dispatch(ws.EventTypeChatRoomAddedMe, ws.Targets{
+						Members: membersIDs,
+					}, ws.ChatRoomAddedMeEventData{
+						ChatRoom: room,
+					})
+				}
+			}(cr, []uuid.UUID{senderID, receiverID})
 		} else {
 			return entity.Message{}, fmt.Errorf("failed to find chat room: %w", err)
 		}
@@ -279,6 +365,8 @@ func (m *ManageMessage) CreateMessageOnPrivateRoom(
 	if err != nil {
 		return entity.Message{}, fmt.Errorf("failed to create message: %w", err)
 	}
+
+	var attachmentsData []entity.AttachedItemOnMessage
 	if len(attachments) > 0 {
 		aiParams := make([]parameter.AttachItemMessageParam, len(attachments))
 		for i, v := range attachments {
@@ -294,6 +382,21 @@ func (m *ManageMessage) CreateMessageOnPrivateRoom(
 		); err != nil {
 			return entity.Message{}, fmt.Errorf("failed to attache items on messages: %w", err)
 		}
+
+		attachmentsEntity, err := m.DB.GetAttachedItemsOnMessageWithSd(
+			ctx,
+			sd,
+			e.MessageID,
+			parameter.WhereAttachedItemOnMessageParam{},
+			parameter.AttachedItemOnMessageOrderMethodDefault,
+			store.NumberedPaginationParam{},
+			store.CursorPaginationParam{},
+			store.WithCountParam{},
+		)
+		if err != nil {
+			return entity.Message{}, fmt.Errorf("failed to get attached items on message: %w", err)
+		}
+		attachmentsData = attachmentsEntity.Data
 	}
 
 	if _, err = m.DB.CreateReadReceiptWithSd(
@@ -306,6 +409,46 @@ func (m *ManageMessage) CreateMessageOnPrivateRoom(
 	); err != nil {
 		return entity.Message{}, fmt.Errorf("failed to create read receipt: %w", err)
 	}
+
+	msg := entity.MessageWithSenderAndReadReceiptCountAndAttachments{
+		MessageID:        e.MessageID,
+		ChatRoomActionID: e.ChatRoomActionID,
+		Sender: entity.NullableEntity[entity.MemberCard]{
+			Valid: true,
+			Entity: entity.MemberCard{
+				MemberID:     sender.MemberID,
+				Name:         sender.Name,
+				FirstName:    sender.FirstName,
+				LastName:     sender.LastName,
+				Email:        sender.Email,
+				ProfileImage: sender.ProfileImage,
+				GradeID:      sender.GradeID,
+				GroupID:      sender.GroupID,
+			},
+		},
+		Body:             e.Body,
+		PostedAt:         e.PostedAt,
+		LastEditedAt:     e.LastEditedAt,
+		ReadReceiptCount: 0,
+		Attachments:      attachmentsData,
+	}
+
+	defer func(
+		room entity.ChatRoom, belongMemberIDs []uuid.UUID,
+		msg entity.MessageWithSenderAndReadReceiptCountAndAttachments,
+	) {
+		if err == nil {
+			m.WsHub.Dispatch(ws.EventTypeChatRoomSentMessage, ws.Targets{
+				Members: belongMemberIDs,
+			}, ws.ChatRoomSentMessageEventData{
+				ChatRoomID:           room.ChatRoomID,
+				Action:               msg,
+				ChatRoomActionID:     cra.ChatRoomActionID,
+				ChatRoomActionTypeID: cra.ChatRoomActionTypeID,
+				ActedAt:              cra.ActedAt,
+			})
+		}
+	}(cr, []uuid.UUID{senderID, receiverID}, msg)
 
 	return e, nil
 }
@@ -345,14 +488,32 @@ func (m *ManageMessage) DeleteMessage(
 	if msg.ChatRoomAction.ChatRoomID != chatRoomID {
 		return 0, errhandle.NewCommonError(response.NotMatchChatRoomMessage, nil)
 	}
-	if exist, err := m.DB.ExistsChatRoomBelongingWithSd(
+	owner, err := m.DB.FindMemberByIDWithSd(ctx, sd, ownerID)
+	if err != nil {
+		return 0, fmt.Errorf("failed to find member: %w", err)
+	}
+	belongMembers, err := m.DB.GetMembersOnChatRoomWithSd(
 		ctx,
 		sd,
-		ownerID,
 		chatRoomID,
-	); err != nil {
+		parameter.WhereMemberOnChatRoomParam{},
+		parameter.MemberOnChatRoomOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
 		return 0, fmt.Errorf("failed to exists chat room belonging: %w", err)
-	} else if !exist {
+	}
+	var belong bool
+	belongMemberIDs := make([]uuid.UUID, len(belongMembers.Data))
+	for _, v := range belongMembers.Data {
+		if v.Member.MemberID == ownerID {
+			belong = true
+		}
+		belongMemberIDs = append(belongMemberIDs, v.Member.MemberID)
+	}
+	if !belong {
 		return 0, errhandle.NewCommonError(response.NotChatRoomMember, nil)
 	}
 
@@ -367,14 +528,15 @@ func (m *ManageMessage) DeleteMessage(
 	if err != nil {
 		return 0, fmt.Errorf("failed to update chat room action: %w", err)
 	}
-	if _, err = m.DB.CreateChatRoomDeleteMessageActionWithSd(
+	deletedAction, err := m.DB.CreateChatRoomDeleteMessageActionWithSd(
 		ctx,
 		sd,
 		parameter.CreateChatRoomDeleteMessageActionParam{
 			ChatRoomActionID: cra.ChatRoomActionID,
 			DeletedBy:        entity.UUID{Valid: true, Bytes: ownerID},
 		},
-	); err != nil {
+	)
+	if err != nil {
 		return 0, fmt.Errorf("failed to create chat room delete message action: %w", err)
 	}
 
@@ -419,6 +581,42 @@ func (m *ManageMessage) DeleteMessage(
 			return 0, fmt.Errorf("failed to plural delete files: %w", err)
 		}
 	}
+
+	action := entity.ChatRoomDeleteMessageActionWithDeletedBy{
+		ChatRoomDeleteMessageActionID: deletedAction.ChatRoomDeleteMessageActionID,
+		ChatRoomActionID:              deletedAction.ChatRoomActionID,
+		DeletedBy: entity.NullableEntity[entity.SimpleMember]{
+			Valid: true,
+			Entity: entity.SimpleMember{
+				MemberID:       ownerID,
+				Name:           owner.Name,
+				FirstName:      owner.FirstName,
+				LastName:       owner.LastName,
+				Email:          owner.Email,
+				ProfileImageID: owner.ProfileImageID,
+				GradeID:        owner.GradeID,
+				GroupID:        owner.GroupID,
+			},
+		},
+	}
+
+	defer func(
+		roomID uuid.UUID, belongMemberIDs []uuid.UUID,
+		action entity.ChatRoomDeleteMessageActionWithDeletedBy,
+		actAttr entity.ChatRoomAction,
+	) {
+		if err == nil {
+			m.WsHub.Dispatch(ws.EventTypeChatRoomDeletedMessage, ws.Targets{
+				Members: belongMemberIDs,
+			}, ws.ChatRoomDeletedMessageEventData{
+				ChatRoomID:           roomID,
+				Action:               action,
+				ChatRoomActionID:     actAttr.ChatRoomActionID,
+				ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+				ActedAt:              actAttr.ActedAt,
+			})
+		}
+	}(chatRoomID, belongMemberIDs, action, cra)
 
 	return e, nil
 }
@@ -638,14 +836,28 @@ func (m *ManageMessage) EditMessage(
 	if msg.ChatRoomAction.ChatRoomID != chatRoomID {
 		return entity.Message{}, errhandle.NewCommonError(response.NotMatchChatRoomMessage, nil)
 	}
-	if exist, err := m.DB.ExistsChatRoomBelongingWithSd(
+	belongMembers, err := m.DB.GetMembersOnChatRoomWithSd(
 		ctx,
 		sd,
-		ownerID,
 		chatRoomID,
-	); err != nil {
+		parameter.WhereMemberOnChatRoomParam{},
+		parameter.MemberOnChatRoomOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
 		return entity.Message{}, fmt.Errorf("failed to exists chat room belonging: %w", err)
-	} else if !exist {
+	}
+	var belong bool
+	belongMemberIDs := make([]uuid.UUID, len(belongMembers.Data))
+	for _, v := range belongMembers.Data {
+		if v.Member.MemberID == ownerID {
+			belong = true
+		}
+		belongMemberIDs = append(belongMemberIDs, v.Member.MemberID)
+	}
+	if !belong {
 		return entity.Message{}, errhandle.NewCommonError(response.NotChatRoomMember, nil)
 	}
 	if e, err = m.DB.UpdateMessageWithSd(
@@ -659,6 +871,20 @@ func (m *ManageMessage) EditMessage(
 	); err != nil {
 		return entity.Message{}, fmt.Errorf("failed to update message: %w", err)
 	}
+
+	defer func(
+		roomID uuid.UUID, msg entity.Message, belongMemberIDs []uuid.UUID,
+	) {
+		if err == nil {
+			m.WsHub.Dispatch(ws.EventTypeChatRoomEditedMessage, ws.Targets{
+				Members: belongMemberIDs,
+			}, ws.ChatRoomEditedMessageEventData{
+				ChatRoomID: roomID,
+				Message:    msg,
+			})
+		}
+	}(chatRoomID, e, belongMemberIDs)
+
 	return e, nil
 }
 

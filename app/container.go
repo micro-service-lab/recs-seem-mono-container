@@ -132,12 +132,6 @@ func (c *Container) Init(ctx context.Context) error {
 
 	c.Validator = vd
 
-	svc := service.NewManager(
-		str, c.Translator, s3, h, clk, authSvc, ssm, *cfg,
-	)
-
-	c.ServiceManager = svc
-
 	ps := pubsub.NewRedisService(*cfg)
 
 	c.PubsubService = ps
@@ -145,6 +139,12 @@ func (c *Container) Init(ctx context.Context) error {
 	hub := ws.NewHub(ps)
 
 	c.WebsocketHub = hub
+
+	svc := service.NewManager(
+		str, c.Translator, s3, h, clk, authSvc, ssm, *cfg, hub,
+	)
+
+	c.ServiceManager = svc
 
 	return nil
 }

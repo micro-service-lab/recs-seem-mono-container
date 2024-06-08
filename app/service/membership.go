@@ -11,6 +11,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/ws"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 )
 
@@ -18,6 +19,7 @@ import (
 type ManageMembership struct {
 	DB      store.Store
 	Clocker clock.Clock
+	WsHub   ws.HubInterface
 }
 
 // BelongMembersOnOrganization メンバーを組織に所属させる。
@@ -72,6 +74,25 @@ func (m *ManageMembership) BelongMembersOnOrganization(
 	if len(mm.Data) != len(memberIDs) {
 		return 0, errhandle.NewModelNotFoundError(OrganizationBelongingTargetMembers)
 	}
+
+	belongingMembers, err := m.DB.GetMembersOnOrganizationWithSd(
+		ctx,
+		sd,
+		organizationID,
+		parameter.WhereMemberOnOrganizationParam{},
+		parameter.MemberOnOrganizationOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get members on organization: %w", err)
+	}
+	alreadyMemberIDs := make([]uuid.UUID, 0, len(belongingMembers.Data))
+	for _, v := range belongingMembers.Data {
+		alreadyMemberIDs = append(alreadyMemberIDs, v.Member.MemberID)
+	}
+
 	bcrp := make([]parameter.BelongOrganizationParam, 0, len(mm.Data))
 	for _, m := range mm.Data {
 		bcrp = append(bcrp, parameter.BelongOrganizationParam{
@@ -105,7 +126,9 @@ func (m *ManageMembership) BelongMembersOnOrganization(
 			}
 			return 0, fmt.Errorf("failed to find chat room: %w", err)
 		}
-		if _, err = belongMembersOnChatRoom(
+		var action entity.ChatRoomAddMemberActionWithAddedByAndAddMembers
+		var actAttr entity.ChatRoomAction
+		if _, action, actAttr, err = belongMembersOnChatRoom(
 			ctx,
 			sd,
 			now,
@@ -117,6 +140,28 @@ func (m *ManageMembership) BelongMembersOnOrganization(
 		); err != nil {
 			return 0, fmt.Errorf("failed to belong members on chat room: %w", err)
 		}
+		defer func(
+			room entity.ChatRoom, membersIDs, alreadyMemberIDs []uuid.UUID,
+			action entity.ChatRoomAddMemberActionWithAddedByAndAddMembers,
+			actAttr entity.ChatRoomAction,
+		) {
+			if err == nil {
+				m.WsHub.Dispatch(ws.EventTypeChatRoomAddedMe, ws.Targets{
+					Members: membersIDs,
+				}, ws.ChatRoomAddedMeEventData{
+					ChatRoom: room,
+				})
+				m.WsHub.Dispatch(ws.EventTypeChatRoomAddedMember, ws.Targets{
+					Members: alreadyMemberIDs,
+				}, ws.ChatRoomAddedMemberEventData{
+					ChatRoomID:           room.ChatRoomID,
+					Action:               action,
+					ChatRoomActionID:     actAttr.ChatRoomActionID,
+					ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+					ActedAt:              actAttr.ActedAt,
+				})
+			}
+		}(room, memberIDs, alreadyMemberIDs, action, actAttr)
 	}
 
 	return e, nil
@@ -174,6 +219,30 @@ func (m *ManageMembership) RemoveMembersFromOrganization(
 	if len(mm.Data) != len(memberIDs) {
 		return 0, errhandle.NewModelNotFoundError(OrganizationBelongingTargetMembers)
 	}
+	belongingMembers, err := m.DB.GetMembersOnOrganizationWithSd(
+		ctx,
+		sd,
+		organizationID,
+		parameter.WhereMemberOnOrganizationParam{},
+		parameter.MemberOnOrganizationOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get members on organization: %w", err)
+	}
+	removeMembers := make(map[uuid.UUID]struct{}, len(mm.Data))
+	for _, v := range memberIDs {
+		removeMembers[v] = struct{}{}
+	}
+	leftMemberIDs := make([]uuid.UUID, 0, len(belongingMembers.Data))
+	for _, v := range belongingMembers.Data {
+		if _, ok := removeMembers[v.Member.MemberID]; ok {
+			continue
+		}
+		leftMemberIDs = append(leftMemberIDs, v.Member.MemberID)
+	}
 	if e, err = m.DB.DisbelongPluralMembersOnOrganizationWithSd(
 		ctx,
 		sd,
@@ -200,7 +269,9 @@ func (m *ManageMembership) RemoveMembersFromOrganization(
 			}
 			return 0, fmt.Errorf("failed to find chat room: %w", err)
 		}
-		if _, err = removeMembersFromChatRoom(
+		var action entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers
+		var actAttr entity.ChatRoomAction
+		if _, action, actAttr, err = removeMembersFromChatRoom(
 			ctx,
 			sd,
 			now,
@@ -212,6 +283,32 @@ func (m *ManageMembership) RemoveMembersFromOrganization(
 		); err != nil {
 			return 0, fmt.Errorf("failed to remove members from chat room: %w", err)
 		}
+		defer func(
+			room entity.ChatRoom, membersIDs, leftMemberIDs []uuid.UUID,
+			action entity.ChatRoomRemoveMemberActionWithRemovedByAndRemoveMembers,
+			actAttr entity.ChatRoomAction,
+		) {
+			if err == nil {
+				m.WsHub.Dispatch(ws.EventTypeChatRoomRemovedMe, ws.Targets{
+					Members: membersIDs,
+				}, ws.ChatRoomRemovedMeEventData{
+					ChatRoomID:           room.ChatRoomID,
+					Action:               action,
+					ChatRoomActionID:     actAttr.ChatRoomActionID,
+					ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+					ActedAt:              actAttr.ActedAt,
+				})
+				m.WsHub.Dispatch(ws.EventTypeChatRoomRemovedMember, ws.Targets{
+					Members: leftMemberIDs,
+				}, ws.ChatRoomRemovedMemberEventData{
+					ChatRoomID:           room.ChatRoomID,
+					Action:               action,
+					ChatRoomActionID:     actAttr.ChatRoomActionID,
+					ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+					ActedAt:              actAttr.ActedAt,
+				})
+			}
+		}(room, memberIDs, leftMemberIDs, action, actAttr)
 	}
 
 	return e, nil
@@ -255,6 +352,26 @@ func (m *ManageMembership) WithdrawMemberFromOrganization(
 		}
 		return 0, fmt.Errorf("failed to find organization: %w", err)
 	}
+	belongingMembers, err := m.DB.GetMembersOnOrganizationWithSd(
+		ctx,
+		sd,
+		organizationID,
+		parameter.WhereMemberOnOrganizationParam{},
+		parameter.MemberOnOrganizationOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get members on organization: %w", err)
+	}
+	leftMemberIDs := make([]uuid.UUID, 0, len(belongingMembers.Data))
+	for _, v := range belongingMembers.Data {
+		if v.Member.MemberID == memberID {
+			continue
+		}
+		leftMemberIDs = append(leftMemberIDs, v.Member.MemberID)
+	}
 	if e, err = m.DB.DisbelongOrganizationWithSd(
 		ctx,
 		sd,
@@ -281,7 +398,9 @@ func (m *ManageMembership) WithdrawMemberFromOrganization(
 			}
 			return 0, fmt.Errorf("failed to find chat room: %w", err)
 		}
-		if _, err = withdrawMemberFromChatRoom(
+		var action entity.ChatRoomWithdrawActionWithMember
+		var actAttr entity.ChatRoomAction
+		if _, action, actAttr, err = withdrawMemberFromChatRoom(
 			ctx,
 			sd,
 			now,
@@ -292,6 +411,23 @@ func (m *ManageMembership) WithdrawMemberFromOrganization(
 		); err != nil {
 			return 0, fmt.Errorf("failed to withdraw member from chat room: %w", err)
 		}
+		defer func(
+			room entity.ChatRoom, leftMemberIDs []uuid.UUID,
+			action entity.ChatRoomWithdrawActionWithMember,
+			actAttr entity.ChatRoomAction,
+		) {
+			if err == nil {
+				m.WsHub.Dispatch(ws.EventTypeChatRoomWithdrawnMember, ws.Targets{
+					Members: leftMemberIDs,
+				}, ws.ChatRoomWithdrawnMemberEventData{
+					ChatRoomID:           room.ChatRoomID,
+					Action:               action,
+					ChatRoomActionID:     actAttr.ChatRoomActionID,
+					ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+					ActedAt:              actAttr.ActedAt,
+				})
+			}
+		}(room, leftMemberIDs, action, actAttr)
 	}
 
 	return e, nil

@@ -175,4 +175,25 @@ type ReadReceipt interface {
 		np NumberedPaginationParam,
 		order parameter.ReadableMemberOnMessageOrderMethod,
 	) (ListResult[entity.ReadableMemberOnMessage], error)
+	// GetReadableMessagesOnChatRoomAndMember チャットルーム、メンバー上のメッセージを取得する。
+	GetReadableMessagesOnChatRoomAndMember(
+		ctx context.Context,
+		chatRoomID, memberID uuid.UUID,
+		where parameter.WhereReadableMessageOnChatRoomAndMemberParam,
+		order parameter.ReadableMessageOnChatRoomAndMemberOrderMethod,
+		np NumberedPaginationParam,
+		cp CursorPaginationParam,
+		wc WithCountParam,
+	) (ListResult[entity.ReadableMessageOnChatRoomAndMember], error)
+	// GetReadableMessagesOnChatRoomAndMemberWithSd SD付きでチャットルーム、メンバー上のメッセージを取得する。
+	GetReadableMessagesOnChatRoomAndMemberWithSd(
+		ctx context.Context,
+		sd Sd,
+		chatRoomID, memberID uuid.UUID,
+		where parameter.WhereReadableMessageOnChatRoomAndMemberParam,
+		order parameter.ReadableMessageOnChatRoomAndMemberOrderMethod,
+		np NumberedPaginationParam,
+		cp CursorPaginationParam,
+		wc WithCountParam,
+	) (ListResult[entity.ReadableMessageOnChatRoomAndMember], error)
 }

@@ -1020,6 +1020,245 @@ func (q *Queries) GetReadableMembersOnMessageUseNumberedPaginate(ctx context.Con
 	return items, nil
 }
 
+const getReadableMessagesOnChatRoomAndMember = `-- name: GetReadableMessagesOnChatRoomAndMember :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, t_read_receipts.read_at read_at FROM t_messages
+LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
+WHERE t_messages.chat_room_action_id IN (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1)
+AND t_read_receipts.member_id = $2
+AND
+	CASE WHEN $3::boolean = true THEN t_read_receipts.read_at IS NOT NULL ELSE TRUE END
+AND
+	CASE WHEN $4::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
+ORDER BY
+	CASE WHEN $5::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
+	t_messages_pkey ASC
+`
+
+type GetReadableMessagesOnChatRoomAndMemberParams struct {
+	ChatRoomID     uuid.UUID `json:"chat_room_id"`
+	MemberID       uuid.UUID `json:"member_id"`
+	WhereIsRead    bool      `json:"where_is_read"`
+	WhereIsNotRead bool      `json:"where_is_not_read"`
+	OrderMethod    string    `json:"order_method"`
+}
+
+type GetReadableMessagesOnChatRoomAndMemberRow struct {
+	TMessagesPkey    pgtype.Int8        `json:"t_messages_pkey"`
+	MessageID        uuid.UUID          `json:"message_id"`
+	SenderID         pgtype.UUID        `json:"sender_id"`
+	Body             string             `json:"body"`
+	PostedAt         time.Time          `json:"posted_at"`
+	LastEditedAt     time.Time          `json:"last_edited_at"`
+	ChatRoomActionID uuid.UUID          `json:"chat_room_action_id"`
+	ReadAt           pgtype.Timestamptz `json:"read_at"`
+}
+
+func (q *Queries) GetReadableMessagesOnChatRoomAndMember(ctx context.Context, arg GetReadableMessagesOnChatRoomAndMemberParams) ([]GetReadableMessagesOnChatRoomAndMemberRow, error) {
+	rows, err := q.db.Query(ctx, getReadableMessagesOnChatRoomAndMember,
+		arg.ChatRoomID,
+		arg.MemberID,
+		arg.WhereIsRead,
+		arg.WhereIsNotRead,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetReadableMessagesOnChatRoomAndMemberRow{}
+	for rows.Next() {
+		var i GetReadableMessagesOnChatRoomAndMemberRow
+		if err := rows.Scan(
+			&i.TMessagesPkey,
+			&i.MessageID,
+			&i.SenderID,
+			&i.Body,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.ChatRoomActionID,
+			&i.ReadAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getReadableMessagesOnChatRoomAndMemberUseKeysetPaginate = `-- name: GetReadableMessagesOnChatRoomAndMemberUseKeysetPaginate :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, t_read_receipts.read_at read_at FROM t_messages
+LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
+WHERE t_messages.chat_room_action_id IN (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1)
+AND t_read_receipts.member_id = $2
+AND
+	CASE WHEN $4::boolean = true THEN t_read_receipts.read_at IS NOT NULL ELSE TRUE END
+AND
+	CASE WHEN $5::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
+AND
+	CASE $6::text
+		WHEN 'next' THEN
+			CASE $7::text
+				WHEN 'read_at' THEN t_read_receipts.read_at > $8 OR (t_read_receipts.read_at = $8 AND t_messages_pkey > $9::int)
+				WHEN 'r_read_at' THEN t_read_receipts.read_at < $8 OR (t_read_receipts.read_at = $8 AND t_messages_pkey > $9::int)
+				ELSE t_messages_pkey > $9::int
+			END
+		WHEN 'prev' THEN
+			CASE $7::text
+				WHEN 'read_at' THEN t_read_receipts.read_at < $8 OR (t_read_receipts.read_at = $8 AND t_messages_pkey < $9::int)
+				WHEN 'r_read_at' THEN t_read_receipts.read_at > $8 OR (t_read_receipts.read_at = $8 AND t_messages_pkey < $9::int)
+				ELSE t_messages_pkey < $9::int
+			END
+	END
+ORDER BY
+	CASE WHEN $7::text = 'read_at' AND $6::text = 'next' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN $7::text = 'read_at' AND $6::text = 'prev' THEN t_read_receipts.read_at END DESC NULLS LAST,
+	CASE WHEN $7::text = 'r_read_at' AND $6::text = 'next' THEN t_read_receipts.read_at END DESC NULLS LAST,
+	CASE WHEN $7::text = 'r_read_at' AND $6::text = 'prev' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN $6::text = 'next' THEN t_messages_pkey END ASC,
+	CASE WHEN $6::text = 'prev' THEN t_messages_pkey END DESC
+LIMIT $3
+`
+
+type GetReadableMessagesOnChatRoomAndMemberUseKeysetPaginateParams struct {
+	ChatRoomID      uuid.UUID          `json:"chat_room_id"`
+	MemberID        uuid.UUID          `json:"member_id"`
+	Limit           int32              `json:"limit"`
+	WhereIsRead     bool               `json:"where_is_read"`
+	WhereIsNotRead  bool               `json:"where_is_not_read"`
+	CursorDirection string             `json:"cursor_direction"`
+	OrderMethod     string             `json:"order_method"`
+	ReadAtCursor    pgtype.Timestamptz `json:"read_at_cursor"`
+	Cursor          int32              `json:"cursor"`
+}
+
+type GetReadableMessagesOnChatRoomAndMemberUseKeysetPaginateRow struct {
+	TMessagesPkey    pgtype.Int8        `json:"t_messages_pkey"`
+	MessageID        uuid.UUID          `json:"message_id"`
+	SenderID         pgtype.UUID        `json:"sender_id"`
+	Body             string             `json:"body"`
+	PostedAt         time.Time          `json:"posted_at"`
+	LastEditedAt     time.Time          `json:"last_edited_at"`
+	ChatRoomActionID uuid.UUID          `json:"chat_room_action_id"`
+	ReadAt           pgtype.Timestamptz `json:"read_at"`
+}
+
+func (q *Queries) GetReadableMessagesOnChatRoomAndMemberUseKeysetPaginate(ctx context.Context, arg GetReadableMessagesOnChatRoomAndMemberUseKeysetPaginateParams) ([]GetReadableMessagesOnChatRoomAndMemberUseKeysetPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getReadableMessagesOnChatRoomAndMemberUseKeysetPaginate,
+		arg.ChatRoomID,
+		arg.MemberID,
+		arg.Limit,
+		arg.WhereIsRead,
+		arg.WhereIsNotRead,
+		arg.CursorDirection,
+		arg.OrderMethod,
+		arg.ReadAtCursor,
+		arg.Cursor,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetReadableMessagesOnChatRoomAndMemberUseKeysetPaginateRow{}
+	for rows.Next() {
+		var i GetReadableMessagesOnChatRoomAndMemberUseKeysetPaginateRow
+		if err := rows.Scan(
+			&i.TMessagesPkey,
+			&i.MessageID,
+			&i.SenderID,
+			&i.Body,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.ChatRoomActionID,
+			&i.ReadAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getReadableMessagesOnChatRoomAndMemberUseNumberedPaginate = `-- name: GetReadableMessagesOnChatRoomAndMemberUseNumberedPaginate :many
+SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, t_read_receipts.read_at read_at FROM t_messages
+LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
+WHERE t_messages.chat_room_action_id IN (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1)
+AND t_read_receipts.member_id = $2
+AND
+	CASE WHEN $5::boolean = true THEN t_read_receipts.read_at IS NOT NULL ELSE TRUE END
+AND
+	CASE WHEN $6::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
+ORDER BY
+	CASE WHEN $7::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN $7::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
+	t_messages_pkey ASC
+LIMIT $3 OFFSET $4
+`
+
+type GetReadableMessagesOnChatRoomAndMemberUseNumberedPaginateParams struct {
+	ChatRoomID     uuid.UUID `json:"chat_room_id"`
+	MemberID       uuid.UUID `json:"member_id"`
+	Limit          int32     `json:"limit"`
+	Offset         int32     `json:"offset"`
+	WhereIsRead    bool      `json:"where_is_read"`
+	WhereIsNotRead bool      `json:"where_is_not_read"`
+	OrderMethod    string    `json:"order_method"`
+}
+
+type GetReadableMessagesOnChatRoomAndMemberUseNumberedPaginateRow struct {
+	TMessagesPkey    pgtype.Int8        `json:"t_messages_pkey"`
+	MessageID        uuid.UUID          `json:"message_id"`
+	SenderID         pgtype.UUID        `json:"sender_id"`
+	Body             string             `json:"body"`
+	PostedAt         time.Time          `json:"posted_at"`
+	LastEditedAt     time.Time          `json:"last_edited_at"`
+	ChatRoomActionID uuid.UUID          `json:"chat_room_action_id"`
+	ReadAt           pgtype.Timestamptz `json:"read_at"`
+}
+
+func (q *Queries) GetReadableMessagesOnChatRoomAndMemberUseNumberedPaginate(ctx context.Context, arg GetReadableMessagesOnChatRoomAndMemberUseNumberedPaginateParams) ([]GetReadableMessagesOnChatRoomAndMemberUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getReadableMessagesOnChatRoomAndMemberUseNumberedPaginate,
+		arg.ChatRoomID,
+		arg.MemberID,
+		arg.Limit,
+		arg.Offset,
+		arg.WhereIsRead,
+		arg.WhereIsNotRead,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetReadableMessagesOnChatRoomAndMemberUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetReadableMessagesOnChatRoomAndMemberUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.TMessagesPkey,
+			&i.MessageID,
+			&i.SenderID,
+			&i.Body,
+			&i.PostedAt,
+			&i.LastEditedAt,
+			&i.ChatRoomActionID,
+			&i.ReadAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getReadableMessagesOnMember = `-- name: GetReadableMessagesOnMember :many
 SELECT t_messages.t_messages_pkey, t_messages.message_id, t_messages.sender_id, t_messages.body, t_messages.posted_at, t_messages.last_edited_at, t_messages.chat_room_action_id, t_read_receipts.read_at read_at FROM t_messages
 LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id

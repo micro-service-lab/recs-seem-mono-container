@@ -441,4 +441,11 @@ var (
 		Message:    "must be group professor if grade professor error",
 		StatusCode: http.StatusBadRequest,
 	}
+
+	// NotOrganizationMember 組織のメンバーでない
+	NotOrganizationMember = APIResponseType{
+		Code:       "258",
+		Message:    "not organization member error",
+		StatusCode: http.StatusForbidden,
+	}
 )

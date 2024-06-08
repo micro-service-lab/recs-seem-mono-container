@@ -117,6 +117,43 @@ func convMemberOnChatRoom(r query.GetMembersOnChatRoomRow) entity.MemberOnChatRo
 	}
 }
 
+func convMemberOnChatRoomWithChatRoomID(r query.GetMembersOnChatRoomRow) entity.MemberOnChatRoomWithChatRoomID {
+	var profileImg entity.NullableEntity[entity.ImageWithAttachableItem]
+	if r.MemberProfileImageID.Valid {
+		profileImg = entity.NullableEntity[entity.ImageWithAttachableItem]{
+			Valid: true,
+			Entity: entity.ImageWithAttachableItem{
+				ImageID: r.MemberProfileImageID.Bytes,
+				Height:  entity.Float(r.MemberProfileImageHeight),
+				Width:   entity.Float(r.MemberProfileImageWidth),
+				AttachableItem: entity.AttachableItem{
+					AttachableItemID: r.MemberProfileImageAttachableItemID.Bytes,
+					OwnerID:          entity.UUID(r.MemberProfileImageOwnerID),
+					FromOuter:        r.MemberProfileImageFromOuter.Bool,
+					URL:              r.MemberProfileImageUrl.String,
+					Alias:            r.MemberProfileImageAlias.String,
+					Size:             entity.Float(r.MemberProfileImageSize),
+					MimeTypeID:       r.MemberProfileImageMimeTypeID.Bytes,
+				},
+			},
+		}
+	}
+	return entity.MemberOnChatRoomWithChatRoomID{
+		Member: entity.MemberCard{
+			MemberID:     r.MemberID,
+			Name:         r.MemberName.String,
+			FirstName:    entity.String(r.MemberFirstName),
+			LastName:     entity.String(r.MemberLastName),
+			Email:        r.MemberEmail.String,
+			ProfileImage: profileImg,
+			GradeID:      r.MemberGradeID.Bytes,
+			GroupID:      r.MemberGroupID.Bytes,
+		},
+		ChatRoomID: r.ChatRoomID,
+		AddedAt:    r.AddedAt,
+	}
+}
+
 func convPrivateChatRoomCompanion(
 	r query.GetPluralPrivateChatRoomCompanionsRow,
 ) entity.PrivateChatRoomCompanions {
@@ -1017,7 +1054,7 @@ func (a *PgAdapter) GetPluralChatRoomsOnMemberWithSd(
 func getPluralMembersOnChatRoom(
 	ctx context.Context, qtx *query.Queries, chatRoomIDs []uuid.UUID,
 	np store.NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod,
-) (store.ListResult[entity.MemberOnChatRoom], error) {
+) (store.ListResult[entity.MemberOnChatRoomWithChatRoomID], error) {
 	var e []query.GetPluralMembersOnChatRoomRow
 	var err error
 	if !np.Valid {
@@ -1040,21 +1077,21 @@ func getPluralMembersOnChatRoom(
 		}
 	}
 	if err != nil {
-		return store.ListResult[entity.MemberOnChatRoom]{},
+		return store.ListResult[entity.MemberOnChatRoomWithChatRoomID]{},
 			fmt.Errorf("failed to get members on chat room: %w", err)
 	}
-	entities := make([]entity.MemberOnChatRoom, len(e))
+	entities := make([]entity.MemberOnChatRoomWithChatRoomID, len(e))
 	for i, v := range e {
-		entities[i] = convMemberOnChatRoom(query.GetMembersOnChatRoomRow(v))
+		entities[i] = convMemberOnChatRoomWithChatRoomID(query.GetMembersOnChatRoomRow(v))
 	}
-	return store.ListResult[entity.MemberOnChatRoom]{Data: entities}, nil
+	return store.ListResult[entity.MemberOnChatRoomWithChatRoomID]{Data: entities}, nil
 }
 
 // GetPluralMembersOnChatRoom チャットルーム上の複数のメンバーを取得する。
 func (a *PgAdapter) GetPluralMembersOnChatRoom(
 	ctx context.Context, chatRoomIDs []uuid.UUID,
 	np store.NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod,
-) (store.ListResult[entity.MemberOnChatRoom], error) {
+) (store.ListResult[entity.MemberOnChatRoomWithChatRoomID], error) {
 	return getPluralMembersOnChatRoom(ctx, a.query, chatRoomIDs, np, order)
 }
 
@@ -1062,12 +1099,12 @@ func (a *PgAdapter) GetPluralMembersOnChatRoom(
 func (a *PgAdapter) GetPluralMembersOnChatRoomWithSd(
 	ctx context.Context, sd store.Sd, chatRoomIDs []uuid.UUID,
 	np store.NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod,
-) (store.ListResult[entity.MemberOnChatRoom], error) {
+) (store.ListResult[entity.MemberOnChatRoomWithChatRoomID], error) {
 	a.mu.RLock()
 	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ListResult[entity.MemberOnChatRoom]{}, store.ErrNotFoundDescriptor
+		return store.ListResult[entity.MemberOnChatRoomWithChatRoomID]{}, store.ErrNotFoundDescriptor
 	}
 	return getPluralMembersOnChatRoom(ctx, qtx, chatRoomIDs, np, order)
 }

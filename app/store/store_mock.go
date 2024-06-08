@@ -2122,7 +2122,7 @@ var _ Store = &StoreMock{}
 //			GetPluralMembersFunc: func(ctx context.Context, memberIDs []uuid.UUID, order parameter.MemberOrderMethod, np NumberedPaginationParam) (ListResult[entity.Member], error) {
 //				panic("mock out the GetPluralMembers method")
 //			},
-//			GetPluralMembersOnChatRoomFunc: func(ctx context.Context, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoom], error) {
+//			GetPluralMembersOnChatRoomFunc: func(ctx context.Context, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoomWithChatRoomID], error) {
 //				panic("mock out the GetPluralMembersOnChatRoom method")
 //			},
 //			GetPluralMembersOnChatRoomAddMemberActionFunc: func(ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.MemberOnChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberOnChatRoomAddMemberAction], error) {
@@ -2137,7 +2137,7 @@ var _ Store = &StoreMock{}
 //			GetPluralMembersOnChatRoomRemoveMemberActionWithSdFunc: func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberOnChatRoomRemoveMemberAction], error) {
 //				panic("mock out the GetPluralMembersOnChatRoomRemoveMemberActionWithSd method")
 //			},
-//			GetPluralMembersOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoom], error) {
+//			GetPluralMembersOnChatRoomWithSdFunc: func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoomWithChatRoomID], error) {
 //				panic("mock out the GetPluralMembersOnChatRoomWithSd method")
 //			},
 //			GetPluralMembersOnOrganizationFunc: func(ctx context.Context, organizationIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnOrganizationOrderMethod) (ListResult[entity.MemberOnOrganization], error) {
@@ -2364,6 +2364,12 @@ var _ Store = &StoreMock{}
 //			},
 //			GetReadableMembersOnMessageWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID, where parameter.WhereReadableMemberOnMessageParam, order parameter.ReadableMemberOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMemberOnMessage], error) {
 //				panic("mock out the GetReadableMembersOnMessageWithSd method")
+//			},
+//			GetReadableMessagesOnChatRoomAndMemberFunc: func(ctx context.Context, chatRoomID uuid.UUID, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam, order parameter.ReadableMessageOnChatRoomAndMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMessageOnChatRoomAndMember], error) {
+//				panic("mock out the GetReadableMessagesOnChatRoomAndMember method")
+//			},
+//			GetReadableMessagesOnChatRoomAndMemberWithSdFunc: func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam, order parameter.ReadableMessageOnChatRoomAndMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMessageOnChatRoomAndMember], error) {
+//				panic("mock out the GetReadableMessagesOnChatRoomAndMemberWithSd method")
 //			},
 //			GetReadableMessagesOnMemberFunc: func(ctx context.Context, memberID uuid.UUID, where parameter.WhereReadableMessageOnMemberParam, order parameter.ReadableMessageOnMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMessageOnMember], error) {
 //				panic("mock out the GetReadableMessagesOnMember method")
@@ -4944,7 +4950,7 @@ type StoreMock struct {
 	GetPluralMembersFunc func(ctx context.Context, memberIDs []uuid.UUID, order parameter.MemberOrderMethod, np NumberedPaginationParam) (ListResult[entity.Member], error)
 
 	// GetPluralMembersOnChatRoomFunc mocks the GetPluralMembersOnChatRoom method.
-	GetPluralMembersOnChatRoomFunc func(ctx context.Context, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoom], error)
+	GetPluralMembersOnChatRoomFunc func(ctx context.Context, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoomWithChatRoomID], error)
 
 	// GetPluralMembersOnChatRoomAddMemberActionFunc mocks the GetPluralMembersOnChatRoomAddMemberAction method.
 	GetPluralMembersOnChatRoomAddMemberActionFunc func(ctx context.Context, chatRoomAddMemberActionIDs []uuid.UUID, order parameter.MemberOnChatRoomAddMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberOnChatRoomAddMemberAction], error)
@@ -4959,7 +4965,7 @@ type StoreMock struct {
 	GetPluralMembersOnChatRoomRemoveMemberActionWithSdFunc func(ctx context.Context, sd Sd, chatRoomRemoveMemberActionIDs []uuid.UUID, order parameter.MemberOnChatRoomRemoveMemberActionOrderMethod, np NumberedPaginationParam) (ListResult[entity.MemberOnChatRoomRemoveMemberAction], error)
 
 	// GetPluralMembersOnChatRoomWithSdFunc mocks the GetPluralMembersOnChatRoomWithSd method.
-	GetPluralMembersOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoom], error)
+	GetPluralMembersOnChatRoomWithSdFunc func(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoomWithChatRoomID], error)
 
 	// GetPluralMembersOnOrganizationFunc mocks the GetPluralMembersOnOrganization method.
 	GetPluralMembersOnOrganizationFunc func(ctx context.Context, organizationIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnOrganizationOrderMethod) (ListResult[entity.MemberOnOrganization], error)
@@ -5185,6 +5191,12 @@ type StoreMock struct {
 
 	// GetReadableMembersOnMessageWithSdFunc mocks the GetReadableMembersOnMessageWithSd method.
 	GetReadableMembersOnMessageWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID, where parameter.WhereReadableMemberOnMessageParam, order parameter.ReadableMemberOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMemberOnMessage], error)
+
+	// GetReadableMessagesOnChatRoomAndMemberFunc mocks the GetReadableMessagesOnChatRoomAndMember method.
+	GetReadableMessagesOnChatRoomAndMemberFunc func(ctx context.Context, chatRoomID uuid.UUID, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam, order parameter.ReadableMessageOnChatRoomAndMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMessageOnChatRoomAndMember], error)
+
+	// GetReadableMessagesOnChatRoomAndMemberWithSdFunc mocks the GetReadableMessagesOnChatRoomAndMemberWithSd method.
+	GetReadableMessagesOnChatRoomAndMemberWithSdFunc func(ctx context.Context, sd Sd, chatRoomID uuid.UUID, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam, order parameter.ReadableMessageOnChatRoomAndMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMessageOnChatRoomAndMember], error)
 
 	// GetReadableMessagesOnMemberFunc mocks the GetReadableMessagesOnMember method.
 	GetReadableMessagesOnMemberFunc func(ctx context.Context, memberID uuid.UUID, where parameter.WhereReadableMessageOnMemberParam, order parameter.ReadableMessageOnMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMessageOnMember], error)
@@ -13584,6 +13596,46 @@ type StoreMock struct {
 			// Wc is the wc argument value.
 			Wc WithCountParam
 		}
+		// GetReadableMessagesOnChatRoomAndMember holds details about calls to the GetReadableMessagesOnChatRoomAndMember method.
+		GetReadableMessagesOnChatRoomAndMember []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereReadableMessageOnChatRoomAndMemberParam
+			// Order is the order argument value.
+			Order parameter.ReadableMessageOnChatRoomAndMemberOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
+		// GetReadableMessagesOnChatRoomAndMemberWithSd holds details about calls to the GetReadableMessagesOnChatRoomAndMemberWithSd method.
+		GetReadableMessagesOnChatRoomAndMemberWithSd []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// Sd is the sd argument value.
+			Sd Sd
+			// ChatRoomID is the chatRoomID argument value.
+			ChatRoomID uuid.UUID
+			// MemberID is the memberID argument value.
+			MemberID uuid.UUID
+			// Where is the where argument value.
+			Where parameter.WhereReadableMessageOnChatRoomAndMemberParam
+			// Order is the order argument value.
+			Order parameter.ReadableMessageOnChatRoomAndMemberOrderMethod
+			// Np is the np argument value.
+			Np NumberedPaginationParam
+			// Cp is the cp argument value.
+			Cp CursorPaginationParam
+			// Wc is the wc argument value.
+			Wc WithCountParam
+		}
 		// GetReadableMessagesOnMember holds details about calls to the GetReadableMessagesOnMember method.
 		GetReadableMessagesOnMember []struct {
 			// Ctx is the ctx argument value.
@@ -15881,6 +15933,8 @@ type StoreMock struct {
 	lockGetProfessorsWithSd                                             sync.RWMutex
 	lockGetReadableMembersOnMessage                                     sync.RWMutex
 	lockGetReadableMembersOnMessageWithSd                               sync.RWMutex
+	lockGetReadableMessagesOnChatRoomAndMember                          sync.RWMutex
+	lockGetReadableMessagesOnChatRoomAndMemberWithSd                    sync.RWMutex
 	lockGetReadableMessagesOnMember                                     sync.RWMutex
 	lockGetReadableMessagesOnMemberWithSd                               sync.RWMutex
 	lockGetRecordTypes                                                  sync.RWMutex
@@ -45209,7 +45263,7 @@ func (mock *StoreMock) GetPluralMembersCalls() []struct {
 }
 
 // GetPluralMembersOnChatRoom calls GetPluralMembersOnChatRoomFunc.
-func (mock *StoreMock) GetPluralMembersOnChatRoom(ctx context.Context, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoom], error) {
+func (mock *StoreMock) GetPluralMembersOnChatRoom(ctx context.Context, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoomWithChatRoomID], error) {
 	if mock.GetPluralMembersOnChatRoomFunc == nil {
 		panic("StoreMock.GetPluralMembersOnChatRoomFunc: method is nil but Store.GetPluralMembersOnChatRoom was just called")
 	}
@@ -45437,7 +45491,7 @@ func (mock *StoreMock) GetPluralMembersOnChatRoomRemoveMemberActionWithSdCalls()
 }
 
 // GetPluralMembersOnChatRoomWithSd calls GetPluralMembersOnChatRoomWithSdFunc.
-func (mock *StoreMock) GetPluralMembersOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoom], error) {
+func (mock *StoreMock) GetPluralMembersOnChatRoomWithSd(ctx context.Context, sd Sd, chatRoomIDs []uuid.UUID, np NumberedPaginationParam, order parameter.MemberOnChatRoomOrderMethod) (ListResult[entity.MemberOnChatRoomWithChatRoomID], error) {
 	if mock.GetPluralMembersOnChatRoomWithSdFunc == nil {
 		panic("StoreMock.GetPluralMembersOnChatRoomWithSdFunc: method is nil but Store.GetPluralMembersOnChatRoomWithSd was just called")
 	}
@@ -49069,6 +49123,130 @@ func (mock *StoreMock) GetReadableMembersOnMessageWithSdCalls() []struct {
 	mock.lockGetReadableMembersOnMessageWithSd.RLock()
 	calls = mock.calls.GetReadableMembersOnMessageWithSd
 	mock.lockGetReadableMembersOnMessageWithSd.RUnlock()
+	return calls
+}
+
+// GetReadableMessagesOnChatRoomAndMember calls GetReadableMessagesOnChatRoomAndMemberFunc.
+func (mock *StoreMock) GetReadableMessagesOnChatRoomAndMember(ctx context.Context, chatRoomID uuid.UUID, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam, order parameter.ReadableMessageOnChatRoomAndMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMessageOnChatRoomAndMember], error) {
+	if mock.GetReadableMessagesOnChatRoomAndMemberFunc == nil {
+		panic("StoreMock.GetReadableMessagesOnChatRoomAndMemberFunc: method is nil but Store.GetReadableMessagesOnChatRoomAndMember was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		MemberID   uuid.UUID
+		Where      parameter.WhereReadableMessageOnChatRoomAndMemberParam
+		Order      parameter.ReadableMessageOnChatRoomAndMemberOrderMethod
+		Np         NumberedPaginationParam
+		Cp         CursorPaginationParam
+		Wc         WithCountParam
+	}{
+		Ctx:        ctx,
+		ChatRoomID: chatRoomID,
+		MemberID:   memberID,
+		Where:      where,
+		Order:      order,
+		Np:         np,
+		Cp:         cp,
+		Wc:         wc,
+	}
+	mock.lockGetReadableMessagesOnChatRoomAndMember.Lock()
+	mock.calls.GetReadableMessagesOnChatRoomAndMember = append(mock.calls.GetReadableMessagesOnChatRoomAndMember, callInfo)
+	mock.lockGetReadableMessagesOnChatRoomAndMember.Unlock()
+	return mock.GetReadableMessagesOnChatRoomAndMemberFunc(ctx, chatRoomID, memberID, where, order, np, cp, wc)
+}
+
+// GetReadableMessagesOnChatRoomAndMemberCalls gets all the calls that were made to GetReadableMessagesOnChatRoomAndMember.
+// Check the length with:
+//
+//	len(mockedStore.GetReadableMessagesOnChatRoomAndMemberCalls())
+func (mock *StoreMock) GetReadableMessagesOnChatRoomAndMemberCalls() []struct {
+	Ctx        context.Context
+	ChatRoomID uuid.UUID
+	MemberID   uuid.UUID
+	Where      parameter.WhereReadableMessageOnChatRoomAndMemberParam
+	Order      parameter.ReadableMessageOnChatRoomAndMemberOrderMethod
+	Np         NumberedPaginationParam
+	Cp         CursorPaginationParam
+	Wc         WithCountParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		ChatRoomID uuid.UUID
+		MemberID   uuid.UUID
+		Where      parameter.WhereReadableMessageOnChatRoomAndMemberParam
+		Order      parameter.ReadableMessageOnChatRoomAndMemberOrderMethod
+		Np         NumberedPaginationParam
+		Cp         CursorPaginationParam
+		Wc         WithCountParam
+	}
+	mock.lockGetReadableMessagesOnChatRoomAndMember.RLock()
+	calls = mock.calls.GetReadableMessagesOnChatRoomAndMember
+	mock.lockGetReadableMessagesOnChatRoomAndMember.RUnlock()
+	return calls
+}
+
+// GetReadableMessagesOnChatRoomAndMemberWithSd calls GetReadableMessagesOnChatRoomAndMemberWithSdFunc.
+func (mock *StoreMock) GetReadableMessagesOnChatRoomAndMemberWithSd(ctx context.Context, sd Sd, chatRoomID uuid.UUID, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam, order parameter.ReadableMessageOnChatRoomAndMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMessageOnChatRoomAndMember], error) {
+	if mock.GetReadableMessagesOnChatRoomAndMemberWithSdFunc == nil {
+		panic("StoreMock.GetReadableMessagesOnChatRoomAndMemberWithSdFunc: method is nil but Store.GetReadableMessagesOnChatRoomAndMemberWithSd was just called")
+	}
+	callInfo := struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+		MemberID   uuid.UUID
+		Where      parameter.WhereReadableMessageOnChatRoomAndMemberParam
+		Order      parameter.ReadableMessageOnChatRoomAndMemberOrderMethod
+		Np         NumberedPaginationParam
+		Cp         CursorPaginationParam
+		Wc         WithCountParam
+	}{
+		Ctx:        ctx,
+		Sd:         sd,
+		ChatRoomID: chatRoomID,
+		MemberID:   memberID,
+		Where:      where,
+		Order:      order,
+		Np:         np,
+		Cp:         cp,
+		Wc:         wc,
+	}
+	mock.lockGetReadableMessagesOnChatRoomAndMemberWithSd.Lock()
+	mock.calls.GetReadableMessagesOnChatRoomAndMemberWithSd = append(mock.calls.GetReadableMessagesOnChatRoomAndMemberWithSd, callInfo)
+	mock.lockGetReadableMessagesOnChatRoomAndMemberWithSd.Unlock()
+	return mock.GetReadableMessagesOnChatRoomAndMemberWithSdFunc(ctx, sd, chatRoomID, memberID, where, order, np, cp, wc)
+}
+
+// GetReadableMessagesOnChatRoomAndMemberWithSdCalls gets all the calls that were made to GetReadableMessagesOnChatRoomAndMemberWithSd.
+// Check the length with:
+//
+//	len(mockedStore.GetReadableMessagesOnChatRoomAndMemberWithSdCalls())
+func (mock *StoreMock) GetReadableMessagesOnChatRoomAndMemberWithSdCalls() []struct {
+	Ctx        context.Context
+	Sd         Sd
+	ChatRoomID uuid.UUID
+	MemberID   uuid.UUID
+	Where      parameter.WhereReadableMessageOnChatRoomAndMemberParam
+	Order      parameter.ReadableMessageOnChatRoomAndMemberOrderMethod
+	Np         NumberedPaginationParam
+	Cp         CursorPaginationParam
+	Wc         WithCountParam
+} {
+	var calls []struct {
+		Ctx        context.Context
+		Sd         Sd
+		ChatRoomID uuid.UUID
+		MemberID   uuid.UUID
+		Where      parameter.WhereReadableMessageOnChatRoomAndMemberParam
+		Order      parameter.ReadableMessageOnChatRoomAndMemberOrderMethod
+		Np         NumberedPaginationParam
+		Cp         CursorPaginationParam
+		Wc         WithCountParam
+	}
+	mock.lockGetReadableMessagesOnChatRoomAndMemberWithSd.RLock()
+	calls = mock.calls.GetReadableMessagesOnChatRoomAndMemberWithSd
+	mock.lockGetReadableMessagesOnChatRoomAndMemberWithSd.RUnlock()
 	return calls
 }
 

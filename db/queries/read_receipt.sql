@@ -248,6 +248,68 @@ ORDER BY
 	t_messages_pkey ASC
 LIMIT $1 OFFSET $2;
 
+-- name: GetReadableMessagesOnChatRoomAndMember :many
+SELECT t_messages.*, t_read_receipts.read_at read_at FROM t_messages
+LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
+WHERE t_messages.chat_room_action_id IN (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1)
+AND t_read_receipts.member_id = $2
+AND
+	CASE WHEN @where_is_read::boolean = true THEN t_read_receipts.read_at IS NOT NULL ELSE TRUE END
+AND
+	CASE WHEN @where_is_not_read::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
+ORDER BY
+	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
+	t_messages_pkey ASC;
+
+-- name: GetReadableMessagesOnChatRoomAndMemberUseNumberedPaginate :many
+SELECT t_messages.*, t_read_receipts.read_at read_at FROM t_messages
+LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
+WHERE t_messages.chat_room_action_id IN (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1)
+AND t_read_receipts.member_id = $2
+AND
+	CASE WHEN @where_is_read::boolean = true THEN t_read_receipts.read_at IS NOT NULL ELSE TRUE END
+AND
+	CASE WHEN @where_is_not_read::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
+ORDER BY
+	CASE WHEN @order_method::text = 'read_at' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_read_at' THEN t_read_receipts.read_at END DESC NULLS LAST,
+	t_messages_pkey ASC
+LIMIT $3 OFFSET $4;
+
+-- name: GetReadableMessagesOnChatRoomAndMemberUseKeysetPaginate :many
+SELECT t_messages.*, t_read_receipts.read_at read_at FROM t_messages
+LEFT JOIN t_read_receipts ON t_messages.message_id = t_read_receipts.message_id
+WHERE t_messages.chat_room_action_id IN (SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1)
+AND t_read_receipts.member_id = $2
+AND
+	CASE WHEN @where_is_read::boolean = true THEN t_read_receipts.read_at IS NOT NULL ELSE TRUE END
+AND
+	CASE WHEN @where_is_not_read::boolean = true THEN t_read_receipts.read_at IS NULL ELSE TRUE END
+AND
+	CASE @cursor_direction::text
+		WHEN 'next' THEN
+			CASE @order_method::text
+				WHEN 'read_at' THEN t_read_receipts.read_at > @read_at_cursor OR (t_read_receipts.read_at = @read_at_cursor AND t_messages_pkey > @cursor::int)
+				WHEN 'r_read_at' THEN t_read_receipts.read_at < @read_at_cursor OR (t_read_receipts.read_at = @read_at_cursor AND t_messages_pkey > @cursor::int)
+				ELSE t_messages_pkey > @cursor::int
+			END
+		WHEN 'prev' THEN
+			CASE @order_method::text
+				WHEN 'read_at' THEN t_read_receipts.read_at < @read_at_cursor OR (t_read_receipts.read_at = @read_at_cursor AND t_messages_pkey < @cursor::int)
+				WHEN 'r_read_at' THEN t_read_receipts.read_at > @read_at_cursor OR (t_read_receipts.read_at = @read_at_cursor AND t_messages_pkey < @cursor::int)
+				ELSE t_messages_pkey < @cursor::int
+			END
+	END
+ORDER BY
+	CASE WHEN @order_method::text = 'read_at' AND @cursor_direction::text = 'next' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'read_at' AND @cursor_direction::text = 'prev' THEN t_read_receipts.read_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_read_at' AND @cursor_direction::text = 'next' THEN t_read_receipts.read_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_read_at' AND @cursor_direction::text = 'prev' THEN t_read_receipts.read_at END ASC NULLS LAST,
+	CASE WHEN @cursor_direction::text = 'next' THEN t_messages_pkey END ASC,
+	CASE WHEN @cursor_direction::text = 'prev' THEN t_messages_pkey END DESC
+LIMIT $3;
+
 -- name: CountReadableMessagesOnMember :one
 SELECT COUNT(*) FROM t_read_receipts
 WHERE member_id = $1

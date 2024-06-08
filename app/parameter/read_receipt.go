@@ -176,3 +176,56 @@ const (
 	// ReadableMessageOnMemberOrderMethodReverseReadAt は既読日時逆順。
 	ReadableMessageOnMemberOrderMethodReverseReadAt ReadableMessageOnMemberOrderMethod = "r_read_at"
 )
+
+// ReadableMessageOnChatRoomAndMemberOrderMethod チャットルームとメンバー上の既読情報の並び替え方法。
+type ReadableMessageOnChatRoomAndMemberOrderMethod string
+
+// ParseReadableMessageOnChatRoomAndMemberOrderMethod はチャットルームとメンバー上の既読情報の並び替え方法をパースする。
+func ParseReadableMessageOnChatRoomAndMemberOrderMethod(v string) (any, error) {
+	if v == "" {
+		return ReadableMessageOnChatRoomAndMemberOrderMethodDefault, nil
+	}
+	switch v {
+	case string(ReadableMessageOnChatRoomAndMemberOrderMethodDefault):
+		return ReadableMessageOnChatRoomAndMemberOrderMethodDefault, nil
+	case string(ReadableMessageOnChatRoomAndMemberOrderMethodReadAt):
+		return ReadableMessageOnChatRoomAndMemberOrderMethodReadAt, nil
+	case string(ReadableMessageOnChatRoomAndMemberOrderMethodReverseReadAt):
+		return ReadableMessageOnChatRoomAndMemberOrderMethodReverseReadAt, nil
+	default:
+		return ReadableMessageOnChatRoomAndMemberOrderMethodDefault, nil
+	}
+}
+
+const (
+	// ReadableMessageOnChatRoomAndMemberDefaultCursorKey はデフォルトカーソルキー。
+	ReadableMessageOnChatRoomAndMemberDefaultCursorKey = "default"
+	// ReadableMessageOnChatRoomAndMemberReadAtCursorKey は既読日時カーソルキー。
+	ReadableMessageOnChatRoomAndMemberReadAtCursorKey = "read_at"
+)
+
+// GetCursorKeyName はカーソルキー名を取得する。
+func (m ReadableMessageOnChatRoomAndMemberOrderMethod) GetCursorKeyName() string {
+	switch m {
+	case ReadableMessageOnChatRoomAndMemberOrderMethodDefault:
+		return ReadableMessageOnChatRoomAndMemberDefaultCursorKey
+	case ReadableMessageOnChatRoomAndMemberOrderMethodReadAt, ReadableMessageOnChatRoomAndMemberOrderMethodReverseReadAt:
+		return ReadableMessageOnChatRoomAndMemberReadAtCursorKey
+	default:
+		return ReadableMessageOnChatRoomAndMemberDefaultCursorKey
+	}
+}
+
+// GetStringValue は文字列を取得する。
+func (m ReadableMessageOnChatRoomAndMemberOrderMethod) GetStringValue() string {
+	return string(m)
+}
+
+const (
+	// ReadableMessageOnChatRoomAndMemberOrderMethodDefault はデフォルト。
+	ReadableMessageOnChatRoomAndMemberOrderMethodDefault ReadableMessageOnChatRoomAndMemberOrderMethod = "default"
+	// ReadableMessageOnChatRoomAndMemberOrderMethodReadAt は既読日時順。
+	ReadableMessageOnChatRoomAndMemberOrderMethodReadAt ReadableMessageOnChatRoomAndMemberOrderMethod = "read_at"
+	// ReadableMessageOnChatRoomAndMemberOrderMethodReverseReadAt は既読日時逆順。
+	ReadableMessageOnChatRoomAndMemberOrderMethodReverseReadAt ReadableMessageOnChatRoomAndMemberOrderMethod = "r_read_at"
+)

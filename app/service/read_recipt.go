@@ -122,17 +122,18 @@ func (m *ManageReadReceipt) ReadMessage(
 	}
 
 	defer func(
-		roomID uuid.UUID, belongMemberIDs, messageIDs []uuid.UUID,
+		roomID, memberID uuid.UUID, belongMemberIDs, messageIDs []uuid.UUID,
 	) {
 		if err == nil {
 			m.WsHub.Dispatch(ws.EventTypeChatRoomReadMessage, ws.Targets{
 				Members: belongMemberIDs,
 			}, ws.ChatRoomReadMessageEventData{
 				ChatRoomID: roomID,
+				MemberID:   memberID,
 				MessageIDs: messageIDs,
 			})
 		}
-	}(chatRoomID, belongMemberIDs, []uuid.UUID{messageID})
+	}(chatRoomID, memberID, belongMemberIDs, []uuid.UUID{messageID})
 
 	return true, nil
 }
@@ -251,17 +252,18 @@ func (m *ManageReadReceipt) ReadMessagesOnChatRoomAndMember(
 	}
 
 	defer func(
-		roomID uuid.UUID, belongMemberIDs, messageIDs []uuid.UUID,
+		roomID, memberID uuid.UUID, belongMemberIDs, messageIDs []uuid.UUID,
 	) {
 		if err == nil {
 			m.WsHub.Dispatch(ws.EventTypeChatRoomReadMessage, ws.Targets{
 				Members: belongMemberIDs,
 			}, ws.ChatRoomReadMessageEventData{
 				ChatRoomID: roomID,
+				MemberID:   memberID,
 				MessageIDs: messageIDs,
 			})
 		}
-	}(chatRoomID, belongMemberIDs, messageIDs)
+	}(chatRoomID, memberID, belongMemberIDs, messageIDs)
 
 	return e, nil
 }

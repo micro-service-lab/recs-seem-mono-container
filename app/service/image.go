@@ -128,7 +128,7 @@ func (m *ManageImage) CreateImage(
 		extension = "." + alias[i+1:]
 	}
 	fname := fmt.Sprintf("%s%s", uid.String(), extension)
-	url, err := m.Storage.UploadObject(ctx, bytes.NewReader(data), fname)
+	url, err := m.Storage.UploadObject(ctx, bytes.NewReader(data), fname, mtype.String())
 	if err != nil {
 		return entity.ImageWithAttachableItem{}, errhandle.NewCommonError(response.FailedUpload, nil)
 	}
@@ -243,7 +243,7 @@ func (m *ManageImage) CreateImages(
 			extension = "." + p.Alias[i+1:]
 		}
 		fname := fmt.Sprintf("%s%s", uid.String(), extension)
-		url, err := m.Storage.UploadObject(ctx, bytes.NewReader(data), fname)
+		url, err := m.Storage.UploadObject(ctx, bytes.NewReader(data), fname, mtype.String())
 		if err != nil {
 			return nil, errhandle.NewCommonError(response.FailedUpload, nil)
 		}
@@ -362,7 +362,7 @@ func (m *ManageImage) CreateImageSpecifyFilename(
 	if exist {
 		return entity.ImageWithAttachableItem{}, errhandle.NewCommonError(response.ConflictStorageKey, nil)
 	}
-	url, err := m.Storage.UploadObject(ctx, bytes.NewReader(data), filename)
+	url, err := m.Storage.UploadObject(ctx, bytes.NewReader(data), filename, mtype.String())
 	if err != nil {
 		return entity.ImageWithAttachableItem{}, errhandle.NewCommonError(response.FailedUpload, nil)
 	}
@@ -475,7 +475,7 @@ func (m *ManageImage) CreateImagesSpecifyFilename(
 		if exist {
 			return nil, errhandle.NewCommonError(response.ConflictStorageKey, nil)
 		}
-		url, err := m.Storage.UploadObject(ctx, bytes.NewReader(data), p.Filename)
+		url, err := m.Storage.UploadObject(ctx, bytes.NewReader(data), p.Filename, mtype.String())
 		if err != nil {
 			return nil, errhandle.NewCommonError(response.FailedUpload, nil)
 		}

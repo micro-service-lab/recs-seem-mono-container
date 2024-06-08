@@ -731,10 +731,12 @@ func (m *ManageChatRoomBelonging) GetChatRoomsOnMember(
 	}
 	privateRoomIDs := make([]uuid.UUID, 0, len(e.Data))
 	es.Data = make([]entity.PracticalChatRoomOnMember, len(e.Data))
-	for _, v := range e.Data {
+	roomIDs := make([]uuid.UUID, len(e.Data))
+	for i, v := range e.Data {
 		if v.ChatRoom.IsPrivate {
 			privateRoomIDs = append(privateRoomIDs, v.ChatRoom.ChatRoomID)
 		}
+		roomIDs[i] = v.ChatRoom.ChatRoomID
 	}
 	companions, err := m.DB.GetPluralPrivateChatRoomCompanions(
 		ctx,
@@ -754,6 +756,22 @@ func (m *ManageChatRoomBelonging) GetChatRoomsOnMember(
 			AddedAt: v.AddedAt,
 		}
 	}
+	unreads, err := m.DB.CountReadableMessagesOnChatRoomsAndMember(
+		ctx,
+		roomIDs,
+		memberID,
+		parameter.WhereReadableMessageOnChatRoomAndMemberParam{
+			WhereIsNotRead: true,
+		},
+	)
+	if err != nil {
+		return store.ListResult[entity.PracticalChatRoomOnMember]{},
+			fmt.Errorf("failed to count readable messages on chat rooms and member: %w", err)
+	}
+	unreadCounts := make(map[uuid.UUID]int64, len(unreads))
+	for _, v := range unreads {
+		unreadCounts[v.ChatRoomID] = v.Count
+	}
 	for i, v := range e.Data {
 		var cp entity.NullableEntity[entity.MemberOnChatRoom]
 		if companion, ok := companionMap[v.ChatRoom.ChatRoomID]; ok {
@@ -761,6 +779,10 @@ func (m *ManageChatRoomBelonging) GetChatRoomsOnMember(
 				Valid:  true,
 				Entity: companion,
 			}
+		}
+		unread, ok := unreadCounts[v.ChatRoom.ChatRoomID]
+		if !ok {
+			unread = 0
 		}
 		es.Data[i] = entity.PracticalChatRoomOnMember{
 			ChatRoom: entity.PracticalChatRoom{
@@ -774,7 +796,8 @@ func (m *ManageChatRoomBelonging) GetChatRoomsOnMember(
 				LatestAction:     v.ChatRoom.LatestAction,
 				Companion:        cp,
 			},
-			AddedAt: v.AddedAt,
+			UnreadCount: unread,
+			AddedAt:     v.AddedAt,
 		}
 	}
 	return es, nil

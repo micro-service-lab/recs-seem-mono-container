@@ -84,12 +84,13 @@ func NewS3(
 
 // PutObject stores data and returns the key.
 func (s *S3) PutObject(
-	ctx context.Context, reader io.Reader, key string,
+	ctx context.Context, reader io.Reader, key, contentType string,
 ) (string, error) {
 	_, err := s.cli.PutObject(ctx, &s3.PutObjectInput{
-		Bucket: aws.String(s.bucket),
-		Key:    aws.String(key),
-		Body:   reader,
+		Bucket:      aws.String(s.bucket),
+		Key:         aws.String(key),
+		Body:        reader,
+		ContentType: aws.String(contentType),
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to put object, %w", err)
@@ -99,12 +100,13 @@ func (s *S3) PutObject(
 
 // UploadObject stores data and returns the key.
 func (s *S3) UploadObject(
-	ctx context.Context, reader io.Reader, key string,
+	ctx context.Context, reader io.Reader, key, contentType string,
 ) (string, error) {
 	_, err := s.uploader.Upload(ctx, &s3.PutObjectInput{
-		Bucket: aws.String(s.bucket),
-		Key:    aws.String(key),
-		Body:   reader,
+		Bucket:      aws.String(s.bucket),
+		Key:         aws.String(key),
+		Body:        reader,
+		ContentType: aws.String(contentType),
 	})
 	if err != nil {
 		return "", fmt.Errorf("failed to upload object, %w", err)

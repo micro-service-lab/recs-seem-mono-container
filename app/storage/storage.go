@@ -9,10 +9,10 @@ import (
 // Storage is an interface to store and retrieve data.
 type Storage interface {
 	// PutObject stores data and returns the key.
-	PutObject(ctx context.Context, reader io.Reader, key string) (string, error)
+	PutObject(ctx context.Context, reader io.Reader, key, contentType string) (string, error)
 	// UploadObject stores data and returns the key.
 	UploadObject(
-		ctx context.Context, reader io.Reader, key string,
+		ctx context.Context, reader io.Reader, key, contentType string,
 	) (string, error)
 	// GetObject retrieves data by key.
 	GetObject(ctx context.Context, key string) (io.ReadCloser, error)

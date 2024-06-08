@@ -53,8 +53,9 @@ type MemberOnChatRoomWithChatRoomIDForQuery struct {
 
 // PracticalChatRoomOnMember メンバー上の実用的なチャットルームを表す構造体。
 type PracticalChatRoomOnMember struct {
-	ChatRoom PracticalChatRoom `json:"chat_room"`
-	AddedAt  time.Time         `json:"added_at"`
+	ChatRoom    PracticalChatRoom `json:"chat_room"`
+	AddedAt     time.Time         `json:"added_at"`
+	UnreadCount int64             `json:"unread_count"`
 }
 
 // ChatRoomOnMember メンバー上のチャットルームを表す構造体。

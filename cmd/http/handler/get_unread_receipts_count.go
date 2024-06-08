@@ -25,9 +25,9 @@ func (h *GetUnreadReceiptsCount) ServeHTTP(w http.ResponseWriter, r *http.Reques
 	)
 	if err == nil {
 		res := struct {
-			Read int64 `json:"read"`
+			Count int64 `json:"count"`
 		}{
-			Read: read,
+			Count: read,
 		}
 		err = response.JSONResponseWriter(ctx, w, response.Success, res, nil)
 	}

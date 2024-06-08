@@ -142,6 +142,7 @@ type ChatRoomSentMessageEventData struct {
 // ChatRoomReadMessageEventData チャットルームのメッセージが既読になった際のイベントデータを表す構造体。
 type ChatRoomReadMessageEventData struct {
 	ChatRoomID uuid.UUID   `json:"chat_room_id"`
+	MemberID   uuid.UUID   `json:"member_id"`
 	MessageIDs []uuid.UUID `json:"message_ids"`
 }
 

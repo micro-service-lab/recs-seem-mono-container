@@ -238,8 +238,8 @@ func (m *ManageReadReceipt) ReadMessagesOnChatRoomAndMember(
 		return 0, nil
 	}
 	messageIDs := make([]uuid.UUID, len(readableMessages.Data))
-	for _, v := range readableMessages.Data {
-		messageIDs = append(messageIDs, v.Message.MessageID)
+	for i, v := range readableMessages.Data {
+		messageIDs[i] = v.Message.MessageID
 	}
 	if e, err = m.DB.ReadReceiptsOnChatRoomAndMemberWithSd(
 		ctx,

@@ -665,11 +665,20 @@ func (m *ManageChatRoomBelonging) WithdrawMemberFromChatRoom(
 	e, action, actAttr, err = withdrawMemberFromChatRoom(ctx, sd, now, m.DB, room, owner, false)
 
 	defer func(
-		room entity.ChatRoom, leftMemberIDs []uuid.UUID,
+		room entity.ChatRoom, leftMemberIDs []uuid.UUID, memberID uuid.UUID,
 		action entity.ChatRoomWithdrawActionWithMember,
 		actAttr entity.ChatRoomAction,
 	) {
 		if err == nil {
+			m.WsHub.Dispatch(ws.EventTypeChatRoomWithdrawnMe, ws.Targets{
+				Members: []uuid.UUID{memberID},
+			}, ws.ChatRoomWithdrawnMeEventData{
+				ChatRoomID:           room.ChatRoomID,
+				Action:               action,
+				ChatRoomActionID:     actAttr.ChatRoomActionID,
+				ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+				ActedAt:              actAttr.ActedAt,
+			})
 			m.WsHub.Dispatch(ws.EventTypeChatRoomWithdrawnMember, ws.Targets{
 				Members: leftMemberIDs,
 			}, ws.ChatRoomWithdrawnMemberEventData{
@@ -680,7 +689,7 @@ func (m *ManageChatRoomBelonging) WithdrawMemberFromChatRoom(
 				ActedAt:              actAttr.ActedAt,
 			})
 		}
-	}(room, leftMemberIDs, action, actAttr)
+	}(room, leftMemberIDs, memberID, action, actAttr)
 
 	return e, err
 }

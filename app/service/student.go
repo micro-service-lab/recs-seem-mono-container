@@ -631,6 +631,27 @@ func (m *ManageStudent) UpdateStudentGrade(
 		return entity.StudentWithMember{}, fmt.Errorf("failed to belong organization: %w", err)
 	}
 	if grade.Organization.ChatRoomID.Valid {
+		room, err := m.DB.FindChatRoomByIDWithSd(ctx, sd, grade.Organization.ChatRoomID.Bytes)
+		if err != nil {
+			return entity.StudentWithMember{}, fmt.Errorf("failed to find chat room by id: %w", err)
+		}
+		belonging, err := m.DB.GetMembersOnChatRoomWithSd(
+			ctx,
+			sd,
+			grade.Organization.ChatRoomID.Bytes,
+			parameter.WhereMemberOnChatRoomParam{},
+			parameter.MemberOnChatRoomOrderMethodDefault,
+			store.NumberedPaginationParam{},
+			store.CursorPaginationParam{},
+			store.WithCountParam{},
+		)
+		if err != nil {
+			return entity.StudentWithMember{}, fmt.Errorf("failed to get members on chat room: %w", err)
+		}
+		belongingMemberIDs := make([]uuid.UUID, 0, len(belonging.Data))
+		for _, v := range belonging.Data {
+			belongingMemberIDs = append(belongingMemberIDs, v.Member.MemberID)
+		}
 		_, err = m.DB.BelongChatRoomWithSd(ctx, sd, parameter.BelongChatRoomParam{
 			MemberID:   e.Member.MemberID,
 			ChatRoomID: grade.Organization.ChatRoomID.Bytes,
@@ -661,6 +682,53 @@ func (m *ManageStudent) UpdateStudentGrade(
 		if err != nil {
 			return entity.StudentWithMember{}, fmt.Errorf("failed to add member to chat room add member action: %w", err)
 		}
+		action := entity.ChatRoomAddMemberActionWithAddedByAndAddMembers{
+			ChatRoomAddMemberActionID: craAdd.ChatRoomAddMemberActionID,
+			ChatRoomActionID:          cra.ChatRoomActionID,
+			AddedBy:                   entity.NullableEntity[entity.SimpleMember]{},
+			AddMembers: []entity.MemberOnChatRoomAddMemberAction{
+				{
+					ChatRoomAddMemberActionID: craAdd.ChatRoomAddMemberActionID,
+					Member: entity.NullableEntity[entity.SimpleMember]{
+						Valid: true,
+						Entity: entity.SimpleMember{
+							MemberID:       member.MemberID,
+							Name:           member.Name,
+							FirstName:      member.FirstName,
+							LastName:       member.LastName,
+							Email:          member.Email,
+							ProfileImageID: member.ProfileImageID,
+							GradeID:        member.GradeID,
+							GroupID:        member.GroupID,
+						},
+					},
+				},
+			},
+		}
+
+		defer func(
+			room entity.ChatRoom, membersIDs, alreadyMemberIDs []uuid.UUID,
+			action entity.ChatRoomAddMemberActionWithAddedByAndAddMembers,
+			actAttr entity.ChatRoomAction,
+		) {
+			if err == nil {
+				m.WsHub.Dispatch(ws.EventTypeChatRoomAddedMe, ws.Targets{
+					Members: membersIDs,
+				}, ws.ChatRoomAddedMeEventData{
+					ChatRoom: room,
+				})
+				m.WsHub.Dispatch(ws.EventTypeChatRoomAddedMember, ws.Targets{
+					Members: alreadyMemberIDs,
+				}, ws.ChatRoomAddedMemberEventData{
+					ChatRoomID:           room.ChatRoomID,
+					Action:               action,
+					ChatRoomActionID:     actAttr.ChatRoomActionID,
+					ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+					ActedAt:              actAttr.ActedAt,
+				})
+			}
+		}(room, []uuid.UUID{e.Member.MemberID},
+			belongingMemberIDs, action, cra)
 	}
 
 	_, err = m.DB.DisbelongOrganizationWithSd(ctx, sd, e.Member.MemberID, originGrade.Organization.OrganizationID)
@@ -668,9 +736,30 @@ func (m *ManageStudent) UpdateStudentGrade(
 		return entity.StudentWithMember{}, fmt.Errorf("failed to disbelong organization: %w", err)
 	}
 	if originGrade.Organization.ChatRoomID.Valid {
+		room, err := m.DB.FindChatRoomByIDWithSd(ctx, sd, originGrade.Organization.ChatRoomID.Bytes)
+		if err != nil {
+			return entity.StudentWithMember{}, fmt.Errorf("failed to find chat room by id: %w", err)
+		}
 		_, err = m.DB.DisbelongChatRoomWithSd(ctx, sd, e.Member.MemberID, originGrade.Organization.ChatRoomID.Bytes)
 		if err != nil {
 			return entity.StudentWithMember{}, fmt.Errorf("failed to disbelong chat room: %w", err)
+		}
+		belonging, err := m.DB.GetMembersOnChatRoomWithSd(
+			ctx,
+			sd,
+			originGrade.Organization.ChatRoomID.Bytes,
+			parameter.WhereMemberOnChatRoomParam{},
+			parameter.MemberOnChatRoomOrderMethodDefault,
+			store.NumberedPaginationParam{},
+			store.CursorPaginationParam{},
+			store.WithCountParam{},
+		)
+		if err != nil {
+			return entity.StudentWithMember{}, fmt.Errorf("failed to get members on chat room: %w", err)
+		}
+		belongingMemberIDs := make([]uuid.UUID, 0, len(belonging.Data))
+		for _, v := range belonging.Data {
+			belongingMemberIDs = append(belongingMemberIDs, v.Member.MemberID)
 		}
 		cra, err := m.DB.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
 			ChatRoomID:           originGrade.Organization.ChatRoomID.Bytes,
@@ -687,6 +776,50 @@ func (m *ManageStudent) UpdateStudentGrade(
 		if err != nil {
 			return entity.StudentWithMember{}, fmt.Errorf("failed to create chat room withdraw action: %w", err)
 		}
+		action := entity.ChatRoomWithdrawActionWithMember{
+			ChatRoomWithdrawActionID: cra.ChatRoomActionID,
+			ChatRoomActionID:         cra.ChatRoomActionID,
+			Member: entity.NullableEntity[entity.SimpleMember]{
+				Valid: true,
+				Entity: entity.SimpleMember{
+					MemberID:       member.MemberID,
+					Name:           member.Name,
+					FirstName:      member.FirstName,
+					LastName:       member.LastName,
+					Email:          member.Email,
+					ProfileImageID: member.ProfileImageID,
+					GradeID:        member.GradeID,
+					GroupID:        member.GroupID,
+				},
+			},
+		}
+
+		defer func(
+			room entity.ChatRoom, leftMemberIDs []uuid.UUID, memberID uuid.UUID,
+			action entity.ChatRoomWithdrawActionWithMember,
+			actAttr entity.ChatRoomAction,
+		) {
+			if err == nil {
+				m.WsHub.Dispatch(ws.EventTypeChatRoomWithdrawnMe, ws.Targets{
+					Members: []uuid.UUID{memberID},
+				}, ws.ChatRoomWithdrawnMeEventData{
+					ChatRoomID:           room.ChatRoomID,
+					Action:               action,
+					ChatRoomActionID:     actAttr.ChatRoomActionID,
+					ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+					ActedAt:              actAttr.ActedAt,
+				})
+				m.WsHub.Dispatch(ws.EventTypeChatRoomWithdrawnMember, ws.Targets{
+					Members: leftMemberIDs,
+				}, ws.ChatRoomWithdrawnMemberEventData{
+					ChatRoomID:           room.ChatRoomID,
+					Action:               action,
+					ChatRoomActionID:     actAttr.ChatRoomActionID,
+					ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+					ActedAt:              actAttr.ActedAt,
+				})
+			}
+		}(room, belongingMemberIDs, e.Member.MemberID, action, cra)
 	}
 
 	e.Member.GradeID = member.GradeID
@@ -764,6 +897,27 @@ func (m *ManageStudent) UpdateStudentGroup(
 		return entity.StudentWithMember{}, fmt.Errorf("failed to belong organization: %w", err)
 	}
 	if group.Organization.ChatRoomID.Valid {
+		room, err := m.DB.FindChatRoomByIDWithSd(ctx, sd, group.Organization.ChatRoomID.Bytes)
+		if err != nil {
+			return entity.StudentWithMember{}, fmt.Errorf("failed to find chat room by id: %w", err)
+		}
+		belonging, err := m.DB.GetMembersOnChatRoomWithSd(
+			ctx,
+			sd,
+			group.Organization.ChatRoomID.Bytes,
+			parameter.WhereMemberOnChatRoomParam{},
+			parameter.MemberOnChatRoomOrderMethodDefault,
+			store.NumberedPaginationParam{},
+			store.CursorPaginationParam{},
+			store.WithCountParam{},
+		)
+		if err != nil {
+			return entity.StudentWithMember{}, fmt.Errorf("failed to get members on chat room: %w", err)
+		}
+		belongingMemberIDs := make([]uuid.UUID, 0, len(belonging.Data))
+		for _, v := range belonging.Data {
+			belongingMemberIDs = append(belongingMemberIDs, v.Member.MemberID)
+		}
 		_, err = m.DB.BelongChatRoomWithSd(ctx, sd, parameter.BelongChatRoomParam{
 			MemberID:   e.Member.MemberID,
 			ChatRoomID: group.Organization.ChatRoomID.Bytes,
@@ -794,6 +948,53 @@ func (m *ManageStudent) UpdateStudentGroup(
 		if err != nil {
 			return entity.StudentWithMember{}, fmt.Errorf("failed to add member to chat room add member action: %w", err)
 		}
+		action := entity.ChatRoomAddMemberActionWithAddedByAndAddMembers{
+			ChatRoomAddMemberActionID: craAdd.ChatRoomAddMemberActionID,
+			ChatRoomActionID:          cra.ChatRoomActionID,
+			AddedBy:                   entity.NullableEntity[entity.SimpleMember]{},
+			AddMembers: []entity.MemberOnChatRoomAddMemberAction{
+				{
+					ChatRoomAddMemberActionID: craAdd.ChatRoomAddMemberActionID,
+					Member: entity.NullableEntity[entity.SimpleMember]{
+						Valid: true,
+						Entity: entity.SimpleMember{
+							MemberID:       member.MemberID,
+							Name:           member.Name,
+							FirstName:      member.FirstName,
+							LastName:       member.LastName,
+							Email:          member.Email,
+							ProfileImageID: member.ProfileImageID,
+							GradeID:        member.GradeID,
+							GroupID:        member.GroupID,
+						},
+					},
+				},
+			},
+		}
+
+		defer func(
+			room entity.ChatRoom, membersIDs, alreadyMemberIDs []uuid.UUID,
+			action entity.ChatRoomAddMemberActionWithAddedByAndAddMembers,
+			actAttr entity.ChatRoomAction,
+		) {
+			if err == nil {
+				m.WsHub.Dispatch(ws.EventTypeChatRoomAddedMe, ws.Targets{
+					Members: membersIDs,
+				}, ws.ChatRoomAddedMeEventData{
+					ChatRoom: room,
+				})
+				m.WsHub.Dispatch(ws.EventTypeChatRoomAddedMember, ws.Targets{
+					Members: alreadyMemberIDs,
+				}, ws.ChatRoomAddedMemberEventData{
+					ChatRoomID:           room.ChatRoomID,
+					Action:               action,
+					ChatRoomActionID:     actAttr.ChatRoomActionID,
+					ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+					ActedAt:              actAttr.ActedAt,
+				})
+			}
+		}(room, []uuid.UUID{e.Member.MemberID},
+			belongingMemberIDs, action, cra)
 	}
 
 	_, err = m.DB.DisbelongOrganizationWithSd(ctx, sd, e.Member.MemberID, originGroup.Organization.OrganizationID)
@@ -801,9 +1002,30 @@ func (m *ManageStudent) UpdateStudentGroup(
 		return entity.StudentWithMember{}, fmt.Errorf("failed to disbelong organization: %w", err)
 	}
 	if originGroup.Organization.ChatRoomID.Valid {
+		room, err := m.DB.FindChatRoomByIDWithSd(ctx, sd, originGroup.Organization.ChatRoomID.Bytes)
+		if err != nil {
+			return entity.StudentWithMember{}, fmt.Errorf("failed to find chat room by id: %w", err)
+		}
 		_, err = m.DB.DisbelongChatRoomWithSd(ctx, sd, e.Member.MemberID, originGroup.Organization.ChatRoomID.Bytes)
 		if err != nil {
 			return entity.StudentWithMember{}, fmt.Errorf("failed to disbelong chat room: %w", err)
+		}
+		belonging, err := m.DB.GetMembersOnChatRoomWithSd(
+			ctx,
+			sd,
+			originGroup.Organization.ChatRoomID.Bytes,
+			parameter.WhereMemberOnChatRoomParam{},
+			parameter.MemberOnChatRoomOrderMethodDefault,
+			store.NumberedPaginationParam{},
+			store.CursorPaginationParam{},
+			store.WithCountParam{},
+		)
+		if err != nil {
+			return entity.StudentWithMember{}, fmt.Errorf("failed to get members on chat room: %w", err)
+		}
+		belongingMemberIDs := make([]uuid.UUID, 0, len(belonging.Data))
+		for _, v := range belonging.Data {
+			belongingMemberIDs = append(belongingMemberIDs, v.Member.MemberID)
 		}
 		cra, err := m.DB.CreateChatRoomActionWithSd(ctx, sd, parameter.CreateChatRoomActionParam{
 			ChatRoomID:           originGroup.Organization.ChatRoomID.Bytes,
@@ -820,6 +1042,50 @@ func (m *ManageStudent) UpdateStudentGroup(
 		if err != nil {
 			return entity.StudentWithMember{}, fmt.Errorf("failed to create chat room withdraw action: %w", err)
 		}
+		action := entity.ChatRoomWithdrawActionWithMember{
+			ChatRoomWithdrawActionID: cra.ChatRoomActionID,
+			ChatRoomActionID:         cra.ChatRoomActionID,
+			Member: entity.NullableEntity[entity.SimpleMember]{
+				Valid: true,
+				Entity: entity.SimpleMember{
+					MemberID:       member.MemberID,
+					Name:           member.Name,
+					FirstName:      member.FirstName,
+					LastName:       member.LastName,
+					Email:          member.Email,
+					ProfileImageID: member.ProfileImageID,
+					GradeID:        member.GradeID,
+					GroupID:        member.GroupID,
+				},
+			},
+		}
+
+		defer func(
+			room entity.ChatRoom, leftMemberIDs []uuid.UUID, memberID uuid.UUID,
+			action entity.ChatRoomWithdrawActionWithMember,
+			actAttr entity.ChatRoomAction,
+		) {
+			if err == nil {
+				m.WsHub.Dispatch(ws.EventTypeChatRoomWithdrawnMe, ws.Targets{
+					Members: []uuid.UUID{memberID},
+				}, ws.ChatRoomWithdrawnMeEventData{
+					ChatRoomID:           room.ChatRoomID,
+					Action:               action,
+					ChatRoomActionID:     actAttr.ChatRoomActionID,
+					ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+					ActedAt:              actAttr.ActedAt,
+				})
+				m.WsHub.Dispatch(ws.EventTypeChatRoomWithdrawnMember, ws.Targets{
+					Members: leftMemberIDs,
+				}, ws.ChatRoomWithdrawnMemberEventData{
+					ChatRoomID:           room.ChatRoomID,
+					Action:               action,
+					ChatRoomActionID:     actAttr.ChatRoomActionID,
+					ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
+					ActedAt:              actAttr.ActedAt,
+				})
+			}
+		}(room, belongingMemberIDs, e.Member.MemberID, action, cra)
 	}
 
 	e.Member.GroupID = member.GradeID

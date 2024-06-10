@@ -35,7 +35,9 @@ func convReadableMessageOnMember(e query.GetReadableMessagesOnMemberRow) entity.
 	}
 }
 
-func convReadableMessageOnChatRoomAndMember(e query.GetReadableMessagesOnChatRoomAndMemberRow) entity.ReadableMessageOnChatRoomAndMember {
+func convReadableMessageOnChatRoomAndMember(
+	e query.GetReadableMessagesOnChatRoomAndMemberRow,
+) entity.ReadableMessageOnChatRoomAndMember {
 	return entity.ReadableMessageOnChatRoomAndMember{
 		Message: entity.Message{
 			MessageID:        e.MessageID,
@@ -1146,7 +1148,9 @@ func getReadableMessagesOnChatRoomAndMember(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.ReadableMessageOnChatRoomAndMember], error) {
-	eConvFunc := func(e entity.ReadableMessageOnChatRoomAndMemberForQuery) (entity.ReadableMessageOnChatRoomAndMember, error) {
+	eConvFunc := func(
+		e entity.ReadableMessageOnChatRoomAndMemberForQuery,
+	) (entity.ReadableMessageOnChatRoomAndMember, error) {
 		return e.ReadableMessageOnChatRoomAndMember, nil
 	}
 	runCFunc := func() (int64, error) {
@@ -1180,8 +1184,9 @@ func getReadableMessagesOnChatRoomAndMember(
 		fq := make([]entity.ReadableMessageOnChatRoomAndMemberForQuery, len(r))
 		for i, e := range r {
 			fq[i] = entity.ReadableMessageOnChatRoomAndMemberForQuery{
-				Pkey:                               entity.Int(e.TMessagesPkey),
-				ReadableMessageOnChatRoomAndMember: convReadableMessageOnChatRoomAndMember(query.GetReadableMessagesOnChatRoomAndMemberRow(e)),
+				Pkey: entity.Int(e.TMessagesPkey),
+				ReadableMessageOnChatRoomAndMember: convReadableMessageOnChatRoomAndMember(
+					query.GetReadableMessagesOnChatRoomAndMemberRow(e)),
 			}
 		}
 		return fq, nil
@@ -1220,13 +1225,16 @@ func getReadableMessagesOnChatRoomAndMember(
 		fq := make([]entity.ReadableMessageOnChatRoomAndMemberForQuery, len(r))
 		for i, e := range r {
 			fq[i] = entity.ReadableMessageOnChatRoomAndMemberForQuery{
-				Pkey:                               entity.Int(e.TMessagesPkey),
-				ReadableMessageOnChatRoomAndMember: convReadableMessageOnChatRoomAndMember(query.GetReadableMessagesOnChatRoomAndMemberRow(e)),
+				Pkey: entity.Int(e.TMessagesPkey),
+				ReadableMessageOnChatRoomAndMember: convReadableMessageOnChatRoomAndMember(
+					query.GetReadableMessagesOnChatRoomAndMemberRow(e)),
 			}
 		}
 		return fq, nil
 	}
-	runQNPFunc := func(orderMethod string, limit, offset int32) ([]entity.ReadableMessageOnChatRoomAndMemberForQuery, error) {
+	runQNPFunc := func(orderMethod string, limit, offset int32) (
+		[]entity.ReadableMessageOnChatRoomAndMemberForQuery, error,
+	) {
 		p := query.GetReadableMessagesOnChatRoomAndMemberUseNumberedPaginateParams{
 			ChatRoomID:     chatRoomID,
 			MemberID:       memberID,
@@ -1243,8 +1251,9 @@ func getReadableMessagesOnChatRoomAndMember(
 		fq := make([]entity.ReadableMessageOnChatRoomAndMemberForQuery, len(r))
 		for i, e := range r {
 			fq[i] = entity.ReadableMessageOnChatRoomAndMemberForQuery{
-				Pkey:                               entity.Int(e.TMessagesPkey),
-				ReadableMessageOnChatRoomAndMember: convReadableMessageOnChatRoomAndMember(query.GetReadableMessagesOnChatRoomAndMemberRow(e)),
+				Pkey: entity.Int(e.TMessagesPkey),
+				ReadableMessageOnChatRoomAndMember: convReadableMessageOnChatRoomAndMember(
+					query.GetReadableMessagesOnChatRoomAndMemberRow(e)),
 			}
 		}
 		return fq, nil

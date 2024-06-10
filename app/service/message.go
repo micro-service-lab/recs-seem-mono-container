@@ -554,6 +554,26 @@ func (m *ManageMessage) DeleteMessage(
 		return 0, fmt.Errorf("failed to get attached items on message: %w", err)
 	}
 
+	unreadMembers, err := m.DB.GetReadableMembersOnMessageWithSd(
+		ctx,
+		sd,
+		messageID,
+		parameter.WhereReadableMemberOnMessageParam{
+			WhereIsNotRead: true,
+		},
+		parameter.ReadableMemberOnMessageOrderMethodDefault,
+		store.NumberedPaginationParam{},
+		store.CursorPaginationParam{},
+		store.WithCountParam{},
+	)
+	if err != nil {
+		return 0, fmt.Errorf("failed to get unread members on message: %w", err)
+	}
+	unreadMemberIDs := make([]uuid.UUID, len(unreadMembers.Data))
+	for i, v := range unreadMembers.Data {
+		unreadMemberIDs[i] = v.Member.MemberID
+	}
+
 	// readReceiptsはカスケード削除される
 	if e, err = m.DB.DeleteMessageWithSd(ctx, sd, messageID); err != nil {
 		return 0, fmt.Errorf("failed to delete message: %w", err)
@@ -601,7 +621,7 @@ func (m *ManageMessage) DeleteMessage(
 	}
 
 	defer func(
-		roomID uuid.UUID, belongMemberIDs []uuid.UUID,
+		roomID uuid.UUID, belongMemberIDs, unreadMemberIDs []uuid.UUID,
 		action entity.ChatRoomDeleteMessageActionWithDeletedBy,
 		actAttr entity.ChatRoomAction,
 	) {
@@ -614,9 +634,10 @@ func (m *ManageMessage) DeleteMessage(
 				ChatRoomActionID:     actAttr.ChatRoomActionID,
 				ChatRoomActionTypeID: actAttr.ChatRoomActionTypeID,
 				ActedAt:              actAttr.ActedAt,
+				UnreadMemberIDs:      unreadMemberIDs,
 			})
 		}
-	}(chatRoomID, belongMemberIDs, action, cra)
+	}(chatRoomID, belongMemberIDs, unreadMemberIDs, action, cra)
 
 	return e, nil
 }

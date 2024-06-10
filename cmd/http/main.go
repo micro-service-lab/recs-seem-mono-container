@@ -81,7 +81,7 @@ func run(ctx context.Context) error {
 		log.Println("CORS is enabled")
 		middlewares = append(middlewares, cors.Handler(cors.Options{
 			AllowedOrigins: []string(ctr.Config.ClientOrigin),
-			AllowedMethods: []string{http.MethodPost, http.MethodGet},
+			AllowedMethods: []string{http.MethodPost, http.MethodGet, http.MethodPut, http.MethodDelete},
 			AllowedHeaders: []string{
 				"Authorization",
 				"Content-Type",

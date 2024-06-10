@@ -142,7 +142,7 @@ type ReadReceipt interface {
 	// GetReadableMembersOnMessage メッセージ上のメンバーを取得する。
 	GetReadableMembersOnMessage(
 		ctx context.Context,
-		memberID uuid.UUID,
+		messageID uuid.UUID,
 		where parameter.WhereReadableMemberOnMessageParam,
 		order parameter.ReadableMemberOnMessageOrderMethod,
 		np NumberedPaginationParam,
@@ -153,7 +153,7 @@ type ReadReceipt interface {
 	GetReadableMembersOnMessageWithSd(
 		ctx context.Context,
 		sd Sd,
-		memberID uuid.UUID,
+		messageID uuid.UUID,
 		where parameter.WhereReadableMemberOnMessageParam,
 		order parameter.ReadableMemberOnMessageOrderMethod,
 		np NumberedPaginationParam,

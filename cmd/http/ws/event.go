@@ -26,6 +26,8 @@ const (
 	EventTypeChatRoomRemovedMe EventType = "chat_room:removed:me"
 	// EventTypeChatRoomRemovedMember チャットルームから自分以外のメンバーが削除されたことを表すイベント。
 	EventTypeChatRoomRemovedMember EventType = "chat_room:removed:member"
+	// EventTypeChatRoomWithdrawnMe チャットルームから自分が退室したことを表すイベント。
+	EventTypeChatRoomWithdrawnMe EventType = "chat_room:withdrawn:me"
 	// EventTypeChatRoomWithdrawnMember チャットルームから自分以外のメンバーが退室したことを表すイベント。
 	EventTypeChatRoomWithdrawnMember EventType = "chat_room:withdrawn:member"
 	// EventTypeChatRoomUpdatedName チャットルームの名前が更新されたことを表すイベント。
@@ -97,6 +99,15 @@ type ChatRoomRemovedMemberEventData struct {
 	ActedAt              time.Time                                                      `json:"acted_at"`
 }
 
+// ChatRoomWithdrawnMeEventData チャットルームから自分が退室した際のイベントデータを表す構造体。
+type ChatRoomWithdrawnMeEventData struct {
+	ChatRoomID           uuid.UUID                               `json:"chat_room_id"`
+	Action               entity.ChatRoomWithdrawActionWithMember `json:"action"`
+	ChatRoomActionID     uuid.UUID                               `json:"chat_room_action_id"`
+	ChatRoomActionTypeID uuid.UUID                               `json:"chat_room_action_type_id"`
+	ActedAt              time.Time                               `json:"acted_at"`
+}
+
 // ChatRoomWithdrawnMemberEventData チャットルームから自分以外のメンバーが退室した際のイベントデータを表す構造体。
 type ChatRoomWithdrawnMemberEventData struct {
 	ChatRoomID           uuid.UUID                               `json:"chat_room_id"`
@@ -122,6 +133,7 @@ type ChatRoomDeletedMessageEventData struct {
 	ChatRoomActionID     uuid.UUID                                       `json:"chat_room_action_id"`
 	ChatRoomActionTypeID uuid.UUID                                       `json:"chat_room_action_type_id"`
 	ActedAt              time.Time                                       `json:"acted_at"`
+	UnreadMemberIDs      []uuid.UUID                                     `json:"unread_member_ids"`
 }
 
 // ChatRoomEditedMessageEventData チャットルームのメッセージが編集された際のイベントデータを表す構造体。

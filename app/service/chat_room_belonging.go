@@ -513,6 +513,16 @@ func (m *ManageChatRoomBelonging) RemoveMembersFromChatRoom(
 		}
 	}()
 	now := m.Clocker.Now()
+	var inMembers bool
+	for _, v := range memberIDs {
+		if v == ownerID {
+			inMembers = true
+			break
+		}
+	}
+	if inMembers {
+		return 0, errhandle.NewCommonError(response.CannotDeleteSelfFromChatRoom, nil)
+	}
 	owner, err := m.DB.FindMemberByIDWithSd(ctx, sd, ownerID)
 	if err != nil {
 		var nfe errhandle.ModelNotFoundError

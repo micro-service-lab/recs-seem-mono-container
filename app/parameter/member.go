@@ -115,16 +115,24 @@ func (p MemberWithParams) Case() MemberWithCase {
 
 // WhereMemberParam メンバー検索のパラメータ。
 type WhereMemberParam struct {
-	WhereLikeName      bool
-	SearchName         string
-	WhereHasPolicy     bool
-	HasPolicyIDs       []uuid.UUID
-	WhenInAttendStatus bool
-	InAttendStatusIDs  []uuid.UUID
-	WhenInGrade        bool
-	InGradeIDs         []uuid.UUID
-	WhenInGroup        bool
-	InGroupIDs         []uuid.UUID
+	WhereLikeName                 bool
+	SearchName                    string
+	WhereHasPolicy                bool
+	HasPolicyIDs                  []uuid.UUID
+	WhenInAttendStatus            bool
+	InAttendStatusIDs             []uuid.UUID
+	WhenInGrade                   bool
+	InGradeIDs                    []uuid.UUID
+	WhenInGroup                   bool
+	InGroupIDs                    []uuid.UUID
+	WhereNotBelongingOrganization bool
+	WhereBelongingOrganization    bool
+	BelongingOrganizationID       uuid.UUID
+	NotBelongingOrganizationID    uuid.UUID
+	WhereNotBelongingChatRoom     bool
+	WhereBelongingChatRoom        bool
+	BelongingChatRoomID           uuid.UUID
+	NotBelongingChatRoomID        uuid.UUID
 }
 
 // MemberOrderMethod メンバーの並び替え方法。

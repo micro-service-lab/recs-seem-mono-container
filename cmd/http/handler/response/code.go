@@ -448,4 +448,18 @@ var (
 		Message:    "not organization member error",
 		StatusCode: http.StatusForbidden,
 	}
+
+	// CannotDeleteSelfFromOrganization 組織から自分自身を削除できない
+	CannotDeleteSelfFromOrganization = APIResponseType{
+		Code:       "259",
+		Message:    "cannot delete self from organization error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotDeleteSelfFromChatRoom チャットルームから自分自身を削除できない
+	CannotDeleteSelfFromChatRoom = APIResponseType{
+		Code:       "260",
+		Message:    "cannot delete self from chat room error",
+		StatusCode: http.StatusForbidden,
+	}
 )

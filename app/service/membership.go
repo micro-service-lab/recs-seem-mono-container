@@ -11,6 +11,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/ws"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
 )
@@ -53,13 +54,25 @@ func (m *ManageMembership) BelongMembersOnOrganization(
 		}
 		return 0, fmt.Errorf("failed to find member: %w", err)
 	}
-	org, err := m.DB.FindOrganizationByIDWithSd(ctx, sd, organizationID)
+	org, err := m.DB.FindOrganizationWithDetailWithSd(ctx, sd, organizationID)
 	if err != nil {
 		var nfe errhandle.ModelNotFoundError
 		if errors.As(err, &nfe) {
 			return 0, errhandle.NewModelNotFoundError(OrganizationBelongingTargetOrganization)
 		}
 		return 0, fmt.Errorf("failed to find organization: %w", err)
+	}
+	if org.Grade.Valid {
+		return 0, errhandle.NewCommonError(response.AttemptOperateGradeOrganization, nil)
+	}
+	if org.Group.Valid {
+		return 0, errhandle.NewCommonError(response.AttemptOperateGroupOrganization, nil)
+	}
+	if org.IsPersonal {
+		return 0, errhandle.NewCommonError(response.AttemptOperatePersonalOrganization, nil)
+	}
+	if org.IsWhole {
+		return 0, errhandle.NewCommonError(response.AttemptOperateWholeOrganization, nil)
 	}
 	mm, err := m.DB.GetPluralMembersWithSd(
 		ctx,
@@ -190,6 +203,16 @@ func (m *ManageMembership) RemoveMembersFromOrganization(
 		}
 	}()
 	now := m.Clocker.Now()
+	var inMembers bool
+	for _, v := range memberIDs {
+		if v == ownerID {
+			inMembers = true
+			break
+		}
+	}
+	if inMembers {
+		return 0, errhandle.NewCommonError(response.CannotDeleteSelfFromOrganization, nil)
+	}
 	owner, err := m.DB.FindMemberByIDWithSd(ctx, sd, ownerID)
 	if err != nil {
 		var nfe errhandle.ModelNotFoundError
@@ -198,13 +221,25 @@ func (m *ManageMembership) RemoveMembersFromOrganization(
 		}
 		return 0, fmt.Errorf("failed to find member: %w", err)
 	}
-	org, err := m.DB.FindOrganizationByIDWithSd(ctx, sd, organizationID)
+	org, err := m.DB.FindOrganizationWithDetailWithSd(ctx, sd, organizationID)
 	if err != nil {
 		var nfe errhandle.ModelNotFoundError
 		if errors.As(err, &nfe) {
 			return 0, errhandle.NewModelNotFoundError(OrganizationBelongingTargetOrganization)
 		}
 		return 0, fmt.Errorf("failed to find organization: %w", err)
+	}
+	if org.Grade.Valid {
+		return 0, errhandle.NewCommonError(response.AttemptOperateGradeOrganization, nil)
+	}
+	if org.Group.Valid {
+		return 0, errhandle.NewCommonError(response.AttemptOperateGroupOrganization, nil)
+	}
+	if org.IsPersonal {
+		return 0, errhandle.NewCommonError(response.AttemptOperatePersonalOrganization, nil)
+	}
+	if org.IsWhole {
+		return 0, errhandle.NewCommonError(response.AttemptOperateWholeOrganization, nil)
 	}
 	mm, err := m.DB.GetPluralMembersWithSd(
 		ctx,
@@ -344,13 +379,25 @@ func (m *ManageMembership) WithdrawMemberFromOrganization(
 		}
 		return 0, fmt.Errorf("failed to find member: %w", err)
 	}
-	org, err := m.DB.FindOrganizationByIDWithSd(ctx, sd, organizationID)
+	org, err := m.DB.FindOrganizationWithDetailWithSd(ctx, sd, organizationID)
 	if err != nil {
 		var nfe errhandle.ModelNotFoundError
 		if errors.As(err, &nfe) {
 			return 0, errhandle.NewModelNotFoundError(OrganizationBelongingTargetOrganization)
 		}
 		return 0, fmt.Errorf("failed to find organization: %w", err)
+	}
+	if org.Grade.Valid {
+		return 0, errhandle.NewCommonError(response.AttemptOperateGradeOrganization, nil)
+	}
+	if org.Group.Valid {
+		return 0, errhandle.NewCommonError(response.AttemptOperateGroupOrganization, nil)
+	}
+	if org.IsPersonal {
+		return 0, errhandle.NewCommonError(response.AttemptOperatePersonalOrganization, nil)
+	}
+	if org.IsWhole {
+		return 0, errhandle.NewCommonError(response.AttemptOperateWholeOrganization, nil)
 	}
 	belongingMembers, err := m.DB.GetMembersOnOrganizationWithSd(
 		ctx,

@@ -447,7 +447,7 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			GetImagesCountFunc: func(ctx context.Context) (int64, error) {
 //				panic("mock out the GetImagesCount method")
 //			},
-//			GetMembersFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Member], error) {
+//			GetMembersFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Member], error) {
 //				panic("mock out the GetMembers method")
 //			},
 //			GetMembersOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, whereSearchName string, order parameter.MemberOnChatRoomOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberOnChatRoom], error) {
@@ -462,25 +462,25 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			GetMembersOnOrganizationCountFunc: func(ctx context.Context, chatRoomID uuid.UUID, whereSearchName string) (int64, error) {
 //				panic("mock out the GetMembersOnOrganizationCount method")
 //			},
-//			GetMembersWithAttendStatusFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithAttendStatus], error) {
+//			GetMembersWithAttendStatusFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithAttendStatus], error) {
 //				panic("mock out the GetMembersWithAttendStatus method")
 //			},
-//			GetMembersWithCrewFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrew], error) {
+//			GetMembersWithCrewFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrew], error) {
 //				panic("mock out the GetMembersWithCrew method")
 //			},
-//			GetMembersWithCrewAndProfileImageAndAttendStatusFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrewAndProfileImageAndAttendStatus], error) {
+//			GetMembersWithCrewAndProfileImageAndAttendStatusFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrewAndProfileImageAndAttendStatus], error) {
 //				panic("mock out the GetMembersWithCrewAndProfileImageAndAttendStatus method")
 //			},
-//			GetMembersWithDetailFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithDetail], error) {
+//			GetMembersWithDetailFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithDetail], error) {
 //				panic("mock out the GetMembersWithDetail method")
 //			},
-//			GetMembersWithPersonalOrganizationFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithPersonalOrganization], error) {
+//			GetMembersWithPersonalOrganizationFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithPersonalOrganization], error) {
 //				panic("mock out the GetMembersWithPersonalOrganization method")
 //			},
-//			GetMembersWithProfileImageFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithProfileImage], error) {
+//			GetMembersWithProfileImageFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithProfileImage], error) {
 //				panic("mock out the GetMembersWithProfileImage method")
 //			},
-//			GetMembersWithRoleFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithRole], error) {
+//			GetMembersWithRoleFunc: func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithRole], error) {
 //				panic("mock out the GetMembersWithRole method")
 //			},
 //			GetMessagesOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, whereInSenders []uuid.UUID, whereSearchBody string, whereEarlierPostedAt time.Time, whereLaterPostedAt time.Time, whereEarlierLastEditedAt time.Time, whereLaterLastEditedAt time.Time, order parameter.MessageOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MessageWithSenderAndReadReceiptCountAndAttachments], error) {
@@ -1145,7 +1145,7 @@ type ManagerInterfaceMock struct {
 	GetImagesCountFunc func(ctx context.Context) (int64, error)
 
 	// GetMembersFunc mocks the GetMembers method.
-	GetMembersFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Member], error)
+	GetMembersFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Member], error)
 
 	// GetMembersOnChatRoomFunc mocks the GetMembersOnChatRoom method.
 	GetMembersOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, whereSearchName string, order parameter.MemberOnChatRoomOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberOnChatRoom], error)
@@ -1160,25 +1160,25 @@ type ManagerInterfaceMock struct {
 	GetMembersOnOrganizationCountFunc func(ctx context.Context, chatRoomID uuid.UUID, whereSearchName string) (int64, error)
 
 	// GetMembersWithAttendStatusFunc mocks the GetMembersWithAttendStatus method.
-	GetMembersWithAttendStatusFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithAttendStatus], error)
+	GetMembersWithAttendStatusFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithAttendStatus], error)
 
 	// GetMembersWithCrewFunc mocks the GetMembersWithCrew method.
-	GetMembersWithCrewFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrew], error)
+	GetMembersWithCrewFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrew], error)
 
 	// GetMembersWithCrewAndProfileImageAndAttendStatusFunc mocks the GetMembersWithCrewAndProfileImageAndAttendStatus method.
-	GetMembersWithCrewAndProfileImageAndAttendStatusFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrewAndProfileImageAndAttendStatus], error)
+	GetMembersWithCrewAndProfileImageAndAttendStatusFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrewAndProfileImageAndAttendStatus], error)
 
 	// GetMembersWithDetailFunc mocks the GetMembersWithDetail method.
-	GetMembersWithDetailFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithDetail], error)
+	GetMembersWithDetailFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithDetail], error)
 
 	// GetMembersWithPersonalOrganizationFunc mocks the GetMembersWithPersonalOrganization method.
-	GetMembersWithPersonalOrganizationFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithPersonalOrganization], error)
+	GetMembersWithPersonalOrganizationFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithPersonalOrganization], error)
 
 	// GetMembersWithProfileImageFunc mocks the GetMembersWithProfileImage method.
-	GetMembersWithProfileImageFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithProfileImage], error)
+	GetMembersWithProfileImageFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithProfileImage], error)
 
 	// GetMembersWithRoleFunc mocks the GetMembersWithRole method.
-	GetMembersWithRoleFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithRole], error)
+	GetMembersWithRoleFunc func(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithRole], error)
 
 	// GetMessagesOnChatRoomFunc mocks the GetMessagesOnChatRoom method.
 	GetMessagesOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, whereInSenders []uuid.UUID, whereSearchBody string, whereEarlierPostedAt time.Time, whereLaterPostedAt time.Time, whereEarlierLastEditedAt time.Time, whereLaterLastEditedAt time.Time, order parameter.MessageOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MessageWithSenderAndReadReceiptCountAndAttachments], error)
@@ -2772,6 +2772,14 @@ type ManagerInterfaceMock struct {
 			WhereInGrades []uuid.UUID
 			// WhereInGroups is the whereInGroups argument value.
 			WhereInGroups []uuid.UUID
+			// WhereBelongingOrganizationID is the whereBelongingOrganizationID argument value.
+			WhereBelongingOrganizationID uuid.UUID
+			// WhereNotBelongingOrganizationID is the whereNotBelongingOrganizationID argument value.
+			WhereNotBelongingOrganizationID uuid.UUID
+			// WhereBelongingChatRoomID is the whereBelongingChatRoomID argument value.
+			WhereBelongingChatRoomID uuid.UUID
+			// WhereNotBelongingChatRoomID is the whereNotBelongingChatRoomID argument value.
+			WhereNotBelongingChatRoomID uuid.UUID
 			// Order is the order argument value.
 			Order parameter.MemberOrderMethod
 			// Pg is the pg argument value.
@@ -2859,6 +2867,14 @@ type ManagerInterfaceMock struct {
 			WhereInGrades []uuid.UUID
 			// WhereInGroups is the whereInGroups argument value.
 			WhereInGroups []uuid.UUID
+			// WhereBelongingOrganizationID is the whereBelongingOrganizationID argument value.
+			WhereBelongingOrganizationID uuid.UUID
+			// WhereNotBelongingOrganizationID is the whereNotBelongingOrganizationID argument value.
+			WhereNotBelongingOrganizationID uuid.UUID
+			// WhereBelongingChatRoomID is the whereBelongingChatRoomID argument value.
+			WhereBelongingChatRoomID uuid.UUID
+			// WhereNotBelongingChatRoomID is the whereNotBelongingChatRoomID argument value.
+			WhereNotBelongingChatRoomID uuid.UUID
 			// Order is the order argument value.
 			Order parameter.MemberOrderMethod
 			// Pg is the pg argument value.
@@ -2886,6 +2902,14 @@ type ManagerInterfaceMock struct {
 			WhereInGrades []uuid.UUID
 			// WhereInGroups is the whereInGroups argument value.
 			WhereInGroups []uuid.UUID
+			// WhereBelongingOrganizationID is the whereBelongingOrganizationID argument value.
+			WhereBelongingOrganizationID uuid.UUID
+			// WhereNotBelongingOrganizationID is the whereNotBelongingOrganizationID argument value.
+			WhereNotBelongingOrganizationID uuid.UUID
+			// WhereBelongingChatRoomID is the whereBelongingChatRoomID argument value.
+			WhereBelongingChatRoomID uuid.UUID
+			// WhereNotBelongingChatRoomID is the whereNotBelongingChatRoomID argument value.
+			WhereNotBelongingChatRoomID uuid.UUID
 			// Order is the order argument value.
 			Order parameter.MemberOrderMethod
 			// Pg is the pg argument value.
@@ -2913,6 +2937,14 @@ type ManagerInterfaceMock struct {
 			WhereInGrades []uuid.UUID
 			// WhereInGroups is the whereInGroups argument value.
 			WhereInGroups []uuid.UUID
+			// WhereBelongingOrganizationID is the whereBelongingOrganizationID argument value.
+			WhereBelongingOrganizationID uuid.UUID
+			// WhereNotBelongingOrganizationID is the whereNotBelongingOrganizationID argument value.
+			WhereNotBelongingOrganizationID uuid.UUID
+			// WhereBelongingChatRoomID is the whereBelongingChatRoomID argument value.
+			WhereBelongingChatRoomID uuid.UUID
+			// WhereNotBelongingChatRoomID is the whereNotBelongingChatRoomID argument value.
+			WhereNotBelongingChatRoomID uuid.UUID
 			// Order is the order argument value.
 			Order parameter.MemberOrderMethod
 			// Pg is the pg argument value.
@@ -2940,6 +2972,14 @@ type ManagerInterfaceMock struct {
 			WhereInGrades []uuid.UUID
 			// WhereInGroups is the whereInGroups argument value.
 			WhereInGroups []uuid.UUID
+			// WhereBelongingOrganizationID is the whereBelongingOrganizationID argument value.
+			WhereBelongingOrganizationID uuid.UUID
+			// WhereNotBelongingOrganizationID is the whereNotBelongingOrganizationID argument value.
+			WhereNotBelongingOrganizationID uuid.UUID
+			// WhereBelongingChatRoomID is the whereBelongingChatRoomID argument value.
+			WhereBelongingChatRoomID uuid.UUID
+			// WhereNotBelongingChatRoomID is the whereNotBelongingChatRoomID argument value.
+			WhereNotBelongingChatRoomID uuid.UUID
 			// Order is the order argument value.
 			Order parameter.MemberOrderMethod
 			// Pg is the pg argument value.
@@ -2967,6 +3007,14 @@ type ManagerInterfaceMock struct {
 			WhereInGrades []uuid.UUID
 			// WhereInGroups is the whereInGroups argument value.
 			WhereInGroups []uuid.UUID
+			// WhereBelongingOrganizationID is the whereBelongingOrganizationID argument value.
+			WhereBelongingOrganizationID uuid.UUID
+			// WhereNotBelongingOrganizationID is the whereNotBelongingOrganizationID argument value.
+			WhereNotBelongingOrganizationID uuid.UUID
+			// WhereBelongingChatRoomID is the whereBelongingChatRoomID argument value.
+			WhereBelongingChatRoomID uuid.UUID
+			// WhereNotBelongingChatRoomID is the whereNotBelongingChatRoomID argument value.
+			WhereNotBelongingChatRoomID uuid.UUID
 			// Order is the order argument value.
 			Order parameter.MemberOrderMethod
 			// Pg is the pg argument value.
@@ -2994,6 +3042,14 @@ type ManagerInterfaceMock struct {
 			WhereInGrades []uuid.UUID
 			// WhereInGroups is the whereInGroups argument value.
 			WhereInGroups []uuid.UUID
+			// WhereBelongingOrganizationID is the whereBelongingOrganizationID argument value.
+			WhereBelongingOrganizationID uuid.UUID
+			// WhereNotBelongingOrganizationID is the whereNotBelongingOrganizationID argument value.
+			WhereNotBelongingOrganizationID uuid.UUID
+			// WhereBelongingChatRoomID is the whereBelongingChatRoomID argument value.
+			WhereBelongingChatRoomID uuid.UUID
+			// WhereNotBelongingChatRoomID is the whereNotBelongingChatRoomID argument value.
+			WhereNotBelongingChatRoomID uuid.UUID
 			// Order is the order argument value.
 			Order parameter.MemberOrderMethod
 			// Pg is the pg argument value.
@@ -3021,6 +3077,14 @@ type ManagerInterfaceMock struct {
 			WhereInGrades []uuid.UUID
 			// WhereInGroups is the whereInGroups argument value.
 			WhereInGroups []uuid.UUID
+			// WhereBelongingOrganizationID is the whereBelongingOrganizationID argument value.
+			WhereBelongingOrganizationID uuid.UUID
+			// WhereNotBelongingOrganizationID is the whereNotBelongingOrganizationID argument value.
+			WhereNotBelongingOrganizationID uuid.UUID
+			// WhereBelongingChatRoomID is the whereBelongingChatRoomID argument value.
+			WhereBelongingChatRoomID uuid.UUID
+			// WhereNotBelongingChatRoomID is the whereNotBelongingChatRoomID argument value.
+			WhereNotBelongingChatRoomID uuid.UUID
 			// Order is the order argument value.
 			Order parameter.MemberOrderMethod
 			// Pg is the pg argument value.
@@ -10005,41 +10069,49 @@ func (mock *ManagerInterfaceMock) GetImagesCountCalls() []struct {
 }
 
 // GetMembers calls GetMembersFunc.
-func (mock *ManagerInterfaceMock) GetMembers(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Member], error) {
+func (mock *ManagerInterfaceMock) GetMembers(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.Member], error) {
 	if mock.GetMembersFunc == nil {
 		panic("ManagerInterfaceMock.GetMembersFunc: method is nil but ManagerInterface.GetMembers was just called")
 	}
 	callInfo := struct {
-		Ctx                   context.Context
-		WhereSearchName       string
-		WhereHasInPolicies    []uuid.UUID
-		WhereInAttendStatuses []uuid.UUID
-		WhereInGrades         []uuid.UUID
-		WhereInGroups         []uuid.UUID
-		Order                 parameter.MemberOrderMethod
-		Pg                    parameter.Pagination
-		Limit                 parameter.Limit
-		Cursor                parameter.Cursor
-		Offset                parameter.Offset
-		WithCount             parameter.WithCount
+		Ctx                             context.Context
+		WhereSearchName                 string
+		WhereHasInPolicies              []uuid.UUID
+		WhereInAttendStatuses           []uuid.UUID
+		WhereInGrades                   []uuid.UUID
+		WhereInGroups                   []uuid.UUID
+		WhereBelongingOrganizationID    uuid.UUID
+		WhereNotBelongingOrganizationID uuid.UUID
+		WhereBelongingChatRoomID        uuid.UUID
+		WhereNotBelongingChatRoomID     uuid.UUID
+		Order                           parameter.MemberOrderMethod
+		Pg                              parameter.Pagination
+		Limit                           parameter.Limit
+		Cursor                          parameter.Cursor
+		Offset                          parameter.Offset
+		WithCount                       parameter.WithCount
 	}{
-		Ctx:                   ctx,
-		WhereSearchName:       whereSearchName,
-		WhereHasInPolicies:    whereHasInPolicies,
-		WhereInAttendStatuses: whereInAttendStatuses,
-		WhereInGrades:         whereInGrades,
-		WhereInGroups:         whereInGroups,
-		Order:                 order,
-		Pg:                    pg,
-		Limit:                 limit,
-		Cursor:                cursor,
-		Offset:                offset,
-		WithCount:             withCount,
+		Ctx:                             ctx,
+		WhereSearchName:                 whereSearchName,
+		WhereHasInPolicies:              whereHasInPolicies,
+		WhereInAttendStatuses:           whereInAttendStatuses,
+		WhereInGrades:                   whereInGrades,
+		WhereInGroups:                   whereInGroups,
+		WhereBelongingOrganizationID:    whereBelongingOrganizationID,
+		WhereNotBelongingOrganizationID: whereNotBelongingOrganizationID,
+		WhereBelongingChatRoomID:        whereBelongingChatRoomID,
+		WhereNotBelongingChatRoomID:     whereNotBelongingChatRoomID,
+		Order:                           order,
+		Pg:                              pg,
+		Limit:                           limit,
+		Cursor:                          cursor,
+		Offset:                          offset,
+		WithCount:                       withCount,
 	}
 	mock.lockGetMembers.Lock()
 	mock.calls.GetMembers = append(mock.calls.GetMembers, callInfo)
 	mock.lockGetMembers.Unlock()
-	return mock.GetMembersFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, order, pg, limit, cursor, offset, withCount)
+	return mock.GetMembersFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, whereBelongingOrganizationID, whereNotBelongingOrganizationID, whereBelongingChatRoomID, whereNotBelongingChatRoomID, order, pg, limit, cursor, offset, withCount)
 }
 
 // GetMembersCalls gets all the calls that were made to GetMembers.
@@ -10047,32 +10119,40 @@ func (mock *ManagerInterfaceMock) GetMembers(ctx context.Context, whereSearchNam
 //
 //	len(mockedManagerInterface.GetMembersCalls())
 func (mock *ManagerInterfaceMock) GetMembersCalls() []struct {
-	Ctx                   context.Context
-	WhereSearchName       string
-	WhereHasInPolicies    []uuid.UUID
-	WhereInAttendStatuses []uuid.UUID
-	WhereInGrades         []uuid.UUID
-	WhereInGroups         []uuid.UUID
-	Order                 parameter.MemberOrderMethod
-	Pg                    parameter.Pagination
-	Limit                 parameter.Limit
-	Cursor                parameter.Cursor
-	Offset                parameter.Offset
-	WithCount             parameter.WithCount
+	Ctx                             context.Context
+	WhereSearchName                 string
+	WhereHasInPolicies              []uuid.UUID
+	WhereInAttendStatuses           []uuid.UUID
+	WhereInGrades                   []uuid.UUID
+	WhereInGroups                   []uuid.UUID
+	WhereBelongingOrganizationID    uuid.UUID
+	WhereNotBelongingOrganizationID uuid.UUID
+	WhereBelongingChatRoomID        uuid.UUID
+	WhereNotBelongingChatRoomID     uuid.UUID
+	Order                           parameter.MemberOrderMethod
+	Pg                              parameter.Pagination
+	Limit                           parameter.Limit
+	Cursor                          parameter.Cursor
+	Offset                          parameter.Offset
+	WithCount                       parameter.WithCount
 } {
 	var calls []struct {
-		Ctx                   context.Context
-		WhereSearchName       string
-		WhereHasInPolicies    []uuid.UUID
-		WhereInAttendStatuses []uuid.UUID
-		WhereInGrades         []uuid.UUID
-		WhereInGroups         []uuid.UUID
-		Order                 parameter.MemberOrderMethod
-		Pg                    parameter.Pagination
-		Limit                 parameter.Limit
-		Cursor                parameter.Cursor
-		Offset                parameter.Offset
-		WithCount             parameter.WithCount
+		Ctx                             context.Context
+		WhereSearchName                 string
+		WhereHasInPolicies              []uuid.UUID
+		WhereInAttendStatuses           []uuid.UUID
+		WhereInGrades                   []uuid.UUID
+		WhereInGroups                   []uuid.UUID
+		WhereBelongingOrganizationID    uuid.UUID
+		WhereNotBelongingOrganizationID uuid.UUID
+		WhereBelongingChatRoomID        uuid.UUID
+		WhereNotBelongingChatRoomID     uuid.UUID
+		Order                           parameter.MemberOrderMethod
+		Pg                              parameter.Pagination
+		Limit                           parameter.Limit
+		Cursor                          parameter.Cursor
+		Offset                          parameter.Offset
+		WithCount                       parameter.WithCount
 	}
 	mock.lockGetMembers.RLock()
 	calls = mock.calls.GetMembers
@@ -10289,41 +10369,49 @@ func (mock *ManagerInterfaceMock) GetMembersOnOrganizationCountCalls() []struct 
 }
 
 // GetMembersWithAttendStatus calls GetMembersWithAttendStatusFunc.
-func (mock *ManagerInterfaceMock) GetMembersWithAttendStatus(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithAttendStatus], error) {
+func (mock *ManagerInterfaceMock) GetMembersWithAttendStatus(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithAttendStatus], error) {
 	if mock.GetMembersWithAttendStatusFunc == nil {
 		panic("ManagerInterfaceMock.GetMembersWithAttendStatusFunc: method is nil but ManagerInterface.GetMembersWithAttendStatus was just called")
 	}
 	callInfo := struct {
-		Ctx                   context.Context
-		WhereSearchName       string
-		WhereHasInPolicies    []uuid.UUID
-		WhereInAttendStatuses []uuid.UUID
-		WhereInGrades         []uuid.UUID
-		WhereInGroups         []uuid.UUID
-		Order                 parameter.MemberOrderMethod
-		Pg                    parameter.Pagination
-		Limit                 parameter.Limit
-		Cursor                parameter.Cursor
-		Offset                parameter.Offset
-		WithCount             parameter.WithCount
+		Ctx                             context.Context
+		WhereSearchName                 string
+		WhereHasInPolicies              []uuid.UUID
+		WhereInAttendStatuses           []uuid.UUID
+		WhereInGrades                   []uuid.UUID
+		WhereInGroups                   []uuid.UUID
+		WhereBelongingOrganizationID    uuid.UUID
+		WhereNotBelongingOrganizationID uuid.UUID
+		WhereBelongingChatRoomID        uuid.UUID
+		WhereNotBelongingChatRoomID     uuid.UUID
+		Order                           parameter.MemberOrderMethod
+		Pg                              parameter.Pagination
+		Limit                           parameter.Limit
+		Cursor                          parameter.Cursor
+		Offset                          parameter.Offset
+		WithCount                       parameter.WithCount
 	}{
-		Ctx:                   ctx,
-		WhereSearchName:       whereSearchName,
-		WhereHasInPolicies:    whereHasInPolicies,
-		WhereInAttendStatuses: whereInAttendStatuses,
-		WhereInGrades:         whereInGrades,
-		WhereInGroups:         whereInGroups,
-		Order:                 order,
-		Pg:                    pg,
-		Limit:                 limit,
-		Cursor:                cursor,
-		Offset:                offset,
-		WithCount:             withCount,
+		Ctx:                             ctx,
+		WhereSearchName:                 whereSearchName,
+		WhereHasInPolicies:              whereHasInPolicies,
+		WhereInAttendStatuses:           whereInAttendStatuses,
+		WhereInGrades:                   whereInGrades,
+		WhereInGroups:                   whereInGroups,
+		WhereBelongingOrganizationID:    whereBelongingOrganizationID,
+		WhereNotBelongingOrganizationID: whereNotBelongingOrganizationID,
+		WhereBelongingChatRoomID:        whereBelongingChatRoomID,
+		WhereNotBelongingChatRoomID:     whereNotBelongingChatRoomID,
+		Order:                           order,
+		Pg:                              pg,
+		Limit:                           limit,
+		Cursor:                          cursor,
+		Offset:                          offset,
+		WithCount:                       withCount,
 	}
 	mock.lockGetMembersWithAttendStatus.Lock()
 	mock.calls.GetMembersWithAttendStatus = append(mock.calls.GetMembersWithAttendStatus, callInfo)
 	mock.lockGetMembersWithAttendStatus.Unlock()
-	return mock.GetMembersWithAttendStatusFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, order, pg, limit, cursor, offset, withCount)
+	return mock.GetMembersWithAttendStatusFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, whereBelongingOrganizationID, whereNotBelongingOrganizationID, whereBelongingChatRoomID, whereNotBelongingChatRoomID, order, pg, limit, cursor, offset, withCount)
 }
 
 // GetMembersWithAttendStatusCalls gets all the calls that were made to GetMembersWithAttendStatus.
@@ -10331,32 +10419,40 @@ func (mock *ManagerInterfaceMock) GetMembersWithAttendStatus(ctx context.Context
 //
 //	len(mockedManagerInterface.GetMembersWithAttendStatusCalls())
 func (mock *ManagerInterfaceMock) GetMembersWithAttendStatusCalls() []struct {
-	Ctx                   context.Context
-	WhereSearchName       string
-	WhereHasInPolicies    []uuid.UUID
-	WhereInAttendStatuses []uuid.UUID
-	WhereInGrades         []uuid.UUID
-	WhereInGroups         []uuid.UUID
-	Order                 parameter.MemberOrderMethod
-	Pg                    parameter.Pagination
-	Limit                 parameter.Limit
-	Cursor                parameter.Cursor
-	Offset                parameter.Offset
-	WithCount             parameter.WithCount
+	Ctx                             context.Context
+	WhereSearchName                 string
+	WhereHasInPolicies              []uuid.UUID
+	WhereInAttendStatuses           []uuid.UUID
+	WhereInGrades                   []uuid.UUID
+	WhereInGroups                   []uuid.UUID
+	WhereBelongingOrganizationID    uuid.UUID
+	WhereNotBelongingOrganizationID uuid.UUID
+	WhereBelongingChatRoomID        uuid.UUID
+	WhereNotBelongingChatRoomID     uuid.UUID
+	Order                           parameter.MemberOrderMethod
+	Pg                              parameter.Pagination
+	Limit                           parameter.Limit
+	Cursor                          parameter.Cursor
+	Offset                          parameter.Offset
+	WithCount                       parameter.WithCount
 } {
 	var calls []struct {
-		Ctx                   context.Context
-		WhereSearchName       string
-		WhereHasInPolicies    []uuid.UUID
-		WhereInAttendStatuses []uuid.UUID
-		WhereInGrades         []uuid.UUID
-		WhereInGroups         []uuid.UUID
-		Order                 parameter.MemberOrderMethod
-		Pg                    parameter.Pagination
-		Limit                 parameter.Limit
-		Cursor                parameter.Cursor
-		Offset                parameter.Offset
-		WithCount             parameter.WithCount
+		Ctx                             context.Context
+		WhereSearchName                 string
+		WhereHasInPolicies              []uuid.UUID
+		WhereInAttendStatuses           []uuid.UUID
+		WhereInGrades                   []uuid.UUID
+		WhereInGroups                   []uuid.UUID
+		WhereBelongingOrganizationID    uuid.UUID
+		WhereNotBelongingOrganizationID uuid.UUID
+		WhereBelongingChatRoomID        uuid.UUID
+		WhereNotBelongingChatRoomID     uuid.UUID
+		Order                           parameter.MemberOrderMethod
+		Pg                              parameter.Pagination
+		Limit                           parameter.Limit
+		Cursor                          parameter.Cursor
+		Offset                          parameter.Offset
+		WithCount                       parameter.WithCount
 	}
 	mock.lockGetMembersWithAttendStatus.RLock()
 	calls = mock.calls.GetMembersWithAttendStatus
@@ -10365,41 +10461,49 @@ func (mock *ManagerInterfaceMock) GetMembersWithAttendStatusCalls() []struct {
 }
 
 // GetMembersWithCrew calls GetMembersWithCrewFunc.
-func (mock *ManagerInterfaceMock) GetMembersWithCrew(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrew], error) {
+func (mock *ManagerInterfaceMock) GetMembersWithCrew(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrew], error) {
 	if mock.GetMembersWithCrewFunc == nil {
 		panic("ManagerInterfaceMock.GetMembersWithCrewFunc: method is nil but ManagerInterface.GetMembersWithCrew was just called")
 	}
 	callInfo := struct {
-		Ctx                   context.Context
-		WhereSearchName       string
-		WhereHasInPolicies    []uuid.UUID
-		WhereInAttendStatuses []uuid.UUID
-		WhereInGrades         []uuid.UUID
-		WhereInGroups         []uuid.UUID
-		Order                 parameter.MemberOrderMethod
-		Pg                    parameter.Pagination
-		Limit                 parameter.Limit
-		Cursor                parameter.Cursor
-		Offset                parameter.Offset
-		WithCount             parameter.WithCount
+		Ctx                             context.Context
+		WhereSearchName                 string
+		WhereHasInPolicies              []uuid.UUID
+		WhereInAttendStatuses           []uuid.UUID
+		WhereInGrades                   []uuid.UUID
+		WhereInGroups                   []uuid.UUID
+		WhereBelongingOrganizationID    uuid.UUID
+		WhereNotBelongingOrganizationID uuid.UUID
+		WhereBelongingChatRoomID        uuid.UUID
+		WhereNotBelongingChatRoomID     uuid.UUID
+		Order                           parameter.MemberOrderMethod
+		Pg                              parameter.Pagination
+		Limit                           parameter.Limit
+		Cursor                          parameter.Cursor
+		Offset                          parameter.Offset
+		WithCount                       parameter.WithCount
 	}{
-		Ctx:                   ctx,
-		WhereSearchName:       whereSearchName,
-		WhereHasInPolicies:    whereHasInPolicies,
-		WhereInAttendStatuses: whereInAttendStatuses,
-		WhereInGrades:         whereInGrades,
-		WhereInGroups:         whereInGroups,
-		Order:                 order,
-		Pg:                    pg,
-		Limit:                 limit,
-		Cursor:                cursor,
-		Offset:                offset,
-		WithCount:             withCount,
+		Ctx:                             ctx,
+		WhereSearchName:                 whereSearchName,
+		WhereHasInPolicies:              whereHasInPolicies,
+		WhereInAttendStatuses:           whereInAttendStatuses,
+		WhereInGrades:                   whereInGrades,
+		WhereInGroups:                   whereInGroups,
+		WhereBelongingOrganizationID:    whereBelongingOrganizationID,
+		WhereNotBelongingOrganizationID: whereNotBelongingOrganizationID,
+		WhereBelongingChatRoomID:        whereBelongingChatRoomID,
+		WhereNotBelongingChatRoomID:     whereNotBelongingChatRoomID,
+		Order:                           order,
+		Pg:                              pg,
+		Limit:                           limit,
+		Cursor:                          cursor,
+		Offset:                          offset,
+		WithCount:                       withCount,
 	}
 	mock.lockGetMembersWithCrew.Lock()
 	mock.calls.GetMembersWithCrew = append(mock.calls.GetMembersWithCrew, callInfo)
 	mock.lockGetMembersWithCrew.Unlock()
-	return mock.GetMembersWithCrewFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, order, pg, limit, cursor, offset, withCount)
+	return mock.GetMembersWithCrewFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, whereBelongingOrganizationID, whereNotBelongingOrganizationID, whereBelongingChatRoomID, whereNotBelongingChatRoomID, order, pg, limit, cursor, offset, withCount)
 }
 
 // GetMembersWithCrewCalls gets all the calls that were made to GetMembersWithCrew.
@@ -10407,32 +10511,40 @@ func (mock *ManagerInterfaceMock) GetMembersWithCrew(ctx context.Context, whereS
 //
 //	len(mockedManagerInterface.GetMembersWithCrewCalls())
 func (mock *ManagerInterfaceMock) GetMembersWithCrewCalls() []struct {
-	Ctx                   context.Context
-	WhereSearchName       string
-	WhereHasInPolicies    []uuid.UUID
-	WhereInAttendStatuses []uuid.UUID
-	WhereInGrades         []uuid.UUID
-	WhereInGroups         []uuid.UUID
-	Order                 parameter.MemberOrderMethod
-	Pg                    parameter.Pagination
-	Limit                 parameter.Limit
-	Cursor                parameter.Cursor
-	Offset                parameter.Offset
-	WithCount             parameter.WithCount
+	Ctx                             context.Context
+	WhereSearchName                 string
+	WhereHasInPolicies              []uuid.UUID
+	WhereInAttendStatuses           []uuid.UUID
+	WhereInGrades                   []uuid.UUID
+	WhereInGroups                   []uuid.UUID
+	WhereBelongingOrganizationID    uuid.UUID
+	WhereNotBelongingOrganizationID uuid.UUID
+	WhereBelongingChatRoomID        uuid.UUID
+	WhereNotBelongingChatRoomID     uuid.UUID
+	Order                           parameter.MemberOrderMethod
+	Pg                              parameter.Pagination
+	Limit                           parameter.Limit
+	Cursor                          parameter.Cursor
+	Offset                          parameter.Offset
+	WithCount                       parameter.WithCount
 } {
 	var calls []struct {
-		Ctx                   context.Context
-		WhereSearchName       string
-		WhereHasInPolicies    []uuid.UUID
-		WhereInAttendStatuses []uuid.UUID
-		WhereInGrades         []uuid.UUID
-		WhereInGroups         []uuid.UUID
-		Order                 parameter.MemberOrderMethod
-		Pg                    parameter.Pagination
-		Limit                 parameter.Limit
-		Cursor                parameter.Cursor
-		Offset                parameter.Offset
-		WithCount             parameter.WithCount
+		Ctx                             context.Context
+		WhereSearchName                 string
+		WhereHasInPolicies              []uuid.UUID
+		WhereInAttendStatuses           []uuid.UUID
+		WhereInGrades                   []uuid.UUID
+		WhereInGroups                   []uuid.UUID
+		WhereBelongingOrganizationID    uuid.UUID
+		WhereNotBelongingOrganizationID uuid.UUID
+		WhereBelongingChatRoomID        uuid.UUID
+		WhereNotBelongingChatRoomID     uuid.UUID
+		Order                           parameter.MemberOrderMethod
+		Pg                              parameter.Pagination
+		Limit                           parameter.Limit
+		Cursor                          parameter.Cursor
+		Offset                          parameter.Offset
+		WithCount                       parameter.WithCount
 	}
 	mock.lockGetMembersWithCrew.RLock()
 	calls = mock.calls.GetMembersWithCrew
@@ -10441,41 +10553,49 @@ func (mock *ManagerInterfaceMock) GetMembersWithCrewCalls() []struct {
 }
 
 // GetMembersWithCrewAndProfileImageAndAttendStatus calls GetMembersWithCrewAndProfileImageAndAttendStatusFunc.
-func (mock *ManagerInterfaceMock) GetMembersWithCrewAndProfileImageAndAttendStatus(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrewAndProfileImageAndAttendStatus], error) {
+func (mock *ManagerInterfaceMock) GetMembersWithCrewAndProfileImageAndAttendStatus(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithCrewAndProfileImageAndAttendStatus], error) {
 	if mock.GetMembersWithCrewAndProfileImageAndAttendStatusFunc == nil {
 		panic("ManagerInterfaceMock.GetMembersWithCrewAndProfileImageAndAttendStatusFunc: method is nil but ManagerInterface.GetMembersWithCrewAndProfileImageAndAttendStatus was just called")
 	}
 	callInfo := struct {
-		Ctx                   context.Context
-		WhereSearchName       string
-		WhereHasInPolicies    []uuid.UUID
-		WhereInAttendStatuses []uuid.UUID
-		WhereInGrades         []uuid.UUID
-		WhereInGroups         []uuid.UUID
-		Order                 parameter.MemberOrderMethod
-		Pg                    parameter.Pagination
-		Limit                 parameter.Limit
-		Cursor                parameter.Cursor
-		Offset                parameter.Offset
-		WithCount             parameter.WithCount
+		Ctx                             context.Context
+		WhereSearchName                 string
+		WhereHasInPolicies              []uuid.UUID
+		WhereInAttendStatuses           []uuid.UUID
+		WhereInGrades                   []uuid.UUID
+		WhereInGroups                   []uuid.UUID
+		WhereBelongingOrganizationID    uuid.UUID
+		WhereNotBelongingOrganizationID uuid.UUID
+		WhereBelongingChatRoomID        uuid.UUID
+		WhereNotBelongingChatRoomID     uuid.UUID
+		Order                           parameter.MemberOrderMethod
+		Pg                              parameter.Pagination
+		Limit                           parameter.Limit
+		Cursor                          parameter.Cursor
+		Offset                          parameter.Offset
+		WithCount                       parameter.WithCount
 	}{
-		Ctx:                   ctx,
-		WhereSearchName:       whereSearchName,
-		WhereHasInPolicies:    whereHasInPolicies,
-		WhereInAttendStatuses: whereInAttendStatuses,
-		WhereInGrades:         whereInGrades,
-		WhereInGroups:         whereInGroups,
-		Order:                 order,
-		Pg:                    pg,
-		Limit:                 limit,
-		Cursor:                cursor,
-		Offset:                offset,
-		WithCount:             withCount,
+		Ctx:                             ctx,
+		WhereSearchName:                 whereSearchName,
+		WhereHasInPolicies:              whereHasInPolicies,
+		WhereInAttendStatuses:           whereInAttendStatuses,
+		WhereInGrades:                   whereInGrades,
+		WhereInGroups:                   whereInGroups,
+		WhereBelongingOrganizationID:    whereBelongingOrganizationID,
+		WhereNotBelongingOrganizationID: whereNotBelongingOrganizationID,
+		WhereBelongingChatRoomID:        whereBelongingChatRoomID,
+		WhereNotBelongingChatRoomID:     whereNotBelongingChatRoomID,
+		Order:                           order,
+		Pg:                              pg,
+		Limit:                           limit,
+		Cursor:                          cursor,
+		Offset:                          offset,
+		WithCount:                       withCount,
 	}
 	mock.lockGetMembersWithCrewAndProfileImageAndAttendStatus.Lock()
 	mock.calls.GetMembersWithCrewAndProfileImageAndAttendStatus = append(mock.calls.GetMembersWithCrewAndProfileImageAndAttendStatus, callInfo)
 	mock.lockGetMembersWithCrewAndProfileImageAndAttendStatus.Unlock()
-	return mock.GetMembersWithCrewAndProfileImageAndAttendStatusFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, order, pg, limit, cursor, offset, withCount)
+	return mock.GetMembersWithCrewAndProfileImageAndAttendStatusFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, whereBelongingOrganizationID, whereNotBelongingOrganizationID, whereBelongingChatRoomID, whereNotBelongingChatRoomID, order, pg, limit, cursor, offset, withCount)
 }
 
 // GetMembersWithCrewAndProfileImageAndAttendStatusCalls gets all the calls that were made to GetMembersWithCrewAndProfileImageAndAttendStatus.
@@ -10483,32 +10603,40 @@ func (mock *ManagerInterfaceMock) GetMembersWithCrewAndProfileImageAndAttendStat
 //
 //	len(mockedManagerInterface.GetMembersWithCrewAndProfileImageAndAttendStatusCalls())
 func (mock *ManagerInterfaceMock) GetMembersWithCrewAndProfileImageAndAttendStatusCalls() []struct {
-	Ctx                   context.Context
-	WhereSearchName       string
-	WhereHasInPolicies    []uuid.UUID
-	WhereInAttendStatuses []uuid.UUID
-	WhereInGrades         []uuid.UUID
-	WhereInGroups         []uuid.UUID
-	Order                 parameter.MemberOrderMethod
-	Pg                    parameter.Pagination
-	Limit                 parameter.Limit
-	Cursor                parameter.Cursor
-	Offset                parameter.Offset
-	WithCount             parameter.WithCount
+	Ctx                             context.Context
+	WhereSearchName                 string
+	WhereHasInPolicies              []uuid.UUID
+	WhereInAttendStatuses           []uuid.UUID
+	WhereInGrades                   []uuid.UUID
+	WhereInGroups                   []uuid.UUID
+	WhereBelongingOrganizationID    uuid.UUID
+	WhereNotBelongingOrganizationID uuid.UUID
+	WhereBelongingChatRoomID        uuid.UUID
+	WhereNotBelongingChatRoomID     uuid.UUID
+	Order                           parameter.MemberOrderMethod
+	Pg                              parameter.Pagination
+	Limit                           parameter.Limit
+	Cursor                          parameter.Cursor
+	Offset                          parameter.Offset
+	WithCount                       parameter.WithCount
 } {
 	var calls []struct {
-		Ctx                   context.Context
-		WhereSearchName       string
-		WhereHasInPolicies    []uuid.UUID
-		WhereInAttendStatuses []uuid.UUID
-		WhereInGrades         []uuid.UUID
-		WhereInGroups         []uuid.UUID
-		Order                 parameter.MemberOrderMethod
-		Pg                    parameter.Pagination
-		Limit                 parameter.Limit
-		Cursor                parameter.Cursor
-		Offset                parameter.Offset
-		WithCount             parameter.WithCount
+		Ctx                             context.Context
+		WhereSearchName                 string
+		WhereHasInPolicies              []uuid.UUID
+		WhereInAttendStatuses           []uuid.UUID
+		WhereInGrades                   []uuid.UUID
+		WhereInGroups                   []uuid.UUID
+		WhereBelongingOrganizationID    uuid.UUID
+		WhereNotBelongingOrganizationID uuid.UUID
+		WhereBelongingChatRoomID        uuid.UUID
+		WhereNotBelongingChatRoomID     uuid.UUID
+		Order                           parameter.MemberOrderMethod
+		Pg                              parameter.Pagination
+		Limit                           parameter.Limit
+		Cursor                          parameter.Cursor
+		Offset                          parameter.Offset
+		WithCount                       parameter.WithCount
 	}
 	mock.lockGetMembersWithCrewAndProfileImageAndAttendStatus.RLock()
 	calls = mock.calls.GetMembersWithCrewAndProfileImageAndAttendStatus
@@ -10517,41 +10645,49 @@ func (mock *ManagerInterfaceMock) GetMembersWithCrewAndProfileImageAndAttendStat
 }
 
 // GetMembersWithDetail calls GetMembersWithDetailFunc.
-func (mock *ManagerInterfaceMock) GetMembersWithDetail(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithDetail], error) {
+func (mock *ManagerInterfaceMock) GetMembersWithDetail(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithDetail], error) {
 	if mock.GetMembersWithDetailFunc == nil {
 		panic("ManagerInterfaceMock.GetMembersWithDetailFunc: method is nil but ManagerInterface.GetMembersWithDetail was just called")
 	}
 	callInfo := struct {
-		Ctx                   context.Context
-		WhereSearchName       string
-		WhereHasInPolicies    []uuid.UUID
-		WhereInAttendStatuses []uuid.UUID
-		WhereInGrades         []uuid.UUID
-		WhereInGroups         []uuid.UUID
-		Order                 parameter.MemberOrderMethod
-		Pg                    parameter.Pagination
-		Limit                 parameter.Limit
-		Cursor                parameter.Cursor
-		Offset                parameter.Offset
-		WithCount             parameter.WithCount
+		Ctx                             context.Context
+		WhereSearchName                 string
+		WhereHasInPolicies              []uuid.UUID
+		WhereInAttendStatuses           []uuid.UUID
+		WhereInGrades                   []uuid.UUID
+		WhereInGroups                   []uuid.UUID
+		WhereBelongingOrganizationID    uuid.UUID
+		WhereNotBelongingOrganizationID uuid.UUID
+		WhereBelongingChatRoomID        uuid.UUID
+		WhereNotBelongingChatRoomID     uuid.UUID
+		Order                           parameter.MemberOrderMethod
+		Pg                              parameter.Pagination
+		Limit                           parameter.Limit
+		Cursor                          parameter.Cursor
+		Offset                          parameter.Offset
+		WithCount                       parameter.WithCount
 	}{
-		Ctx:                   ctx,
-		WhereSearchName:       whereSearchName,
-		WhereHasInPolicies:    whereHasInPolicies,
-		WhereInAttendStatuses: whereInAttendStatuses,
-		WhereInGrades:         whereInGrades,
-		WhereInGroups:         whereInGroups,
-		Order:                 order,
-		Pg:                    pg,
-		Limit:                 limit,
-		Cursor:                cursor,
-		Offset:                offset,
-		WithCount:             withCount,
+		Ctx:                             ctx,
+		WhereSearchName:                 whereSearchName,
+		WhereHasInPolicies:              whereHasInPolicies,
+		WhereInAttendStatuses:           whereInAttendStatuses,
+		WhereInGrades:                   whereInGrades,
+		WhereInGroups:                   whereInGroups,
+		WhereBelongingOrganizationID:    whereBelongingOrganizationID,
+		WhereNotBelongingOrganizationID: whereNotBelongingOrganizationID,
+		WhereBelongingChatRoomID:        whereBelongingChatRoomID,
+		WhereNotBelongingChatRoomID:     whereNotBelongingChatRoomID,
+		Order:                           order,
+		Pg:                              pg,
+		Limit:                           limit,
+		Cursor:                          cursor,
+		Offset:                          offset,
+		WithCount:                       withCount,
 	}
 	mock.lockGetMembersWithDetail.Lock()
 	mock.calls.GetMembersWithDetail = append(mock.calls.GetMembersWithDetail, callInfo)
 	mock.lockGetMembersWithDetail.Unlock()
-	return mock.GetMembersWithDetailFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, order, pg, limit, cursor, offset, withCount)
+	return mock.GetMembersWithDetailFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, whereBelongingOrganizationID, whereNotBelongingOrganizationID, whereBelongingChatRoomID, whereNotBelongingChatRoomID, order, pg, limit, cursor, offset, withCount)
 }
 
 // GetMembersWithDetailCalls gets all the calls that were made to GetMembersWithDetail.
@@ -10559,32 +10695,40 @@ func (mock *ManagerInterfaceMock) GetMembersWithDetail(ctx context.Context, wher
 //
 //	len(mockedManagerInterface.GetMembersWithDetailCalls())
 func (mock *ManagerInterfaceMock) GetMembersWithDetailCalls() []struct {
-	Ctx                   context.Context
-	WhereSearchName       string
-	WhereHasInPolicies    []uuid.UUID
-	WhereInAttendStatuses []uuid.UUID
-	WhereInGrades         []uuid.UUID
-	WhereInGroups         []uuid.UUID
-	Order                 parameter.MemberOrderMethod
-	Pg                    parameter.Pagination
-	Limit                 parameter.Limit
-	Cursor                parameter.Cursor
-	Offset                parameter.Offset
-	WithCount             parameter.WithCount
+	Ctx                             context.Context
+	WhereSearchName                 string
+	WhereHasInPolicies              []uuid.UUID
+	WhereInAttendStatuses           []uuid.UUID
+	WhereInGrades                   []uuid.UUID
+	WhereInGroups                   []uuid.UUID
+	WhereBelongingOrganizationID    uuid.UUID
+	WhereNotBelongingOrganizationID uuid.UUID
+	WhereBelongingChatRoomID        uuid.UUID
+	WhereNotBelongingChatRoomID     uuid.UUID
+	Order                           parameter.MemberOrderMethod
+	Pg                              parameter.Pagination
+	Limit                           parameter.Limit
+	Cursor                          parameter.Cursor
+	Offset                          parameter.Offset
+	WithCount                       parameter.WithCount
 } {
 	var calls []struct {
-		Ctx                   context.Context
-		WhereSearchName       string
-		WhereHasInPolicies    []uuid.UUID
-		WhereInAttendStatuses []uuid.UUID
-		WhereInGrades         []uuid.UUID
-		WhereInGroups         []uuid.UUID
-		Order                 parameter.MemberOrderMethod
-		Pg                    parameter.Pagination
-		Limit                 parameter.Limit
-		Cursor                parameter.Cursor
-		Offset                parameter.Offset
-		WithCount             parameter.WithCount
+		Ctx                             context.Context
+		WhereSearchName                 string
+		WhereHasInPolicies              []uuid.UUID
+		WhereInAttendStatuses           []uuid.UUID
+		WhereInGrades                   []uuid.UUID
+		WhereInGroups                   []uuid.UUID
+		WhereBelongingOrganizationID    uuid.UUID
+		WhereNotBelongingOrganizationID uuid.UUID
+		WhereBelongingChatRoomID        uuid.UUID
+		WhereNotBelongingChatRoomID     uuid.UUID
+		Order                           parameter.MemberOrderMethod
+		Pg                              parameter.Pagination
+		Limit                           parameter.Limit
+		Cursor                          parameter.Cursor
+		Offset                          parameter.Offset
+		WithCount                       parameter.WithCount
 	}
 	mock.lockGetMembersWithDetail.RLock()
 	calls = mock.calls.GetMembersWithDetail
@@ -10593,41 +10737,49 @@ func (mock *ManagerInterfaceMock) GetMembersWithDetailCalls() []struct {
 }
 
 // GetMembersWithPersonalOrganization calls GetMembersWithPersonalOrganizationFunc.
-func (mock *ManagerInterfaceMock) GetMembersWithPersonalOrganization(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithPersonalOrganization], error) {
+func (mock *ManagerInterfaceMock) GetMembersWithPersonalOrganization(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithPersonalOrganization], error) {
 	if mock.GetMembersWithPersonalOrganizationFunc == nil {
 		panic("ManagerInterfaceMock.GetMembersWithPersonalOrganizationFunc: method is nil but ManagerInterface.GetMembersWithPersonalOrganization was just called")
 	}
 	callInfo := struct {
-		Ctx                   context.Context
-		WhereSearchName       string
-		WhereHasInPolicies    []uuid.UUID
-		WhereInAttendStatuses []uuid.UUID
-		WhereInGrades         []uuid.UUID
-		WhereInGroups         []uuid.UUID
-		Order                 parameter.MemberOrderMethod
-		Pg                    parameter.Pagination
-		Limit                 parameter.Limit
-		Cursor                parameter.Cursor
-		Offset                parameter.Offset
-		WithCount             parameter.WithCount
+		Ctx                             context.Context
+		WhereSearchName                 string
+		WhereHasInPolicies              []uuid.UUID
+		WhereInAttendStatuses           []uuid.UUID
+		WhereInGrades                   []uuid.UUID
+		WhereInGroups                   []uuid.UUID
+		WhereBelongingOrganizationID    uuid.UUID
+		WhereNotBelongingOrganizationID uuid.UUID
+		WhereBelongingChatRoomID        uuid.UUID
+		WhereNotBelongingChatRoomID     uuid.UUID
+		Order                           parameter.MemberOrderMethod
+		Pg                              parameter.Pagination
+		Limit                           parameter.Limit
+		Cursor                          parameter.Cursor
+		Offset                          parameter.Offset
+		WithCount                       parameter.WithCount
 	}{
-		Ctx:                   ctx,
-		WhereSearchName:       whereSearchName,
-		WhereHasInPolicies:    whereHasInPolicies,
-		WhereInAttendStatuses: whereInAttendStatuses,
-		WhereInGrades:         whereInGrades,
-		WhereInGroups:         whereInGroups,
-		Order:                 order,
-		Pg:                    pg,
-		Limit:                 limit,
-		Cursor:                cursor,
-		Offset:                offset,
-		WithCount:             withCount,
+		Ctx:                             ctx,
+		WhereSearchName:                 whereSearchName,
+		WhereHasInPolicies:              whereHasInPolicies,
+		WhereInAttendStatuses:           whereInAttendStatuses,
+		WhereInGrades:                   whereInGrades,
+		WhereInGroups:                   whereInGroups,
+		WhereBelongingOrganizationID:    whereBelongingOrganizationID,
+		WhereNotBelongingOrganizationID: whereNotBelongingOrganizationID,
+		WhereBelongingChatRoomID:        whereBelongingChatRoomID,
+		WhereNotBelongingChatRoomID:     whereNotBelongingChatRoomID,
+		Order:                           order,
+		Pg:                              pg,
+		Limit:                           limit,
+		Cursor:                          cursor,
+		Offset:                          offset,
+		WithCount:                       withCount,
 	}
 	mock.lockGetMembersWithPersonalOrganization.Lock()
 	mock.calls.GetMembersWithPersonalOrganization = append(mock.calls.GetMembersWithPersonalOrganization, callInfo)
 	mock.lockGetMembersWithPersonalOrganization.Unlock()
-	return mock.GetMembersWithPersonalOrganizationFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, order, pg, limit, cursor, offset, withCount)
+	return mock.GetMembersWithPersonalOrganizationFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, whereBelongingOrganizationID, whereNotBelongingOrganizationID, whereBelongingChatRoomID, whereNotBelongingChatRoomID, order, pg, limit, cursor, offset, withCount)
 }
 
 // GetMembersWithPersonalOrganizationCalls gets all the calls that were made to GetMembersWithPersonalOrganization.
@@ -10635,32 +10787,40 @@ func (mock *ManagerInterfaceMock) GetMembersWithPersonalOrganization(ctx context
 //
 //	len(mockedManagerInterface.GetMembersWithPersonalOrganizationCalls())
 func (mock *ManagerInterfaceMock) GetMembersWithPersonalOrganizationCalls() []struct {
-	Ctx                   context.Context
-	WhereSearchName       string
-	WhereHasInPolicies    []uuid.UUID
-	WhereInAttendStatuses []uuid.UUID
-	WhereInGrades         []uuid.UUID
-	WhereInGroups         []uuid.UUID
-	Order                 parameter.MemberOrderMethod
-	Pg                    parameter.Pagination
-	Limit                 parameter.Limit
-	Cursor                parameter.Cursor
-	Offset                parameter.Offset
-	WithCount             parameter.WithCount
+	Ctx                             context.Context
+	WhereSearchName                 string
+	WhereHasInPolicies              []uuid.UUID
+	WhereInAttendStatuses           []uuid.UUID
+	WhereInGrades                   []uuid.UUID
+	WhereInGroups                   []uuid.UUID
+	WhereBelongingOrganizationID    uuid.UUID
+	WhereNotBelongingOrganizationID uuid.UUID
+	WhereBelongingChatRoomID        uuid.UUID
+	WhereNotBelongingChatRoomID     uuid.UUID
+	Order                           parameter.MemberOrderMethod
+	Pg                              parameter.Pagination
+	Limit                           parameter.Limit
+	Cursor                          parameter.Cursor
+	Offset                          parameter.Offset
+	WithCount                       parameter.WithCount
 } {
 	var calls []struct {
-		Ctx                   context.Context
-		WhereSearchName       string
-		WhereHasInPolicies    []uuid.UUID
-		WhereInAttendStatuses []uuid.UUID
-		WhereInGrades         []uuid.UUID
-		WhereInGroups         []uuid.UUID
-		Order                 parameter.MemberOrderMethod
-		Pg                    parameter.Pagination
-		Limit                 parameter.Limit
-		Cursor                parameter.Cursor
-		Offset                parameter.Offset
-		WithCount             parameter.WithCount
+		Ctx                             context.Context
+		WhereSearchName                 string
+		WhereHasInPolicies              []uuid.UUID
+		WhereInAttendStatuses           []uuid.UUID
+		WhereInGrades                   []uuid.UUID
+		WhereInGroups                   []uuid.UUID
+		WhereBelongingOrganizationID    uuid.UUID
+		WhereNotBelongingOrganizationID uuid.UUID
+		WhereBelongingChatRoomID        uuid.UUID
+		WhereNotBelongingChatRoomID     uuid.UUID
+		Order                           parameter.MemberOrderMethod
+		Pg                              parameter.Pagination
+		Limit                           parameter.Limit
+		Cursor                          parameter.Cursor
+		Offset                          parameter.Offset
+		WithCount                       parameter.WithCount
 	}
 	mock.lockGetMembersWithPersonalOrganization.RLock()
 	calls = mock.calls.GetMembersWithPersonalOrganization
@@ -10669,41 +10829,49 @@ func (mock *ManagerInterfaceMock) GetMembersWithPersonalOrganizationCalls() []st
 }
 
 // GetMembersWithProfileImage calls GetMembersWithProfileImageFunc.
-func (mock *ManagerInterfaceMock) GetMembersWithProfileImage(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithProfileImage], error) {
+func (mock *ManagerInterfaceMock) GetMembersWithProfileImage(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithProfileImage], error) {
 	if mock.GetMembersWithProfileImageFunc == nil {
 		panic("ManagerInterfaceMock.GetMembersWithProfileImageFunc: method is nil but ManagerInterface.GetMembersWithProfileImage was just called")
 	}
 	callInfo := struct {
-		Ctx                   context.Context
-		WhereSearchName       string
-		WhereHasInPolicies    []uuid.UUID
-		WhereInAttendStatuses []uuid.UUID
-		WhereInGrades         []uuid.UUID
-		WhereInGroups         []uuid.UUID
-		Order                 parameter.MemberOrderMethod
-		Pg                    parameter.Pagination
-		Limit                 parameter.Limit
-		Cursor                parameter.Cursor
-		Offset                parameter.Offset
-		WithCount             parameter.WithCount
+		Ctx                             context.Context
+		WhereSearchName                 string
+		WhereHasInPolicies              []uuid.UUID
+		WhereInAttendStatuses           []uuid.UUID
+		WhereInGrades                   []uuid.UUID
+		WhereInGroups                   []uuid.UUID
+		WhereBelongingOrganizationID    uuid.UUID
+		WhereNotBelongingOrganizationID uuid.UUID
+		WhereBelongingChatRoomID        uuid.UUID
+		WhereNotBelongingChatRoomID     uuid.UUID
+		Order                           parameter.MemberOrderMethod
+		Pg                              parameter.Pagination
+		Limit                           parameter.Limit
+		Cursor                          parameter.Cursor
+		Offset                          parameter.Offset
+		WithCount                       parameter.WithCount
 	}{
-		Ctx:                   ctx,
-		WhereSearchName:       whereSearchName,
-		WhereHasInPolicies:    whereHasInPolicies,
-		WhereInAttendStatuses: whereInAttendStatuses,
-		WhereInGrades:         whereInGrades,
-		WhereInGroups:         whereInGroups,
-		Order:                 order,
-		Pg:                    pg,
-		Limit:                 limit,
-		Cursor:                cursor,
-		Offset:                offset,
-		WithCount:             withCount,
+		Ctx:                             ctx,
+		WhereSearchName:                 whereSearchName,
+		WhereHasInPolicies:              whereHasInPolicies,
+		WhereInAttendStatuses:           whereInAttendStatuses,
+		WhereInGrades:                   whereInGrades,
+		WhereInGroups:                   whereInGroups,
+		WhereBelongingOrganizationID:    whereBelongingOrganizationID,
+		WhereNotBelongingOrganizationID: whereNotBelongingOrganizationID,
+		WhereBelongingChatRoomID:        whereBelongingChatRoomID,
+		WhereNotBelongingChatRoomID:     whereNotBelongingChatRoomID,
+		Order:                           order,
+		Pg:                              pg,
+		Limit:                           limit,
+		Cursor:                          cursor,
+		Offset:                          offset,
+		WithCount:                       withCount,
 	}
 	mock.lockGetMembersWithProfileImage.Lock()
 	mock.calls.GetMembersWithProfileImage = append(mock.calls.GetMembersWithProfileImage, callInfo)
 	mock.lockGetMembersWithProfileImage.Unlock()
-	return mock.GetMembersWithProfileImageFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, order, pg, limit, cursor, offset, withCount)
+	return mock.GetMembersWithProfileImageFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, whereBelongingOrganizationID, whereNotBelongingOrganizationID, whereBelongingChatRoomID, whereNotBelongingChatRoomID, order, pg, limit, cursor, offset, withCount)
 }
 
 // GetMembersWithProfileImageCalls gets all the calls that were made to GetMembersWithProfileImage.
@@ -10711,32 +10879,40 @@ func (mock *ManagerInterfaceMock) GetMembersWithProfileImage(ctx context.Context
 //
 //	len(mockedManagerInterface.GetMembersWithProfileImageCalls())
 func (mock *ManagerInterfaceMock) GetMembersWithProfileImageCalls() []struct {
-	Ctx                   context.Context
-	WhereSearchName       string
-	WhereHasInPolicies    []uuid.UUID
-	WhereInAttendStatuses []uuid.UUID
-	WhereInGrades         []uuid.UUID
-	WhereInGroups         []uuid.UUID
-	Order                 parameter.MemberOrderMethod
-	Pg                    parameter.Pagination
-	Limit                 parameter.Limit
-	Cursor                parameter.Cursor
-	Offset                parameter.Offset
-	WithCount             parameter.WithCount
+	Ctx                             context.Context
+	WhereSearchName                 string
+	WhereHasInPolicies              []uuid.UUID
+	WhereInAttendStatuses           []uuid.UUID
+	WhereInGrades                   []uuid.UUID
+	WhereInGroups                   []uuid.UUID
+	WhereBelongingOrganizationID    uuid.UUID
+	WhereNotBelongingOrganizationID uuid.UUID
+	WhereBelongingChatRoomID        uuid.UUID
+	WhereNotBelongingChatRoomID     uuid.UUID
+	Order                           parameter.MemberOrderMethod
+	Pg                              parameter.Pagination
+	Limit                           parameter.Limit
+	Cursor                          parameter.Cursor
+	Offset                          parameter.Offset
+	WithCount                       parameter.WithCount
 } {
 	var calls []struct {
-		Ctx                   context.Context
-		WhereSearchName       string
-		WhereHasInPolicies    []uuid.UUID
-		WhereInAttendStatuses []uuid.UUID
-		WhereInGrades         []uuid.UUID
-		WhereInGroups         []uuid.UUID
-		Order                 parameter.MemberOrderMethod
-		Pg                    parameter.Pagination
-		Limit                 parameter.Limit
-		Cursor                parameter.Cursor
-		Offset                parameter.Offset
-		WithCount             parameter.WithCount
+		Ctx                             context.Context
+		WhereSearchName                 string
+		WhereHasInPolicies              []uuid.UUID
+		WhereInAttendStatuses           []uuid.UUID
+		WhereInGrades                   []uuid.UUID
+		WhereInGroups                   []uuid.UUID
+		WhereBelongingOrganizationID    uuid.UUID
+		WhereNotBelongingOrganizationID uuid.UUID
+		WhereBelongingChatRoomID        uuid.UUID
+		WhereNotBelongingChatRoomID     uuid.UUID
+		Order                           parameter.MemberOrderMethod
+		Pg                              parameter.Pagination
+		Limit                           parameter.Limit
+		Cursor                          parameter.Cursor
+		Offset                          parameter.Offset
+		WithCount                       parameter.WithCount
 	}
 	mock.lockGetMembersWithProfileImage.RLock()
 	calls = mock.calls.GetMembersWithProfileImage
@@ -10745,41 +10921,49 @@ func (mock *ManagerInterfaceMock) GetMembersWithProfileImageCalls() []struct {
 }
 
 // GetMembersWithRole calls GetMembersWithRoleFunc.
-func (mock *ManagerInterfaceMock) GetMembersWithRole(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithRole], error) {
+func (mock *ManagerInterfaceMock) GetMembersWithRole(ctx context.Context, whereSearchName string, whereHasInPolicies []uuid.UUID, whereInAttendStatuses []uuid.UUID, whereInGrades []uuid.UUID, whereInGroups []uuid.UUID, whereBelongingOrganizationID uuid.UUID, whereNotBelongingOrganizationID uuid.UUID, whereBelongingChatRoomID uuid.UUID, whereNotBelongingChatRoomID uuid.UUID, order parameter.MemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.MemberWithRole], error) {
 	if mock.GetMembersWithRoleFunc == nil {
 		panic("ManagerInterfaceMock.GetMembersWithRoleFunc: method is nil but ManagerInterface.GetMembersWithRole was just called")
 	}
 	callInfo := struct {
-		Ctx                   context.Context
-		WhereSearchName       string
-		WhereHasInPolicies    []uuid.UUID
-		WhereInAttendStatuses []uuid.UUID
-		WhereInGrades         []uuid.UUID
-		WhereInGroups         []uuid.UUID
-		Order                 parameter.MemberOrderMethod
-		Pg                    parameter.Pagination
-		Limit                 parameter.Limit
-		Cursor                parameter.Cursor
-		Offset                parameter.Offset
-		WithCount             parameter.WithCount
+		Ctx                             context.Context
+		WhereSearchName                 string
+		WhereHasInPolicies              []uuid.UUID
+		WhereInAttendStatuses           []uuid.UUID
+		WhereInGrades                   []uuid.UUID
+		WhereInGroups                   []uuid.UUID
+		WhereBelongingOrganizationID    uuid.UUID
+		WhereNotBelongingOrganizationID uuid.UUID
+		WhereBelongingChatRoomID        uuid.UUID
+		WhereNotBelongingChatRoomID     uuid.UUID
+		Order                           parameter.MemberOrderMethod
+		Pg                              parameter.Pagination
+		Limit                           parameter.Limit
+		Cursor                          parameter.Cursor
+		Offset                          parameter.Offset
+		WithCount                       parameter.WithCount
 	}{
-		Ctx:                   ctx,
-		WhereSearchName:       whereSearchName,
-		WhereHasInPolicies:    whereHasInPolicies,
-		WhereInAttendStatuses: whereInAttendStatuses,
-		WhereInGrades:         whereInGrades,
-		WhereInGroups:         whereInGroups,
-		Order:                 order,
-		Pg:                    pg,
-		Limit:                 limit,
-		Cursor:                cursor,
-		Offset:                offset,
-		WithCount:             withCount,
+		Ctx:                             ctx,
+		WhereSearchName:                 whereSearchName,
+		WhereHasInPolicies:              whereHasInPolicies,
+		WhereInAttendStatuses:           whereInAttendStatuses,
+		WhereInGrades:                   whereInGrades,
+		WhereInGroups:                   whereInGroups,
+		WhereBelongingOrganizationID:    whereBelongingOrganizationID,
+		WhereNotBelongingOrganizationID: whereNotBelongingOrganizationID,
+		WhereBelongingChatRoomID:        whereBelongingChatRoomID,
+		WhereNotBelongingChatRoomID:     whereNotBelongingChatRoomID,
+		Order:                           order,
+		Pg:                              pg,
+		Limit:                           limit,
+		Cursor:                          cursor,
+		Offset:                          offset,
+		WithCount:                       withCount,
 	}
 	mock.lockGetMembersWithRole.Lock()
 	mock.calls.GetMembersWithRole = append(mock.calls.GetMembersWithRole, callInfo)
 	mock.lockGetMembersWithRole.Unlock()
-	return mock.GetMembersWithRoleFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, order, pg, limit, cursor, offset, withCount)
+	return mock.GetMembersWithRoleFunc(ctx, whereSearchName, whereHasInPolicies, whereInAttendStatuses, whereInGrades, whereInGroups, whereBelongingOrganizationID, whereNotBelongingOrganizationID, whereBelongingChatRoomID, whereNotBelongingChatRoomID, order, pg, limit, cursor, offset, withCount)
 }
 
 // GetMembersWithRoleCalls gets all the calls that were made to GetMembersWithRole.
@@ -10787,32 +10971,40 @@ func (mock *ManagerInterfaceMock) GetMembersWithRole(ctx context.Context, whereS
 //
 //	len(mockedManagerInterface.GetMembersWithRoleCalls())
 func (mock *ManagerInterfaceMock) GetMembersWithRoleCalls() []struct {
-	Ctx                   context.Context
-	WhereSearchName       string
-	WhereHasInPolicies    []uuid.UUID
-	WhereInAttendStatuses []uuid.UUID
-	WhereInGrades         []uuid.UUID
-	WhereInGroups         []uuid.UUID
-	Order                 parameter.MemberOrderMethod
-	Pg                    parameter.Pagination
-	Limit                 parameter.Limit
-	Cursor                parameter.Cursor
-	Offset                parameter.Offset
-	WithCount             parameter.WithCount
+	Ctx                             context.Context
+	WhereSearchName                 string
+	WhereHasInPolicies              []uuid.UUID
+	WhereInAttendStatuses           []uuid.UUID
+	WhereInGrades                   []uuid.UUID
+	WhereInGroups                   []uuid.UUID
+	WhereBelongingOrganizationID    uuid.UUID
+	WhereNotBelongingOrganizationID uuid.UUID
+	WhereBelongingChatRoomID        uuid.UUID
+	WhereNotBelongingChatRoomID     uuid.UUID
+	Order                           parameter.MemberOrderMethod
+	Pg                              parameter.Pagination
+	Limit                           parameter.Limit
+	Cursor                          parameter.Cursor
+	Offset                          parameter.Offset
+	WithCount                       parameter.WithCount
 } {
 	var calls []struct {
-		Ctx                   context.Context
-		WhereSearchName       string
-		WhereHasInPolicies    []uuid.UUID
-		WhereInAttendStatuses []uuid.UUID
-		WhereInGrades         []uuid.UUID
-		WhereInGroups         []uuid.UUID
-		Order                 parameter.MemberOrderMethod
-		Pg                    parameter.Pagination
-		Limit                 parameter.Limit
-		Cursor                parameter.Cursor
-		Offset                parameter.Offset
-		WithCount             parameter.WithCount
+		Ctx                             context.Context
+		WhereSearchName                 string
+		WhereHasInPolicies              []uuid.UUID
+		WhereInAttendStatuses           []uuid.UUID
+		WhereInGrades                   []uuid.UUID
+		WhereInGroups                   []uuid.UUID
+		WhereBelongingOrganizationID    uuid.UUID
+		WhereNotBelongingOrganizationID uuid.UUID
+		WhereBelongingChatRoomID        uuid.UUID
+		WhereNotBelongingChatRoomID     uuid.UUID
+		Order                           parameter.MemberOrderMethod
+		Pg                              parameter.Pagination
+		Limit                           parameter.Limit
+		Cursor                          parameter.Cursor
+		Offset                          parameter.Offset
+		WithCount                       parameter.WithCount
 	}
 	mock.lockGetMembersWithRole.RLock()
 	calls = mock.calls.GetMembersWithRole

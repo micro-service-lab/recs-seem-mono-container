@@ -25,19 +25,35 @@ AND
 	CASE WHEN $7::boolean = true THEN grade_id = ANY($8::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $9::boolean = true THEN group_id = ANY($10::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $12) ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $14) ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $16) ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $18) ELSE TRUE END
 `
 
 type CountMembersParams struct {
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
 }
 
 func (q *Queries) CountMembers(ctx context.Context, arg CountMembersParams) (int64, error) {
@@ -52,6 +68,14 @@ func (q *Queries) CountMembers(ctx context.Context, arg CountMembersParams) (int
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 	)
 	var count int64
 	err := row.Scan(&count)
@@ -671,24 +695,40 @@ AND
 	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $12) ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $14) ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $16) ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $18) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'name' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $19::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
 type GetMembersParams struct {
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	OrderMethod        string      `json:"order_method"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	OrderMethod                   string      `json:"order_method"`
 }
 
 func (q *Queries) GetMembers(ctx context.Context, arg GetMembersParams) ([]Member, error) {
@@ -703,6 +743,14 @@ func (q *Queries) GetMembers(ctx context.Context, arg GetMembersParams) ([]Membe
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.OrderMethod,
 	)
 	if err != nil {
@@ -753,46 +801,62 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
 AND
-	CASE $12::text
+	CASE WHEN $12::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $13) ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $15) ELSE TRUE END
+AND
+	CASE WHEN $16::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $17) ELSE TRUE END
+AND
+	CASE WHEN $18::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $19) ELSE TRUE END
+AND
+	CASE $20::text
 		WHEN 'next' THEN
-			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				ELSE m_members_pkey > $15::int
+			CASE $21::text
+				WHEN 'name' THEN m_members.name > $22 OR (m_members.name = $22 AND m_members_pkey > $23::int)
+				WHEN 'r_name' THEN m_members.name < $22 OR (m_members.name = $22 AND m_members_pkey > $23::int)
+				ELSE m_members_pkey > $23::int
 			END
 		WHEN 'prev' THEN
-			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				ELSE m_members_pkey < $15::int
+			CASE $21::text
+				WHEN 'name' THEN m_members.name < $22 OR (m_members.name = $22 AND m_members_pkey < $23::int)
+				WHEN 'r_name' THEN m_members.name > $22 OR (m_members.name = $22 AND m_members_pkey < $23::int)
+				ELSE m_members_pkey < $23::int
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
-	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
+	CASE WHEN $21::text = 'name' AND $20::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $21::text = 'name' AND $20::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' AND $20::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' AND $20::text = 'prev' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $20::text = 'next' THEN m_members_pkey END ASC,
+	CASE WHEN $20::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
 `
 
 type GetMembersUseKeysetPaginateParams struct {
-	Limit              int32       `json:"limit"`
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	CursorDirection    string      `json:"cursor_direction"`
-	OrderMethod        string      `json:"order_method"`
-	NameCursor         string      `json:"name_cursor"`
-	Cursor             int32       `json:"cursor"`
+	Limit                         int32       `json:"limit"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	CursorDirection               string      `json:"cursor_direction"`
+	OrderMethod                   string      `json:"order_method"`
+	NameCursor                    string      `json:"name_cursor"`
+	Cursor                        int32       `json:"cursor"`
 }
 
 func (q *Queries) GetMembersUseKeysetPaginate(ctx context.Context, arg GetMembersUseKeysetPaginateParams) ([]Member, error) {
@@ -808,6 +872,14 @@ func (q *Queries) GetMembersUseKeysetPaginate(ctx context.Context, arg GetMember
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.CursorDirection,
 		arg.OrderMethod,
 		arg.NameCursor,
@@ -860,27 +932,43 @@ AND
 	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $14) ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $16) ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $18) ELSE TRUE END
+AND
+	CASE WHEN $19::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $20) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'name' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetMembersUseNumberedPaginateParams struct {
-	Limit              int32       `json:"limit"`
-	Offset             int32       `json:"offset"`
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	OrderMethod        string      `json:"order_method"`
+	Limit                         int32       `json:"limit"`
+	Offset                        int32       `json:"offset"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	OrderMethod                   string      `json:"order_method"`
 }
 
 func (q *Queries) GetMembersUseNumberedPaginate(ctx context.Context, arg GetMembersUseNumberedPaginateParams) ([]Member, error) {
@@ -897,6 +985,14 @@ func (q *Queries) GetMembersUseNumberedPaginate(ctx context.Context, arg GetMemb
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.OrderMethod,
 	)
 	if err != nil {
@@ -947,24 +1043,40 @@ AND
 	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $12) ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $14) ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $16) ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $18) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'name' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $19::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
 type GetMembersWithAttendStatusParams struct {
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	OrderMethod        string      `json:"order_method"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	OrderMethod                   string      `json:"order_method"`
 }
 
 type GetMembersWithAttendStatusRow struct {
@@ -1000,6 +1112,14 @@ func (q *Queries) GetMembersWithAttendStatus(ctx context.Context, arg GetMembers
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.OrderMethod,
 	)
 	if err != nil {
@@ -1053,46 +1173,62 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
 AND
-	CASE $12::text
+	CASE WHEN $12::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $13) ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $15) ELSE TRUE END
+AND
+	CASE WHEN $16::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $17) ELSE TRUE END
+AND
+	CASE WHEN $18::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $19) ELSE TRUE END
+AND
+	CASE $20::text
 		WHEN 'next' THEN
-			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				ELSE m_members_pkey > $15::int
+			CASE $21::text
+				WHEN 'name' THEN m_members.name > $22 OR (m_members.name = $22 AND m_members_pkey > $23::int)
+				WHEN 'r_name' THEN m_members.name < $22 OR (m_members.name = $22 AND m_members_pkey > $23::int)
+				ELSE m_members_pkey > $23::int
 			END
 		WHEN 'prev' THEN
-			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				ELSE m_members_pkey < $15::int
+			CASE $21::text
+				WHEN 'name' THEN m_members.name < $22 OR (m_members.name = $22 AND m_members_pkey < $23::int)
+				WHEN 'r_name' THEN m_members.name > $22 OR (m_members.name = $22 AND m_members_pkey < $23::int)
+				ELSE m_members_pkey < $23::int
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
-	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
+	CASE WHEN $21::text = 'name' AND $20::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $21::text = 'name' AND $20::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' AND $20::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' AND $20::text = 'prev' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $20::text = 'next' THEN m_members_pkey END ASC,
+	CASE WHEN $20::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
 `
 
 type GetMembersWithAttendStatusUseKeysetPaginateParams struct {
-	Limit              int32       `json:"limit"`
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	CursorDirection    string      `json:"cursor_direction"`
-	OrderMethod        string      `json:"order_method"`
-	NameCursor         string      `json:"name_cursor"`
-	Cursor             int32       `json:"cursor"`
+	Limit                         int32       `json:"limit"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	CursorDirection               string      `json:"cursor_direction"`
+	OrderMethod                   string      `json:"order_method"`
+	NameCursor                    string      `json:"name_cursor"`
+	Cursor                        int32       `json:"cursor"`
 }
 
 type GetMembersWithAttendStatusUseKeysetPaginateRow struct {
@@ -1129,6 +1265,14 @@ func (q *Queries) GetMembersWithAttendStatusUseKeysetPaginate(ctx context.Contex
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.CursorDirection,
 		arg.OrderMethod,
 		arg.NameCursor,
@@ -1184,27 +1328,43 @@ AND
 	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $14) ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $16) ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $18) ELSE TRUE END
+AND
+	CASE WHEN $19::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $20) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'name' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetMembersWithAttendStatusUseNumberedPaginateParams struct {
-	Limit              int32       `json:"limit"`
-	Offset             int32       `json:"offset"`
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	OrderMethod        string      `json:"order_method"`
+	Limit                         int32       `json:"limit"`
+	Offset                        int32       `json:"offset"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	OrderMethod                   string      `json:"order_method"`
 }
 
 type GetMembersWithAttendStatusUseNumberedPaginateRow struct {
@@ -1242,6 +1402,14 @@ func (q *Queries) GetMembersWithAttendStatusUseNumberedPaginate(ctx context.Cont
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.OrderMethod,
 	)
 	if err != nil {
@@ -1302,24 +1470,40 @@ AND
 	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $12) ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $14) ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $16) ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $18) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'name' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $19::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
 type GetMembersWithCrewParams struct {
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	OrderMethod        string      `json:"order_method"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	OrderMethod                   string      `json:"order_method"`
 }
 
 type GetMembersWithCrewRow struct {
@@ -1369,6 +1553,14 @@ func (q *Queries) GetMembersWithCrew(ctx context.Context, arg GetMembersWithCrew
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.OrderMethod,
 	)
 	if err != nil {
@@ -1444,46 +1636,62 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
 AND
-	CASE $12::text
+	CASE WHEN $12::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $13) ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $15) ELSE TRUE END
+AND
+	CASE WHEN $16::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $17) ELSE TRUE END
+AND
+	CASE WHEN $18::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $19) ELSE TRUE END
+AND
+	CASE $20::text
 		WHEN 'next' THEN
-			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				ELSE m_members_pkey > $15::int
+			CASE $21::text
+				WHEN 'name' THEN m_members.name > $22 OR (m_members.name = $22 AND m_members_pkey > $23::int)
+				WHEN 'r_name' THEN m_members.name < $22 OR (m_members.name = $22 AND m_members_pkey > $23::int)
+				ELSE m_members_pkey > $23::int
 			END
 		WHEN 'prev' THEN
-			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				ELSE m_members_pkey < $15::int
+			CASE $21::text
+				WHEN 'name' THEN m_members.name < $22 OR (m_members.name = $22 AND m_members_pkey < $23::int)
+				WHEN 'r_name' THEN m_members.name > $22 OR (m_members.name = $22 AND m_members_pkey < $23::int)
+				ELSE m_members_pkey < $23::int
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
-	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
+	CASE WHEN $21::text = 'name' AND $20::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $21::text = 'name' AND $20::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' AND $20::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' AND $20::text = 'prev' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $20::text = 'next' THEN m_members_pkey END ASC,
+	CASE WHEN $20::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
 `
 
 type GetMembersWithCrewUseKeysetPaginateParams struct {
-	Limit              int32       `json:"limit"`
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	CursorDirection    string      `json:"cursor_direction"`
-	OrderMethod        string      `json:"order_method"`
-	NameCursor         string      `json:"name_cursor"`
-	Cursor             int32       `json:"cursor"`
+	Limit                         int32       `json:"limit"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	CursorDirection               string      `json:"cursor_direction"`
+	OrderMethod                   string      `json:"order_method"`
+	NameCursor                    string      `json:"name_cursor"`
+	Cursor                        int32       `json:"cursor"`
 }
 
 type GetMembersWithCrewUseKeysetPaginateRow struct {
@@ -1534,6 +1742,14 @@ func (q *Queries) GetMembersWithCrewUseKeysetPaginate(ctx context.Context, arg G
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.CursorDirection,
 		arg.OrderMethod,
 		arg.NameCursor,
@@ -1611,27 +1827,43 @@ AND
 	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $14) ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $16) ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $18) ELSE TRUE END
+AND
+	CASE WHEN $19::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $20) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'name' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetMembersWithCrewUseNumberedPaginateParams struct {
-	Limit              int32       `json:"limit"`
-	Offset             int32       `json:"offset"`
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	OrderMethod        string      `json:"order_method"`
+	Limit                         int32       `json:"limit"`
+	Offset                        int32       `json:"offset"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	OrderMethod                   string      `json:"order_method"`
 }
 
 type GetMembersWithCrewUseNumberedPaginateRow struct {
@@ -1683,6 +1915,14 @@ func (q *Queries) GetMembersWithCrewUseNumberedPaginate(ctx context.Context, arg
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.OrderMethod,
 	)
 	if err != nil {
@@ -1750,24 +1990,40 @@ AND
 	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $12) ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $14) ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $16) ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $18) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'name' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $19::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
 type GetMembersWithDetailParams struct {
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	OrderMethod        string      `json:"order_method"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	OrderMethod                   string      `json:"order_method"`
 }
 
 type GetMembersWithDetailRow struct {
@@ -1803,6 +2059,14 @@ func (q *Queries) GetMembersWithDetail(ctx context.Context, arg GetMembersWithDe
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.OrderMethod,
 	)
 	if err != nil {
@@ -1857,46 +2121,62 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
 AND
-	CASE $12::text
+	CASE WHEN $12::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $13) ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $15) ELSE TRUE END
+AND
+	CASE WHEN $16::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $17) ELSE TRUE END
+AND
+	CASE WHEN $18::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $19) ELSE TRUE END
+AND
+	CASE $20::text
 		WHEN 'next' THEN
-			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				ELSE m_members_pkey > $15::int
+			CASE $21::text
+				WHEN 'name' THEN m_members.name > $22 OR (m_members.name = $22 AND m_members_pkey > $23::int)
+				WHEN 'r_name' THEN m_members.name < $22 OR (m_members.name = $22 AND m_members_pkey > $23::int)
+				ELSE m_members_pkey > $23::int
 			END
 		WHEN 'prev' THEN
-			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				ELSE m_members_pkey < $15::int
+			CASE $21::text
+				WHEN 'name' THEN m_members.name < $22 OR (m_members.name = $22 AND m_members_pkey < $23::int)
+				WHEN 'r_name' THEN m_members.name > $22 OR (m_members.name = $22 AND m_members_pkey < $23::int)
+				ELSE m_members_pkey < $23::int
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
-	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
+	CASE WHEN $21::text = 'name' AND $20::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $21::text = 'name' AND $20::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' AND $20::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' AND $20::text = 'prev' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $20::text = 'next' THEN m_members_pkey END ASC,
+	CASE WHEN $20::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
 `
 
 type GetMembersWithDetailUseKeysetPaginateParams struct {
-	Limit              int32       `json:"limit"`
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	CursorDirection    string      `json:"cursor_direction"`
-	OrderMethod        string      `json:"order_method"`
-	NameCursor         string      `json:"name_cursor"`
-	Cursor             int32       `json:"cursor"`
+	Limit                         int32       `json:"limit"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	CursorDirection               string      `json:"cursor_direction"`
+	OrderMethod                   string      `json:"order_method"`
+	NameCursor                    string      `json:"name_cursor"`
+	Cursor                        int32       `json:"cursor"`
 }
 
 type GetMembersWithDetailUseKeysetPaginateRow struct {
@@ -1933,6 +2213,14 @@ func (q *Queries) GetMembersWithDetailUseKeysetPaginate(ctx context.Context, arg
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.CursorDirection,
 		arg.OrderMethod,
 		arg.NameCursor,
@@ -1989,27 +2277,43 @@ AND
 	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $14) ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $16) ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $18) ELSE TRUE END
+AND
+	CASE WHEN $19::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $20) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'name' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetMembersWithDetailUseNumberedPaginateParams struct {
-	Limit              int32       `json:"limit"`
-	Offset             int32       `json:"offset"`
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	OrderMethod        string      `json:"order_method"`
+	Limit                         int32       `json:"limit"`
+	Offset                        int32       `json:"offset"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	OrderMethod                   string      `json:"order_method"`
 }
 
 type GetMembersWithDetailUseNumberedPaginateRow struct {
@@ -2047,6 +2351,14 @@ func (q *Queries) GetMembersWithDetailUseNumberedPaginate(ctx context.Context, a
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.OrderMethod,
 	)
 	if err != nil {
@@ -2101,24 +2413,40 @@ AND
 	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $12) ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $14) ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $16) ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $18) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'name' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $19::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
 type GetMembersWithPersonalOrganizationParams struct {
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	OrderMethod        string      `json:"order_method"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	OrderMethod                   string      `json:"order_method"`
 }
 
 type GetMembersWithPersonalOrganizationRow struct {
@@ -2158,6 +2486,14 @@ func (q *Queries) GetMembersWithPersonalOrganization(ctx context.Context, arg Ge
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.OrderMethod,
 	)
 	if err != nil {
@@ -2217,46 +2553,62 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
 AND
-	CASE $12::text
+	CASE WHEN $12::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $13) ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $15) ELSE TRUE END
+AND
+	CASE WHEN $16::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $17) ELSE TRUE END
+AND
+	CASE WHEN $18::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $19) ELSE TRUE END
+AND
+	CASE $20::text
 		WHEN 'next' THEN
-			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				ELSE m_members_pkey > $15::int
+			CASE $21::text
+				WHEN 'name' THEN m_members.name > $22 OR (m_members.name = $22 AND m_members_pkey > $23::int)
+				WHEN 'r_name' THEN m_members.name < $22 OR (m_members.name = $22 AND m_members_pkey > $23::int)
+				ELSE m_members_pkey > $23::int
 			END
 		WHEN 'prev' THEN
-			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				ELSE m_members_pkey < $15::int
+			CASE $21::text
+				WHEN 'name' THEN m_members.name < $22 OR (m_members.name = $22 AND m_members_pkey < $23::int)
+				WHEN 'r_name' THEN m_members.name > $22 OR (m_members.name = $22 AND m_members_pkey < $23::int)
+				ELSE m_members_pkey < $23::int
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
-	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
+	CASE WHEN $21::text = 'name' AND $20::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $21::text = 'name' AND $20::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' AND $20::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' AND $20::text = 'prev' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $20::text = 'next' THEN m_members_pkey END ASC,
+	CASE WHEN $20::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
 `
 
 type GetMembersWithPersonalOrganizationUseKeysetPaginateParams struct {
-	Limit              int32       `json:"limit"`
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	CursorDirection    string      `json:"cursor_direction"`
-	OrderMethod        string      `json:"order_method"`
-	NameCursor         string      `json:"name_cursor"`
-	Cursor             int32       `json:"cursor"`
+	Limit                         int32       `json:"limit"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	CursorDirection               string      `json:"cursor_direction"`
+	OrderMethod                   string      `json:"order_method"`
+	NameCursor                    string      `json:"name_cursor"`
+	Cursor                        int32       `json:"cursor"`
 }
 
 type GetMembersWithPersonalOrganizationUseKeysetPaginateRow struct {
@@ -2297,6 +2649,14 @@ func (q *Queries) GetMembersWithPersonalOrganizationUseKeysetPaginate(ctx contex
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.CursorDirection,
 		arg.OrderMethod,
 		arg.NameCursor,
@@ -2358,27 +2718,43 @@ AND
 	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $14) ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $16) ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $18) ELSE TRUE END
+AND
+	CASE WHEN $19::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $20) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'name' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetMembersWithPersonalOrganizationUseNumberedPaginateParams struct {
-	Limit              int32       `json:"limit"`
-	Offset             int32       `json:"offset"`
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	OrderMethod        string      `json:"order_method"`
+	Limit                         int32       `json:"limit"`
+	Offset                        int32       `json:"offset"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	OrderMethod                   string      `json:"order_method"`
 }
 
 type GetMembersWithPersonalOrganizationUseNumberedPaginateRow struct {
@@ -2420,6 +2796,14 @@ func (q *Queries) GetMembersWithPersonalOrganizationUseNumberedPaginate(ctx cont
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.OrderMethod,
 	)
 	if err != nil {
@@ -2481,24 +2865,40 @@ AND
 	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $12) ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $14) ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $16) ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $18) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'name' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $19::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
 type GetMembersWithProfileImageParams struct {
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	OrderMethod        string      `json:"order_method"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	OrderMethod                   string      `json:"order_method"`
 }
 
 type GetMembersWithProfileImageRow struct {
@@ -2541,6 +2941,14 @@ func (q *Queries) GetMembersWithProfileImage(ctx context.Context, arg GetMembers
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.OrderMethod,
 	)
 	if err != nil {
@@ -2606,46 +3014,62 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
 AND
-	CASE $12::text
+	CASE WHEN $12::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $13) ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $15) ELSE TRUE END
+AND
+	CASE WHEN $16::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $17) ELSE TRUE END
+AND
+	CASE WHEN $18::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $19) ELSE TRUE END
+AND
+	CASE $20::text
 		WHEN 'next' THEN
-			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				ELSE m_members_pkey > $15::int
+			CASE $21::text
+				WHEN 'name' THEN m_members.name > $22 OR (m_members.name = $22 AND m_members_pkey > $23::int)
+				WHEN 'r_name' THEN m_members.name < $22 OR (m_members.name = $22 AND m_members_pkey > $23::int)
+				ELSE m_members_pkey > $23::int
 			END
 		WHEN 'prev' THEN
-			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				ELSE m_members_pkey < $15::int
+			CASE $21::text
+				WHEN 'name' THEN m_members.name < $22 OR (m_members.name = $22 AND m_members_pkey < $23::int)
+				WHEN 'r_name' THEN m_members.name > $22 OR (m_members.name = $22 AND m_members_pkey < $23::int)
+				ELSE m_members_pkey < $23::int
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
-	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
+	CASE WHEN $21::text = 'name' AND $20::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $21::text = 'name' AND $20::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' AND $20::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' AND $20::text = 'prev' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $20::text = 'next' THEN m_members_pkey END ASC,
+	CASE WHEN $20::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
 `
 
 type GetMembersWithProfileImageUseKeysetPaginateParams struct {
-	Limit              int32       `json:"limit"`
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	CursorDirection    string      `json:"cursor_direction"`
-	OrderMethod        string      `json:"order_method"`
-	NameCursor         string      `json:"name_cursor"`
-	Cursor             int32       `json:"cursor"`
+	Limit                         int32       `json:"limit"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	CursorDirection               string      `json:"cursor_direction"`
+	OrderMethod                   string      `json:"order_method"`
+	NameCursor                    string      `json:"name_cursor"`
+	Cursor                        int32       `json:"cursor"`
 }
 
 type GetMembersWithProfileImageUseKeysetPaginateRow struct {
@@ -2689,6 +3113,14 @@ func (q *Queries) GetMembersWithProfileImageUseKeysetPaginate(ctx context.Contex
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.CursorDirection,
 		arg.OrderMethod,
 		arg.NameCursor,
@@ -2756,27 +3188,43 @@ AND
 	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $14) ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $16) ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $18) ELSE TRUE END
+AND
+	CASE WHEN $19::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $20) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'name' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetMembersWithProfileImageUseNumberedPaginateParams struct {
-	Limit              int32       `json:"limit"`
-	Offset             int32       `json:"offset"`
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	OrderMethod        string      `json:"order_method"`
+	Limit                         int32       `json:"limit"`
+	Offset                        int32       `json:"offset"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	OrderMethod                   string      `json:"order_method"`
 }
 
 type GetMembersWithProfileImageUseNumberedPaginateRow struct {
@@ -2821,6 +3269,14 @@ func (q *Queries) GetMembersWithProfileImageUseNumberedPaginate(ctx context.Cont
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.OrderMethod,
 	)
 	if err != nil {
@@ -2880,24 +3336,40 @@ AND
 	CASE WHEN $7::boolean = true THEN m_members.grade_id = ANY($8::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $9::boolean = true THEN m_members.group_id = ANY($10::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $11::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $12) ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $14) ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $16) ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $18) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'name' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $11::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $19::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 `
 
 type GetMembersWithRoleParams struct {
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	OrderMethod        string      `json:"order_method"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	OrderMethod                   string      `json:"order_method"`
 }
 
 type GetMembersWithRoleRow struct {
@@ -2933,6 +3405,14 @@ func (q *Queries) GetMembersWithRole(ctx context.Context, arg GetMembersWithRole
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.OrderMethod,
 	)
 	if err != nil {
@@ -2986,46 +3466,62 @@ AND
 AND
 	CASE WHEN $10::boolean = true THEN m_members.group_id = ANY($11::uuid[]) ELSE TRUE END
 AND
-	CASE $12::text
+	CASE WHEN $12::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $13) ELSE TRUE END
+AND
+	CASE WHEN $14::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $15) ELSE TRUE END
+AND
+	CASE WHEN $16::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $17) ELSE TRUE END
+AND
+	CASE WHEN $18::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $19) ELSE TRUE END
+AND
+	CASE $20::text
 		WHEN 'next' THEN
-			CASE $13::text
-				WHEN 'name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				WHEN 'r_name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey > $15::int)
-				ELSE m_members_pkey > $15::int
+			CASE $21::text
+				WHEN 'name' THEN m_members.name > $22 OR (m_members.name = $22 AND m_members_pkey > $23::int)
+				WHEN 'r_name' THEN m_members.name < $22 OR (m_members.name = $22 AND m_members_pkey > $23::int)
+				ELSE m_members_pkey > $23::int
 			END
 		WHEN 'prev' THEN
-			CASE $13::text
-				WHEN 'name' THEN m_members.name < $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				WHEN 'r_name' THEN m_members.name > $14 OR (m_members.name = $14 AND m_members_pkey < $15::int)
-				ELSE m_members_pkey < $15::int
+			CASE $21::text
+				WHEN 'name' THEN m_members.name < $22 OR (m_members.name = $22 AND m_members_pkey < $23::int)
+				WHEN 'r_name' THEN m_members.name > $22 OR (m_members.name = $22 AND m_members_pkey < $23::int)
+				ELSE m_members_pkey < $23::int
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'name' AND $12::text = 'next' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $13::text = 'name' AND $12::text = 'prev' THEN m_members.name END DESC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'next' THEN m_members.name END DESC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' AND $12::text = 'prev' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $12::text = 'next' THEN m_members_pkey END ASC,
-	CASE WHEN $12::text = 'prev' THEN m_members_pkey END DESC
+	CASE WHEN $21::text = 'name' AND $20::text = 'next' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $21::text = 'name' AND $20::text = 'prev' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' AND $20::text = 'next' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' AND $20::text = 'prev' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $20::text = 'next' THEN m_members_pkey END ASC,
+	CASE WHEN $20::text = 'prev' THEN m_members_pkey END DESC
 LIMIT $1
 `
 
 type GetMembersWithRoleUseKeysetPaginateParams struct {
-	Limit              int32       `json:"limit"`
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	CursorDirection    string      `json:"cursor_direction"`
-	OrderMethod        string      `json:"order_method"`
-	NameCursor         string      `json:"name_cursor"`
-	Cursor             int32       `json:"cursor"`
+	Limit                         int32       `json:"limit"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	CursorDirection               string      `json:"cursor_direction"`
+	OrderMethod                   string      `json:"order_method"`
+	NameCursor                    string      `json:"name_cursor"`
+	Cursor                        int32       `json:"cursor"`
 }
 
 type GetMembersWithRoleUseKeysetPaginateRow struct {
@@ -3062,6 +3558,14 @@ func (q *Queries) GetMembersWithRoleUseKeysetPaginate(ctx context.Context, arg G
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.CursorDirection,
 		arg.OrderMethod,
 		arg.NameCursor,
@@ -3117,27 +3621,43 @@ AND
 	CASE WHEN $9::boolean = true THEN m_members.grade_id = ANY($10::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN $11::boolean = true THEN m_members.group_id = ANY($12::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN $13::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $14) ELSE TRUE END
+AND
+	CASE WHEN $15::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = $16) ELSE TRUE END
+AND
+	CASE WHEN $17::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $18) ELSE TRUE END
+AND
+	CASE WHEN $19::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = $20) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'name' THEN m_members.name END ASC NULLS LAST,
-	CASE WHEN $13::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
+	CASE WHEN $21::text = 'name' THEN m_members.name END ASC NULLS LAST,
+	CASE WHEN $21::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
 	m_members_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
 type GetMembersWithRoleUseNumberedPaginateParams struct {
-	Limit              int32       `json:"limit"`
-	Offset             int32       `json:"offset"`
-	WhereLikeName      bool        `json:"where_like_name"`
-	SearchName         string      `json:"search_name"`
-	WhereHasPolicy     bool        `json:"where_has_policy"`
-	HasPolicyIds       []uuid.UUID `json:"has_policy_ids"`
-	WhenInAttendStatus bool        `json:"when_in_attend_status"`
-	InAttendStatusIds  []uuid.UUID `json:"in_attend_status_ids"`
-	WhenInGrade        bool        `json:"when_in_grade"`
-	InGradeIds         []uuid.UUID `json:"in_grade_ids"`
-	WhenInGroup        bool        `json:"when_in_group"`
-	InGroupIds         []uuid.UUID `json:"in_group_ids"`
-	OrderMethod        string      `json:"order_method"`
+	Limit                         int32       `json:"limit"`
+	Offset                        int32       `json:"offset"`
+	WhereLikeName                 bool        `json:"where_like_name"`
+	SearchName                    string      `json:"search_name"`
+	WhereHasPolicy                bool        `json:"where_has_policy"`
+	HasPolicyIds                  []uuid.UUID `json:"has_policy_ids"`
+	WhenInAttendStatus            bool        `json:"when_in_attend_status"`
+	InAttendStatusIds             []uuid.UUID `json:"in_attend_status_ids"`
+	WhenInGrade                   bool        `json:"when_in_grade"`
+	InGradeIds                    []uuid.UUID `json:"in_grade_ids"`
+	WhenInGroup                   bool        `json:"when_in_group"`
+	InGroupIds                    []uuid.UUID `json:"in_group_ids"`
+	WhereNotBelongingOrganization bool        `json:"where_not_belonging_organization"`
+	NotBelongingOrganizationID    uuid.UUID   `json:"not_belonging_organization_id"`
+	WhereBelongingOrganization    bool        `json:"where_belonging_organization"`
+	BelongingOrganizationID       uuid.UUID   `json:"belonging_organization_id"`
+	WhereNotBelongingChatRoom     bool        `json:"where_not_belonging_chat_room"`
+	NotBelongingChatRoomID        uuid.UUID   `json:"not_belonging_chat_room_id"`
+	WhereBelongingChatRoom        bool        `json:"where_belonging_chat_room"`
+	BelongingChatRoomID           uuid.UUID   `json:"belonging_chat_room_id"`
+	OrderMethod                   string      `json:"order_method"`
 }
 
 type GetMembersWithRoleUseNumberedPaginateRow struct {
@@ -3175,6 +3695,14 @@ func (q *Queries) GetMembersWithRoleUseNumberedPaginate(ctx context.Context, arg
 		arg.InGradeIds,
 		arg.WhenInGroup,
 		arg.InGroupIds,
+		arg.WhereNotBelongingOrganization,
+		arg.NotBelongingOrganizationID,
+		arg.WhereBelongingOrganization,
+		arg.BelongingOrganizationID,
+		arg.WhereNotBelongingChatRoom,
+		arg.NotBelongingChatRoomID,
+		arg.WhereBelongingChatRoom,
+		arg.BelongingChatRoomID,
 		arg.OrderMethod,
 	)
 	if err != nil {

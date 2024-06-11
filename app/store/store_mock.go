@@ -2359,10 +2359,10 @@ var _ Store = &StoreMock{}
 //			GetProfessorsWithSdFunc: func(ctx context.Context, sd Sd, where parameter.WhereProfessorParam, order parameter.ProfessorOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Professor], error) {
 //				panic("mock out the GetProfessorsWithSd method")
 //			},
-//			GetReadableMembersOnMessageFunc: func(ctx context.Context, memberID uuid.UUID, where parameter.WhereReadableMemberOnMessageParam, order parameter.ReadableMemberOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMemberOnMessage], error) {
+//			GetReadableMembersOnMessageFunc: func(ctx context.Context, messageID uuid.UUID, where parameter.WhereReadableMemberOnMessageParam, order parameter.ReadableMemberOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMemberOnMessage], error) {
 //				panic("mock out the GetReadableMembersOnMessage method")
 //			},
-//			GetReadableMembersOnMessageWithSdFunc: func(ctx context.Context, sd Sd, memberID uuid.UUID, where parameter.WhereReadableMemberOnMessageParam, order parameter.ReadableMemberOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMemberOnMessage], error) {
+//			GetReadableMembersOnMessageWithSdFunc: func(ctx context.Context, sd Sd, messageID uuid.UUID, where parameter.WhereReadableMemberOnMessageParam, order parameter.ReadableMemberOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMemberOnMessage], error) {
 //				panic("mock out the GetReadableMembersOnMessageWithSd method")
 //			},
 //			GetReadableMessagesOnChatRoomAndMemberFunc: func(ctx context.Context, chatRoomID uuid.UUID, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam, order parameter.ReadableMessageOnChatRoomAndMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMessageOnChatRoomAndMember], error) {
@@ -5187,10 +5187,10 @@ type StoreMock struct {
 	GetProfessorsWithSdFunc func(ctx context.Context, sd Sd, where parameter.WhereProfessorParam, order parameter.ProfessorOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.Professor], error)
 
 	// GetReadableMembersOnMessageFunc mocks the GetReadableMembersOnMessage method.
-	GetReadableMembersOnMessageFunc func(ctx context.Context, memberID uuid.UUID, where parameter.WhereReadableMemberOnMessageParam, order parameter.ReadableMemberOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMemberOnMessage], error)
+	GetReadableMembersOnMessageFunc func(ctx context.Context, messageID uuid.UUID, where parameter.WhereReadableMemberOnMessageParam, order parameter.ReadableMemberOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMemberOnMessage], error)
 
 	// GetReadableMembersOnMessageWithSdFunc mocks the GetReadableMembersOnMessageWithSd method.
-	GetReadableMembersOnMessageWithSdFunc func(ctx context.Context, sd Sd, memberID uuid.UUID, where parameter.WhereReadableMemberOnMessageParam, order parameter.ReadableMemberOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMemberOnMessage], error)
+	GetReadableMembersOnMessageWithSdFunc func(ctx context.Context, sd Sd, messageID uuid.UUID, where parameter.WhereReadableMemberOnMessageParam, order parameter.ReadableMemberOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMemberOnMessage], error)
 
 	// GetReadableMessagesOnChatRoomAndMemberFunc mocks the GetReadableMessagesOnChatRoomAndMember method.
 	GetReadableMessagesOnChatRoomAndMemberFunc func(ctx context.Context, chatRoomID uuid.UUID, memberID uuid.UUID, where parameter.WhereReadableMessageOnChatRoomAndMemberParam, order parameter.ReadableMessageOnChatRoomAndMemberOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMessageOnChatRoomAndMember], error)
@@ -13564,8 +13564,8 @@ type StoreMock struct {
 		GetReadableMembersOnMessage []struct {
 			// Ctx is the ctx argument value.
 			Ctx context.Context
-			// MemberID is the memberID argument value.
-			MemberID uuid.UUID
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
 			// Where is the where argument value.
 			Where parameter.WhereReadableMemberOnMessageParam
 			// Order is the order argument value.
@@ -13583,8 +13583,8 @@ type StoreMock struct {
 			Ctx context.Context
 			// Sd is the sd argument value.
 			Sd Sd
-			// MemberID is the memberID argument value.
-			MemberID uuid.UUID
+			// MessageID is the messageID argument value.
+			MessageID uuid.UUID
 			// Where is the where argument value.
 			Where parameter.WhereReadableMemberOnMessageParam
 			// Order is the order argument value.
@@ -49011,31 +49011,31 @@ func (mock *StoreMock) GetProfessorsWithSdCalls() []struct {
 }
 
 // GetReadableMembersOnMessage calls GetReadableMembersOnMessageFunc.
-func (mock *StoreMock) GetReadableMembersOnMessage(ctx context.Context, memberID uuid.UUID, where parameter.WhereReadableMemberOnMessageParam, order parameter.ReadableMemberOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMemberOnMessage], error) {
+func (mock *StoreMock) GetReadableMembersOnMessage(ctx context.Context, messageID uuid.UUID, where parameter.WhereReadableMemberOnMessageParam, order parameter.ReadableMemberOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMemberOnMessage], error) {
 	if mock.GetReadableMembersOnMessageFunc == nil {
 		panic("StoreMock.GetReadableMembersOnMessageFunc: method is nil but Store.GetReadableMembersOnMessage was just called")
 	}
 	callInfo := struct {
-		Ctx      context.Context
-		MemberID uuid.UUID
-		Where    parameter.WhereReadableMemberOnMessageParam
-		Order    parameter.ReadableMemberOnMessageOrderMethod
-		Np       NumberedPaginationParam
-		Cp       CursorPaginationParam
-		Wc       WithCountParam
+		Ctx       context.Context
+		MessageID uuid.UUID
+		Where     parameter.WhereReadableMemberOnMessageParam
+		Order     parameter.ReadableMemberOnMessageOrderMethod
+		Np        NumberedPaginationParam
+		Cp        CursorPaginationParam
+		Wc        WithCountParam
 	}{
-		Ctx:      ctx,
-		MemberID: memberID,
-		Where:    where,
-		Order:    order,
-		Np:       np,
-		Cp:       cp,
-		Wc:       wc,
+		Ctx:       ctx,
+		MessageID: messageID,
+		Where:     where,
+		Order:     order,
+		Np:        np,
+		Cp:        cp,
+		Wc:        wc,
 	}
 	mock.lockGetReadableMembersOnMessage.Lock()
 	mock.calls.GetReadableMembersOnMessage = append(mock.calls.GetReadableMembersOnMessage, callInfo)
 	mock.lockGetReadableMembersOnMessage.Unlock()
-	return mock.GetReadableMembersOnMessageFunc(ctx, memberID, where, order, np, cp, wc)
+	return mock.GetReadableMembersOnMessageFunc(ctx, messageID, where, order, np, cp, wc)
 }
 
 // GetReadableMembersOnMessageCalls gets all the calls that were made to GetReadableMembersOnMessage.
@@ -49043,22 +49043,22 @@ func (mock *StoreMock) GetReadableMembersOnMessage(ctx context.Context, memberID
 //
 //	len(mockedStore.GetReadableMembersOnMessageCalls())
 func (mock *StoreMock) GetReadableMembersOnMessageCalls() []struct {
-	Ctx      context.Context
-	MemberID uuid.UUID
-	Where    parameter.WhereReadableMemberOnMessageParam
-	Order    parameter.ReadableMemberOnMessageOrderMethod
-	Np       NumberedPaginationParam
-	Cp       CursorPaginationParam
-	Wc       WithCountParam
+	Ctx       context.Context
+	MessageID uuid.UUID
+	Where     parameter.WhereReadableMemberOnMessageParam
+	Order     parameter.ReadableMemberOnMessageOrderMethod
+	Np        NumberedPaginationParam
+	Cp        CursorPaginationParam
+	Wc        WithCountParam
 } {
 	var calls []struct {
-		Ctx      context.Context
-		MemberID uuid.UUID
-		Where    parameter.WhereReadableMemberOnMessageParam
-		Order    parameter.ReadableMemberOnMessageOrderMethod
-		Np       NumberedPaginationParam
-		Cp       CursorPaginationParam
-		Wc       WithCountParam
+		Ctx       context.Context
+		MessageID uuid.UUID
+		Where     parameter.WhereReadableMemberOnMessageParam
+		Order     parameter.ReadableMemberOnMessageOrderMethod
+		Np        NumberedPaginationParam
+		Cp        CursorPaginationParam
+		Wc        WithCountParam
 	}
 	mock.lockGetReadableMembersOnMessage.RLock()
 	calls = mock.calls.GetReadableMembersOnMessage
@@ -49067,33 +49067,33 @@ func (mock *StoreMock) GetReadableMembersOnMessageCalls() []struct {
 }
 
 // GetReadableMembersOnMessageWithSd calls GetReadableMembersOnMessageWithSdFunc.
-func (mock *StoreMock) GetReadableMembersOnMessageWithSd(ctx context.Context, sd Sd, memberID uuid.UUID, where parameter.WhereReadableMemberOnMessageParam, order parameter.ReadableMemberOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMemberOnMessage], error) {
+func (mock *StoreMock) GetReadableMembersOnMessageWithSd(ctx context.Context, sd Sd, messageID uuid.UUID, where parameter.WhereReadableMemberOnMessageParam, order parameter.ReadableMemberOnMessageOrderMethod, np NumberedPaginationParam, cp CursorPaginationParam, wc WithCountParam) (ListResult[entity.ReadableMemberOnMessage], error) {
 	if mock.GetReadableMembersOnMessageWithSdFunc == nil {
 		panic("StoreMock.GetReadableMembersOnMessageWithSdFunc: method is nil but Store.GetReadableMembersOnMessageWithSd was just called")
 	}
 	callInfo := struct {
-		Ctx      context.Context
-		Sd       Sd
-		MemberID uuid.UUID
-		Where    parameter.WhereReadableMemberOnMessageParam
-		Order    parameter.ReadableMemberOnMessageOrderMethod
-		Np       NumberedPaginationParam
-		Cp       CursorPaginationParam
-		Wc       WithCountParam
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+		Where     parameter.WhereReadableMemberOnMessageParam
+		Order     parameter.ReadableMemberOnMessageOrderMethod
+		Np        NumberedPaginationParam
+		Cp        CursorPaginationParam
+		Wc        WithCountParam
 	}{
-		Ctx:      ctx,
-		Sd:       sd,
-		MemberID: memberID,
-		Where:    where,
-		Order:    order,
-		Np:       np,
-		Cp:       cp,
-		Wc:       wc,
+		Ctx:       ctx,
+		Sd:        sd,
+		MessageID: messageID,
+		Where:     where,
+		Order:     order,
+		Np:        np,
+		Cp:        cp,
+		Wc:        wc,
 	}
 	mock.lockGetReadableMembersOnMessageWithSd.Lock()
 	mock.calls.GetReadableMembersOnMessageWithSd = append(mock.calls.GetReadableMembersOnMessageWithSd, callInfo)
 	mock.lockGetReadableMembersOnMessageWithSd.Unlock()
-	return mock.GetReadableMembersOnMessageWithSdFunc(ctx, sd, memberID, where, order, np, cp, wc)
+	return mock.GetReadableMembersOnMessageWithSdFunc(ctx, sd, messageID, where, order, np, cp, wc)
 }
 
 // GetReadableMembersOnMessageWithSdCalls gets all the calls that were made to GetReadableMembersOnMessageWithSd.
@@ -49101,24 +49101,24 @@ func (mock *StoreMock) GetReadableMembersOnMessageWithSd(ctx context.Context, sd
 //
 //	len(mockedStore.GetReadableMembersOnMessageWithSdCalls())
 func (mock *StoreMock) GetReadableMembersOnMessageWithSdCalls() []struct {
-	Ctx      context.Context
-	Sd       Sd
-	MemberID uuid.UUID
-	Where    parameter.WhereReadableMemberOnMessageParam
-	Order    parameter.ReadableMemberOnMessageOrderMethod
-	Np       NumberedPaginationParam
-	Cp       CursorPaginationParam
-	Wc       WithCountParam
+	Ctx       context.Context
+	Sd        Sd
+	MessageID uuid.UUID
+	Where     parameter.WhereReadableMemberOnMessageParam
+	Order     parameter.ReadableMemberOnMessageOrderMethod
+	Np        NumberedPaginationParam
+	Cp        CursorPaginationParam
+	Wc        WithCountParam
 } {
 	var calls []struct {
-		Ctx      context.Context
-		Sd       Sd
-		MemberID uuid.UUID
-		Where    parameter.WhereReadableMemberOnMessageParam
-		Order    parameter.ReadableMemberOnMessageOrderMethod
-		Np       NumberedPaginationParam
-		Cp       CursorPaginationParam
-		Wc       WithCountParam
+		Ctx       context.Context
+		Sd        Sd
+		MessageID uuid.UUID
+		Where     parameter.WhereReadableMemberOnMessageParam
+		Order     parameter.ReadableMemberOnMessageOrderMethod
+		Np        NumberedPaginationParam
+		Cp        CursorPaginationParam
+		Wc        WithCountParam
 	}
 	mock.lockGetReadableMembersOnMessageWithSd.RLock()
 	calls = mock.calls.GetReadableMembersOnMessageWithSd

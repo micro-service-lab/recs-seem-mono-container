@@ -105,6 +105,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
@@ -122,6 +130,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
@@ -140,6 +156,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
@@ -192,6 +216,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
@@ -210,6 +242,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
@@ -229,6 +269,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
@@ -291,6 +339,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
@@ -314,6 +370,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
@@ -338,6 +402,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
@@ -412,6 +484,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
@@ -438,6 +518,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
@@ -465,6 +553,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
@@ -539,6 +635,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
@@ -559,6 +663,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
@@ -580,6 +692,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
@@ -640,6 +760,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
@@ -658,6 +786,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
@@ -677,6 +813,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
@@ -734,6 +878,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
@@ -753,6 +905,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 ORDER BY
 	CASE WHEN @order_method::text = 'name' THEN m_members.name END ASC NULLS LAST,
 	CASE WHEN @order_method::text = 'r_name' THEN m_members.name END DESC NULLS LAST,
@@ -773,6 +933,14 @@ AND
 	CASE WHEN @when_in_grade::boolean = true THEN m_members.grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
 	CASE WHEN @when_in_group::boolean = true THEN m_members.group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END
 AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
@@ -831,4 +999,12 @@ AND
 AND
 	CASE WHEN @when_in_grade::boolean = true THEN grade_id = ANY(@in_grade_ids::uuid[]) ELSE TRUE END
 AND
-	CASE WHEN @when_in_group::boolean = true THEN group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END;
+	CASE WHEN @when_in_group::boolean = true THEN group_id = ANY(@in_group_ids::uuid[]) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_organization::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @not_belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_organization::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_memberships WHERE m_memberships.organization_id = @belonging_organization_id) ELSE TRUE END
+AND
+	CASE WHEN @where_not_belonging_chat_room::boolean = true THEN m_members.member_id NOT IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @not_belonging_chat_room_id) ELSE TRUE END
+AND
+	CASE WHEN @where_belonging_chat_room::boolean = true THEN m_members.member_id IN (SELECT member_id FROM m_chat_room_belongings WHERE m_chat_room_belongings.chat_room_id = @belonging_chat_room_id) ELSE TRUE END;

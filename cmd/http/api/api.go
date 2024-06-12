@@ -119,6 +119,7 @@ func (s *API) Handler() http.Handler {
 	r.Mount("/read_receipts", ReadReceiptHandler(s.svc, s.clk, s.auth, s.ssm))
 	r.Mount("/groups", GroupHandler(s.svc))
 	r.Mount("/grades", GradeHandler(s.svc))
+	r.Mount("/attachable_items", AttachableItemHandler(s.svc, s.clk, s.auth, s.ssm))
 
 	r.NotFound(s.notFound)
 	r.MethodNotAllowed(s.methodNotAllowed)

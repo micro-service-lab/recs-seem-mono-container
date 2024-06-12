@@ -4,8 +4,8 @@ package ws
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"log"
+	"reflect"
 	"sync"
 
 	"github.com/google/uuid"
@@ -93,7 +93,6 @@ func (h *Hub) Dispatch(eventType EventType, targets Targets, data any) {
 // RegisterClient クライアントを登録する。
 func (h *Hub) RegisterClient(c *Client) {
 	h.RegisterCh <- c
-	fmt.Println("register client")
 }
 
 // UnRegisterClient クライアントの登録解除用のチャネルを返す。
@@ -170,26 +169,133 @@ func (h *Hub) broadCastToClient(msg []byte) {
 		log.Printf("ws: broadcast message unmarshal error: %v", err)
 		return
 	}
-	//nolint:exhaustive
+	var data any
 	switch payload.EventType {
+	case EventTypeConnectingMembers:
+		var typedPayload TypedPayload[ConnectingMembersEventData]
+		if err := json.Unmarshal(msg, &typedPayload); err != nil {
+			log.Printf("ws: broadcast message unmarshal error: %v", err)
+			return
+		}
+		setEmptySlicesToEmptyArrays(&typedPayload.Data)
+		data = typedPayload.Data
 	case EventTypeConnected:
 		var typedPayload TypedPayload[ConnectedEventData]
 		if err := json.Unmarshal(msg, &typedPayload); err != nil {
 			log.Printf("ws: broadcast message unmarshal error: %v", err)
 			return
 		}
+		setEmptySlicesToEmptyArrays(&typedPayload.Data)
 		h.addOnlineMemberProcessing(typedPayload.Data)
+		data = typedPayload.Data
 	case EventTypeDisconnected:
 		var typedPayload TypedPayload[DisconnectedEventData]
 		if err := json.Unmarshal(msg, &typedPayload); err != nil {
 			log.Printf("ws: broadcast message unmarshal error: %v", err)
 			return
 		}
+		setEmptySlicesToEmptyArrays(&typedPayload.Data)
 		h.removeOnlineMemberProcessing(typedPayload.Data)
+		data = typedPayload.Data
+	case EventTypeChatRoomAddedMe:
+		var typedPayload TypedPayload[ChatRoomAddedMeEventData]
+		if err := json.Unmarshal(msg, &typedPayload); err != nil {
+			log.Printf("ws: broadcast message unmarshal error: %v", err)
+			return
+		}
+		setEmptySlicesToEmptyArrays(&typedPayload.Data)
+		data = typedPayload.Data
+	case EventTypeChatRoomAddedMember:
+		var typedPayload TypedPayload[ChatRoomAddedMemberEventData]
+		if err := json.Unmarshal(msg, &typedPayload); err != nil {
+			log.Printf("ws: broadcast message unmarshal error: %v", err)
+			return
+		}
+		setEmptySlicesToEmptyArrays(&typedPayload.Data)
+		data = typedPayload.Data
+	case EventTypeChatRoomRemovedMe:
+		var typedPayload TypedPayload[ChatRoomRemovedMeEventData]
+		if err := json.Unmarshal(msg, &typedPayload); err != nil {
+			log.Printf("ws: broadcast message unmarshal error: %v", err)
+			return
+		}
+		setEmptySlicesToEmptyArrays(&typedPayload.Data)
+		data = typedPayload.Data
+	case EventTypeChatRoomRemovedMember:
+		var typedPayload TypedPayload[ChatRoomRemovedMemberEventData]
+		if err := json.Unmarshal(msg, &typedPayload); err != nil {
+			log.Printf("ws: broadcast message unmarshal error: %v", err)
+			return
+		}
+		data = typedPayload.Data
+	case EventTypeChatRoomWithdrawnMe:
+		var typedPayload TypedPayload[ChatRoomWithdrawnMeEventData]
+		if err := json.Unmarshal(msg, &typedPayload); err != nil {
+			log.Printf("ws: broadcast message unmarshal error: %v", err)
+			return
+		}
+		setEmptySlicesToEmptyArrays(&typedPayload.Data)
+		data = typedPayload.Data
+	case EventTypeChatRoomWithdrawnMember:
+		var typedPayload TypedPayload[ChatRoomWithdrawnMemberEventData]
+		if err := json.Unmarshal(msg, &typedPayload); err != nil {
+			log.Printf("ws: broadcast message unmarshal error: %v", err)
+			return
+		}
+		setEmptySlicesToEmptyArrays(&typedPayload.Data)
+		data = typedPayload.Data
+	case EventTypeChatRoomUpdatedName:
+		var typedPayload TypedPayload[ChatRoomUpdatedNameEventData]
+		if err := json.Unmarshal(msg, &typedPayload); err != nil {
+			log.Printf("ws: broadcast message unmarshal error: %v", err)
+			return
+		}
+		setEmptySlicesToEmptyArrays(&typedPayload.Data)
+		data = typedPayload.Data
+	case EventTypeChatRoomDeletedMessage:
+		var typedPayload TypedPayload[ChatRoomDeletedMessageEventData]
+		if err := json.Unmarshal(msg, &typedPayload); err != nil {
+			log.Printf("ws: broadcast message unmarshal error: %v", err)
+			return
+		}
+		setEmptySlicesToEmptyArrays(&typedPayload.Data)
+		data = typedPayload.Data
+	case EventTypeChatRoomEditedMessage:
+		var typedPayload TypedPayload[ChatRoomEditedMessageEventData]
+		if err := json.Unmarshal(msg, &typedPayload); err != nil {
+			log.Printf("ws: broadcast message unmarshal error: %v", err)
+			return
+		}
+		setEmptySlicesToEmptyArrays(&typedPayload.Data)
+		data = typedPayload.Data
+	case EventTypeChatRoomSentMessage:
+		var typedPayload TypedPayload[ChatRoomSentMessageEventData]
+		if err := json.Unmarshal(msg, &typedPayload); err != nil {
+			log.Printf("ws: broadcast message unmarshal error: %v", err)
+			return
+		}
+		setEmptySlicesToEmptyArrays(&typedPayload.Data)
+		data = typedPayload.Data
+	case EventTypeChatRoomReadMessage:
+		var typedPayload TypedPayload[ChatRoomReadMessageEventData]
+		if err := json.Unmarshal(msg, &typedPayload); err != nil {
+			log.Printf("ws: broadcast message unmarshal error: %v", err)
+			return
+		}
+		setEmptySlicesToEmptyArrays(&typedPayload.Data)
+		data = typedPayload.Data
+	case EventTypeChatRoomDeleted:
+		var typedPayload TypedPayload[ChatRoomDeletedEventData]
+		if err := json.Unmarshal(msg, &typedPayload); err != nil {
+			log.Printf("ws: broadcast message unmarshal error: %v", err)
+			return
+		}
+		setEmptySlicesToEmptyArrays(&typedPayload.Data)
+		data = typedPayload.Data
 	}
 	res := ResponsePayload{
 		EventType: payload.EventType,
-		Data:      payload.Data,
+		Data:      data,
 	}
 	resBytes, err := json.Marshal(res)
 	if err != nil {
@@ -248,5 +354,26 @@ func (h *Hub) removeOnlineMemberProcessing(data any) {
 	}
 	if len(h.OnlineMembers[memberID]) == 0 {
 		delete(h.OnlineMembers, memberID)
+	}
+}
+
+func setEmptySlicesToEmptyArrays(val any) {
+	v := reflect.ValueOf(val).Elem()
+	setEmptySlicesToEmptyArraysRecursive(v)
+}
+
+func setEmptySlicesToEmptyArraysRecursive(v reflect.Value) {
+	if v.Kind() == reflect.Struct {
+		for i := 0; i < v.NumField(); i++ {
+			field := v.Field(i)
+			if field.Kind() == reflect.Slice && field.IsNil() {
+				newSlice := reflect.MakeSlice(field.Type(), 0, 0)
+				field.Set(newSlice)
+			} else if field.Kind() == reflect.Ptr && !field.IsNil() {
+				setEmptySlicesToEmptyArraysRecursive(field.Elem())
+			} else if field.Kind() == reflect.Struct {
+				setEmptySlicesToEmptyArraysRecursive(field)
+			}
+		}
 	}
 }

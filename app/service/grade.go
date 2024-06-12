@@ -330,10 +330,10 @@ func (m *ManageGrade) DeleteGrade(ctx context.Context, id uuid.UUID) (c int64, e
 		var imageIDs []uuid.UUID
 		var fileIDs []uuid.UUID
 		for _, v := range attachableItems.Data {
-			if v.AttachableItem.ImageID.Valid {
-				imageIDs = append(imageIDs, v.AttachableItem.ImageID.Bytes)
-			} else if v.AttachableItem.FileID.Valid {
-				fileIDs = append(fileIDs, v.AttachableItem.FileID.Bytes)
+			if v.AttachableItem.Image.Valid {
+				imageIDs = append(imageIDs, v.AttachableItem.Image.Entity.ImageID)
+			} else if v.AttachableItem.File.Valid {
+				fileIDs = append(fileIDs, v.AttachableItem.File.Entity.FileID)
 			}
 		}
 		if cr.CoverImage.Valid {
@@ -430,10 +430,10 @@ func (m *ManageGrade) PluralDeleteGrades(
 				return 0, fmt.Errorf("failed to get attached items on chat room: %w", err)
 			}
 			for _, v := range attachableItems.Data {
-				if v.AttachableItem.ImageID.Valid {
-					imageIDs = append(imageIDs, v.AttachableItem.ImageID.Bytes)
-				} else if v.AttachableItem.FileID.Valid {
-					fileIDs = append(fileIDs, v.AttachableItem.FileID.Bytes)
+				if v.AttachableItem.Image.Valid {
+					imageIDs = append(imageIDs, v.AttachableItem.Image.Entity.ImageID)
+				} else if v.AttachableItem.File.Valid {
+					fileIDs = append(fileIDs, v.AttachableItem.File.Entity.FileID)
 				}
 			}
 			cr, err := m.DB.FindChatRoomByIDWithSd(ctx, sd, e.Organization.ChatRoomID.Bytes)

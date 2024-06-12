@@ -582,10 +582,10 @@ func (m *ManageMessage) DeleteMessage(
 	var imageIDs []uuid.UUID
 	var fileIDs []uuid.UUID
 	for _, v := range ai.Data {
-		if v.AttachableItem.ImageID.Valid {
-			imageIDs = append(imageIDs, v.AttachableItem.ImageID.Bytes)
-		} else if v.AttachableItem.FileID.Valid {
-			fileIDs = append(fileIDs, v.AttachableItem.FileID.Bytes)
+		if v.AttachableItem.Image.Valid {
+			imageIDs = append(imageIDs, v.AttachableItem.Image.Entity.ImageID)
+		} else if v.AttachableItem.File.Valid {
+			fileIDs = append(fileIDs, v.AttachableItem.File.Entity.FileID)
 		}
 	}
 
@@ -696,10 +696,10 @@ func (m *ManageMessage) ForceDeleteMessages(
 	var fileIDs []uuid.UUID
 
 	for _, v := range ai.Data {
-		if v.AttachableItem.ImageID.Valid {
-			imageIDs = append(imageIDs, v.AttachableItem.ImageID.Bytes)
-		} else if v.AttachableItem.FileID.Valid {
-			fileIDs = append(fileIDs, v.AttachableItem.FileID.Bytes)
+		if v.AttachableItem.Image.Valid {
+			imageIDs = append(imageIDs, v.AttachableItem.Image.Entity.ImageID)
+		} else if v.AttachableItem.File.Valid {
+			fileIDs = append(fileIDs, v.AttachableItem.File.Entity.FileID)
 		}
 	}
 

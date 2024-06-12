@@ -13,9 +13,9 @@ type AttachedMessage struct {
 
 // AttachedItemOnMessage メッセージに添付された添付を表す構造体。
 type AttachedItemOnMessage struct {
-	AttachedMessageID uuid.UUID      `json:"attached_message_id"`
-	MessageID         uuid.UUID      `json:"message_id"`
-	AttachableItem    AttachableItem `json:"attachable_item"`
+	AttachedMessageID uuid.UUID                 `json:"attached_message_id"`
+	MessageID         uuid.UUID                 `json:"message_id"`
+	AttachableItem    AttachableItemWithContent `json:"attachable_item"`
 }
 
 // AttachedItemOnMessageForQuery メッセージに添付された添付を表す構造体(クエリー用)。
@@ -39,9 +39,9 @@ type AttachedItemOnMessageWithMimeTypeForQuery struct {
 
 // AttachedItemOnChatRoom チャットルームに添付された添付を表す構造体。
 type AttachedItemOnChatRoom struct {
-	AttachedMessageID uuid.UUID      `json:"attached_message_id"`
-	AttachableItem    AttachableItem `json:"attachable_item"`
-	Message           Message        `json:"message"`
+	AttachedMessageID uuid.UUID                 `json:"attached_message_id"`
+	AttachableItem    AttachableItemWithContent `json:"attachable_item"`
+	Message           Message                   `json:"message"`
 }
 
 // AttachedItemOnChatRoomForQuery チャットルームに添付された添付を表す構造体(クエリー用)。

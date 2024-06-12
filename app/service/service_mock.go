@@ -267,6 +267,9 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			DisassociateRoleOnPolicyFunc: func(ctx context.Context, policyID uuid.UUID) (int64, error) {
 //				panic("mock out the DisassociateRoleOnPolicy method")
 //			},
+//			DownloadAttachableItemFunc: func(ctx context.Context, ownerID uuid.UUID, id uuid.UUID) (io.ReadCloser, string, error) {
+//				panic("mock out the DownloadAttachableItem method")
+//			},
 //			EditMessageFunc: func(ctx context.Context, chatRoomID uuid.UUID, ownerID uuid.UUID, messageID uuid.UUID, content string) (entity.Message, error) {
 //				panic("mock out the EditMessage method")
 //			},
@@ -963,6 +966,9 @@ type ManagerInterfaceMock struct {
 
 	// DisassociateRoleOnPolicyFunc mocks the DisassociateRoleOnPolicy method.
 	DisassociateRoleOnPolicyFunc func(ctx context.Context, policyID uuid.UUID) (int64, error)
+
+	// DownloadAttachableItemFunc mocks the DownloadAttachableItem method.
+	DownloadAttachableItemFunc func(ctx context.Context, ownerID uuid.UUID, id uuid.UUID) (io.ReadCloser, string, error)
 
 	// EditMessageFunc mocks the EditMessage method.
 	EditMessageFunc func(ctx context.Context, chatRoomID uuid.UUID, ownerID uuid.UUID, messageID uuid.UUID, content string) (entity.Message, error)
@@ -2201,6 +2207,15 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// PolicyID is the policyID argument value.
 			PolicyID uuid.UUID
+		}
+		// DownloadAttachableItem holds details about calls to the DownloadAttachableItem method.
+		DownloadAttachableItem []struct {
+			// Ctx is the ctx argument value.
+			Ctx context.Context
+			// OwnerID is the ownerID argument value.
+			OwnerID uuid.UUID
+			// ID is the id argument value.
+			ID uuid.UUID
 		}
 		// EditMessage holds details about calls to the EditMessage method.
 		EditMessage []struct {
@@ -4125,6 +4140,7 @@ type ManagerInterfaceMock struct {
 	lockDisassociatePolicyOnRoles                        sync.RWMutex
 	lockDisassociateRoleOnPolicies                       sync.RWMutex
 	lockDisassociateRoleOnPolicy                         sync.RWMutex
+	lockDownloadAttachableItem                           sync.RWMutex
 	lockEditMessage                                      sync.RWMutex
 	lockFindAttachableItemByID                           sync.RWMutex
 	lockFindAttachableItemByURL                          sync.RWMutex
@@ -7633,6 +7649,46 @@ func (mock *ManagerInterfaceMock) DisassociateRoleOnPolicyCalls() []struct {
 	mock.lockDisassociateRoleOnPolicy.RLock()
 	calls = mock.calls.DisassociateRoleOnPolicy
 	mock.lockDisassociateRoleOnPolicy.RUnlock()
+	return calls
+}
+
+// DownloadAttachableItem calls DownloadAttachableItemFunc.
+func (mock *ManagerInterfaceMock) DownloadAttachableItem(ctx context.Context, ownerID uuid.UUID, id uuid.UUID) (io.ReadCloser, string, error) {
+	if mock.DownloadAttachableItemFunc == nil {
+		panic("ManagerInterfaceMock.DownloadAttachableItemFunc: method is nil but ManagerInterface.DownloadAttachableItem was just called")
+	}
+	callInfo := struct {
+		Ctx     context.Context
+		OwnerID uuid.UUID
+		ID      uuid.UUID
+	}{
+		Ctx:     ctx,
+		OwnerID: ownerID,
+		ID:      id,
+	}
+	mock.lockDownloadAttachableItem.Lock()
+	mock.calls.DownloadAttachableItem = append(mock.calls.DownloadAttachableItem, callInfo)
+	mock.lockDownloadAttachableItem.Unlock()
+	return mock.DownloadAttachableItemFunc(ctx, ownerID, id)
+}
+
+// DownloadAttachableItemCalls gets all the calls that were made to DownloadAttachableItem.
+// Check the length with:
+//
+//	len(mockedManagerInterface.DownloadAttachableItemCalls())
+func (mock *ManagerInterfaceMock) DownloadAttachableItemCalls() []struct {
+	Ctx     context.Context
+	OwnerID uuid.UUID
+	ID      uuid.UUID
+} {
+	var calls []struct {
+		Ctx     context.Context
+		OwnerID uuid.UUID
+		ID      uuid.UUID
+	}
+	mock.lockDownloadAttachableItem.RLock()
+	calls = mock.calls.DownloadAttachableItem
+	mock.lockDownloadAttachableItem.RUnlock()
 	return calls
 }
 

@@ -145,10 +145,14 @@ const getAttachedItemsOnChatRoom = `-- name: GetAttachedItemsOnChatRoom :many
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
 t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_images.image_id attached_image_id, t_images.height attached_image_height,
+t_images.width attached_image_width, t_files.file_id attached_file_id,
 t_messages.sender_id message_sender_id, t_messages.chat_room_action_id message_chat_room_action_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
 FROM t_attached_messages
 LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE t_attached_messages.message_id IN (
 	SELECT m.message_id FROM t_messages m WHERE m.chat_room_action_id IN (
 		SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1
@@ -183,6 +187,10 @@ type GetAttachedItemsOnChatRoomRow struct {
 	AttachedItemMimeTypeID  pgtype.UUID        `json:"attached_item_mime_type_id"`
 	AttachedItemOwnerID     pgtype.UUID        `json:"attached_item_owner_id"`
 	AttachedItemFromOuter   pgtype.Bool        `json:"attached_item_from_outer"`
+	AttachedImageID         pgtype.UUID        `json:"attached_image_id"`
+	AttachedImageHeight     pgtype.Float8      `json:"attached_image_height"`
+	AttachedImageWidth      pgtype.Float8      `json:"attached_image_width"`
+	AttachedFileID          pgtype.UUID        `json:"attached_file_id"`
 	MessageSenderID         pgtype.UUID        `json:"message_sender_id"`
 	MessageChatRoomActionID pgtype.UUID        `json:"message_chat_room_action_id"`
 	MessageBody             pgtype.Text        `json:"message_body"`
@@ -216,6 +224,10 @@ func (q *Queries) GetAttachedItemsOnChatRoom(ctx context.Context, arg GetAttache
 			&i.AttachedItemMimeTypeID,
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
+			&i.AttachedImageID,
+			&i.AttachedImageHeight,
+			&i.AttachedImageWidth,
+			&i.AttachedFileID,
 			&i.MessageSenderID,
 			&i.MessageChatRoomActionID,
 			&i.MessageBody,
@@ -236,10 +248,14 @@ const getAttachedItemsOnChatRoomUseKeysetPaginate = `-- name: GetAttachedItemsOn
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
 t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_images.image_id attached_image_id, t_images.height attached_image_height,
+t_images.width attached_image_width, t_files.file_id attached_file_id,
 t_messages.sender_id message_sender_id, t_messages.chat_room_action_id message_chat_room_action_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
 FROM t_attached_messages
 LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE t_attached_messages.message_id IN (
 	SELECT m.message_id FROM t_messages m WHERE m.chat_room_action_id IN (
 		SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1
@@ -286,6 +302,10 @@ type GetAttachedItemsOnChatRoomUseKeysetPaginateRow struct {
 	AttachedItemMimeTypeID  pgtype.UUID        `json:"attached_item_mime_type_id"`
 	AttachedItemOwnerID     pgtype.UUID        `json:"attached_item_owner_id"`
 	AttachedItemFromOuter   pgtype.Bool        `json:"attached_item_from_outer"`
+	AttachedImageID         pgtype.UUID        `json:"attached_image_id"`
+	AttachedImageHeight     pgtype.Float8      `json:"attached_image_height"`
+	AttachedImageWidth      pgtype.Float8      `json:"attached_image_width"`
+	AttachedFileID          pgtype.UUID        `json:"attached_file_id"`
 	MessageSenderID         pgtype.UUID        `json:"message_sender_id"`
 	MessageChatRoomActionID pgtype.UUID        `json:"message_chat_room_action_id"`
 	MessageBody             pgtype.Text        `json:"message_body"`
@@ -322,6 +342,10 @@ func (q *Queries) GetAttachedItemsOnChatRoomUseKeysetPaginate(ctx context.Contex
 			&i.AttachedItemMimeTypeID,
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
+			&i.AttachedImageID,
+			&i.AttachedImageHeight,
+			&i.AttachedImageWidth,
+			&i.AttachedFileID,
 			&i.MessageSenderID,
 			&i.MessageChatRoomActionID,
 			&i.MessageBody,
@@ -342,10 +366,14 @@ const getAttachedItemsOnChatRoomUseNumberedPaginate = `-- name: GetAttachedItems
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
 t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_images.image_id attached_image_id, t_images.height attached_image_height,
+t_images.width attached_image_width, t_files.file_id attached_file_id,
 t_messages.sender_id message_sender_id, t_messages.chat_room_action_id message_chat_room_action_id, t_messages.body message_body, t_messages.posted_at message_posted_at, t_messages.last_edited_at message_last_edited_at
 FROM t_attached_messages
 LEFT JOIN t_messages ON t_attached_messages.message_id = t_messages.message_id
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE t_attached_messages.message_id IN (
 	SELECT m.message_id FROM t_messages m WHERE m.chat_room_action_id IN (
 		SELECT chat_room_action_id FROM t_chat_room_actions WHERE chat_room_id = $1
@@ -383,6 +411,10 @@ type GetAttachedItemsOnChatRoomUseNumberedPaginateRow struct {
 	AttachedItemMimeTypeID  pgtype.UUID        `json:"attached_item_mime_type_id"`
 	AttachedItemOwnerID     pgtype.UUID        `json:"attached_item_owner_id"`
 	AttachedItemFromOuter   pgtype.Bool        `json:"attached_item_from_outer"`
+	AttachedImageID         pgtype.UUID        `json:"attached_image_id"`
+	AttachedImageHeight     pgtype.Float8      `json:"attached_image_height"`
+	AttachedImageWidth      pgtype.Float8      `json:"attached_image_width"`
+	AttachedFileID          pgtype.UUID        `json:"attached_file_id"`
 	MessageSenderID         pgtype.UUID        `json:"message_sender_id"`
 	MessageChatRoomActionID pgtype.UUID        `json:"message_chat_room_action_id"`
 	MessageBody             pgtype.Text        `json:"message_body"`
@@ -418,6 +450,10 @@ func (q *Queries) GetAttachedItemsOnChatRoomUseNumberedPaginate(ctx context.Cont
 			&i.AttachedItemMimeTypeID,
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
+			&i.AttachedImageID,
+			&i.AttachedImageHeight,
+			&i.AttachedImageWidth,
+			&i.AttachedFileID,
 			&i.MessageSenderID,
 			&i.MessageChatRoomActionID,
 			&i.MessageBody,
@@ -437,9 +473,13 @@ func (q *Queries) GetAttachedItemsOnChatRoomUseNumberedPaginate(ctx context.Cont
 const getAttachedItemsOnMessage = `-- name: GetAttachedItemsOnMessage :many
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
-t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_images.image_id attached_image_id, t_images.height attached_image_height,
+t_images.width attached_image_width, t_files.file_id attached_file_id
 FROM t_attached_messages
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE message_id = $1
 AND
 	CASE WHEN $2::boolean = true THEN t_attachable_items.mime_type_id = ANY($3::uuid[]) ELSE TRUE END
@@ -470,6 +510,10 @@ type GetAttachedItemsOnMessageRow struct {
 	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
 	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
 	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+	AttachedImageID        pgtype.UUID   `json:"attached_image_id"`
+	AttachedImageHeight    pgtype.Float8 `json:"attached_image_height"`
+	AttachedImageWidth     pgtype.Float8 `json:"attached_image_width"`
+	AttachedFileID         pgtype.UUID   `json:"attached_file_id"`
 }
 
 func (q *Queries) GetAttachedItemsOnMessage(ctx context.Context, arg GetAttachedItemsOnMessageParams) ([]GetAttachedItemsOnMessageRow, error) {
@@ -498,6 +542,10 @@ func (q *Queries) GetAttachedItemsOnMessage(ctx context.Context, arg GetAttached
 			&i.AttachedItemMimeTypeID,
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
+			&i.AttachedImageID,
+			&i.AttachedImageHeight,
+			&i.AttachedImageWidth,
+			&i.AttachedFileID,
 		); err != nil {
 			return nil, err
 		}
@@ -512,9 +560,13 @@ func (q *Queries) GetAttachedItemsOnMessage(ctx context.Context, arg GetAttached
 const getAttachedItemsOnMessageUseKeysetPaginate = `-- name: GetAttachedItemsOnMessageUseKeysetPaginate :many
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
-t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_images.image_id attached_image_id, t_images.height attached_image_height,
+t_images.width attached_image_width, t_files.file_id attached_file_id
 FROM t_attached_messages
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE message_id = $1
 AND
 	CASE WHEN $3::boolean = true THEN t_attachable_items.mime_type_id = ANY($4::uuid[]) ELSE TRUE END
@@ -557,6 +609,10 @@ type GetAttachedItemsOnMessageUseKeysetPaginateRow struct {
 	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
 	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
 	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+	AttachedImageID        pgtype.UUID   `json:"attached_image_id"`
+	AttachedImageHeight    pgtype.Float8 `json:"attached_image_height"`
+	AttachedImageWidth     pgtype.Float8 `json:"attached_image_width"`
+	AttachedFileID         pgtype.UUID   `json:"attached_file_id"`
 }
 
 func (q *Queries) GetAttachedItemsOnMessageUseKeysetPaginate(ctx context.Context, arg GetAttachedItemsOnMessageUseKeysetPaginateParams) ([]GetAttachedItemsOnMessageUseKeysetPaginateRow, error) {
@@ -588,6 +644,10 @@ func (q *Queries) GetAttachedItemsOnMessageUseKeysetPaginate(ctx context.Context
 			&i.AttachedItemMimeTypeID,
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
+			&i.AttachedImageID,
+			&i.AttachedImageHeight,
+			&i.AttachedImageWidth,
+			&i.AttachedFileID,
 		); err != nil {
 			return nil, err
 		}
@@ -602,9 +662,13 @@ func (q *Queries) GetAttachedItemsOnMessageUseKeysetPaginate(ctx context.Context
 const getAttachedItemsOnMessageUseNumberedPaginate = `-- name: GetAttachedItemsOnMessageUseNumberedPaginate :many
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
-t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_images.image_id attached_image_id, t_images.height attached_image_height,
+t_images.width attached_image_width, t_files.file_id attached_file_id
 FROM t_attached_messages
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE message_id = $1
 AND
 	CASE WHEN $4::boolean = true THEN t_attachable_items.mime_type_id = ANY($5::uuid[]) ELSE TRUE END
@@ -638,6 +702,10 @@ type GetAttachedItemsOnMessageUseNumberedPaginateRow struct {
 	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
 	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
 	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+	AttachedImageID        pgtype.UUID   `json:"attached_image_id"`
+	AttachedImageHeight    pgtype.Float8 `json:"attached_image_height"`
+	AttachedImageWidth     pgtype.Float8 `json:"attached_image_width"`
+	AttachedFileID         pgtype.UUID   `json:"attached_file_id"`
 }
 
 func (q *Queries) GetAttachedItemsOnMessageUseNumberedPaginate(ctx context.Context, arg GetAttachedItemsOnMessageUseNumberedPaginateParams) ([]GetAttachedItemsOnMessageUseNumberedPaginateRow, error) {
@@ -668,6 +736,10 @@ func (q *Queries) GetAttachedItemsOnMessageUseNumberedPaginate(ctx context.Conte
 			&i.AttachedItemMimeTypeID,
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
+			&i.AttachedImageID,
+			&i.AttachedImageHeight,
+			&i.AttachedImageWidth,
+			&i.AttachedFileID,
 		); err != nil {
 			return nil, err
 		}
@@ -683,9 +755,13 @@ const getAttachedItemsOnMessageWithMimeType = `-- name: GetAttachedItemsOnMessag
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
 t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_images.image_id attached_image_id, t_images.height attached_image_height,
+t_images.width attached_image_width, t_files.file_id attached_file_id,
 m_mime_types.name mime_type_name, m_mime_types.key mime_type_key, m_mime_types.kind mime_type_kind
 FROM t_attached_messages
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE message_id = $1
 AND
@@ -717,6 +793,10 @@ type GetAttachedItemsOnMessageWithMimeTypeRow struct {
 	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
 	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
 	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+	AttachedImageID        pgtype.UUID   `json:"attached_image_id"`
+	AttachedImageHeight    pgtype.Float8 `json:"attached_image_height"`
+	AttachedImageWidth     pgtype.Float8 `json:"attached_image_width"`
+	AttachedFileID         pgtype.UUID   `json:"attached_file_id"`
 	MimeTypeName           pgtype.Text   `json:"mime_type_name"`
 	MimeTypeKey            pgtype.Text   `json:"mime_type_key"`
 	MimeTypeKind           pgtype.Text   `json:"mime_type_kind"`
@@ -748,6 +828,10 @@ func (q *Queries) GetAttachedItemsOnMessageWithMimeType(ctx context.Context, arg
 			&i.AttachedItemMimeTypeID,
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
+			&i.AttachedImageID,
+			&i.AttachedImageHeight,
+			&i.AttachedImageWidth,
+			&i.AttachedFileID,
 			&i.MimeTypeName,
 			&i.MimeTypeKey,
 			&i.MimeTypeKind,
@@ -766,9 +850,13 @@ const getAttachedItemsOnMessageWithMimeTypeUseKeysetPaginate = `-- name: GetAtta
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
 t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_images.image_id attached_image_id, t_images.height attached_image_height,
+t_images.width attached_image_width, t_files.file_id attached_file_id,
 m_mime_types.name mime_type_name, m_mime_types.key mime_type_key, m_mime_types.kind mime_type_kind
 FROM t_attached_messages
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE message_id = $1
 AND
@@ -812,6 +900,10 @@ type GetAttachedItemsOnMessageWithMimeTypeUseKeysetPaginateRow struct {
 	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
 	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
 	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+	AttachedImageID        pgtype.UUID   `json:"attached_image_id"`
+	AttachedImageHeight    pgtype.Float8 `json:"attached_image_height"`
+	AttachedImageWidth     pgtype.Float8 `json:"attached_image_width"`
+	AttachedFileID         pgtype.UUID   `json:"attached_file_id"`
 	MimeTypeName           pgtype.Text   `json:"mime_type_name"`
 	MimeTypeKey            pgtype.Text   `json:"mime_type_key"`
 	MimeTypeKind           pgtype.Text   `json:"mime_type_kind"`
@@ -846,6 +938,10 @@ func (q *Queries) GetAttachedItemsOnMessageWithMimeTypeUseKeysetPaginate(ctx con
 			&i.AttachedItemMimeTypeID,
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
+			&i.AttachedImageID,
+			&i.AttachedImageHeight,
+			&i.AttachedImageWidth,
+			&i.AttachedFileID,
 			&i.MimeTypeName,
 			&i.MimeTypeKey,
 			&i.MimeTypeKind,
@@ -864,9 +960,13 @@ const getAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate = `-- name: GetAt
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
 t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_images.image_id attached_image_id, t_images.height attached_image_height,
+t_images.width attached_image_width, t_files.file_id attached_file_id,
 m_mime_types.name mime_type_name, m_mime_types.key mime_type_key, m_mime_types.kind mime_type_kind
 FROM t_attached_messages
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE message_id = $1
 AND
@@ -901,6 +1001,10 @@ type GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateRow struct {
 	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
 	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
 	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+	AttachedImageID        pgtype.UUID   `json:"attached_image_id"`
+	AttachedImageHeight    pgtype.Float8 `json:"attached_image_height"`
+	AttachedImageWidth     pgtype.Float8 `json:"attached_image_width"`
+	AttachedFileID         pgtype.UUID   `json:"attached_file_id"`
 	MimeTypeName           pgtype.Text   `json:"mime_type_name"`
 	MimeTypeKey            pgtype.Text   `json:"mime_type_key"`
 	MimeTypeKind           pgtype.Text   `json:"mime_type_kind"`
@@ -934,6 +1038,10 @@ func (q *Queries) GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate(ctx c
 			&i.AttachedItemMimeTypeID,
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
+			&i.AttachedImageID,
+			&i.AttachedImageHeight,
+			&i.AttachedImageWidth,
+			&i.AttachedFileID,
 			&i.MimeTypeName,
 			&i.MimeTypeKey,
 			&i.MimeTypeKind,
@@ -951,9 +1059,13 @@ func (q *Queries) GetAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate(ctx c
 const getPluralAttachedItemsOnMessage = `-- name: GetPluralAttachedItemsOnMessage :many
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
-t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_images.image_id attached_image_id, t_images.height attached_image_height,
+t_images.width attached_image_width, t_files.file_id attached_file_id
 FROM t_attached_messages
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE message_id = ANY($1::uuid[])
 ORDER BY
 	t_attached_messages_pkey ASC
@@ -970,6 +1082,10 @@ type GetPluralAttachedItemsOnMessageRow struct {
 	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
 	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
 	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+	AttachedImageID        pgtype.UUID   `json:"attached_image_id"`
+	AttachedImageHeight    pgtype.Float8 `json:"attached_image_height"`
+	AttachedImageWidth     pgtype.Float8 `json:"attached_image_width"`
+	AttachedFileID         pgtype.UUID   `json:"attached_file_id"`
 }
 
 func (q *Queries) GetPluralAttachedItemsOnMessage(ctx context.Context, messageIds []uuid.UUID) ([]GetPluralAttachedItemsOnMessageRow, error) {
@@ -992,6 +1108,10 @@ func (q *Queries) GetPluralAttachedItemsOnMessage(ctx context.Context, messageId
 			&i.AttachedItemMimeTypeID,
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
+			&i.AttachedImageID,
+			&i.AttachedImageHeight,
+			&i.AttachedImageWidth,
+			&i.AttachedFileID,
 		); err != nil {
 			return nil, err
 		}
@@ -1006,9 +1126,13 @@ func (q *Queries) GetPluralAttachedItemsOnMessage(ctx context.Context, messageId
 const getPluralAttachedItemsOnMessageUseNumberedPaginate = `-- name: GetPluralAttachedItemsOnMessageUseNumberedPaginate :many
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
-t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer
+t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_images.image_id attached_image_id, t_images.height attached_image_height,
+t_images.width attached_image_width, t_files.file_id attached_file_id
 FROM t_attached_messages
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 WHERE message_id = ANY($3::uuid[])
 ORDER BY
 	t_attached_messages_pkey ASC
@@ -1032,6 +1156,10 @@ type GetPluralAttachedItemsOnMessageUseNumberedPaginateRow struct {
 	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
 	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
 	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+	AttachedImageID        pgtype.UUID   `json:"attached_image_id"`
+	AttachedImageHeight    pgtype.Float8 `json:"attached_image_height"`
+	AttachedImageWidth     pgtype.Float8 `json:"attached_image_width"`
+	AttachedFileID         pgtype.UUID   `json:"attached_file_id"`
 }
 
 func (q *Queries) GetPluralAttachedItemsOnMessageUseNumberedPaginate(ctx context.Context, arg GetPluralAttachedItemsOnMessageUseNumberedPaginateParams) ([]GetPluralAttachedItemsOnMessageUseNumberedPaginateRow, error) {
@@ -1054,6 +1182,10 @@ func (q *Queries) GetPluralAttachedItemsOnMessageUseNumberedPaginate(ctx context
 			&i.AttachedItemMimeTypeID,
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
+			&i.AttachedImageID,
+			&i.AttachedImageHeight,
+			&i.AttachedImageWidth,
+			&i.AttachedFileID,
 		); err != nil {
 			return nil, err
 		}
@@ -1069,9 +1201,13 @@ const getPluralAttachedItemsOnMessageWithMimeType = `-- name: GetPluralAttachedI
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
 t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_images.image_id attached_image_id, t_images.height attached_image_height,
+t_images.width attached_image_width, t_files.file_id attached_file_id,
 m_mime_types.name mime_type_name, m_mime_types.key mime_type_key, m_mime_types.kind mime_type_kind
 FROM t_attached_messages
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE message_id = ANY($1::uuid[])
 ORDER BY
@@ -1089,6 +1225,10 @@ type GetPluralAttachedItemsOnMessageWithMimeTypeRow struct {
 	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
 	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
 	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+	AttachedImageID        pgtype.UUID   `json:"attached_image_id"`
+	AttachedImageHeight    pgtype.Float8 `json:"attached_image_height"`
+	AttachedImageWidth     pgtype.Float8 `json:"attached_image_width"`
+	AttachedFileID         pgtype.UUID   `json:"attached_file_id"`
 	MimeTypeName           pgtype.Text   `json:"mime_type_name"`
 	MimeTypeKey            pgtype.Text   `json:"mime_type_key"`
 	MimeTypeKind           pgtype.Text   `json:"mime_type_kind"`
@@ -1114,6 +1254,10 @@ func (q *Queries) GetPluralAttachedItemsOnMessageWithMimeType(ctx context.Contex
 			&i.AttachedItemMimeTypeID,
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
+			&i.AttachedImageID,
+			&i.AttachedImageHeight,
+			&i.AttachedImageWidth,
+			&i.AttachedFileID,
 			&i.MimeTypeName,
 			&i.MimeTypeKey,
 			&i.MimeTypeKind,
@@ -1132,9 +1276,13 @@ const getPluralAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate = `-- name:
 SELECT t_attached_messages.t_attached_messages_pkey, t_attached_messages.attached_message_id, t_attached_messages.message_id, t_attached_messages.attachable_item_id, t_attachable_items.url attached_item_url, t_attachable_items.alias attached_item_alias,
 t_attachable_items.size attached_item_size, t_attachable_items.mime_type_id attached_item_mime_type_id,
 t_attachable_items.owner_id attached_item_owner_id, t_attachable_items.from_outer attached_item_from_outer,
+t_images.image_id attached_image_id, t_images.height attached_image_height,
+t_images.width attached_image_width, t_files.file_id attached_file_id,
 m_mime_types.name mime_type_name, m_mime_types.key mime_type_key, m_mime_types.kind mime_type_kind
 FROM t_attached_messages
 LEFT JOIN t_attachable_items ON t_attached_messages.attachable_item_id = t_attachable_items.attachable_item_id
+LEFT JOIN t_images ON t_attachable_items.attachable_item_id = t_images.attachable_item_id
+LEFT JOIN t_files ON t_attachable_items.attachable_item_id = t_files.attachable_item_id
 LEFT JOIN m_mime_types ON t_attachable_items.mime_type_id = m_mime_types.mime_type_id
 WHERE message_id = ANY($3::uuid[])
 ORDER BY
@@ -1159,6 +1307,10 @@ type GetPluralAttachedItemsOnMessageWithMimeTypeUseNumberedPaginateRow struct {
 	AttachedItemMimeTypeID pgtype.UUID   `json:"attached_item_mime_type_id"`
 	AttachedItemOwnerID    pgtype.UUID   `json:"attached_item_owner_id"`
 	AttachedItemFromOuter  pgtype.Bool   `json:"attached_item_from_outer"`
+	AttachedImageID        pgtype.UUID   `json:"attached_image_id"`
+	AttachedImageHeight    pgtype.Float8 `json:"attached_image_height"`
+	AttachedImageWidth     pgtype.Float8 `json:"attached_image_width"`
+	AttachedFileID         pgtype.UUID   `json:"attached_file_id"`
 	MimeTypeName           pgtype.Text   `json:"mime_type_name"`
 	MimeTypeKey            pgtype.Text   `json:"mime_type_key"`
 	MimeTypeKind           pgtype.Text   `json:"mime_type_kind"`
@@ -1184,6 +1336,10 @@ func (q *Queries) GetPluralAttachedItemsOnMessageWithMimeTypeUseNumberedPaginate
 			&i.AttachedItemMimeTypeID,
 			&i.AttachedItemOwnerID,
 			&i.AttachedItemFromOuter,
+			&i.AttachedImageID,
+			&i.AttachedImageHeight,
+			&i.AttachedImageWidth,
+			&i.AttachedFileID,
 			&i.MimeTypeName,
 			&i.MimeTypeKey,
 			&i.MimeTypeKind,

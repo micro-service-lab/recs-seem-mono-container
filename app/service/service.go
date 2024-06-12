@@ -83,7 +83,7 @@ func NewManager(
 		ManageOrganization:       ManageOrganization{DB: db, Clocker: clk, Storage: stg, WsHub: wsHub},
 		ManageImage:              ManageImage{DB: db, Storage: stg},
 		ManageFile:               ManageFile{DB: db, Storage: stg},
-		ManageAttachableItem:     ManageAttachableItem{DB: db},
+		ManageAttachableItem:     ManageAttachableItem{DB: db, Storage: stg},
 		ManageGrade:              ManageGrade{DB: db, Clocker: clk, Storage: stg},
 		ManageGroup:              ManageGroup{DB: db, Clocker: clk, Storage: stg},
 		ManageChatRoom:           ManageChatRoom{DB: db, Storage: stg, Clocker: clk, WsHub: wsHub},
@@ -1190,6 +1190,9 @@ type MembershipManager interface {
 type AttachableItemManager interface {
 	FindAttachableItemByID(ctx context.Context, id uuid.UUID) (entity.AttachableItemWithContent, error)
 	FindAttachableItemByURL(ctx context.Context, url string) (entity.AttachableItemWithContent, error)
+	DownloadAttachableItem(
+		ctx context.Context, ownerID, id uuid.UUID,
+	) (io.ReadCloser, string, error)
 }
 
 // MessageManager is a interface for message service.

@@ -340,11 +340,33 @@ func getAttachedItemsOnChatRoom(
 		}
 		fq := make([]entity.AttachedItemOnChatRoomForQuery, len(r))
 		for i, e := range r {
+			var image entity.NullableEntity[entity.Image]
+			if e.AttachedImageID.Valid {
+				image = entity.NullableEntity[entity.Image]{
+					Valid: true,
+					Entity: entity.Image{
+						ImageID:          e.AttachedImageID.Bytes,
+						Height:           entity.Float(e.AttachedImageHeight),
+						Width:            entity.Float(e.AttachedImageWidth),
+						AttachableItemID: e.AttachableItemID.Bytes,
+					},
+				}
+			}
+			var file entity.NullableEntity[entity.File]
+			if e.AttachedFileID.Valid {
+				file = entity.NullableEntity[entity.File]{
+					Valid: true,
+					Entity: entity.File{
+						FileID:           e.AttachedFileID.Bytes,
+						AttachableItemID: e.AttachableItemID.Bytes,
+					},
+				}
+			}
 			fq[i] = entity.AttachedItemOnChatRoomForQuery{
 				Pkey: entity.Int(e.TAttachedMessagesPkey),
 				AttachedItemOnChatRoom: entity.AttachedItemOnChatRoom{
 					AttachedMessageID: e.AttachedMessageID,
-					AttachableItem: entity.AttachableItem{
+					AttachableItem: entity.AttachableItemWithContent{
 						AttachableItemID: e.AttachableItemID.Bytes,
 						OwnerID:          entity.UUID(e.AttachedItemOwnerID),
 						FromOuter:        e.AttachedItemFromOuter.Bool,
@@ -352,6 +374,8 @@ func getAttachedItemsOnChatRoom(
 						Alias:            e.AttachedItemAlias.String,
 						Size:             entity.Float(e.AttachedItemSize),
 						MimeTypeID:       e.AttachedItemMimeTypeID.Bytes,
+						Image:            image,
+						File:             file,
 					},
 					Message: entity.Message{
 						MessageID:        e.MessageID,
@@ -385,11 +409,33 @@ func getAttachedItemsOnChatRoom(
 		}
 		fq := make([]entity.AttachedItemOnChatRoomForQuery, len(r))
 		for i, e := range r {
+			var image entity.NullableEntity[entity.Image]
+			if e.AttachedImageID.Valid {
+				image = entity.NullableEntity[entity.Image]{
+					Valid: true,
+					Entity: entity.Image{
+						ImageID:          e.AttachedImageID.Bytes,
+						Height:           entity.Float(e.AttachedImageHeight),
+						Width:            entity.Float(e.AttachedImageWidth),
+						AttachableItemID: e.AttachableItemID.Bytes,
+					},
+				}
+			}
+			var file entity.NullableEntity[entity.File]
+			if e.AttachedFileID.Valid {
+				file = entity.NullableEntity[entity.File]{
+					Valid: true,
+					Entity: entity.File{
+						FileID:           e.AttachedFileID.Bytes,
+						AttachableItemID: e.AttachableItemID.Bytes,
+					},
+				}
+			}
 			fq[i] = entity.AttachedItemOnChatRoomForQuery{
 				Pkey: entity.Int(e.TAttachedMessagesPkey),
 				AttachedItemOnChatRoom: entity.AttachedItemOnChatRoom{
 					AttachedMessageID: e.AttachedMessageID,
-					AttachableItem: entity.AttachableItem{
+					AttachableItem: entity.AttachableItemWithContent{
 						AttachableItemID: e.AttachableItemID.Bytes,
 						OwnerID:          entity.UUID(e.AttachedItemOwnerID),
 						FromOuter:        e.AttachedItemFromOuter.Bool,
@@ -397,6 +443,8 @@ func getAttachedItemsOnChatRoom(
 						Alias:            e.AttachedItemAlias.String,
 						Size:             entity.Float(e.AttachedItemSize),
 						MimeTypeID:       e.AttachedItemMimeTypeID.Bytes,
+						Image:            image,
+						File:             file,
 					},
 					Message: entity.Message{
 						MessageID:        e.MessageID,
@@ -427,11 +475,33 @@ func getAttachedItemsOnChatRoom(
 		}
 		fq := make([]entity.AttachedItemOnChatRoomForQuery, len(r))
 		for i, e := range r {
+			var image entity.NullableEntity[entity.Image]
+			if e.AttachedImageID.Valid {
+				image = entity.NullableEntity[entity.Image]{
+					Valid: true,
+					Entity: entity.Image{
+						ImageID:          e.AttachedImageID.Bytes,
+						Height:           entity.Float(e.AttachedImageHeight),
+						Width:            entity.Float(e.AttachedImageWidth),
+						AttachableItemID: e.AttachableItemID.Bytes,
+					},
+				}
+			}
+			var file entity.NullableEntity[entity.File]
+			if e.AttachedFileID.Valid {
+				file = entity.NullableEntity[entity.File]{
+					Valid: true,
+					Entity: entity.File{
+						FileID:           e.AttachedFileID.Bytes,
+						AttachableItemID: e.AttachableItemID.Bytes,
+					},
+				}
+			}
 			fq[i] = entity.AttachedItemOnChatRoomForQuery{
 				Pkey: entity.Int(e.TAttachedMessagesPkey),
 				AttachedItemOnChatRoom: entity.AttachedItemOnChatRoom{
 					AttachedMessageID: e.AttachedMessageID,
-					AttachableItem: entity.AttachableItem{
+					AttachableItem: entity.AttachableItemWithContent{
 						AttachableItemID: e.AttachableItemID.Bytes,
 						OwnerID:          entity.UUID(e.AttachedItemOwnerID),
 						FromOuter:        e.AttachedItemFromOuter.Bool,
@@ -439,6 +509,8 @@ func getAttachedItemsOnChatRoom(
 						Alias:            e.AttachedItemAlias.String,
 						Size:             entity.Float(e.AttachedItemSize),
 						MimeTypeID:       e.AttachedItemMimeTypeID.Bytes,
+						Image:            image,
+						File:             file,
 					},
 					Message: entity.Message{
 						MessageID:        e.MessageID,
@@ -544,12 +616,34 @@ func getAttachedItemsOnMessage(
 		}
 		fq := make([]entity.AttachedItemOnMessageForQuery, len(r))
 		for i, e := range r {
+			var image entity.NullableEntity[entity.Image]
+			if e.AttachedImageID.Valid {
+				image = entity.NullableEntity[entity.Image]{
+					Valid: true,
+					Entity: entity.Image{
+						ImageID:          e.AttachedImageID.Bytes,
+						Height:           entity.Float(e.AttachedImageHeight),
+						Width:            entity.Float(e.AttachedImageWidth),
+						AttachableItemID: e.AttachableItemID.Bytes,
+					},
+				}
+			}
+			var file entity.NullableEntity[entity.File]
+			if e.AttachedFileID.Valid {
+				file = entity.NullableEntity[entity.File]{
+					Valid: true,
+					Entity: entity.File{
+						FileID:           e.AttachedFileID.Bytes,
+						AttachableItemID: e.AttachableItemID.Bytes,
+					},
+				}
+			}
 			fq[i] = entity.AttachedItemOnMessageForQuery{
 				Pkey: entity.Int(e.TAttachedMessagesPkey),
 				AttachedItemOnMessage: entity.AttachedItemOnMessage{
 					AttachedMessageID: e.AttachedMessageID,
 					MessageID:         e.MessageID,
-					AttachableItem: entity.AttachableItem{
+					AttachableItem: entity.AttachableItemWithContent{
 						AttachableItemID: e.AttachableItemID.Bytes,
 						OwnerID:          entity.UUID(e.AttachedItemOwnerID),
 						FromOuter:        e.AttachedItemFromOuter.Bool,
@@ -557,6 +651,8 @@ func getAttachedItemsOnMessage(
 						Alias:            e.AttachedItemAlias.String,
 						Size:             entity.Float(e.AttachedItemSize),
 						MimeTypeID:       e.AttachedItemMimeTypeID.Bytes,
+						Image:            image,
+						File:             file,
 					},
 				},
 			}
@@ -582,12 +678,34 @@ func getAttachedItemsOnMessage(
 		}
 		fq := make([]entity.AttachedItemOnMessageForQuery, len(r))
 		for i, e := range r {
+			var image entity.NullableEntity[entity.Image]
+			if e.AttachedImageID.Valid {
+				image = entity.NullableEntity[entity.Image]{
+					Valid: true,
+					Entity: entity.Image{
+						ImageID:          e.AttachedImageID.Bytes,
+						Height:           entity.Float(e.AttachedImageHeight),
+						Width:            entity.Float(e.AttachedImageWidth),
+						AttachableItemID: e.AttachableItemID.Bytes,
+					},
+				}
+			}
+			var file entity.NullableEntity[entity.File]
+			if e.AttachedFileID.Valid {
+				file = entity.NullableEntity[entity.File]{
+					Valid: true,
+					Entity: entity.File{
+						FileID:           e.AttachedFileID.Bytes,
+						AttachableItemID: e.AttachableItemID.Bytes,
+					},
+				}
+			}
 			fq[i] = entity.AttachedItemOnMessageForQuery{
 				Pkey: entity.Int(e.TAttachedMessagesPkey),
 				AttachedItemOnMessage: entity.AttachedItemOnMessage{
 					AttachedMessageID: e.AttachedMessageID,
 					MessageID:         e.MessageID,
-					AttachableItem: entity.AttachableItem{
+					AttachableItem: entity.AttachableItemWithContent{
 						AttachableItemID: e.AttachableItemID.Bytes,
 						OwnerID:          entity.UUID(e.AttachedItemOwnerID),
 						FromOuter:        e.AttachedItemFromOuter.Bool,
@@ -595,6 +713,8 @@ func getAttachedItemsOnMessage(
 						Alias:            e.AttachedItemAlias.String,
 						Size:             entity.Float(e.AttachedItemSize),
 						MimeTypeID:       e.AttachedItemMimeTypeID.Bytes,
+						Image:            image,
+						File:             file,
 					},
 				},
 			}
@@ -617,12 +737,34 @@ func getAttachedItemsOnMessage(
 		}
 		fq := make([]entity.AttachedItemOnMessageForQuery, len(r))
 		for i, e := range r {
+			var image entity.NullableEntity[entity.Image]
+			if e.AttachedImageID.Valid {
+				image = entity.NullableEntity[entity.Image]{
+					Valid: true,
+					Entity: entity.Image{
+						ImageID:          e.AttachedImageID.Bytes,
+						Height:           entity.Float(e.AttachedImageHeight),
+						Width:            entity.Float(e.AttachedImageWidth),
+						AttachableItemID: e.AttachableItemID.Bytes,
+					},
+				}
+			}
+			var file entity.NullableEntity[entity.File]
+			if e.AttachedFileID.Valid {
+				file = entity.NullableEntity[entity.File]{
+					Valid: true,
+					Entity: entity.File{
+						FileID:           e.AttachedFileID.Bytes,
+						AttachableItemID: e.AttachableItemID.Bytes,
+					},
+				}
+			}
 			fq[i] = entity.AttachedItemOnMessageForQuery{
 				Pkey: entity.Int(e.TAttachedMessagesPkey),
 				AttachedItemOnMessage: entity.AttachedItemOnMessage{
 					AttachedMessageID: e.AttachedMessageID,
 					MessageID:         e.MessageID,
-					AttachableItem: entity.AttachableItem{
+					AttachableItem: entity.AttachableItemWithContent{
 						AttachableItemID: e.AttachableItemID.Bytes,
 						OwnerID:          entity.UUID(e.AttachedItemOwnerID),
 						FromOuter:        e.AttachedItemFromOuter.Bool,
@@ -630,6 +772,8 @@ func getAttachedItemsOnMessage(
 						Alias:            e.AttachedItemAlias.String,
 						Size:             entity.Float(e.AttachedItemSize),
 						MimeTypeID:       e.AttachedItemMimeTypeID.Bytes,
+						Image:            image,
+						File:             file,
 					},
 				},
 			}
@@ -715,10 +859,32 @@ func getPluralAttachedItemsOnMessage(
 	}
 	entities := make([]entity.AttachedItemOnMessage, len(e))
 	for i, v := range e {
+		var image entity.NullableEntity[entity.Image]
+		if v.AttachedImageID.Valid {
+			image = entity.NullableEntity[entity.Image]{
+				Valid: true,
+				Entity: entity.Image{
+					ImageID:          v.AttachedImageID.Bytes,
+					Height:           entity.Float(v.AttachedImageHeight),
+					Width:            entity.Float(v.AttachedImageWidth),
+					AttachableItemID: v.AttachableItemID.Bytes,
+				},
+			}
+		}
+		var file entity.NullableEntity[entity.File]
+		if v.AttachedFileID.Valid {
+			file = entity.NullableEntity[entity.File]{
+				Valid: true,
+				Entity: entity.File{
+					FileID:           v.AttachedFileID.Bytes,
+					AttachableItemID: v.AttachableItemID.Bytes,
+				},
+			}
+		}
 		entities[i] = entity.AttachedItemOnMessage{
 			AttachedMessageID: v.AttachedMessageID,
 			MessageID:         v.MessageID,
-			AttachableItem: entity.AttachableItem{
+			AttachableItem: entity.AttachableItemWithContent{
 				AttachableItemID: v.AttachableItemID.Bytes,
 				OwnerID:          entity.UUID(v.AttachedItemOwnerID),
 				FromOuter:        v.AttachedItemFromOuter.Bool,
@@ -726,6 +892,8 @@ func getPluralAttachedItemsOnMessage(
 				Alias:            v.AttachedItemAlias.String,
 				Size:             entity.Float(v.AttachedItemSize),
 				MimeTypeID:       v.AttachedItemMimeTypeID.Bytes,
+				Image:            image,
+				File:             file,
 			},
 		}
 	}
@@ -791,6 +959,28 @@ func getAttachedItemsOnMessageWithMimeType(
 				Valid: true,
 			}
 		}
+		var image entity.NullableEntity[entity.Image]
+		if e.AttachedImageID.Valid {
+			image = entity.NullableEntity[entity.Image]{
+				Valid: true,
+				Entity: entity.Image{
+					ImageID:          e.AttachedImageID.Bytes,
+					Height:           entity.Float(e.AttachedImageHeight),
+					Width:            entity.Float(e.AttachedImageWidth),
+					AttachableItemID: e.AttachableItemID.Bytes,
+				},
+			}
+		}
+		var file entity.NullableEntity[entity.File]
+		if e.AttachedFileID.Valid {
+			file = entity.NullableEntity[entity.File]{
+				Valid: true,
+				Entity: entity.File{
+					FileID:           e.AttachedFileID.Bytes,
+					AttachableItemID: e.AttachableItemID.Bytes,
+				},
+			}
+		}
 		return entity.AttachedItemOnMessageWithMimeTypeForQuery{
 			Pkey: entity.Int(e.TAttachedMessagesPkey),
 			AttachedItemOnMessageWithMimeType: entity.AttachedItemOnMessageWithMimeType{
@@ -804,6 +994,8 @@ func getAttachedItemsOnMessageWithMimeType(
 					Alias:            e.AttachedItemAlias.String,
 					Size:             entity.Float(e.AttachedItemSize),
 					MimeType:         mimeType,
+					Image:            image,
+					File:             file,
 				},
 			},
 		}
@@ -965,6 +1157,28 @@ func getPluralAttachedItemsOnMessageWithMimeType(
 				Valid: true,
 			}
 		}
+		var image entity.NullableEntity[entity.Image]
+		if v.AttachedImageID.Valid {
+			image = entity.NullableEntity[entity.Image]{
+				Valid: true,
+				Entity: entity.Image{
+					ImageID:          v.AttachedImageID.Bytes,
+					Height:           entity.Float(v.AttachedImageHeight),
+					Width:            entity.Float(v.AttachedImageWidth),
+					AttachableItemID: v.AttachableItemID.Bytes,
+				},
+			}
+		}
+		var file entity.NullableEntity[entity.File]
+		if v.AttachedFileID.Valid {
+			file = entity.NullableEntity[entity.File]{
+				Valid: true,
+				Entity: entity.File{
+					FileID:           v.AttachedFileID.Bytes,
+					AttachableItemID: v.AttachableItemID.Bytes,
+				},
+			}
+		}
 		entities[i] = entity.AttachedItemOnMessageWithMimeType{
 			AttachedMessageID: v.AttachedMessageID,
 			MessageID:         v.MessageID,
@@ -976,6 +1190,8 @@ func getPluralAttachedItemsOnMessageWithMimeType(
 				Alias:            v.AttachedItemAlias.String,
 				Size:             entity.Float(v.AttachedItemSize),
 				MimeType:         mimeType,
+				Image:            image,
+				File:             file,
 			},
 		}
 	}

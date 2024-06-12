@@ -476,4 +476,11 @@ var (
 		Message:    "cannot add self to chat room error",
 		StatusCode: http.StatusForbidden,
 	}
+
+	// CannotDownloadOuterAttachableItem 外部添付アイテムをダウンロードできない
+	CannotDownloadOuterAttachableItem = APIResponseType{
+		Code:       "263",
+		Message:    "cannot download outer attachable item error",
+		StatusCode: http.StatusForbidden,
+	}
 )

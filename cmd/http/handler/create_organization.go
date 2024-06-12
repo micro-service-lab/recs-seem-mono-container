@@ -124,6 +124,20 @@ func (h *CreateOrganization) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				err = ve
 			}
 		}
+		var ce errhandle.CommonError
+		if errors.As(err, &ce) {
+			if ce.Code.Code == response.CannotAddSelfToOrganization.Code {
+				msgStr := h.Translator.TranslateWithOpts(lang.GetLocaleForTranslation(ctx), "CannotAddSelfToMembers", i18n.Options{
+					DefaultMessage: &i18n.Message{
+						ID:    "CannotAddSelfToMembers",
+						Other: "Cannot add self to members",
+					},
+				})
+				ve := errhandle.NewValidationError(nil)
+				ve.Add("member_ids", msgStr)
+				err = ve
+			}
+		}
 	} else {
 		err = response.JSONResponseWriter(ctx, w, response.Success, organization, nil)
 	}

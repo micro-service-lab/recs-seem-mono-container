@@ -514,6 +514,17 @@ func (m *ManageChatRoom) CreateChatRoom(
 		}
 		coverImage = entity.NullableEntity[entity.ImageWithAttachableItem]{Valid: true, Entity: image}
 	}
+	var inMembers bool
+	for _, v := range members {
+		if v == ownerID {
+			inMembers = true
+			break
+		}
+	}
+	if inMembers {
+		return entity.ChatRoom{},
+			errhandle.NewCommonError(response.CannotAddSelfToChatRoom, nil)
+	}
 
 	owner, err := m.DB.FindMemberByIDWithSd(ctx, sd, ownerID)
 	if err != nil {

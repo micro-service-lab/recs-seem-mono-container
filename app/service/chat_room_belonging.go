@@ -157,6 +157,7 @@ func belongMembersOnChatRoom(
 				GroupID:        owner.GroupID,
 			},
 		},
+		AddMembers: addMembers,
 	}
 
 	return e, action, addCra, nil

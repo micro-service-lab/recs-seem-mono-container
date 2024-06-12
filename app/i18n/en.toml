@@ -101,3 +101,5 @@ other = "The specified {{.ID}} contains {{{.ValueType}} that is not associated w
 other = "{{.ID}} is for professors only"
 [MustBeEntityStatusIfEntityStatus]
 other = "If the {{.Assumption}} is a {{.AssumptionStatus}}, the {{.Target}} must be a {{.TargetStatus}}"
+[CannotAddSelfToMembers]
+other = "You cannot include yourself as a member"

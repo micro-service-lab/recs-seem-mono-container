@@ -326,6 +326,17 @@ func (m *ManageOrganization) CreateOrganization(
 		}
 	}()
 	now := m.Clocker.Now()
+	var inMembers bool
+	for _, v := range members {
+		if v == ownerID {
+			inMembers = true
+			break
+		}
+	}
+	if inMembers {
+		return entity.Organization{},
+			errhandle.NewCommonError(response.CannotAddSelfToOrganization, nil)
+	}
 
 	owner, err := m.DB.FindMemberByIDWithSd(ctx, sd, ownerID)
 	if err != nil {

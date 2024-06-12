@@ -462,4 +462,18 @@ var (
 		Message:    "cannot delete self from chat room error",
 		StatusCode: http.StatusForbidden,
 	}
+
+	// CannotAddSelfToOrganization 組織に自分自身を追加できない
+	CannotAddSelfToOrganization = APIResponseType{
+		Code:       "261",
+		Message:    "cannot add self to organization error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotAddSelfToChatRoom チャットルームに自分自身を追加できない
+	CannotAddSelfToChatRoom = APIResponseType{
+		Code:       "262",
+		Message:    "cannot add self to chat room error",
+		StatusCode: http.StatusForbidden,
+	}
 )

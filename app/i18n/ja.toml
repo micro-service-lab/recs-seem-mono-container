@@ -101,3 +101,5 @@ other = "指定された{{.ID}}には{{.Associated}}に関連付けられてい�
 other = "教授専用の{{.ID}}です"
 [MustBeEntityStatusIfEntityStatus]
 other = "{{.Assumption}}が{{.AssumptionStatus}}の場合、{{.Target}}は{{.TargetStatus}}である必要があります"
+[CannotAddSelfToMembers]
+other = "メンバーに自分自身を含めることはできません"

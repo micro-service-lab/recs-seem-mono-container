@@ -23,7 +23,7 @@ type CreateFile struct {
 func (h *CreateFile) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	const (
 		propName  = "files"
-		maxMemory = 32 << 20
+		maxMemory = 32 << 25
 	)
 	ctx := r.Context()
 	authUser := auth.FromContext(ctx)

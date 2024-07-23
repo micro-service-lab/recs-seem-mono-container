@@ -96,8 +96,7 @@ func (s *API) Handler() http.Handler {
 
 	r.Post("/ping", handler.PingHandler(s.clk))
 
-	r.Mount("/auth", AuthHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm, s.cfg))
-	r.Mount("/confidential", ConfidentialHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
+	// マスタデータ
 	r.Mount("/attend_statuses", AttendStatusHandler(s.svc))
 	r.Mount("/attendance_types", AttendanceTypeHandler(s.svc))
 	r.Mount("/event_types", EventTypeHandler(s.svc))
@@ -106,19 +105,23 @@ func (s *API) Handler() http.Handler {
 	r.Mount("/record_types", RecordTypeHandler(s.svc))
 	r.Mount("/mime_types", MimeTypeHandler(s.svc))
 	r.Mount("/permissions", PermissionHandler(s.svc))
+	r.Mount("/chat_room_action_types", ChatRoomActionTypeHandler(s.svc))
+	r.Mount("/groups", GroupHandler(s.svc))
+	r.Mount("/grades", GradeHandler(s.svc))
+
+	// トランザクションデータ
+	r.Mount("/auth", AuthHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm, s.cfg))
+	r.Mount("/confidential", ConfidentialHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
 	r.Mount("/policies", PolicyHandler(s.svc, s.validator, s.translator))
 	r.Mount("/roles", RoleHandler(s.svc, s.validator, s.translator))
 	r.Mount("/organizations", OrganizationHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
 	r.Mount("/students", StudentHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
 	r.Mount("/professors", ProfessorHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
 	r.Mount("/members", MemberHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
-	r.Mount("/chat_room_action_types", ChatRoomActionTypeHandler(s.svc))
 	r.Mount("/chat_rooms", ChatRoomHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
 	r.Mount("/images", ImageHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
 	r.Mount("/files", FileHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
 	r.Mount("/read_receipts", ReadReceiptHandler(s.svc, s.clk, s.auth, s.ssm))
-	r.Mount("/groups", GroupHandler(s.svc))
-	r.Mount("/grades", GradeHandler(s.svc))
 	r.Mount("/attachable_items", AttachableItemHandler(s.svc, s.clk, s.auth, s.ssm))
 
 	r.NotFound(s.notFound)

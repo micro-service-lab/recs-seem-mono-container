@@ -1,11 +1,11 @@
 -- name: CreateAttendances :copyfrom
-INSERT INTO t_attendances (attendance_type_id, member_id, description, date, mail_send_flag, send_organization_id, posted_at, last_edited_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8);
+INSERT INTO t_attendances (attendance_type_id, member_id, description, start_date, end_date, mail_send_flag, send_organization_id, posted_at, last_edited_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
 
 -- name: CreateAttendance :one
-INSERT INTO t_attendances (attendance_type_id, member_id, description, date, mail_send_flag, send_organization_id, posted_at, last_edited_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;
+INSERT INTO t_attendances (attendance_type_id, member_id, description, start_date, end_date, mail_send_flag, send_organization_id, posted_at, last_edited_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *;
 
 -- name: UpdateAttendance :one
-UPDATE t_attendances SET attendance_type_id = $2, member_id = $3, description = $4, date = $5, mail_send_flag = $6, send_organization_id = $7, last_edited_at = $8 WHERE attendance_id = $1 RETURNING *;
+UPDATE t_attendances SET attendance_type_id = $2, member_id = $3, description = $4, start_date = $5, end_date = $6, mail_send_flag = $7, send_organization_id = $8, last_edited_at = $9 WHERE attendance_id = $1 RETURNING *;
 
 -- name: DeleteAttendance :execrows
 DELETE FROM t_attendances WHERE attendance_id = $1;
@@ -67,16 +67,20 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC;
 
 -- name: GetAttendanceUseNumberedPaginate :many
@@ -86,16 +90,20 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -106,9 +114,13 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
@@ -117,22 +129,22 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN date > @date_cursor OR (date = @date_cursor AND t_attendances_pkey > @cursor::int)
-				WHEN 'r_date' THEN date < @date_cursor OR (date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'start_date' THEN start_date > @date_cursor OR (start_date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_start_date' THEN start_date < @date_cursor OR (start_date = @date_cursor AND t_attendances_pkey > @cursor::int)
 				ELSE t_attendances_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN date < @date_cursor OR (date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				WHEN 'r_date' THEN date > @date_cursor OR (date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'start_date' THEN start_date < @date_cursor OR (start_date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_start_date' THEN start_date > @date_cursor OR (start_date = @date_cursor AND t_attendances_pkey < @cursor::int)
 				ELSE t_attendances_pkey < @cursor::int
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'next' THEN date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'prev' THEN date END DESC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'next' THEN date END DESC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'prev' THEN date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' AND @cursor_direction::text = 'next' THEN start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' AND @cursor_direction::text = 'prev' THEN start_date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' AND @cursor_direction::text = 'next' THEN start_date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' AND @cursor_direction::text = 'prev' THEN start_date END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_attendances_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1;
@@ -141,16 +153,16 @@ LIMIT $1;
 SELECT * FROM t_attendances
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC;
 
 -- name: GetPluralAttendancesUseNumberedPaginate :many
 SELECT * FROM t_attendances
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -165,16 +177,20 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC;
 
 -- name: GetAttendanceWithMemberUseNumberedPaginate :many
@@ -188,16 +204,20 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -212,9 +232,13 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
@@ -223,22 +247,22 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'start_date' THEN t_attendances.start_date > @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_start_date' THEN t_attendances.start_date < @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey > @cursor::int)
 				ELSE t_attendances_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'start_date' THEN t_attendances.start_date < @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_start_date' THEN t_attendances.start_date > @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey < @cursor::int)
 				ELSE t_attendances_pkey < @cursor::int
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'next' THEN date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'prev' THEN date END DESC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'next' THEN date END DESC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'prev' THEN date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' AND @cursor_direction::text = 'next' THEN start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' AND @cursor_direction::text = 'prev' THEN start_date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' AND @cursor_direction::text = 'next' THEN start_date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' AND @cursor_direction::text = 'prev' THEN start_date END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_attendances_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1;
@@ -251,8 +275,8 @@ LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC;
 
 -- name: GetPluralAttendanceWithMemberUseNumberedPaginate :many
@@ -263,8 +287,8 @@ LEFT JOIN m_grades ON m_members.grade_id = m_grades.grade_id
 LEFT JOIN m_groups ON m_members.group_id = m_groups.group_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -276,16 +300,20 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC;
 
 -- name: GetAttendanceWithAttendanceTypeUseNumberedPaginate :many
@@ -296,16 +324,20 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -317,9 +349,13 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
@@ -328,22 +364,22 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'start_date' THEN t_attendances.start_date > @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_start_date' THEN t_attendances.start_date < @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey > @cursor::int)
 				ELSE t_attendances_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'start_date' THEN t_attendances.start_date < @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_start_date' THEN t_attendances.start_date > @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey < @cursor::int)
 				ELSE t_attendances_pkey < @cursor::int
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'next' THEN date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'prev' THEN date END DESC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'next' THEN date END DESC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'prev' THEN date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' AND @cursor_direction::text = 'next' THEN start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' AND @cursor_direction::text = 'prev' THEN start_date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' AND @cursor_direction::text = 'next' THEN start_date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' AND @cursor_direction::text = 'prev' THEN start_date END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_attendances_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1;
@@ -353,8 +389,8 @@ SELECT t_attendances.*, m_attendance_types.attendance_type_id, m_attendance_type
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC;
 
 -- name: GetPluralAttendanceWithAttendanceTypeUseNumberedPaginate :many
@@ -362,8 +398,8 @@ SELECT t_attendances.*, m_attendance_types.attendance_type_id, m_attendance_type
 LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_types.attendance_type_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -375,16 +411,20 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC;
 
 -- name: GetAttendanceWithSendOrganizationUseNumberedPaginate :many
@@ -395,16 +435,20 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -416,9 +460,13 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
@@ -427,22 +475,22 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'start_date' THEN t_attendances.start_date > @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_start_date' THEN t_attendances.start_date < @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey > @cursor::int)
 				ELSE t_attendances_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'start_date' THEN t_attendances.start_date < @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_start_date' THEN t_attendances.start_date > @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey < @cursor::int)
 				ELSE t_attendances_pkey > @cursor
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'next' THEN date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'prev' THEN date END DESC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'next' THEN date END DESC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'prev' THEN date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' AND @cursor_direction::text = 'next' THEN start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' AND @cursor_direction::text = 'prev' THEN start_date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' AND @cursor_direction::text = 'next' THEN start_date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' AND @cursor_direction::text = 'prev' THEN start_date END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_attendances_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1;
@@ -452,8 +500,8 @@ SELECT t_attendances.*, sqlc.embed(m_organizations) FROM t_attendances
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC;
 
 -- name: GetPluralAttendanceWithSendOrganizationUseNumberedPaginate :many
@@ -461,8 +509,8 @@ SELECT t_attendances.*, sqlc.embed(m_organizations) FROM t_attendances
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -476,16 +524,20 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC;
 
 -- name: GetAttendanceWithDetailsUseNumberedPaginate :many
@@ -498,16 +550,20 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -521,9 +577,13 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
@@ -532,22 +592,22 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'start_date' THEN t_attendances.start_date > @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_start_date' THEN t_attendances.start_date < @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey > @cursor::int)
 				ELSE t_attendances_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'start_date' THEN t_attendances.start_date < @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_start_date' THEN t_attendances.start_date > @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey < @cursor::int)
 				ELSE t_attendances_pkey < @cursor::int
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'next' THEN date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'prev' THEN date END DESC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'next' THEN date END DESC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'prev' THEN date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' AND @cursor_direction::text = 'next' THEN start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' AND @cursor_direction::text = 'prev' THEN start_date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' AND @cursor_direction::text = 'next' THEN start_date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' AND @cursor_direction::text = 'prev' THEN start_date END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_attendances_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1;
@@ -559,8 +619,8 @@ LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.atten
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC;
 
 -- name: GetPluralAttendanceWithDetailsUseNumberedPaginate :many
@@ -570,8 +630,8 @@ LEFT JOIN t_late_arrivals ON t_attendances.attendance_id = t_late_arrivals.atten
 LEFT JOIN t_absences ON t_attendances.attendance_id = t_absences.attendance_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -591,16 +651,20 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC;
 
 -- name: GetAttendanceWithAllUseNumberedPaginate :many
@@ -619,16 +683,20 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
 	CASE WHEN @where_in_send_organization::boolean = true THEN t_attendances.send_organization_id = ANY(@in_send_organization) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -648,9 +716,13 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND
@@ -659,22 +731,22 @@ AND
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'start_date' THEN t_attendances.start_date > @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey > @cursor::int)
+				WHEN 'r_start_date' THEN t_attendances.start_date < @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey > @cursor::int)
 				ELSE t_attendances_pkey > @cursor::int
 			END
 		WHEN 'prev' THEN
 			CASE @order_method::text
-				WHEN 'date' THEN t_attendances.date < @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
-				WHEN 'r_date' THEN t_attendances.date > @date_cursor OR (t_attendances.date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'start_date' THEN t_attendances.start_date < @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey < @cursor::int)
+				WHEN 'r_start_date' THEN t_attendances.start_date > @date_cursor OR (t_attendances.start_date = @date_cursor AND t_attendances_pkey < @cursor::int)
 				ELSE t_attendances_pkey < @cursor::int
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'next' THEN date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'date' AND @cursor_direction::text = 'prev' THEN date END DESC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'next' THEN date END DESC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' AND @cursor_direction::text = 'prev' THEN date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' AND @cursor_direction::text = 'next' THEN start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' AND @cursor_direction::text = 'prev' THEN start_date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' AND @cursor_direction::text = 'next' THEN start_date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' AND @cursor_direction::text = 'prev' THEN start_date END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_attendances_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_attendances_pkey END DESC
 LIMIT $1;
@@ -692,8 +764,8 @@ LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC;
 
 -- name: GetPluralAttendanceWithAllUseNumberedPaginate :many
@@ -709,8 +781,8 @@ LEFT JOIN m_attendance_types ON t_attendances.attendance_type_id = m_attendance_
 LEFT JOIN m_organizations ON t_attendances.send_organization_id = m_organizations.organization_id
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY
-	CASE WHEN @order_method::text = 'date' THEN t_attendances.date END ASC NULLS LAST,
-	CASE WHEN @order_method::text = 'r_date' THEN t_attendances.date END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'start_date' THEN t_attendances.start_date END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_start_date' THEN t_attendances.start_date END DESC NULLS LAST,
 	t_attendances_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -721,9 +793,13 @@ WHERE
 AND
 	CASE WHEN @where_in_member::boolean = true THEN t_attendances.member_id = ANY(@in_member) ELSE TRUE END
 AND
-	CASE WHEN @where_earlier_date::boolean = true THEN t_attendances.date >= @earlier_date ELSE TRUE END
+	CASE WHEN @where_earlier_start_date::boolean = true THEN t_attendances.start_date >= @earlier_start_date ELSE TRUE END
 AND
-	CASE WHEN @where_later_date::boolean = true THEN t_attendances.date <= @later_date ELSE TRUE END
+	CASE WHEN @where_later_start_date::boolean = true THEN t_attendances.start_date <= @later_start_date ELSE TRUE END
+AND
+	CASE WHEN @where_earlier_end_date::boolean = true THEN t_attendances.end_date >= @earlier_end_date ELSE TRUE END
+AND
+	CASE WHEN @where_later_end_date::boolean = true THEN t_attendances.end_date <= @later_end_date ELSE TRUE END
 AND
 	CASE WHEN @where_mail_send_flag::boolean = true THEN t_attendances.mail_send_flag = @mail_send_flag ELSE TRUE END
 AND

@@ -203,7 +203,8 @@ func (r iteratorForCreateAttendances) Values() ([]interface{}, error) {
 		r.rows[0].AttendanceTypeID,
 		r.rows[0].MemberID,
 		r.rows[0].Description,
-		r.rows[0].Date,
+		r.rows[0].StartDate,
+		r.rows[0].EndDate,
 		r.rows[0].MailSendFlag,
 		r.rows[0].SendOrganizationID,
 		r.rows[0].PostedAt,
@@ -216,7 +217,7 @@ func (r iteratorForCreateAttendances) Err() error {
 }
 
 func (q *Queries) CreateAttendances(ctx context.Context, arg []CreateAttendancesParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"t_attendances"}, []string{"attendance_type_id", "member_id", "description", "date", "mail_send_flag", "send_organization_id", "posted_at", "last_edited_at"}, &iteratorForCreateAttendances{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"t_attendances"}, []string{"attendance_type_id", "member_id", "description", "start_date", "end_date", "mail_send_flag", "send_organization_id", "posted_at", "last_edited_at"}, &iteratorForCreateAttendances{rows: arg})
 }
 
 // iteratorForCreateChatRoomActionTypes implements pgx.CopyFromSource.

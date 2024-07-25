@@ -87,6 +87,10 @@ func ChatRoomHandler(
 	getActions := handler.GetChatRoomActionsOnChatRoom{
 		Service: svc,
 	}
+
+	getUnreadCount := handler.GetUnreadReceiptsCount{
+		Service: svc,
+	}
 	r := chi.NewRouter()
 	r.Group(func(r chi.Router) {
 		r.Use(AuthMiddleware(clk.Now, auth, svc, ssm))
@@ -94,6 +98,10 @@ func ChatRoomHandler(
 		r.Post("/", createHandler.ServeHTTP)
 		r.Delete(uuidPath("/{chat_room_id:uuid}"), deleteHandler.ServeHTTP)
 		r.Put(uuidPath("/{chat_room_id:uuid}"), updateHandler.ServeHTTP)
+
+		r.Route(uuidPath("/{chat_room_id:uuid}/chat_room_actions"), func(r chi.Router) {
+			r.Get("/", getActions.ServeHTTP)
+		})
 
 		r.Route(uuidPath("/{chat_room_id:uuid}/members"), func(r chi.Router) {
 			r.Post("/", addMembers.ServeHTTP)
@@ -106,24 +114,17 @@ func ChatRoomHandler(
 			r.Post("/", createMessage.ServeHTTP)
 			r.Delete(uuidPath("/{message_id:uuid}"), deleteMessage.ServeHTTP)
 			r.Put(uuidPath("/{message_id:uuid}"), editMessage.ServeHTTP)
+			r.Post(uuidPath("/{message_id:uuid}/read"), readMessage.ServeHTTP)
 
-			r.Route("/read", func(r chi.Router) {
-				r.Post("/", readOnChatRoom.ServeHTTP)
-			})
-
-			r.Route(uuidPath("/{message_id:uuid}/read"), func(r chi.Router) {
-				r.Post("/", readMessage.ServeHTTP)
-			})
+			r.Post("/read", readOnChatRoom.ServeHTTP)
 
 			r.Route(uuidPath("/{message_id:uuid}/attachable_items"), func(r chi.Router) {
 				r.Post("/", attachItemOnMessage.ServeHTTP)
 				r.Delete("/", detachItemOnMessage.ServeHTTP)
 			})
 		})
-	})
 
-	r.Route(uuidPath("/{chat_room_id:uuid}/chat_room_actions"), func(r chi.Router) {
-		r.Get("/", getActions.ServeHTTP)
+		r.Get("/unread_count", getUnreadCount.ServeHTTP)
 	})
 
 	return r

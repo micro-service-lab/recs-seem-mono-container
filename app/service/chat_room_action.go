@@ -2,13 +2,16 @@ package service
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 )
 
 // ManageChatRoomAction チャットルームアクション管理サービス。
@@ -19,7 +22,8 @@ type ManageChatRoomAction struct {
 // GetChatRoomActionsOnChatRoom チャットルームに紐づくチャットルームアクションを取得する。
 func (m *ManageChatRoomAction) GetChatRoomActionsOnChatRoom(
 	ctx context.Context,
-	chatRoomID uuid.UUID,
+	chatRoomID,
+	ownerID uuid.UUID,
 	whereInTypes []uuid.UUID,
 	order parameter.ChatRoomActionOrderMethod,
 	pg parameter.Pagination,
@@ -28,6 +32,28 @@ func (m *ManageChatRoomAction) GetChatRoomActionsOnChatRoom(
 	offset parameter.Offset,
 	withCount parameter.WithCount,
 ) (e store.ListResult[entity.ChatRoomActionPractical], err error) {
+	_, err = m.DB.FindChatRoomByID(ctx, chatRoomID)
+	if err != nil {
+		var e errhandle.ModelNotFoundError
+		if errors.As(err, &e) {
+			return store.ListResult[entity.ChatRoomActionPractical]{}, errhandle.NewModelNotFoundError("chat room")
+		}
+		return store.ListResult[entity.ChatRoomActionPractical]{}, fmt.Errorf("failed to find chat room by id: %w", err)
+	}
+
+	_, err = m.DB.FindMemberByID(ctx, ownerID)
+	if err != nil {
+		var e errhandle.ModelNotFoundError
+		if errors.As(err, &e) {
+			return store.ListResult[entity.ChatRoomActionPractical]{}, errhandle.NewModelNotFoundError("owner")
+		}
+		return store.ListResult[entity.ChatRoomActionPractical]{}, fmt.Errorf("failed to find member by id: %w", err)
+	}
+	if b, err := m.DB.ExistsChatRoomBelonging(ctx, chatRoomID, ownerID); err != nil {
+		return store.ListResult[entity.ChatRoomActionPractical]{}, fmt.Errorf("failed to check chat room belonging: %w", err)
+	} else if !b {
+		return store.ListResult[entity.ChatRoomActionPractical]{}, errhandle.NewCommonError(response.NotChatRoomMember, nil)
+	}
 	wc := store.WithCountParam{
 		Valid: bool(withCount),
 	}

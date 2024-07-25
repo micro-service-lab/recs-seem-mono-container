@@ -1073,7 +1073,8 @@ type ProfessorManager interface {
 type ChatRoomActionManager interface {
 	GetChatRoomActionsOnChatRoom(
 		ctx context.Context,
-		chatRoomID uuid.UUID,
+		chatRoomID,
+		ownerID uuid.UUID,
 		whereInTypes []uuid.UUID,
 		order parameter.ChatRoomActionOrderMethod,
 		pg parameter.Pagination,

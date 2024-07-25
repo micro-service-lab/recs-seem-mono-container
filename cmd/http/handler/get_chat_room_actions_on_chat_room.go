@@ -13,6 +13,7 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/queryparam"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
+	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
 )
 
 // GetChatRoomActionsOnChatRoom is a handler for getting chat room action.
@@ -44,6 +45,7 @@ var getChatRoomActionsParseFuncMap = map[reflect.Type]queryparam.ParserFunc{
 func (h *GetChatRoomActionsOnChatRoom) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	id := uuid.MustParse(chi.URLParam(r, "chat_room_id"))
+	authUser := auth.FromContext(ctx)
 	parse := queryparam.NewParser(r.URL.Query())
 	var param GetChatRoomActionsOnChatRoomParam
 	err := parse.ParseWithOptions(&param, queryparam.Options{
@@ -66,6 +68,7 @@ func (h *GetChatRoomActionsOnChatRoom) ServeHTTP(w http.ResponseWriter, r *http.
 	actions, err := h.Service.GetChatRoomActionsOnChatRoom(
 		ctx,
 		id,
+		authUser.MemberID,
 		inTypes,
 		param.Order,
 		param.Pagination,

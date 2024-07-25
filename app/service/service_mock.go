@@ -405,7 +405,7 @@ var _ ManagerInterface = &ManagerInterfaceMock{}
 //			GetChatRoomActionTypesCountFunc: func(ctx context.Context, whereSearchName string) (int64, error) {
 //				panic("mock out the GetChatRoomActionTypesCount method")
 //			},
-//			GetChatRoomActionsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, whereInTypes []uuid.UUID, order parameter.ChatRoomActionOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.ChatRoomActionPractical], error) {
+//			GetChatRoomActionsOnChatRoomFunc: func(ctx context.Context, chatRoomID uuid.UUID, ownerID uuid.UUID, whereInTypes []uuid.UUID, order parameter.ChatRoomActionOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.ChatRoomActionPractical], error) {
 //				panic("mock out the GetChatRoomActionsOnChatRoom method")
 //			},
 //			GetChatRoomsOnMemberFunc: func(ctx context.Context, memberID uuid.UUID, whereSearchName string, order parameter.ChatRoomOnMemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PracticalChatRoomOnMember], error) {
@@ -1106,7 +1106,7 @@ type ManagerInterfaceMock struct {
 	GetChatRoomActionTypesCountFunc func(ctx context.Context, whereSearchName string) (int64, error)
 
 	// GetChatRoomActionsOnChatRoomFunc mocks the GetChatRoomActionsOnChatRoom method.
-	GetChatRoomActionsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, whereInTypes []uuid.UUID, order parameter.ChatRoomActionOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.ChatRoomActionPractical], error)
+	GetChatRoomActionsOnChatRoomFunc func(ctx context.Context, chatRoomID uuid.UUID, ownerID uuid.UUID, whereInTypes []uuid.UUID, order parameter.ChatRoomActionOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.ChatRoomActionPractical], error)
 
 	// GetChatRoomsOnMemberFunc mocks the GetChatRoomsOnMember method.
 	GetChatRoomsOnMemberFunc func(ctx context.Context, memberID uuid.UUID, whereSearchName string, order parameter.ChatRoomOnMemberOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.PracticalChatRoomOnMember], error)
@@ -2580,6 +2580,8 @@ type ManagerInterfaceMock struct {
 			Ctx context.Context
 			// ChatRoomID is the chatRoomID argument value.
 			ChatRoomID uuid.UUID
+			// OwnerID is the ownerID argument value.
+			OwnerID uuid.UUID
 			// WhereInTypes is the whereInTypes argument value.
 			WhereInTypes []uuid.UUID
 			// Order is the order argument value.
@@ -9397,13 +9399,14 @@ func (mock *ManagerInterfaceMock) GetChatRoomActionTypesCountCalls() []struct {
 }
 
 // GetChatRoomActionsOnChatRoom calls GetChatRoomActionsOnChatRoomFunc.
-func (mock *ManagerInterfaceMock) GetChatRoomActionsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, whereInTypes []uuid.UUID, order parameter.ChatRoomActionOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.ChatRoomActionPractical], error) {
+func (mock *ManagerInterfaceMock) GetChatRoomActionsOnChatRoom(ctx context.Context, chatRoomID uuid.UUID, ownerID uuid.UUID, whereInTypes []uuid.UUID, order parameter.ChatRoomActionOrderMethod, pg parameter.Pagination, limit parameter.Limit, cursor parameter.Cursor, offset parameter.Offset, withCount parameter.WithCount) (store.ListResult[entity.ChatRoomActionPractical], error) {
 	if mock.GetChatRoomActionsOnChatRoomFunc == nil {
 		panic("ManagerInterfaceMock.GetChatRoomActionsOnChatRoomFunc: method is nil but ManagerInterface.GetChatRoomActionsOnChatRoom was just called")
 	}
 	callInfo := struct {
 		Ctx          context.Context
 		ChatRoomID   uuid.UUID
+		OwnerID      uuid.UUID
 		WhereInTypes []uuid.UUID
 		Order        parameter.ChatRoomActionOrderMethod
 		Pg           parameter.Pagination
@@ -9414,6 +9417,7 @@ func (mock *ManagerInterfaceMock) GetChatRoomActionsOnChatRoom(ctx context.Conte
 	}{
 		Ctx:          ctx,
 		ChatRoomID:   chatRoomID,
+		OwnerID:      ownerID,
 		WhereInTypes: whereInTypes,
 		Order:        order,
 		Pg:           pg,
@@ -9425,7 +9429,7 @@ func (mock *ManagerInterfaceMock) GetChatRoomActionsOnChatRoom(ctx context.Conte
 	mock.lockGetChatRoomActionsOnChatRoom.Lock()
 	mock.calls.GetChatRoomActionsOnChatRoom = append(mock.calls.GetChatRoomActionsOnChatRoom, callInfo)
 	mock.lockGetChatRoomActionsOnChatRoom.Unlock()
-	return mock.GetChatRoomActionsOnChatRoomFunc(ctx, chatRoomID, whereInTypes, order, pg, limit, cursor, offset, withCount)
+	return mock.GetChatRoomActionsOnChatRoomFunc(ctx, chatRoomID, ownerID, whereInTypes, order, pg, limit, cursor, offset, withCount)
 }
 
 // GetChatRoomActionsOnChatRoomCalls gets all the calls that were made to GetChatRoomActionsOnChatRoom.
@@ -9435,6 +9439,7 @@ func (mock *ManagerInterfaceMock) GetChatRoomActionsOnChatRoom(ctx context.Conte
 func (mock *ManagerInterfaceMock) GetChatRoomActionsOnChatRoomCalls() []struct {
 	Ctx          context.Context
 	ChatRoomID   uuid.UUID
+	OwnerID      uuid.UUID
 	WhereInTypes []uuid.UUID
 	Order        parameter.ChatRoomActionOrderMethod
 	Pg           parameter.Pagination
@@ -9446,6 +9451,7 @@ func (mock *ManagerInterfaceMock) GetChatRoomActionsOnChatRoomCalls() []struct {
 	var calls []struct {
 		Ctx          context.Context
 		ChatRoomID   uuid.UUID
+		OwnerID      uuid.UUID
 		WhereInTypes []uuid.UUID
 		Order        parameter.ChatRoomActionOrderMethod
 		Pg           parameter.Pagination

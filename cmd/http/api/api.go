@@ -121,7 +121,6 @@ func (s *API) Handler() http.Handler {
 	r.Mount("/chat_rooms", ChatRoomHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
 	r.Mount("/images", ImageHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
 	r.Mount("/files", FileHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
-	r.Mount("/read_receipts", ReadReceiptHandler(s.svc, s.clk, s.auth, s.ssm))
 	r.Mount("/attachable_items", AttachableItemHandler(s.svc, s.clk, s.auth, s.ssm))
 
 	r.NotFound(s.notFound)

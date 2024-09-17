@@ -61,10 +61,10 @@ func ConfidentialHandler(
 			r.Get("/", getChatRooms.ServeHTTP)
 
 			r.Route("/private_members/{member_id}", func(r chi.Router) {
-				r.Post("", createPrivateChatRoom.ServeHTTP)
-				r.Get("", findPrivateChatRoom.ServeHTTP)
+				r.Post("/", createPrivateChatRoom.ServeHTTP)
+				r.Get("/", findPrivateChatRoom.ServeHTTP)
 
-				r.Route("messages", func(r chi.Router) {
+				r.Route("/messages", func(r chi.Router) {
 					r.Post("/", createPrivateMessage.ServeHTTP)
 				})
 			})

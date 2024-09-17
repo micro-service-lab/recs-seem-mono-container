@@ -49,9 +49,10 @@ func (m *ManageChatRoomAction) GetChatRoomActionsOnChatRoom(
 		}
 		return store.ListResult[entity.ChatRoomActionPractical]{}, fmt.Errorf("failed to find member by id: %w", err)
 	}
-	if b, err := m.DB.ExistsChatRoomBelonging(ctx, chatRoomID, ownerID); err != nil {
+	if b, err := m.DB.ExistsChatRoomBelonging(ctx, ownerID, chatRoomID); err != nil {
 		return store.ListResult[entity.ChatRoomActionPractical]{}, fmt.Errorf("failed to check chat room belonging: %w", err)
 	} else if !b {
+		fmt.Println("NotChatRoomMember")
 		return store.ListResult[entity.ChatRoomActionPractical]{}, errhandle.NewCommonError(response.NotChatRoomMember, nil)
 	}
 	wc := store.WithCountParam{

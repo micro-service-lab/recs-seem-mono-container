@@ -58,22 +58,28 @@ func (q *Queries) CreatePermissionCategory(ctx context.Context, arg CreatePermis
 	return i, err
 }
 
-const deletePermissionCategory = `-- name: DeletePermissionCategory :exec
+const deletePermissionCategory = `-- name: DeletePermissionCategory :execrows
 DELETE FROM m_permission_categories WHERE permission_category_id = $1
 `
 
-func (q *Queries) DeletePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePermissionCategory, permissionCategoryID)
-	return err
+func (q *Queries) DeletePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermissionCategory, permissionCategoryID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deletePermissionCategoryByKey = `-- name: DeletePermissionCategoryByKey :exec
+const deletePermissionCategoryByKey = `-- name: DeletePermissionCategoryByKey :execrows
 DELETE FROM m_permission_categories WHERE key = $1
 `
 
-func (q *Queries) DeletePermissionCategoryByKey(ctx context.Context, key string) error {
-	_, err := q.db.Exec(ctx, deletePermissionCategoryByKey, key)
-	return err
+func (q *Queries) DeletePermissionCategoryByKey(ctx context.Context, key string) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermissionCategoryByKey, key)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findPermissionCategoryByID = `-- name: FindPermissionCategoryByID :one
@@ -115,8 +121,8 @@ SELECT m_permission_categories_pkey, permission_category_id, name, description, 
 WHERE
 	CASE WHEN $1::boolean = true THEN m_permission_categories.name LIKE '%' || $2::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN m_permission_categories.name END ASC,
-	CASE WHEN $3::text = 'r_name' THEN m_permission_categories.name END DESC,
+	CASE WHEN $3::text = 'name' THEN m_permission_categories.name END ASC NULLS LAST,
+	CASE WHEN $3::text = 'r_name' THEN m_permission_categories.name END DESC NULLS LAST,
 	m_permission_categories_pkey ASC
 `
 
@@ -172,10 +178,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_permission_categories.name END ASC,
-	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_permission_categories.name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_permission_categories.name END ASC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_permission_categories.name END DESC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_permission_categories.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_permission_categories.name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_permission_categories.name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_permission_categories.name END ASC NULLS LAST,
 	CASE WHEN $4::text = 'next' THEN m_permission_categories_pkey END ASC,
 	CASE WHEN $4::text = 'prev' THEN m_permission_categories_pkey END DESC
 LIMIT $1
@@ -230,8 +236,8 @@ SELECT m_permission_categories_pkey, permission_category_id, name, description, 
 WHERE
 	CASE WHEN $3::boolean = true THEN m_permission_categories.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN m_permission_categories.name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN m_permission_categories.name END DESC,
+	CASE WHEN $5::text = 'name' THEN m_permission_categories.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' THEN m_permission_categories.name END DESC NULLS LAST,
 	m_permission_categories_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -278,20 +284,20 @@ func (q *Queries) GetPermissionCategoriesUseNumberedPaginate(ctx context.Context
 
 const getPluralPermissionCategories = `-- name: GetPluralPermissionCategories :many
 SELECT m_permission_categories_pkey, permission_category_id, name, description, key FROM m_permission_categories
-WHERE permission_category_id = ANY($3::uuid[])
+WHERE permission_category_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_permission_categories.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_permission_categories.name END DESC NULLS LAST,
 	m_permission_categories_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
 type GetPluralPermissionCategoriesParams struct {
-	Limit                 int32       `json:"limit"`
-	Offset                int32       `json:"offset"`
 	PermissionCategoryIds []uuid.UUID `json:"permission_category_ids"`
+	OrderMethod           string      `json:"order_method"`
 }
 
 func (q *Queries) GetPluralPermissionCategories(ctx context.Context, arg GetPluralPermissionCategoriesParams) ([]PermissionCategory, error) {
-	rows, err := q.db.Query(ctx, getPluralPermissionCategories, arg.Limit, arg.Offset, arg.PermissionCategoryIds)
+	rows, err := q.db.Query(ctx, getPluralPermissionCategories, arg.PermissionCategoryIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -316,13 +322,64 @@ func (q *Queries) GetPluralPermissionCategories(ctx context.Context, arg GetPlur
 	return items, nil
 }
 
-const pluralDeletePermissionCategories = `-- name: PluralDeletePermissionCategories :exec
+const getPluralPermissionCategoriesUseNumberedPaginate = `-- name: GetPluralPermissionCategoriesUseNumberedPaginate :many
+SELECT m_permission_categories_pkey, permission_category_id, name, description, key FROM m_permission_categories
+WHERE permission_category_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_permission_categories.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_permission_categories.name END DESC NULLS LAST,
+	m_permission_categories_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralPermissionCategoriesUseNumberedPaginateParams struct {
+	Limit                 int32       `json:"limit"`
+	Offset                int32       `json:"offset"`
+	PermissionCategoryIds []uuid.UUID `json:"permission_category_ids"`
+	OrderMethod           string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralPermissionCategoriesUseNumberedPaginate(ctx context.Context, arg GetPluralPermissionCategoriesUseNumberedPaginateParams) ([]PermissionCategory, error) {
+	rows, err := q.db.Query(ctx, getPluralPermissionCategoriesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.PermissionCategoryIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []PermissionCategory{}
+	for rows.Next() {
+		var i PermissionCategory
+		if err := rows.Scan(
+			&i.MPermissionCategoriesPkey,
+			&i.PermissionCategoryID,
+			&i.Name,
+			&i.Description,
+			&i.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const pluralDeletePermissionCategories = `-- name: PluralDeletePermissionCategories :execrows
 DELETE FROM m_permission_categories WHERE permission_category_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeletePermissionCategories(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeletePermissionCategories, dollar_1)
-	return err
+func (q *Queries) PluralDeletePermissionCategories(ctx context.Context, permissionCategoryIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeletePermissionCategories, permissionCategoryIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updatePermissionCategory = `-- name: UpdatePermissionCategory :one

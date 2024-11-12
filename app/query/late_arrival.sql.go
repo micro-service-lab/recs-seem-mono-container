@@ -49,13 +49,16 @@ type CreateLateArrivalsParams struct {
 	ArriveTime   time.Time `json:"arrive_time"`
 }
 
-const deleteLateArrival = `-- name: DeleteLateArrival :exec
+const deleteLateArrival = `-- name: DeleteLateArrival :execrows
 DELETE FROM t_late_arrivals WHERE late_arrival_id = $1
 `
 
-func (q *Queries) DeleteLateArrival(ctx context.Context, lateArrivalID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteLateArrival, lateArrivalID)
-	return err
+func (q *Queries) DeleteLateArrival(ctx context.Context, lateArrivalID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteLateArrival, lateArrivalID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findLateArrivalByID = `-- name: FindLateArrivalByID :one
@@ -190,20 +193,13 @@ func (q *Queries) GetLateArrivalsUseNumberedPaginate(ctx context.Context, arg Ge
 
 const getPluralLateArrivals = `-- name: GetPluralLateArrivals :many
 SELECT t_late_arrivals_pkey, late_arrival_id, attendance_id, arrive_time FROM t_late_arrivals
-WHERE attendance_id = ANY($3::uuid[])
+WHERE attendance_id = ANY($1::uuid[])
 ORDER BY
 	t_late_arrivals_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
-type GetPluralLateArrivalsParams struct {
-	Limit         int32       `json:"limit"`
-	Offset        int32       `json:"offset"`
-	AttendanceIds []uuid.UUID `json:"attendance_ids"`
-}
-
-func (q *Queries) GetPluralLateArrivals(ctx context.Context, arg GetPluralLateArrivalsParams) ([]LateArrival, error) {
-	rows, err := q.db.Query(ctx, getPluralLateArrivals, arg.Limit, arg.Offset, arg.AttendanceIds)
+func (q *Queries) GetPluralLateArrivals(ctx context.Context, attendanceIds []uuid.UUID) ([]LateArrival, error) {
+	rows, err := q.db.Query(ctx, getPluralLateArrivals, attendanceIds)
 	if err != nil {
 		return nil, err
 	}
@@ -227,11 +223,53 @@ func (q *Queries) GetPluralLateArrivals(ctx context.Context, arg GetPluralLateAr
 	return items, nil
 }
 
-const pluralDeleteLateArrivals = `-- name: PluralDeleteLateArrivals :exec
+const getPluralLateArrivalsUseNumberedPaginate = `-- name: GetPluralLateArrivalsUseNumberedPaginate :many
+SELECT t_late_arrivals_pkey, late_arrival_id, attendance_id, arrive_time FROM t_late_arrivals
+WHERE attendance_id = ANY($3::uuid[])
+ORDER BY
+	t_late_arrivals_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralLateArrivalsUseNumberedPaginateParams struct {
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+	AttendanceIds []uuid.UUID `json:"attendance_ids"`
+}
+
+func (q *Queries) GetPluralLateArrivalsUseNumberedPaginate(ctx context.Context, arg GetPluralLateArrivalsUseNumberedPaginateParams) ([]LateArrival, error) {
+	rows, err := q.db.Query(ctx, getPluralLateArrivalsUseNumberedPaginate, arg.Limit, arg.Offset, arg.AttendanceIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []LateArrival{}
+	for rows.Next() {
+		var i LateArrival
+		if err := rows.Scan(
+			&i.TLateArrivalsPkey,
+			&i.LateArrivalID,
+			&i.AttendanceID,
+			&i.ArriveTime,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const pluralDeleteLateArrivals = `-- name: PluralDeleteLateArrivals :execrows
 DELETE FROM t_late_arrivals WHERE late_arrival_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteLateArrivals(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteLateArrivals, dollar_1)
-	return err
+func (q *Queries) PluralDeleteLateArrivals(ctx context.Context, lateArrivalIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteLateArrivals, lateArrivalIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }

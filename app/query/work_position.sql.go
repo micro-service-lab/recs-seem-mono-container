@@ -80,13 +80,16 @@ type CreateWorkPositionsParams struct {
 	UpdatedAt      time.Time `json:"updated_at"`
 }
 
-const deleteWorkPosition = `-- name: DeleteWorkPosition :exec
+const deleteWorkPosition = `-- name: DeleteWorkPosition :execrows
 DELETE FROM m_work_positions WHERE work_position_id = $1
 `
 
-func (q *Queries) DeleteWorkPosition(ctx context.Context, workPositionID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteWorkPosition, workPositionID)
-	return err
+func (q *Queries) DeleteWorkPosition(ctx context.Context, workPositionID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteWorkPosition, workPositionID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findWorkPositionByID = `-- name: FindWorkPositionByID :one
@@ -108,35 +111,83 @@ func (q *Queries) FindWorkPositionByID(ctx context.Context, workPositionID uuid.
 	return i, err
 }
 
-const getPluckWorkPositions = `-- name: GetPluckWorkPositions :many
+const getPluralWorkPositions = `-- name: GetPluralWorkPositions :many
 SELECT work_position_id, name FROM m_work_positions
 WHERE
-	work_position_id = ANY($3::uuid[])
+	work_position_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_work_positions_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
-type GetPluckWorkPositionsParams struct {
-	Limit           int32       `json:"limit"`
-	Offset          int32       `json:"offset"`
+type GetPluralWorkPositionsParams struct {
 	WorkPositionIds []uuid.UUID `json:"work_position_ids"`
+	OrderMethod     string      `json:"order_method"`
 }
 
-type GetPluckWorkPositionsRow struct {
+type GetPluralWorkPositionsRow struct {
 	WorkPositionID uuid.UUID `json:"work_position_id"`
 	Name           string    `json:"name"`
 }
 
-func (q *Queries) GetPluckWorkPositions(ctx context.Context, arg GetPluckWorkPositionsParams) ([]GetPluckWorkPositionsRow, error) {
-	rows, err := q.db.Query(ctx, getPluckWorkPositions, arg.Limit, arg.Offset, arg.WorkPositionIds)
+func (q *Queries) GetPluralWorkPositions(ctx context.Context, arg GetPluralWorkPositionsParams) ([]GetPluralWorkPositionsRow, error) {
+	rows, err := q.db.Query(ctx, getPluralWorkPositions, arg.WorkPositionIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluckWorkPositionsRow{}
+	items := []GetPluralWorkPositionsRow{}
 	for rows.Next() {
-		var i GetPluckWorkPositionsRow
+		var i GetPluralWorkPositionsRow
+		if err := rows.Scan(&i.WorkPositionID, &i.Name); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralWorkPositionsUseNumberedPaginate = `-- name: GetPluralWorkPositionsUseNumberedPaginate :many
+SELECT work_position_id, name FROM m_work_positions
+WHERE
+	work_position_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
+	m_work_positions_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralWorkPositionsUseNumberedPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	Offset          int32       `json:"offset"`
+	WorkPositionIds []uuid.UUID `json:"work_position_ids"`
+	OrderMethod     string      `json:"order_method"`
+}
+
+type GetPluralWorkPositionsUseNumberedPaginateRow struct {
+	WorkPositionID uuid.UUID `json:"work_position_id"`
+	Name           string    `json:"name"`
+}
+
+func (q *Queries) GetPluralWorkPositionsUseNumberedPaginate(ctx context.Context, arg GetPluralWorkPositionsUseNumberedPaginateParams) ([]GetPluralWorkPositionsUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralWorkPositionsUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WorkPositionIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralWorkPositionsUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralWorkPositionsUseNumberedPaginateRow
 		if err := rows.Scan(&i.WorkPositionID, &i.Name); err != nil {
 			return nil, err
 		}
@@ -155,8 +206,8 @@ WHERE
 AND
 	CASE WHEN $3::boolean = true THEN m_work_positions.organization_id = ANY($4::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN $5::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_work_positions_pkey ASC
 `
 
@@ -224,10 +275,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_work_positions.name END ASC,
-	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_work_positions.name END DESC,
-	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_work_positions.name END ASC,
-	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_work_positions.name END DESC,
+	CASE WHEN $7::text = 'name' AND $6::text = 'next' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $7::text = 'name' AND $6::text = 'prev' THEN m_work_positions.name END DESC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'next' THEN m_work_positions.name END DESC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' AND $6::text = 'prev' THEN m_work_positions.name END ASC NULLS LAST,
 	CASE WHEN $6::text = 'next' THEN m_work_positions_pkey END ASC,
 	CASE WHEN $6::text = 'prev' THEN m_work_positions_pkey END DESC
 LIMIT $1
@@ -290,8 +341,8 @@ WHERE
 AND
 	CASE WHEN $5::boolean = true THEN m_work_positions.organization_id = ANY($6::uuid[]) ELSE TRUE END
 ORDER BY
-	CASE WHEN $7::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN $7::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN $7::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $7::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_work_positions_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -342,13 +393,16 @@ func (q *Queries) GetWorkPositionsUseNumberedPaginate(ctx context.Context, arg G
 	return items, nil
 }
 
-const pluralDeleteWorkPositions = `-- name: PluralDeleteWorkPositions :exec
+const pluralDeleteWorkPositions = `-- name: PluralDeleteWorkPositions :execrows
 DELETE FROM m_work_positions WHERE work_position_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteWorkPositions(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteWorkPositions, dollar_1)
-	return err
+func (q *Queries) PluralDeleteWorkPositions(ctx context.Context, workPositionIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteWorkPositions, workPositionIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateWorkPosition = `-- name: UpdateWorkPosition :one

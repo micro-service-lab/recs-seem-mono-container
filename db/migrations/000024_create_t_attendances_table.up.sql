@@ -4,7 +4,8 @@ CREATE TABLE t_attendances (
 	attendance_type_id UUID NOT NULL,
 	member_id UUID NOT NULL,
 	description TEXT NOT NULL,
-	date DATE NOT NULL,
+	start_date DATE NOT NULL,
+	end_date DATE, -- NULL means it is a single day event
 	mail_send_flag BOOLEAN NOT NULL,
 	send_organization_id UUID,
 	posted_at TIMESTAMPTZ NOT NULL,

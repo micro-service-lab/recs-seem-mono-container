@@ -19,8 +19,8 @@ import (
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/api"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/cors"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/lang"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/recoverer"
-	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock/fakeclock"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/faketime"
 )
@@ -42,6 +42,9 @@ func run(ctx context.Context) error {
 		return fmt.Errorf("failed to initialize container: %w", err)
 	}
 
+	go ctr.WebsocketHub.SubscribeMessages(ctx)
+	go ctr.WebsocketHub.RunLoop(ctx)
+
 	r := chi.NewRouter()
 	// TODO: slog に変更する
 	r.Use(middleware.RequestLogger(&middleware.DefaultLogFormatter{
@@ -61,9 +64,16 @@ func run(ctx context.Context) error {
 		r.Mount("/faketime", faketime.NewAPI(fakeClk, "/faketime"))
 	}
 
-	auth := auth.New([]byte(ctr.Config.AuthSecret), ctr.Config.SecretIssuer)
-
-	apiI := api.NewAPI(ctr.Clocker, auth, ctr.ServiceManager)
+	apiI := api.NewAPI(
+		ctr.Clocker,
+		ctr.Auth,
+		ctr.Validator,
+		ctr.ServiceManager,
+		ctr.Translator,
+		ctr.SessionManager,
+		*ctr.Config,
+		ctr.WebsocketHub,
+	)
 
 	middlewares := make([]func(http.Handler) http.Handler, 0, 3) //nolint:gomnd
 	// CORS ミドルウェアを追加
@@ -71,18 +81,22 @@ func run(ctx context.Context) error {
 		log.Println("CORS is enabled")
 		middlewares = append(middlewares, cors.Handler(cors.Options{
 			AllowedOrigins: []string(ctr.Config.ClientOrigin),
-			AllowedMethods: []string{http.MethodPost, http.MethodGet},
-			AllowedHeaders: []string{"Authorization", "Content-Type", "X-Request-Id", "Accept", "X-CSRF-Token"},
-			MaxAge:         ctr.Config.CORSMaxAge,
-			ErrorHandler:   cors.AppHandler,
-			// AllowCredentials: true, // jwtをクッキーに保存する場合はtrueにする
-			Debug: ctr.Config.DebugCORS,
+			AllowedMethods: []string{http.MethodPost, http.MethodGet, http.MethodPut, http.MethodDelete},
+			AllowedHeaders: []string{
+				"Authorization",
+				"Content-Type",
+				"X-Request-Id",
+				"Accept",
+				"X-CSRF-Token",
+				"X-Requested-With",
+			},
+			MaxAge:           ctr.Config.CORSMaxAge,
+			ErrorHandler:     cors.AppHandler,
+			AllowCredentials: true, // jwtをクッキーに保存する場合はtrueにする
+			Debug:            ctr.Config.DebugCORS,
 		}))
 	}
-	// AuthMiddleware を追加
-	// middlewares = append(middlewares, app.AuthMiddleware(time.Now, auth, db, app.DefaultAPIBasePath))
-
-	// RateLimitMiddleware を追加
+	middlewares = append(middlewares, lang.Handler(string(ctr.Config.DefaultLanguage)))
 	middlewares = append(middlewares, httprate.Limit(
 		ctr.Config.ThrottleRequestLimit,
 		1*time.Minute,

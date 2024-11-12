@@ -1,7 +1,11 @@
 // Package parameter layer common parameters for the application.
 package parameter
 
-import "strconv"
+import (
+	"strconv"
+
+	"github.com/google/uuid"
+)
 
 // Pagination ページネーション。
 type Pagination string
@@ -92,4 +96,16 @@ type OrderMethod interface {
 	GetCursorKeyName() string
 	// GetStringValue は文字列に変換する。
 	GetStringValue() string
+}
+
+// EntityID エンティティID。
+type EntityID uuid.UUID
+
+// ParseEntityIDParam はエンティティIDをパースする。
+func ParseEntityIDParam(v string) (any, error) {
+	id, err := uuid.Parse(v)
+	if err != nil {
+		return EntityID(uuid.Nil), nil
+	}
+	return EntityID(id), nil
 }

@@ -5,9 +5,9 @@ import (
 	"net/http"
 	"reflect"
 
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
-	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/queryparam"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
 )
@@ -46,15 +46,9 @@ func (h *GetAttendStatuses) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		FuncMap: getAttendStatusesParseFuncMap,
 	})
 	if err != nil {
-		log.Printf("failed to parse query: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}
@@ -69,15 +63,9 @@ func (h *GetAttendStatuses) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		param.WithCount,
 	)
 	if err != nil {
-		log.Printf("failed to get attend statuses: %v", err)
 		handled, err := errhandle.ErrorHandle(ctx, w, err)
-		if err != nil {
+		if !handled || err != nil {
 			log.Printf("failed to handle error: %v", err)
-		}
-		if !handled {
-			if err := response.JSONResponseWriter(ctx, w, response.System, nil, nil); err != nil {
-				log.Printf("failed to write response: %v", err)
-			}
 		}
 		return
 	}

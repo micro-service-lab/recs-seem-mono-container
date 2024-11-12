@@ -67,13 +67,16 @@ type CreateRolesParams struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
-const deleteRole = `-- name: DeleteRole :exec
+const deleteRole = `-- name: DeleteRole :execrows
 DELETE FROM m_roles WHERE role_id = $1
 `
 
-func (q *Queries) DeleteRole(ctx context.Context, roleID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteRole, roleID)
-	return err
+func (q *Queries) DeleteRole(ctx context.Context, roleID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteRole, roleID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findRoleByID = `-- name: FindRoleByID :one
@@ -94,36 +97,88 @@ func (q *Queries) FindRoleByID(ctx context.Context, roleID uuid.UUID) (Role, err
 	return i, err
 }
 
-const getPluckRoles = `-- name: GetPluckRoles :many
-SELECT role_id, name FROM m_roles
+const getPluralRoles = `-- name: GetPluralRoles :many
+SELECT m_roles_pkey, role_id, name, description, created_at, updated_at FROM m_roles
 WHERE
-	role_id = ANY($3::uuid[])
+	role_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_roles_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
-type GetPluckRolesParams struct {
-	Limit   int32       `json:"limit"`
-	Offset  int32       `json:"offset"`
-	RoleIds []uuid.UUID `json:"role_ids"`
+type GetPluralRolesParams struct {
+	RoleIds     []uuid.UUID `json:"role_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
-type GetPluckRolesRow struct {
-	RoleID uuid.UUID `json:"role_id"`
-	Name   string    `json:"name"`
-}
-
-func (q *Queries) GetPluckRoles(ctx context.Context, arg GetPluckRolesParams) ([]GetPluckRolesRow, error) {
-	rows, err := q.db.Query(ctx, getPluckRoles, arg.Limit, arg.Offset, arg.RoleIds)
+func (q *Queries) GetPluralRoles(ctx context.Context, arg GetPluralRolesParams) ([]Role, error) {
+	rows, err := q.db.Query(ctx, getPluralRoles, arg.RoleIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	items := []GetPluckRolesRow{}
+	items := []Role{}
 	for rows.Next() {
-		var i GetPluckRolesRow
-		if err := rows.Scan(&i.RoleID, &i.Name); err != nil {
+		var i Role
+		if err := rows.Scan(
+			&i.MRolesPkey,
+			&i.RoleID,
+			&i.Name,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralRolesUseNumberedPaginate = `-- name: GetPluralRolesUseNumberedPaginate :many
+SELECT m_roles_pkey, role_id, name, description, created_at, updated_at FROM m_roles
+WHERE
+	role_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
+	m_roles_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralRolesUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	RoleIds     []uuid.UUID `json:"role_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralRolesUseNumberedPaginate(ctx context.Context, arg GetPluralRolesUseNumberedPaginateParams) ([]Role, error) {
+	rows, err := q.db.Query(ctx, getPluralRolesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.RoleIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Role{}
+	for rows.Next() {
+		var i Role
+		if err := rows.Scan(
+			&i.MRolesPkey,
+			&i.RoleID,
+			&i.Name,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -139,8 +194,8 @@ SELECT m_roles_pkey, role_id, name, description, created_at, updated_at FROM m_r
 WHERE
 	CASE WHEN $1::boolean = true THEN m_roles.name LIKE '%' || $2::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN $3::text = 'r_name' THEN m_roles.name END DESC,
+	CASE WHEN $3::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN $3::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_roles_pkey ASC
 `
 
@@ -197,10 +252,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_roles.name END ASC,
-	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_roles.name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_roles.name END ASC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_roles.name END DESC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_roles.name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_roles.name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_roles.name END ASC NULLS LAST,
 	CASE WHEN $4::text = 'next' THEN m_roles_pkey END ASC,
 	CASE WHEN $4::text = 'prev' THEN m_roles_pkey END DESC
 LIMIT $1
@@ -256,8 +311,8 @@ SELECT m_roles_pkey, role_id, name, description, created_at, updated_at FROM m_r
 WHERE
 	CASE WHEN $3::boolean = true THEN m_roles.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN m_roles.name END DESC,
+	CASE WHEN $5::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_roles_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -303,13 +358,16 @@ func (q *Queries) GetRolesUseNumberedPaginate(ctx context.Context, arg GetRolesU
 	return items, nil
 }
 
-const pluralDeleteRoles = `-- name: PluralDeleteRoles :exec
+const pluralDeleteRoles = `-- name: PluralDeleteRoles :execrows
 DELETE FROM m_roles WHERE role_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteRoles(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteRoles, dollar_1)
-	return err
+func (q *Queries) PluralDeleteRoles(ctx context.Context, roleIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteRoles, roleIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateRole = `-- name: UpdateRole :one

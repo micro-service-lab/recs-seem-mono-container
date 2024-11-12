@@ -79,21 +79,21 @@ func (m *ManageRecordType) UpdateRecordType(
 }
 
 // DeleteRecordType 議事録タイプを削除する。
-func (m *ManageRecordType) DeleteRecordType(ctx context.Context, id uuid.UUID) error {
-	err := m.DB.DeleteRecordType(ctx, id)
+func (m *ManageRecordType) DeleteRecordType(ctx context.Context, id uuid.UUID) (int64, error) {
+	c, err := m.DB.DeleteRecordType(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to delete record type: %w", err)
+		return 0, fmt.Errorf("failed to delete record type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteRecordTypes 議事録タイプを複数削除する。
-func (m *ManageRecordType) PluralDeleteRecordTypes(ctx context.Context, ids []uuid.UUID) error {
-	err := m.DB.PluralDeleteRecordTypes(ctx, ids)
+func (m *ManageRecordType) PluralDeleteRecordTypes(ctx context.Context, ids []uuid.UUID) (int64, error) {
+	c, err := m.DB.PluralDeleteRecordTypes(ctx, ids)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete record types: %w", err)
+		return 0, fmt.Errorf("failed to plural delete record types: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // FindRecordTypeByID 議事録タイプをIDで取得する。
@@ -141,14 +141,14 @@ func (m *ManageRecordType) GetRecordTypes(
 	case parameter.NumberedPagination:
 		np = store.NumberedPaginationParam{
 			Valid:  true,
-			Offset: entity.Int{Int64: int64(offset)},
-			Limit:  entity.Int{Int64: int64(limit)},
+			Offset: entity.Int{Int64: int64(offset), Valid: true},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
 		}
 	case parameter.CursorPagination:
 		cp = store.CursorPaginationParam{
 			Valid:  true,
 			Cursor: string(cursor),
-			Limit:  entity.Int{Int64: int64(limit)},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
 		}
 	case parameter.NonePagination:
 	}

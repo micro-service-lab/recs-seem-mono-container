@@ -8,3 +8,4 @@ CREATE TABLE m_mime_types (
 ALTER TABLE m_mime_types ADD CONSTRAINT m_mime_types_pkey PRIMARY KEY (m_mime_types_pkey);
 CREATE UNIQUE INDEX idx_m_mime_types_id ON m_mime_types(mime_type_id);
 CREATE UNIQUE INDEX idx_m_mime_types_key ON m_mime_types(key);
+CREATE INDEX idx_m_mime_types_kind ON m_mime_types(kind);

@@ -22,15 +22,17 @@ type AttachableItem struct {
 	AttachableItemID     uuid.UUID     `json:"attachable_item_id"`
 	Url                  string        `json:"url"`
 	Size                 pgtype.Float8 `json:"size"`
+	Alias                string        `json:"alias"`
 	MimeTypeID           uuid.UUID     `json:"mime_type_id"`
 	OwnerID              pgtype.UUID   `json:"owner_id"`
+	FromOuter            bool          `json:"from_outer"`
 }
 
 type AttachedMessage struct {
 	TAttachedMessagesPkey pgtype.Int8 `json:"t_attached_messages_pkey"`
 	AttachedMessageID     uuid.UUID   `json:"attached_message_id"`
-	MessageID             pgtype.UUID `json:"message_id"`
-	FileUrl               string      `json:"file_url"`
+	MessageID             uuid.UUID   `json:"message_id"`
+	AttachableItemID      pgtype.UUID `json:"attachable_item_id"`
 }
 
 type AttendStatus struct {
@@ -46,7 +48,8 @@ type Attendance struct {
 	AttendanceTypeID   uuid.UUID   `json:"attendance_type_id"`
 	MemberID           uuid.UUID   `json:"member_id"`
 	Description        string      `json:"description"`
-	Date               pgtype.Date `json:"date"`
+	StartDate          pgtype.Date `json:"start_date"`
+	EndDate            pgtype.Date `json:"end_date"`
 	MailSendFlag       bool        `json:"mail_send_flag"`
 	SendOrganizationID pgtype.UUID `json:"send_organization_id"`
 	PostedAt           time.Time   `json:"posted_at"`
@@ -66,11 +69,39 @@ type ChatRoom struct {
 	ChatRoomID       uuid.UUID   `json:"chat_room_id"`
 	Name             pgtype.Text `json:"name"`
 	IsPrivate        bool        `json:"is_private"`
-	CoverImageUrl    pgtype.Text `json:"cover_image_url"`
+	CoverImageID     pgtype.UUID `json:"cover_image_id"`
 	OwnerID          pgtype.UUID `json:"owner_id"`
 	FromOrganization bool        `json:"from_organization"`
 	CreatedAt        time.Time   `json:"created_at"`
 	UpdatedAt        time.Time   `json:"updated_at"`
+}
+
+type ChatRoomAction struct {
+	TChatRoomActionsPkey pgtype.Int8 `json:"t_chat_room_actions_pkey"`
+	ChatRoomActionID     uuid.UUID   `json:"chat_room_action_id"`
+	ChatRoomID           uuid.UUID   `json:"chat_room_id"`
+	ChatRoomActionTypeID uuid.UUID   `json:"chat_room_action_type_id"`
+	ActedAt              time.Time   `json:"acted_at"`
+}
+
+type ChatRoomActionType struct {
+	MChatRoomActionTypesPkey pgtype.Int8 `json:"m_chat_room_action_types_pkey"`
+	ChatRoomActionTypeID     uuid.UUID   `json:"chat_room_action_type_id"`
+	Name                     string      `json:"name"`
+	Key                      string      `json:"key"`
+}
+
+type ChatRoomAddMemberAction struct {
+	TChatRoomAddMemberActionsPkey pgtype.Int8 `json:"t_chat_room_add_member_actions_pkey"`
+	ChatRoomAddMemberActionID     uuid.UUID   `json:"chat_room_add_member_action_id"`
+	ChatRoomActionID              uuid.UUID   `json:"chat_room_action_id"`
+	AddedBy                       pgtype.UUID `json:"added_by"`
+}
+
+type ChatRoomAddedMember struct {
+	TChatRoomAddedMembersPkey pgtype.Int8 `json:"t_chat_room_added_members_pkey"`
+	ChatRoomAddMemberActionID uuid.UUID   `json:"chat_room_add_member_action_id"`
+	MemberID                  pgtype.UUID `json:"member_id"`
 }
 
 type ChatRoomBelonging struct {
@@ -78,6 +109,42 @@ type ChatRoomBelonging struct {
 	MemberID                uuid.UUID   `json:"member_id"`
 	ChatRoomID              uuid.UUID   `json:"chat_room_id"`
 	AddedAt                 time.Time   `json:"added_at"`
+}
+
+type ChatRoomCreateAction struct {
+	TChatRoomCreateActionsPkey pgtype.Int8 `json:"t_chat_room_create_actions_pkey"`
+	ChatRoomCreateActionID     uuid.UUID   `json:"chat_room_create_action_id"`
+	ChatRoomActionID           uuid.UUID   `json:"chat_room_action_id"`
+	CreatedBy                  pgtype.UUID `json:"created_by"`
+	Name                       pgtype.Text `json:"name"`
+}
+
+type ChatRoomRemoveMemberAction struct {
+	TChatRoomRemoveMemberActionsPkey pgtype.Int8 `json:"t_chat_room_remove_member_actions_pkey"`
+	ChatRoomRemoveMemberActionID     uuid.UUID   `json:"chat_room_remove_member_action_id"`
+	ChatRoomActionID                 uuid.UUID   `json:"chat_room_action_id"`
+	RemovedBy                        pgtype.UUID `json:"removed_by"`
+}
+
+type ChatRoomRemovedMember struct {
+	TChatRoomRemovedMembersPkey  pgtype.Int8 `json:"t_chat_room_removed_members_pkey"`
+	ChatRoomRemoveMemberActionID uuid.UUID   `json:"chat_room_remove_member_action_id"`
+	MemberID                     pgtype.UUID `json:"member_id"`
+}
+
+type ChatRoomUpdateNameAction struct {
+	TChatRoomUpdateNameActionsPkey pgtype.Int8 `json:"t_chat_room_update_name_actions_pkey"`
+	ChatRoomUpdateNameActionID     uuid.UUID   `json:"chat_room_update_name_action_id"`
+	ChatRoomActionID               uuid.UUID   `json:"chat_room_action_id"`
+	UpdatedBy                      pgtype.UUID `json:"updated_by"`
+	Name                           string      `json:"name"`
+}
+
+type ChatRoomWithdrawAction struct {
+	TChatRoomWithdrawActionsPkey pgtype.Int8 `json:"t_chat_room_withdraw_actions_pkey"`
+	ChatRoomWithdrawActionID     uuid.UUID   `json:"chat_room_withdraw_action_id"`
+	ChatRoomActionID             uuid.UUID   `json:"chat_room_action_id"`
+	MemberID                     pgtype.UUID `json:"member_id"`
 }
 
 type EarlyLeaving struct {
@@ -162,8 +229,10 @@ type Member struct {
 	Password               string      `json:"password"`
 	Email                  string      `json:"email"`
 	Name                   string      `json:"name"`
+	FirstName              pgtype.Text `json:"first_name"`
+	LastName               pgtype.Text `json:"last_name"`
 	AttendStatusID         uuid.UUID   `json:"attend_status_id"`
-	ProfileImageUrl        pgtype.Text `json:"profile_image_url"`
+	ProfileImageID         pgtype.UUID `json:"profile_image_id"`
 	GradeID                uuid.UUID   `json:"grade_id"`
 	GroupID                uuid.UUID   `json:"group_id"`
 	PersonalOrganizationID uuid.UUID   `json:"personal_organization_id"`
@@ -172,14 +241,22 @@ type Member struct {
 	UpdatedAt              time.Time   `json:"updated_at"`
 }
 
+type Membership struct {
+	MMembershipsPkey pgtype.Int8 `json:"m_memberships_pkey"`
+	MemberID         uuid.UUID   `json:"member_id"`
+	OrganizationID   uuid.UUID   `json:"organization_id"`
+	WorkPositionID   pgtype.UUID `json:"work_position_id"`
+	AddedAt          time.Time   `json:"added_at"`
+}
+
 type Message struct {
-	TMessagesPkey pgtype.Int8 `json:"t_messages_pkey"`
-	MessageID     uuid.UUID   `json:"message_id"`
-	ChatRoomID    uuid.UUID   `json:"chat_room_id"`
-	SenderID      pgtype.UUID `json:"sender_id"`
-	Body          string      `json:"body"`
-	PostedAt      time.Time   `json:"posted_at"`
-	LastEditedAt  time.Time   `json:"last_edited_at"`
+	TMessagesPkey    pgtype.Int8 `json:"t_messages_pkey"`
+	MessageID        uuid.UUID   `json:"message_id"`
+	SenderID         pgtype.UUID `json:"sender_id"`
+	Body             string      `json:"body"`
+	PostedAt         time.Time   `json:"posted_at"`
+	LastEditedAt     time.Time   `json:"last_edited_at"`
+	ChatRoomActionID uuid.UUID   `json:"chat_room_action_id"`
 }
 
 type MimeType struct {
@@ -258,6 +335,13 @@ type Professor struct {
 	MemberID        uuid.UUID   `json:"member_id"`
 }
 
+type ReadReceipt struct {
+	TReadReceiptsPkey pgtype.Int8        `json:"t_read_receipts_pkey"`
+	MemberID          uuid.UUID          `json:"member_id"`
+	MessageID         uuid.UUID          `json:"message_id"`
+	ReadAt            pgtype.Timestamptz `json:"read_at"`
+}
+
 type Record struct {
 	TRecordsPkey   pgtype.Int8 `json:"t_records_pkey"`
 	RecordID       uuid.UUID   `json:"record_id"`
@@ -297,6 +381,13 @@ type Student struct {
 	MStudentsPkey pgtype.Int8 `json:"m_students_pkey"`
 	StudentID     uuid.UUID   `json:"student_id"`
 	MemberID      uuid.UUID   `json:"member_id"`
+}
+
+type TChatRoomDeleteMessageAction struct {
+	TChatRoomDeleteMessageActionsPkey pgtype.Int8 `json:"t_chat_room_delete_message_actions_pkey"`
+	ChatRoomDeleteMessageActionID     uuid.UUID   `json:"chat_room_delete_message_action_id"`
+	ChatRoomActionID                  uuid.UUID   `json:"chat_room_action_id"`
+	DeletedBy                         pgtype.UUID `json:"deleted_by"`
 }
 
 type WorkPosition struct {

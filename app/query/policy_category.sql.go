@@ -58,22 +58,28 @@ func (q *Queries) CreatePolicyCategory(ctx context.Context, arg CreatePolicyCate
 	return i, err
 }
 
-const deletePolicyCategory = `-- name: DeletePolicyCategory :exec
+const deletePolicyCategory = `-- name: DeletePolicyCategory :execrows
 DELETE FROM m_policy_categories WHERE policy_category_id = $1
 `
 
-func (q *Queries) DeletePolicyCategory(ctx context.Context, policyCategoryID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePolicyCategory, policyCategoryID)
-	return err
+func (q *Queries) DeletePolicyCategory(ctx context.Context, policyCategoryID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePolicyCategory, policyCategoryID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deletePolicyCategoryByKey = `-- name: DeletePolicyCategoryByKey :exec
+const deletePolicyCategoryByKey = `-- name: DeletePolicyCategoryByKey :execrows
 DELETE FROM m_policy_categories WHERE key = $1
 `
 
-func (q *Queries) DeletePolicyCategoryByKey(ctx context.Context, key string) error {
-	_, err := q.db.Exec(ctx, deletePolicyCategoryByKey, key)
-	return err
+func (q *Queries) DeletePolicyCategoryByKey(ctx context.Context, key string) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePolicyCategoryByKey, key)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findPolicyCategoryByID = `-- name: FindPolicyCategoryByID :one
@@ -112,20 +118,68 @@ func (q *Queries) FindPolicyCategoryByKey(ctx context.Context, key string) (Poli
 
 const getPluralPolicyCategories = `-- name: GetPluralPolicyCategories :many
 SELECT m_policy_categories_pkey, policy_category_id, name, description, key FROM m_policy_categories
+WHERE policy_category_id = ANY($1::uuid[])
+ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_policy_categories.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_policy_categories.name END DESC NULLS LAST,
+	m_policy_categories_pkey ASC
+`
+
+type GetPluralPolicyCategoriesParams struct {
+	PolicyCategoryIds []uuid.UUID `json:"policy_category_ids"`
+	OrderMethod       string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralPolicyCategories(ctx context.Context, arg GetPluralPolicyCategoriesParams) ([]PolicyCategory, error) {
+	rows, err := q.db.Query(ctx, getPluralPolicyCategories, arg.PolicyCategoryIds, arg.OrderMethod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []PolicyCategory{}
+	for rows.Next() {
+		var i PolicyCategory
+		if err := rows.Scan(
+			&i.MPolicyCategoriesPkey,
+			&i.PolicyCategoryID,
+			&i.Name,
+			&i.Description,
+			&i.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralPolicyCategoriesUseNumberedPaginate = `-- name: GetPluralPolicyCategoriesUseNumberedPaginate :many
+SELECT m_policy_categories_pkey, policy_category_id, name, description, key FROM m_policy_categories
 WHERE policy_category_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_policy_categories.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_policy_categories.name END DESC NULLS LAST,
 	m_policy_categories_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralPolicyCategoriesParams struct {
+type GetPluralPolicyCategoriesUseNumberedPaginateParams struct {
 	Limit             int32       `json:"limit"`
 	Offset            int32       `json:"offset"`
 	PolicyCategoryIds []uuid.UUID `json:"policy_category_ids"`
+	OrderMethod       string      `json:"order_method"`
 }
 
-func (q *Queries) GetPluralPolicyCategories(ctx context.Context, arg GetPluralPolicyCategoriesParams) ([]PolicyCategory, error) {
-	rows, err := q.db.Query(ctx, getPluralPolicyCategories, arg.Limit, arg.Offset, arg.PolicyCategoryIds)
+func (q *Queries) GetPluralPolicyCategoriesUseNumberedPaginate(ctx context.Context, arg GetPluralPolicyCategoriesUseNumberedPaginateParams) ([]PolicyCategory, error) {
+	rows, err := q.db.Query(ctx, getPluralPolicyCategoriesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.PolicyCategoryIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -155,8 +209,8 @@ SELECT m_policy_categories_pkey, policy_category_id, name, description, key FROM
 WHERE
 	CASE WHEN $1::boolean = true THEN m_policy_categories.name LIKE '%' || $2::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN m_policy_categories.name END ASC,
-	CASE WHEN $3::text = 'r_name' THEN m_policy_categories.name END DESC,
+	CASE WHEN $3::text = 'name' THEN m_policy_categories.name END ASC NULLS LAST,
+	CASE WHEN $3::text = 'r_name' THEN m_policy_categories.name END DESC NULLS LAST,
 	m_policy_categories_pkey ASC
 `
 
@@ -212,10 +266,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_policy_categories.name END ASC,
-	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_policy_categories.name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_policy_categories.name END ASC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_policy_categories.name END DESC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_policy_categories.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_policy_categories.name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_policy_categories.name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_policy_categories.name END ASC NULLS LAST,
 	CASE WHEN $4::text = 'next' THEN m_policy_categories_pkey END ASC,
 	CASE WHEN $4::text = 'prev' THEN m_policy_categories_pkey END DESC
 LIMIT $1
@@ -270,8 +324,8 @@ SELECT m_policy_categories_pkey, policy_category_id, name, description, key FROM
 WHERE
 	CASE WHEN $3::boolean = true THEN m_policy_categories.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN m_policy_categories.name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN m_policy_categories.name END DESC,
+	CASE WHEN $5::text = 'name' THEN m_policy_categories.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' THEN m_policy_categories.name END DESC NULLS LAST,
 	m_policy_categories_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -316,13 +370,16 @@ func (q *Queries) GetPolicyCategoriesUseNumberedPaginate(ctx context.Context, ar
 	return items, nil
 }
 
-const pluralDeletePolicyCategories = `-- name: PluralDeletePolicyCategories :exec
+const pluralDeletePolicyCategories = `-- name: PluralDeletePolicyCategories :execrows
 DELETE FROM m_policy_categories WHERE policy_category_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeletePolicyCategories(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeletePolicyCategories, dollar_1)
-	return err
+func (q *Queries) PluralDeletePolicyCategories(ctx context.Context, policyCategoryIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeletePolicyCategories, policyCategoryIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updatePolicyCategory = `-- name: UpdatePolicyCategory :one

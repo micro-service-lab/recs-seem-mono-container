@@ -602,21 +602,21 @@ func (m *ManageMimeType) UpdateMimeType(
 }
 
 // DeleteMimeType マイムタイプを削除する。
-func (m *ManageMimeType) DeleteMimeType(ctx context.Context, id uuid.UUID) error {
-	err := m.DB.DeleteMimeType(ctx, id)
+func (m *ManageMimeType) DeleteMimeType(ctx context.Context, id uuid.UUID) (int64, error) {
+	c, err := m.DB.DeleteMimeType(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to delete mime type: %w", err)
+		return 0, fmt.Errorf("failed to delete mime type: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteMimeTypes マイムタイプを複数削除する。
-func (m *ManageMimeType) PluralDeleteMimeTypes(ctx context.Context, ids []uuid.UUID) error {
-	err := m.DB.PluralDeleteMimeTypes(ctx, ids)
+func (m *ManageMimeType) PluralDeleteMimeTypes(ctx context.Context, ids []uuid.UUID) (int64, error) {
+	c, err := m.DB.PluralDeleteMimeTypes(ctx, ids)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete mime types: %w", err)
+		return 0, fmt.Errorf("failed to plural delete mime types: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // FindMimeTypeByID マイムタイプをIDで取得する。
@@ -664,14 +664,14 @@ func (m *ManageMimeType) GetMimeTypes(
 	case parameter.NumberedPagination:
 		np = store.NumberedPaginationParam{
 			Valid:  true,
-			Offset: entity.Int{Int64: int64(offset)},
-			Limit:  entity.Int{Int64: int64(limit)},
+			Offset: entity.Int{Int64: int64(offset), Valid: true},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
 		}
 	case parameter.CursorPagination:
 		cp = store.CursorPaginationParam{
 			Valid:  true,
 			Cursor: string(cursor),
-			Limit:  entity.Int{Int64: int64(limit)},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
 		}
 	case parameter.NonePagination:
 	}

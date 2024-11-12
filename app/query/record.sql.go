@@ -111,22 +111,28 @@ type CreateRecordsParams struct {
 	LastEditedAt   time.Time   `json:"last_edited_at"`
 }
 
-const deleteRecord = `-- name: DeleteRecord :exec
+const deleteRecord = `-- name: DeleteRecord :execrows
 DELETE FROM t_records WHERE record_id = $1
 `
 
-func (q *Queries) DeleteRecord(ctx context.Context, recordID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteRecord, recordID)
-	return err
+func (q *Queries) DeleteRecord(ctx context.Context, recordID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteRecord, recordID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteRecordOnOrganization = `-- name: DeleteRecordOnOrganization :exec
+const deleteRecordOnOrganization = `-- name: DeleteRecordOnOrganization :execrows
 DELETE FROM t_records WHERE organization_id = $1
 `
 
-func (q *Queries) DeleteRecordOnOrganization(ctx context.Context, organizationID pgtype.UUID) error {
-	_, err := q.db.Exec(ctx, deleteRecordOnOrganization, organizationID)
-	return err
+func (q *Queries) DeleteRecordOnOrganization(ctx context.Context, organizationID pgtype.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteRecordOnOrganization, organizationID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findRecordByID = `-- name: FindRecordByID :one
@@ -152,7 +158,7 @@ func (q *Queries) FindRecordByID(ctx context.Context, recordID uuid.UUID) (Recor
 }
 
 const findRecordByIDWithAll = `-- name: FindRecordByIDWithAll :one
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
@@ -201,8 +207,10 @@ func (q *Queries) FindRecordByIDWithAll(ctx context.Context, recordID uuid.UUID)
 		&i.Member.Password,
 		&i.Member.Email,
 		&i.Member.Name,
+		&i.Member.FirstName,
+		&i.Member.LastName,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageUrl,
+		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -214,7 +222,7 @@ func (q *Queries) FindRecordByIDWithAll(ctx context.Context, recordID uuid.UUID)
 }
 
 const findRecordByIDWithLastEditedBy = `-- name: FindRecordByIDWithLastEditedBy :one
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE record_id = $1
 `
@@ -244,8 +252,10 @@ func (q *Queries) FindRecordByIDWithLastEditedBy(ctx context.Context, recordID u
 		&i.Member.Password,
 		&i.Member.Email,
 		&i.Member.Name,
+		&i.Member.FirstName,
+		&i.Member.LastName,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageUrl,
+		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -296,7 +306,7 @@ func (q *Queries) FindRecordByIDWithOrganization(ctx context.Context, recordID u
 }
 
 const findRecordByIDWithPostedBy = `-- name: FindRecordByIDWithPostedBy :one
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 WHERE record_id = $1
 `
@@ -326,8 +336,10 @@ func (q *Queries) FindRecordByIDWithPostedBy(ctx context.Context, recordID uuid.
 		&i.Member.Password,
 		&i.Member.Email,
 		&i.Member.Name,
+		&i.Member.FirstName,
+		&i.Member.LastName,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageUrl,
+		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -372,20 +384,80 @@ func (q *Queries) FindRecordByIDWithRecordType(ctx context.Context, recordID uui
 }
 
 const getPluralRecords = `-- name: GetPluralRecords :many
+SELECT t_records_pkey, record_id, record_type_id, title, body, organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_records WHERE record_id = ANY($1::uuid[])
+ORDER BY
+	CASE WHEN $2::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
+	t_records_pkey ASC
+`
+
+type GetPluralRecordsParams struct {
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralRecords(ctx context.Context, arg GetPluralRecordsParams) ([]Record, error) {
+	rows, err := q.db.Query(ctx, getPluralRecords, arg.RecordIds, arg.OrderMethod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Record{}
+	for rows.Next() {
+		var i Record
+		if err := rows.Scan(
+			&i.TRecordsPkey,
+			&i.RecordID,
+			&i.RecordTypeID,
+			&i.Title,
+			&i.Body,
+			&i.OrganizationID,
+			&i.PostedBy,
+			&i.LastEditedBy,
+			&i.PostedAt,
+			&i.LastEditedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralRecordsUseNumberedPaginate = `-- name: GetPluralRecordsUseNumberedPaginate :many
 SELECT t_records_pkey, record_id, record_type_id, title, body, organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_records WHERE record_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralRecordsParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	RecordIds []uuid.UUID `json:"record_ids"`
+type GetPluralRecordsUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
-func (q *Queries) GetPluralRecords(ctx context.Context, arg GetPluralRecordsParams) ([]Record, error) {
-	rows, err := q.db.Query(ctx, getPluralRecords, arg.Limit, arg.Offset, arg.RecordIds)
+func (q *Queries) GetPluralRecordsUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsUseNumberedPaginateParams) ([]Record, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.RecordIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -416,21 +488,25 @@ func (q *Queries) GetPluralRecords(ctx context.Context, arg GetPluralRecordsPara
 }
 
 const getPluralRecordsWithAll = `-- name: GetPluralRecordsWithAll :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 LEFT JOIN m_members AS m_members_2 ON t_records.last_edited_by = m_members_2.member_id
-WHERE record_id = ANY($3::uuid[])
+WHERE record_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
 type GetPluralRecordsWithAllParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	RecordIds []uuid.UUID `json:"record_ids"`
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralRecordsWithAllRow struct {
@@ -442,7 +518,7 @@ type GetPluralRecordsWithAllRow struct {
 }
 
 func (q *Queries) GetPluralRecordsWithAll(ctx context.Context, arg GetPluralRecordsWithAllParams) ([]GetPluralRecordsWithAllRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithAll, arg.Limit, arg.Offset, arg.RecordIds)
+	rows, err := q.db.Query(ctx, getPluralRecordsWithAll, arg.RecordIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -481,8 +557,10 @@ func (q *Queries) GetPluralRecordsWithAll(ctx context.Context, arg GetPluralReco
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -495,8 +573,125 @@ func (q *Queries) GetPluralRecordsWithAll(ctx context.Context, arg GetPluralReco
 			&i.Member_2.Password,
 			&i.Member_2.Email,
 			&i.Member_2.Name,
+			&i.Member_2.FirstName,
+			&i.Member_2.LastName,
 			&i.Member_2.AttendStatusID,
-			&i.Member_2.ProfileImageUrl,
+			&i.Member_2.ProfileImageID,
+			&i.Member_2.GradeID,
+			&i.Member_2.GroupID,
+			&i.Member_2.PersonalOrganizationID,
+			&i.Member_2.RoleID,
+			&i.Member_2.CreatedAt,
+			&i.Member_2.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralRecordsWithAllUseNumberedPaginate = `-- name: GetPluralRecordsWithAllUseNumberedPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
+LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+LEFT JOIN m_members AS m_members_2 ON t_records.last_edited_by = m_members_2.member_id
+WHERE record_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
+	t_records_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralRecordsWithAllUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+type GetPluralRecordsWithAllUseNumberedPaginateRow struct {
+	Record       Record       `json:"record"`
+	RecordType   RecordType   `json:"record_type"`
+	Organization Organization `json:"organization"`
+	Member       Member       `json:"member"`
+	Member_2     Member       `json:"member_2"`
+}
+
+func (q *Queries) GetPluralRecordsWithAllUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsWithAllUseNumberedPaginateParams) ([]GetPluralRecordsWithAllUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithAllUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.RecordIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralRecordsWithAllUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralRecordsWithAllUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.RecordType.MRecordTypesPkey,
+			&i.RecordType.RecordTypeID,
+			&i.RecordType.Name,
+			&i.RecordType.Key,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.Color,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Member_2.MMembersPkey,
+			&i.Member_2.MemberID,
+			&i.Member_2.LoginID,
+			&i.Member_2.Password,
+			&i.Member_2.Email,
+			&i.Member_2.Name,
+			&i.Member_2.FirstName,
+			&i.Member_2.LastName,
+			&i.Member_2.AttendStatusID,
+			&i.Member_2.ProfileImageID,
 			&i.Member_2.GradeID,
 			&i.Member_2.GroupID,
 			&i.Member_2.PersonalOrganizationID,
@@ -515,18 +710,22 @@ func (q *Queries) GetPluralRecordsWithAll(ctx context.Context, arg GetPluralReco
 }
 
 const getPluralRecordsWithLastEditedBy = `-- name: GetPluralRecordsWithLastEditedBy :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
-WHERE record_id = ANY($3::uuid[])
+WHERE record_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
 type GetPluralRecordsWithLastEditedByParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	RecordIds []uuid.UUID `json:"record_ids"`
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralRecordsWithLastEditedByRow struct {
@@ -535,7 +734,7 @@ type GetPluralRecordsWithLastEditedByRow struct {
 }
 
 func (q *Queries) GetPluralRecordsWithLastEditedBy(ctx context.Context, arg GetPluralRecordsWithLastEditedByParams) ([]GetPluralRecordsWithLastEditedByRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithLastEditedBy, arg.Limit, arg.Offset, arg.RecordIds)
+	rows, err := q.db.Query(ctx, getPluralRecordsWithLastEditedBy, arg.RecordIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -560,8 +759,89 @@ func (q *Queries) GetPluralRecordsWithLastEditedBy(ctx context.Context, arg GetP
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralRecordsWithLastEditedByUseNumberedPaginate = `-- name: GetPluralRecordsWithLastEditedByUseNumberedPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
+WHERE record_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
+	t_records_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralRecordsWithLastEditedByUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+type GetPluralRecordsWithLastEditedByUseNumberedPaginateRow struct {
+	Record Record `json:"record"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) GetPluralRecordsWithLastEditedByUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsWithLastEditedByUseNumberedPaginateParams) ([]GetPluralRecordsWithLastEditedByUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithLastEditedByUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.RecordIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralRecordsWithLastEditedByUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralRecordsWithLastEditedByUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -582,16 +862,20 @@ func (q *Queries) GetPluralRecordsWithLastEditedBy(ctx context.Context, arg GetP
 const getPluralRecordsWithOrganization = `-- name: GetPluralRecordsWithOrganization :many
 SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM t_records
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
-WHERE record_id = ANY($3::uuid[])
+WHERE record_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
 type GetPluralRecordsWithOrganizationParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	RecordIds []uuid.UUID `json:"record_ids"`
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralRecordsWithOrganizationRow struct {
@@ -600,7 +884,7 @@ type GetPluralRecordsWithOrganizationRow struct {
 }
 
 func (q *Queries) GetPluralRecordsWithOrganization(ctx context.Context, arg GetPluralRecordsWithOrganizationParams) ([]GetPluralRecordsWithOrganizationRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithOrganization, arg.Limit, arg.Offset, arg.RecordIds)
+	rows, err := q.db.Query(ctx, getPluralRecordsWithOrganization, arg.RecordIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -640,19 +924,96 @@ func (q *Queries) GetPluralRecordsWithOrganization(ctx context.Context, arg GetP
 	return items, nil
 }
 
-const getPluralRecordsWithPostedBy = `-- name: GetPluralRecordsWithPostedBy :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
-LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+const getPluralRecordsWithOrganizationUseNumberedPaginate = `-- name: GetPluralRecordsWithOrganizationUseNumberedPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM t_records
+LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 WHERE record_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
+type GetPluralRecordsWithOrganizationUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+type GetPluralRecordsWithOrganizationUseNumberedPaginateRow struct {
+	Record       Record       `json:"record"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetPluralRecordsWithOrganizationUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsWithOrganizationUseNumberedPaginateParams) ([]GetPluralRecordsWithOrganizationUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithOrganizationUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.RecordIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralRecordsWithOrganizationUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralRecordsWithOrganizationUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.Color,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralRecordsWithPostedBy = `-- name: GetPluralRecordsWithPostedBy :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+WHERE record_id = ANY($1::uuid[])
+ORDER BY
+	CASE WHEN $2::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
+	t_records_pkey ASC
+`
+
 type GetPluralRecordsWithPostedByParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	RecordIds []uuid.UUID `json:"record_ids"`
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralRecordsWithPostedByRow struct {
@@ -661,7 +1022,7 @@ type GetPluralRecordsWithPostedByRow struct {
 }
 
 func (q *Queries) GetPluralRecordsWithPostedBy(ctx context.Context, arg GetPluralRecordsWithPostedByParams) ([]GetPluralRecordsWithPostedByRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithPostedBy, arg.Limit, arg.Offset, arg.RecordIds)
+	rows, err := q.db.Query(ctx, getPluralRecordsWithPostedBy, arg.RecordIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -686,8 +1047,89 @@ func (q *Queries) GetPluralRecordsWithPostedBy(ctx context.Context, arg GetPlura
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralRecordsWithPostedByUseNumberedPaginate = `-- name: GetPluralRecordsWithPostedByUseNumberedPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+WHERE record_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
+	t_records_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralRecordsWithPostedByUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+type GetPluralRecordsWithPostedByUseNumberedPaginateRow struct {
+	Record Record `json:"record"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) GetPluralRecordsWithPostedByUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsWithPostedByUseNumberedPaginateParams) ([]GetPluralRecordsWithPostedByUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithPostedByUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.RecordIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralRecordsWithPostedByUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralRecordsWithPostedByUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -708,16 +1150,20 @@ func (q *Queries) GetPluralRecordsWithPostedBy(ctx context.Context, arg GetPlura
 const getPluralRecordsWithRecordType = `-- name: GetPluralRecordsWithRecordType :many
 SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
-WHERE record_id = ANY($3::uuid[])
+WHERE record_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $2::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $2::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
 type GetPluralRecordsWithRecordTypeParams struct {
-	Limit     int32       `json:"limit"`
-	Offset    int32       `json:"offset"`
-	RecordIds []uuid.UUID `json:"record_ids"`
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralRecordsWithRecordTypeRow struct {
@@ -726,7 +1172,7 @@ type GetPluralRecordsWithRecordTypeRow struct {
 }
 
 func (q *Queries) GetPluralRecordsWithRecordType(ctx context.Context, arg GetPluralRecordsWithRecordTypeParams) ([]GetPluralRecordsWithRecordTypeRow, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordsWithRecordType, arg.Limit, arg.Offset, arg.RecordIds)
+	rows, err := q.db.Query(ctx, getPluralRecordsWithRecordType, arg.RecordIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -734,6 +1180,73 @@ func (q *Queries) GetPluralRecordsWithRecordType(ctx context.Context, arg GetPlu
 	items := []GetPluralRecordsWithRecordTypeRow{}
 	for rows.Next() {
 		var i GetPluralRecordsWithRecordTypeRow
+		if err := rows.Scan(
+			&i.Record.TRecordsPkey,
+			&i.Record.RecordID,
+			&i.Record.RecordTypeID,
+			&i.Record.Title,
+			&i.Record.Body,
+			&i.Record.OrganizationID,
+			&i.Record.PostedBy,
+			&i.Record.LastEditedBy,
+			&i.Record.PostedAt,
+			&i.Record.LastEditedAt,
+			&i.RecordType.MRecordTypesPkey,
+			&i.RecordType.RecordTypeID,
+			&i.RecordType.Name,
+			&i.RecordType.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralRecordsWithRecordTypeUseNumberedPaginate = `-- name: GetPluralRecordsWithRecordTypeUseNumberedPaginate :many
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key FROM t_records
+LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
+WHERE record_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $4::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
+	t_records_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralRecordsWithRecordTypeUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	RecordIds   []uuid.UUID `json:"record_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+type GetPluralRecordsWithRecordTypeUseNumberedPaginateRow struct {
+	Record     Record     `json:"record"`
+	RecordType RecordType `json:"record_type"`
+}
+
+func (q *Queries) GetPluralRecordsWithRecordTypeUseNumberedPaginate(ctx context.Context, arg GetPluralRecordsWithRecordTypeUseNumberedPaginateParams) ([]GetPluralRecordsWithRecordTypeUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordsWithRecordTypeUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.RecordIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralRecordsWithRecordTypeUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralRecordsWithRecordTypeUseNumberedPaginateRow
 		if err := rows.Scan(
 			&i.Record.TRecordsPkey,
 			&i.Record.RecordID,
@@ -773,12 +1286,12 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN last_edited_by = ANY($10) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'title' THEN title END ASC,
-	CASE WHEN $11::text = 'r_title' THEN title END DESC,
-	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $11::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 `
 
@@ -875,18 +1388,18 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC,
-	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC,
-	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN $12::text = 'next' THEN t_records_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1
@@ -974,12 +1487,12 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN last_edited_by = ANY($12) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'title' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1046,7 +1559,7 @@ func (q *Queries) GetRecordsUseNumberedPaginate(ctx context.Context, arg GetReco
 }
 
 const getRecordsWithAll = `-- name: GetRecordsWithAll :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
@@ -1062,12 +1575,12 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN t_records.last_edited_by = ANY($10) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'title' THEN title END ASC,
-	CASE WHEN $11::text = 'r_title' THEN title END DESC,
-	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $11::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 `
 
@@ -1145,8 +1658,10 @@ func (q *Queries) GetRecordsWithAll(ctx context.Context, arg GetRecordsWithAllPa
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1159,8 +1674,10 @@ func (q *Queries) GetRecordsWithAll(ctx context.Context, arg GetRecordsWithAllPa
 			&i.Member_2.Password,
 			&i.Member_2.Email,
 			&i.Member_2.Name,
+			&i.Member_2.FirstName,
+			&i.Member_2.LastName,
 			&i.Member_2.AttendStatusID,
-			&i.Member_2.ProfileImageUrl,
+			&i.Member_2.ProfileImageID,
 			&i.Member_2.GradeID,
 			&i.Member_2.GroupID,
 			&i.Member_2.PersonalOrganizationID,
@@ -1179,7 +1696,7 @@ func (q *Queries) GetRecordsWithAll(ctx context.Context, arg GetRecordsWithAllPa
 }
 
 const getRecordsWithAllUseKeysetPaginate = `-- name: GetRecordsWithAllUseKeysetPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
@@ -1218,18 +1735,18 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC,
-	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC,
-	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN $12::text = 'next' THEN t_records_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1
@@ -1321,8 +1838,10 @@ func (q *Queries) GetRecordsWithAllUseKeysetPaginate(ctx context.Context, arg Ge
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1335,8 +1854,10 @@ func (q *Queries) GetRecordsWithAllUseKeysetPaginate(ctx context.Context, arg Ge
 			&i.Member_2.Password,
 			&i.Member_2.Email,
 			&i.Member_2.Name,
+			&i.Member_2.FirstName,
+			&i.Member_2.LastName,
 			&i.Member_2.AttendStatusID,
-			&i.Member_2.ProfileImageUrl,
+			&i.Member_2.ProfileImageID,
 			&i.Member_2.GradeID,
 			&i.Member_2.GroupID,
 			&i.Member_2.PersonalOrganizationID,
@@ -1355,7 +1876,7 @@ func (q *Queries) GetRecordsWithAllUseKeysetPaginate(ctx context.Context, arg Ge
 }
 
 const getRecordsWithAllUseNumberedPaginate = `-- name: GetRecordsWithAllUseNumberedPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_record_types.m_record_types_pkey, m_record_types.record_type_id, m_record_types.name, m_record_types.key, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
@@ -1371,12 +1892,12 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN t_records.last_edited_by = ANY($12) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'title' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1459,8 +1980,10 @@ func (q *Queries) GetRecordsWithAllUseNumberedPaginate(ctx context.Context, arg 
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1473,8 +1996,10 @@ func (q *Queries) GetRecordsWithAllUseNumberedPaginate(ctx context.Context, arg 
 			&i.Member_2.Password,
 			&i.Member_2.Email,
 			&i.Member_2.Name,
+			&i.Member_2.FirstName,
+			&i.Member_2.LastName,
 			&i.Member_2.AttendStatusID,
-			&i.Member_2.ProfileImageUrl,
+			&i.Member_2.ProfileImageID,
 			&i.Member_2.GradeID,
 			&i.Member_2.GroupID,
 			&i.Member_2.PersonalOrganizationID,
@@ -1493,7 +2018,7 @@ func (q *Queries) GetRecordsWithAllUseNumberedPaginate(ctx context.Context, arg 
 }
 
 const getRecordsWithLastEditedBy = `-- name: GetRecordsWithLastEditedBy :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE
 	CASE WHEN $1::boolean = true THEN record_type_id = ANY($2) ELSE TRUE END
@@ -1506,12 +2031,12 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN t_records.last_edited_by = ANY($10) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'title' THEN title END ASC,
-	CASE WHEN $11::text = 'r_title' THEN title END DESC,
-	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $11::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 `
 
@@ -1572,8 +2097,10 @@ func (q *Queries) GetRecordsWithLastEditedBy(ctx context.Context, arg GetRecords
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1592,7 +2119,7 @@ func (q *Queries) GetRecordsWithLastEditedBy(ctx context.Context, arg GetRecords
 }
 
 const getRecordsWithLastEditedByUseKeysetPaginate = `-- name: GetRecordsWithLastEditedByUseKeysetPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE
 	CASE WHEN $2::boolean = true THEN record_type_id = ANY($3) ELSE TRUE END
@@ -1628,18 +2155,18 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC,
-	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC,
-	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN $12::text = 'next' THEN t_records_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1
@@ -1714,8 +2241,10 @@ func (q *Queries) GetRecordsWithLastEditedByUseKeysetPaginate(ctx context.Contex
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1734,7 +2263,7 @@ func (q *Queries) GetRecordsWithLastEditedByUseKeysetPaginate(ctx context.Contex
 }
 
 const getRecordsWithLastEditedByUseNumberedPaginate = `-- name: GetRecordsWithLastEditedByUseNumberedPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN record_type_id = ANY($4) ELSE TRUE END
@@ -1747,12 +2276,12 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN t_records.last_edited_by = ANY($12) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'title' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1818,8 +2347,10 @@ func (q *Queries) GetRecordsWithLastEditedByUseNumberedPaginate(ctx context.Cont
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1851,12 +2382,12 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN last_edited_by = ANY($10) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'title' THEN title END ASC,
-	CASE WHEN $11::text = 'r_title' THEN title END DESC,
-	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $11::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 `
 
@@ -1969,18 +2500,18 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC,
-	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC,
-	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN $12::text = 'next' THEN t_records_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1
@@ -2084,12 +2615,12 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN last_edited_by = ANY($12) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'title' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2171,7 +2702,7 @@ func (q *Queries) GetRecordsWithOrganizationUseNumberedPaginate(ctx context.Cont
 }
 
 const getRecordsWithPostedBy = `-- name: GetRecordsWithPostedBy :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 WHERE
 	CASE WHEN $1::boolean = true THEN record_type_id = ANY($2) ELSE TRUE END
@@ -2184,12 +2715,12 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN last_edited_by = ANY($10) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'title' THEN title END ASC,
-	CASE WHEN $11::text = 'r_title' THEN title END DESC,
-	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $11::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 `
 
@@ -2250,8 +2781,10 @@ func (q *Queries) GetRecordsWithPostedBy(ctx context.Context, arg GetRecordsWith
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2270,7 +2803,7 @@ func (q *Queries) GetRecordsWithPostedBy(ctx context.Context, arg GetRecordsWith
 }
 
 const getRecordsWithPostedByUseKeysetPaginate = `-- name: GetRecordsWithPostedByUseKeysetPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 WHERE
 	CASE WHEN $2::boolean = true THEN record_type_id = ANY($3) ELSE TRUE END
@@ -2306,18 +2839,18 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC,
-	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC,
-	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN $12::text = 'next' THEN t_records_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1
@@ -2392,8 +2925,10 @@ func (q *Queries) GetRecordsWithPostedByUseKeysetPaginate(ctx context.Context, a
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2412,7 +2947,7 @@ func (q *Queries) GetRecordsWithPostedByUseKeysetPaginate(ctx context.Context, a
 }
 
 const getRecordsWithPostedByUseNumberedPaginate = `-- name: GetRecordsWithPostedByUseNumberedPaginate :many
-SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
+SELECT t_records.t_records_pkey, t_records.record_id, t_records.record_type_id, t_records.title, t_records.body, t_records.organization_id, t_records.posted_by, t_records.last_edited_by, t_records.posted_at, t_records.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_records
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN record_type_id = ANY($4) ELSE TRUE END
@@ -2425,12 +2960,12 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN last_edited_by = ANY($12) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'title' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2496,8 +3031,10 @@ func (q *Queries) GetRecordsWithPostedByUseNumberedPaginate(ctx context.Context,
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2529,12 +3066,12 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN last_edited_by = ANY($10) ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'title' THEN title END ASC,
-	CASE WHEN $11::text = 'r_title' THEN title END DESC,
-	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $11::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $11::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $11::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 `
 
@@ -2641,18 +3178,18 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC,
-	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC,
-	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'title' AND $12::text = 'next' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'title' AND $12::text = 'prev' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'next' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' AND $12::text = 'prev' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' AND $12::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' AND $12::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' AND $12::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' AND $12::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN $12::text = 'next' THEN t_records_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1
@@ -2750,12 +3287,12 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN last_edited_by = ANY($12) ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'title' THEN title END ASC,
-	CASE WHEN $13::text = 'r_title' THEN title END DESC,
-	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN $13::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN $13::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2830,13 +3367,16 @@ func (q *Queries) GetRecordsWithRecordTypeUseNumberedPaginate(ctx context.Contex
 	return items, nil
 }
 
-const pluralDeleteRecords = `-- name: PluralDeleteRecords :exec
+const pluralDeleteRecords = `-- name: PluralDeleteRecords :execrows
 DELETE FROM t_records WHERE record_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteRecords(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteRecords, dollar_1)
-	return err
+func (q *Queries) PluralDeleteRecords(ctx context.Context, recordIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteRecords, recordIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateRecord = `-- name: UpdateRecord :one

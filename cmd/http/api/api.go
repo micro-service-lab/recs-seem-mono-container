@@ -8,11 +8,16 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"github.com/micro-service-lab/recs-seem-mono-container/app/i18n"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/service"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler"
 	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/handler/response"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/validation"
+	"github.com/micro-service-lab/recs-seem-mono-container/cmd/http/ws"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/auth"
 	"github.com/micro-service-lab/recs-seem-mono-container/internal/clock"
+	"github.com/micro-service-lab/recs-seem-mono-container/internal/config"
+	"github.com/micro-service-lab/recs-seem-mono-container/internal/session"
 )
 
 // API API を表す構造体。
@@ -21,20 +26,48 @@ type API struct {
 	clk clock.Clock
 	// auth 認証サービス
 	auth auth.Auth
+	// validator バリデーションサービス
+	validator validation.Validator
 	// svc サービスハンドラ
 	svc service.ManagerInterface
 
 	// middlewares API で使用する HTTP ミドルウェア
 	middlewares []func(http.Handler) http.Handler
+
+	// translator 翻訳サービス
+	translator i18n.Translation
+
+	// ssm セッションマネージャ
+	ssm session.Manager
+
+	// cfg 設定
+	cfg config.Config
+
+	// wsHub WebSocket ハブ
+	wsHub ws.HubInterface
 }
 
 // NewAPI API を生成して返す。
-func NewAPI(clk clock.Clock, auth auth.Auth, svc service.ManagerInterface) *API {
+func NewAPI(
+	clk clock.Clock,
+	auth auth.Auth,
+	validator validation.Validator,
+	svc service.ManagerInterface,
+	translator i18n.Translation,
+	ssm session.Manager,
+	cfg config.Config,
+	wsHub ws.HubInterface,
+) *API {
 	return &API{
 		clk:         clk,
 		auth:        auth,
+		validator:   validator,
 		svc:         svc,
 		middlewares: make([]func(http.Handler) http.Handler, 0),
+		translator:  translator,
+		ssm:         ssm,
+		cfg:         cfg,
+		wsHub:       wsHub,
 	}
 }
 
@@ -49,13 +82,21 @@ func (s *API) Handler() http.Handler {
 
 	r.Use(s.middlewares...)
 	r.Use(
-		allowContentTypeMiddleware("application/json"),
+		// json or multipart/form-data のみ受け付ける
+		allowContentTypeMiddleware("application/json", "multipart/form-data"),
 		middleware.RequestID,
 		middleware.SetHeader("Content-Type", "application/json"),
 	)
 
+	r.Group(func(r chi.Router) {
+		r.Use(AuthMiddleware(s.clk.Now, s.auth, s.svc, s.ssm))
+
+		r.HandleFunc("/ws", handler.NewWebsocketHandler(s.wsHub).Handle)
+	})
+
 	r.Post("/ping", handler.PingHandler(s.clk))
 
+	// マスタデータ
 	r.Mount("/attend_statuses", AttendStatusHandler(s.svc))
 	r.Mount("/attendance_types", AttendanceTypeHandler(s.svc))
 	r.Mount("/event_types", EventTypeHandler(s.svc))
@@ -63,6 +104,25 @@ func (s *API) Handler() http.Handler {
 	r.Mount("/policy_categories", PolicyCategoryHandler(s.svc))
 	r.Mount("/record_types", RecordTypeHandler(s.svc))
 	r.Mount("/mime_types", MimeTypeHandler(s.svc))
+	r.Mount("/permissions", PermissionHandler(s.svc))
+	r.Mount("/chat_room_action_types", ChatRoomActionTypeHandler(s.svc))
+	r.Mount("/groups", GroupHandler(s.svc))
+	r.Mount("/grades", GradeHandler(s.svc))
+
+	// トランザクションデータ
+	r.Mount("/auth", AuthHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm, s.cfg))
+	r.Mount("/confidential", ConfidentialHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
+	r.Mount("/policies", PolicyHandler(s.svc, s.validator, s.translator))
+	r.Mount("/roles", RoleHandler(s.svc, s.validator, s.translator))
+	r.Mount("/organizations", OrganizationHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
+	r.Mount("/students", StudentHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
+	r.Mount("/professors", ProfessorHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
+	r.Mount("/members", MemberHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
+	r.Mount("/chat_rooms", ChatRoomHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
+	r.Mount("/images", ImageHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
+	r.Mount("/files", FileHandler(s.svc, s.validator, s.translator, s.clk, s.auth, s.ssm))
+	r.Mount("/read_receipts", ReadReceiptHandler(s.svc, s.clk, s.auth, s.ssm))
+	r.Mount("/attachable_items", AttachableItemHandler(s.svc, s.clk, s.auth, s.ssm))
 
 	r.NotFound(s.notFound)
 	r.MethodNotAllowed(s.methodNotAllowed)

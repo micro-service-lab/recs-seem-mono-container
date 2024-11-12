@@ -58,22 +58,28 @@ type CreateEventTypesParams struct {
 	Color string `json:"color"`
 }
 
-const deleteEventType = `-- name: DeleteEventType :exec
+const deleteEventType = `-- name: DeleteEventType :execrows
 DELETE FROM m_event_types WHERE event_type_id = $1
 `
 
-func (q *Queries) DeleteEventType(ctx context.Context, eventTypeID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteEventType, eventTypeID)
-	return err
+func (q *Queries) DeleteEventType(ctx context.Context, eventTypeID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteEventType, eventTypeID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteEventTypeByKey = `-- name: DeleteEventTypeByKey :exec
+const deleteEventTypeByKey = `-- name: DeleteEventTypeByKey :execrows
 DELETE FROM m_event_types WHERE key = $1
 `
 
-func (q *Queries) DeleteEventTypeByKey(ctx context.Context, key string) error {
-	_, err := q.db.Exec(ctx, deleteEventTypeByKey, key)
-	return err
+func (q *Queries) DeleteEventTypeByKey(ctx context.Context, key string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteEventTypeByKey, key)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findEventTypeByID = `-- name: FindEventTypeByID :one
@@ -115,8 +121,8 @@ SELECT m_event_types_pkey, event_type_id, name, key, color FROM m_event_types
 WHERE
 	CASE WHEN $1::boolean = true THEN name LIKE '%' || $2::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN name END ASC,
-	CASE WHEN $3::text = 'r_name' THEN name END DESC,
+	CASE WHEN $3::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN $3::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_event_types_pkey ASC
 `
 
@@ -172,10 +178,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN name END ASC,
-	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN name END ASC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN name END DESC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN name END ASC NULLS LAST,
 	CASE WHEN $4::text = 'next' THEN m_event_types_pkey END ASC,
 	CASE WHEN $4::text = 'prev' THEN m_event_types_pkey END DESC
 LIMIT $1
@@ -230,8 +236,8 @@ SELECT m_event_types_pkey, event_type_id, name, key, color FROM m_event_types
 WHERE
 	CASE WHEN $3::boolean = true THEN name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN name END DESC,
+	CASE WHEN $5::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_event_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -277,20 +283,20 @@ func (q *Queries) GetEventTypesUseNumberedPaginate(ctx context.Context, arg GetE
 }
 
 const getPluralEventTypes = `-- name: GetPluralEventTypes :many
-SELECT m_event_types_pkey, event_type_id, name, key, color FROM m_event_types WHERE event_type_id = ANY($3::uuid[])
+SELECT m_event_types_pkey, event_type_id, name, key, color FROM m_event_types WHERE event_type_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_event_types_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
 type GetPluralEventTypesParams struct {
-	Limit        int32       `json:"limit"`
-	Offset       int32       `json:"offset"`
 	EventTypeIds []uuid.UUID `json:"event_type_ids"`
+	OrderMethod  string      `json:"order_method"`
 }
 
 func (q *Queries) GetPluralEventTypes(ctx context.Context, arg GetPluralEventTypesParams) ([]EventType, error) {
-	rows, err := q.db.Query(ctx, getPluralEventTypes, arg.Limit, arg.Offset, arg.EventTypeIds)
+	rows, err := q.db.Query(ctx, getPluralEventTypes, arg.EventTypeIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -315,13 +321,63 @@ func (q *Queries) GetPluralEventTypes(ctx context.Context, arg GetPluralEventTyp
 	return items, nil
 }
 
-const pluralDeleteEventTypes = `-- name: PluralDeleteEventTypes :exec
+const getPluralEventTypesUseNumberedPaginate = `-- name: GetPluralEventTypesUseNumberedPaginate :many
+SELECT m_event_types_pkey, event_type_id, name, key, color FROM m_event_types WHERE event_type_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN name END DESC NULLS LAST,
+	m_event_types_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralEventTypesUseNumberedPaginateParams struct {
+	Limit        int32       `json:"limit"`
+	Offset       int32       `json:"offset"`
+	EventTypeIds []uuid.UUID `json:"event_type_ids"`
+	OrderMethod  string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralEventTypesUseNumberedPaginate(ctx context.Context, arg GetPluralEventTypesUseNumberedPaginateParams) ([]EventType, error) {
+	rows, err := q.db.Query(ctx, getPluralEventTypesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.EventTypeIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []EventType{}
+	for rows.Next() {
+		var i EventType
+		if err := rows.Scan(
+			&i.MEventTypesPkey,
+			&i.EventTypeID,
+			&i.Name,
+			&i.Key,
+			&i.Color,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const pluralDeleteEventTypes = `-- name: PluralDeleteEventTypes :execrows
 DELETE FROM m_event_types WHERE event_type_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteEventTypes(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteEventTypes, dollar_1)
-	return err
+func (q *Queries) PluralDeleteEventTypes(ctx context.Context, eventTypeIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteEventTypes, eventTypeIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateEventType = `-- name: UpdateEventType :one

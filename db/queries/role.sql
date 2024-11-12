@@ -7,11 +7,11 @@ INSERT INTO m_roles (name, description, created_at, updated_at) VALUES ($1, $2, 
 -- name: UpdateRole :one
 UPDATE m_roles SET name = $2, description = $3, updated_at = $4 WHERE role_id = $1 RETURNING *;
 
--- name: DeleteRole :exec
+-- name: DeleteRole :execrows
 DELETE FROM m_roles WHERE role_id = $1;
 
--- name: PluralDeleteRoles :exec
-DELETE FROM m_roles WHERE role_id = ANY($1::uuid[]);
+-- name: PluralDeleteRoles :execrows
+DELETE FROM m_roles WHERE role_id = ANY(@role_ids::uuid[]);
 
 -- name: FindRoleByID :one
 SELECT * FROM m_roles WHERE role_id = $1;
@@ -21,8 +21,8 @@ SELECT * FROM m_roles
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_roles.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_roles_pkey ASC;
 
 -- name: GetRolesUseNumberedPaginate :many
@@ -30,8 +30,8 @@ SELECT * FROM m_roles
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_roles.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_roles_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -55,19 +55,30 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_roles.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_roles.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_roles.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_roles.name END DESC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_roles.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_roles.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_roles.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_roles_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_roles_pkey END DESC
 LIMIT $1;
 
--- name: GetPluckRoles :many
-SELECT role_id, name FROM m_roles
+-- name: GetPluralRoles :many
+SELECT * FROM m_roles
 WHERE
 	role_id = ANY(@role_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
+	m_roles_pkey ASC;
+
+-- name: GetPluralRolesUseNumberedPaginate :many
+SELECT * FROM m_roles
+WHERE
+	role_id = ANY(@role_ids::uuid[])
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_roles.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_roles.name END DESC NULLS LAST,
 	m_roles_pkey ASC
 LIMIT $1 OFFSET $2;
 

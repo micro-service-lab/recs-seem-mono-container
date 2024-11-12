@@ -95,7 +95,7 @@ func (c *InitPermissionCategories) RunDiff(ctx context.Context, notDel, deepEqua
 		return fmt.Errorf("failed to create permission categories: %w", err)
 	}
 	if len(existIDs) > 0 && !notDel {
-		err = (*c.Manager).PluralDeletePermissionCategories(ctx, existIDs)
+		_, err = (*c.Manager).PluralDeletePermissionCategories(ctx, existIDs)
 		if err != nil {
 			return fmt.Errorf("failed to delete permission categories: %w", err)
 		}

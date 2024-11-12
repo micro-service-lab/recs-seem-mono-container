@@ -10,14 +10,14 @@ UPDATE m_event_types SET name = $2, key = $3, color = $4 WHERE event_type_id = $
 -- name: UpdateEventTypeByKey :one
 UPDATE m_event_types SET name = $2, color = $3 WHERE key = $1 RETURNING *;
 
--- name: DeleteEventType :exec
+-- name: DeleteEventType :execrows
 DELETE FROM m_event_types WHERE event_type_id = $1;
 
--- name: DeleteEventTypeByKey :exec
+-- name: DeleteEventTypeByKey :execrows
 DELETE FROM m_event_types WHERE key = $1;
 
--- name: PluralDeleteEventTypes :exec
-DELETE FROM m_event_types WHERE event_type_id = ANY($1::uuid[]);
+-- name: PluralDeleteEventTypes :execrows
+DELETE FROM m_event_types WHERE event_type_id = ANY(@event_type_ids::uuid[]);
 
 -- name: FindEventTypeByID :one
 SELECT * FROM m_event_types WHERE event_type_id = $1;
@@ -30,8 +30,8 @@ SELECT * FROM m_event_types
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_event_types_pkey ASC;
 
 -- name: GetEventTypesUseNumberedPaginate :many
@@ -39,8 +39,8 @@ SELECT * FROM m_event_types
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_event_types_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -64,10 +64,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN name END ASC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN name END DESC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_event_types_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_event_types_pkey END DESC
 LIMIT $1;
@@ -75,6 +75,15 @@ LIMIT $1;
 -- name: GetPluralEventTypes :many
 SELECT * FROM m_event_types WHERE event_type_id = ANY(@event_type_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC NULLS LAST,
+	m_event_types_pkey ASC;
+
+-- name: GetPluralEventTypesUseNumberedPaginate :many
+SELECT * FROM m_event_types WHERE event_type_id = ANY(@event_type_ids::uuid[])
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_event_types_pkey ASC
 LIMIT $1 OFFSET $2;
 

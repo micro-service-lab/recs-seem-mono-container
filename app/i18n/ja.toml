@@ -1,0 +1,105 @@
+[PolicyIDs]
+other = "ポリシーID"
+[PolicyID]
+other = "ポリシーID"
+[RoleIDs]
+other = "ロールID"
+[RoleID]
+other = "ロールID"
+[ProfileImageID]
+other = "プロフィール画像ID"
+[GradeID]
+other = "学年ID"
+[GradeIDs]
+other = "学年ID"
+[GroupID]
+other = "班ID"
+[GroupIDs]
+other = "班ID"
+[LoginID]
+other = "ログインID"
+[CoverImageID]
+other = "カバー画像ID"
+[CoverImageIDs]
+other = "カバー画像ID"
+[MemberID]
+other = "メンバーID"
+[MemberIDs]
+other = "メンバーID"
+[ImageID]
+other = "画像ID"
+[ImageIDs]
+other = "画像ID"
+[FileID]
+other = "ファイルID"
+[FileIDs]
+other = "ファイルID"
+[AttachableItemID]
+other = "添付可能アイテムID"
+[AttachableItemIDs]
+other = "添付可能アイテムID"
+
+[ChatRoom]
+other = "チャットルーム"
+[Organization]
+other = "オーガナイゼーション"
+[File]
+other = "ファイル"
+[Files]
+other = "ファイル"
+[Message]
+other = "メッセージ"
+[Messages]
+other = "メッセージ"
+[Professor]
+other = "教授"
+[Professors]
+other = "教授"
+[Student]
+other = "学生"
+[Students]
+other = "学生"
+[Grade]
+other = "学年"
+[Grades]
+other = "学年"
+[Group]
+other = "班"
+[Groups]
+other = "班"
+
+[Required]
+other = "{{.Target}}は必須フィールドです"
+[IsUploadFile]
+other = "{{.Target}}はアップロードファイルである必要があります"
+[PluralIsUploadFile]
+other = "{{.Target}}にアップロードファイルでないデータが含まれています"
+[ContainSystemFile]
+other = "{{.Target}}にシステムファイルが含まれています"
+[ContainNotOwnerFile]
+other = "{{.Target}}に他のユーザーが所有するファイルが含まれています"
+[ContainsNotImageFile]
+other = "{{.Target}}に画像ファイル以外が含まれています"
+
+[ModelNotExists]
+other = "指定された{{.ID}}が存在しません"
+[PluralModelNotExists]
+other = "指定された{{.ID}}に存在しない{{.ValueType}}が含まれています"
+[ModelExists]
+other = "指定された{{.ID}}は既に存在します"
+[PluralModelExists]
+other = "指定された{{.ID}}に既に存在する{{.ValueType}}が含まれています"
+[AlreadyAssociated]
+other = "指定された{{.ID}}は既に{{.Associated}}へ関連付けられています"
+[PluralAlreadyAssociated]
+other = "指定された{{.ID}}に既に{{.Associated}}へ関連付けられている{{.ValueType}}が含まれています"
+[NotAssociated]
+other = "指定された{{.ID}}は{{.Associated}}に関連付けられていません"
+[PluralNotAssociated]
+other = "指定された{{.ID}}には{{.Associated}}に関連付けられていない{{.ValueType}}が含まれています"
+[OnlyProfessorModel]
+other = "教授専用の{{.ID}}です"
+[MustBeEntityStatusIfEntityStatus]
+other = "{{.Assumption}}が{{.AssumptionStatus}}の場合、{{.Target}}は{{.TargetStatus}}である必要があります"
+[CannotAddSelfToMembers]
+other = "メンバーに自分自身を含めることはできません"

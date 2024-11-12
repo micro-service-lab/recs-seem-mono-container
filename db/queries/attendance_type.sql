@@ -10,14 +10,14 @@ UPDATE m_attendance_types SET name = $2, key = $3, color = $4 WHERE attendance_t
 -- name: UpdateAttendanceTypeByKey :one
 UPDATE m_attendance_types SET name = $2, color = $3 WHERE key = $1 RETURNING *;
 
--- name: DeleteAttendanceType :exec
+-- name: DeleteAttendanceType :execrows
 DELETE FROM m_attendance_types WHERE attendance_type_id = $1;
 
--- name: DeleteAttendanceTypeByKey :exec
+-- name: DeleteAttendanceTypeByKey :execrows
 DELETE FROM m_attendance_types WHERE key = $1;
 
--- name: PluralDeleteAttendanceTypes :exec
-DELETE FROM m_attendance_types WHERE attendance_type_id = ANY($1::uuid[]);
+-- name: PluralDeleteAttendanceTypes :execrows
+DELETE FROM m_attendance_types WHERE attendance_type_id = ANY(@attendance_type_ids::uuid[]);
 
 -- name: FindAttendanceTypeByID :one
 SELECT * FROM m_attendance_types WHERE attendance_type_id = $1;
@@ -30,8 +30,8 @@ SELECT * FROM m_attendance_types
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_attendance_types.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_attendance_types_pkey ASC;
 
 -- name: GetAttendanceTypesUseNumberedPaginate :many
@@ -39,8 +39,8 @@ SELECT * FROM m_attendance_types
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_attendance_types.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_attendance_types_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -64,10 +64,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN name END ASC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN name END DESC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_attendance_types_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_attendance_types_pkey END DESC
 LIMIT $1;
@@ -76,6 +76,16 @@ LIMIT $1;
 SELECT * FROM m_attendance_types
 WHERE attendance_type_id = ANY(@attendance_type_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC NULLS LAST,
+	m_attendance_types_pkey ASC;
+
+-- name: GetPluralAttendanceTypesUseNumberedPaginate :many
+SELECT * FROM m_attendance_types
+WHERE attendance_type_id = ANY(@attendance_type_ids::uuid[])
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_attendance_types_pkey ASC
 LIMIT $1 OFFSET $2;
 

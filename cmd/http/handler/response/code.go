@@ -210,4 +210,277 @@ var (
 		Message:    "unsupported media type error",
 		StatusCode: http.StatusUnsupportedMediaType,
 	}
+
+	// RequestFormatError リクエストフォーマットエラー
+	RequestFormatError = APIResponseType{
+		Code:       "225",
+		Message:    "request format error",
+		StatusCode: http.StatusBadRequest,
+	}
+
+	// AttemptOperatePersonalOrganization 個人用オーガナイゼーションの操作を試みる
+	AttemptOperatePersonalOrganization = APIResponseType{
+		Code:       "226",
+		Message:    "attempt operate personal organization error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// AttemptOperateWholeOrganization 全体用オーガナイゼーションの操作を試みる
+	AttemptOperateWholeOrganization = APIResponseType{
+		Code:       "227",
+		Message:    "attempt operate whole organization error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// AttemptOperateGroupOrganization グループ用オーガナイゼーションの操作を試みる
+	AttemptOperateGroupOrganization = APIResponseType{
+		Code:       "228",
+		Message:    "attempt operate group organization error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// AttemptOperateGradeOrganization 学年用オーガナイゼーションの操作を試みる
+	AttemptOperateGradeOrganization = APIResponseType{
+		Code:       "229",
+		Message:    "attempt operate grade organization error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// ConflictStorageKey ストレージキーの競合
+	ConflictStorageKey = APIResponseType{
+		Code:       "230",
+		Message:    "conflict storage key error",
+		StatusCode: http.StatusConflict,
+	}
+
+	// NotFileOwner ファイルの所有者でない
+	NotFileOwner = APIResponseType{
+		Code:       "231",
+		Message:    "not file owner error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// OnlyProfessorAction 教授のみの操作
+	OnlyProfessorAction = APIResponseType{
+		Code:       "232",
+		Message:    "only professor action error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// InvalidLoginIDOrPassword ログインIDまたはパスワードが無効
+	InvalidLoginIDOrPassword = APIResponseType{
+		Code:       "233",
+		Message:    "invalid login id or password error",
+		StatusCode: http.StatusUnauthorized,
+	}
+
+	// InvalidRefreshToken リフレッシュトークンが無効
+	InvalidRefreshToken = APIResponseType{
+		Code:       "234",
+		Message:    "invalid refresh token error",
+		StatusCode: http.StatusUnauthorized,
+	}
+
+	// ExpireAccessToken アクセストークンの有効期限切れ
+	ExpireAccessToken = APIResponseType{
+		Code:       "235",
+		Message:    "expire access token error",
+		StatusCode: http.StatusUnauthorized,
+	}
+
+	// ExpireRefreshToken リフレッシュトークンの有効期限切れ
+	ExpireRefreshToken = APIResponseType{
+		Code:       "236",
+		Message:    "expire refresh token error",
+		StatusCode: http.StatusUnauthorized,
+	}
+
+	// CannotDeleteOrganizationChatRoom 組織チャットルームを削除できない
+	CannotDeleteOrganizationChatRoom = APIResponseType{
+		Code:       "237",
+		Message:    "cannot delete organization chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotDeletePrivateChatRoom プライベートチャットルームを削除できない
+	CannotDeletePrivateChatRoom = APIResponseType{
+		Code:       "238",
+		Message:    "cannot delete private chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotUpdatePrivateChatRoom プライベートチャットルームを更新できない
+	CannotUpdatePrivateChatRoom = APIResponseType{
+		Code:       "239",
+		Message:    "cannot update private chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotAddMemberToPrivateChatRoom プライベートチャットルームにメンバーを追加できない
+	CannotAddMemberToPrivateChatRoom = APIResponseType{
+		Code:       "240",
+		Message:    "cannot add member to private chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotWithdrawMemberFromPrivateChatRoom プライベートチャットルームからメンバーを退会できない
+	CannotWithdrawMemberFromPrivateChatRoom = APIResponseType{
+		Code:       "241",
+		Message:    "cannot withdraw member from private chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotAddMemberToOrganizationChatRoom 組織チャットルームにメンバーを追加できない
+	CannotAddMemberToOrganizationChatRoom = APIResponseType{
+		Code:       "242",
+		Message:    "cannot add member to organization chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotWithdrawMemberFromOrganizationChatRoom 組織チャットルームからメンバーを退会できない
+	CannotWithdrawMemberFromOrganizationChatRoom = APIResponseType{
+		Code:       "243",
+		Message:    "cannot withdraw member from organization chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotRemoveMemberFromOrganizationChatRoom 組織チャットルームからメンバーを削除できない
+	CannotRemoveMemberFromOrganizationChatRoom = APIResponseType{
+		Code:       "244",
+		Message:    "cannot remove member from organization chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotRemoveMemberFromPrivateChatRoom プライベートチャットルームからメンバーを削除できない
+	CannotRemoveMemberFromPrivateChatRoom = APIResponseType{
+		Code:       "245",
+		Message:    "cannot remove member from private chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// MultiPartFormParseError マルチパートフォームのパースエラー
+	MultiPartFormParseError = APIResponseType{
+		Code:       "246",
+		Message:    "multi part form parse error",
+		StatusCode: http.StatusBadRequest,
+	}
+
+	// CannotDeleteSystemFile システムファイルを削除できない
+	CannotDeleteSystemFile = APIResponseType{
+		Code:       "247",
+		Message:    "cannot delete system file error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// NotImageFile 画像ファイルでない
+	NotImageFile = APIResponseType{
+		Code:       "248",
+		Message:    "not image file error",
+		StatusCode: http.StatusBadRequest,
+	}
+
+	// NotMessageOwner メッセージの所有者でない
+	NotMessageOwner = APIResponseType{
+		Code:       "249",
+		Message:    "not message owner error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// NotMatchChatRoomMessage チャットルームとメッセージが一致しない
+	NotMatchChatRoomMessage = APIResponseType{
+		Code:       "250",
+		Message:    "not match chat room message error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotReadOwnMessage 自分のメッセージを読めない
+	CannotReadOwnMessage = APIResponseType{
+		Code:       "251",
+		Message:    "cannot read own message error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// NotCreateMessageToSelf 自分自身にメッセージを作成できない
+	NotCreateMessageToSelf = APIResponseType{
+		Code:       "252",
+		Message:    "not create message to self error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotAttachSystemFile システムファイルを添付できない
+	CannotAttachSystemFile = APIResponseType{
+		Code:       "253",
+		Message:    "cannot attach system file error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// PrivateChatRoomAlreadyExists プライベートチャットルームが既に存在する
+	PrivateChatRoomAlreadyExists = APIResponseType{
+		Code:       "254",
+		Message:    "private chat room already exists error",
+		StatusCode: http.StatusConflict,
+	}
+
+	// NotChatRoomMember チャットルームのメンバーでない
+	NotChatRoomMember = APIResponseType{
+		Code:       "255",
+		Message:    "not chat room member error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// MustBeGradeProfessorIfGroupProfessor 一方が教授であれば、もう一方も教授である必要がある
+	MustBeGradeProfessorIfGroupProfessor = APIResponseType{
+		Code:       "256",
+		Message:    "must be grade professor if group professor error",
+		StatusCode: http.StatusBadRequest,
+	}
+
+	// MustBeGroupProfessorIfGradeProfessor 一方が教授であれば、もう一方も教授である必要がある
+	MustBeGroupProfessorIfGradeProfessor = APIResponseType{
+		Code:       "257",
+		Message:    "must be group professor if grade professor error",
+		StatusCode: http.StatusBadRequest,
+	}
+
+	// NotOrganizationMember 組織のメンバーでない
+	NotOrganizationMember = APIResponseType{
+		Code:       "258",
+		Message:    "not organization member error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotDeleteSelfFromOrganization 組織から自分自身を削除できない
+	CannotDeleteSelfFromOrganization = APIResponseType{
+		Code:       "259",
+		Message:    "cannot delete self from organization error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotDeleteSelfFromChatRoom チャットルームから自分自身を削除できない
+	CannotDeleteSelfFromChatRoom = APIResponseType{
+		Code:       "260",
+		Message:    "cannot delete self from chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotAddSelfToOrganization 組織に自分自身を追加できない
+	CannotAddSelfToOrganization = APIResponseType{
+		Code:       "261",
+		Message:    "cannot add self to organization error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotAddSelfToChatRoom チャットルームに自分自身を追加できない
+	CannotAddSelfToChatRoom = APIResponseType{
+		Code:       "262",
+		Message:    "cannot add self to chat room error",
+		StatusCode: http.StatusForbidden,
+	}
+
+	// CannotDownloadOuterAttachableItem 外部添付アイテムをダウンロードできない
+	CannotDownloadOuterAttachableItem = APIResponseType{
+		Code:       "263",
+		Message:    "cannot download outer attachable item error",
+		StatusCode: http.StatusForbidden,
+	}
 )

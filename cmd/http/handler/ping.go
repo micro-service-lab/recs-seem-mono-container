@@ -21,7 +21,7 @@ type PingResponse struct {
 	// Message 受信した文字列
 	Message string `json:"message"`
 	// ReceivedTime サーバー受信時刻
-	ReceivedTime time.Time `json:"receivedTime"`
+	ReceivedTime time.Time `json:"received_time"`
 }
 
 // PingHandler 疎通確認 API の HTTP ハンドラ。
@@ -37,7 +37,7 @@ func PingHandler(clk clock.Clock) func(w http.ResponseWriter, r *http.Request) {
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			// デコードに失敗した場合はログ出力して 400 Bad Request を返す。
 			log.Printf("[ERROR] request decoding failed: %+v", err)
-			errAtr := response.ApplicationErrorAttributes{
+			errAtr := map[string]string{
 				"error": "invalid json",
 			}
 			err := response.JSONResponseWriter(r.Context(), w, response.Validation, nil, errAtr)

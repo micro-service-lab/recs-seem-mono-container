@@ -9,3 +9,17 @@ type Image struct {
 	Width            Float     `json:"width"`
 	AttachableItemID uuid.UUID `json:"attachable_item_id"`
 }
+
+// ImageWithAttachableItem 画像と添付アイテムを表す構造体。
+type ImageWithAttachableItem struct {
+	ImageID        uuid.UUID      `json:"image_id"`
+	Height         Float          `json:"height"`
+	Width          Float          `json:"width"`
+	AttachableItem AttachableItem `json:"attachable_item"`
+}
+
+// ImageWithAttachableItemForQuery 画像と添付アイテムを表す構造体(クエリー用)。
+type ImageWithAttachableItemForQuery struct {
+	Pkey Int `json:"-"`
+	ImageWithAttachableItem
+}

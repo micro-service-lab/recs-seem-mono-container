@@ -65,7 +65,9 @@ func (r iteratorForCreateAttachableItems) Values() ([]interface{}, error) {
 	return []interface{}{
 		r.rows[0].Url,
 		r.rows[0].Size,
+		r.rows[0].Alias,
 		r.rows[0].OwnerID,
+		r.rows[0].FromOuter,
 		r.rows[0].MimeTypeID,
 	}, nil
 }
@@ -75,7 +77,7 @@ func (r iteratorForCreateAttachableItems) Err() error {
 }
 
 func (q *Queries) CreateAttachableItems(ctx context.Context, arg []CreateAttachableItemsParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"t_attachable_items"}, []string{"url", "size", "owner_id", "mime_type_id"}, &iteratorForCreateAttachableItems{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"t_attachable_items"}, []string{"url", "size", "alias", "owner_id", "from_outer", "mime_type_id"}, &iteratorForCreateAttachableItems{rows: arg})
 }
 
 // iteratorForCreateAttachedMessages implements pgx.CopyFromSource.
@@ -99,7 +101,7 @@ func (r *iteratorForCreateAttachedMessages) Next() bool {
 func (r iteratorForCreateAttachedMessages) Values() ([]interface{}, error) {
 	return []interface{}{
 		r.rows[0].MessageID,
-		r.rows[0].FileUrl,
+		r.rows[0].AttachableItemID,
 	}, nil
 }
 
@@ -108,7 +110,7 @@ func (r iteratorForCreateAttachedMessages) Err() error {
 }
 
 func (q *Queries) CreateAttachedMessages(ctx context.Context, arg []CreateAttachedMessagesParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"t_attached_messages"}, []string{"message_id", "file_url"}, &iteratorForCreateAttachedMessages{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"t_attached_messages"}, []string{"message_id", "attachable_item_id"}, &iteratorForCreateAttachedMessages{rows: arg})
 }
 
 // iteratorForCreateAttendStatuses implements pgx.CopyFromSource.
@@ -201,7 +203,8 @@ func (r iteratorForCreateAttendances) Values() ([]interface{}, error) {
 		r.rows[0].AttendanceTypeID,
 		r.rows[0].MemberID,
 		r.rows[0].Description,
-		r.rows[0].Date,
+		r.rows[0].StartDate,
+		r.rows[0].EndDate,
 		r.rows[0].MailSendFlag,
 		r.rows[0].SendOrganizationID,
 		r.rows[0].PostedAt,
@@ -214,7 +217,140 @@ func (r iteratorForCreateAttendances) Err() error {
 }
 
 func (q *Queries) CreateAttendances(ctx context.Context, arg []CreateAttendancesParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"t_attendances"}, []string{"attendance_type_id", "member_id", "description", "date", "mail_send_flag", "send_organization_id", "posted_at", "last_edited_at"}, &iteratorForCreateAttendances{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"t_attendances"}, []string{"attendance_type_id", "member_id", "description", "start_date", "end_date", "mail_send_flag", "send_organization_id", "posted_at", "last_edited_at"}, &iteratorForCreateAttendances{rows: arg})
+}
+
+// iteratorForCreateChatRoomActionTypes implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomActionTypes struct {
+	rows                 []CreateChatRoomActionTypesParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomActionTypes) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomActionTypes) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].Name,
+		r.rows[0].Key,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomActionTypes) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomActionTypes(ctx context.Context, arg []CreateChatRoomActionTypesParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"m_chat_room_action_types"}, []string{"name", "key"}, &iteratorForCreateChatRoomActionTypes{rows: arg})
+}
+
+// iteratorForCreateChatRoomActions implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomActions struct {
+	rows                 []CreateChatRoomActionsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomActions) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomActions) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].ChatRoomID,
+		r.rows[0].ChatRoomActionTypeID,
+		r.rows[0].ActedAt,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomActions) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomActions(ctx context.Context, arg []CreateChatRoomActionsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_actions"}, []string{"chat_room_id", "chat_room_action_type_id", "acted_at"}, &iteratorForCreateChatRoomActions{rows: arg})
+}
+
+// iteratorForCreateChatRoomAddMemberActions implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomAddMemberActions struct {
+	rows                 []CreateChatRoomAddMemberActionsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomAddMemberActions) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomAddMemberActions) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].ChatRoomActionID,
+		r.rows[0].AddedBy,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomAddMemberActions) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomAddMemberActions(ctx context.Context, arg []CreateChatRoomAddMemberActionsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_add_member_actions"}, []string{"chat_room_action_id", "added_by"}, &iteratorForCreateChatRoomAddMemberActions{rows: arg})
+}
+
+// iteratorForCreateChatRoomAddedMembers implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomAddedMembers struct {
+	rows                 []CreateChatRoomAddedMembersParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomAddedMembers) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomAddedMembers) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].MemberID,
+		r.rows[0].ChatRoomAddMemberActionID,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomAddedMembers) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomAddedMembers(ctx context.Context, arg []CreateChatRoomAddedMembersParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_added_members"}, []string{"member_id", "chat_room_add_member_action_id"}, &iteratorForCreateChatRoomAddedMembers{rows: arg})
 }
 
 // iteratorForCreateChatRoomBelongings implements pgx.CopyFromSource.
@@ -251,6 +387,206 @@ func (q *Queries) CreateChatRoomBelongings(ctx context.Context, arg []CreateChat
 	return q.db.CopyFrom(ctx, []string{"m_chat_room_belongings"}, []string{"member_id", "chat_room_id", "added_at"}, &iteratorForCreateChatRoomBelongings{rows: arg})
 }
 
+// iteratorForCreateChatRoomCreateActions implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomCreateActions struct {
+	rows                 []CreateChatRoomCreateActionsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomCreateActions) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomCreateActions) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].ChatRoomActionID,
+		r.rows[0].CreatedBy,
+		r.rows[0].Name,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomCreateActions) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomCreateActions(ctx context.Context, arg []CreateChatRoomCreateActionsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_create_actions"}, []string{"chat_room_action_id", "created_by", "name"}, &iteratorForCreateChatRoomCreateActions{rows: arg})
+}
+
+// iteratorForCreateChatRoomDeleteMessageActions implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomDeleteMessageActions struct {
+	rows                 []CreateChatRoomDeleteMessageActionsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomDeleteMessageActions) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomDeleteMessageActions) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].ChatRoomActionID,
+		r.rows[0].DeletedBy,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomDeleteMessageActions) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomDeleteMessageActions(ctx context.Context, arg []CreateChatRoomDeleteMessageActionsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_delete_message_actions"}, []string{"chat_room_action_id", "deleted_by"}, &iteratorForCreateChatRoomDeleteMessageActions{rows: arg})
+}
+
+// iteratorForCreateChatRoomRemoveMemberActions implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomRemoveMemberActions struct {
+	rows                 []CreateChatRoomRemoveMemberActionsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomRemoveMemberActions) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomRemoveMemberActions) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].ChatRoomActionID,
+		r.rows[0].RemovedBy,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomRemoveMemberActions) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomRemoveMemberActions(ctx context.Context, arg []CreateChatRoomRemoveMemberActionsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_remove_member_actions"}, []string{"chat_room_action_id", "removed_by"}, &iteratorForCreateChatRoomRemoveMemberActions{rows: arg})
+}
+
+// iteratorForCreateChatRoomRemovedMembers implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomRemovedMembers struct {
+	rows                 []CreateChatRoomRemovedMembersParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomRemovedMembers) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomRemovedMembers) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].MemberID,
+		r.rows[0].ChatRoomRemoveMemberActionID,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomRemovedMembers) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomRemovedMembers(ctx context.Context, arg []CreateChatRoomRemovedMembersParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_removed_members"}, []string{"member_id", "chat_room_remove_member_action_id"}, &iteratorForCreateChatRoomRemovedMembers{rows: arg})
+}
+
+// iteratorForCreateChatRoomUpdateNameActions implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomUpdateNameActions struct {
+	rows                 []CreateChatRoomUpdateNameActionsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomUpdateNameActions) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomUpdateNameActions) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].ChatRoomActionID,
+		r.rows[0].UpdatedBy,
+		r.rows[0].Name,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomUpdateNameActions) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomUpdateNameActions(ctx context.Context, arg []CreateChatRoomUpdateNameActionsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_update_name_actions"}, []string{"chat_room_action_id", "updated_by", "name"}, &iteratorForCreateChatRoomUpdateNameActions{rows: arg})
+}
+
+// iteratorForCreateChatRoomWithdrawActions implements pgx.CopyFromSource.
+type iteratorForCreateChatRoomWithdrawActions struct {
+	rows                 []CreateChatRoomWithdrawActionsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateChatRoomWithdrawActions) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateChatRoomWithdrawActions) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].ChatRoomActionID,
+		r.rows[0].MemberID,
+	}, nil
+}
+
+func (r iteratorForCreateChatRoomWithdrawActions) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateChatRoomWithdrawActions(ctx context.Context, arg []CreateChatRoomWithdrawActionsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_chat_room_withdraw_actions"}, []string{"chat_room_action_id", "member_id"}, &iteratorForCreateChatRoomWithdrawActions{rows: arg})
+}
+
 // iteratorForCreateChatRooms implements pgx.CopyFromSource.
 type iteratorForCreateChatRooms struct {
 	rows                 []CreateChatRoomsParams
@@ -273,7 +609,7 @@ func (r iteratorForCreateChatRooms) Values() ([]interface{}, error) {
 	return []interface{}{
 		r.rows[0].Name,
 		r.rows[0].IsPrivate,
-		r.rows[0].CoverImageUrl,
+		r.rows[0].CoverImageID,
 		r.rows[0].OwnerID,
 		r.rows[0].FromOrganization,
 		r.rows[0].CreatedAt,
@@ -286,7 +622,7 @@ func (r iteratorForCreateChatRooms) Err() error {
 }
 
 func (q *Queries) CreateChatRooms(ctx context.Context, arg []CreateChatRoomsParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"m_chat_rooms"}, []string{"name", "is_private", "cover_image_url", "owner_id", "from_organization", "created_at", "updated_at"}, &iteratorForCreateChatRooms{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"m_chat_rooms"}, []string{"name", "is_private", "cover_image_id", "owner_id", "from_organization", "created_at", "updated_at"}, &iteratorForCreateChatRooms{rows: arg})
 }
 
 // iteratorForCreateEarlyLeavings implements pgx.CopyFromSource.
@@ -622,10 +958,12 @@ func (r iteratorForCreateMembers) Values() ([]interface{}, error) {
 		r.rows[0].Password,
 		r.rows[0].Email,
 		r.rows[0].Name,
+		r.rows[0].FirstName,
+		r.rows[0].LastName,
 		r.rows[0].AttendStatusID,
 		r.rows[0].GradeID,
 		r.rows[0].GroupID,
-		r.rows[0].ProfileImageUrl,
+		r.rows[0].ProfileImageID,
 		r.rows[0].RoleID,
 		r.rows[0].PersonalOrganizationID,
 		r.rows[0].CreatedAt,
@@ -638,7 +976,42 @@ func (r iteratorForCreateMembers) Err() error {
 }
 
 func (q *Queries) CreateMembers(ctx context.Context, arg []CreateMembersParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"m_members"}, []string{"login_id", "password", "email", "name", "attend_status_id", "grade_id", "group_id", "profile_image_url", "role_id", "personal_organization_id", "created_at", "updated_at"}, &iteratorForCreateMembers{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"m_members"}, []string{"login_id", "password", "email", "name", "first_name", "last_name", "attend_status_id", "grade_id", "group_id", "profile_image_id", "role_id", "personal_organization_id", "created_at", "updated_at"}, &iteratorForCreateMembers{rows: arg})
+}
+
+// iteratorForCreateMemberships implements pgx.CopyFromSource.
+type iteratorForCreateMemberships struct {
+	rows                 []CreateMembershipsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateMemberships) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateMemberships) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].MemberID,
+		r.rows[0].OrganizationID,
+		r.rows[0].WorkPositionID,
+		r.rows[0].AddedAt,
+	}, nil
+}
+
+func (r iteratorForCreateMemberships) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateMemberships(ctx context.Context, arg []CreateMembershipsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"m_memberships"}, []string{"member_id", "organization_id", "work_position_id", "added_at"}, &iteratorForCreateMemberships{rows: arg})
 }
 
 // iteratorForCreateMessages implements pgx.CopyFromSource.
@@ -661,7 +1034,7 @@ func (r *iteratorForCreateMessages) Next() bool {
 
 func (r iteratorForCreateMessages) Values() ([]interface{}, error) {
 	return []interface{}{
-		r.rows[0].ChatRoomID,
+		r.rows[0].ChatRoomActionID,
 		r.rows[0].SenderID,
 		r.rows[0].Body,
 		r.rows[0].PostedAt,
@@ -674,7 +1047,7 @@ func (r iteratorForCreateMessages) Err() error {
 }
 
 func (q *Queries) CreateMessages(ctx context.Context, arg []CreateMessagesParams) (int64, error) {
-	return q.db.CopyFrom(ctx, []string{"t_messages"}, []string{"chat_room_id", "sender_id", "body", "posted_at", "last_edited_at"}, &iteratorForCreateMessages{rows: arg})
+	return q.db.CopyFrom(ctx, []string{"t_messages"}, []string{"chat_room_action_id", "sender_id", "body", "posted_at", "last_edited_at"}, &iteratorForCreateMessages{rows: arg})
 }
 
 // iteratorForCreateMimeTypes implements pgx.CopyFromSource.
@@ -986,6 +1359,40 @@ func (r iteratorForCreateProfessors) Err() error {
 
 func (q *Queries) CreateProfessors(ctx context.Context, memberID []uuid.UUID) (int64, error) {
 	return q.db.CopyFrom(ctx, []string{"m_professors"}, []string{"member_id"}, &iteratorForCreateProfessors{rows: memberID})
+}
+
+// iteratorForCreateReadReceipts implements pgx.CopyFromSource.
+type iteratorForCreateReadReceipts struct {
+	rows                 []CreateReadReceiptsParams
+	skippedFirstNextCall bool
+}
+
+func (r *iteratorForCreateReadReceipts) Next() bool {
+	if len(r.rows) == 0 {
+		return false
+	}
+	if !r.skippedFirstNextCall {
+		r.skippedFirstNextCall = true
+		return true
+	}
+	r.rows = r.rows[1:]
+	return len(r.rows) > 0
+}
+
+func (r iteratorForCreateReadReceipts) Values() ([]interface{}, error) {
+	return []interface{}{
+		r.rows[0].MemberID,
+		r.rows[0].MessageID,
+		r.rows[0].ReadAt,
+	}, nil
+}
+
+func (r iteratorForCreateReadReceipts) Err() error {
+	return nil
+}
+
+func (q *Queries) CreateReadReceipts(ctx context.Context, arg []CreateReadReceiptsParams) (int64, error) {
+	return q.db.CopyFrom(ctx, []string{"t_read_receipts"}, []string{"member_id", "message_id", "read_at"}, &iteratorForCreateReadReceipts{rows: arg})
 }
 
 // iteratorForCreateRecordTypes implements pgx.CopyFromSource.

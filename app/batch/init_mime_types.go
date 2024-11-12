@@ -95,7 +95,7 @@ func (c *InitMimeTypes) RunDiff(ctx context.Context, notDel, deepEqual bool) err
 		return fmt.Errorf("failed to create mime types: %w", err)
 	}
 	if len(existIDs) > 0 && !notDel {
-		err = (*c.Manager).PluralDeleteMimeTypes(ctx, existIDs)
+		_, err = (*c.Manager).PluralDeleteMimeTypes(ctx, existIDs)
 		if err != nil {
 			return fmt.Errorf("failed to delete mime types: %w", err)
 		}

@@ -87,22 +87,28 @@ func (q *Queries) CreateLabIOHistory(ctx context.Context, arg CreateLabIOHistory
 	return i, err
 }
 
-const deleteLabIOHistory = `-- name: DeleteLabIOHistory :exec
+const deleteLabIOHistory = `-- name: DeleteLabIOHistory :execrows
 DELETE FROM t_lab_io_histories WHERE lab_io_history_id = $1
 `
 
-func (q *Queries) DeleteLabIOHistory(ctx context.Context, labIoHistoryID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteLabIOHistory, labIoHistoryID)
-	return err
+func (q *Queries) DeleteLabIOHistory(ctx context.Context, labIoHistoryID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteLabIOHistory, labIoHistoryID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteLabIOHistoryOnMember = `-- name: DeleteLabIOHistoryOnMember :exec
+const deleteLabIOHistoryOnMember = `-- name: DeleteLabIOHistoryOnMember :execrows
 DELETE FROM t_lab_io_histories WHERE member_id = $1
 `
 
-func (q *Queries) DeleteLabIOHistoryOnMember(ctx context.Context, memberID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteLabIOHistoryOnMember, memberID)
-	return err
+func (q *Queries) DeleteLabIOHistoryOnMember(ctx context.Context, memberID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteLabIOHistoryOnMember, memberID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const exitLabIOHistory = `-- name: ExitLabIOHistory :one
@@ -145,7 +151,7 @@ func (q *Queries) FindLabIOHistoryByID(ctx context.Context, labIoHistoryID uuid.
 }
 
 const findLabIOHistoryWithMember = `-- name: FindLabIOHistoryWithMember :one
-SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
+SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE lab_io_history_id = $1
 `
@@ -170,8 +176,10 @@ func (q *Queries) FindLabIOHistoryWithMember(ctx context.Context, labIoHistoryID
 		&i.Member.Password,
 		&i.Member.Email,
 		&i.Member.Name,
+		&i.Member.FirstName,
+		&i.Member.LastName,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageUrl,
+		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -195,10 +203,10 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN exited_at <= $10 ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN $11::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN $11::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN $11::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN $11::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $11::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
 `
 
@@ -286,14 +294,14 @@ AND
 		END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'old_enter' AND $12::text = 'next' THEN entered_at END ASC,
-	CASE WHEN $13::text = 'old_enter' AND $12::text = 'prev' THEN entered_at END DESC,
-	CASE WHEN $13::text = 'late_enter' AND $12::text = 'next' THEN entered_at END DESC,
-	CASE WHEN $13::text = 'late_enter' AND $12::text = 'prev' THEN entered_at END ASC,
-	CASE WHEN $13::text = 'old_exit' AND $12::text = 'next' THEN exited_at END ASC,
-	CASE WHEN $13::text = 'old_exit' AND $12::text = 'prev' THEN exited_at END DESC,
-	CASE WHEN $13::text = 'late_exit' AND $12::text = 'next' THEN exited_at END DESC,
-	CASE WHEN $13::text = 'late_exit' AND $12::text = 'prev' THEN exited_at END ASC,
+	CASE WHEN $13::text = 'old_enter' AND $12::text = 'next' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'old_enter' AND $12::text = 'prev' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'late_enter' AND $12::text = 'next' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'late_enter' AND $12::text = 'prev' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'old_exit' AND $12::text = 'next' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'old_exit' AND $12::text = 'prev' THEN exited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'late_exit' AND $12::text = 'next' THEN exited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'late_exit' AND $12::text = 'prev' THEN exited_at END ASC NULLS LAST,
 	CASE WHEN $12::text = 'next' THEN t_lab_io_histories_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN t_lab_io_histories_pkey END DESC
 LIMIT $1
@@ -374,10 +382,10 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN exited_at <= $12 ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN $13::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN $13::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN $13::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN $13::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -439,7 +447,7 @@ func (q *Queries) GetLabIOHistoriesUseNumberedPaginate(ctx context.Context, arg 
 }
 
 const getLabIOHistoriesWithMember = `-- name: GetLabIOHistoriesWithMember :many
-SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
+SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE
 	CASE WHEN $1::boolean = true THEN t_lab_io_histories.member_id = ANY($2) ELSE TRUE END
@@ -452,10 +460,10 @@ AND
 AND
 	CASE WHEN $9::boolean = true THEN exited_at <= $10 ELSE TRUE END
 ORDER BY
-	CASE WHEN $11::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN $11::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN $11::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN $11::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN $11::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $11::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $11::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
 `
 
@@ -511,8 +519,10 @@ func (q *Queries) GetLabIOHistoriesWithMember(ctx context.Context, arg GetLabIOH
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -531,7 +541,7 @@ func (q *Queries) GetLabIOHistoriesWithMember(ctx context.Context, arg GetLabIOH
 }
 
 const getLabIOHistoriesWithMemberUseKeysetPaginate = `-- name: GetLabIOHistoriesWithMemberUseKeysetPaginate :many
-SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
+SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE
 	CASE WHEN $2::boolean = true THEN t_lab_io_histories.member_id = ANY($3) ELSE TRUE END
@@ -563,14 +573,14 @@ AND
 		END
 	END
 ORDER BY
-	CASE WHEN $13::text = 'old_enter' AND $12::text = 'next' THEN entered_at END ASC,
-	CASE WHEN $13::text = 'old_enter' AND $12::text = 'prev' THEN entered_at END DESC,
-	CASE WHEN $13::text = 'late_enter' AND $12::text = 'next' THEN entered_at END DESC,
-	CASE WHEN $13::text = 'late_enter' AND $12::text = 'prev' THEN entered_at END ASC,
-	CASE WHEN $13::text = 'old_exit' AND $12::text = 'next' THEN exited_at END ASC,
-	CASE WHEN $13::text = 'old_exit' AND $12::text = 'prev' THEN exited_at END DESC,
-	CASE WHEN $13::text = 'late_exit' AND $12::text = 'next' THEN exited_at END DESC,
-	CASE WHEN $13::text = 'late_exit' AND $12::text = 'prev' THEN exited_at END ASC,
+	CASE WHEN $13::text = 'old_enter' AND $12::text = 'next' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'old_enter' AND $12::text = 'prev' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'late_enter' AND $12::text = 'next' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'late_enter' AND $12::text = 'prev' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'old_exit' AND $12::text = 'next' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'old_exit' AND $12::text = 'prev' THEN exited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'late_exit' AND $12::text = 'next' THEN exited_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'late_exit' AND $12::text = 'prev' THEN exited_at END ASC NULLS LAST,
 	CASE WHEN $12::text = 'next' THEN t_lab_io_histories_pkey END ASC,
 	CASE WHEN $12::text = 'prev' THEN t_lab_io_histories_pkey END DESC
 LIMIT $1
@@ -638,8 +648,10 @@ func (q *Queries) GetLabIOHistoriesWithMemberUseKeysetPaginate(ctx context.Conte
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -658,7 +670,7 @@ func (q *Queries) GetLabIOHistoriesWithMemberUseKeysetPaginate(ctx context.Conte
 }
 
 const getLabIOHistoriesWithMemberUseNumberedPaginate = `-- name: GetLabIOHistoriesWithMemberUseNumberedPaginate :many
-SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
+SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN t_lab_io_histories.member_id = ANY($4) ELSE TRUE END
@@ -671,10 +683,10 @@ AND
 AND
 	CASE WHEN $11::boolean = true THEN exited_at <= $12 ELSE TRUE END
 ORDER BY
-	CASE WHEN $13::text = 'old_enter' THEN entered_at END ASC,
-	CASE WHEN $13::text = 'late_enter' THEN entered_at END DESC,
-	CASE WHEN $13::text = 'old_exit' THEN exited_at END ASC,
-	CASE WHEN $13::text = 'late_exit' THEN exited_at END DESC,
+	CASE WHEN $13::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $13::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $13::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -735,8 +747,10 @@ func (q *Queries) GetLabIOHistoriesWithMemberUseNumberedPaginate(ctx context.Con
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -755,20 +769,71 @@ func (q *Queries) GetLabIOHistoriesWithMemberUseNumberedPaginate(ctx context.Con
 }
 
 const getPluralLabIOHistories = `-- name: GetPluralLabIOHistories :many
+SELECT t_lab_io_histories_pkey, lab_io_history_id, member_id, entered_at, exited_at FROM t_lab_io_histories WHERE lab_io_history_id = ANY($1::uuid[])
+ORDER BY
+	CASE WHEN $2::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $2::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
+	t_lab_io_histories_pkey ASC
+`
+
+type GetPluralLabIOHistoriesParams struct {
+	LabIoHistoryIds []uuid.UUID `json:"lab_io_history_ids"`
+	OrderMethod     string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralLabIOHistories(ctx context.Context, arg GetPluralLabIOHistoriesParams) ([]LabIOHistory, error) {
+	rows, err := q.db.Query(ctx, getPluralLabIOHistories, arg.LabIoHistoryIds, arg.OrderMethod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []LabIOHistory{}
+	for rows.Next() {
+		var i LabIOHistory
+		if err := rows.Scan(
+			&i.TLabIoHistoriesPkey,
+			&i.LabIoHistoryID,
+			&i.MemberID,
+			&i.EnteredAt,
+			&i.ExitedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralLabIOHistoriesUseNumberedPaginate = `-- name: GetPluralLabIOHistoriesUseNumberedPaginate :many
 SELECT t_lab_io_histories_pkey, lab_io_history_id, member_id, entered_at, exited_at FROM t_lab_io_histories WHERE lab_io_history_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralLabIOHistoriesParams struct {
+type GetPluralLabIOHistoriesUseNumberedPaginateParams struct {
 	Limit           int32       `json:"limit"`
 	Offset          int32       `json:"offset"`
 	LabIoHistoryIds []uuid.UUID `json:"lab_io_history_ids"`
+	OrderMethod     string      `json:"order_method"`
 }
 
-func (q *Queries) GetPluralLabIOHistories(ctx context.Context, arg GetPluralLabIOHistoriesParams) ([]LabIOHistory, error) {
-	rows, err := q.db.Query(ctx, getPluralLabIOHistories, arg.Limit, arg.Offset, arg.LabIoHistoryIds)
+func (q *Queries) GetPluralLabIOHistoriesUseNumberedPaginate(ctx context.Context, arg GetPluralLabIOHistoriesUseNumberedPaginateParams) ([]LabIOHistory, error) {
+	rows, err := q.db.Query(ctx, getPluralLabIOHistoriesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.LabIoHistoryIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -794,18 +859,20 @@ func (q *Queries) GetPluralLabIOHistories(ctx context.Context, arg GetPluralLabI
 }
 
 const getPluralLabIOHistoriesWithMember = `-- name: GetPluralLabIOHistoriesWithMember :many
-SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
+SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
 LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
-WHERE lab_io_history_id = ANY($3::uuid[])
+WHERE lab_io_history_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $2::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $2::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
 	t_lab_io_histories_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
 type GetPluralLabIOHistoriesWithMemberParams struct {
-	Limit           int32       `json:"limit"`
-	Offset          int32       `json:"offset"`
 	LabIoHistoryIds []uuid.UUID `json:"lab_io_history_ids"`
+	OrderMethod     string      `json:"order_method"`
 }
 
 type GetPluralLabIOHistoriesWithMemberRow struct {
@@ -814,7 +881,7 @@ type GetPluralLabIOHistoriesWithMemberRow struct {
 }
 
 func (q *Queries) GetPluralLabIOHistoriesWithMember(ctx context.Context, arg GetPluralLabIOHistoriesWithMemberParams) ([]GetPluralLabIOHistoriesWithMemberRow, error) {
-	rows, err := q.db.Query(ctx, getPluralLabIOHistoriesWithMember, arg.Limit, arg.Offset, arg.LabIoHistoryIds)
+	rows, err := q.db.Query(ctx, getPluralLabIOHistoriesWithMember, arg.LabIoHistoryIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -834,8 +901,10 @@ func (q *Queries) GetPluralLabIOHistoriesWithMember(ctx context.Context, arg Get
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -853,13 +922,88 @@ func (q *Queries) GetPluralLabIOHistoriesWithMember(ctx context.Context, arg Get
 	return items, nil
 }
 
-const pluralDeleteLabIOHistories = `-- name: PluralDeleteLabIOHistories :exec
+const getPluralLabIOHistoriesWithMemberUseNumberedPaginate = `-- name: GetPluralLabIOHistoriesWithMemberUseNumberedPaginate :many
+SELECT t_lab_io_histories.t_lab_io_histories_pkey, t_lab_io_histories.lab_io_history_id, t_lab_io_histories.member_id, t_lab_io_histories.entered_at, t_lab_io_histories.exited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_lab_io_histories
+LEFT JOIN m_members ON t_lab_io_histories.member_id = m_members.member_id
+WHERE lab_io_history_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'old_enter' THEN entered_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_enter' THEN entered_at END DESC NULLS LAST,
+	CASE WHEN $4::text = 'old_exit' THEN exited_at END ASC NULLS LAST,
+	CASE WHEN $4::text = 'late_exit' THEN exited_at END DESC NULLS LAST,
+	t_lab_io_histories_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralLabIOHistoriesWithMemberUseNumberedPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	Offset          int32       `json:"offset"`
+	LabIoHistoryIds []uuid.UUID `json:"lab_io_history_ids"`
+	OrderMethod     string      `json:"order_method"`
+}
+
+type GetPluralLabIOHistoriesWithMemberUseNumberedPaginateRow struct {
+	LabIOHistory LabIOHistory `json:"lab_iohistory"`
+	Member       Member       `json:"member"`
+}
+
+func (q *Queries) GetPluralLabIOHistoriesWithMemberUseNumberedPaginate(ctx context.Context, arg GetPluralLabIOHistoriesWithMemberUseNumberedPaginateParams) ([]GetPluralLabIOHistoriesWithMemberUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralLabIOHistoriesWithMemberUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.LabIoHistoryIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralLabIOHistoriesWithMemberUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralLabIOHistoriesWithMemberUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.LabIOHistory.TLabIoHistoriesPkey,
+			&i.LabIOHistory.LabIoHistoryID,
+			&i.LabIOHistory.MemberID,
+			&i.LabIOHistory.EnteredAt,
+			&i.LabIOHistory.ExitedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const pluralDeleteLabIOHistories = `-- name: PluralDeleteLabIOHistories :execrows
 DELETE FROM t_lab_io_histories WHERE lab_io_history_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteLabIOHistories(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteLabIOHistories, dollar_1)
-	return err
+func (q *Queries) PluralDeleteLabIOHistories(ctx context.Context, labIoHistoryIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteLabIOHistories, labIoHistoryIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateLabIOHistory = `-- name: UpdateLabIOHistory :one

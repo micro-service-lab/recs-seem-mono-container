@@ -188,8 +188,8 @@ func TestManageEventType_DeleteEventType(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		DeleteEventTypeFunc: func(_ context.Context, _ uuid.UUID) error {
-			return nil
+		DeleteEventTypeFunc: func(_ context.Context, _ uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManageEventType{
@@ -198,7 +198,7 @@ func TestManageEventType_DeleteEventType(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.DeleteEventType(ctx, c.id)
+		_, err := s.DeleteEventType(ctx, c.id)
 		assert.NoError(t, err)
 	}
 
@@ -234,8 +234,8 @@ func TestManageEventType_PluralDeleteEventTypes(t *testing.T) {
 	}
 
 	storeMock := &store.StoreMock{
-		PluralDeleteEventTypesFunc: func(_ context.Context, _ []uuid.UUID) error {
-			return nil
+		PluralDeleteEventTypesFunc: func(_ context.Context, _ []uuid.UUID) (int64, error) {
+			return 0, nil
 		},
 	}
 	s := service.ManageEventType{
@@ -244,7 +244,7 @@ func TestManageEventType_PluralDeleteEventTypes(t *testing.T) {
 	ctx := context.Background()
 
 	for _, c := range cases {
-		err := s.PluralDeleteEventTypes(ctx, c.ids)
+		_, err := s.PluralDeleteEventTypes(ctx, c.ids)
 		assert.NoError(t, err)
 	}
 

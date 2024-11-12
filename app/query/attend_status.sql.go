@@ -55,22 +55,28 @@ type CreateAttendStatusesParams struct {
 	Key  string `json:"key"`
 }
 
-const deleteAttendStatus = `-- name: DeleteAttendStatus :exec
+const deleteAttendStatus = `-- name: DeleteAttendStatus :execrows
 DELETE FROM m_attend_statuses WHERE attend_status_id = $1
 `
 
-func (q *Queries) DeleteAttendStatus(ctx context.Context, attendStatusID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAttendStatus, attendStatusID)
-	return err
+func (q *Queries) DeleteAttendStatus(ctx context.Context, attendStatusID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAttendStatus, attendStatusID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteAttendStatusByKey = `-- name: DeleteAttendStatusByKey :exec
+const deleteAttendStatusByKey = `-- name: DeleteAttendStatusByKey :execrows
 DELETE FROM m_attend_statuses WHERE key = $1
 `
 
-func (q *Queries) DeleteAttendStatusByKey(ctx context.Context, key string) error {
-	_, err := q.db.Exec(ctx, deleteAttendStatusByKey, key)
-	return err
+func (q *Queries) DeleteAttendStatusByKey(ctx context.Context, key string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAttendStatusByKey, key)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findAttendStatusByID = `-- name: FindAttendStatusByID :one
@@ -110,8 +116,8 @@ SELECT m_attend_statuses_pkey, attend_status_id, name, key FROM m_attend_statuse
 WHERE
 	CASE WHEN $1::boolean = true THEN m_attend_statuses.name LIKE '%' || $2::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN m_attend_statuses.name END ASC,
-	CASE WHEN $3::text = 'r_name' THEN m_attend_statuses.name END DESC,
+	CASE WHEN $3::text = 'name' THEN m_attend_statuses.name END ASC NULLS LAST,
+	CASE WHEN $3::text = 'r_name' THEN m_attend_statuses.name END DESC NULLS LAST,
 	m_attend_statuses_pkey ASC
 `
 
@@ -166,10 +172,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_attend_statuses.name END ASC,
-	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_attend_statuses.name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_attend_statuses.name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_attend_statuses.name END ASC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN m_attend_statuses.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN m_attend_statuses.name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN m_attend_statuses.name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN m_attend_statuses.name END ASC NULLS LAST,
 	CASE WHEN $4::text = 'next' THEN m_attend_statuses_pkey END ASC,
 	CASE WHEN $4::text = 'prev' THEN m_attend_statuses_pkey END DESC
 LIMIT $1
@@ -223,8 +229,8 @@ SELECT m_attend_statuses_pkey, attend_status_id, name, key FROM m_attend_statuse
 WHERE
 	CASE WHEN $3::boolean = true THEN m_attend_statuses.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN m_attend_statuses.name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN m_attend_statuses.name END DESC,
+	CASE WHEN $5::text = 'name' THEN m_attend_statuses.name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' THEN m_attend_statuses.name END DESC NULLS LAST,
 	m_attend_statuses_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -270,20 +276,20 @@ func (q *Queries) GetAttendStatusesUseNumberedPaginate(ctx context.Context, arg 
 
 const getPluralAttendStatuses = `-- name: GetPluralAttendStatuses :many
 SELECT m_attend_statuses_pkey, attend_status_id, name, key FROM m_attend_statuses
-WHERE attend_status_id = ANY($3::uuid[])
+WHERE attend_status_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_attend_statuses.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_attend_statuses.name END DESC NULLS LAST,
 	m_attend_statuses_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
 type GetPluralAttendStatusesParams struct {
-	Limit           int32       `json:"limit"`
-	Offset          int32       `json:"offset"`
 	AttendStatusIds []uuid.UUID `json:"attend_status_ids"`
+	OrderMethod     string      `json:"order_method"`
 }
 
 func (q *Queries) GetPluralAttendStatuses(ctx context.Context, arg GetPluralAttendStatusesParams) ([]AttendStatus, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendStatuses, arg.Limit, arg.Offset, arg.AttendStatusIds)
+	rows, err := q.db.Query(ctx, getPluralAttendStatuses, arg.AttendStatusIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -307,13 +313,63 @@ func (q *Queries) GetPluralAttendStatuses(ctx context.Context, arg GetPluralAtte
 	return items, nil
 }
 
-const pluralDeleteAttendStatuses = `-- name: PluralDeleteAttendStatuses :exec
+const getPluralAttendStatusesUseNumberedPaginate = `-- name: GetPluralAttendStatusesUseNumberedPaginate :many
+SELECT m_attend_statuses_pkey, attend_status_id, name, key FROM m_attend_statuses
+WHERE attend_status_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_attend_statuses.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_attend_statuses.name END DESC NULLS LAST,
+	m_attend_statuses_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralAttendStatusesUseNumberedPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	Offset          int32       `json:"offset"`
+	AttendStatusIds []uuid.UUID `json:"attend_status_ids"`
+	OrderMethod     string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralAttendStatusesUseNumberedPaginate(ctx context.Context, arg GetPluralAttendStatusesUseNumberedPaginateParams) ([]AttendStatus, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendStatusesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.AttendStatusIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []AttendStatus{}
+	for rows.Next() {
+		var i AttendStatus
+		if err := rows.Scan(
+			&i.MAttendStatusesPkey,
+			&i.AttendStatusID,
+			&i.Name,
+			&i.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const pluralDeleteAttendStatuses = `-- name: PluralDeleteAttendStatuses :execrows
 DELETE FROM m_attend_statuses WHERE attend_status_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteAttendStatuses(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteAttendStatuses, dollar_1)
-	return err
+func (q *Queries) PluralDeleteAttendStatuses(ctx context.Context, attendStatusIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteAttendStatuses, attendStatusIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateAttendStatus = `-- name: UpdateAttendStatus :one

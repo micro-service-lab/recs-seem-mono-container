@@ -58,22 +58,28 @@ type CreateAttendanceTypesParams struct {
 	Color string `json:"color"`
 }
 
-const deleteAttendanceType = `-- name: DeleteAttendanceType :exec
+const deleteAttendanceType = `-- name: DeleteAttendanceType :execrows
 DELETE FROM m_attendance_types WHERE attendance_type_id = $1
 `
 
-func (q *Queries) DeleteAttendanceType(ctx context.Context, attendanceTypeID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAttendanceType, attendanceTypeID)
-	return err
+func (q *Queries) DeleteAttendanceType(ctx context.Context, attendanceTypeID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAttendanceType, attendanceTypeID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteAttendanceTypeByKey = `-- name: DeleteAttendanceTypeByKey :exec
+const deleteAttendanceTypeByKey = `-- name: DeleteAttendanceTypeByKey :execrows
 DELETE FROM m_attendance_types WHERE key = $1
 `
 
-func (q *Queries) DeleteAttendanceTypeByKey(ctx context.Context, key string) error {
-	_, err := q.db.Exec(ctx, deleteAttendanceTypeByKey, key)
-	return err
+func (q *Queries) DeleteAttendanceTypeByKey(ctx context.Context, key string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAttendanceTypeByKey, key)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findAttendanceTypeByID = `-- name: FindAttendanceTypeByID :one
@@ -115,8 +121,8 @@ SELECT m_attendance_types_pkey, attendance_type_id, name, key, color FROM m_atte
 WHERE
 	CASE WHEN $1::boolean = true THEN m_attendance_types.name LIKE '%' || $2::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN name END ASC,
-	CASE WHEN $3::text = 'r_name' THEN name END DESC,
+	CASE WHEN $3::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN $3::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_attendance_types_pkey ASC
 `
 
@@ -172,10 +178,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN name END ASC,
-	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN name END ASC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN name END DESC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN name END ASC NULLS LAST,
 	CASE WHEN $4::text = 'next' THEN m_attendance_types_pkey END ASC,
 	CASE WHEN $4::text = 'prev' THEN m_attendance_types_pkey END DESC
 LIMIT $1
@@ -230,8 +236,8 @@ SELECT m_attendance_types_pkey, attendance_type_id, name, key, color FROM m_atte
 WHERE
 	CASE WHEN $3::boolean = true THEN m_attendance_types.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN name END DESC,
+	CASE WHEN $5::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_attendance_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -278,20 +284,20 @@ func (q *Queries) GetAttendanceTypesUseNumberedPaginate(ctx context.Context, arg
 
 const getPluralAttendanceTypes = `-- name: GetPluralAttendanceTypes :many
 SELECT m_attendance_types_pkey, attendance_type_id, name, key, color FROM m_attendance_types
-WHERE attendance_type_id = ANY($3::uuid[])
+WHERE attendance_type_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_attendance_types_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
 type GetPluralAttendanceTypesParams struct {
-	Limit             int32       `json:"limit"`
-	Offset            int32       `json:"offset"`
 	AttendanceTypeIds []uuid.UUID `json:"attendance_type_ids"`
+	OrderMethod       string      `json:"order_method"`
 }
 
 func (q *Queries) GetPluralAttendanceTypes(ctx context.Context, arg GetPluralAttendanceTypesParams) ([]AttendanceType, error) {
-	rows, err := q.db.Query(ctx, getPluralAttendanceTypes, arg.Limit, arg.Offset, arg.AttendanceTypeIds)
+	rows, err := q.db.Query(ctx, getPluralAttendanceTypes, arg.AttendanceTypeIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -316,13 +322,64 @@ func (q *Queries) GetPluralAttendanceTypes(ctx context.Context, arg GetPluralAtt
 	return items, nil
 }
 
-const pluralDeleteAttendanceTypes = `-- name: PluralDeleteAttendanceTypes :exec
+const getPluralAttendanceTypesUseNumberedPaginate = `-- name: GetPluralAttendanceTypesUseNumberedPaginate :many
+SELECT m_attendance_types_pkey, attendance_type_id, name, key, color FROM m_attendance_types
+WHERE attendance_type_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN name END DESC NULLS LAST,
+	m_attendance_types_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralAttendanceTypesUseNumberedPaginateParams struct {
+	Limit             int32       `json:"limit"`
+	Offset            int32       `json:"offset"`
+	AttendanceTypeIds []uuid.UUID `json:"attendance_type_ids"`
+	OrderMethod       string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralAttendanceTypesUseNumberedPaginate(ctx context.Context, arg GetPluralAttendanceTypesUseNumberedPaginateParams) ([]AttendanceType, error) {
+	rows, err := q.db.Query(ctx, getPluralAttendanceTypesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.AttendanceTypeIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []AttendanceType{}
+	for rows.Next() {
+		var i AttendanceType
+		if err := rows.Scan(
+			&i.MAttendanceTypesPkey,
+			&i.AttendanceTypeID,
+			&i.Name,
+			&i.Key,
+			&i.Color,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const pluralDeleteAttendanceTypes = `-- name: PluralDeleteAttendanceTypes :execrows
 DELETE FROM m_attendance_types WHERE attendance_type_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteAttendanceTypes(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteAttendanceTypes, dollar_1)
-	return err
+func (q *Queries) PluralDeleteAttendanceTypes(ctx context.Context, attendanceTypeIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteAttendanceTypes, attendanceTypeIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateAttendanceType = `-- name: UpdateAttendanceType :one

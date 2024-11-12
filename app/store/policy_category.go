@@ -28,17 +28,17 @@ type PolicyCategory interface {
 	CreatePolicyCategoriesWithSd(
 		ctx context.Context, sd Sd, params []parameter.CreatePolicyCategoryParam) (int64, error)
 	// DeletePolicyCategory ポリシーカテゴリーを削除する。
-	DeletePolicyCategory(ctx context.Context, policyCategoryID uuid.UUID) error
+	DeletePolicyCategory(ctx context.Context, policyCategoryID uuid.UUID) (int64, error)
 	// DeletePolicyCategoryWithSd SD付きでポリシーカテゴリーを削除する。
-	DeletePolicyCategoryWithSd(ctx context.Context, sd Sd, policyCategoryID uuid.UUID) error
+	DeletePolicyCategoryWithSd(ctx context.Context, sd Sd, policyCategoryID uuid.UUID) (int64, error)
 	// DeletePolicyCategoryByKey ポリシーカテゴリーを削除する。
-	DeletePolicyCategoryByKey(ctx context.Context, key string) error
+	DeletePolicyCategoryByKey(ctx context.Context, key string) (int64, error)
 	// DeletePolicyCategoryByKeyWithSd SD付きでポリシーカテゴリーを削除する。
-	DeletePolicyCategoryByKeyWithSd(ctx context.Context, sd Sd, key string) error
+	DeletePolicyCategoryByKeyWithSd(ctx context.Context, sd Sd, key string) (int64, error)
 	// PluralDeletePolicyCategories ポリシーカテゴリーを複数削除する。
-	PluralDeletePolicyCategories(ctx context.Context, policyCategoryIDs []uuid.UUID) error
+	PluralDeletePolicyCategories(ctx context.Context, policyCategoryIDs []uuid.UUID) (int64, error)
 	// PluralDeletePolicyCategoriesWithSd SD付きでポリシーカテゴリーを複数削除する。
-	PluralDeletePolicyCategoriesWithSd(ctx context.Context, sd Sd, policyCategoryIDs []uuid.UUID) error
+	PluralDeletePolicyCategoriesWithSd(ctx context.Context, sd Sd, policyCategoryIDs []uuid.UUID) (int64, error)
 	// FindPolicyCategoryByID ポリシーカテゴリーを取得する。
 	FindPolicyCategoryByID(ctx context.Context, policyCategoryID uuid.UUID) (entity.PolicyCategory, error)
 	// FindPolicyCategoryByIDWithSd SD付きでポリシーカテゴリーを取得する。
@@ -71,6 +71,7 @@ type PolicyCategory interface {
 	GetPluralPolicyCategories(
 		ctx context.Context,
 		policyCategoryIDs []uuid.UUID,
+		order parameter.PolicyCategoryOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.PolicyCategory], error)
 	// GetPluralPolicyCategoriesWithSd SD付きでポリシーカテゴリーを取得する。
@@ -78,6 +79,7 @@ type PolicyCategory interface {
 		ctx context.Context,
 		sd Sd,
 		policyCategoryIDs []uuid.UUID,
+		order parameter.PolicyCategoryOrderMethod,
 		np NumberedPaginationParam,
 	) (ListResult[entity.PolicyCategory], error)
 	// UpdatePolicyCategory ポリシーカテゴリーを更新する。

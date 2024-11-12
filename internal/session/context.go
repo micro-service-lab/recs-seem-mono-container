@@ -21,25 +21,3 @@ func FromContext(ctx context.Context) *Session {
 	}
 	return nil
 }
-
-// AdminID context のセッション情報から管理者アカウント ID を取得する。
-// 取得できない場合は 0 を返す。
-func AdminID(ctx context.Context) string {
-	sess := FromContext(ctx)
-	if sess == nil {
-		return ""
-	}
-
-	return sess.AdminID()
-}
-
-// UserID context のセッション情報からユーザー ID を取得する。
-// 取得できない場合は 0 を返す。
-func UserID(ctx context.Context) int32 {
-	sess := FromContext(ctx)
-	if sess == nil {
-		return 0
-	}
-
-	return sess.UserID()
-}

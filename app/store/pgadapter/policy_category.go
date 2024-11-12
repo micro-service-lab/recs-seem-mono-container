@@ -7,8 +7,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
@@ -32,26 +34,20 @@ func countPolicyCategories(
 func (a *PgAdapter) CountPolicyCategories(
 	ctx context.Context, where parameter.WherePolicyCategoryParam,
 ) (int64, error) {
-	c, err := countPolicyCategories(ctx, a.query, where)
-	if err != nil {
-		return 0, fmt.Errorf("failed to count policy category: %w", err)
-	}
-	return c, nil
+	return countPolicyCategories(ctx, a.query, where)
 }
 
 // CountPolicyCategoriesWithSd SD付きでポリシーカテゴリー数を取得する。
 func (a *PgAdapter) CountPolicyCategoriesWithSd(
 	ctx context.Context, sd store.Sd, where parameter.WherePolicyCategoryParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := countPolicyCategories(ctx, qtx, where)
-	if err != nil {
-		return 0, fmt.Errorf("failed to count policy category: %w", err)
-	}
-	return c, nil
+	return countPolicyCategories(ctx, qtx, where)
 }
 
 func createPolicyCategory(
@@ -64,6 +60,10 @@ func createPolicyCategory(
 	}
 	e, err := qtx.CreatePolicyCategory(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.PolicyCategory{}, errhandle.NewModelDuplicatedError("policy category")
+		}
 		return entity.PolicyCategory{}, fmt.Errorf("failed to create policy category: %w", err)
 	}
 	entity := entity.PolicyCategory{
@@ -79,26 +79,20 @@ func createPolicyCategory(
 func (a *PgAdapter) CreatePolicyCategory(
 	ctx context.Context, param parameter.CreatePolicyCategoryParam,
 ) (entity.PolicyCategory, error) {
-	e, err := createPolicyCategory(ctx, a.query, param)
-	if err != nil {
-		return entity.PolicyCategory{}, fmt.Errorf("failed to create policy category: %w", err)
-	}
-	return e, nil
+	return createPolicyCategory(ctx, a.query, param)
 }
 
 // CreatePolicyCategoryWithSd SD付きでポリシーカテゴリーを作成する。
 func (a *PgAdapter) CreatePolicyCategoryWithSd(
 	ctx context.Context, sd store.Sd, param parameter.CreatePolicyCategoryParam,
 ) (entity.PolicyCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PolicyCategory{}, store.ErrNotFoundDescriptor
 	}
-	e, err := createPolicyCategory(ctx, qtx, param)
-	if err != nil {
-		return entity.PolicyCategory{}, fmt.Errorf("failed to create policy category: %w", err)
-	}
-	return e, nil
+	return createPolicyCategory(ctx, qtx, param)
 }
 
 func createPolicyCategories(
@@ -114,6 +108,10 @@ func createPolicyCategories(
 	}
 	c, err := qtx.CreatePolicyCategories(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return 0, errhandle.NewModelDuplicatedError("policy category")
+		}
 		return 0, fmt.Errorf("failed to create policy categories: %w", err)
 	}
 	return c, nil
@@ -123,126 +121,111 @@ func createPolicyCategories(
 func (a *PgAdapter) CreatePolicyCategories(
 	ctx context.Context, params []parameter.CreatePolicyCategoryParam,
 ) (int64, error) {
-	c, err := createPolicyCategories(ctx, a.query, params)
-	if err != nil {
-		return 0, fmt.Errorf("failed to create policy categories: %w", err)
-	}
-	return c, nil
+	return createPolicyCategories(ctx, a.query, params)
 }
 
 // CreatePolicyCategoriesWithSd SD付きでポリシーカテゴリーを作成する。
 func (a *PgAdapter) CreatePolicyCategoriesWithSd(
 	ctx context.Context, sd store.Sd, params []parameter.CreatePolicyCategoryParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := createPolicyCategories(ctx, qtx, params)
+	return createPolicyCategories(ctx, qtx, params)
+}
+
+func deletePolicyCategory(ctx context.Context, qtx *query.Queries, policyCategoryID uuid.UUID) (int64, error) {
+	c, err := qtx.DeletePolicyCategory(ctx, policyCategoryID)
 	if err != nil {
-		return 0, fmt.Errorf("failed to create policy categories: %w", err)
+		return 0, fmt.Errorf("failed to delete policy category: %w", err)
+	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("policy category")
 	}
 	return c, nil
 }
 
-func deletePolicyCategory(ctx context.Context, qtx *query.Queries, policyCategoryID uuid.UUID) error {
-	err := qtx.DeletePolicyCategory(ctx, policyCategoryID)
-	if err != nil {
-		return fmt.Errorf("failed to delete policy category: %w", err)
-	}
-	return nil
-}
-
 // DeletePolicyCategory ポリシーカテゴリーを削除する。
-func (a *PgAdapter) DeletePolicyCategory(ctx context.Context, policyCategoryID uuid.UUID) error {
-	err := deletePolicyCategory(ctx, a.query, policyCategoryID)
-	if err != nil {
-		return fmt.Errorf("failed to delete policy category: %w", err)
-	}
-	return nil
+func (a *PgAdapter) DeletePolicyCategory(ctx context.Context, policyCategoryID uuid.UUID) (int64, error) {
+	return deletePolicyCategory(ctx, a.query, policyCategoryID)
 }
 
 // DeletePolicyCategoryWithSd SD付きでポリシーカテゴリーを削除する。
 func (a *PgAdapter) DeletePolicyCategoryWithSd(
 	ctx context.Context, sd store.Sd, policyCategoryID uuid.UUID,
-) error {
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deletePolicyCategory(ctx, qtx, policyCategoryID)
-	if err != nil {
-		return fmt.Errorf("failed to delete policy category: %w", err)
-	}
-	return nil
+	return deletePolicyCategory(ctx, qtx, policyCategoryID)
 }
 
-func deletePolicyCategoryByKey(ctx context.Context, qtx *query.Queries, key string) error {
-	err := qtx.DeletePolicyCategoryByKey(ctx, key)
+func deletePolicyCategoryByKey(ctx context.Context, qtx *query.Queries, key string) (int64, error) {
+	c, err := qtx.DeletePolicyCategoryByKey(ctx, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete policy category: %w", err)
+		return 0, fmt.Errorf("failed to delete policy category: %w", err)
 	}
-	return nil
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("policy category")
+	}
+	return c, nil
 }
 
 // DeletePolicyCategoryByKey ポリシーカテゴリーを削除する。
-func (a *PgAdapter) DeletePolicyCategoryByKey(ctx context.Context, key string) error {
-	err := deletePolicyCategoryByKey(ctx, a.query, key)
-	if err != nil {
-		return fmt.Errorf("failed to delete policy category: %w", err)
-	}
-	return nil
+func (a *PgAdapter) DeletePolicyCategoryByKey(ctx context.Context, key string) (int64, error) {
+	return deletePolicyCategoryByKey(ctx, a.query, key)
 }
 
 // DeletePolicyCategoryByKeyWithSd SD付きでポリシーカテゴリーを削除する。
 func (a *PgAdapter) DeletePolicyCategoryByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
-) error {
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deletePolicyCategoryByKey(ctx, qtx, key)
-	if err != nil {
-		return fmt.Errorf("failed to delete policy category: %w", err)
-	}
-	return nil
+	return deletePolicyCategoryByKey(ctx, qtx, key)
 }
 
 func pluralDeletePolicyCategories(
 	ctx context.Context, qtx *query.Queries, policyCategoryIDs []uuid.UUID,
-) error {
-	err := qtx.PluralDeletePolicyCategories(ctx, policyCategoryIDs)
+) (int64, error) {
+	c, err := qtx.PluralDeletePolicyCategories(ctx, policyCategoryIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete policy categories: %w", err)
+		return 0, fmt.Errorf("failed to plural delete policy categories: %w", err)
 	}
-	return nil
+	if c != int64(len(policyCategoryIDs)) {
+		return 0, errhandle.NewModelNotFoundError("policy category")
+	}
+	return c, nil
 }
 
 // PluralDeletePolicyCategories ポリシーカテゴリーを複数削除する。
 func (a *PgAdapter) PluralDeletePolicyCategories(
 	ctx context.Context, policyCategoryIDs []uuid.UUID,
-) error {
-	err := pluralDeletePolicyCategories(ctx, a.query, policyCategoryIDs)
-	if err != nil {
-		return fmt.Errorf("failed to plural delete policy categories: %w", err)
-	}
-	return nil
+) (int64, error) {
+	return pluralDeletePolicyCategories(ctx, a.query, policyCategoryIDs)
 }
 
 // PluralDeletePolicyCategoriesWithSd SD付きでポリシーカテゴリーを複数削除する。
 func (a *PgAdapter) PluralDeletePolicyCategoriesWithSd(
 	ctx context.Context, sd store.Sd, policyCategoryIDs []uuid.UUID,
-) error {
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := pluralDeletePolicyCategories(ctx, qtx, policyCategoryIDs)
-	if err != nil {
-		return fmt.Errorf("failed to plural delete policy categories: %w", err)
-	}
-	return nil
+	return pluralDeletePolicyCategories(ctx, qtx, policyCategoryIDs)
 }
 
 func findPolicyCategoryByID(
@@ -251,7 +234,7 @@ func findPolicyCategoryByID(
 	e, err := qtx.FindPolicyCategoryByID(ctx, policyCategoryID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.PolicyCategory{}, store.ErrDataNoRecord
+			return entity.PolicyCategory{}, errhandle.NewModelNotFoundError("policy category")
 		}
 		return entity.PolicyCategory{}, fmt.Errorf("failed to find policy category: %w", err)
 	}
@@ -268,26 +251,20 @@ func findPolicyCategoryByID(
 func (a *PgAdapter) FindPolicyCategoryByID(
 	ctx context.Context, policyCategoryID uuid.UUID,
 ) (entity.PolicyCategory, error) {
-	e, err := findPolicyCategoryByID(ctx, a.query, policyCategoryID)
-	if err != nil {
-		return entity.PolicyCategory{}, fmt.Errorf("failed to find policy category: %w", err)
-	}
-	return e, nil
+	return findPolicyCategoryByID(ctx, a.query, policyCategoryID)
 }
 
 // FindPolicyCategoryByIDWithSd SD付きでポリシーカテゴリーを取得する。
 func (a *PgAdapter) FindPolicyCategoryByIDWithSd(
 	ctx context.Context, sd store.Sd, policyCategoryID uuid.UUID,
 ) (entity.PolicyCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PolicyCategory{}, store.ErrNotFoundDescriptor
 	}
-	e, err := findPolicyCategoryByID(ctx, qtx, policyCategoryID)
-	if err != nil {
-		return entity.PolicyCategory{}, fmt.Errorf("failed to find policy category: %w", err)
-	}
-	return e, nil
+	return findPolicyCategoryByID(ctx, qtx, policyCategoryID)
 }
 
 func findPolicyCategoryByKey(
@@ -296,7 +273,7 @@ func findPolicyCategoryByKey(
 	e, err := qtx.FindPolicyCategoryByKey(ctx, key)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.PolicyCategory{}, store.ErrDataNoRecord
+			return entity.PolicyCategory{}, errhandle.NewModelNotFoundError("policy category")
 		}
 		return entity.PolicyCategory{}, fmt.Errorf("failed to find policy category: %w", err)
 	}
@@ -311,26 +288,20 @@ func findPolicyCategoryByKey(
 
 // FindPolicyCategoryByKey ポリシーカテゴリーを取得する。
 func (a *PgAdapter) FindPolicyCategoryByKey(ctx context.Context, key string) (entity.PolicyCategory, error) {
-	e, err := findPolicyCategoryByKey(ctx, a.query, key)
-	if err != nil {
-		return entity.PolicyCategory{}, fmt.Errorf("failed to find policy category: %w", err)
-	}
-	return e, nil
+	return findPolicyCategoryByKey(ctx, a.query, key)
 }
 
 // FindPolicyCategoryByKeyWithSd SD付きでポリシーカテゴリーを取得する。
 func (a *PgAdapter) FindPolicyCategoryByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) (entity.PolicyCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PolicyCategory{}, store.ErrNotFoundDescriptor
 	}
-	e, err := findPolicyCategoryByKey(ctx, qtx, key)
-	if err != nil {
-		return entity.PolicyCategory{}, fmt.Errorf("failed to find policy category: %w", err)
-	}
-	return e, nil
+	return findPolicyCategoryByKey(ctx, qtx, key)
 }
 
 // PolicyCategoryCursor is a cursor for PolicyCategory.
@@ -460,11 +431,7 @@ func (a *PgAdapter) GetPolicyCategories(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.PolicyCategory], error) {
-	r, err := getPolicyCategories(ctx, a.query, where, order, np, cp, wc)
-	if err != nil {
-		return store.ListResult[entity.PolicyCategory]{}, fmt.Errorf("failed to get policy categories: %w", err)
-	}
-	return r, nil
+	return getPolicyCategories(ctx, a.query, where, order, np, cp, wc)
 }
 
 // GetPolicyCategoriesWithSd SD付きでポリシーカテゴリーを取得する。
@@ -477,26 +444,34 @@ func (a *PgAdapter) GetPolicyCategoriesWithSd(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.PolicyCategory], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.PolicyCategory]{}, store.ErrNotFoundDescriptor
 	}
-	r, err := getPolicyCategories(ctx, qtx, where, order, np, cp, wc)
-	if err != nil {
-		return store.ListResult[entity.PolicyCategory]{}, fmt.Errorf("failed to get policy categories: %w", err)
-	}
-	return r, nil
+	return getPolicyCategories(ctx, qtx, where, order, np, cp, wc)
 }
 
 func getPluralPolicyCategories(
-	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, qtx *query.Queries, ids []uuid.UUID,
+	order parameter.PolicyCategoryOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.PolicyCategory], error) {
-	p := query.GetPluralPolicyCategoriesParams{
-		PolicyCategoryIds: ids,
-		Offset:            int32(np.Offset.Int64),
-		Limit:             int32(np.Limit.Int64),
+	var e []query.PolicyCategory
+	var err error
+	if !np.Valid {
+		e, err = qtx.GetPluralPolicyCategories(ctx, query.GetPluralPolicyCategoriesParams{
+			PolicyCategoryIds: ids,
+			OrderMethod:       order.GetStringValue(),
+		})
+	} else {
+		e, err = qtx.GetPluralPolicyCategoriesUseNumberedPaginate(
+			ctx, query.GetPluralPolicyCategoriesUseNumberedPaginateParams{
+				PolicyCategoryIds: ids,
+				Offset:            int32(np.Offset.Int64),
+				Limit:             int32(np.Limit.Int64),
+			})
 	}
-	e, err := qtx.GetPluralPolicyCategories(ctx, p)
 	if err != nil {
 		return store.ListResult[entity.PolicyCategory]{},
 			fmt.Errorf("failed to get plural policy categories: %w", err)
@@ -515,30 +490,23 @@ func getPluralPolicyCategories(
 
 // GetPluralPolicyCategories ポリシーカテゴリーを取得する。
 func (a *PgAdapter) GetPluralPolicyCategories(
-	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, ids []uuid.UUID, order parameter.PolicyCategoryOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.PolicyCategory], error) {
-	r, err := getPluralPolicyCategories(ctx, a.query, ids, np)
-	if err != nil {
-		return store.ListResult[entity.PolicyCategory]{},
-			fmt.Errorf("failed to get plural policy categories: %w", err)
-	}
-	return r, nil
+	return getPluralPolicyCategories(ctx, a.query, ids, order, np)
 }
 
 // GetPluralPolicyCategoriesWithSd SD付きでポリシーカテゴリーを取得する。
 func (a *PgAdapter) GetPluralPolicyCategoriesWithSd(
-	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, sd store.Sd, ids []uuid.UUID,
+	order parameter.PolicyCategoryOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.PolicyCategory], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.PolicyCategory]{}, store.ErrNotFoundDescriptor
 	}
-	r, err := getPluralPolicyCategories(ctx, qtx, ids, np)
-	if err != nil {
-		return store.ListResult[entity.PolicyCategory]{},
-			fmt.Errorf("failed to get plural policy categories: %w", err)
-	}
-	return r, nil
+	return getPluralPolicyCategories(ctx, qtx, ids, order, np)
 }
 
 func updatePolicyCategory(
@@ -554,7 +522,11 @@ func updatePolicyCategory(
 	e, err := qtx.UpdatePolicyCategory(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.PolicyCategory{}, store.ErrDataNoRecord
+			return entity.PolicyCategory{}, errhandle.NewModelNotFoundError("policy category")
+		}
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.PolicyCategory{}, errhandle.NewModelDuplicatedError("policy category")
 		}
 		return entity.PolicyCategory{}, fmt.Errorf("failed to update policy category: %w", err)
 	}
@@ -571,26 +543,20 @@ func updatePolicyCategory(
 func (a *PgAdapter) UpdatePolicyCategory(
 	ctx context.Context, policyCategoryID uuid.UUID, param parameter.UpdatePolicyCategoryParams,
 ) (entity.PolicyCategory, error) {
-	e, err := updatePolicyCategory(ctx, a.query, policyCategoryID, param)
-	if err != nil {
-		return entity.PolicyCategory{}, fmt.Errorf("failed to update policy category: %w", err)
-	}
-	return e, nil
+	return updatePolicyCategory(ctx, a.query, policyCategoryID, param)
 }
 
 // UpdatePolicyCategoryWithSd SD付きでポリシーカテゴリーを更新する。
 func (a *PgAdapter) UpdatePolicyCategoryWithSd(
 	ctx context.Context, sd store.Sd, policyCategoryID uuid.UUID, param parameter.UpdatePolicyCategoryParams,
 ) (entity.PolicyCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PolicyCategory{}, store.ErrNotFoundDescriptor
 	}
-	e, err := updatePolicyCategory(ctx, qtx, policyCategoryID, param)
-	if err != nil {
-		return entity.PolicyCategory{}, fmt.Errorf("failed to update policy category: %w", err)
-	}
-	return e, nil
+	return updatePolicyCategory(ctx, qtx, policyCategoryID, param)
 }
 
 func updatePolicyCategoryByKey(
@@ -604,7 +570,7 @@ func updatePolicyCategoryByKey(
 	e, err := qtx.UpdatePolicyCategoryByKey(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.PolicyCategory{}, store.ErrDataNoRecord
+			return entity.PolicyCategory{}, errhandle.NewModelNotFoundError("policy category")
 		}
 		return entity.PolicyCategory{}, fmt.Errorf("failed to update policy category: %w", err)
 	}
@@ -621,24 +587,18 @@ func updatePolicyCategoryByKey(
 func (a *PgAdapter) UpdatePolicyCategoryByKey(
 	ctx context.Context, key string, param parameter.UpdatePolicyCategoryByKeyParams,
 ) (entity.PolicyCategory, error) {
-	e, err := updatePolicyCategoryByKey(ctx, a.query, key, param)
-	if err != nil {
-		return entity.PolicyCategory{}, fmt.Errorf("failed to update policy category: %w", err)
-	}
-	return e, nil
+	return updatePolicyCategoryByKey(ctx, a.query, key, param)
 }
 
 // UpdatePolicyCategoryByKeyWithSd SD付きでポリシーカテゴリーを更新する。
 func (a *PgAdapter) UpdatePolicyCategoryByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string, param parameter.UpdatePolicyCategoryByKeyParams,
 ) (entity.PolicyCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PolicyCategory{}, store.ErrNotFoundDescriptor
 	}
-	e, err := updatePolicyCategoryByKey(ctx, qtx, key, param)
-	if err != nil {
-		return entity.PolicyCategory{}, fmt.Errorf("failed to update policy category: %w", err)
-	}
-	return e, nil
+	return updatePolicyCategoryByKey(ctx, qtx, key, param)
 }

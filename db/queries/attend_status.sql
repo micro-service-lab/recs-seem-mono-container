@@ -10,14 +10,14 @@ UPDATE m_attend_statuses SET name = $2, key = $3 WHERE attend_status_id = $1 RET
 -- name: UpdateAttendStatusByKey :one
 UPDATE m_attend_statuses SET name = $2 WHERE key = $1 RETURNING *;
 
--- name: DeleteAttendStatus :exec
+-- name: DeleteAttendStatus :execrows
 DELETE FROM m_attend_statuses WHERE attend_status_id = $1;
 
--- name: DeleteAttendStatusByKey :exec
+-- name: DeleteAttendStatusByKey :execrows
 DELETE FROM m_attend_statuses WHERE key = $1;
 
--- name: PluralDeleteAttendStatuses :exec
-DELETE FROM m_attend_statuses WHERE attend_status_id = ANY($1::uuid[]);
+-- name: PluralDeleteAttendStatuses :execrows
+DELETE FROM m_attend_statuses WHERE attend_status_id = ANY(@attend_status_ids::uuid[]);
 
 -- name: FindAttendStatusByID :one
 SELECT * FROM m_attend_statuses WHERE attend_status_id = $1;
@@ -30,8 +30,8 @@ SELECT * FROM m_attend_statuses
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_attend_statuses.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_attend_statuses.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_attend_statuses.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_attend_statuses.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_attend_statuses.name END DESC NULLS LAST,
 	m_attend_statuses_pkey ASC;
 
 -- name: GetAttendStatusesUseNumberedPaginate :many
@@ -39,8 +39,8 @@ SELECT * FROM m_attend_statuses
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_attend_statuses.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_attend_statuses.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_attend_statuses.name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN m_attend_statuses.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_attend_statuses.name END DESC NULLS LAST,
 	m_attend_statuses_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -64,10 +64,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_attend_statuses.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_attend_statuses.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_attend_statuses.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_attend_statuses.name END ASC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_attend_statuses.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_attend_statuses.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_attend_statuses.name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_attend_statuses.name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_attend_statuses_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_attend_statuses_pkey END DESC
 LIMIT $1;
@@ -76,6 +76,16 @@ LIMIT $1;
 SELECT * FROM m_attend_statuses
 WHERE attend_status_id = ANY(@attend_status_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_attend_statuses.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_attend_statuses.name END DESC NULLS LAST,
+	m_attend_statuses_pkey ASC;
+
+-- name: GetPluralAttendStatusesUseNumberedPaginate :many
+SELECT * FROM m_attend_statuses
+WHERE attend_status_id = ANY(@attend_status_ids::uuid[])
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN m_attend_statuses.name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN m_attend_statuses.name END DESC NULLS LAST,
 	m_attend_statuses_pkey ASC
 LIMIT $1 OFFSET $2;
 

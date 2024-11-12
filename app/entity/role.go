@@ -10,3 +10,9 @@ type Role struct {
 	Name        string    `json:"name"`
 	Description string    `json:"description"`
 }
+
+// RoleWithPolicies ロールとポリシーを表す構造体。
+type RoleWithPolicies struct {
+	Role
+	Policies []PolicyOnRole `json:"policies"`
+}

@@ -4,11 +4,11 @@ INSERT INTO t_early_leavings (attendance_id, leave_time) VALUES ($1, $2);
 -- name: CreateEarlyLeaving :one
 INSERT INTO t_early_leavings (attendance_id, leave_time) VALUES ($1, $2) RETURNING *;
 
--- name: DeleteEarlyLeaving :exec
+-- name: DeleteEarlyLeaving :execrows
 DELETE FROM t_early_leavings WHERE early_leaving_id = $1;
 
--- name: PluralDeleteEarlyLeavings :exec
-DELETE FROM t_early_leavings WHERE early_leaving_id = ANY($1::uuid[]);
+-- name: PluralDeleteEarlyLeavings :execrows
+DELETE FROM t_early_leavings WHERE early_leaving_id = ANY(@early_leaving_ids::uuid[]);
 
 -- name: FindEarlyLeavingByID :one
 SELECT * FROM t_early_leavings WHERE early_leaving_id = $1;
@@ -39,6 +39,12 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralEarlyLeavings :many
+SELECT * FROM t_early_leavings
+WHERE attendance_id = ANY(@attendance_ids::uuid[])
+ORDER BY
+	t_early_leavings_pkey ASC;
+
+-- name: GetPluralEarlyLeavingsUseNumberedPaginate :many
 SELECT * FROM t_early_leavings
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY

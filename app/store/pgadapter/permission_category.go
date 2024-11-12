@@ -7,8 +7,10 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 
 	"github.com/micro-service-lab/recs-seem-mono-container/app/entity"
+	"github.com/micro-service-lab/recs-seem-mono-container/app/errhandle"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/parameter"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/query"
 	"github.com/micro-service-lab/recs-seem-mono-container/app/store"
@@ -32,26 +34,20 @@ func countPermissionCategories(
 func (a *PgAdapter) CountPermissionCategories(
 	ctx context.Context, where parameter.WherePermissionCategoryParam,
 ) (int64, error) {
-	c, err := countPermissionCategories(ctx, a.query, where)
-	if err != nil {
-		return 0, fmt.Errorf("failed to count permission category: %w", err)
-	}
-	return c, nil
+	return countPermissionCategories(ctx, a.query, where)
 }
 
 // CountPermissionCategoriesWithSd SD付きで権限カテゴリー数を取得する。
 func (a *PgAdapter) CountPermissionCategoriesWithSd(
 	ctx context.Context, sd store.Sd, where parameter.WherePermissionCategoryParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := countPermissionCategories(ctx, qtx, where)
-	if err != nil {
-		return 0, fmt.Errorf("failed to count permission category: %w", err)
-	}
-	return c, nil
+	return countPermissionCategories(ctx, qtx, where)
 }
 
 func createPermissionCategory(
@@ -64,6 +60,10 @@ func createPermissionCategory(
 	}
 	e, err := qtx.CreatePermissionCategory(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.PermissionCategory{}, errhandle.NewModelDuplicatedError("permission category")
+		}
 		return entity.PermissionCategory{}, fmt.Errorf("failed to create permission category: %w", err)
 	}
 	entity := entity.PermissionCategory{
@@ -79,26 +79,20 @@ func createPermissionCategory(
 func (a *PgAdapter) CreatePermissionCategory(
 	ctx context.Context, param parameter.CreatePermissionCategoryParam,
 ) (entity.PermissionCategory, error) {
-	e, err := createPermissionCategory(ctx, a.query, param)
-	if err != nil {
-		return entity.PermissionCategory{}, fmt.Errorf("failed to create permission category: %w", err)
-	}
-	return e, nil
+	return createPermissionCategory(ctx, a.query, param)
 }
 
 // CreatePermissionCategoryWithSd SD付きで権限カテゴリーを作成する。
 func (a *PgAdapter) CreatePermissionCategoryWithSd(
 	ctx context.Context, sd store.Sd, param parameter.CreatePermissionCategoryParam,
 ) (entity.PermissionCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PermissionCategory{}, store.ErrNotFoundDescriptor
 	}
-	e, err := createPermissionCategory(ctx, qtx, param)
-	if err != nil {
-		return entity.PermissionCategory{}, fmt.Errorf("failed to create permission category: %w", err)
-	}
-	return e, nil
+	return createPermissionCategory(ctx, qtx, param)
 }
 
 func createPermissionCategories(
@@ -114,6 +108,10 @@ func createPermissionCategories(
 	}
 	c, err := qtx.CreatePermissionCategories(ctx, p)
 	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return 0, errhandle.NewModelDuplicatedError("permission category")
+		}
 		return 0, fmt.Errorf("failed to create permission categories: %w", err)
 	}
 	return c, nil
@@ -123,126 +121,111 @@ func createPermissionCategories(
 func (a *PgAdapter) CreatePermissionCategories(
 	ctx context.Context, params []parameter.CreatePermissionCategoryParam,
 ) (int64, error) {
-	c, err := createPermissionCategories(ctx, a.query, params)
-	if err != nil {
-		return 0, fmt.Errorf("failed to create permission categories: %w", err)
-	}
-	return c, nil
+	return createPermissionCategories(ctx, a.query, params)
 }
 
 // CreatePermissionCategoriesWithSd SD付きで権限カテゴリーを作成する。
 func (a *PgAdapter) CreatePermissionCategoriesWithSd(
 	ctx context.Context, sd store.Sd, params []parameter.CreatePermissionCategoryParam,
 ) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return 0, store.ErrNotFoundDescriptor
 	}
-	c, err := createPermissionCategories(ctx, qtx, params)
+	return createPermissionCategories(ctx, qtx, params)
+}
+
+func deletePermissionCategory(ctx context.Context, qtx *query.Queries, permissionCategoryID uuid.UUID) (int64, error) {
+	c, err := qtx.DeletePermissionCategory(ctx, permissionCategoryID)
 	if err != nil {
-		return 0, fmt.Errorf("failed to create permission categories: %w", err)
+		return 0, fmt.Errorf("failed to delete permission category: %w", err)
+	}
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("permission category")
 	}
 	return c, nil
 }
 
-func deletePermissionCategory(ctx context.Context, qtx *query.Queries, permissionCategoryID uuid.UUID) error {
-	err := qtx.DeletePermissionCategory(ctx, permissionCategoryID)
-	if err != nil {
-		return fmt.Errorf("failed to delete permission category: %w", err)
-	}
-	return nil
-}
-
 // DeletePermissionCategory 権限カテゴリーを削除する。
-func (a *PgAdapter) DeletePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID) error {
-	err := deletePermissionCategory(ctx, a.query, permissionCategoryID)
-	if err != nil {
-		return fmt.Errorf("failed to delete permission category: %w", err)
-	}
-	return nil
+func (a *PgAdapter) DeletePermissionCategory(ctx context.Context, permissionCategoryID uuid.UUID) (int64, error) {
+	return deletePermissionCategory(ctx, a.query, permissionCategoryID)
 }
 
 // DeletePermissionCategoryWithSd SD付きで権限カテゴリーを削除する。
 func (a *PgAdapter) DeletePermissionCategoryWithSd(
 	ctx context.Context, sd store.Sd, permissionCategoryID uuid.UUID,
-) error {
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deletePermissionCategory(ctx, qtx, permissionCategoryID)
-	if err != nil {
-		return fmt.Errorf("failed to delete permission category: %w", err)
-	}
-	return nil
+	return deletePermissionCategory(ctx, qtx, permissionCategoryID)
 }
 
-func deletePermissionCategoryByKey(ctx context.Context, qtx *query.Queries, key string) error {
-	err := qtx.DeletePermissionCategoryByKey(ctx, key)
+func deletePermissionCategoryByKey(ctx context.Context, qtx *query.Queries, key string) (int64, error) {
+	c, err := qtx.DeletePermissionCategoryByKey(ctx, key)
 	if err != nil {
-		return fmt.Errorf("failed to delete permission category: %w", err)
+		return 0, fmt.Errorf("failed to delete permission category: %w", err)
 	}
-	return nil
+	if c != 1 {
+		return 0, errhandle.NewModelNotFoundError("permission category")
+	}
+	return c, nil
 }
 
 // DeletePermissionCategoryByKey 権限カテゴリーを削除する。
-func (a *PgAdapter) DeletePermissionCategoryByKey(ctx context.Context, key string) error {
-	err := deletePermissionCategoryByKey(ctx, a.query, key)
-	if err != nil {
-		return fmt.Errorf("failed to delete permission category: %w", err)
-	}
-	return nil
+func (a *PgAdapter) DeletePermissionCategoryByKey(ctx context.Context, key string) (int64, error) {
+	return deletePermissionCategoryByKey(ctx, a.query, key)
 }
 
 // DeletePermissionCategoryByKeyWithSd SD付きで権限カテゴリーを削除する。
 func (a *PgAdapter) DeletePermissionCategoryByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
-) error {
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := deletePermissionCategoryByKey(ctx, qtx, key)
-	if err != nil {
-		return fmt.Errorf("failed to delete permission category: %w", err)
-	}
-	return nil
+	return deletePermissionCategoryByKey(ctx, qtx, key)
 }
 
 func pluralDeletePermissionCategories(
 	ctx context.Context, qtx *query.Queries, permissionCategoryIDs []uuid.UUID,
-) error {
-	err := qtx.PluralDeletePermissionCategories(ctx, permissionCategoryIDs)
+) (int64, error) {
+	c, err := qtx.PluralDeletePermissionCategories(ctx, permissionCategoryIDs)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete permission categories: %w", err)
+		return 0, fmt.Errorf("failed to plural delete permission categories: %w", err)
 	}
-	return nil
+	if c != int64(len(permissionCategoryIDs)) {
+		return 0, errhandle.NewModelNotFoundError("permission category")
+	}
+	return c, nil
 }
 
 // PluralDeletePermissionCategories 権限カテゴリーを複数削除する。
 func (a *PgAdapter) PluralDeletePermissionCategories(
 	ctx context.Context, permissionCategoryIDs []uuid.UUID,
-) error {
-	err := pluralDeletePermissionCategories(ctx, a.query, permissionCategoryIDs)
-	if err != nil {
-		return fmt.Errorf("failed to plural delete permission categories: %w", err)
-	}
-	return nil
+) (int64, error) {
+	return pluralDeletePermissionCategories(ctx, a.query, permissionCategoryIDs)
 }
 
 // PluralDeletePermissionCategoriesWithSd SD付きで権限カテゴリーを複数削除する。
 func (a *PgAdapter) PluralDeletePermissionCategoriesWithSd(
 	ctx context.Context, sd store.Sd, permissionCategoryIDs []uuid.UUID,
-) error {
+) (int64, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
-		return store.ErrNotFoundDescriptor
+		return 0, store.ErrNotFoundDescriptor
 	}
-	err := pluralDeletePermissionCategories(ctx, qtx, permissionCategoryIDs)
-	if err != nil {
-		return fmt.Errorf("failed to plural delete permission categories: %w", err)
-	}
-	return nil
+	return pluralDeletePermissionCategories(ctx, qtx, permissionCategoryIDs)
 }
 
 func findPermissionCategoryByID(
@@ -251,7 +234,7 @@ func findPermissionCategoryByID(
 	e, err := qtx.FindPermissionCategoryByID(ctx, permissionCategoryID)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.PermissionCategory{}, store.ErrDataNoRecord
+			return entity.PermissionCategory{}, errhandle.NewModelNotFoundError("permission category")
 		}
 		return entity.PermissionCategory{}, fmt.Errorf("failed to find permission category: %w", err)
 	}
@@ -268,26 +251,20 @@ func findPermissionCategoryByID(
 func (a *PgAdapter) FindPermissionCategoryByID(
 	ctx context.Context, permissionCategoryID uuid.UUID,
 ) (entity.PermissionCategory, error) {
-	e, err := findPermissionCategoryByID(ctx, a.query, permissionCategoryID)
-	if err != nil {
-		return entity.PermissionCategory{}, fmt.Errorf("failed to find permission category: %w", err)
-	}
-	return e, nil
+	return findPermissionCategoryByID(ctx, a.query, permissionCategoryID)
 }
 
 // FindPermissionCategoryByIDWithSd SD付きで権限カテゴリーを取得する。
 func (a *PgAdapter) FindPermissionCategoryByIDWithSd(
 	ctx context.Context, sd store.Sd, permissionCategoryID uuid.UUID,
 ) (entity.PermissionCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PermissionCategory{}, store.ErrNotFoundDescriptor
 	}
-	e, err := findPermissionCategoryByID(ctx, qtx, permissionCategoryID)
-	if err != nil {
-		return entity.PermissionCategory{}, fmt.Errorf("failed to find permission category: %w", err)
-	}
-	return e, nil
+	return findPermissionCategoryByID(ctx, qtx, permissionCategoryID)
 }
 
 func findPermissionCategoryByKey(
@@ -296,7 +273,7 @@ func findPermissionCategoryByKey(
 	e, err := qtx.FindPermissionCategoryByKey(ctx, key)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.PermissionCategory{}, store.ErrDataNoRecord
+			return entity.PermissionCategory{}, errhandle.NewModelNotFoundError("permission category")
 		}
 		return entity.PermissionCategory{}, fmt.Errorf("failed to find permission category: %w", err)
 	}
@@ -311,26 +288,20 @@ func findPermissionCategoryByKey(
 
 // FindPermissionCategoryByKey 権限カテゴリーを取得する。
 func (a *PgAdapter) FindPermissionCategoryByKey(ctx context.Context, key string) (entity.PermissionCategory, error) {
-	e, err := findPermissionCategoryByKey(ctx, a.query, key)
-	if err != nil {
-		return entity.PermissionCategory{}, fmt.Errorf("failed to find permission category: %w", err)
-	}
-	return e, nil
+	return findPermissionCategoryByKey(ctx, a.query, key)
 }
 
 // FindPermissionCategoryByKeyWithSd SD付きで権限カテゴリーを取得する。
 func (a *PgAdapter) FindPermissionCategoryByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string,
 ) (entity.PermissionCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PermissionCategory{}, store.ErrNotFoundDescriptor
 	}
-	e, err := findPermissionCategoryByKey(ctx, qtx, key)
-	if err != nil {
-		return entity.PermissionCategory{}, fmt.Errorf("failed to find permission category: %w", err)
-	}
-	return e, nil
+	return findPermissionCategoryByKey(ctx, qtx, key)
 }
 
 // PermissionCategoryCursor is a cursor for PermissionCategory.
@@ -460,11 +431,7 @@ func (a *PgAdapter) GetPermissionCategories(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.PermissionCategory], error) {
-	r, err := getPermissionCategories(ctx, a.query, where, order, np, cp, wc)
-	if err != nil {
-		return store.ListResult[entity.PermissionCategory]{}, fmt.Errorf("failed to get permission categories: %w", err)
-	}
-	return r, nil
+	return getPermissionCategories(ctx, a.query, where, order, np, cp, wc)
 }
 
 // GetPermissionCategoriesWithSd SD付きで権限カテゴリーを取得する。
@@ -477,26 +444,34 @@ func (a *PgAdapter) GetPermissionCategoriesWithSd(
 	cp store.CursorPaginationParam,
 	wc store.WithCountParam,
 ) (store.ListResult[entity.PermissionCategory], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.PermissionCategory]{}, store.ErrNotFoundDescriptor
 	}
-	r, err := getPermissionCategories(ctx, qtx, where, order, np, cp, wc)
-	if err != nil {
-		return store.ListResult[entity.PermissionCategory]{}, fmt.Errorf("failed to get permission categories: %w", err)
-	}
-	return r, nil
+	return getPermissionCategories(ctx, qtx, where, order, np, cp, wc)
 }
 
 func getPluralPermissionCategories(
-	ctx context.Context, qtx *query.Queries, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, qtx *query.Queries, ids []uuid.UUID,
+	order parameter.PermissionCategoryOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.PermissionCategory], error) {
-	p := query.GetPluralPermissionCategoriesParams{
-		PermissionCategoryIds: ids,
-		Offset:                int32(np.Offset.Int64),
-		Limit:                 int32(np.Limit.Int64),
+	var e []query.PermissionCategory
+	var err error
+	if !np.Valid {
+		e, err = qtx.GetPluralPermissionCategories(ctx, query.GetPluralPermissionCategoriesParams{
+			PermissionCategoryIds: ids,
+			OrderMethod:           order.GetStringValue(),
+		})
+	} else {
+		e, err = qtx.GetPluralPermissionCategoriesUseNumberedPaginate(
+			ctx, query.GetPluralPermissionCategoriesUseNumberedPaginateParams{
+				PermissionCategoryIds: ids,
+				Offset:                int32(np.Offset.Int64),
+				Limit:                 int32(np.Limit.Int64),
+			})
 	}
-	e, err := qtx.GetPluralPermissionCategories(ctx, p)
 	if err != nil {
 		return store.ListResult[entity.PermissionCategory]{},
 			fmt.Errorf("failed to get plural permission categories: %w", err)
@@ -515,30 +490,23 @@ func getPluralPermissionCategories(
 
 // GetPluralPermissionCategories 権限カテゴリーを取得する。
 func (a *PgAdapter) GetPluralPermissionCategories(
-	ctx context.Context, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, ids []uuid.UUID, order parameter.PermissionCategoryOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.PermissionCategory], error) {
-	r, err := getPluralPermissionCategories(ctx, a.query, ids, np)
-	if err != nil {
-		return store.ListResult[entity.PermissionCategory]{},
-			fmt.Errorf("failed to get plural permission categories: %w", err)
-	}
-	return r, nil
+	return getPluralPermissionCategories(ctx, a.query, ids, order, np)
 }
 
 // GetPluralPermissionCategoriesWithSd SD付きで権限カテゴリーを取得する。
 func (a *PgAdapter) GetPluralPermissionCategoriesWithSd(
-	ctx context.Context, sd store.Sd, ids []uuid.UUID, np store.NumberedPaginationParam,
+	ctx context.Context, sd store.Sd, ids []uuid.UUID,
+	order parameter.PermissionCategoryOrderMethod, np store.NumberedPaginationParam,
 ) (store.ListResult[entity.PermissionCategory], error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return store.ListResult[entity.PermissionCategory]{}, store.ErrNotFoundDescriptor
 	}
-	r, err := getPluralPermissionCategories(ctx, qtx, ids, np)
-	if err != nil {
-		return store.ListResult[entity.PermissionCategory]{},
-			fmt.Errorf("failed to get plural permission categories: %w", err)
-	}
-	return r, nil
+	return getPluralPermissionCategories(ctx, qtx, ids, order, np)
 }
 
 func updatePermissionCategory(
@@ -554,7 +522,11 @@ func updatePermissionCategory(
 	e, err := qtx.UpdatePermissionCategory(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.PermissionCategory{}, store.ErrDataNoRecord
+			return entity.PermissionCategory{}, errhandle.NewModelNotFoundError("permission category")
+		}
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == pgUniquenessViolationCode {
+			return entity.PermissionCategory{}, errhandle.NewModelDuplicatedError("permission category")
 		}
 		return entity.PermissionCategory{}, fmt.Errorf("failed to update permission category: %w", err)
 	}
@@ -571,26 +543,20 @@ func updatePermissionCategory(
 func (a *PgAdapter) UpdatePermissionCategory(
 	ctx context.Context, permissionCategoryID uuid.UUID, param parameter.UpdatePermissionCategoryParams,
 ) (entity.PermissionCategory, error) {
-	e, err := updatePermissionCategory(ctx, a.query, permissionCategoryID, param)
-	if err != nil {
-		return entity.PermissionCategory{}, fmt.Errorf("failed to update permission category: %w", err)
-	}
-	return e, nil
+	return updatePermissionCategory(ctx, a.query, permissionCategoryID, param)
 }
 
 // UpdatePermissionCategoryWithSd SD付きで権限カテゴリーを更新する。
 func (a *PgAdapter) UpdatePermissionCategoryWithSd(
 	ctx context.Context, sd store.Sd, permissionCategoryID uuid.UUID, param parameter.UpdatePermissionCategoryParams,
 ) (entity.PermissionCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PermissionCategory{}, store.ErrNotFoundDescriptor
 	}
-	e, err := updatePermissionCategory(ctx, qtx, permissionCategoryID, param)
-	if err != nil {
-		return entity.PermissionCategory{}, fmt.Errorf("failed to update permission category: %w", err)
-	}
-	return e, nil
+	return updatePermissionCategory(ctx, qtx, permissionCategoryID, param)
 }
 
 func updatePermissionCategoryByKey(
@@ -604,7 +570,7 @@ func updatePermissionCategoryByKey(
 	e, err := qtx.UpdatePermissionCategoryByKey(ctx, p)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return entity.PermissionCategory{}, store.ErrDataNoRecord
+			return entity.PermissionCategory{}, errhandle.NewModelNotFoundError("permission category")
 		}
 		return entity.PermissionCategory{}, fmt.Errorf("failed to update permission category: %w", err)
 	}
@@ -621,24 +587,18 @@ func updatePermissionCategoryByKey(
 func (a *PgAdapter) UpdatePermissionCategoryByKey(
 	ctx context.Context, key string, param parameter.UpdatePermissionCategoryByKeyParams,
 ) (entity.PermissionCategory, error) {
-	e, err := updatePermissionCategoryByKey(ctx, a.query, key, param)
-	if err != nil {
-		return entity.PermissionCategory{}, fmt.Errorf("failed to update permission category: %w", err)
-	}
-	return e, nil
+	return updatePermissionCategoryByKey(ctx, a.query, key, param)
 }
 
 // UpdatePermissionCategoryByKeyWithSd SD付きで権限カテゴリーを更新する。
 func (a *PgAdapter) UpdatePermissionCategoryByKeyWithSd(
 	ctx context.Context, sd store.Sd, key string, param parameter.UpdatePermissionCategoryByKeyParams,
 ) (entity.PermissionCategory, error) {
+	a.mu.RLock()
+	defer a.mu.RUnlock()
 	qtx, ok := a.qtxMap[sd]
 	if !ok {
 		return entity.PermissionCategory{}, store.ErrNotFoundDescriptor
 	}
-	e, err := updatePermissionCategoryByKey(ctx, qtx, key, param)
-	if err != nil {
-		return entity.PermissionCategory{}, fmt.Errorf("failed to update permission category: %w", err)
-	}
-	return e, nil
+	return updatePermissionCategoryByKey(ctx, qtx, key, param)
 }

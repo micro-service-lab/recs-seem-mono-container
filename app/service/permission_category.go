@@ -17,8 +17,10 @@ type PermissionCategoryKey string
 const (
 	// PermissionCategoryKeyOrganization オーガナイゼーションの設定に関する権限。
 	PermissionCategoryKeyOrganization PermissionCategoryKey = "organization"
-	// PermissionCategoryKeyUser オーガナイゼーション所属ユーザー(権限含む)に関する権限。
-	PermissionCategoryKeyUser PermissionCategoryKey = "user"
+	// PermissionCategoryKeyMember オーガナイゼーション所属メンバーに関する権限。
+	PermissionCategoryKeyMember PermissionCategoryKey = "member"
+	// PermissionCategoryKeyWorkPosition ワークポジションに関する権限。
+	PermissionCategoryKeyWorkPosition PermissionCategoryKey = "work_position"
 	// PermissionCategoryKeyEvent イベントに関する権限。
 	PermissionCategoryKeyEvent PermissionCategoryKey = "event"
 	// PermissionCategoryKeyChatRoom チャットルームに関する権限。
@@ -42,9 +44,14 @@ var PermissionCategories = []PermissionCategory{
 		Description: "オーガナイゼーションの設定に関する権限",
 	},
 	{
-		Key:         string(PermissionCategoryKeyUser),
-		Name:        "ユーザー",
-		Description: "オーガナイゼーション所属ユーザー(権限含む)に関する権限",
+		Key:         string(PermissionCategoryKeyMember),
+		Name:        "メンバー",
+		Description: "オーガナイゼーション所属メンバーに関する権限",
+	},
+	{
+		Key:         string(PermissionCategoryKeyWorkPosition),
+		Name:        "ワークポジション",
+		Description: "ワークポジションに関する権限",
 	},
 	{
 		Key:         string(PermissionCategoryKeyEvent),
@@ -113,23 +120,23 @@ func (m *ManagePermissionCategory) UpdatePermissionCategory(
 }
 
 // DeletePermissionCategory 権限カテゴリーを削除する。
-func (m *ManagePermissionCategory) DeletePermissionCategory(ctx context.Context, id uuid.UUID) error {
-	err := m.DB.DeletePermissionCategory(ctx, id)
+func (m *ManagePermissionCategory) DeletePermissionCategory(ctx context.Context, id uuid.UUID) (int64, error) {
+	c, err := m.DB.DeletePermissionCategory(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to delete permission category: %w", err)
+		return 0, fmt.Errorf("failed to delete permission category: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeletePermissionCategories 権限カテゴリーを複数削除する。
 func (m *ManagePermissionCategory) PluralDeletePermissionCategories(
 	ctx context.Context, ids []uuid.UUID,
-) error {
-	err := m.DB.PluralDeletePermissionCategories(ctx, ids)
+) (int64, error) {
+	c, err := m.DB.PluralDeletePermissionCategories(ctx, ids)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete permission categories: %w", err)
+		return 0, fmt.Errorf("failed to plural delete permission categories: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // FindPermissionCategoryByID 権限カテゴリーをIDで取得する。
@@ -179,14 +186,14 @@ func (m *ManagePermissionCategory) GetPermissionCategories(
 	case parameter.NumberedPagination:
 		np = store.NumberedPaginationParam{
 			Valid:  true,
-			Offset: entity.Int{Int64: int64(offset)},
-			Limit:  entity.Int{Int64: int64(limit)},
+			Offset: entity.Int{Int64: int64(offset), Valid: true},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
 		}
 	case parameter.CursorPagination:
 		cp = store.CursorPaginationParam{
 			Valid:  true,
 			Cursor: string(cursor),
-			Limit:  entity.Int{Int64: int64(limit)},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
 		}
 	case parameter.NonePagination:
 	}

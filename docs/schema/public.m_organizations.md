@@ -7,7 +7,7 @@
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | m_organizations_pkey | bigint | nextval('m_organizations_m_organizations_pkey_seq'::regclass) | false |  |  |  |
-| organization_id | uuid | uuid_generate_v4() | false | [public.m_work_positions](public.m_work_positions.md) [public.m_groups](public.m_groups.md) [public.m_grades](public.m_grades.md) [public.m_members](public.m_members.md) [public.t_events](public.t_events.md) [public.t_attendances](public.t_attendances.md) [public.t_records](public.t_records.md) |  |  |
+| organization_id | uuid | uuid_generate_v4() | false | [public.m_work_positions](public.m_work_positions.md) [public.m_groups](public.m_groups.md) [public.m_grades](public.m_grades.md) [public.m_members](public.m_members.md) [public.t_events](public.t_events.md) [public.t_attendances](public.t_attendances.md) [public.t_records](public.t_records.md) [public.m_memberships](public.m_memberships.md) |  |  |
 | name | varchar(255) |  | false |  |  |  |
 | description | text |  | true |  |  |  |
 | color | varchar(7) |  | true |  |  |  |
@@ -30,7 +30,7 @@
 | ---- | ---------- |
 | m_organizations_pkey | CREATE UNIQUE INDEX m_organizations_pkey ON public.m_organizations USING btree (m_organizations_pkey) |
 | idx_m_organizations_id | CREATE UNIQUE INDEX idx_m_organizations_id ON public.m_organizations USING btree (organization_id) |
-| idx_m_organizations_name | CREATE UNIQUE INDEX idx_m_organizations_name ON public.m_organizations USING btree (name) |
+| idx_m_organizations_name | CREATE INDEX idx_m_organizations_name ON public.m_organizations USING btree (name) |
 
 ## Relations
 

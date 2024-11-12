@@ -4,20 +4,23 @@ INSERT INTO m_grades (key, organization_id) VALUES ($1, $2);
 -- name: CreateGrade :one
 INSERT INTO m_grades (key, organization_id) VALUES ($1, $2) RETURNING *;
 
--- name: DeleteGrade :exec
+-- name: DeleteGrade :execrows
 DELETE FROM m_grades WHERE grade_id = $1;
 
--- name: DeleteGradeByKey :exec
+-- name: DeleteGradeByKey :execrows
 DELETE FROM m_grades WHERE key = $1;
 
--- name: PluralDeleteGrades :exec
-DELETE FROM m_grades WHERE grade_id = ANY($1::uuid[]);
+-- name: PluralDeleteGrades :execrows
+DELETE FROM m_grades WHERE grade_id = ANY(@grade_ids::uuid[]);
 
 -- name: FindGradeByID :one
 SELECT * FROM m_grades WHERE grade_id = $1;
 
 -- name: FindGradeByIDWithOrganization :one
-SELECT sqlc.embed(m_grades), sqlc.embed(m_organizations) FROM m_grades
+SELECT m_grades.*, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id
+FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE grade_id = $1;
 
@@ -25,7 +28,10 @@ WHERE grade_id = $1;
 SELECT * FROM m_grades WHERE key = $1;
 
 -- name: FindGradeByKeyWithOrganization :one
-SELECT sqlc.embed(m_grades), sqlc.embed(m_organizations) FROM m_grades
+SELECT m_grades.*, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id
+FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE key = $1;
 
@@ -56,59 +62,71 @@ LIMIT $1;
 
 -- name: GetPluralGrades :many
 SELECT * FROM m_grades
-WHERE organization_id = ANY(@organization_ids::uuid[])
+WHERE grade_id = ANY(@grade_ids::uuid[])
+ORDER BY
+	m_grades_pkey ASC;
+
+-- name: GetPluralGradesUseNumberedPaginate :many
+SELECT * FROM m_grades
+WHERE grade_id = ANY(@grade_ids::uuid[])
 ORDER BY
 	m_grades_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetGradesWithOrganization :many
-SELECT sqlc.embed(m_grades), sqlc.embed(m_organizations) FROM m_grades
+SELECT m_grades.*, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id
+FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
 	m_grades_pkey ASC;
 
 -- name: GetGradesWithOrganizationUseNumberedPaginate :many
-SELECT sqlc.embed(m_grades), sqlc.embed(m_organizations) FROM m_grades
+SELECT m_grades.*, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id
+FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN m_organizations.name END DESC,
 	m_grades_pkey ASC
 LIMIT $1 OFFSET $2;
 
 -- name: GetGradesWithOrganizationUseKeysetPaginate :many
-SELECT sqlc.embed(m_grades), sqlc.embed(m_organizations) FROM m_grades
+SELECT m_grades.*, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id
+FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
 WHERE
 	CASE @cursor_direction::text
 		WHEN 'next' THEN
-			CASE @order_method::text
-				WHEN 'name' THEN name > @name_cursor OR (name = @name_cursor AND m_grades_pkey > @cursor::int)
-				WHEN 'r_name' THEN name < @name_cursor OR (name = @name_cursor AND m_grades_pkey > @cursor::int)
-				ELSE m_grades_pkey > @cursor::int
-			END
+			m_grades_pkey > @cursor::int
 		WHEN 'prev' THEN
-			CASE @order_method::text
-				WHEN 'name' THEN name < @name_cursor OR (name = @name_cursor AND m_grades_pkey < @cursor::int)
-				WHEN 'r_name' THEN name > @name_cursor OR (name = @name_cursor AND m_grades_pkey < @cursor::int)
-				ELSE m_grades_pkey < @cursor::int
-			END
+			m_grades_pkey < @cursor::int
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN m_organizations.name END ASC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN m_organizations.name END DESC,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_grades_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_grades_pkey END DESC
 LIMIT $1;
 
 -- name: GetPluralGradesWithOrganization :many
-SELECT sqlc.embed(m_grades), sqlc.embed(m_organizations) FROM m_grades
+SELECT m_grades.*, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id
+FROM m_grades
 LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
-WHERE organization_id = ANY(@organization_ids::uuid[])
+WHERE grade_id = ANY(@grade_ids::uuid[])
+ORDER BY
+	m_grades_pkey ASC;
+
+-- name: GetPluralGradesWithOrganizationUseNumberedPaginate :many
+SELECT m_grades.*, m_organizations.name organization_name, m_organizations.description organization_description,
+m_organizations.color organization_color, m_organizations.is_personal organization_is_personal,
+m_organizations.is_whole organization_is_whole, m_organizations.chat_room_id organization_chat_room_id
+FROM m_grades
+LEFT JOIN m_organizations ON m_grades.organization_id = m_organizations.organization_id
+WHERE grade_id = ANY(@grade_ids::uuid[])
 ORDER BY
 	m_grades_pkey ASC
 LIMIT $1 OFFSET $2;

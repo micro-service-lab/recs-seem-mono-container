@@ -27,6 +27,9 @@ const (
 	AttendStatusKeyNotAttend AttendStatusKey = "not_attend"
 )
 
+// DefaultAttendStatusKey デフォルトの出席状況キー。
+const DefaultAttendStatusKey = AttendStatusKeyNotAttend
+
 // AttendStatus 出席状況。
 type AttendStatus struct {
 	Key  string
@@ -87,21 +90,21 @@ func (m *ManageAttendStatus) UpdateAttendStatus(
 }
 
 // DeleteAttendStatus 出席状況を削除する。
-func (m *ManageAttendStatus) DeleteAttendStatus(ctx context.Context, id uuid.UUID) error {
-	err := m.DB.DeleteAttendStatus(ctx, id)
+func (m *ManageAttendStatus) DeleteAttendStatus(ctx context.Context, id uuid.UUID) (int64, error) {
+	c, err := m.DB.DeleteAttendStatus(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to delete attend status: %w", err)
+		return 0, fmt.Errorf("failed to delete attend status: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeleteAttendStatuses 出席状況を複数削除する。
-func (m *ManageAttendStatus) PluralDeleteAttendStatuses(ctx context.Context, ids []uuid.UUID) error {
-	err := m.DB.PluralDeleteAttendStatuses(ctx, ids)
+func (m *ManageAttendStatus) PluralDeleteAttendStatuses(ctx context.Context, ids []uuid.UUID) (int64, error) {
+	c, err := m.DB.PluralDeleteAttendStatuses(ctx, ids)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete attend statuses: %w", err)
+		return 0, fmt.Errorf("failed to plural delete attend statuses: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // FindAttendStatusByID 出席状況をIDで取得する。
@@ -146,14 +149,14 @@ func (m *ManageAttendStatus) GetAttendStatuses(
 	case parameter.NumberedPagination:
 		np = store.NumberedPaginationParam{
 			Valid:  true,
-			Offset: entity.Int{Int64: int64(offset)},
-			Limit:  entity.Int{Int64: int64(limit)},
+			Offset: entity.Int{Int64: int64(offset), Valid: true},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
 		}
 	case parameter.CursorPagination:
 		cp = store.CursorPaginationParam{
 			Valid:  true,
 			Cursor: string(cursor),
-			Limit:  entity.Int{Int64: int64(limit)},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
 		}
 	case parameter.NonePagination:
 	}

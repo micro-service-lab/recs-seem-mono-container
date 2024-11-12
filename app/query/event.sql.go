@@ -145,22 +145,28 @@ type CreateEventsParams struct {
 	LastEditedAt       time.Time   `json:"last_edited_at"`
 }
 
-const deleteEvent = `-- name: DeleteEvent :exec
+const deleteEvent = `-- name: DeleteEvent :execrows
 DELETE FROM t_events WHERE event_id = $1
 `
 
-func (q *Queries) DeleteEvent(ctx context.Context, eventID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteEvent, eventID)
-	return err
+func (q *Queries) DeleteEvent(ctx context.Context, eventID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteEvent, eventID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteEventOnOrganization = `-- name: DeleteEventOnOrganization :exec
+const deleteEventOnOrganization = `-- name: DeleteEventOnOrganization :execrows
 DELETE FROM t_events WHERE organization_id = $1
 `
 
-func (q *Queries) DeleteEventOnOrganization(ctx context.Context, organizationID pgtype.UUID) error {
-	_, err := q.db.Exec(ctx, deleteEventOnOrganization, organizationID)
-	return err
+func (q *Queries) DeleteEventOnOrganization(ctx context.Context, organizationID pgtype.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteEventOnOrganization, organizationID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findEventByID = `-- name: FindEventByID :one
@@ -190,7 +196,7 @@ func (q *Queries) FindEventByID(ctx context.Context, eventID uuid.UUID) (Event, 
 }
 
 const findEventByIDWithAll = `-- name: FindEventByIDWithAll :one
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_event_types_pkey, o.event_type_id, o.name, o.key, o.color, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.color, s.is_personal, s.is_whole, s.created_at, s.updated_at, s.chat_room_id, send_organizations.m_organizations_pkey, send_organizations.organization_id, send_organizations.name, send_organizations.description, send_organizations.color, send_organizations.is_personal, send_organizations.is_whole, send_organizations.created_at, send_organizations.updated_at, send_organizations.chat_room_id, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_url, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at FROM t_events
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_event_types_pkey, o.event_type_id, o.name, o.key, o.color, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.color, s.is_personal, s.is_whole, s.created_at, s.updated_at, s.chat_room_id, send_organizations.m_organizations_pkey, send_organizations.organization_id, send_organizations.name, send_organizations.description, send_organizations.color, send_organizations.is_personal, send_organizations.is_whole, send_organizations.created_at, send_organizations.updated_at, send_organizations.chat_room_id, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at FROM t_events
 LEFT JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
 LEFT JOIN m_organizations s ON t_events.organization_id = s.organization_id
 LEFT JOIN m_organizations send_organizations ON t_events.send_organization_id = p.organization_id
@@ -264,8 +270,10 @@ func (q *Queries) FindEventByIDWithAll(ctx context.Context, eventID uuid.UUID) (
 		&i.Member.Password,
 		&i.Member.Email,
 		&i.Member.Name,
+		&i.Member.FirstName,
+		&i.Member.LastName,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageUrl,
+		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -277,7 +285,7 @@ func (q *Queries) FindEventByIDWithAll(ctx context.Context, eventID uuid.UUID) (
 }
 
 const findEventByIDWithLastEditUser = `-- name: FindEventByIDWithLastEditUser :one
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
 LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
 WHERE event_id = $1
 `
@@ -311,8 +319,10 @@ func (q *Queries) FindEventByIDWithLastEditUser(ctx context.Context, eventID uui
 		&i.Member.Password,
 		&i.Member.Email,
 		&i.Member.Name,
+		&i.Member.FirstName,
+		&i.Member.LastName,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageUrl,
+		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -367,7 +377,7 @@ func (q *Queries) FindEventByIDWithOrganization(ctx context.Context, eventID uui
 }
 
 const findEventByIDWithPostUser = `-- name: FindEventByIDWithPostUser :one
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
 LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
 WHERE event_id = $1
 `
@@ -401,8 +411,10 @@ func (q *Queries) FindEventByIDWithPostUser(ctx context.Context, eventID uuid.UU
 		&i.Member.Password,
 		&i.Member.Email,
 		&i.Member.Name,
+		&i.Member.FirstName,
+		&i.Member.LastName,
 		&i.Member.AttendStatusID,
-		&i.Member.ProfileImageUrl,
+		&i.Member.ProfileImageID,
 		&i.Member.GradeID,
 		&i.Member.GroupID,
 		&i.Member.PersonalOrganizationID,
@@ -513,8 +525,8 @@ AND
 AND
 	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -625,10 +637,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -734,8 +746,8 @@ AND
 AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -818,7 +830,7 @@ func (q *Queries) GetEventsUseNumberedPaginate(ctx context.Context, arg GetEvent
 }
 
 const getEventsWithAll = `-- name: GetEventsWithAll :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_event_types_pkey, o.event_type_id, o.name, o.key, o.color, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.color, s.is_personal, s.is_whole, s.created_at, s.updated_at, s.chat_room_id, p.m_organizations_pkey, p.organization_id, p.name, p.description, p.color, p.is_personal, p.is_whole, p.created_at, p.updated_at, p.chat_room_id, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_url, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_url, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_url, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_url, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at FROM t_events
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_event_types_pkey, o.event_type_id, o.name, o.key, o.color, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.color, s.is_personal, s.is_whole, s.created_at, s.updated_at, s.chat_room_id, p.m_organizations_pkey, p.organization_id, p.name, p.description, p.color, p.is_personal, p.is_whole, p.created_at, p.updated_at, p.chat_room_id, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at FROM t_events
 LEFT JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
 LEFT JOIN m_organizations s ON t_events.organization_id = s.organization_id
 LEFT JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
@@ -841,8 +853,8 @@ AND
 AND
 	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -948,8 +960,10 @@ func (q *Queries) GetEventsWithAll(ctx context.Context, arg GetEventsWithAllPara
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -962,8 +976,10 @@ func (q *Queries) GetEventsWithAll(ctx context.Context, arg GetEventsWithAllPara
 			&i.Member_2.Password,
 			&i.Member_2.Email,
 			&i.Member_2.Name,
+			&i.Member_2.FirstName,
+			&i.Member_2.LastName,
 			&i.Member_2.AttendStatusID,
-			&i.Member_2.ProfileImageUrl,
+			&i.Member_2.ProfileImageID,
 			&i.Member_2.GradeID,
 			&i.Member_2.GroupID,
 			&i.Member_2.PersonalOrganizationID,
@@ -982,7 +998,7 @@ func (q *Queries) GetEventsWithAll(ctx context.Context, arg GetEventsWithAllPara
 }
 
 const getEventsWithAllUseKeysetPaginate = `-- name: GetEventsWithAllUseKeysetPaginate :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_event_types_pkey, o.event_type_id, o.name, o.key, o.color, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.color, s.is_personal, s.is_whole, s.created_at, s.updated_at, s.chat_room_id, p.m_organizations_pkey, p.organization_id, p.name, p.description, p.color, p.is_personal, p.is_whole, p.created_at, p.updated_at, p.chat_room_id, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_url, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_url, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_url, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_url, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at FROM t_events
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_event_types_pkey, o.event_type_id, o.name, o.key, o.color, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.color, s.is_personal, s.is_whole, s.created_at, s.updated_at, s.chat_room_id, p.m_organizations_pkey, p.organization_id, p.name, p.description, p.color, p.is_personal, p.is_whole, p.created_at, p.updated_at, p.chat_room_id, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at FROM t_events
 LEFT JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
 LEFT JOIN m_organizations s ON t_events.organization_id = s.organization_id
 LEFT JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
@@ -1020,10 +1036,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -1139,8 +1155,10 @@ func (q *Queries) GetEventsWithAllUseKeysetPaginate(ctx context.Context, arg Get
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1153,8 +1171,10 @@ func (q *Queries) GetEventsWithAllUseKeysetPaginate(ctx context.Context, arg Get
 			&i.Member_2.Password,
 			&i.Member_2.Email,
 			&i.Member_2.Name,
+			&i.Member_2.FirstName,
+			&i.Member_2.LastName,
 			&i.Member_2.AttendStatusID,
-			&i.Member_2.ProfileImageUrl,
+			&i.Member_2.ProfileImageID,
 			&i.Member_2.GradeID,
 			&i.Member_2.GroupID,
 			&i.Member_2.PersonalOrganizationID,
@@ -1173,7 +1193,7 @@ func (q *Queries) GetEventsWithAllUseKeysetPaginate(ctx context.Context, arg Get
 }
 
 const getEventsWithAllUseNumberedPaginate = `-- name: GetEventsWithAllUseNumberedPaginate :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_event_types_pkey, o.event_type_id, o.name, o.key, o.color, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.color, s.is_personal, s.is_whole, s.created_at, s.updated_at, s.chat_room_id, p.m_organizations_pkey, p.organization_id, p.name, p.description, p.color, p.is_personal, p.is_whole, p.created_at, p.updated_at, p.chat_room_id, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_url, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_url, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_url, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_url, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at FROM t_events
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_event_types_pkey, o.event_type_id, o.name, o.key, o.color, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.color, s.is_personal, s.is_whole, s.created_at, s.updated_at, s.chat_room_id, p.m_organizations_pkey, p.organization_id, p.name, p.description, p.color, p.is_personal, p.is_whole, p.created_at, p.updated_at, p.chat_room_id, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at FROM t_events
 LEFT JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
 LEFT JOIN m_organizations s ON t_events.organization_id = s.organization_id
 LEFT JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
@@ -1196,8 +1216,8 @@ AND
 AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1308,8 +1328,10 @@ func (q *Queries) GetEventsWithAllUseNumberedPaginate(ctx context.Context, arg G
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1322,8 +1344,10 @@ func (q *Queries) GetEventsWithAllUseNumberedPaginate(ctx context.Context, arg G
 			&i.Member_2.Password,
 			&i.Member_2.Email,
 			&i.Member_2.Name,
+			&i.Member_2.FirstName,
+			&i.Member_2.LastName,
 			&i.Member_2.AttendStatusID,
-			&i.Member_2.ProfileImageUrl,
+			&i.Member_2.ProfileImageID,
 			&i.Member_2.GradeID,
 			&i.Member_2.GroupID,
 			&i.Member_2.PersonalOrganizationID,
@@ -1342,7 +1366,7 @@ func (q *Queries) GetEventsWithAllUseNumberedPaginate(ctx context.Context, arg G
 }
 
 const getEventsWithLastEditUser = `-- name: GetEventsWithLastEditUser :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
 LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
 WHERE
 	CASE WHEN $1::boolean = true THEN title LIKE '%' || $2::text || '%' ELSE TRUE END
@@ -1361,8 +1385,8 @@ AND
 AND
 	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -1439,8 +1463,10 @@ func (q *Queries) GetEventsWithLastEditUser(ctx context.Context, arg GetEventsWi
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1459,7 +1485,7 @@ func (q *Queries) GetEventsWithLastEditUser(ctx context.Context, arg GetEventsWi
 }
 
 const getEventsWithLastEditUserUseKeysetPaginate = `-- name: GetEventsWithLastEditUserUseKeysetPaginate :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
 LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
 WHERE
 	CASE WHEN $2::boolean = true THEN title LIKE '%' || $3::text || '%' ELSE TRUE END
@@ -1493,10 +1519,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -1583,8 +1609,10 @@ func (q *Queries) GetEventsWithLastEditUserUseKeysetPaginate(ctx context.Context
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1603,7 +1631,7 @@ func (q *Queries) GetEventsWithLastEditUserUseKeysetPaginate(ctx context.Context
 }
 
 const getEventsWithLastEditUserUseNumberedPaginate = `-- name: GetEventsWithLastEditUserUseNumberedPaginate :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
 LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
@@ -1622,8 +1650,8 @@ AND
 AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -1705,8 +1733,10 @@ func (q *Queries) GetEventsWithLastEditUserUseNumberedPaginate(ctx context.Conte
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -1744,8 +1774,8 @@ AND
 AND
 	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -1872,10 +1902,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -1997,8 +2027,8 @@ AND
 AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2096,7 +2126,7 @@ func (q *Queries) GetEventsWithOrganizationUseNumberedPaginate(ctx context.Conte
 }
 
 const getEventsWithPostUser = `-- name: GetEventsWithPostUser :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
 LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
 WHERE
 	CASE WHEN $1::boolean = true THEN title LIKE '%' || $2::text || '%' ELSE TRUE END
@@ -2115,8 +2145,8 @@ AND
 AND
 	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -2193,8 +2223,10 @@ func (q *Queries) GetEventsWithPostUser(ctx context.Context, arg GetEventsWithPo
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2213,7 +2245,7 @@ func (q *Queries) GetEventsWithPostUser(ctx context.Context, arg GetEventsWithPo
 }
 
 const getEventsWithPostUserUseKeysetPaginate = `-- name: GetEventsWithPostUserUseKeysetPaginate :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
 LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
 WHERE
 	CASE WHEN $2::boolean = true THEN title LIKE '%' || $3::text || '%' ELSE TRUE END
@@ -2247,10 +2279,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -2337,8 +2369,10 @@ func (q *Queries) GetEventsWithPostUserUseKeysetPaginate(ctx context.Context, ar
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2357,7 +2391,7 @@ func (q *Queries) GetEventsWithPostUserUseKeysetPaginate(ctx context.Context, ar
 }
 
 const getEventsWithPostUserUseNumberedPaginate = `-- name: GetEventsWithPostUserUseNumberedPaginate :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
 LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
 WHERE
 	CASE WHEN $3::boolean = true THEN title LIKE '%' || $4::text || '%' ELSE TRUE END
@@ -2376,8 +2410,8 @@ AND
 AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2459,8 +2493,10 @@ func (q *Queries) GetEventsWithPostUserUseNumberedPaginate(ctx context.Context, 
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -2498,8 +2534,8 @@ AND
 AND
 	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -2626,10 +2662,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -2751,8 +2787,8 @@ AND
 AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -2869,8 +2905,8 @@ AND
 AND
 	CASE WHEN $15::boolean = true THEN end_time <= $16 ELSE TRUE END
 ORDER BY
-	CASE WHEN $17::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $17::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $17::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 `
 
@@ -2992,10 +3028,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'next' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'start_time' AND $18::text = 'prev' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'next' THEN start_time END DESC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' AND $18::text = 'prev' THEN start_time END ASC NULLS LAST,
 	CASE WHEN $18::text = 'next' THEN t_events_pkey END ASC,
 	CASE WHEN $18::text = 'prev' THEN t_events_pkey END DESC
 LIMIT $1
@@ -3112,8 +3148,8 @@ AND
 AND
 	CASE WHEN $17::boolean = true THEN end_time <= $18 ELSE TRUE END
 ORDER BY
-	CASE WHEN $19::text = 'start_time' THEN start_time END ASC,
-	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC,
+	CASE WHEN $19::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $19::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -3206,20 +3242,76 @@ func (q *Queries) GetEventsWithTypeUseNumberedPaginate(ctx context.Context, arg 
 }
 
 const getPluralEvents = `-- name: GetPluralEvents :many
+SELECT t_events_pkey, event_id, event_type_id, title, description, organization_id, start_time, end_time, mail_send_flag, send_organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_events WHERE event_id = ANY($1::uuid[])
+ORDER BY
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
+	t_events_pkey ASC
+`
+
+type GetPluralEventsParams struct {
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralEvents(ctx context.Context, arg GetPluralEventsParams) ([]Event, error) {
+	rows, err := q.db.Query(ctx, getPluralEvents, arg.EventIds, arg.OrderMethod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Event{}
+	for rows.Next() {
+		var i Event
+		if err := rows.Scan(
+			&i.TEventsPkey,
+			&i.EventID,
+			&i.EventTypeID,
+			&i.Title,
+			&i.Description,
+			&i.OrganizationID,
+			&i.StartTime,
+			&i.EndTime,
+			&i.MailSendFlag,
+			&i.SendOrganizationID,
+			&i.PostedBy,
+			&i.LastEditedBy,
+			&i.PostedAt,
+			&i.LastEditedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralEventsUseNumberedPaginate = `-- name: GetPluralEventsUseNumberedPaginate :many
 SELECT t_events_pkey, event_id, event_type_id, title, description, organization_id, start_time, end_time, mail_send_flag, send_organization_id, posted_by, last_edited_by, posted_at, last_edited_at FROM t_events WHERE event_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralEventsParams struct {
-	Limit    int32       `json:"limit"`
-	Offset   int32       `json:"offset"`
-	EventIds []uuid.UUID `json:"event_ids"`
+type GetPluralEventsUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
-func (q *Queries) GetPluralEvents(ctx context.Context, arg GetPluralEventsParams) ([]Event, error) {
-	rows, err := q.db.Query(ctx, getPluralEvents, arg.Limit, arg.Offset, arg.EventIds)
+func (q *Queries) GetPluralEventsUseNumberedPaginate(ctx context.Context, arg GetPluralEventsUseNumberedPaginateParams) ([]Event, error) {
+	rows, err := q.db.Query(ctx, getPluralEventsUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.EventIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -3254,22 +3346,22 @@ func (q *Queries) GetPluralEvents(ctx context.Context, arg GetPluralEventsParams
 }
 
 const getPluralEventsWithAll = `-- name: GetPluralEventsWithAll :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_event_types_pkey, o.event_type_id, o.name, o.key, o.color, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.color, s.is_personal, s.is_whole, s.created_at, s.updated_at, s.chat_room_id, p.m_organizations_pkey, p.organization_id, p.name, p.description, p.color, p.is_personal, p.is_whole, p.created_at, p.updated_at, p.chat_room_id, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_url, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_url, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_url, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.attend_status_id, l.profile_image_url, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at FROM t_events
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_event_types_pkey, o.event_type_id, o.name, o.key, o.color, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.color, s.is_personal, s.is_whole, s.created_at, s.updated_at, s.chat_room_id, p.m_organizations_pkey, p.organization_id, p.name, p.description, p.color, p.is_personal, p.is_whole, p.created_at, p.updated_at, p.chat_room_id, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at FROM t_events
 LEFT JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
 LEFT JOIN m_organizations s ON t_events.organization_id = s.organization_id
 LEFT JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
 LEFT JOIN m_members l ON t_events.posted_by = l.member_id
 LEFT JOIN m_members l ON t_events.last_edited_by = l.member_id
-WHERE event_id = ANY($3::uuid[])
+WHERE event_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
 type GetPluralEventsWithAllParams struct {
-	Limit    int32       `json:"limit"`
-	Offset   int32       `json:"offset"`
-	EventIds []uuid.UUID `json:"event_ids"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralEventsWithAllRow struct {
@@ -3282,7 +3374,7 @@ type GetPluralEventsWithAllRow struct {
 }
 
 func (q *Queries) GetPluralEventsWithAll(ctx context.Context, arg GetPluralEventsWithAllParams) ([]GetPluralEventsWithAllRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithAll, arg.Limit, arg.Offset, arg.EventIds)
+	rows, err := q.db.Query(ctx, getPluralEventsWithAll, arg.EventIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3336,8 +3428,10 @@ func (q *Queries) GetPluralEventsWithAll(ctx context.Context, arg GetPluralEvent
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -3350,8 +3444,138 @@ func (q *Queries) GetPluralEventsWithAll(ctx context.Context, arg GetPluralEvent
 			&i.Member_2.Password,
 			&i.Member_2.Email,
 			&i.Member_2.Name,
+			&i.Member_2.FirstName,
+			&i.Member_2.LastName,
 			&i.Member_2.AttendStatusID,
-			&i.Member_2.ProfileImageUrl,
+			&i.Member_2.ProfileImageID,
+			&i.Member_2.GradeID,
+			&i.Member_2.GroupID,
+			&i.Member_2.PersonalOrganizationID,
+			&i.Member_2.RoleID,
+			&i.Member_2.CreatedAt,
+			&i.Member_2.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralEventsWithAllUseNumberedPaginate = `-- name: GetPluralEventsWithAllUseNumberedPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, o.m_event_types_pkey, o.event_type_id, o.name, o.key, o.color, s.m_organizations_pkey, s.organization_id, s.name, s.description, s.color, s.is_personal, s.is_whole, s.created_at, s.updated_at, s.chat_room_id, p.m_organizations_pkey, p.organization_id, p.name, p.description, p.color, p.is_personal, p.is_whole, p.created_at, p.updated_at, p.chat_room_id, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at, l.m_members_pkey, l.member_id, l.login_id, l.password, l.email, l.name, l.first_name, l.last_name, l.attend_status_id, l.profile_image_id, l.grade_id, l.group_id, l.personal_organization_id, l.role_id, l.created_at, l.updated_at FROM t_events
+LEFT JOIN m_event_types o ON t_events.event_type_id = o.event_type_id
+LEFT JOIN m_organizations s ON t_events.organization_id = s.organization_id
+LEFT JOIN m_organizations p ON t_events.send_organization_id = p.organization_id
+LEFT JOIN m_members l ON t_events.posted_by = l.member_id
+LEFT JOIN m_members l ON t_events.last_edited_by = l.member_id
+WHERE event_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
+	t_events_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralEventsWithAllUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+type GetPluralEventsWithAllUseNumberedPaginateRow struct {
+	Event          Event        `json:"event"`
+	EventType      EventType    `json:"event_type"`
+	Organization   Organization `json:"organization"`
+	Organization_2 Organization `json:"organization_2"`
+	Member         Member       `json:"member"`
+	Member_2       Member       `json:"member_2"`
+}
+
+func (q *Queries) GetPluralEventsWithAllUseNumberedPaginate(ctx context.Context, arg GetPluralEventsWithAllUseNumberedPaginateParams) ([]GetPluralEventsWithAllUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralEventsWithAllUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.EventIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralEventsWithAllUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralEventsWithAllUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.EventType.MEventTypesPkey,
+			&i.EventType.EventTypeID,
+			&i.EventType.Name,
+			&i.EventType.Key,
+			&i.EventType.Color,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.Color,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
+			&i.Organization_2.MOrganizationsPkey,
+			&i.Organization_2.OrganizationID,
+			&i.Organization_2.Name,
+			&i.Organization_2.Description,
+			&i.Organization_2.Color,
+			&i.Organization_2.IsPersonal,
+			&i.Organization_2.IsWhole,
+			&i.Organization_2.CreatedAt,
+			&i.Organization_2.UpdatedAt,
+			&i.Organization_2.ChatRoomID,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+			&i.Member_2.MMembersPkey,
+			&i.Member_2.MemberID,
+			&i.Member_2.LoginID,
+			&i.Member_2.Password,
+			&i.Member_2.Email,
+			&i.Member_2.Name,
+			&i.Member_2.FirstName,
+			&i.Member_2.LastName,
+			&i.Member_2.AttendStatusID,
+			&i.Member_2.ProfileImageID,
 			&i.Member_2.GradeID,
 			&i.Member_2.GroupID,
 			&i.Member_2.PersonalOrganizationID,
@@ -3370,18 +3594,18 @@ func (q *Queries) GetPluralEventsWithAll(ctx context.Context, arg GetPluralEvent
 }
 
 const getPluralEventsWithLastEditUser = `-- name: GetPluralEventsWithLastEditUser :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
 LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
-WHERE event_id = ANY($3::uuid[])
+WHERE event_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
 type GetPluralEventsWithLastEditUserParams struct {
-	Limit    int32       `json:"limit"`
-	Offset   int32       `json:"offset"`
-	EventIds []uuid.UUID `json:"event_ids"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralEventsWithLastEditUserRow struct {
@@ -3390,7 +3614,7 @@ type GetPluralEventsWithLastEditUserRow struct {
 }
 
 func (q *Queries) GetPluralEventsWithLastEditUser(ctx context.Context, arg GetPluralEventsWithLastEditUserParams) ([]GetPluralEventsWithLastEditUserRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithLastEditUser, arg.Limit, arg.Offset, arg.EventIds)
+	rows, err := q.db.Query(ctx, getPluralEventsWithLastEditUser, arg.EventIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3419,8 +3643,89 @@ func (q *Queries) GetPluralEventsWithLastEditUser(ctx context.Context, arg GetPl
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralEventsWithLastEditUserUseNumberedPaginate = `-- name: GetPluralEventsWithLastEditUserUseNumberedPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+LEFT JOIN m_members ON t_events.last_edited_by = m_members.member_id
+WHERE event_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
+	t_events_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralEventsWithLastEditUserUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+type GetPluralEventsWithLastEditUserUseNumberedPaginateRow struct {
+	Event  Event  `json:"event"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) GetPluralEventsWithLastEditUserUseNumberedPaginate(ctx context.Context, arg GetPluralEventsWithLastEditUserUseNumberedPaginateParams) ([]GetPluralEventsWithLastEditUserUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralEventsWithLastEditUserUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.EventIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralEventsWithLastEditUserUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralEventsWithLastEditUserUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -3441,16 +3746,16 @@ func (q *Queries) GetPluralEventsWithLastEditUser(ctx context.Context, arg GetPl
 const getPluralEventsWithOrganization = `-- name: GetPluralEventsWithOrganization :many
 SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM t_events
 LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
-WHERE event_id = ANY($3::uuid[])
+WHERE event_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
 type GetPluralEventsWithOrganizationParams struct {
-	Limit    int32       `json:"limit"`
-	Offset   int32       `json:"offset"`
-	EventIds []uuid.UUID `json:"event_ids"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralEventsWithOrganizationRow struct {
@@ -3459,7 +3764,7 @@ type GetPluralEventsWithOrganizationRow struct {
 }
 
 func (q *Queries) GetPluralEventsWithOrganization(ctx context.Context, arg GetPluralEventsWithOrganizationParams) ([]GetPluralEventsWithOrganizationRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithOrganization, arg.Limit, arg.Offset, arg.EventIds)
+	rows, err := q.db.Query(ctx, getPluralEventsWithOrganization, arg.EventIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3503,19 +3808,92 @@ func (q *Queries) GetPluralEventsWithOrganization(ctx context.Context, arg GetPl
 	return items, nil
 }
 
-const getPluralEventsWithPostUser = `-- name: GetPluralEventsWithPostUser :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.attend_status_id, m_members.profile_image_url, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
-LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
+const getPluralEventsWithOrganizationUseNumberedPaginate = `-- name: GetPluralEventsWithOrganizationUseNumberedPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM t_events
+LEFT JOIN m_organizations ON t_events.organization_id = m_organizations.organization_id
 WHERE event_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
+type GetPluralEventsWithOrganizationUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+type GetPluralEventsWithOrganizationUseNumberedPaginateRow struct {
+	Event        Event        `json:"event"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetPluralEventsWithOrganizationUseNumberedPaginate(ctx context.Context, arg GetPluralEventsWithOrganizationUseNumberedPaginateParams) ([]GetPluralEventsWithOrganizationUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralEventsWithOrganizationUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.EventIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralEventsWithOrganizationUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralEventsWithOrganizationUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.Color,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralEventsWithPostUser = `-- name: GetPluralEventsWithPostUser :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
+WHERE event_id = ANY($1::uuid[])
+ORDER BY
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
+	t_events_pkey ASC
+`
+
 type GetPluralEventsWithPostUserParams struct {
-	Limit    int32       `json:"limit"`
-	Offset   int32       `json:"offset"`
-	EventIds []uuid.UUID `json:"event_ids"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralEventsWithPostUserRow struct {
@@ -3524,7 +3902,7 @@ type GetPluralEventsWithPostUserRow struct {
 }
 
 func (q *Queries) GetPluralEventsWithPostUser(ctx context.Context, arg GetPluralEventsWithPostUserParams) ([]GetPluralEventsWithPostUserRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithPostUser, arg.Limit, arg.Offset, arg.EventIds)
+	rows, err := q.db.Query(ctx, getPluralEventsWithPostUser, arg.EventIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3553,8 +3931,89 @@ func (q *Queries) GetPluralEventsWithPostUser(ctx context.Context, arg GetPlural
 			&i.Member.Password,
 			&i.Member.Email,
 			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
 			&i.Member.AttendStatusID,
-			&i.Member.ProfileImageUrl,
+			&i.Member.ProfileImageID,
+			&i.Member.GradeID,
+			&i.Member.GroupID,
+			&i.Member.PersonalOrganizationID,
+			&i.Member.RoleID,
+			&i.Member.CreatedAt,
+			&i.Member.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralEventsWithPostUserUseNumberedPaginate = `-- name: GetPluralEventsWithPostUserUseNumberedPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_members.m_members_pkey, m_members.member_id, m_members.login_id, m_members.password, m_members.email, m_members.name, m_members.first_name, m_members.last_name, m_members.attend_status_id, m_members.profile_image_id, m_members.grade_id, m_members.group_id, m_members.personal_organization_id, m_members.role_id, m_members.created_at, m_members.updated_at FROM t_events
+LEFT JOIN m_members ON t_events.posted_by = m_members.member_id
+WHERE event_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
+	t_events_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralEventsWithPostUserUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+type GetPluralEventsWithPostUserUseNumberedPaginateRow struct {
+	Event  Event  `json:"event"`
+	Member Member `json:"member"`
+}
+
+func (q *Queries) GetPluralEventsWithPostUserUseNumberedPaginate(ctx context.Context, arg GetPluralEventsWithPostUserUseNumberedPaginateParams) ([]GetPluralEventsWithPostUserUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralEventsWithPostUserUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.EventIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralEventsWithPostUserUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralEventsWithPostUserUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.Member.MMembersPkey,
+			&i.Member.MemberID,
+			&i.Member.LoginID,
+			&i.Member.Password,
+			&i.Member.Email,
+			&i.Member.Name,
+			&i.Member.FirstName,
+			&i.Member.LastName,
+			&i.Member.AttendStatusID,
+			&i.Member.ProfileImageID,
 			&i.Member.GradeID,
 			&i.Member.GroupID,
 			&i.Member.PersonalOrganizationID,
@@ -3575,16 +4034,16 @@ func (q *Queries) GetPluralEventsWithPostUser(ctx context.Context, arg GetPlural
 const getPluralEventsWithSendOrganization = `-- name: GetPluralEventsWithSendOrganization :many
 SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM t_events
 LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
-WHERE event_id = ANY($3::uuid[])
+WHERE event_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
 type GetPluralEventsWithSendOrganizationParams struct {
-	Limit    int32       `json:"limit"`
-	Offset   int32       `json:"offset"`
-	EventIds []uuid.UUID `json:"event_ids"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralEventsWithSendOrganizationRow struct {
@@ -3593,7 +4052,7 @@ type GetPluralEventsWithSendOrganizationRow struct {
 }
 
 func (q *Queries) GetPluralEventsWithSendOrganization(ctx context.Context, arg GetPluralEventsWithSendOrganizationParams) ([]GetPluralEventsWithSendOrganizationRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithSendOrganization, arg.Limit, arg.Offset, arg.EventIds)
+	rows, err := q.db.Query(ctx, getPluralEventsWithSendOrganization, arg.EventIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3637,19 +4096,92 @@ func (q *Queries) GetPluralEventsWithSendOrganization(ctx context.Context, arg G
 	return items, nil
 }
 
-const getPluralEventsWithType = `-- name: GetPluralEventsWithType :many
-SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_event_types.m_event_types_pkey, m_event_types.event_type_id, m_event_types.name, m_event_types.key, m_event_types.color FROM t_events
-LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
+const getPluralEventsWithSendOrganizationUseNumberedPaginate = `-- name: GetPluralEventsWithSendOrganizationUseNumberedPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_organizations.m_organizations_pkey, m_organizations.organization_id, m_organizations.name, m_organizations.description, m_organizations.color, m_organizations.is_personal, m_organizations.is_whole, m_organizations.created_at, m_organizations.updated_at, m_organizations.chat_room_id FROM t_events
+LEFT JOIN m_organizations ON t_events.send_organization_id = m_organizations.organization_id
 WHERE event_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
 	t_events_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
+type GetPluralEventsWithSendOrganizationUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+type GetPluralEventsWithSendOrganizationUseNumberedPaginateRow struct {
+	Event        Event        `json:"event"`
+	Organization Organization `json:"organization"`
+}
+
+func (q *Queries) GetPluralEventsWithSendOrganizationUseNumberedPaginate(ctx context.Context, arg GetPluralEventsWithSendOrganizationUseNumberedPaginateParams) ([]GetPluralEventsWithSendOrganizationUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralEventsWithSendOrganizationUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.EventIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralEventsWithSendOrganizationUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralEventsWithSendOrganizationUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.Organization.MOrganizationsPkey,
+			&i.Organization.OrganizationID,
+			&i.Organization.Name,
+			&i.Organization.Description,
+			&i.Organization.Color,
+			&i.Organization.IsPersonal,
+			&i.Organization.IsWhole,
+			&i.Organization.CreatedAt,
+			&i.Organization.UpdatedAt,
+			&i.Organization.ChatRoomID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralEventsWithType = `-- name: GetPluralEventsWithType :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_event_types.m_event_types_pkey, m_event_types.event_type_id, m_event_types.name, m_event_types.key, m_event_types.color FROM t_events
+LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
+WHERE event_id = ANY($1::uuid[])
+ORDER BY
+	CASE WHEN $2::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
+	t_events_pkey ASC
+`
+
 type GetPluralEventsWithTypeParams struct {
-	Limit    int32       `json:"limit"`
-	Offset   int32       `json:"offset"`
-	EventIds []uuid.UUID `json:"event_ids"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
 }
 
 type GetPluralEventsWithTypeRow struct {
@@ -3658,7 +4190,7 @@ type GetPluralEventsWithTypeRow struct {
 }
 
 func (q *Queries) GetPluralEventsWithType(ctx context.Context, arg GetPluralEventsWithTypeParams) ([]GetPluralEventsWithTypeRow, error) {
-	rows, err := q.db.Query(ctx, getPluralEventsWithType, arg.Limit, arg.Offset, arg.EventIds)
+	rows, err := q.db.Query(ctx, getPluralEventsWithType, arg.EventIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -3697,13 +4229,84 @@ func (q *Queries) GetPluralEventsWithType(ctx context.Context, arg GetPluralEven
 	return items, nil
 }
 
-const pluralDeleteEvents = `-- name: PluralDeleteEvents :exec
+const getPluralEventsWithTypeUseNumberedPaginate = `-- name: GetPluralEventsWithTypeUseNumberedPaginate :many
+SELECT t_events.t_events_pkey, t_events.event_id, t_events.event_type_id, t_events.title, t_events.description, t_events.organization_id, t_events.start_time, t_events.end_time, t_events.mail_send_flag, t_events.send_organization_id, t_events.posted_by, t_events.last_edited_by, t_events.posted_at, t_events.last_edited_at, m_event_types.m_event_types_pkey, m_event_types.event_type_id, m_event_types.name, m_event_types.key, m_event_types.color FROM t_events
+LEFT JOIN m_event_types ON t_events.event_type_id = m_event_types.event_type_id
+WHERE event_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'start_time' THEN start_time END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_start_time' THEN start_time END DESC NULLS LAST,
+	t_events_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralEventsWithTypeUseNumberedPaginateParams struct {
+	Limit       int32       `json:"limit"`
+	Offset      int32       `json:"offset"`
+	EventIds    []uuid.UUID `json:"event_ids"`
+	OrderMethod string      `json:"order_method"`
+}
+
+type GetPluralEventsWithTypeUseNumberedPaginateRow struct {
+	Event     Event     `json:"event"`
+	EventType EventType `json:"event_type"`
+}
+
+func (q *Queries) GetPluralEventsWithTypeUseNumberedPaginate(ctx context.Context, arg GetPluralEventsWithTypeUseNumberedPaginateParams) ([]GetPluralEventsWithTypeUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralEventsWithTypeUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.EventIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralEventsWithTypeUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralEventsWithTypeUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.Event.TEventsPkey,
+			&i.Event.EventID,
+			&i.Event.EventTypeID,
+			&i.Event.Title,
+			&i.Event.Description,
+			&i.Event.OrganizationID,
+			&i.Event.StartTime,
+			&i.Event.EndTime,
+			&i.Event.MailSendFlag,
+			&i.Event.SendOrganizationID,
+			&i.Event.PostedBy,
+			&i.Event.LastEditedBy,
+			&i.Event.PostedAt,
+			&i.Event.LastEditedAt,
+			&i.EventType.MEventTypesPkey,
+			&i.EventType.EventTypeID,
+			&i.EventType.Name,
+			&i.EventType.Key,
+			&i.EventType.Color,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const pluralDeleteEvents = `-- name: PluralDeleteEvents :execrows
 DELETE FROM t_events WHERE event_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteEvents(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteEvents, dollar_1)
-	return err
+func (q *Queries) PluralDeleteEvents(ctx context.Context, eventIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteEvents, eventIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateEvent = `-- name: UpdateEvent :one

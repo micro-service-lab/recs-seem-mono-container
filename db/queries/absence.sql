@@ -4,11 +4,11 @@ INSERT INTO t_absences (attendance_id) VALUES ($1);
 -- name: CreateAbsence :one
 INSERT INTO t_absences (attendance_id) VALUES ($1) RETURNING *;
 
--- name: DeleteAbsence :exec
+-- name: DeleteAbsence :execrows
 DELETE FROM t_absences WHERE absence_id = $1;
 
--- name: PluralDeleteAbsences :exec
-DELETE FROM t_absences WHERE absence_id = ANY($1::uuid[]);
+-- name: PluralDeleteAbsences :execrows
+DELETE FROM t_absences WHERE absence_id = ANY(@absence_ids::uuid[]);
 
 -- name: FindAbsenceByID :one
 SELECT * FROM t_absences WHERE absence_id = $1;
@@ -39,6 +39,12 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralAbsences :many
+SELECT * FROM t_absences
+WHERE absence_id = ANY(@absence_ids::uuid[])
+ORDER BY
+	t_absences_pkey ASC;
+
+-- name: GetPluralAbsencesUseNumberedPaginate :many
 SELECT * FROM t_absences
 WHERE absence_id = ANY(@absence_ids::uuid[])
 ORDER BY

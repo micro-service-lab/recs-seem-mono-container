@@ -13,7 +13,9 @@ import (
 )
 
 func TestPgAdapter_PermissionCategory(t *testing.T) {
-	t.Parallel()
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 	ctx := context.Background()
 	adapter := NewDummyPgAdapter(t)
 
@@ -149,12 +151,13 @@ func TestPgAdapter_PermissionCategory(t *testing.T) {
 					ctx,
 					sd,
 					[]uuid.UUID{el.Data[0].PermissionCategoryID, el.Data[1].PermissionCategoryID},
+					parameter.PermissionCategoryOrderMethodDefault,
 					validNp,
 				)
 				assert.NoError(t, err)
 				assert.Len(t, el.Data, 2)
 				// delete
-				err = adapter.DeletePermissionCategoryWithSd(ctx, sd, el.Data[0].PermissionCategoryID)
+				_, err = adapter.DeletePermissionCategoryWithSd(ctx, sd, el.Data[0].PermissionCategoryID)
 				assert.NoError(t, err)
 				count, err = adapter.CountPermissionCategoriesWithSd(ctx, sd, parameter.WherePermissionCategoryParam{})
 				assert.NoError(t, err)
@@ -173,26 +176,33 @@ func TestPgAdapter_PermissionCategory(t *testing.T) {
 				assert.Equal(t, el.WithCount.Count, int64(2))
 				// update
 				p := parameter.UpdatePermissionCategoryParams{
-					Name: "name4",
-					Key:  "key4",
+					Name:        "name4",
+					Key:         "key4",
+					Description: "description4",
 				}
 				e, err := adapter.UpdatePermissionCategoryWithSd(ctx, sd, el.Data[0].PermissionCategoryID, p)
 				assert.NoError(t, err)
 				assert.Equal(t, p.Name, e.Name)
 				assert.Equal(t, p.Key, e.Key)
+				assert.Equal(t, p.Description, e.Description)
 				e, err = adapter.FindPermissionCategoryByIDWithSd(ctx, sd, el.Data[0].PermissionCategoryID)
 				assert.NoError(t, err)
 				assert.Equal(t, p.Name, e.Name)
+				assert.Equal(t, p.Key, e.Key)
+				assert.Equal(t, p.Description, e.Description)
 				// update by key
 				p2 := parameter.UpdatePermissionCategoryByKeyParams{
-					Name: "name5",
+					Name:        "name5",
+					Description: "description5",
 				}
 				e, err = adapter.UpdatePermissionCategoryByKeyWithSd(ctx, sd, el.Data[1].Key, p2)
 				assert.NoError(t, err)
 				assert.Equal(t, p2.Name, e.Name)
+				assert.Equal(t, p2.Description, e.Description)
 				e, err = adapter.FindPermissionCategoryByKeyWithSd(ctx, sd, el.Data[1].Key)
 				assert.NoError(t, err)
 				assert.Equal(t, p2.Name, e.Name)
+				assert.Equal(t, p2.Description, e.Description)
 			},
 		},
 	}

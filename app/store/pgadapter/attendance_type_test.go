@@ -13,7 +13,9 @@ import (
 )
 
 func TestPgAdapter_AttendanceType(t *testing.T) {
-	t.Parallel()
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 	ctx := context.Background()
 	adapter := NewDummyPgAdapter(t)
 
@@ -149,12 +151,13 @@ func TestPgAdapter_AttendanceType(t *testing.T) {
 					ctx,
 					sd,
 					[]uuid.UUID{el.Data[0].AttendanceTypeID, el.Data[1].AttendanceTypeID},
+					parameter.AttendanceTypeOrderMethodDefault,
 					validNp,
 				)
 				assert.NoError(t, err)
 				assert.Len(t, el.Data, 2)
 				// delete
-				err = adapter.DeleteAttendanceTypeWithSd(ctx, sd, el.Data[0].AttendanceTypeID)
+				_, err = adapter.DeleteAttendanceTypeWithSd(ctx, sd, el.Data[0].AttendanceTypeID)
 				assert.NoError(t, err)
 				count, err = adapter.CountAttendanceTypesWithSd(ctx, sd, parameter.WhereAttendanceTypeParam{})
 				assert.NoError(t, err)
@@ -173,26 +176,33 @@ func TestPgAdapter_AttendanceType(t *testing.T) {
 				assert.Equal(t, el.WithCount.Count, int64(2))
 				// update
 				p := parameter.UpdateAttendanceTypeParams{
-					Name: "name4",
-					Key:  "key4",
+					Name:  "name4",
+					Key:   "key4",
+					Color: "#000000",
 				}
 				e, err := adapter.UpdateAttendanceTypeWithSd(ctx, sd, el.Data[0].AttendanceTypeID, p)
 				assert.NoError(t, err)
 				assert.Equal(t, p.Name, e.Name)
 				assert.Equal(t, p.Key, e.Key)
+				assert.Equal(t, p.Color, e.Color)
 				e, err = adapter.FindAttendanceTypeByIDWithSd(ctx, sd, el.Data[0].AttendanceTypeID)
 				assert.NoError(t, err)
 				assert.Equal(t, p.Name, e.Name)
+				assert.Equal(t, p.Key, e.Key)
+				assert.Equal(t, p.Color, e.Color)
 				// update by key
 				p2 := parameter.UpdateAttendanceTypeByKeyParams{
-					Name: "name5",
+					Name:  "name5",
+					Color: "#000001",
 				}
 				e, err = adapter.UpdateAttendanceTypeByKeyWithSd(ctx, sd, el.Data[1].Key, p2)
 				assert.NoError(t, err)
 				assert.Equal(t, p2.Name, e.Name)
+				assert.Equal(t, p2.Color, e.Color)
 				e, err = adapter.FindAttendanceTypeByKeyWithSd(ctx, sd, el.Data[1].Key)
 				assert.NoError(t, err)
 				assert.Equal(t, p2.Name, e.Name)
+				assert.Equal(t, p2.Color, e.Color)
 			},
 		},
 	}

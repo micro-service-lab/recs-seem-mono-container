@@ -13,7 +13,9 @@ import (
 )
 
 func TestPgAdapter_AttendStatus(t *testing.T) {
-	t.Parallel()
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 	ctx := context.Background()
 	adapter := NewDummyPgAdapter(t)
 
@@ -149,12 +151,13 @@ func TestPgAdapter_AttendStatus(t *testing.T) {
 					ctx,
 					sd,
 					[]uuid.UUID{el.Data[0].AttendStatusID, el.Data[1].AttendStatusID},
+					parameter.AttendStatusOrderMethodDefault,
 					validNp,
 				)
 				assert.NoError(t, err)
 				assert.Len(t, el.Data, 2)
 				// delete
-				err = adapter.DeleteAttendStatusWithSd(ctx, sd, el.Data[0].AttendStatusID)
+				_, err = adapter.DeleteAttendStatusWithSd(ctx, sd, el.Data[0].AttendStatusID)
 				assert.NoError(t, err)
 				count, err = adapter.CountAttendStatusesWithSd(ctx, sd, parameter.WhereAttendStatusParam{})
 				assert.NoError(t, err)
@@ -183,6 +186,7 @@ func TestPgAdapter_AttendStatus(t *testing.T) {
 				e, err = adapter.FindAttendStatusByIDWithSd(ctx, sd, el.Data[0].AttendStatusID)
 				assert.NoError(t, err)
 				assert.Equal(t, p.Name, e.Name)
+				assert.Equal(t, p.Key, e.Key)
 				// update by key
 				p2 := parameter.UpdateAttendStatusByKeyParams{
 					Name: "name5",

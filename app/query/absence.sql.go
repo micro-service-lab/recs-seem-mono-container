@@ -33,13 +33,16 @@ func (q *Queries) CreateAbsence(ctx context.Context, attendanceID uuid.UUID) (Ab
 	return i, err
 }
 
-const deleteAbsence = `-- name: DeleteAbsence :exec
+const deleteAbsence = `-- name: DeleteAbsence :execrows
 DELETE FROM t_absences WHERE absence_id = $1
 `
 
-func (q *Queries) DeleteAbsence(ctx context.Context, absenceID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteAbsence, absenceID)
-	return err
+func (q *Queries) DeleteAbsence(ctx context.Context, absenceID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteAbsence, absenceID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findAbsenceByID = `-- name: FindAbsenceByID :one
@@ -154,20 +157,13 @@ func (q *Queries) GetAbsencesUseNumberedPaginate(ctx context.Context, arg GetAbs
 
 const getPluralAbsences = `-- name: GetPluralAbsences :many
 SELECT t_absences_pkey, absence_id, attendance_id FROM t_absences
-WHERE absence_id = ANY($3::uuid[])
+WHERE absence_id = ANY($1::uuid[])
 ORDER BY
 	t_absences_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
-type GetPluralAbsencesParams struct {
-	Limit      int32       `json:"limit"`
-	Offset     int32       `json:"offset"`
-	AbsenceIds []uuid.UUID `json:"absence_ids"`
-}
-
-func (q *Queries) GetPluralAbsences(ctx context.Context, arg GetPluralAbsencesParams) ([]Absence, error) {
-	rows, err := q.db.Query(ctx, getPluralAbsences, arg.Limit, arg.Offset, arg.AbsenceIds)
+func (q *Queries) GetPluralAbsences(ctx context.Context, absenceIds []uuid.UUID) ([]Absence, error) {
+	rows, err := q.db.Query(ctx, getPluralAbsences, absenceIds)
 	if err != nil {
 		return nil, err
 	}
@@ -186,11 +182,48 @@ func (q *Queries) GetPluralAbsences(ctx context.Context, arg GetPluralAbsencesPa
 	return items, nil
 }
 
-const pluralDeleteAbsences = `-- name: PluralDeleteAbsences :exec
+const getPluralAbsencesUseNumberedPaginate = `-- name: GetPluralAbsencesUseNumberedPaginate :many
+SELECT t_absences_pkey, absence_id, attendance_id FROM t_absences
+WHERE absence_id = ANY($3::uuid[])
+ORDER BY
+	t_absences_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralAbsencesUseNumberedPaginateParams struct {
+	Limit      int32       `json:"limit"`
+	Offset     int32       `json:"offset"`
+	AbsenceIds []uuid.UUID `json:"absence_ids"`
+}
+
+func (q *Queries) GetPluralAbsencesUseNumberedPaginate(ctx context.Context, arg GetPluralAbsencesUseNumberedPaginateParams) ([]Absence, error) {
+	rows, err := q.db.Query(ctx, getPluralAbsencesUseNumberedPaginate, arg.Limit, arg.Offset, arg.AbsenceIds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Absence{}
+	for rows.Next() {
+		var i Absence
+		if err := rows.Scan(&i.TAbsencesPkey, &i.AbsenceID, &i.AttendanceID); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const pluralDeleteAbsences = `-- name: PluralDeleteAbsences :execrows
 DELETE FROM t_absences WHERE absence_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteAbsences(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteAbsences, dollar_1)
-	return err
+func (q *Queries) PluralDeleteAbsences(ctx context.Context, absenceIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteAbsences, absenceIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }

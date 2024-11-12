@@ -55,22 +55,28 @@ type CreateRecordTypesParams struct {
 	Key  string `json:"key"`
 }
 
-const deleteRecordType = `-- name: DeleteRecordType :exec
+const deleteRecordType = `-- name: DeleteRecordType :execrows
 DELETE FROM m_record_types WHERE record_type_id = $1
 `
 
-func (q *Queries) DeleteRecordType(ctx context.Context, recordTypeID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deleteRecordType, recordTypeID)
-	return err
+func (q *Queries) DeleteRecordType(ctx context.Context, recordTypeID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteRecordType, recordTypeID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deleteRecordTypeByKey = `-- name: DeleteRecordTypeByKey :exec
+const deleteRecordTypeByKey = `-- name: DeleteRecordTypeByKey :execrows
 DELETE FROM m_record_types WHERE key = $1
 `
 
-func (q *Queries) DeleteRecordTypeByKey(ctx context.Context, key string) error {
-	_, err := q.db.Exec(ctx, deleteRecordTypeByKey, key)
-	return err
+func (q *Queries) DeleteRecordTypeByKey(ctx context.Context, key string) (int64, error) {
+	result, err := q.db.Exec(ctx, deleteRecordTypeByKey, key)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const findRecordTypeByID = `-- name: FindRecordTypeByID :one
@@ -108,20 +114,68 @@ func (q *Queries) FindRecordTypeByKey(ctx context.Context, key string) (RecordTy
 const getPluralRecordTypes = `-- name: GetPluralRecordTypes :many
 SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
 WHERE
+	record_type_id = ANY($1::uuid[])
+ORDER BY
+	CASE WHEN $2::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN name END DESC NULLS LAST,
+	m_record_types_pkey ASC
+`
+
+type GetPluralRecordTypesParams struct {
+	RecordTypeIds []uuid.UUID `json:"record_type_ids"`
+	OrderMethod   string      `json:"order_method"`
+}
+
+func (q *Queries) GetPluralRecordTypes(ctx context.Context, arg GetPluralRecordTypesParams) ([]RecordType, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordTypes, arg.RecordTypeIds, arg.OrderMethod)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []RecordType{}
+	for rows.Next() {
+		var i RecordType
+		if err := rows.Scan(
+			&i.MRecordTypesPkey,
+			&i.RecordTypeID,
+			&i.Name,
+			&i.Key,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralRecordTypesUseNumberedPaginate = `-- name: GetPluralRecordTypesUseNumberedPaginate :many
+SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
+WHERE
 	record_type_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_record_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
-type GetPluralRecordTypesParams struct {
+type GetPluralRecordTypesUseNumberedPaginateParams struct {
 	Limit         int32       `json:"limit"`
 	Offset        int32       `json:"offset"`
 	RecordTypeIds []uuid.UUID `json:"record_type_ids"`
+	OrderMethod   string      `json:"order_method"`
 }
 
-func (q *Queries) GetPluralRecordTypes(ctx context.Context, arg GetPluralRecordTypesParams) ([]RecordType, error) {
-	rows, err := q.db.Query(ctx, getPluralRecordTypes, arg.Limit, arg.Offset, arg.RecordTypeIds)
+func (q *Queries) GetPluralRecordTypesUseNumberedPaginate(ctx context.Context, arg GetPluralRecordTypesUseNumberedPaginateParams) ([]RecordType, error) {
+	rows, err := q.db.Query(ctx, getPluralRecordTypesUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.RecordTypeIds,
+		arg.OrderMethod,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -150,8 +204,8 @@ SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
 WHERE
 	CASE WHEN $1::boolean = true THEN m_record_types.name LIKE '%' || $2::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $3::text = 'name' THEN name END ASC,
-	CASE WHEN $3::text = 'r_name' THEN name END DESC,
+	CASE WHEN $3::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN $3::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_record_types_pkey ASC
 `
 
@@ -206,10 +260,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN name END ASC,
-	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN name END DESC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN name END ASC,
-	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN name END DESC,
+	CASE WHEN $5::text = 'name' AND $4::text = 'next' THEN name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'name' AND $4::text = 'prev' THEN name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'next' THEN name END DESC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' AND $4::text = 'prev' THEN name END ASC NULLS LAST,
 	CASE WHEN $4::text = 'next' THEN m_record_types_pkey END ASC,
 	CASE WHEN $4::text = 'prev' THEN m_record_types_pkey END DESC
 LIMIT $1
@@ -263,8 +317,8 @@ SELECT m_record_types_pkey, record_type_id, name, key FROM m_record_types
 WHERE
 	CASE WHEN $3::boolean = true THEN m_record_types.name LIKE '%' || $4::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $5::text = 'name' THEN name END ASC,
-	CASE WHEN $5::text = 'r_name' THEN name END DESC,
+	CASE WHEN $5::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN $5::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_record_types_pkey ASC
 LIMIT $1 OFFSET $2
 `
@@ -308,13 +362,16 @@ func (q *Queries) GetRecordTypesUseNumberedPaginate(ctx context.Context, arg Get
 	return items, nil
 }
 
-const pluralDeleteRecordTypes = `-- name: PluralDeleteRecordTypes :exec
+const pluralDeleteRecordTypes = `-- name: PluralDeleteRecordTypes :execrows
 DELETE FROM m_record_types WHERE record_type_id = ANY($1::uuid[])
 `
 
-func (q *Queries) PluralDeleteRecordTypes(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, pluralDeleteRecordTypes, dollar_1)
-	return err
+func (q *Queries) PluralDeleteRecordTypes(ctx context.Context, recordTypeIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeleteRecordTypes, recordTypeIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const updateRecordType = `-- name: UpdateRecordType :one

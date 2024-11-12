@@ -12,7 +12,8 @@ type Attendance struct {
 	AttendanceTypeID   uuid.UUID `json:"attendance_type_id"`
 	MemberID           uuid.UUID `json:"member_id"`
 	Description        string    `json:"description"`
-	Date               Date      `json:"date"`
+	StartDate          Date      `json:"start_date"`
+	EndDate            Date      `json:"end_date"`
 	MailSendFlag       bool      `json:"mail_send_flag"`
 	SendOrganizationID UUID      `json:"send_organization_id"`
 	PostedAt           time.Time `json:"posted_at"`

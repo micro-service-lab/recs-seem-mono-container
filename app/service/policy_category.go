@@ -15,8 +15,10 @@ import (
 type PolicyCategoryKey string
 
 const (
-	// PolicyCategoryKeyUser ユーザー(ポリシー含む)に関するポリシー。
-	PolicyCategoryKeyUser PolicyCategoryKey = "user"
+	// PolicyCategoryKeyMember メンバーに関するポリシー。
+	PolicyCategoryKeyMember PolicyCategoryKey = "member"
+	// PolicyCategoryKeyRole ロールに関するポリシー。
+	PolicyCategoryKeyRole PolicyCategoryKey = "role"
 	// PolicyCategoryKeyOrganization オーガナイゼーションに関するポリシー。
 	PolicyCategoryKeyOrganization PolicyCategoryKey = "organization"
 	// PolicyCategoryKeyAttendance 出欠関連に関するポリシー。
@@ -40,9 +42,14 @@ var PolicyCategories = []PolicyCategory{
 		Description: "オーガナイゼーションの設定に関するポリシー",
 	},
 	{
-		Key:         string(PolicyCategoryKeyUser),
-		Name:        "ユーザー",
-		Description: "オーガナイゼーション所属ユーザー(ポリシー含む)に関するポリシー",
+		Key:         string(PolicyCategoryKeyMember),
+		Name:        "メンバー",
+		Description: "オーガナイゼーション所属メンバーに関するポリシー",
+	},
+	{
+		Key:         string(PolicyCategoryKeyRole),
+		Name:        "ロール",
+		Description: "ロールに関するポリシー",
 	},
 	{
 		Key:         string(PolicyCategoryKeyAttendance),
@@ -106,23 +113,23 @@ func (m *ManagePolicyCategory) UpdatePolicyCategory(
 }
 
 // DeletePolicyCategory ポリシーカテゴリーを削除する。
-func (m *ManagePolicyCategory) DeletePolicyCategory(ctx context.Context, id uuid.UUID) error {
-	err := m.DB.DeletePolicyCategory(ctx, id)
+func (m *ManagePolicyCategory) DeletePolicyCategory(ctx context.Context, id uuid.UUID) (int64, error) {
+	c, err := m.DB.DeletePolicyCategory(ctx, id)
 	if err != nil {
-		return fmt.Errorf("failed to delete policy category: %w", err)
+		return 0, fmt.Errorf("failed to delete policy category: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // PluralDeletePolicyCategories ポリシーカテゴリーを複数削除する。
 func (m *ManagePolicyCategory) PluralDeletePolicyCategories(
 	ctx context.Context, ids []uuid.UUID,
-) error {
-	err := m.DB.PluralDeletePolicyCategories(ctx, ids)
+) (int64, error) {
+	c, err := m.DB.PluralDeletePolicyCategories(ctx, ids)
 	if err != nil {
-		return fmt.Errorf("failed to plural delete policy categories: %w", err)
+		return 0, fmt.Errorf("failed to plural delete policy categories: %w", err)
 	}
-	return nil
+	return c, nil
 }
 
 // FindPolicyCategoryByID ポリシーカテゴリーをIDで取得する。
@@ -172,14 +179,14 @@ func (m *ManagePolicyCategory) GetPolicyCategories(
 	case parameter.NumberedPagination:
 		np = store.NumberedPaginationParam{
 			Valid:  true,
-			Offset: entity.Int{Int64: int64(offset)},
-			Limit:  entity.Int{Int64: int64(limit)},
+			Offset: entity.Int{Int64: int64(offset), Valid: true},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
 		}
 	case parameter.CursorPagination:
 		cp = store.CursorPaginationParam{
 			Valid:  true,
 			Cursor: string(cursor),
-			Limit:  entity.Int{Int64: int64(limit)},
+			Limit:  entity.Int{Int64: int64(limit), Valid: true},
 		}
 	case parameter.NonePagination:
 	}

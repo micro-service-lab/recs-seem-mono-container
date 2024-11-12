@@ -10,14 +10,14 @@ UPDATE m_record_types SET name = $2, key = $3 WHERE record_type_id = $1 RETURNIN
 -- name: UpdateRecordTypeByKey :one
 UPDATE m_record_types SET name = $2 WHERE key = $1 RETURNING *;
 
--- name: DeleteRecordType :exec
+-- name: DeleteRecordType :execrows
 DELETE FROM m_record_types WHERE record_type_id = $1;
 
--- name: DeleteRecordTypeByKey :exec
+-- name: DeleteRecordTypeByKey :execrows
 DELETE FROM m_record_types WHERE key = $1;
 
--- name: PluralDeleteRecordTypes :exec
-DELETE FROM m_record_types WHERE record_type_id = ANY($1::uuid[]);
+-- name: PluralDeleteRecordTypes :execrows
+DELETE FROM m_record_types WHERE record_type_id = ANY(@record_type_ids::uuid[]);
 
 -- name: FindRecordTypeByID :one
 SELECT * FROM m_record_types WHERE record_type_id = $1;
@@ -30,8 +30,8 @@ SELECT * FROM m_record_types
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_record_types.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_record_types_pkey ASC;
 
 -- name: GetRecordTypesUseNumberedPaginate :many
@@ -39,8 +39,8 @@ SELECT * FROM m_record_types
 WHERE
 	CASE WHEN @where_like_name::boolean = true THEN m_record_types.name LIKE '%' || @search_name::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' THEN name END ASC,
-	CASE WHEN @order_method::text = 'r_name' THEN name END DESC,
+	CASE WHEN @order_method::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_record_types_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -64,10 +64,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN name END ASC,
-	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN name END DESC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN name END ASC,
-	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN name END DESC,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'next' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'name' AND @cursor_direction::text = 'prev' THEN name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'next' THEN name END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' AND @cursor_direction::text = 'prev' THEN name END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN m_record_types_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN m_record_types_pkey END DESC
 LIMIT $1;
@@ -77,6 +77,17 @@ SELECT * FROM m_record_types
 WHERE
 	record_type_id = ANY(@record_type_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC NULLS LAST,
+	m_record_types_pkey ASC;
+
+-- name: GetPluralRecordTypesUseNumberedPaginate :many
+SELECT * FROM m_record_types
+WHERE
+	record_type_id = ANY(@record_type_ids::uuid[])
+ORDER BY
+	CASE WHEN @order_method::text = 'name' THEN name END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_name' THEN name END DESC NULLS LAST,
 	m_record_types_pkey ASC
 LIMIT $1 OFFSET $2;
 

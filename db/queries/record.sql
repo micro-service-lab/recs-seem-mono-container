@@ -7,14 +7,14 @@ INSERT INTO t_records (record_type_id, title, body, organization_id, posted_by, 
 -- name: UpdateRecord :one
 UPDATE t_records SET record_type_id = $2, title = $3, body = $4, organization_id = $5, last_edited_by = $6, last_edited_at = $7 WHERE record_id = $1 RETURNING *;
 
--- name: DeleteRecord :exec
+-- name: DeleteRecord :execrows
 DELETE FROM t_records WHERE record_id = $1;
 
--- name: DeleteRecordOnOrganization :exec
+-- name: DeleteRecordOnOrganization :execrows
 DELETE FROM t_records WHERE organization_id = $1;
 
--- name: PluralDeleteRecords :exec
-DELETE FROM t_records WHERE record_id = ANY($1::uuid[]);
+-- name: PluralDeleteRecords :execrows
+DELETE FROM t_records WHERE record_id = ANY(@record_ids::uuid[]);
 
 -- name: FindRecordByID :one
 SELECT * FROM t_records WHERE record_id = $1;
@@ -60,12 +60,12 @@ AND
 AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC;
 
 -- name: GetRecordsUseNumberedPaginate :many
@@ -81,12 +81,12 @@ AND
 AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -126,18 +126,18 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC,
-	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC,
-	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_records_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1;
@@ -145,6 +145,23 @@ LIMIT $1;
 -- name: GetPluralRecords :many
 SELECT * FROM t_records WHERE record_id = ANY(@record_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
+	t_records_pkey ASC;
+
+-- name: GetPluralRecordsUseNumberedPaginate :many
+SELECT * FROM t_records WHERE record_id = ANY(@record_ids::uuid[])
+ORDER BY
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -162,12 +179,12 @@ AND
 AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC;
 
 -- name: GetRecordsWithRecordTypeUseNumberedPaginate :many
@@ -184,12 +201,12 @@ AND
 AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -230,18 +247,18 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC,
-	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC,
-	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_records_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1;
@@ -251,6 +268,25 @@ SELECT sqlc.embed(t_records), sqlc.embed(m_record_types) FROM t_records
 LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
 WHERE record_id = ANY(@record_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
+	t_records_pkey ASC;
+
+-- name: GetPluralRecordsWithRecordTypeUseNumberedPaginate :many
+SELECT sqlc.embed(t_records), sqlc.embed(m_record_types) FROM t_records
+LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
+WHERE record_id = ANY(@record_ids::uuid[])
+ORDER BY
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -268,12 +304,12 @@ AND
 AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC;
 
 -- name: GetRecordsWithOrganizationUseNumberedPaginate :many
@@ -290,12 +326,12 @@ AND
 AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -336,18 +372,18 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC,
-	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC,
-	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_records_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1;
@@ -357,6 +393,25 @@ SELECT sqlc.embed(t_records), sqlc.embed(m_organizations) FROM t_records
 LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
 WHERE record_id = ANY(@record_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
+	t_records_pkey ASC;
+
+-- name: GetPluralRecordsWithOrganizationUseNumberedPaginate :many
+SELECT sqlc.embed(t_records), sqlc.embed(m_organizations) FROM t_records
+LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
+WHERE record_id = ANY(@record_ids::uuid[])
+ORDER BY
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -374,12 +429,12 @@ AND
 AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC;
 
 -- name: GetRecordsWithPostedByUseNumberedPaginate :many
@@ -396,12 +451,12 @@ AND
 AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -442,18 +497,18 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC,
-	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC,
-	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_records_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1;
@@ -463,6 +518,25 @@ SELECT sqlc.embed(t_records), sqlc.embed(m_members) FROM t_records
 LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 WHERE record_id = ANY(@record_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
+	t_records_pkey ASC;
+
+-- name: GetPluralRecordsWithPostedByUseNumberedPaginate :many
+SELECT sqlc.embed(t_records), sqlc.embed(m_members) FROM t_records
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+WHERE record_id = ANY(@record_ids::uuid[])
+ORDER BY
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -480,12 +554,12 @@ AND
 AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN t_records.last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC;
 
 -- name: GetRecordsWithLastEditedByUseNumberedPaginate :many
@@ -502,12 +576,12 @@ AND
 AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN t_records.last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -548,18 +622,18 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC,
-	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC,
-	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_records_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1;
@@ -569,6 +643,25 @@ SELECT sqlc.embed(t_records), sqlc.embed(m_members) FROM t_records
 LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
 WHERE record_id = ANY(@record_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
+	t_records_pkey ASC;
+
+-- name: GetPluralRecordsWithLastEditedByUseNumberedPaginate :many
+SELECT sqlc.embed(t_records), sqlc.embed(m_members) FROM t_records
+LEFT JOIN m_members ON t_records.last_edited_by = m_members.member_id
+WHERE record_id = ANY(@record_ids::uuid[])
+ORDER BY
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -589,12 +682,12 @@ AND
 AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN t_records.last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC;
 
 -- name: GetRecordsWithAllUseNumberedPaginate :many
@@ -614,12 +707,12 @@ AND
 AND
 	CASE WHEN @where_in_last_edited_by::boolean = true THEN t_records.last_edited_by = ANY(@in_last_edited_by) ELSE TRUE END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2;
 
@@ -663,18 +756,18 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC,
-	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC,
-	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END ASC,
-	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END DESC,
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC,
-	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC,
-	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'next' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'title' AND @cursor_direction::text = 'prev' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'next' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' AND @cursor_direction::text = 'prev' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'next' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'next' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' AND @cursor_direction::text = 'prev' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'next' THEN last_edited_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' AND @cursor_direction::text = 'prev' THEN last_edited_at END ASC NULLS LAST,
 	CASE WHEN @cursor_direction::text = 'next' THEN t_records_pkey END ASC,
 	CASE WHEN @cursor_direction::text = 'prev' THEN t_records_pkey END DESC
 LIMIT $1;
@@ -687,6 +780,28 @@ LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
 LEFT JOIN m_members AS m_members_2 ON t_records.last_edited_by = m_members_2.member_id
 WHERE record_id = ANY(@record_ids::uuid[])
 ORDER BY
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
+	t_records_pkey ASC;
+
+-- name: GetPluralRecordsWithAllUseNumberedPaginate :many
+SELECT sqlc.embed(t_records), sqlc.embed(m_record_types), sqlc.embed(m_organizations), sqlc.embed(m_members), sqlc.embed(m_members) FROM t_records
+LEFT JOIN m_record_types ON t_records.record_type_id = m_record_types.record_type_id
+LEFT JOIN m_organizations ON t_records.organization_id = m_organizations.organization_id
+LEFT JOIN m_members ON t_records.posted_by = m_members.member_id
+LEFT JOIN m_members AS m_members_2 ON t_records.last_edited_by = m_members_2.member_id
+WHERE record_id = ANY(@record_ids::uuid[])
+ORDER BY
+	CASE WHEN @order_method::text = 'title' THEN title END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_title' THEN title END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'posted_at' THEN posted_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_posted_at' THEN posted_at END DESC NULLS LAST,
+	CASE WHEN @order_method::text = 'last_edited_at' THEN last_edited_at END ASC NULLS LAST,
+	CASE WHEN @order_method::text = 'r_last_edited_at' THEN last_edited_at END DESC NULLS LAST,
 	t_records_pkey ASC
 LIMIT $1 OFFSET $2;
 

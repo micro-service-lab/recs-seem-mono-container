@@ -91,7 +91,7 @@ func (c *InitRecordTypes) RunDiff(ctx context.Context, notDel, deepEqual bool) e
 		return fmt.Errorf("failed to create record types: %w", err)
 	}
 	if len(existIDs) > 0 && !notDel {
-		err = (*c.Manager).PluralDeleteRecordTypes(ctx, existIDs)
+		_, err = (*c.Manager).PluralDeleteRecordTypes(ctx, existIDs)
 		if err != nil {
 			return fmt.Errorf("failed to delete record types: %w", err)
 		}

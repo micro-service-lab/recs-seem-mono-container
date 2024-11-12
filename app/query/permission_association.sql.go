@@ -74,7 +74,7 @@ type CreatePermissionAssociationsParams struct {
 	WorkPositionID uuid.UUID `json:"work_position_id"`
 }
 
-const deletePermissionAssociation = `-- name: DeletePermissionAssociation :exec
+const deletePermissionAssociation = `-- name: DeletePermissionAssociation :execrows
 DELETE FROM m_permission_associations WHERE permission_id = $1 AND work_position_id = $2
 `
 
@@ -83,45 +83,60 @@ type DeletePermissionAssociationParams struct {
 	WorkPositionID uuid.UUID `json:"work_position_id"`
 }
 
-func (q *Queries) DeletePermissionAssociation(ctx context.Context, arg DeletePermissionAssociationParams) error {
-	_, err := q.db.Exec(ctx, deletePermissionAssociation, arg.PermissionID, arg.WorkPositionID)
-	return err
+func (q *Queries) DeletePermissionAssociation(ctx context.Context, arg DeletePermissionAssociationParams) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermissionAssociation, arg.PermissionID, arg.WorkPositionID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deletePermissionOnPermission = `-- name: DeletePermissionOnPermission :exec
+const deletePermissionOnPermission = `-- name: DeletePermissionOnPermission :execrows
 DELETE FROM m_permission_associations WHERE permission_id = $1
 `
 
-func (q *Queries) DeletePermissionOnPermission(ctx context.Context, permissionID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePermissionOnPermission, permissionID)
-	return err
+func (q *Queries) DeletePermissionOnPermission(ctx context.Context, permissionID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermissionOnPermission, permissionID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deletePermissionOnPermissions = `-- name: DeletePermissionOnPermissions :exec
+const deletePermissionOnPermissions = `-- name: DeletePermissionOnPermissions :execrows
 DELETE FROM m_permission_associations WHERE permission_id = ANY($1::uuid[])
 `
 
-func (q *Queries) DeletePermissionOnPermissions(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePermissionOnPermissions, dollar_1)
-	return err
+func (q *Queries) DeletePermissionOnPermissions(ctx context.Context, permissionIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermissionOnPermissions, permissionIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deletePermissionOnWorkPosition = `-- name: DeletePermissionOnWorkPosition :exec
+const deletePermissionOnWorkPosition = `-- name: DeletePermissionOnWorkPosition :execrows
 DELETE FROM m_permission_associations WHERE work_position_id = $1
 `
 
-func (q *Queries) DeletePermissionOnWorkPosition(ctx context.Context, workPositionID uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePermissionOnWorkPosition, workPositionID)
-	return err
+func (q *Queries) DeletePermissionOnWorkPosition(ctx context.Context, workPositionID uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermissionOnWorkPosition, workPositionID)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const deletePermissionOnWorkPositions = `-- name: DeletePermissionOnWorkPositions :exec
+const deletePermissionOnWorkPositions = `-- name: DeletePermissionOnWorkPositions :execrows
 DELETE FROM m_permission_associations WHERE work_position_id = ANY($1::uuid[])
 `
 
-func (q *Queries) DeletePermissionOnWorkPositions(ctx context.Context, dollar_1 []uuid.UUID) error {
-	_, err := q.db.Exec(ctx, deletePermissionOnWorkPositions, dollar_1)
-	return err
+func (q *Queries) DeletePermissionOnWorkPositions(ctx context.Context, workPositionIds []uuid.UUID) (int64, error) {
+	result, err := q.db.Exec(ctx, deletePermissionOnWorkPositions, workPositionIds)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
 const getPermissionsOnWorkPosition = `-- name: GetPermissionsOnWorkPosition :many
@@ -131,8 +146,8 @@ WHERE work_position_id = $1
 AND
 	CASE WHEN $2::boolean = true THEN m_permissions.name LIKE '%' || $3::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
 `
 
@@ -205,10 +220,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_permissions.name END ASC,
-	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_permissions.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_permissions.name END ASC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_permissions.name END DESC,
+	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_permissions.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_permissions.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_permissions.name END ASC NULLS LAST,
 	CASE WHEN $5::text = 'next' THEN m_permission_associations_pkey END ASC,
 	CASE WHEN $5::text = 'prev' THEN m_permission_associations_pkey END DESC
 LIMIT $2
@@ -276,8 +291,8 @@ WHERE work_position_id = $1
 AND
 	CASE WHEN $4::boolean = true THEN m_permissions.name LIKE '%' || $5::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_permissions.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_permissions.name END DESC,
+	CASE WHEN $6::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
 LIMIT $2 OFFSET $3
 `
@@ -336,16 +351,16 @@ func (q *Queries) GetPermissionsOnWorkPositionUseNumberedPaginate(ctx context.Co
 const getPluralPermissionsOnWorkPosition = `-- name: GetPluralPermissionsOnWorkPosition :many
 SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id FROM m_permission_associations
 LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
-WHERE work_position_id = ANY($3::uuid[])
+WHERE work_position_id = ANY($1::uuid[])
 ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
-LIMIT $1 OFFSET $2
 `
 
 type GetPluralPermissionsOnWorkPositionParams struct {
-	Limit           int32       `json:"limit"`
-	Offset          int32       `json:"offset"`
 	WorkPositionIds []uuid.UUID `json:"work_position_ids"`
+	OrderMethod     string      `json:"order_method"`
 }
 
 type GetPluralPermissionsOnWorkPositionRow struct {
@@ -354,7 +369,7 @@ type GetPluralPermissionsOnWorkPositionRow struct {
 }
 
 func (q *Queries) GetPluralPermissionsOnWorkPosition(ctx context.Context, arg GetPluralPermissionsOnWorkPositionParams) ([]GetPluralPermissionsOnWorkPositionRow, error) {
-	rows, err := q.db.Query(ctx, getPluralPermissionsOnWorkPosition, arg.Limit, arg.Offset, arg.WorkPositionIds)
+	rows, err := q.db.Query(ctx, getPluralPermissionsOnWorkPosition, arg.WorkPositionIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -383,19 +398,77 @@ func (q *Queries) GetPluralPermissionsOnWorkPosition(ctx context.Context, arg Ge
 	return items, nil
 }
 
-const getPluralWorkPositionsOnPermission = `-- name: GetPluralWorkPositionsOnPermission :many
-SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_work_positions.m_work_positions_pkey, m_work_positions.work_position_id, m_work_positions.organization_id, m_work_positions.name, m_work_positions.description, m_work_positions.created_at, m_work_positions.updated_at FROM m_permission_associations
-LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
-WHERE permission_id = ANY($3::uuid[])
+const getPluralPermissionsOnWorkPositionUseNumberedPaginate = `-- name: GetPluralPermissionsOnWorkPositionUseNumberedPaginate :many
+SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_permissions.m_permissions_pkey, m_permissions.permission_id, m_permissions.name, m_permissions.description, m_permissions.key, m_permissions.permission_category_id FROM m_permission_associations
+LEFT JOIN m_permissions ON m_permission_associations.permission_id = m_permissions.permission_id
+WHERE work_position_id = ANY($3::uuid[])
 ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_permissions.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_permissions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
 LIMIT $1 OFFSET $2
 `
 
+type GetPluralPermissionsOnWorkPositionUseNumberedPaginateParams struct {
+	Limit           int32       `json:"limit"`
+	Offset          int32       `json:"offset"`
+	WorkPositionIds []uuid.UUID `json:"work_position_ids"`
+	OrderMethod     string      `json:"order_method"`
+}
+
+type GetPluralPermissionsOnWorkPositionUseNumberedPaginateRow struct {
+	PermissionAssociation PermissionAssociation `json:"permission_association"`
+	Permission            Permission            `json:"permission"`
+}
+
+func (q *Queries) GetPluralPermissionsOnWorkPositionUseNumberedPaginate(ctx context.Context, arg GetPluralPermissionsOnWorkPositionUseNumberedPaginateParams) ([]GetPluralPermissionsOnWorkPositionUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralPermissionsOnWorkPositionUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.WorkPositionIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralPermissionsOnWorkPositionUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralPermissionsOnWorkPositionUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.PermissionAssociation.MPermissionAssociationsPkey,
+			&i.PermissionAssociation.PermissionID,
+			&i.PermissionAssociation.WorkPositionID,
+			&i.Permission.MPermissionsPkey,
+			&i.Permission.PermissionID,
+			&i.Permission.Name,
+			&i.Permission.Description,
+			&i.Permission.Key,
+			&i.Permission.PermissionCategoryID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getPluralWorkPositionsOnPermission = `-- name: GetPluralWorkPositionsOnPermission :many
+SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_work_positions.m_work_positions_pkey, m_work_positions.work_position_id, m_work_positions.organization_id, m_work_positions.name, m_work_positions.description, m_work_positions.created_at, m_work_positions.updated_at FROM m_permission_associations
+LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
+WHERE permission_id = ANY($1::uuid[])
+ORDER BY
+	CASE WHEN $2::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $2::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
+	m_permission_associations_pkey ASC
+`
+
 type GetPluralWorkPositionsOnPermissionParams struct {
-	Limit         int32       `json:"limit"`
-	Offset        int32       `json:"offset"`
 	PermissionIds []uuid.UUID `json:"permission_ids"`
+	OrderMethod   string      `json:"order_method"`
 }
 
 type GetPluralWorkPositionsOnPermissionRow struct {
@@ -404,7 +477,7 @@ type GetPluralWorkPositionsOnPermissionRow struct {
 }
 
 func (q *Queries) GetPluralWorkPositionsOnPermission(ctx context.Context, arg GetPluralWorkPositionsOnPermissionParams) ([]GetPluralWorkPositionsOnPermissionRow, error) {
-	rows, err := q.db.Query(ctx, getPluralWorkPositionsOnPermission, arg.Limit, arg.Offset, arg.PermissionIds)
+	rows, err := q.db.Query(ctx, getPluralWorkPositionsOnPermission, arg.PermissionIds, arg.OrderMethod)
 	if err != nil {
 		return nil, err
 	}
@@ -434,6 +507,65 @@ func (q *Queries) GetPluralWorkPositionsOnPermission(ctx context.Context, arg Ge
 	return items, nil
 }
 
+const getPluralWorkPositionsOnPermissionUseNumberedPaginate = `-- name: GetPluralWorkPositionsOnPermissionUseNumberedPaginate :many
+SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_work_positions.m_work_positions_pkey, m_work_positions.work_position_id, m_work_positions.organization_id, m_work_positions.name, m_work_positions.description, m_work_positions.created_at, m_work_positions.updated_at FROM m_permission_associations
+LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
+WHERE permission_id = ANY($3::uuid[])
+ORDER BY
+	CASE WHEN $4::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
+	m_permission_associations_pkey ASC
+LIMIT $1 OFFSET $2
+`
+
+type GetPluralWorkPositionsOnPermissionUseNumberedPaginateParams struct {
+	Limit         int32       `json:"limit"`
+	Offset        int32       `json:"offset"`
+	PermissionIds []uuid.UUID `json:"permission_ids"`
+	OrderMethod   string      `json:"order_method"`
+}
+
+type GetPluralWorkPositionsOnPermissionUseNumberedPaginateRow struct {
+	PermissionAssociation PermissionAssociation `json:"permission_association"`
+	WorkPosition          WorkPosition          `json:"work_position"`
+}
+
+func (q *Queries) GetPluralWorkPositionsOnPermissionUseNumberedPaginate(ctx context.Context, arg GetPluralWorkPositionsOnPermissionUseNumberedPaginateParams) ([]GetPluralWorkPositionsOnPermissionUseNumberedPaginateRow, error) {
+	rows, err := q.db.Query(ctx, getPluralWorkPositionsOnPermissionUseNumberedPaginate,
+		arg.Limit,
+		arg.Offset,
+		arg.PermissionIds,
+		arg.OrderMethod,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []GetPluralWorkPositionsOnPermissionUseNumberedPaginateRow{}
+	for rows.Next() {
+		var i GetPluralWorkPositionsOnPermissionUseNumberedPaginateRow
+		if err := rows.Scan(
+			&i.PermissionAssociation.MPermissionAssociationsPkey,
+			&i.PermissionAssociation.PermissionID,
+			&i.PermissionAssociation.WorkPositionID,
+			&i.WorkPosition.MWorkPositionsPkey,
+			&i.WorkPosition.WorkPositionID,
+			&i.WorkPosition.OrganizationID,
+			&i.WorkPosition.Name,
+			&i.WorkPosition.Description,
+			&i.WorkPosition.CreatedAt,
+			&i.WorkPosition.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getWorkPositionsOnPermission = `-- name: GetWorkPositionsOnPermission :many
 SELECT m_permission_associations.m_permission_associations_pkey, m_permission_associations.permission_id, m_permission_associations.work_position_id, m_work_positions.m_work_positions_pkey, m_work_positions.work_position_id, m_work_positions.organization_id, m_work_positions.name, m_work_positions.description, m_work_positions.created_at, m_work_positions.updated_at FROM m_permission_associations
 LEFT JOIN m_work_positions ON m_permission_associations.work_position_id = m_work_positions.work_position_id
@@ -441,8 +573,8 @@ WHERE permission_id = $1
 AND
 	CASE WHEN $2::boolean = true THEN m_work_positions.name LIKE '%' || $3::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $4::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN $4::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN $4::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $4::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
 `
 
@@ -516,10 +648,10 @@ AND
 			END
 	END
 ORDER BY
-	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_work_positions.name END ASC,
-	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_work_positions.name END DESC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_work_positions.name END ASC,
-	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_work_positions.name END DESC,
+	CASE WHEN $6::text = 'name' AND $5::text = 'next' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'name' AND $5::text = 'prev' THEN m_work_positions.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'next' THEN m_work_positions.name END DESC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' AND $5::text = 'prev' THEN m_work_positions.name END ASC NULLS LAST,
 	CASE WHEN $5::text = 'next' THEN m_permission_associations_pkey END ASC,
 	CASE WHEN $5::text = 'prev' THEN m_permission_associations_pkey END DESC
 LIMIT $2
@@ -588,8 +720,8 @@ WHERE permission_id = $1
 AND
 	CASE WHEN $4::boolean = true THEN m_work_positions.name LIKE '%' || $5::text || '%' ELSE TRUE END
 ORDER BY
-	CASE WHEN $6::text = 'name' THEN m_work_positions.name END ASC,
-	CASE WHEN $6::text = 'r_name' THEN m_work_positions.name END DESC,
+	CASE WHEN $6::text = 'name' THEN m_work_positions.name END ASC NULLS LAST,
+	CASE WHEN $6::text = 'r_name' THEN m_work_positions.name END DESC NULLS LAST,
 	m_permission_associations_pkey ASC
 LIMIT $2 OFFSET $3
 `
@@ -646,7 +778,7 @@ func (q *Queries) GetWorkPositionsOnPermissionUseNumberedPaginate(ctx context.Co
 	return items, nil
 }
 
-const pluralDeletePermissionAssociationsOnPermission = `-- name: PluralDeletePermissionAssociationsOnPermission :exec
+const pluralDeletePermissionAssociationsOnPermission = `-- name: PluralDeletePermissionAssociationsOnPermission :execrows
 DELETE FROM m_permission_associations WHERE permission_id = $1 AND work_position_id = ANY($2::uuid[])
 `
 
@@ -655,12 +787,15 @@ type PluralDeletePermissionAssociationsOnPermissionParams struct {
 	Column2      []uuid.UUID `json:"column_2"`
 }
 
-func (q *Queries) PluralDeletePermissionAssociationsOnPermission(ctx context.Context, arg PluralDeletePermissionAssociationsOnPermissionParams) error {
-	_, err := q.db.Exec(ctx, pluralDeletePermissionAssociationsOnPermission, arg.PermissionID, arg.Column2)
-	return err
+func (q *Queries) PluralDeletePermissionAssociationsOnPermission(ctx context.Context, arg PluralDeletePermissionAssociationsOnPermissionParams) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeletePermissionAssociationsOnPermission, arg.PermissionID, arg.Column2)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }
 
-const pluralDeletePermissionAssociationsOnWorkPosition = `-- name: PluralDeletePermissionAssociationsOnWorkPosition :exec
+const pluralDeletePermissionAssociationsOnWorkPosition = `-- name: PluralDeletePermissionAssociationsOnWorkPosition :execrows
 DELETE FROM m_permission_associations WHERE work_position_id = $1 AND permission_id = ANY($2::uuid[])
 `
 
@@ -669,7 +804,10 @@ type PluralDeletePermissionAssociationsOnWorkPositionParams struct {
 	Column2        []uuid.UUID `json:"column_2"`
 }
 
-func (q *Queries) PluralDeletePermissionAssociationsOnWorkPosition(ctx context.Context, arg PluralDeletePermissionAssociationsOnWorkPositionParams) error {
-	_, err := q.db.Exec(ctx, pluralDeletePermissionAssociationsOnWorkPosition, arg.WorkPositionID, arg.Column2)
-	return err
+func (q *Queries) PluralDeletePermissionAssociationsOnWorkPosition(ctx context.Context, arg PluralDeletePermissionAssociationsOnWorkPositionParams) (int64, error) {
+	result, err := q.db.Exec(ctx, pluralDeletePermissionAssociationsOnWorkPosition, arg.WorkPositionID, arg.Column2)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected(), nil
 }

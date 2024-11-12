@@ -4,11 +4,11 @@ INSERT INTO t_late_arrivals (attendance_id, arrive_time) VALUES ($1, $2);
 -- name: CreateLateArrival :one
 INSERT INTO t_late_arrivals (attendance_id, arrive_time) VALUES ($1, $2) RETURNING *;
 
--- name: DeleteLateArrival :exec
+-- name: DeleteLateArrival :execrows
 DELETE FROM t_late_arrivals WHERE late_arrival_id = $1;
 
--- name: PluralDeleteLateArrivals :exec
-DELETE FROM t_late_arrivals WHERE late_arrival_id = ANY($1::uuid[]);
+-- name: PluralDeleteLateArrivals :execrows
+DELETE FROM t_late_arrivals WHERE late_arrival_id = ANY(@late_arrival_ids::uuid[]);
 
 -- name: FindLateArrivalByID :one
 SELECT * FROM t_late_arrivals WHERE late_arrival_id = $1;
@@ -39,6 +39,12 @@ ORDER BY
 LIMIT $1;
 
 -- name: GetPluralLateArrivals :many
+SELECT * FROM t_late_arrivals
+WHERE attendance_id = ANY(@attendance_ids::uuid[])
+ORDER BY
+	t_late_arrivals_pkey ASC;
+
+-- name: GetPluralLateArrivalsUseNumberedPaginate :many
 SELECT * FROM t_late_arrivals
 WHERE attendance_id = ANY(@attendance_ids::uuid[])
 ORDER BY

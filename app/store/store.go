@@ -8,12 +8,8 @@ import (
 	"github.com/google/uuid"
 )
 
-var (
-	// ErrNotFoundDescriptor ディスクリプタが見つからないエラー。
-	ErrNotFoundDescriptor = errors.New("not found descriptor")
-	// ErrDataNoRecord レコードが存在しないエラー。
-	ErrDataNoRecord = errors.New("no record")
-)
+// ErrNotFoundDescriptor ディスクリプタが見つからないエラー。
+var ErrNotFoundDescriptor = errors.New("not found descriptor")
 
 // Sd Storeディスクリプタ。
 type Sd uuid.UUID
@@ -35,8 +31,37 @@ type Store interface {
 	AttendStatus
 	AttendanceType
 	EventType
+	Permission
 	PermissionCategory
 	PolicyCategory
 	RecordType
 	MimeType
+	Policy
+	Role
+	RoleAssociation
+	AttachableItem
+	ChatRoom
+	ChatRoomBelonging
+	Organization
+	Group
+	Grade
+	Member
+	Student
+	Professor
+	File
+	Image
+	Message
+	ReadReceipt
+	Membership
+	ChatRoomActionType
+	ChatRoomCreateAction
+	ChatRoomUpdateNameAction
+	ChatRoomAddMemberAction
+	ChatRoomRemoveMemberAction
+	ChatRoomWithdrawAction
+	ChatRoomAddedMember
+	ChatRoomRemovedMember
+	ChatRoomDeleteMessageAction
+	ChatRoomAction
+	AttachedMessage
 }

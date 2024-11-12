@@ -13,7 +13,9 @@ import (
 )
 
 func TestPgAdapter_PolicyCategory(t *testing.T) {
-	t.Parallel()
+	if testing.Short() {
+		t.Skip("skipping test in short mode.")
+	}
 	ctx := context.Background()
 	adapter := NewDummyPgAdapter(t)
 
@@ -149,12 +151,13 @@ func TestPgAdapter_PolicyCategory(t *testing.T) {
 					ctx,
 					sd,
 					[]uuid.UUID{el.Data[0].PolicyCategoryID, el.Data[1].PolicyCategoryID},
+					parameter.PolicyCategoryOrderMethodDefault,
 					validNp,
 				)
 				assert.NoError(t, err)
 				assert.Len(t, el.Data, 2)
 				// delete
-				err = adapter.DeletePolicyCategoryWithSd(ctx, sd, el.Data[0].PolicyCategoryID)
+				_, err = adapter.DeletePolicyCategoryWithSd(ctx, sd, el.Data[0].PolicyCategoryID)
 				assert.NoError(t, err)
 				count, err = adapter.CountPolicyCategoriesWithSd(ctx, sd, parameter.WherePolicyCategoryParam{})
 				assert.NoError(t, err)
@@ -173,26 +176,33 @@ func TestPgAdapter_PolicyCategory(t *testing.T) {
 				assert.Equal(t, el.WithCount.Count, int64(2))
 				// update
 				p := parameter.UpdatePolicyCategoryParams{
-					Name: "name4",
-					Key:  "key4",
+					Name:        "name4",
+					Key:         "key4",
+					Description: "description4",
 				}
 				e, err := adapter.UpdatePolicyCategoryWithSd(ctx, sd, el.Data[0].PolicyCategoryID, p)
 				assert.NoError(t, err)
 				assert.Equal(t, p.Name, e.Name)
 				assert.Equal(t, p.Key, e.Key)
+				assert.Equal(t, p.Description, e.Description)
 				e, err = adapter.FindPolicyCategoryByIDWithSd(ctx, sd, el.Data[0].PolicyCategoryID)
 				assert.NoError(t, err)
 				assert.Equal(t, p.Name, e.Name)
+				assert.Equal(t, p.Key, e.Key)
+				assert.Equal(t, p.Description, e.Description)
 				// update by key
 				p2 := parameter.UpdatePolicyCategoryByKeyParams{
-					Name: "name5",
+					Name:        "name5",
+					Description: "description5",
 				}
 				e, err = adapter.UpdatePolicyCategoryByKeyWithSd(ctx, sd, el.Data[1].Key, p2)
 				assert.NoError(t, err)
 				assert.Equal(t, p2.Name, e.Name)
+				assert.Equal(t, p2.Description, e.Description)
 				e, err = adapter.FindPolicyCategoryByKeyWithSd(ctx, sd, el.Data[1].Key)
 				assert.NoError(t, err)
 				assert.Equal(t, p2.Name, e.Name)
+				assert.Equal(t, p2.Description, e.Description)
 			},
 		},
 	}

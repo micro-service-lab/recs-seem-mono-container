@@ -7,11 +7,13 @@
 | Name | Type | Default | Nullable | Children | Parents | Comment |
 | ---- | ---- | ------- | -------- | -------- | ------- | ------- |
 | t_attachable_items_pkey | bigint | nextval('t_attachable_items_t_attachable_items_pkey_seq'::regclass) | false |  |  |  |
-| attachable_item_id | uuid | uuid_generate_v4() | false | [public.t_images](public.t_images.md) [public.t_files](public.t_files.md) |  |  |
+| attachable_item_id | uuid | uuid_generate_v4() | false | [public.t_images](public.t_images.md) [public.t_files](public.t_files.md) [public.t_attached_messages](public.t_attached_messages.md) |  |  |
 | url | text |  | false |  |  |  |
 | size | double precision |  | true |  |  |  |
+| alias | varchar(255) |  | false |  |  |  |
 | mime_type_id | uuid |  | false |  | [public.m_mime_types](public.m_mime_types.md) |  |
 | owner_id | uuid |  | true |  | [public.m_members](public.m_members.md) |  |
+| from_outer | boolean |  | false |  |  |  |
 
 ## Constraints
 
@@ -27,6 +29,7 @@
 | ---- | ---------- |
 | t_attachable_items_pkey | CREATE UNIQUE INDEX t_attachable_items_pkey ON public.t_attachable_items USING btree (t_attachable_items_pkey) |
 | idx_t_attachable_items_id | CREATE UNIQUE INDEX idx_t_attachable_items_id ON public.t_attachable_items USING btree (attachable_item_id) |
+| idx_t_attachable_items_url | CREATE INDEX idx_t_attachable_items_url ON public.t_attachable_items USING btree (url) |
 
 ## Relations
 
